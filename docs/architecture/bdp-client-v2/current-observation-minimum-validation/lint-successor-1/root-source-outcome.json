@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-17T21:22:41.716285+00:00",
+  "outcome": "focused-source failed; 96 pass/1 fail/348 skipped",
+  "logSha256": "1bbb32e47f201e181c375a984896e73c5a9ca0b07ec4268ad272d7d52ed551a4",
+  "auditSha256": "c1ff1a6cad99b3b943952815be8a0e21f3f756e03b1f16b6126e5efd9200ffc9",
+  "E": "Partial11 of37 HTTP responses, failureCount1, closed/directoryAbsent true",
+  "disposition": "Earlier completed CODE F2 and native acceptance missed HTTP canonical-URI sorting. Actual Relation,Task is correct; restore only explicit expected object order. Preserve original mistaken finding and failed attempt.",
+  "laterStages": "Unattempted; gate closed",
+  "sourceUnchanged": true
+}

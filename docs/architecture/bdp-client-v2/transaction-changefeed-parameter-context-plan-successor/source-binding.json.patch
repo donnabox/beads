@@ -1,0 +1,40 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-source-binding.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-plan-successor/source-binding.json
+@@ -1,7 +1,7 @@
+ {
+-  "status": "PLAN_ONLY_PARENT_MERGE_PENDING",
+-  "workspace": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+-  "head": "1a37f7209e3ff6f409f43491d670c881259406ba",
++  "status": "PLAN_SUCCESSOR_PENDING_ROOT_REVIEW_AUTHORING_CLOSED",
++  "workspace": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
++  "head": "9a42a4531def99e12fa9a1fba02e70558d643265",
+   "tree": "a9cca0e1e5c52ac8bbd06ce989a94ca6e4f2b272",
+   "clean": true,
+   "ownedPaths": [
+@@ -36,6 +36,25 @@
+     "schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+     "vitest.config.ts": "a84575ea9ef0b6e75b6484024a627fa89422aea2fdbeb26127e09714dba0641f",
+     "packages/server/test-support/read-conformance-mock.ts": "dbfb86ac2325c684567ffce40f17105c6b12a63edfa54cc08f0601df8dc613f8",
+-    "pnpm-lock.yaml": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d"
++    "pnpm-lock.yaml": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
++    "packages/server/src/transaction-consistency.ts": "1507f760c790c7232f4e200faa45fdcd3c508a3fbd02909c4c1caaba7a70b6c7",
++    "packages/conformance/src/http-executor.ts": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
++    "packages/conformance/test-support/transactional/fixture-v1.json": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
++    "apps/bdptest/test-support/installed-contract-identity.ts": "d33f6d1ca8a3691bbc2529129bbe85260cdd38f09c8895304a870ec8cf7c4165",
++    "packages/server/src/transaction-batch.ts": "5fa7052d95942548727760625e368f3892e1dacced1654f022720af0b5ce899a",
++    "packages/server/src/transaction-installed.ts": "afddc6b0304fee4762c79e40ac6610a281ca8791928d8f779a900a7f6eac881a",
++    "packages/server/src/transaction-installed-configuration.ts": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
++    "packages/server/src/transaction-sse.ts": "1a414cb252b1eb2b5c3695d16aecb59382cbd417876837351e1d80b91b45784c",
++    "packages/conformance/test-support/profile-contract-plan.ts": "18c953443e6695cfa48f89677231fecffc349df02bd080f107a5c739db10b728",
++    "biome.json": "62beced4e0227b97fe9ade1a1a573bf53a2f8916af8da7ce70f94315fece39dc",
++    "package.json": "f081baa3202b4815663d360d3ad1608206efe1b023086a4c8feff4d7fb97d8d0"
++  },
++  "branch": "codex/vickie-changefeed-parameter-context",
++  "bindingPolicy": "Curated plan dependencies: owned existing paths, error/lifecycle/transport/emission/installed configuration and fixture binding, source-test setup, schema/spec and pinned tool config. Not an exhaustive import/package closure; actual build/copy/package closure is a later measured execution gate.",
++  "originalBindingSha256": "782f862cee2df0883a9aa9c6b061e07f2f328b5afc0f2386d99317a081153685",
++  "priorPinnedPathsUnchanged": true,
++  "readOnlyToolMetadata": {
++    "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/@biomejs/biome/package.json": "8f94f16901a5c47f51babdf8cc36f9340c7f5bb0fd3197c97161445a684da31b",
++    "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/@biomejs/biome/configuration_schema.json": "dd10a299de1840cd2dd723a8f48781e361959f8b91ecc65d70ab6cb7a92c8bb1"
+   }
+ }

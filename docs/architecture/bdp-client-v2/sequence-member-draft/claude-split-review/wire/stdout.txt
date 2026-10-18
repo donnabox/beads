@@ -1,0 +1,51 @@
+## WIRE scope review — `transactional-matrix.test.ts` (+ supplied conformance/server excerpts)
+
+### Findings
+
+**1. Medium — `sequenceMemberWire` has no post-completion guard, and `composedMemberWire` keeps feeding it forever**
+`apps/bdptest/src/transactional-matrix.test.ts`, appended block (hunk `@@ -2809,3 +2844,498 @@`): `sequenceMemberWire.afterExchange` opens with only
+```js
+const index = observedIds.length, id = memberRawIds[index]!, expected = requests[index]!;
+expect(index).toBeLessThan(negative ? 1 : 7);
+```
+Both predecessor sentinels instead have an explicit terminal branch — `crossCarrierWire` (`if (facts.length === maximum) { …; return; }`, excerpt 1953‑1962) and `commandMinimumWire` (`if (observedIds.length === maximum) { …; return; }`, excerpt 2392‑2402). Meanwhile `composedMemberWire` invokes `member.afterExchange(response)` for **every** exchange once `handedOff` is true, not only for member-row exchanges. Two consequences:
+
+- *Demonstrated invariant gap:* after its 7th exchange the member sentinel asserts nothing. It does not reproduce the impersonation checks its siblings perform (no `member-a|member-fail|member-b` key rejection, no "later `operations/sequence` must not carry the member body digest"). The new static loop in the pinning test only proves member keys will not trip the *other* sentinels' guards; the reciprocal guard was never installed.
+- *Latent misattribution:* the first ordinary exchange after the member row throws `expect(7).toBeLessThan(7)` inside the `exactExecution.execute` wrapper, converting an unrelated later row into a harness failure with an opaque message. Today this is unreached only because the member row is last among the 15 action-bearing rows (consistent with `/scenarios/14` of 15 in the preservation facts) — an ordering no assertion pins. Any future row whose id sorts after `transactional.sequence.member-transactions` triggers it.
+
+Smallest correction — mirror `commandMinimumWire` before the index bound (key already extracted in the composed callback; extract it locally here):
+```js
+if (observedIds.length === (negative ? 1 : 7)) {
+  expect(["member-a","member-fail","member-b"]).not.toContain(key);
+  if (response.url === `${scope}operations/sequence`)
+    expect(request.bodyDigest).not.toBe("f3cde631…c71c7");
+  return;
+}
+```
+
+**2. Low — measured-maximum comment trail not extended at either derivative fence**
+New lines ~1734‑1737 (hunk `@@ -1704,8 +1733,8 @@`) and ~2145‑2148 (hunk `@@ -2115,8 +2144,8 @@`): the guards move to `812575` / `21176`, but the comment block above each still lists only `701716B/18263nodes` and `756707B/19731nodes`. The file's own convention records each cohort's measurement plus the `4096B/64node` headroom, and `812575 = 808479+4096`, `21176 = 21112+64` matches `maxDerivativeNormalBytes` / `maxDerivativeNodes` exactly — but a reader cannot derive the new fence from the comments. Add, at both sites: `// Sequence-member measured maximum808479B/21112nodes plus4096B/64nodes.`
+
+**3. Low — envelope equality is closed only for the sequence response, not for receipts, the bead page, or the event page**
+Same appended block, `sequenceMemberWire.afterExchange`. The sequence envelope gets `expect(Object.keys(body)).toEqual(["results"])` plus per-result `toEqual`, and `resource()` / the event object use closed `toEqual`. The three receipt bodies are checked with `toMatchObject` + targeted presence/absence (`status/detail/idempotencyKey/scopeEpoch/authorizationView/requiredPosition/id/transaction/expiresAt`, then `problem` or `effectPosition/next/results`), and the `index === 5` / `else` branches assert only `items`/`events` + `next`. An unexpected additional top-level field (e.g. a stray `allocated`, a second page link, or a new disclosure) is invisible to this sentinel, and the retained-receipt comparison in `transactional-observation.ts` only compares GET-vs-POST, not against an authored expectation. Given that full envelope equality is mandatory here, add a closed key-set assertion per disposition, e.g. `expect(Object.keys(body).sort()).toEqual([...].sort())` for completed/failed receipts and for the two read pages.
+
+### Omitted context (dependencies I cannot verify, not defects)
+
+- **Negative split depends on two unsupplied source facts.** The expected exactly-seven failures (and `schema`/`middle-no-resource` passing) require (a) `#/$defs/transactionalSequenceResponse` to admit a `{operationIndex, outcome:"deleted", deleted:{resourceKind, resource:{id,type,revision}}}` entry, and (b) the `deleteBead` result's revision to be the **pre-delete** revision — the wire asserts `revision: body.results[0].resource.revision`. The supplied `transaction-sequence.ts` `project()` only forwards the member receipt's single result; the batch delete result builder is not supplied. If (a) fails, `schema` becomes an eighth failure; if (b) fails, the negative dies inside the wire with an opaque diff instead of at the intended manifest assertions.
+- **Receipt body fields `scopeEpoch` / `authorizationView`** are asserted via `toMatchObject` but are not in the manifest's assertion set and appear in no supplied schema excerpt.
+- **Receipt-authority capacity.** This row is the first to hold three simultaneous `/id` bindings; `createTransactionalObservations(…, maximum)` throws `receipt authority binding limit or reuse` when `ledger.size >= maximum`. The runner's `maximum` argument is not in the supplied excerpts — needs `≥ 3`.
+- **`implemented`** (defined above line 98, not supplied) is not updated by the diff. If it is a literal id set rather than derived from `bundle.manifest.scenarios`, the member row escapes the `toMatchObject({state:"pass"})` loop; the `15` pass-count and `assertMemberPositive` still cover it, so the impact is limited to that loop's diagnostics.
+- **Execution order is inferred, not pinned.** `cross.finish()` at handoff requires the cross row to have reached `maximum` first, and the cross terminal guard requires the minimum row to precede it; both hold under `minimum < cross < member`, which I can only infer. Failures here are loud, not silent.
+- The pinned `f3cde631…c71c7` cannot be recomputed without tools; `assertMemberControl`'s round-trip (`JSON.stringify(memberRequests()[0].body)` written back, then `expect(value).toEqual(original)`) does prove the positive body string is byte-identical to the authored manifest value, and key order survives the negative's `bead` override, matching `/scenarios/14/actions/0/raw/body/value` as the only derivative delta.
+
+### Nits
+
+- `const request = response.exactRequest!` — siblings use `expect(request).toBeDefined()` first; as written a missing observation surfaces as a TypeError.
+- `applyMemberControl` mutates `row.actions[0]` blindly; `assertMemberControl` checks length 10 but never `actions[0].id === "s-sequence"`.
+- `expect(body.results[1].deleted.resource).not.toHaveProperty("properties"/"metadata")` is dead after the closed `toEqual` above it.
+- `cross.finish()` now runs inside the execute path, so a cross-completeness failure is reported as a member-row exchange error; a labeled rethrow (or a cheap `cross.complete()` predicate at handoff) keeps attribution.
+- `wire.summary()` is recomputed on each loop iteration in `assertMemberPositive`; and the positive `onObserved` mixes `supplemental` (minimum) with `sequenceMemberSupplemental` (member) — the third wire will need a third ad-hoc key.
+
+### Verified consistent
+
+Request/digest oracles against the manifest raw bodies and header order (including keyless sequence bodies vs header-keyed batch recoveries); the `problem(1)` vs `problem(0)` index split; positions `pos-1/pos-1/pos-2` with no `effectPosition` on the failure and `pos-2` serving (`pos-3` negative); cross-checking receipt results against the sequence-observed resources and three distinct `transaction` values; the event-id oracle exactly reproducing `renderTransactionEvent`'s private `sha256(JSON.stringify([tag,value]))` base64url spelling and `pos-1/pos-2` checkpoints; handoff exemption confined to member indices 0/4 with URL + digest + absent key + `writeState === "complete"`; and the count arithmetic (+10 exchanges in all five cohorts, 213/204/205, sessions 21→22, children 22→23, 623 bounded HTTP, 71 children) plus both derivative fences equal to the recommended values.

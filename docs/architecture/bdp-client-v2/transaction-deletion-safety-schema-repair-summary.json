@@ -1,0 +1,2377 @@
+{
+  "source": {
+    "head": "39c160d0d35294003f400cef8d5ab5c6ec9aec9c",
+    "tree": "75e8fb97979e304bbe6fa24b7a570d9fa01efbbb",
+    "parent": "2e742307845f52c23c4a16e6150fcf2201713fb5",
+    "base": "5995f6b08ebd045e4343059c2da1cffd38b09b80",
+    "checkout": "/Users/dbox/repos/wt/vickie/vickie-deletion-safety-schema-repair",
+    "branch": "codex/vickie-deletion-safety-schema-repair",
+    "clean": true,
+    "files": {
+      "apps/bdptest/src/transactional-matrix.test.ts": {
+        "bytes": 66983,
+        "sha256": "d6ab197494a383a7c76c40fa0daeedbde2a3d36dd1c78711cdd48fdd3ed1dcd8"
+      },
+      "packages/conformance/src/transactional-cumulative.test.ts": {
+        "bytes": 82403,
+        "sha256": "4ed3e4ef8b105f9f5d85854a07f03e614adc8c9e4af952421a0b23889f759e9d"
+      },
+      "packages/conformance/test-support/transactional/coverage-v1.json": {
+        "bytes": 88043,
+        "sha256": "dafedd035ca20f684559c739ebf2e6155f8446ce8062c3fa60ff86967b259bbd"
+      },
+      "packages/conformance/test-support/transactional/manifest-v1.json": {
+        "bytes": 620094,
+        "sha256": "56318c56ee99bb981336e3f17560e7b079e88f2f85ef463874c1d556a066b2b2"
+      }
+    },
+    "successorFiles": [
+      "packages/conformance/src/transactional-cumulative.test.ts",
+      "packages/conformance/test-support/transactional/manifest-v1.json"
+    ],
+    "productionAndFixtureUnchanged": true,
+    "claimEligible": false
+  },
+  "artifactMeasurements": {
+    "manifest": {
+      "bytes": 620094,
+      "sha256": "56318c56ee99bb981336e3f17560e7b079e88f2f85ef463874c1d556a066b2b2",
+      "nodes": 16373,
+      "growthBytes": 131814,
+      "newRawObjectBytes": 131808,
+      "newRawObjectSha256": "3e66e7c95aec963cc80e076249a5870b952765b2e98c1023ea148f8f628e6aeb",
+      "removingNewRowReconstructsParentExactly": true
+    },
+    "coverage": {
+      "bytes": 88043,
+      "sha256": "dafedd035ca20f684559c739ebf2e6155f8446ce8062c3fa60ff86967b259bbd",
+      "nodes": 1974,
+      "growthBytes": 17381,
+      "newRawObjectBytes": 17375,
+      "newRawObjectSha256": "ac27a329a1cc013e6a0e24e0f5cad6b5b4af6c128ad65302d030422a3c7e3c0a",
+      "removingNewRowReconstructsParentExactly": true
+    }
+  },
+  "preflightLedgerSha256": "5174215328473dc8eaccabfb39f940e0981b4ed077f63504c55e1be4132af3b5",
+  "derivatives": [
+    {
+      "control": "incoming-order",
+      "actionId": "d-incoming-survives",
+      "finalActionId": "d-incoming-survives",
+      "positiveIds": [
+        "control-position",
+        "control-completed",
+        "control-detail",
+        "control-required",
+        "control-effect",
+        "control-inline",
+        "control-ordered-results",
+        "control-updated-id",
+        "control-updated-type",
+        "control-updated-properties",
+        "control-updated-metadata",
+        "control-l-kind",
+        "control-l-id",
+        "control-l-type",
+        "control-l-revision",
+        "control-r-kind",
+        "control-r-id",
+        "control-r-type",
+        "control-r-revision",
+        "control-a-kind",
+        "control-a-id",
+        "control-a-type",
+        "control-a-revision"
+      ],
+      "stableIds": [
+        "http-status",
+        "present-bdp-scope-epoch",
+        "present-bdp-authorization-view",
+        "present-bdp-scope-position",
+        "schema",
+        "request-headers",
+        "request-body"
+      ],
+      "added": [
+        "control-position",
+        "control-completed",
+        "control-detail",
+        "control-required",
+        "control-effect",
+        "control-inline",
+        "control-ordered-results",
+        "control-updated-id",
+        "control-updated-type",
+        "control-updated-properties",
+        "control-updated-metadata",
+        "control-l-kind",
+        "control-l-id",
+        "control-l-type",
+        "control-l-revision",
+        "control-r-kind",
+        "control-r-id",
+        "control-r-type",
+        "control-r-revision",
+        "control-a-kind",
+        "control-a-id",
+        "control-a-type",
+        "control-a-revision"
+      ],
+      "removed": [],
+      "netAssertions": 23,
+      "normalBytes": 636794,
+      "wireBytes": 311318,
+      "nodes": 16529,
+      "canonicalAssertions": 1872,
+      "derivativeAssertions": 1895,
+      "normalDigest": "25e089cb31c86fe988db6b345d5273c25e10490f16d6fc09024d6d81487270de",
+      "executionManifestDigest": "69b7ba35d012a559865037bd0a2ad197f0f12704104b4b49200ea5c505f58bd3",
+      "rawRequestBytes": 372,
+      "actionAssertionIds": [
+        "http-status",
+        "present-bdp-scope-epoch",
+        "present-bdp-authorization-view",
+        "present-bdp-scope-position",
+        "schema",
+        "serving-context",
+        "request-headers",
+        "request-body",
+        "disposition",
+        "detail",
+        "required-position",
+        "no-effect",
+        "no-results",
+        "no-next",
+        "problem",
+        "control-position",
+        "control-completed",
+        "control-detail",
+        "control-required",
+        "control-effect",
+        "control-inline",
+        "control-ordered-results",
+        "control-updated-id",
+        "control-updated-type",
+        "control-updated-properties",
+        "control-updated-metadata",
+        "control-l-kind",
+        "control-l-id",
+        "control-l-type",
+        "control-l-revision",
+        "control-r-kind",
+        "control-r-id",
+        "control-r-type",
+        "control-r-revision",
+        "control-a-kind",
+        "control-a-id",
+        "control-a-type",
+        "control-a-revision"
+      ]
+    },
+    {
+      "control": "outgoing-order",
+      "actionId": "d-outgoing-survives",
+      "finalActionId": "d-outgoing-survives",
+      "positiveIds": [
+        "control-position",
+        "control-completed",
+        "control-detail",
+        "control-required",
+        "control-effect",
+        "control-inline",
+        "control-ordered-results",
+        "control-updated-id",
+        "control-updated-type",
+        "control-updated-properties",
+        "control-updated-metadata",
+        "control-r-kind",
+        "control-r-id",
+        "control-r-type",
+        "control-r-revision",
+        "control-l-kind",
+        "control-l-id",
+        "control-l-type",
+        "control-l-revision",
+        "control-a-kind",
+        "control-a-id",
+        "control-a-type",
+        "control-a-revision"
+      ],
+      "stableIds": [
+        "http-status",
+        "present-bdp-scope-epoch",
+        "present-bdp-authorization-view",
+        "present-bdp-scope-position",
+        "schema",
+        "request-headers",
+        "request-body"
+      ],
+      "added": [
+        "control-position",
+        "control-completed",
+        "control-detail",
+        "control-required",
+        "control-effect",
+        "control-inline",
+        "control-ordered-results",
+        "control-updated-id",
+        "control-updated-type",
+        "control-updated-properties",
+        "control-updated-metadata",
+        "control-r-kind",
+        "control-r-id",
+        "control-r-type",
+        "control-r-revision",
+        "control-l-kind",
+        "control-l-id",
+        "control-l-type",
+        "control-l-revision",
+        "control-a-kind",
+        "control-a-id",
+        "control-a-type",
+        "control-a-revision"
+      ],
+      "removed": [],
+      "netAssertions": 23,
+      "normalBytes": 636794,
+      "wireBytes": 311318,
+      "nodes": 16529,
+      "canonicalAssertions": 1872,
+      "derivativeAssertions": 1895,
+      "normalDigest": "2b95c85f0609c80f5063eb0053f67305260ef6262d4f7c4f3830cd6ba1a46a0d",
+      "executionManifestDigest": "273e51cf781e73c6342e338a75c76320c426bd1548912a10f774887d91b3f7c4",
+      "rawRequestBytes": 372,
+      "actionAssertionIds": [
+        "http-status",
+        "present-bdp-scope-epoch",
+        "present-bdp-authorization-view",
+        "present-bdp-scope-position",
+        "schema",
+        "serving-context",
+        "request-headers",
+        "request-body",
+        "disposition",
+        "detail",
+        "required-position",
+        "no-effect",
+        "no-results",
+        "no-next",
+        "problem",
+        "control-position",
+        "control-completed",
+        "control-detail",
+        "control-required",
+        "control-effect",
+        "control-inline",
+        "control-ordered-results",
+        "control-updated-id",
+        "control-updated-type",
+        "control-updated-properties",
+        "control-updated-metadata",
+        "control-r-kind",
+        "control-r-id",
+        "control-r-type",
+        "control-r-revision",
+        "control-l-kind",
+        "control-l-id",
+        "control-l-type",
+        "control-l-revision",
+        "control-a-kind",
+        "control-a-id",
+        "control-a-type",
+        "control-a-revision"
+      ]
+    },
+    {
+      "control": "committed-prefix-state",
+      "actionId": "d-incoming-survives",
+      "finalActionId": "d-incoming-survives-beads",
+      "positiveIds": [
+        "control-position",
+        "control-completed",
+        "control-detail",
+        "control-required",
+        "control-effect",
+        "control-inline",
+        "control-ordered-results",
+        "control-updated-id",
+        "control-updated-type",
+        "control-updated-properties",
+        "control-updated-metadata",
+        "control-l-kind",
+        "control-l-id",
+        "control-l-type",
+        "control-l-revision",
+        "control-r-kind",
+        "control-r-id",
+        "control-r-type",
+        "control-r-revision"
+      ],
+      "stableIds": [
+        "http-status",
+        "present-bdp-scope-epoch",
+        "present-bdp-authorization-view",
+        "present-bdp-scope-position",
+        "schema",
+        "request-headers",
+        "request-body"
+      ],
+      "added": [
+        "control-position",
+        "control-completed",
+        "control-detail",
+        "control-required",
+        "control-effect",
+        "control-inline",
+        "control-ordered-results",
+        "control-updated-id",
+        "control-updated-type",
+        "control-updated-properties",
+        "control-updated-metadata",
+        "control-l-kind",
+        "control-l-id",
+        "control-l-type",
+        "control-l-revision",
+        "control-r-kind",
+        "control-r-id",
+        "control-r-type",
+        "control-r-revision"
+      ],
+      "removed": [
+        "serving-context",
+        "disposition",
+        "detail",
+        "required-position",
+        "no-effect",
+        "no-results",
+        "no-next",
+        "problem"
+      ],
+      "netAssertions": 11,
+      "normalBytes": 633780,
+      "wireBytes": 309755,
+      "nodes": 16450,
+      "canonicalAssertions": 1872,
+      "derivativeAssertions": 1883,
+      "normalDigest": "ea6e9f25a02f3f70987b66322a817394da96b43e073a43f2c69a37f326069759",
+      "executionManifestDigest": "1fff14f7040c85d7cdfef3e50367ff743e27823d357b5ad16ea6158b3f5a7f35",
+      "rawRequestBytes": 328,
+      "actionAssertionIds": [
+        "http-status",
+        "present-bdp-scope-epoch",
+        "present-bdp-authorization-view",
+        "present-bdp-scope-position",
+        "schema",
+        "request-headers",
+        "request-body",
+        "control-position",
+        "control-completed",
+        "control-detail",
+        "control-required",
+        "control-effect",
+        "control-inline",
+        "control-ordered-results",
+        "control-updated-id",
+        "control-updated-type",
+        "control-updated-properties",
+        "control-updated-metadata",
+        "control-l-kind",
+        "control-l-id",
+        "control-l-type",
+        "control-l-revision",
+        "control-r-kind",
+        "control-r-id",
+        "control-r-type",
+        "control-r-revision"
+      ]
+    }
+  ],
+  "configurationCaps": {
+    "maximumOperations": {
+      "value": 32,
+      "source": "packages/server/src/transaction-batch.ts:63"
+    },
+    "receiptMaximumItems": {
+      "value": 32,
+      "source": "packages/server/src/transaction-store.ts:217",
+      "capturedBy": "packages/server/src/transaction-runtime-configuration.ts:294",
+      "finiteEventUse": "packages/server/src/transaction-store.ts:1575"
+    },
+    "installedCallerOverride": false,
+    "bindingStatus": "source-inspected only; fresh installed identity not observed at stage1",
+    "requestRowBytes": 2048,
+    "responseRowBytes": 32768,
+    "positiveObserverMs": 63000,
+    "cohortMs": 90000,
+    "outerMs": 120000,
+    "exchangeMs": 5000,
+    "lifecycleMs": 10000,
+    "sevenCohortMaxChildren": 140,
+    "sevenCohortMaxExchanges": 1260
+  },
+  "routePreimage": {
+    "maximumRequestBodyBytes": 65536,
+    "maximumRequestHeaderBytes": 16384,
+    "profile": "transactional",
+    "routes": [
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/a"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/batch"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/links/l"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/?limit=32"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/events/"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/new"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/changes/?after=genesis"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/links/?limit=32"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/b"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/c"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/update-where"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/delete-where"
+      }
+    ],
+    "scope": "https://reference.invalid/acme/"
+  },
+  "routeDigest": "1ba7cbbffc4fb40df2c3f12640bc636e70076cfa25bdd6952b83ec1bb1fe0035",
+  "packed": {
+    "head": "39c160d0d35294003f400cef8d5ab5c6ec9aec9c",
+    "tree": "75e8fb97979e304bbe6fa24b7a570d9fa01efbbb",
+    "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-deletion-safety-schema-repair/installed/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+    "tarballs": {
+      "protocol.tgz": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+      "server.tgz": "ebe17f4c52c685c29444252df996996d5e5683512c4599b9288946617d38fb3e"
+    }
+  },
+  "cohorts": [
+    {
+      "kind": "installed-tx-twelve-partial-summary",
+      "sourceCommit": "39c160d0d35294003f400cef8d5ab5c6ec9aec9c",
+      "elapsedMs": 4120.595167,
+      "actions": 187,
+      "sessions": 19,
+      "childLaunches": 20,
+      "closedChildren": 20,
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "56318c56ee99bb981336e3f17560e7b079e88f2f85ef463874c1d556a066b2b2",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "39c160d0d35294003f400cef8d5ab5c6ec9aec9c",
+          "installedPayloadDigest": "535612f787a2c3e855cab57801599c86faba1ed78e5952534d70c036e64f442a",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "c71c82ec2ffac0f8f429839fb260477a12a7c919715bef913824aa1d2a401338",
+          "authenticationDigest": "c6ec026895d14be69ae80aa285cf5e2b016afe8af6249e99a6b7c9df88501f7d",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "62fb7a2c337864a73fd0e4081be653351a88149dd8a75574dfe6fe74abc0cd4f",
+        "authorityMode": "canonical"
+      },
+      "claimEligible": false
+    },
+    {
+      "kind": "installed-tx-deletion-control",
+      "control": "incoming-order",
+      "sourceCommit": "39c160d0d35294003f400cef8d5ab5c6ec9aec9c",
+      "actionId": "d-incoming-survives",
+      "finalActionId": "d-incoming-survives",
+      "positiveIds": [
+        "control-position",
+        "control-completed",
+        "control-detail",
+        "control-required",
+        "control-effect",
+        "control-inline",
+        "control-ordered-results",
+        "control-updated-id",
+        "control-updated-type",
+        "control-updated-properties",
+        "control-updated-metadata",
+        "control-l-kind",
+        "control-l-id",
+        "control-l-type",
+        "control-l-revision",
+        "control-r-kind",
+        "control-r-id",
+        "control-r-type",
+        "control-r-revision",
+        "control-a-kind",
+        "control-a-id",
+        "control-a-type",
+        "control-a-revision"
+      ],
+      "stableIds": [
+        "http-status",
+        "present-bdp-scope-epoch",
+        "present-bdp-authorization-view",
+        "present-bdp-scope-position",
+        "schema",
+        "request-headers",
+        "request-body"
+      ],
+      "added": [
+        "control-position",
+        "control-completed",
+        "control-detail",
+        "control-required",
+        "control-effect",
+        "control-inline",
+        "control-ordered-results",
+        "control-updated-id",
+        "control-updated-type",
+        "control-updated-properties",
+        "control-updated-metadata",
+        "control-l-kind",
+        "control-l-id",
+        "control-l-type",
+        "control-l-revision",
+        "control-r-kind",
+        "control-r-id",
+        "control-r-type",
+        "control-r-revision",
+        "control-a-kind",
+        "control-a-id",
+        "control-a-type",
+        "control-a-revision"
+      ],
+      "removed": [],
+      "netAssertions": 23,
+      "failedPost": [
+        "serving-context",
+        "disposition",
+        "required-position",
+        "no-effect",
+        "no-results",
+        "no-next",
+        "problem"
+      ],
+      "finalAction": "d-incoming-survives",
+      "finalStatus": 200,
+      "failures": [
+        "serving-context",
+        "disposition",
+        "required-position",
+        "no-effect",
+        "no-results",
+        "no-next",
+        "problem"
+      ],
+      "exchanges": 164,
+      "sessions": 19,
+      "childLaunches": 20,
+      "closedChildren": 20,
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "69b7ba35d012a559865037bd0a2ad197f0f12704104b4b49200ea5c505f58bd3",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "declarations": {
+        "targetLabel": "private-installed-transactional-partial",
+        "exactConfigurationDigest": "1ba7cbbffc4fb40df2c3f12640bc636e70076cfa25bdd6952b83ec1bb1fe0035"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "39c160d0d35294003f400cef8d5ab5c6ec9aec9c",
+          "installedPayloadDigest": "535612f787a2c3e855cab57801599c86faba1ed78e5952534d70c036e64f442a",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "1171919f27e5db222052e3036eb817841e64221fbf1b043fc6cf6ab92fb7c0db",
+          "authenticationDigest": "7644323e0d17bca0228f0e3c71ba90e3251b253ff0a5c981fdd4e1f3689500cd",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "d563d8c96af79f422cc16f20182ce974bc8d218f7d9deeb8b7c8a7a67e33e316",
+        "authorityMode": "canonical"
+      },
+      "claimEligible": false
+    },
+    {
+      "kind": "installed-tx-deletion-control",
+      "control": "outgoing-order",
+      "sourceCommit": "39c160d0d35294003f400cef8d5ab5c6ec9aec9c",
+      "actionId": "d-outgoing-survives",
+      "finalActionId": "d-outgoing-survives",
+      "positiveIds": [
+        "control-position",
+        "control-completed",
+        "control-detail",
+        "control-required",
+        "control-effect",
+        "control-inline",
+        "control-ordered-results",
+        "control-updated-id",
+        "control-updated-type",
+        "control-updated-properties",
+        "control-updated-metadata",
+        "control-r-kind",
+        "control-r-id",
+        "control-r-type",
+        "control-r-revision",
+        "control-l-kind",
+        "control-l-id",
+        "control-l-type",
+        "control-l-revision",
+        "control-a-kind",
+        "control-a-id",
+        "control-a-type",
+        "control-a-revision"
+      ],
+      "stableIds": [
+        "http-status",
+        "present-bdp-scope-epoch",
+        "present-bdp-authorization-view",
+        "present-bdp-scope-position",
+        "schema",
+        "request-headers",
+        "request-body"
+      ],
+      "added": [
+        "control-position",
+        "control-completed",
+        "control-detail",
+        "control-required",
+        "control-effect",
+        "control-inline",
+        "control-ordered-results",
+        "control-updated-id",
+        "control-updated-type",
+        "control-updated-properties",
+        "control-updated-metadata",
+        "control-r-kind",
+        "control-r-id",
+        "control-r-type",
+        "control-r-revision",
+        "control-l-kind",
+        "control-l-id",
+        "control-l-type",
+        "control-l-revision",
+        "control-a-kind",
+        "control-a-id",
+        "control-a-type",
+        "control-a-revision"
+      ],
+      "removed": [],
+      "netAssertions": 23,
+      "failedPost": [
+        "serving-context",
+        "disposition",
+        "required-position",
+        "no-effect",
+        "no-results",
+        "no-next",
+        "problem"
+      ],
+      "finalAction": "d-outgoing-survives",
+      "finalStatus": 200,
+      "failures": [
+        "serving-context",
+        "disposition",
+        "required-position",
+        "no-effect",
+        "no-results",
+        "no-next",
+        "problem"
+      ],
+      "exchanges": 169,
+      "sessions": 19,
+      "childLaunches": 20,
+      "closedChildren": 20,
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "273e51cf781e73c6342e338a75c76320c426bd1548912a10f774887d91b3f7c4",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "declarations": {
+        "targetLabel": "private-installed-transactional-partial",
+        "exactConfigurationDigest": "1ba7cbbffc4fb40df2c3f12640bc636e70076cfa25bdd6952b83ec1bb1fe0035"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "39c160d0d35294003f400cef8d5ab5c6ec9aec9c",
+          "installedPayloadDigest": "535612f787a2c3e855cab57801599c86faba1ed78e5952534d70c036e64f442a",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "b6ebee85046481d79a2d421a331e415408cd54f8800e9e38b54cf5dfbb60bd3a",
+          "authenticationDigest": "15cb2b6fb70704ee3a13ed2af2fb8d3250fd7ef427a776b5087f2ffc76599100",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "d34bb8621341dd8544ec7582c9d973ef84dccb365f145f09cae794f74d93f35b",
+        "authorityMode": "canonical"
+      },
+      "claimEligible": false
+    },
+    {
+      "kind": "installed-tx-deletion-control",
+      "control": "committed-prefix-state",
+      "sourceCommit": "39c160d0d35294003f400cef8d5ab5c6ec9aec9c",
+      "actionId": "d-incoming-survives",
+      "finalActionId": "d-incoming-survives-beads",
+      "positiveIds": [
+        "control-position",
+        "control-completed",
+        "control-detail",
+        "control-required",
+        "control-effect",
+        "control-inline",
+        "control-ordered-results",
+        "control-updated-id",
+        "control-updated-type",
+        "control-updated-properties",
+        "control-updated-metadata",
+        "control-l-kind",
+        "control-l-id",
+        "control-l-type",
+        "control-l-revision",
+        "control-r-kind",
+        "control-r-id",
+        "control-r-type",
+        "control-r-revision"
+      ],
+      "stableIds": [
+        "http-status",
+        "present-bdp-scope-epoch",
+        "present-bdp-authorization-view",
+        "present-bdp-scope-position",
+        "schema",
+        "request-headers",
+        "request-body"
+      ],
+      "added": [
+        "control-position",
+        "control-completed",
+        "control-detail",
+        "control-required",
+        "control-effect",
+        "control-inline",
+        "control-ordered-results",
+        "control-updated-id",
+        "control-updated-type",
+        "control-updated-properties",
+        "control-updated-metadata",
+        "control-l-kind",
+        "control-l-id",
+        "control-l-type",
+        "control-l-revision",
+        "control-r-kind",
+        "control-r-id",
+        "control-r-type",
+        "control-r-revision"
+      ],
+      "removed": [
+        "serving-context",
+        "disposition",
+        "detail",
+        "required-position",
+        "no-effect",
+        "no-results",
+        "no-next",
+        "problem"
+      ],
+      "netAssertions": 11,
+      "failedPost": [],
+      "finalAction": "d-incoming-survives-beads",
+      "finalStatus": 200,
+      "failures": [
+        "serving-context",
+        "ordered-identities",
+        "complete-b"
+      ],
+      "exchanges": 165,
+      "sessions": 19,
+      "childLaunches": 20,
+      "closedChildren": 20,
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "1fff14f7040c85d7cdfef3e50367ff743e27823d357b5ad16ea6158b3f5a7f35",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "declarations": {
+        "targetLabel": "private-installed-transactional-partial",
+        "exactConfigurationDigest": "1ba7cbbffc4fb40df2c3f12640bc636e70076cfa25bdd6952b83ec1bb1fe0035"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "39c160d0d35294003f400cef8d5ab5c6ec9aec9c",
+          "installedPayloadDigest": "535612f787a2c3e855cab57801599c86faba1ed78e5952534d70c036e64f442a",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "f9b08365e4772f17c778c288e6754bd51a9f98a8d8318108c9ca875b1de8febe",
+          "authenticationDigest": "f4cafc52243659524afa6ba0c0d3e8c07d9a318395f1fac4a230ad5f295add1c",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "b44d64293faae10e2cbd0f4c584ef8b3a05a04ac6c06280ca66119604410e90d",
+        "authorityMode": "canonical"
+      },
+      "claimEligible": false
+    },
+    {
+      "kind": "installed-tx-matching-noop-control",
+      "control": "bead-property",
+      "sourceCommit": "39c160d0d35294003f400cef8d5ab5c6ec9aec9c",
+      "actionId": "n-noop",
+      "observedStatus": 200,
+      "writeState": "complete",
+      "intended": [
+        "bead-retained-record"
+      ],
+      "failures": [
+        "serving-context",
+        "required-position",
+        "no-effect",
+        "ordered-results",
+        "bead-retained-record"
+      ],
+      "exchanges": 169,
+      "sessions": 19,
+      "childLaunches": 20,
+      "closedChildren": 20,
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "d1499e347ebf6f3f054ad527473284a203bf6f27fe7dd346020784957935b34d",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "declarations": {
+        "targetLabel": "private-installed-transactional-partial",
+        "exactConfigurationDigest": "1ba7cbbffc4fb40df2c3f12640bc636e70076cfa25bdd6952b83ec1bb1fe0035"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "39c160d0d35294003f400cef8d5ab5c6ec9aec9c",
+          "installedPayloadDigest": "535612f787a2c3e855cab57801599c86faba1ed78e5952534d70c036e64f442a",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "9cb614e8b44a75616958410ee60e0ccbd6d17ff177a3722491bfd45516d13c20",
+          "authenticationDigest": "7501c6dd85ff3b7d8e548d57a557638e4587525f3b75afd825316cf544834b65",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "843aa206139bd0caf288f210d2097ae8aa302f82c9fc3fd5882e2abf0ec40bbd",
+        "authorityMode": "canonical"
+      },
+      "claimEligible": false
+    },
+    {
+      "kind": "installed-tx-matching-noop-control",
+      "control": "link-metadata",
+      "sourceCommit": "39c160d0d35294003f400cef8d5ab5c6ec9aec9c",
+      "actionId": "n-noop",
+      "observedStatus": 200,
+      "writeState": "complete",
+      "intended": [
+        "link-retained-record"
+      ],
+      "failures": [
+        "serving-context",
+        "required-position",
+        "no-effect",
+        "ordered-results",
+        "link-retained-record"
+      ],
+      "exchanges": 169,
+      "sessions": 19,
+      "childLaunches": 20,
+      "closedChildren": 20,
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "0ec39ccf1711b7579bc73ac7c03b00fd02fa06829dff7ebe69cd04b352af78c2",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "declarations": {
+        "targetLabel": "private-installed-transactional-partial",
+        "exactConfigurationDigest": "1ba7cbbffc4fb40df2c3f12640bc636e70076cfa25bdd6952b83ec1bb1fe0035"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "39c160d0d35294003f400cef8d5ab5c6ec9aec9c",
+          "installedPayloadDigest": "535612f787a2c3e855cab57801599c86faba1ed78e5952534d70c036e64f442a",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "fffa90a14e1121091c53abdaddbaf0db7584257262075ac280fb7cc484529961",
+          "authenticationDigest": "83bbe244e43a761a0cd8d084e926f9ea89e07bf63fec38d0582f683dee2ef09d",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "0dbb838bb508221f9f9885da6fbf311336e7f10c636819b22774555314915e8d",
+        "authorityMode": "canonical"
+      },
+      "claimEligible": false
+    },
+    {
+      "kind": "installed-tx-matching-noop-control",
+      "control": "group-inventory-and-head",
+      "sourceCommit": "39c160d0d35294003f400cef8d5ab5c6ec9aec9c",
+      "actionId": "n-noop-groups",
+      "observedStatus": 200,
+      "writeState": "complete",
+      "intended": [
+        "group-inventory",
+        "observed-head"
+      ],
+      "failures": [
+        "observed-head",
+        "group-inventory"
+      ],
+      "exchanges": 174,
+      "sessions": 19,
+      "childLaunches": 20,
+      "closedChildren": 20,
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "f81867e5fd34b3bdc5e28c6cd6faa4cde2f58ee9b15507b058a0a161c883e97d",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "declarations": {
+        "targetLabel": "private-installed-transactional-partial",
+        "exactConfigurationDigest": "1ba7cbbffc4fb40df2c3f12640bc636e70076cfa25bdd6952b83ec1bb1fe0035"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "39c160d0d35294003f400cef8d5ab5c6ec9aec9c",
+          "installedPayloadDigest": "535612f787a2c3e855cab57801599c86faba1ed78e5952534d70c036e64f442a",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "2d937dda3cb4a5015acde39e7be865773e7cd29662a68fb2e307109ba403c3d5",
+          "authenticationDigest": "ed50e07bc05ac17f7e7193c04822b6cfc94408a230ff35cb6a98cf0412b2f3dd",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "bd85b3d49c2a7e9e44f7c8e4992a3b19a58f179c2e1820a4bc05eeb9fd40d2a4",
+        "authorityMode": "canonical"
+      },
+      "claimEligible": false
+    }
+  ],
+  "resultMappings": [
+    {
+      "file": "installed/positive-observation.json",
+      "bytes": 913833,
+      "sha256": "668fd1f368f9ea433ea2a5c25aea5682b9a9f2e1a62c10cb366914cac4cd19ce",
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "56318c56ee99bb981336e3f17560e7b079e88f2f85ef463874c1d556a066b2b2",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "declarations": {
+        "targetLabel": "private-installed-transactional-partial",
+        "exactConfigurationDigest": "1ba7cbbffc4fb40df2c3f12640bc636e70076cfa25bdd6952b83ec1bb1fe0035"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "39c160d0d35294003f400cef8d5ab5c6ec9aec9c",
+          "installedPayloadDigest": "535612f787a2c3e855cab57801599c86faba1ed78e5952534d70c036e64f442a",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "c71c82ec2ffac0f8f429839fb260477a12a7c919715bef913824aa1d2a401338",
+          "authenticationDigest": "c6ec026895d14be69ae80aa285cf5e2b016afe8af6249e99a6b7c9df88501f7d",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "62fb7a2c337864a73fd0e4081be653351a88149dd8a75574dfe6fe74abc0cd4f",
+        "authorityMode": "canonical"
+      },
+      "states": [
+        {
+          "id": "transactional.batch.atomic-commit",
+          "state": "pass",
+          "exchanges": 7
+        },
+        {
+          "id": "transactional.batch.rollback",
+          "state": "pass",
+          "exchanges": 9
+        },
+        {
+          "id": "transactional.batch.deletion-safety",
+          "state": "pass",
+          "exchanges": 21
+        },
+        {
+          "id": "transactional.batch.no-op-entries",
+          "state": "pass",
+          "exchanges": 15
+        },
+        {
+          "id": "transactional.set.mutation",
+          "state": "pass",
+          "exchanges": 29
+        },
+        {
+          "id": "transactional.set.zero-match",
+          "state": "pass",
+          "exchanges": 16
+        },
+        {
+          "id": "transactional.set.cardinality",
+          "state": "pass",
+          "exchanges": 15
+        },
+        {
+          "id": "transactional.set.singleton-targets",
+          "state": "pass",
+          "exchanges": 21
+        },
+        {
+          "id": "transactional.receipt.readable",
+          "state": "pass",
+          "exchanges": 8
+        },
+        {
+          "id": "transactional.receipt.pagination",
+          "state": "pass",
+          "exchanges": 17
+        },
+        {
+          "id": "transactional.idempotency.conflict",
+          "state": "pass",
+          "exchanges": 11
+        },
+        {
+          "id": "transactional.idempotency.failed-retained",
+          "state": "pass",
+          "exchanges": 11
+        }
+      ]
+    },
+    {
+      "file": "installed/deletion-control-committed-prefix-state.json",
+      "bytes": 852303,
+      "sha256": "b93bf2dece2afa0340938d7d6b76b8eec640db9be15400e966cce562a7ad7f99",
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "1fff14f7040c85d7cdfef3e50367ff743e27823d357b5ad16ea6158b3f5a7f35",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "declarations": {
+        "targetLabel": "private-installed-transactional-partial",
+        "exactConfigurationDigest": "1ba7cbbffc4fb40df2c3f12640bc636e70076cfa25bdd6952b83ec1bb1fe0035"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "39c160d0d35294003f400cef8d5ab5c6ec9aec9c",
+          "installedPayloadDigest": "535612f787a2c3e855cab57801599c86faba1ed78e5952534d70c036e64f442a",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "f9b08365e4772f17c778c288e6754bd51a9f98a8d8318108c9ca875b1de8febe",
+          "authenticationDigest": "f4cafc52243659524afa6ba0c0d3e8c07d9a318395f1fac4a230ad5f295add1c",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "b44d64293faae10e2cbd0f4c584ef8b3a05a04ac6c06280ca66119604410e90d",
+        "authorityMode": "canonical"
+      },
+      "states": [
+        {
+          "id": "transactional.batch.atomic-commit",
+          "state": "pass",
+          "exchanges": 7
+        },
+        {
+          "id": "transactional.batch.rollback",
+          "state": "pass",
+          "exchanges": 9
+        },
+        {
+          "id": "transactional.batch.deletion-safety",
+          "state": "fail",
+          "exchanges": 6
+        },
+        {
+          "id": "transactional.batch.no-op-entries",
+          "state": "pass",
+          "exchanges": 15
+        },
+        {
+          "id": "transactional.set.mutation",
+          "state": "pass",
+          "exchanges": 29
+        },
+        {
+          "id": "transactional.set.zero-match",
+          "state": "pass",
+          "exchanges": 16
+        },
+        {
+          "id": "transactional.set.cardinality",
+          "state": "pass",
+          "exchanges": 15
+        },
+        {
+          "id": "transactional.set.singleton-targets",
+          "state": "pass",
+          "exchanges": 21
+        },
+        {
+          "id": "transactional.receipt.readable",
+          "state": "pass",
+          "exchanges": 8
+        },
+        {
+          "id": "transactional.receipt.pagination",
+          "state": "pass",
+          "exchanges": 17
+        },
+        {
+          "id": "transactional.idempotency.conflict",
+          "state": "pass",
+          "exchanges": 11
+        },
+        {
+          "id": "transactional.idempotency.failed-retained",
+          "state": "pass",
+          "exchanges": 11
+        }
+      ]
+    },
+    {
+      "file": "installed/deletion-control-incoming-order.json",
+      "bytes": 850276,
+      "sha256": "6c35160993229eef9f3051fdc2f8ae5aaa0d7985b0023cda6f7e4f58c364afb8",
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "69b7ba35d012a559865037bd0a2ad197f0f12704104b4b49200ea5c505f58bd3",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "declarations": {
+        "targetLabel": "private-installed-transactional-partial",
+        "exactConfigurationDigest": "1ba7cbbffc4fb40df2c3f12640bc636e70076cfa25bdd6952b83ec1bb1fe0035"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "39c160d0d35294003f400cef8d5ab5c6ec9aec9c",
+          "installedPayloadDigest": "535612f787a2c3e855cab57801599c86faba1ed78e5952534d70c036e64f442a",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "1171919f27e5db222052e3036eb817841e64221fbf1b043fc6cf6ab92fb7c0db",
+          "authenticationDigest": "7644323e0d17bca0228f0e3c71ba90e3251b253ff0a5c981fdd4e1f3689500cd",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "d563d8c96af79f422cc16f20182ce974bc8d218f7d9deeb8b7c8a7a67e33e316",
+        "authorityMode": "canonical"
+      },
+      "states": [
+        {
+          "id": "transactional.batch.atomic-commit",
+          "state": "pass",
+          "exchanges": 7
+        },
+        {
+          "id": "transactional.batch.rollback",
+          "state": "pass",
+          "exchanges": 9
+        },
+        {
+          "id": "transactional.batch.deletion-safety",
+          "state": "fail",
+          "exchanges": 5
+        },
+        {
+          "id": "transactional.batch.no-op-entries",
+          "state": "pass",
+          "exchanges": 15
+        },
+        {
+          "id": "transactional.set.mutation",
+          "state": "pass",
+          "exchanges": 29
+        },
+        {
+          "id": "transactional.set.zero-match",
+          "state": "pass",
+          "exchanges": 16
+        },
+        {
+          "id": "transactional.set.cardinality",
+          "state": "pass",
+          "exchanges": 15
+        },
+        {
+          "id": "transactional.set.singleton-targets",
+          "state": "pass",
+          "exchanges": 21
+        },
+        {
+          "id": "transactional.receipt.readable",
+          "state": "pass",
+          "exchanges": 8
+        },
+        {
+          "id": "transactional.receipt.pagination",
+          "state": "pass",
+          "exchanges": 17
+        },
+        {
+          "id": "transactional.idempotency.conflict",
+          "state": "pass",
+          "exchanges": 11
+        },
+        {
+          "id": "transactional.idempotency.failed-retained",
+          "state": "pass",
+          "exchanges": 11
+        }
+      ]
+    },
+    {
+      "file": "installed/deletion-control-outgoing-order.json",
+      "bytes": 870294,
+      "sha256": "4c89451a1fc67d51540af1df389fa9c52520ed1840efb614c2280f95397a0852",
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "273e51cf781e73c6342e338a75c76320c426bd1548912a10f774887d91b3f7c4",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "declarations": {
+        "targetLabel": "private-installed-transactional-partial",
+        "exactConfigurationDigest": "1ba7cbbffc4fb40df2c3f12640bc636e70076cfa25bdd6952b83ec1bb1fe0035"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "39c160d0d35294003f400cef8d5ab5c6ec9aec9c",
+          "installedPayloadDigest": "535612f787a2c3e855cab57801599c86faba1ed78e5952534d70c036e64f442a",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "b6ebee85046481d79a2d421a331e415408cd54f8800e9e38b54cf5dfbb60bd3a",
+          "authenticationDigest": "15cb2b6fb70704ee3a13ed2af2fb8d3250fd7ef427a776b5087f2ffc76599100",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "d34bb8621341dd8544ec7582c9d973ef84dccb365f145f09cae794f74d93f35b",
+        "authorityMode": "canonical"
+      },
+      "states": [
+        {
+          "id": "transactional.batch.atomic-commit",
+          "state": "pass",
+          "exchanges": 7
+        },
+        {
+          "id": "transactional.batch.rollback",
+          "state": "pass",
+          "exchanges": 9
+        },
+        {
+          "id": "transactional.batch.deletion-safety",
+          "state": "fail",
+          "exchanges": 10
+        },
+        {
+          "id": "transactional.batch.no-op-entries",
+          "state": "pass",
+          "exchanges": 15
+        },
+        {
+          "id": "transactional.set.mutation",
+          "state": "pass",
+          "exchanges": 29
+        },
+        {
+          "id": "transactional.set.zero-match",
+          "state": "pass",
+          "exchanges": 16
+        },
+        {
+          "id": "transactional.set.cardinality",
+          "state": "pass",
+          "exchanges": 15
+        },
+        {
+          "id": "transactional.set.singleton-targets",
+          "state": "pass",
+          "exchanges": 21
+        },
+        {
+          "id": "transactional.receipt.readable",
+          "state": "pass",
+          "exchanges": 8
+        },
+        {
+          "id": "transactional.receipt.pagination",
+          "state": "pass",
+          "exchanges": 17
+        },
+        {
+          "id": "transactional.idempotency.conflict",
+          "state": "pass",
+          "exchanges": 11
+        },
+        {
+          "id": "transactional.idempotency.failed-retained",
+          "state": "pass",
+          "exchanges": 11
+        }
+      ]
+    },
+    {
+      "file": "installed/noop-control-bead-property.json",
+      "bytes": 866496,
+      "sha256": "bc53285969e3b05b6d9857f6e07eb008f82ac73923c5a0b36761aec0cc927abb",
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "d1499e347ebf6f3f054ad527473284a203bf6f27fe7dd346020784957935b34d",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "declarations": {
+        "targetLabel": "private-installed-transactional-partial",
+        "exactConfigurationDigest": "1ba7cbbffc4fb40df2c3f12640bc636e70076cfa25bdd6952b83ec1bb1fe0035"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "39c160d0d35294003f400cef8d5ab5c6ec9aec9c",
+          "installedPayloadDigest": "535612f787a2c3e855cab57801599c86faba1ed78e5952534d70c036e64f442a",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "9cb614e8b44a75616958410ee60e0ccbd6d17ff177a3722491bfd45516d13c20",
+          "authenticationDigest": "7501c6dd85ff3b7d8e548d57a557638e4587525f3b75afd825316cf544834b65",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "843aa206139bd0caf288f210d2097ae8aa302f82c9fc3fd5882e2abf0ec40bbd",
+        "authorityMode": "canonical"
+      },
+      "states": [
+        {
+          "id": "transactional.batch.atomic-commit",
+          "state": "pass",
+          "exchanges": 7
+        },
+        {
+          "id": "transactional.batch.rollback",
+          "state": "pass",
+          "exchanges": 9
+        },
+        {
+          "id": "transactional.batch.deletion-safety",
+          "state": "pass",
+          "exchanges": 21
+        },
+        {
+          "id": "transactional.batch.no-op-entries",
+          "state": "fail",
+          "exchanges": 4
+        },
+        {
+          "id": "transactional.set.mutation",
+          "state": "pass",
+          "exchanges": 29
+        },
+        {
+          "id": "transactional.set.zero-match",
+          "state": "pass",
+          "exchanges": 16
+        },
+        {
+          "id": "transactional.set.cardinality",
+          "state": "pass",
+          "exchanges": 15
+        },
+        {
+          "id": "transactional.set.singleton-targets",
+          "state": "pass",
+          "exchanges": 21
+        },
+        {
+          "id": "transactional.receipt.readable",
+          "state": "pass",
+          "exchanges": 8
+        },
+        {
+          "id": "transactional.receipt.pagination",
+          "state": "pass",
+          "exchanges": 17
+        },
+        {
+          "id": "transactional.idempotency.conflict",
+          "state": "pass",
+          "exchanges": 11
+        },
+        {
+          "id": "transactional.idempotency.failed-retained",
+          "state": "pass",
+          "exchanges": 11
+        }
+      ]
+    },
+    {
+      "file": "installed/noop-control-group-inventory-and-head.json",
+      "bytes": 887406,
+      "sha256": "e48e618b90509361b37cbdda4cf886cf8152f27c8c08a1829b129f917c74f2cb",
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "f81867e5fd34b3bdc5e28c6cd6faa4cde2f58ee9b15507b058a0a161c883e97d",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "declarations": {
+        "targetLabel": "private-installed-transactional-partial",
+        "exactConfigurationDigest": "1ba7cbbffc4fb40df2c3f12640bc636e70076cfa25bdd6952b83ec1bb1fe0035"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "39c160d0d35294003f400cef8d5ab5c6ec9aec9c",
+          "installedPayloadDigest": "535612f787a2c3e855cab57801599c86faba1ed78e5952534d70c036e64f442a",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "2d937dda3cb4a5015acde39e7be865773e7cd29662a68fb2e307109ba403c3d5",
+          "authenticationDigest": "ed50e07bc05ac17f7e7193c04822b6cfc94408a230ff35cb6a98cf0412b2f3dd",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "bd85b3d49c2a7e9e44f7c8e4992a3b19a58f179c2e1820a4bc05eeb9fd40d2a4",
+        "authorityMode": "canonical"
+      },
+      "states": [
+        {
+          "id": "transactional.batch.atomic-commit",
+          "state": "pass",
+          "exchanges": 7
+        },
+        {
+          "id": "transactional.batch.rollback",
+          "state": "pass",
+          "exchanges": 9
+        },
+        {
+          "id": "transactional.batch.deletion-safety",
+          "state": "pass",
+          "exchanges": 21
+        },
+        {
+          "id": "transactional.batch.no-op-entries",
+          "state": "fail",
+          "exchanges": 9
+        },
+        {
+          "id": "transactional.set.mutation",
+          "state": "pass",
+          "exchanges": 29
+        },
+        {
+          "id": "transactional.set.zero-match",
+          "state": "pass",
+          "exchanges": 16
+        },
+        {
+          "id": "transactional.set.cardinality",
+          "state": "pass",
+          "exchanges": 15
+        },
+        {
+          "id": "transactional.set.singleton-targets",
+          "state": "pass",
+          "exchanges": 21
+        },
+        {
+          "id": "transactional.receipt.readable",
+          "state": "pass",
+          "exchanges": 8
+        },
+        {
+          "id": "transactional.receipt.pagination",
+          "state": "pass",
+          "exchanges": 17
+        },
+        {
+          "id": "transactional.idempotency.conflict",
+          "state": "pass",
+          "exchanges": 11
+        },
+        {
+          "id": "transactional.idempotency.failed-retained",
+          "state": "pass",
+          "exchanges": 11
+        }
+      ]
+    },
+    {
+      "file": "installed/noop-control-link-metadata.json",
+      "bytes": 866496,
+      "sha256": "2387de54049e76323e50a3816c22dbe2b12d8f3990486b2c8c556d5cc713e226",
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "0ec39ccf1711b7579bc73ac7c03b00fd02fa06829dff7ebe69cd04b352af78c2",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "declarations": {
+        "targetLabel": "private-installed-transactional-partial",
+        "exactConfigurationDigest": "1ba7cbbffc4fb40df2c3f12640bc636e70076cfa25bdd6952b83ec1bb1fe0035"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "39c160d0d35294003f400cef8d5ab5c6ec9aec9c",
+          "installedPayloadDigest": "535612f787a2c3e855cab57801599c86faba1ed78e5952534d70c036e64f442a",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "fffa90a14e1121091c53abdaddbaf0db7584257262075ac280fb7cc484529961",
+          "authenticationDigest": "83bbe244e43a761a0cd8d084e926f9ea89e07bf63fec38d0582f683dee2ef09d",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "0dbb838bb508221f9f9885da6fbf311336e7f10c636819b22774555314915e8d",
+        "authorityMode": "canonical"
+      },
+      "states": [
+        {
+          "id": "transactional.batch.atomic-commit",
+          "state": "pass",
+          "exchanges": 7
+        },
+        {
+          "id": "transactional.batch.rollback",
+          "state": "pass",
+          "exchanges": 9
+        },
+        {
+          "id": "transactional.batch.deletion-safety",
+          "state": "pass",
+          "exchanges": 21
+        },
+        {
+          "id": "transactional.batch.no-op-entries",
+          "state": "fail",
+          "exchanges": 4
+        },
+        {
+          "id": "transactional.set.mutation",
+          "state": "pass",
+          "exchanges": 29
+        },
+        {
+          "id": "transactional.set.zero-match",
+          "state": "pass",
+          "exchanges": 16
+        },
+        {
+          "id": "transactional.set.cardinality",
+          "state": "pass",
+          "exchanges": 15
+        },
+        {
+          "id": "transactional.set.singleton-targets",
+          "state": "pass",
+          "exchanges": 21
+        },
+        {
+          "id": "transactional.receipt.readable",
+          "state": "pass",
+          "exchanges": 8
+        },
+        {
+          "id": "transactional.receipt.pagination",
+          "state": "pass",
+          "exchanges": 17
+        },
+        {
+          "id": "transactional.idempotency.conflict",
+          "state": "pass",
+          "exchanges": 11
+        },
+        {
+          "id": "transactional.idempotency.failed-retained",
+          "state": "pass",
+          "exchanges": 11
+        }
+      ]
+    }
+  ],
+  "newRowWireLedger": [
+    {
+      "id": "d-seed",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "status": 200,
+      "requestBytes": 644,
+      "responseBytes": 1603,
+      "exchangeAssertions": 18,
+      "allAssertionsPassed": true
+    },
+    {
+      "id": "d-seed-facts",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/receipts/bad3dddd-8c16-4763-ba6c-d2a14c61f9d1",
+      "status": 200,
+      "requestBytes": 0,
+      "responseBytes": 1603,
+      "exchangeAssertions": 3,
+      "allAssertionsPassed": true
+    },
+    {
+      "id": "d-seed-events",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/events/",
+      "status": 200,
+      "requestBytes": 0,
+      "responseBytes": 5106,
+      "exchangeAssertions": 14,
+      "allAssertionsPassed": true
+    },
+    {
+      "id": "d-seed-groups",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/changes/?<redacted>",
+      "status": 200,
+      "requestBytes": 0,
+      "responseBytes": 6830,
+      "exchangeAssertions": 23,
+      "allAssertionsPassed": true
+    },
+    {
+      "id": "d-incoming-survives",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "status": 200,
+      "requestBytes": 372,
+      "responseBytes": 545,
+      "exchangeAssertions": 15,
+      "allAssertionsPassed": true
+    },
+    {
+      "id": "d-incoming-survives-beads",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?<redacted>",
+      "status": 200,
+      "requestBytes": 0,
+      "responseBytes": 403,
+      "exchangeAssertions": 12,
+      "allAssertionsPassed": true
+    },
+    {
+      "id": "d-incoming-survives-links",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/?<redacted>",
+      "status": 200,
+      "requestBytes": 0,
+      "responseBytes": 619,
+      "exchangeAssertions": 12,
+      "allAssertionsPassed": true
+    },
+    {
+      "id": "d-incoming-survives-events",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/events/",
+      "status": 200,
+      "requestBytes": 0,
+      "responseBytes": 5106,
+      "exchangeAssertions": 14,
+      "allAssertionsPassed": true
+    },
+    {
+      "id": "d-incoming-survives-groups",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/changes/?<redacted>",
+      "status": 200,
+      "requestBytes": 0,
+      "responseBytes": 6830,
+      "exchangeAssertions": 23,
+      "allAssertionsPassed": true
+    },
+    {
+      "id": "d-outgoing-survives",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "status": 200,
+      "requestBytes": 372,
+      "responseBytes": 545,
+      "exchangeAssertions": 15,
+      "allAssertionsPassed": true
+    },
+    {
+      "id": "d-outgoing-survives-beads",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?<redacted>",
+      "status": 200,
+      "requestBytes": 0,
+      "responseBytes": 403,
+      "exchangeAssertions": 12,
+      "allAssertionsPassed": true
+    },
+    {
+      "id": "d-outgoing-survives-links",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/?<redacted>",
+      "status": 200,
+      "requestBytes": 0,
+      "responseBytes": 619,
+      "exchangeAssertions": 12,
+      "allAssertionsPassed": true
+    },
+    {
+      "id": "d-outgoing-survives-events",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/events/",
+      "status": 200,
+      "requestBytes": 0,
+      "responseBytes": 5106,
+      "exchangeAssertions": 14,
+      "allAssertionsPassed": true
+    },
+    {
+      "id": "d-outgoing-survives-groups",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/changes/?<redacted>",
+      "status": 200,
+      "requestBytes": 0,
+      "responseBytes": 6830,
+      "exchangeAssertions": 23,
+      "allAssertionsPassed": true
+    },
+    {
+      "id": "d-delete",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "status": 200,
+      "requestBytes": 148,
+      "responseBytes": 1142,
+      "exchangeAssertions": 17,
+      "allAssertionsPassed": true
+    },
+    {
+      "id": "d-delete-facts",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/receipts/cdb7e959-d537-4924-8d24-300fca28a6cf",
+      "status": 200,
+      "requestBytes": 0,
+      "responseBytes": 1142,
+      "exchangeAssertions": 3,
+      "allAssertionsPassed": true
+    },
+    {
+      "id": "d-final-beads",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?<redacted>",
+      "status": 200,
+      "requestBytes": 0,
+      "responseBytes": 213,
+      "exchangeAssertions": 11,
+      "allAssertionsPassed": true
+    },
+    {
+      "id": "d-final-links",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/?<redacted>",
+      "status": 200,
+      "requestBytes": 0,
+      "responseBytes": 24,
+      "exchangeAssertions": 10,
+      "allAssertionsPassed": true
+    },
+    {
+      "id": "d-deleted-a",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/a",
+      "status": 404,
+      "requestBytes": 0,
+      "responseBytes": 134,
+      "exchangeAssertions": 8,
+      "allAssertionsPassed": true
+    },
+    {
+      "id": "d-final-events",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/events/",
+      "status": 200,
+      "requestBytes": 0,
+      "responseBytes": 9296,
+      "exchangeAssertions": 28,
+      "allAssertionsPassed": true
+    },
+    {
+      "id": "d-final-groups",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/changes/?<redacted>",
+      "status": 200,
+      "requestBytes": 0,
+      "responseBytes": 6966,
+      "exchangeAssertions": 23,
+      "allAssertionsPassed": true
+    }
+  ],
+  "assertionAccounting": {
+    "authored": 333,
+    "exchangeChecks": 310,
+    "clientChecks": 29,
+    "builtInClientWireChecks": 6
+  },
+  "totals": {
+    "successfulCohorts": 7,
+    "successfulChildrenClosed": 140,
+    "successfulHttp": 1190,
+    "priorFailedPreflightBootstrapInferred": 1,
+    "priorFailedPreflightHttp": 0,
+    "allAttemptChildrenIncludingInferred": 141,
+    "allAttemptHttp": 1190,
+    "authorizedChildrenCeiling": 141,
+    "authorizedHttpCeiling": 1260
+  },
+  "exits": {
+    "frozen-clean": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.287,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "clean"
+      ]
+    },
+    "frozen-typecheck": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.778,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ]
+    },
+    "frozen-build": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.762,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "pack-protocol": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.234,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "pack",
+        "--out",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-deletion-safety-schema-repair/installed/packs/protocol.tgz"
+      ]
+    },
+    "pack-server": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.289,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "pack",
+        "--out",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-deletion-safety-schema-repair/installed/packs/server.tgz"
+      ]
+    },
+    "packed-install": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.442,
+      "command": [
+        "npm",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund"
+      ]
+    },
+    "positive": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 4.766,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "-t",
+        "observes twelve partial Transactional",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-deletion-safety-schema-repair/installed/positive.json"
+      ]
+    },
+    "deletion-controls": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 12.652,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "-t",
+        "discriminates operation-time deletion evidence",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-deletion-safety-schema-repair/installed/deletion-controls.json"
+      ]
+    },
+    "noop-controls": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 12.799,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "-t",
+        "discriminates matching no-op evidence",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-deletion-safety-schema-repair/installed/noop-controls.json"
+      ]
+    }
+  },
+  "sourceChecks": {
+    "format-owned": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 1.315,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "biome",
+        "format",
+        "--write",
+        "packages/conformance/src/transactional-cumulative.test.ts",
+        "apps/bdptest/src/transactional-matrix.test.ts"
+      ]
+    },
+    "typecheck": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 1.37,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ]
+    },
+    "build": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.76,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "cumulative": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 1.965,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/conformance/src/transactional-cumulative.test.ts",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-deletion-safety-schema-repair/cumulative.json"
+      ]
+    },
+    "app-static": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.716,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "-t",
+        "pins the matching no-op installed route|pins deletion-safety derivative",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-deletion-safety-schema-repair/app-static.json"
+      ]
+    },
+    "format": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.341,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "format:check"
+      ]
+    },
+    "lint": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.442,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ]
+    },
+    "boundaries": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.539,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ]
+    },
+    "read-seal": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.336,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ]
+    },
+    "diff": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.02,
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ]
+    }
+  },
+  "cleanup": {
+    "remainingInstalledChildren": 0,
+    "sourceClean": true
+  },
+  "claimEligible": false
+}

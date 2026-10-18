@@ -1,0 +1,17 @@
+{
+  "module": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/packages/server/dist/transaction-http.js",
+  "positiveSha256": "71e4a41978f975b8424b4be5cb835aa2545d4a03d006ee27b4b7ccea971bc6de",
+  "negativeSha256": "194427b2ff57c2581bfe063b98d92c4f7bbdead2d835d746980b5e0832364487",
+  "sites": [
+    {
+      "positive": "transactionHttpProblem(page.code, page.code === \"resource-not-found\" ? page.context : undefined)",
+      "negative": "transactionHttpProblem(page.code)"
+    },
+    {
+      "positive": "transactionHttpProblem(result.code, result.code === \"resource-not-found\" ? result.context : undefined)",
+      "negative": "transactionHttpProblem(result.code)"
+    }
+  ],
+  "changes": 2,
+  "sourceModified": false
+}

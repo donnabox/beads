@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/event-validation-successor-4/run/restart-external.results.json",
+    "--testNamePattern",
+    "^installed\\ Event\\ cursors\\ survive\\ restart\\ with\\ Last\\-Event\\-ID\\ precedence\\ and\\ source\\ binding$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness",
+  "head": "2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96",
+  "tree": "1823346779033dec6255bcab93f69d7149d33055",
+  "sourceIdentity": "a5dae662b7609662bb5c94b07d44fe695231b04fa7f13a9fd642bece1e77c556",
+  "rootGateSha256": "51dd80fb1f521697e968b53a83106b578bdcede52978cada90d32d78e79764cf",
+  "outerSeconds": 120,
+  "automaticRetries": 0,
+  "overrides": {
+    "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/event-validation-successor-4/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed-process.js",
+    "BDP_TRANSACTIONAL_SOURCE_COMMIT": "2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96"
+  }
+}

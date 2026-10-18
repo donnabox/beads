@@ -1,0 +1,37 @@
+{
+  "at": "2026-10-17T11:33:03.606101+00:00",
+  "candidate": "d7197e97a29bff8f075028419afad05388e2e655",
+  "status": "Validation blocked at type-examples; earlier11stages passed",
+  "records": {
+    "type-examples.log": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/type-examples.log",
+      "sha256": "fd09239d4797357ab8c2c651c18139340bbe9085ce6d66c07301ede33037e7f9"
+    },
+    "type-examples.exit.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/type-examples.exit.json",
+      "sha256": "3d3654bf7eabe241b9eb27026d276cb9fc71137f30256af0c9ba3d133b49fa52"
+    },
+    "type-examples.started.json": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/run/type-examples.started.json",
+      "sha256": "be7cd6fe65f1f740eb1c33baecb8aa03f8ce39bfa320948544a81b97cf286397"
+    }
+  },
+  "observedProbe": {
+    "dateTimeCheckerRegistered": false,
+    "rfc3339ValidatorImportable": false,
+    "jsonschemaVersion": "4.26.0",
+    "metadata": "rfc3339-validator is an optional format dependency"
+  },
+  "sourceMechanism": "jsonschema/_format.py395-402 suppresses ImportError then conditionally registers date-time; without dependency bad-date is accepted and existing negative assertion fails.",
+  "sourceUnchangedFromFrozenMain": [
+    "scripts/check_type_examples.py",
+    "specs/types/issue/issue.properties.schema.json"
+  ],
+  "disposition": "Prepare isolated dependency-only correction. No Types/product source changes. Preserve failed attempt; reuse exact earlier Node validation explicitly.",
+  "nodeVersionDispatch": "Root attempted next invocation after receiving failure; existing gate rejected before process launch or started record. No later stage ran.",
+  "cleanup": {
+    "forced": false,
+    "remaining": [],
+    "runtimeDirectories": []
+  }
+}

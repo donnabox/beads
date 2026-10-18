@@ -1,0 +1,254 @@
+packages/server/src/transaction-snapshot.test.ts:1339:18 lint/style/useTemplate  FIXABLE  ━━━━━━━━━━
+
+  i Template literals are preferred over string concatenation.
+  
+    1337 │     };
+    1338 │     owner = open(options);
+  > 1339 │     const deep = "[".repeat(12000) + "1" + "]".repeat(12000);
+         │                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    1340 │     const body = `{"operations":[${JSON.stringify(create("a"))},${JSON.stringify(create("b"))},{"operation":"createLink","id":"links/deep","type":"${linkType}","source":"beads/a","target":"beads/b","properties":{"deep":${deep}}}]}`;
+    1341 │     expect(Buffer.byteLength(body)).toBeLessThanOrEqual(65536);
+  
+  i Unsafe fix: Use a template literal.
+  
+    1337 1337 │       };
+    1338 1338 │       owner = open(options);
+    1339      │ - ····const·deep·=·"[".repeat(12000)·+·"1"·+·"]".repeat(12000);
+         1339 │ + ····const·deep·=·`${"[".repeat(12000)}1${"]".repeat(12000)}`;
+    1340 1340 │       const body = `{"operations":[${JSON.stringify(create("a"))},${JSON.stringify(create("b"))},{"operation":"createLink","id":"links/deep","type":"${linkType}","source":"beads/a","target":"beads/b","properties":{"deep":${deep}}}]}`;
+    1341 1341 │       expect(Buffer.byteLength(body)).toBeLessThanOrEqual(65536);
+  
+
+apps/bdptest/src/transactional-snapshot-installed.test.ts:328:47 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    326 │       status: response.status,
+    327 │       responseBytes: response.bodyOctets,
+  > 328 │       wireSha256: createHash("sha256").update(response.wireResponseBytes!).digest("hex"),
+        │                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    329 │     });
+    330 │     expect(response.headers["x-bdp-development"]).toBe("non-attesting");
+  
+
+apps/bdptest/src/transactional-snapshot-installed.test.ts:1101:53 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1099 │             status: response.status,
+    1100 │             responseBytes: response.bodyOctets,
+  > 1101 │             wireSha256: createHash("sha256").update(response.wireResponseBytes!).digest("hex"),
+         │                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    1102 │             elapsedSeconds: (performance.now() - requestStarted) / 1000,
+    1103 │           });
+  
+
+packages/server/src/transaction-http.ts:478:50 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    476 │       const fields =
+    477 │         lastEventIds ??
+  > 478 │         (request.headers.has("last-event-id") ? [request.headers.get("last-event-id")!] : []);
+        │                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    479 │       if (media === "sse" && fields.length > 1)
+    480 │         throw new TransactionChangefeedParameterError("repeated Last-Event-ID");
+  
+
+packages/server/src/transaction-http.ts:481:75 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    479 │       if (media === "sse" && fields.length > 1)
+    480 │         throw new TransactionChangefeedParameterError("repeated Last-Event-ID");
+  > 481 │       const effective = media === "sse" && fields.length === 1 ? { after: fields[0]! } : changefeed;
+        │                                                                           ^^^^^^^^^^
+    482 │       const observed = await service.changes(effective, minimum, request.signal);
+    483 │       if (observed.kind === "unsupported") return developmentGap("minimum-position");
+  
+
+packages/server/src/transaction-http.ts:534:50 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    532 │       const fields =
+    533 │         lastEventIds ??
+  > 534 │         (request.headers.has("last-event-id") ? [request.headers.get("last-event-id")!] : []);
+        │                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    535 │       const observed = await service.beginEvents(
+    536 │         eventRequest.source.url,
+  
+
+packages/server/src/transaction-snapshot.test.ts:122:3 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    120 │ }
+    121 │ const handle = (manifest: TransactionSnapshotManifest) =>
+  > 122 │   new URL(manifest.id).searchParams.get("snapshot")!;
+        │   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    123 │ function collect(
+    124 │   f: ReturnType<typeof fixture>,
+  
+
+packages/server/src/transaction-snapshot.test.ts:135:61 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    133 │     expect(url.searchParams.get("snapshot")).toBe(handle(manifest));
+    134 │     expect(url.searchParams.get("stream")).toBe(`${kind}s`);
+  > 135 │     page = f.owner.readSnapshotPage(handle(manifest), kind, url.searchParams.get("page")!).page;
+        │                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    136 │     records.push(...page.items);
+    137 │   }
+  
+
+packages/server/src/transaction-snapshot.test.ts:240:17 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    238 │   if (observed.kind !== "page") throw Error("feed unsupported");
+    239 │   expect(observed.page.groups).toHaveLength(1);
+  > 240 │   const group = observed.page.groups[0]!;
+        │                 ^^^^^^^^^^^^^^^^^^^^^^^^
+    241 │   const staged = new Map(replica);
+    242 │   for (const change of group.changes) {
+  
+
+packages/server/src/transaction-snapshot.test.ts:385:17 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    383 │   const first = f.owner.captureSnapshot().manifest,
+    384 │     second = f.owner.captureSnapshot().manifest;
+  > 385 │   const token = new URL(first.beads.next!).searchParams.get("page")!;
+        │                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    386 │   expect(f.owner.readSnapshotPage(handle(first), "bead", token).page.items).toHaveLength(1);
+    387 │   problem(() => f.owner.readSnapshotPage(handle(second), "bead", token), "resource-not-found");
+  
+
+packages/server/src/transaction-snapshot.test.ts:385:25 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    383 │   const first = f.owner.captureSnapshot().manifest,
+    384 │     second = f.owner.captureSnapshot().manifest;
+  > 385 │   const token = new URL(first.beads.next!).searchParams.get("page")!;
+        │                         ^^^^^^^^^^^^^^^^^
+    386 │   expect(f.owner.readSnapshotPage(handle(first), "bead", token).page.items).toHaveLength(1);
+    387 │   problem(() => f.owner.readSnapshotPage(handle(second), "bead", token), "resource-not-found");
+  
+
+packages/server/src/transaction-snapshot.test.ts:580:22 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    578 │   expect(first.beads.items).toHaveLength(15);
+    579 │   expect(Buffer.byteLength(stringifyJsonValue(first.beads))).toBeLessThanOrEqual(limits.pageBytes);
+  > 580 │   const firstToken = new URL(first.beads.next!).searchParams.get("page")!;
+        │                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    581 │   expect(f.owner.readSnapshotPage(handle(first), "bead", firstToken).page.items).toHaveLength(15);
+    582 │   const second = f.owner.captureSnapshot().manifest;
+  
+
+packages/server/src/transaction-snapshot.test.ts:580:30 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    578 │   expect(first.beads.items).toHaveLength(15);
+    579 │   expect(Buffer.byteLength(stringifyJsonValue(first.beads))).toBeLessThanOrEqual(limits.pageBytes);
+  > 580 │   const firstToken = new URL(first.beads.next!).searchParams.get("page")!;
+        │                              ^^^^^^^^^^^^^^^^^
+    581 │   expect(f.owner.readSnapshotPage(handle(first), "bead", firstToken).page.items).toHaveLength(15);
+    582 │   const second = f.owner.captureSnapshot().manifest;
+  
+
+packages/server/src/transaction-snapshot.test.ts:693:17 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    691 │   const firstId = handle(first),
+    692 │     secondId = handle(second);
+  > 693 │   const token = new URL(first.beads.next!).searchParams.get("page")!;
+        │                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    694 │   const otherToken = new URL(second.beads.next!).searchParams.get("page")!;
+    695 │   const unknown = token.slice(0, -1) + (token.endsWith("A") ? "B" : "A");
+  
+
+packages/server/src/transaction-snapshot.test.ts:693:25 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    691 │   const firstId = handle(first),
+    692 │     secondId = handle(second);
+  > 693 │   const token = new URL(first.beads.next!).searchParams.get("page")!;
+        │                         ^^^^^^^^^^^^^^^^^
+    694 │   const otherToken = new URL(second.beads.next!).searchParams.get("page")!;
+    695 │   const unknown = token.slice(0, -1) + (token.endsWith("A") ? "B" : "A");
+  
+
+packages/server/src/transaction-snapshot.test.ts:694:22 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    692 │     secondId = handle(second);
+    693 │   const token = new URL(first.beads.next!).searchParams.get("page")!;
+  > 694 │   const otherToken = new URL(second.beads.next!).searchParams.get("page")!;
+        │                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    695 │   const unknown = token.slice(0, -1) + (token.endsWith("A") ? "B" : "A");
+    696 │   for (const run of [
+  
+
+packages/server/src/transaction-snapshot.test.ts:694:30 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    692 │     secondId = handle(second);
+    693 │   const token = new URL(first.beads.next!).searchParams.get("page")!;
+  > 694 │   const otherToken = new URL(second.beads.next!).searchParams.get("page")!;
+        │                              ^^^^^^^^^^^^^^^^^^
+    695 │   const unknown = token.slice(0, -1) + (token.endsWith("A") ? "B" : "A");
+    696 │   for (const run of [
+  
+
+packages/server/src/transaction-snapshot.test.ts:804:26 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    802 │         if (ordinal === transition) {
+    803 │           expect(page.items).toHaveLength(15);
+  > 804 │           expect(new URL(page.next!).searchParams.get("page")).toMatch(
+        │                          ^^^^^^^^^^
+    805 │             new RegExp(`^sp_${transition + 1}_`),
+    806 │           );
+  
+
+packages/server/src/transaction-snapshot.test.ts:814:11 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    812 │           handle(manifest),
+    813 │           "bead",
+  > 814 │           next.searchParams.get("page")!,
+        │           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    815 │         ).page;
+    816 │         ordinal++;
+  
+
+packages/server/src/transaction-snapshot.test.ts:1299:20 lint/style/noNonNullAssertion ━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1297 │   const pending: [unknown, unknown][] = [[actual, expected]];
+    1298 │   while (pending.length) {
+  > 1299 │     const [a, b] = pending.pop()!;
+         │                    ^^^^^^^^^^^^^^
+    1300 │     if (a === b) continue;
+    1301 │     if (a === null || b === null || typeof a !== "object" || typeof b !== "object")
+  
+
+The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
+Diagnostics not shown: 48.
+Checked 7 files in 87ms. No fixes applied.
+Found 61 warnings.
+Found 7 infos.

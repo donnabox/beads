@@ -1,0 +1,442 @@
+{
+  "sourceSha256": "f72c4f2c8fee327b7799669f76fdddfb9245a5400d391e5911db4ccc96507881",
+  "patchSha256": "a8d1bb0fdf4f49a52cb376767a710e7f4cd6b57df05b37f1137e4d1db926398e",
+  "sourceBytes": 109333,
+  "sourceLines": 2778,
+  "oldGroups": [
+    {
+      "group": "full positive",
+      "expanded": 1,
+      "afterExchange": true,
+      "anchor": 338
+    },
+    {
+      "group": "changed ready fields",
+      "expanded": 5,
+      "afterExchange": false,
+      "anchor": 587
+    },
+    {
+      "group": "altered receipt",
+      "expanded": 4,
+      "afterExchange": false,
+      "anchor": 622
+    },
+    {
+      "group": "ordinary capture/follow",
+      "expanded": 2,
+      "afterExchange": false,
+      "anchor": 822
+    },
+    {
+      "group": "budget abort",
+      "expanded": 1,
+      "afterExchange": true,
+      "anchor": 872
+    },
+    {
+      "group": "preaborted",
+      "expanded": 1,
+      "afterExchange": false,
+      "anchor": 910
+    },
+    {
+      "group": "duplicate binding",
+      "expanded": 1,
+      "afterExchange": false,
+      "anchor": 947
+    },
+    {
+      "group": "global receipt denial",
+      "expanded": 1,
+      "afterExchange": false,
+      "anchor": 963
+    },
+    {
+      "group": "kill and abort",
+      "expanded": 1,
+      "afterExchange": true,
+      "anchor": 981
+    },
+    {
+      "group": "set matched/order/index/poststate",
+      "expanded": 4,
+      "afterExchange": false,
+      "anchor": 1009
+    },
+    {
+      "group": "crosswired set receipt",
+      "expanded": 1,
+      "afterExchange": false,
+      "anchor": 1048
+    },
+    {
+      "group": "omitted set routes",
+      "expanded": 2,
+      "afterExchange": true,
+      "anchor": 1080
+    },
+    {
+      "group": "denied set receipts",
+      "expanded": 2,
+      "afterExchange": false,
+      "anchor": 1105
+    },
+    {
+      "group": "set effects",
+      "expanded": 7,
+      "afterExchange": false,
+      "anchor": 1127
+    },
+    {
+      "group": "pagination",
+      "expanded": 6,
+      "afterExchange": false,
+      "anchor": 1201
+    },
+    {
+      "group": "completed conflict",
+      "expanded": 5,
+      "afterExchange": false,
+      "anchor": 1236
+    },
+    {
+      "group": "no-op controls",
+      "expanded": 3,
+      "afterExchange": false,
+      "anchor": 1391
+    },
+    {
+      "group": "deletion controls",
+      "expanded": 3,
+      "afterExchange": false,
+      "anchor": 1722
+    },
+    {
+      "group": "cross-carrier controls",
+      "expanded": 2,
+      "afterExchange": true,
+      "anchor": 2132
+    }
+  ],
+  "oldExpandedObserveCalls": 52,
+  "oldWithAfterExchange": 7,
+  "oldWithoutAfterExchange": 45,
+  "newExpandedObserveCalls": 54,
+  "newWithAfterExchange": 9,
+  "newWithoutAfterExchange": 45,
+  "rawActionIds": [
+    "m-create-a",
+    "m-replay-a",
+    "m-create-b",
+    "m-replay-b",
+    "m-create-c",
+    "m-replay-c",
+    "m-body-conflict",
+    "m-stale-update",
+    "m-current",
+    "m-events"
+  ],
+  "internalClientAction": "m-retained-a",
+  "expectedPerformedPairs": {
+    "positive": 3,
+    "minimum-batch-body-conflict": 1,
+    "minimum-readonly-credential": 0
+  },
+  "requests": [
+    {
+      "action": "m-create-a",
+      "method": "POST",
+      "urlPath": "operations/create-bead",
+      "bodyOctets": 102,
+      "authoredHeaders": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "minimum-a"
+        },
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "bdp-minimum-scope-position",
+          "value": "not a position!"
+        },
+        {
+          "name": "bdp-scope-epoch",
+          "value": ""
+        },
+        {
+          "name": "bdp-authorization-view",
+          "value": "view-one, view-two"
+        }
+      ],
+      "manifestAssertions": 20
+    },
+    {
+      "action": "m-replay-a",
+      "method": "POST",
+      "urlPath": "operations/create-bead",
+      "bodyOctets": 102,
+      "authoredHeaders": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "minimum-a"
+        },
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "manifestAssertions": 21
+    },
+    {
+      "action": "m-create-b",
+      "method": "POST",
+      "urlPath": "operations/batch",
+      "bodyOctets": 144,
+      "authoredHeaders": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "minimum-b"
+        },
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "bdp-scope-epoch",
+          "value": "foreign-epoch"
+        }
+      ],
+      "manifestAssertions": 20
+    },
+    {
+      "action": "m-replay-b",
+      "method": "POST",
+      "urlPath": "operations/batch",
+      "bodyOctets": 144,
+      "authoredHeaders": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "minimum-b"
+        },
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "bdp-minimum-scope-position",
+          "value": ""
+        },
+        {
+          "name": "bdp-scope-epoch",
+          "value": ""
+        },
+        {
+          "name": "bdp-authorization-view",
+          "value": ""
+        }
+      ],
+      "manifestAssertions": 21
+    },
+    {
+      "action": "m-create-c",
+      "method": "POST",
+      "urlPath": "operations/sequence",
+      "bodyOctets": 173,
+      "authoredHeaders": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "bdp-minimum-scope-position",
+          "value": "pos-99"
+        },
+        {
+          "name": "bdp-scope-epoch",
+          "value": "foreign-epoch"
+        },
+        {
+          "name": "bdp-authorization-view",
+          "value": "foreign-view"
+        }
+      ],
+      "manifestAssertions": 17
+    },
+    {
+      "action": "m-replay-c",
+      "method": "POST",
+      "urlPath": "operations/sequence",
+      "bodyOctets": 173,
+      "authoredHeaders": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "bdp-minimum-scope-position",
+          "value": "not a position!"
+        },
+        {
+          "name": "bdp-scope-epoch",
+          "value": ""
+        },
+        {
+          "name": "bdp-authorization-view",
+          "value": "view-one, view-two"
+        }
+      ],
+      "manifestAssertions": 18
+    },
+    {
+      "action": "m-body-conflict",
+      "method": "POST",
+      "urlPath": "operations/batch",
+      "bodyOctets": 151,
+      "authoredHeaders": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "minimum-b"
+        },
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "bdp-minimum-scope-position",
+          "value": "pos-99"
+        },
+        {
+          "name": "bdp-scope-epoch",
+          "value": "foreign-epoch"
+        },
+        {
+          "name": "bdp-authorization-view",
+          "value": "foreign-view"
+        }
+      ],
+      "manifestAssertions": 10
+    },
+    {
+      "action": "m-stale-update",
+      "method": "POST",
+      "urlPath": "operations/update-bead",
+      "bodyOctets": 140,
+      "authoredHeaders": [
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "minimum-stale"
+        },
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "bdp-minimum-scope-position",
+          "value": "not a position!"
+        },
+        {
+          "name": "bdp-scope-epoch",
+          "value": ""
+        },
+        {
+          "name": "bdp-authorization-view",
+          "value": "view-one, view-two"
+        }
+      ],
+      "manifestAssertions": 18
+    },
+    {
+      "action": "m-retained-a",
+      "method": "GET",
+      "urlPath": null,
+      "bodyOctets": 0,
+      "authoredHeaders": [],
+      "manifestAssertions": 14
+    },
+    {
+      "action": "m-current",
+      "method": "GET",
+      "urlPath": "beads/",
+      "bodyOctets": 0,
+      "authoredHeaders": [],
+      "manifestAssertions": 12
+    },
+    {
+      "action": "m-events",
+      "method": "GET",
+      "urlPath": "events/",
+      "bodyOctets": 0,
+      "authoredHeaders": [],
+      "manifestAssertions": 21
+    }
+  ],
+  "localExpected": {
+    "http": 208,
+    "children": 26,
+    "positiveHttp": 203,
+    "positiveChildren": 22,
+    "controlsHttp": [
+      4,
+      1
+    ],
+    "controlsChildren": [
+      2,
+      2
+    ]
+  },
+  "localHard": {
+    "http": 225,
+    "children": 26
+  },
+  "ciIncrement": {
+    "expectedHttp": 454,
+    "conservativeMaximumHttp": 473,
+    "maximumChildren": 50
+  },
+  "unchangedDeadlines": {
+    "positiveElapsedMs": 63000,
+    "cohortMs": 90000,
+    "testMs": 120000,
+    "requestMs": 5000,
+    "prepareAndCleanupMs": 10000
+  },
+  "staticTitles": [
+    "pins the matching no-op installed route digest and fifteen-action ledger",
+    "pins deletion-safety derivative carriers, complete positives, and measured source bounds"
+  ]
+}

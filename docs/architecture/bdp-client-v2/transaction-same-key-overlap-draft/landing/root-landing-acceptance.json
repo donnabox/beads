@@ -1,0 +1,61 @@
+{
+  "accepted": true,
+  "at": "2026-10-15T20:43:28.793180+00:00",
+  "head": "a18fa993703185a108df4ad75b6d142072ba8736",
+  "base": "98c600767e8e91a79e109cb741beb91e23b9bebe",
+  "tree": "592c5e6e5c0c790b6e2690495b94ac48705b9069",
+  "synthetic": "7c47203d3fd62980805f03cad35ecc64aa28f347",
+  "pr": {
+    "baseRefOid": "98c600767e8e91a79e109cb741beb91e23b9bebe",
+    "headRefOid": "a18fa993703185a108df4ad75b6d142072ba8736",
+    "isDraft": true,
+    "mergeable": "MERGEABLE",
+    "state": "OPEN",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-15T20:40:44Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/gastownhall/bdp/actions/runs/38801589766/job/116651712423",
+        "name": "verify",
+        "startedAt": "2026-10-15T20:23:51Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      }
+    ]
+  },
+  "scope": "Exactly new same-key installed test and21line progress append; production unchanged. Ordinary98c600\u219218f\u2192a18 feature ancestry.",
+  "council": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/root-final-council.json",
+    "sha256": "c46e8353cb6884ee5cd10773d209a2552a0c9be69f578eaea5293785ebdcd602"
+  },
+  "nativeLanding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/landing/native-successor-landing-audit.md",
+    "sha256": "73f89915a825ebf42ef0d66687ef0f63bc5c6d73c7d1ccc5dc78bbe04b55dd10"
+  },
+  "localInstalled": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/root-installed-acceptance.json",
+    "sha256": "c95d3d27fb19f1b506d5a68023fa86490b7d1fa826bce5d2aa03bff8c0f2bd5f"
+  },
+  "ciInputs": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/landing/successor-ci/run.json",
+      "sha256": "51ff15e743e957651ec476c9dbb5b6a869bde2552271b755114fa3189185912c"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/landing/successor-ci/job.json",
+      "sha256": "2875ac0a4ce858ba1874850899ff5b66dacdf144680905f13240f07845cf58c7"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/landing/successor-ci/job.log",
+      "sha256": "3f68208d7e51cc0a658832131584b9c88b0a111a30de28e8178fdeed646ef88d"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/landing/successor-ci/ci-outcome.md",
+      "sha256": "2fb372deb6f392aaa52b1b25176514ec97fe1f3d2cdde15ec58352be78aac7c8"
+    }
+  ],
+  "ci": "Exact candidate; all27terminalsuccess;9311pass1skip180files;preflight7/smoke/Read89. Raw log verified. Derived compact jobs status correction pending separately; actual job.json terminal is authoritative.",
+  "readyAndMergeAllowed": true,
+  "remainingObligation": "After ordinary merge, fetch actual merge and verify ordered parents/tree equal tested synthetic. No release/public profile qualification."
+}

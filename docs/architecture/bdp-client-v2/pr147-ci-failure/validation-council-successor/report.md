@@ -1,0 +1,13 @@
+# CLOSED two-test CI repair validation
+
+No source repair or validation has run. ActualClaude plan review remains separate. Root must freeze both repaired test hashes, exact helper title and accepted council before creating execution-gate.json. Existing cleanb021 source is pinned in baseline-source.json; all other tracked inputs must stay identical before/after. No main inspection or source changes.
+
+Five finite stages: typecheck; targeted format-check; targeted lint; focused-three; complete two files105. Exact argv is commands.json; only the future helper title is dynamically inserted from root-bound release. All104 existing full names are derived from the actual full CI log (verbose describe separators translated to Vitest JSON fullName spaces); new helper adds one. Focused3 includes the two failed callbacks plus helper rejection control. Test JSON must contain exactly selected passing cases, no extra executed cases, no runtime/unhandled failure. Unselected skipped cases remain reported as skipped.
+
+Reuse basis: transaction-fresh-depth-authoring/sequence-service-repair/run.py, with explicit root gate/source hashes, tool pins, previous-stage success, exactselection adjudication and process JSON samples added. Pinned Node24.16/pnpm11.20/Python3.14, maxWorkers1, verbose+JSON,120s supervisor/TERM115, no retry. Callback20s work/5s cleanup/30s remain untouched. Focused deep witness has1directory/2sequential opens,0HTTP/0productchildren; full files retain their existing source owner lifecycles, not a zero-owner claim. Unknown temp entries are retained/classified, ownedbdp directories and sampled processes must be absent.
+
+Historical fresh build/archive/installed provenance files are hash-pinned in payload-bridge.json. Their source attribution remains historical; only unchanged production/config/lock plus test-only delta is claimed. No fresh packaging or installed HTTP rerun is requested for this two-test-only repair. Any unexpected source/build bridge difference fails closed; root owns fullCI/publication. Actual repeated performance gain is not presumed; full CI remains necessary for concurrent-load behavior.
+
+Root invocation after release: python3 guarded-action.py /opt/homebrew/opt/python@3.14/bin/python3.14 <validation>/run.py <one-stage>. Stages run sequentially, stop-first-failure. Existing outcomes are exclusive and never overwritten. Preparation verification was Python AST parsing and data-only104-name/count/source/hash inspection only.
+
+The referenced build/archive/installed provenance all actually name b0213805 and tree0e589d32; this was inspected, not inferred. SIGTERM/SIGINT preserve bounded cleanup/final evidence.

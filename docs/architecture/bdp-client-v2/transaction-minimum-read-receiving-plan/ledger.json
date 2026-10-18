@@ -1,0 +1,76 @@
+{
+  "status": "proposed; authoring and execution closed",
+  "basis": "5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854",
+  "ownedPaths": [
+    "docs/specs/bdp.md",
+    "packages/server/src/transaction-consistency.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-consistency.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-snapshot-http.test.ts",
+    "packages/server/src/transaction-schema-http.test.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "productionPaths": [
+    "packages/server/src/transaction-consistency.ts",
+    "packages/server/src/transaction-http.ts"
+  ],
+  "operatorRulingSha256": "c09f81e8a825efee610eb9b8a9b3a42c5b8a83728ded9d92e180c3cdb6197608",
+  "newInstalled": {
+    "title": "rejects malformed read minimum tuples before observation while preserving receipt nondisclosure",
+    "requests": 21,
+    "children": 1,
+    "workMs": 45000,
+    "cleanupMs": 10000,
+    "testMs": 60000,
+    "commandMs": 120000,
+    "maximumResponseBytes": 32768,
+    "automaticRetries": 0
+  },
+  "changedInstalledRegressions": [
+    {
+      "title": "observes nonallocating creation decisions through the actual eight-handle capacity boundary",
+      "expectedRequests": 39,
+      "children": 3
+    },
+    {
+      "title": "observes fresh Snapshot minima with exact current context and retained gaps over packed bytes",
+      "expectedRequests": 31,
+      "children": 2
+    }
+  ],
+  "installedExpected": {
+    "requests": 91,
+    "children": 6
+  },
+  "emittedControl": {
+    "patch": "delete new common malformed-read gate only",
+    "namedOracle": "minimum-receiving-malformed-request",
+    "requests": 1,
+    "owners": 1,
+    "listeners": 1,
+    "installedChildren": 0,
+    "expectedActualStatus": 500,
+    "expectedMarker": "minimum-position",
+    "expectedTestExit": 1
+  },
+  "sourceSelection": "exact expanded titles and total source fixture workload must be measured/frozen at draft gate before execution; not included in installed91",
+  "preservedUnknownExamples": [
+    "opaque",
+    "unknown",
+    "pos-01",
+    "pos--1",
+    "pos-9007199254740992"
+  ],
+  "limitations": [
+    "unknown position identity semantics unchanged",
+    "missing/hidden plus incompatible minimum unchanged",
+    "S1/G2 unchanged",
+    "no public discovery/admission",
+    "no schema minimum semantics",
+    "no catalog qualification"
+  ]
+}

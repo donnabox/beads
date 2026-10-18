@@ -1,0 +1,308 @@
+{
+  "status": "REVIEW SUCCESSOR PROPOSED; root disposition/real minimum-main reanchor required before authoring",
+  "source": {
+    "commit": "df80f8cb86b7763bc7bb005492e43d8840527045",
+    "tree": "25e9d4aa926ea728f5e356365cb1ffadba269221",
+    "readCheckout": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+    "checkoutHead": "27b4f963c88067419a95f677fa8d7bea1e368d5a",
+    "workingTreeClean": true,
+    "authoringCheckout": "root to create after plan council and actual minimum integration; no invented final parent"
+  },
+  "ownedPaths": [
+    "packages/server/src/transaction-batch.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-set.test.ts",
+    "packages/server/src/transaction-sequence.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-sequence-depth-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "productionPaths": [
+    "packages/server/src/transaction-batch.ts",
+    "packages/server/src/transaction-http.ts"
+  ],
+  "sourceSelections": [
+    {
+      "path": "packages/server/src/transaction-set.test.ts",
+      "titles": [
+        "keeps receiving depth facts private while legacy preparation still throws",
+        "annotates only deep sequence members after complete carrier syntax while strict preparation stays strict"
+      ],
+      "regex": "^(?:keeps\\ receiving\\ depth\\ facts\\ private\\ while\\ legacy\\ preparation\\ still\\ throws|annotates\\ only\\ deep\\ sequence\\ members\\ after\\ complete\\ carrier\\ syntax\\ while\\ strict\\ preparation\\ stays\\ strict)$"
+    },
+    {
+      "path": "packages/server/src/transaction-sequence.test.ts",
+      "titles": [
+        "private Transactional sequence slice runs all eight explicit operation kinds as separate commits with locator-only aliases",
+        "private Transactional sequence slice reserves all unknown keys together, commits a prefix, continues past failure and permits interleaving",
+        "private Transactional sequence slice joins overlapping presentations without running a completed member twice and projects current labels",
+        "private Transactional sequence slice projects another owner's pending receipt before immutable mismatch and never retracts that owner",
+        "private Transactional sequence slice shares singleton and one-operation batch identity, preserving exact numbers and creation defaults",
+        "private Transactional sequence slice leaves no partial bulk admission on after-sequence-reservation failure",
+        "private Transactional sequence slice leaves no partial bulk admission on after-sequence-admission failure",
+        "private Transactional sequence slice classifies foreign key state at its turn after failed detail is forgotten",
+        "private Transactional sequence slice compares retained deep sequence members without executing them or replacing their receipts",
+        "private Transactional sequence slice rolls back every new reservation when a fresh deep sequence member is refused",
+        "private Transactional sequence slice refuses fresh depth after a retained failed member expires between sequence turns",
+        "private Transactional sequence slice rejects duplicate keys and invalid dependency edges before any key effects",
+        "private Transactional sequence slice projects mixed retained, conflicting, failed and unknown keys in declaration order"
+      ],
+      "regex": "^(?:private\\ Transactional\\ sequence\\ slice\\ runs\\ all\\ eight\\ explicit\\ operation\\ kinds\\ as\\ separate\\ commits\\ with\\ locator\\-only\\ aliases|private\\ Transactional\\ sequence\\ slice\\ reserves\\ all\\ unknown\\ keys\\ together,\\ commits\\ a\\ prefix,\\ continues\\ past\\ failure\\ and\\ permits\\ interleaving|private\\ Transactional\\ sequence\\ slice\\ joins\\ overlapping\\ presentations\\ without\\ running\\ a\\ completed\\ member\\ twice\\ and\\ projects\\ current\\ labels|private\\ Transactional\\ sequence\\ slice\\ projects\\ another\\ owner's\\ pending\\ receipt\\ before\\ immutable\\ mismatch\\ and\\ never\\ retracts\\ that\\ owner|private\\ Transactional\\ sequence\\ slice\\ shares\\ singleton\\ and\\ one\\-operation\\ batch\\ identity,\\ preserving\\ exact\\ numbers\\ and\\ creation\\ defaults|private\\ Transactional\\ sequence\\ slice\\ leaves\\ no\\ partial\\ bulk\\ admission\\ on\\ after\\-sequence\\-reservation\\ failure|private\\ Transactional\\ sequence\\ slice\\ leaves\\ no\\ partial\\ bulk\\ admission\\ on\\ after\\-sequence\\-admission\\ failure|private\\ Transactional\\ sequence\\ slice\\ classifies\\ foreign\\ key\\ state\\ at\\ its\\ turn\\ after\\ failed\\ detail\\ is\\ forgotten|private\\ Transactional\\ sequence\\ slice\\ compares\\ retained\\ deep\\ sequence\\ members\\ without\\ executing\\ them\\ or\\ replacing\\ their\\ receipts|private\\ Transactional\\ sequence\\ slice\\ rolls\\ back\\ every\\ new\\ reservation\\ when\\ a\\ fresh\\ deep\\ sequence\\ member\\ is\\ refused|private\\ Transactional\\ sequence\\ slice\\ refuses\\ fresh\\ depth\\ after\\ a\\ retained\\ failed\\ member\\ expires\\ between\\ sequence\\ turns|private\\ Transactional\\ sequence\\ slice\\ rejects\\ duplicate\\ keys\\ and\\ invalid\\ dependency\\ edges\\ before\\ any\\ key\\ effects|private\\ Transactional\\ sequence\\ slice\\ projects\\ mixed\\ retained,\\ conflicting,\\ failed\\ and\\ unknown\\ keys\\ in\\ declaration\\ order)$"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "titles": [
+        "labels sequence depth gaps honestly and keeps sequence capacity distinct from direct transaction capacity",
+        "compares retained sequence members before private depth refusal and preserves receiving failures",
+        "source-private actual Transactional HTTP rejects sequence carrier syntax/keys/negotiation before claiming any member"
+      ],
+      "regex": "^(?:labels\\ sequence\\ depth\\ gaps\\ honestly\\ and\\ keeps\\ sequence\\ capacity\\ distinct\\ from\\ direct\\ transaction\\ capacity|compares\\ retained\\ sequence\\ members\\ before\\ private\\ depth\\ refusal\\ and\\ preserves\\ receiving\\ failures|source\\-private\\ actual\\ Transactional\\ HTTP\\ rejects\\ sequence\\ carrier\\ syntax/keys/negotiation\\ before\\ claiming\\ any\\ member)$"
+    }
+  ],
+  "installed": {
+    "path": "apps/bdptest/src/transactional-sequence-depth-installed.test.ts",
+    "title": "observes retained sequence member conflict before private depth refusal over packed bytes",
+    "requests": [
+      {
+        "index": 1,
+        "id": "seed",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/create-bead",
+        "body": "{\"id\":\"beads/sequence-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"sequence-a\"},\"metadata\":{}}",
+        "bodyBytes": 126,
+        "bodySha256": "764bc2f11265c9581533352015d0313596277a928c88556eedb32ef732ceadd1",
+        "headers": {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "sequence-retained"
+        },
+        "credential": "operator (actual random token excluded)",
+        "expectedStatus": 200
+      },
+      {
+        "index": 2,
+        "id": "retained-deep",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/sequence",
+        "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"sequence-a\"},\"metadata\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":\"leaf\"}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}},\"idempotencyKey\":\"sequence-retained\",\"name\":\"present\"}]}",
+        "bodyBytes": 677,
+        "bodySha256": "7fd1a9710303612edcccee2ebc29d408193283f02ddc3804e75b128d30fb2d23",
+        "headers": {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        "credential": "operator (actual random token excluded)",
+        "expectedStatus": 200
+      },
+      {
+        "index": 3,
+        "id": "original-replay",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/create-bead",
+        "body": "{\"id\":\"beads/sequence-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"sequence-a\"},\"metadata\":{}}",
+        "bodyBytes": 126,
+        "bodySha256": "764bc2f11265c9581533352015d0313596277a928c88556eedb32ef732ceadd1",
+        "headers": {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "sequence-retained"
+        },
+        "credential": "operator (actual random token excluded)",
+        "expectedStatus": 200
+      },
+      {
+        "index": 4,
+        "id": "original-resource",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/sequence-a",
+        "body": "",
+        "bodyBytes": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "headers": {
+          "Accept": "application/json"
+        },
+        "credential": "operator (actual random token excluded)",
+        "expectedStatus": 200
+      },
+      {
+        "index": 5,
+        "id": "fresh-deep",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/sequence",
+        "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"sequence-b\"},\"metadata\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":\"leaf\"}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}},\"idempotencyKey\":\"sequence-fresh\",\"name\":\"present\"}]}",
+        "bodyBytes": 674,
+        "bodySha256": "66f3c980ebb072c775200bda8b73f5d64176d00196eecf4de0fa69240958735e",
+        "headers": {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        "credential": "operator (actual random token excluded)",
+        "expectedStatus": 500
+      },
+      {
+        "index": 6,
+        "id": "fresh-key-reuse",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/sequence",
+        "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"sequence-b\"},\"metadata\":{},\"idempotencyKey\":\"sequence-fresh\",\"name\":\"present\"}]}",
+        "bodyBytes": 219,
+        "bodySha256": "6542f995ee8619607353fd01b5c2f3b257c9ae85ef43f0357e2393bffd81fd62",
+        "headers": {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        "credential": "operator (actual random token excluded)",
+        "expectedStatus": 200
+      },
+      {
+        "index": 7,
+        "id": "retained-deep-negotiation",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/sequence",
+        "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"sequence-a\"},\"metadata\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":\"leaf\"}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}},\"idempotencyKey\":\"sequence-retained\",\"name\":\"present\"}]}",
+        "bodyBytes": 677,
+        "bodySha256": "7fd1a9710303612edcccee2ebc29d408193283f02ddc3804e75b128d30fb2d23",
+        "headers": {
+          "Accept": "text/plain",
+          "Content-Type": "application/json"
+        },
+        "credential": "operator (actual random token excluded)",
+        "expectedStatus": 406
+      },
+      {
+        "index": 8,
+        "id": "fresh-deep-negotiation",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/sequence",
+        "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/sequence-c\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"sequence-c\"},\"metadata\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":\"leaf\"}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}},\"idempotencyKey\":\"sequence-negotiation\",\"name\":\"present\"}]}",
+        "bodyBytes": 680,
+        "bodySha256": "37f093585358ce052ca89c3d8c7f4ce32e3945ff5406c0c17f942688a082be3e",
+        "headers": {
+          "Accept": "text/plain",
+          "Content-Type": "application/json"
+        },
+        "credential": "operator (actual random token excluded)",
+        "expectedStatus": 406
+      }
+    ],
+    "bodyBytesTotal": 3179,
+    "bodyBytesMaximum": 680,
+    "count": 8,
+    "children": 1,
+    "credentials": "operator only; reader credential and401/403 probes are source fixture only"
+  },
+  "sourceExtraRequests": [
+    {
+      "index": 9,
+      "baseBody": "retained-deep",
+      "credential": "absent",
+      "expectedStatus": 401,
+      "code": "unauthenticated"
+    },
+    {
+      "index": 10,
+      "baseBody": "retained-deep",
+      "credential": "read-only principal",
+      "expectedStatus": 403,
+      "code": "forbidden"
+    },
+    {
+      "index": 11,
+      "bodyRecipe": "two copies of retained-deep.operations[0] with duplicate key and distinct valid labels first/second",
+      "credential": "operator",
+      "expectedStatus": 400,
+      "code": "malformed-request"
+    }
+  ],
+  "control": {
+    "target": "sole emitted prepareTransactionSequenceForReceiving function body",
+    "replacement": "return prepareTransactionSequence(scope, text);",
+    "sourceTestTitle": "compares retained sequence members before private depth refusal and preserves receiving failures",
+    "expectedFailure": "sequence-depth:retained-member-conflict",
+    "expectedRequestIndex": 2,
+    "expectedStatus": 500,
+    "expectedMarker": null,
+    "expectedBodyBytes": 0,
+    "expectedHttp": 2,
+    "maximumHttp": 11,
+    "callbacks": 1,
+    "owners": 1,
+    "directories": 1,
+    "listeners": 1,
+    "productChildren": 0,
+    "expectedContextHeaders": [],
+    "markerMeaning": "generic runtime500 from strict preparation outside execution catch; no x-bdp-development-limit",
+    "oracleOrder": "record actual response then status-first named oracle; adjudicator requires500,empty body,no marker,no context; no added preparation catch"
+  },
+  "workload": {
+    "source": {
+      "callbacks": 18,
+      "http": 21,
+      "owners": 16,
+      "directories": 16,
+      "listeners": 3,
+      "productChildren": 0,
+      "detail": "2 preparation,13 owner sequence,3 HTTP: new11 +existing4 +existing6; no product children"
+    },
+    "installed": {
+      "callbacks": 1,
+      "http": 8,
+      "owners": 1,
+      "directories": 1,
+      "listeners": 1,
+      "productChildren": 1
+    },
+    "allIncludingControl": {
+      "callbacks": 20,
+      "httpExpected": 31,
+      "httpMaximum": 40,
+      "owners": 18,
+      "directories": 18,
+      "listeners": 5,
+      "productChildren": 1
+    },
+    "automaticRetries": 0,
+    "deliberateReplay": 1
+  },
+  "bounds": {
+    "newSourceCpuTestSeconds": 15,
+    "newSourceHttpWorkSeconds": 25,
+    "newSourceCleanupSeconds": 5,
+    "newSourceHttpTestSeconds": 30,
+    "installedWorkSeconds": 45,
+    "installedCleanupSeconds": 10,
+    "installedTestSeconds": 60,
+    "perRequestSeconds": 5,
+    "requestBodyBytes": 65536,
+    "requestHeaderBytes": 16384,
+    "responseBodyBytes": 131072,
+    "responseHeaderBytes": 65536,
+    "perCommandSeconds": 120,
+    "processGroupTermSeconds": 115,
+    "processGroupKillSeconds": 120,
+    "existingCases": "unchanged bounds;10 existing HTTP responses (4+6) do not acquire new streaming cap"
+  },
+  "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+  "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+  "commands": "After isolated author checkout/build, use pinned Node directly on its real installed Vitest.mjs; each path + anchored regex above, --maxWorkers=1 --reporter=verbose --reporter=json and exclusive absolute --outputFile. Freeze actual CLI realpath and callback expansion before release; do not use current AW for writes/runs.",
+  "preparationAssertions": {
+    "depthConvention": "root0/operations array1/raw member2/metadata3/nested value4; N wraps of nested:value put leaf at4+N",
+    "passNestedWraps": 28,
+    "refuseNestedWraps": 29,
+    "compare": [
+      "strict batch",
+      "strict sequence",
+      "receiving batch fact",
+      "receiving sequence member fact"
+    ],
+    "shallowSiblingFact": null,
+    "malformedDeep": [
+      "duplicate key with distinct valid labels -> ReadUpdateCarrierError",
+      "wrong-kind @name binding -> ReadUpdateCarrierError"
+    ],
+    "brand": "original member branded/frozen; clones rejected by transactionDepthRefusal/assertPreparedTransaction; forged sequence rejected",
+    "rawInput": "original raw operation, offset2; do not replace with parsed input in implementation"
+  },
+  "expiryAssertion": "After turn depth throw/rollback, normal owner.receipt lookup applies retention and returns absent; later shallow reuse proves no executable deep claim. Do not claim aborted atomic admission durably erased failed row.",
+  "sourcePrivateTestImport": "transaction-sequence.test.ts imports prepareTransactionSequenceForReceiving from ./transaction-batch.js only for new deep cases; existing sequence() stays strict; no package-root export."
+}

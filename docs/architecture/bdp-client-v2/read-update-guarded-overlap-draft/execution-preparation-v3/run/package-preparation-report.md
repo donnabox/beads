@@ -1,0 +1,9 @@
+# RU fresh package preparation through consumer install
+
+Seven released stages each passed once: Node version24.16.0, package directory, protocol pack, server pack, tar/source verification, consumer preparation, offline consumer install. Actual clean source is `be0cc70d8a3174760c4877e8969728dbdec4ead5`, tree `93b2ea89d6db05512d4c0bc5bb3cf6083560e8da`. All667recorded source inputs and312package outputs remain byte-identical to the successful repaired-source build inventory.
+
+Actual archives contain313members: protocol63, server250. Protocol SHA`4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227` (68665bytes); server SHA`7a317b65f83b5addc4b72ab2bf0ca1b447ed7d94d20acd75f03547b9d318714c` (431507bytes). tar-source-provenance.json records each source/archive member and manifest publication normalization. This is not yet installed-byte/graph verification.
+
+Consumer install used pinned pnpm11.20.0 with offline/ignore-scripts/prod, reused8/downloaded0/added8. Full lock read and SHA`bb4ee62d7d037237784d13af711eae2cfd3ba43362edd8798967b75efd98e4e6` supplied to root. Its declared closure has the exact local protocol/server archives and ajv8.17.1,ajv-formats3.0.1,fast-uri3.1.5,fast-deep-equal3.1.3,json-schema-traverse1.0.0,require-from-string2.0.2. Actual installed files/resolution/payload are deliberately not claimed until verify-installed is separately released with this lock bound.
+
+No timeout, forced cleanup, errors or residual process groups. Independent ps confirms all57sampledPIDs across15stages absent; only10tooling node-compile-cache directories remain. Consumer/archive directories are retained intended artifacts. No product tests, child runtimes or HTTP requests started; no verify-installed invocation or later stage. Root owns actual lock acceptance and next release. Exact hashes/exits/process inventory are in package-preparation-summary.json.

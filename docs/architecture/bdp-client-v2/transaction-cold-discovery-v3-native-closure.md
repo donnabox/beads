@@ -1,0 +1,31 @@
+# C3 v3 native plan closure
+
+## Result
+
+No remaining actionable defect found in the nine prescribed v2 corrections. V3 closes the completed external findings and the independently noted16-member inventory error without new serving or protocol semantics. Root can accept this bounded plan and later dispatch its exact reviewed post-Snapshot base. This is plan closure only; no implementation, packed result, profile claim or public serving approval follows.
+
+Exact reviewed plan `transaction-cold-discovery-next-plan-v3.md` SHA256 `1ff0c0cdd954249bb2ad743614c7aa7e4b4d9dce89298e4954d78d9b34e6a0ae`; dispositions SHA256 `80144420139baa5eeb4b335174a158da1a60fbfb2ae62d0fc19b98303751b3d9`. Completed external v2 review SHA256 `260b65fe70ce9f9e199a66dae461094c9366da5684a673817313b3c6a45bf862`. Reviewed v2 remains unchanged at `bb90ce032603cd3ece6b13728e75d041bc62eb4ad2b51720c1a8253b406f7886`.
+
+## Closure of the prescribed corrections
+
+| Finding | Independently checked closure |
+|---|---|
+| F1 packed harness/binding | V3 explicitly assigns an external C3 author-owned frozen pack/install harness, retained installation, exact entry and source environment variables, tarball/source/tree hashes, observed payload/config identity, commands/exits/wire counts and cleanup. Existing `transaction-sequence-alias-http/pack.py:1–12` actually supplies this pattern. Default emitted execution cannot satisfy packed acceptance; smoke's deleted install root cannot be reused. Launcher-declared source is not misrepresented as independent target attestation. No new child/session or runtime seam. |
+| F2 exact inventory | Independently read canonical schema required array:16 names. V3 requires16+limits=17 total, deriving the required set from schema for exact membership. Optional omission policy remains separate from generic parser acceptance. No padded field or schema change. |
+| F3 nested capture/TTL | V3 now requires member-by-member nested frozen page/selector values before receipt-maximum validation, not shallow aliasing. Internal cursorTtlMilliseconds is captured and still passed to the Read plane, while excluded from wire limits. `authority-read.ts:369–388` actually compares that TTL and all five advertised scalars to enforcement. Tests mutate nested caller members and replace the outer reference. No new setting or altered enforcement bound. |
+| F4 source-level mismatch home | `transaction-read.test.ts` is explicitly owned. Its existing source-created service and source handler at760–774 permit a real mismatch negative without manufacturing mismatch through runtime's single-scope construction. Dist HTTP tests retain target observations; source/dist services are not mixed. |
+| F5 capture before parse | V3 limits the one synchronous withRead callback to copying/freezing epoch/view/position. Assembly/schema loading/compilation/validation follow after entry release. Owner refusal cause is handled before assembly; later parser errors remain identifiable validation errors. This is feasible with existing withRead/run, requires no store change, and avoids doing lazy AJV work under the owner gate. |
+| F6 actual snapshot behavior | Confirmed `json-values.ts:24–91`: enumerable object keys/array length are captured once and selected values read once; supported accessor/Proxy inputs normalize into a recursively frozen detached JSON value. Non-plain object prototypes, cycles, nonfinite/non-JSON values and unpaired surrogates are rejected. V3 tests that actual behavior rather than asserting blanket Proxy/accessor rejection. No shared helper strengthening. |
+| F7 canonical URL helpers | Scope uses parseCanonicalScope (trailing slash/no query); nine navigation members use parseCanonicalHttpUrl, allowing the correct slashless Snapshot target. Optional policy IDs retain the Type-ID helper. Explicit slashless-Scope negative is feasible; no change to Read/RU parser behavior. |
+| F8 no-pruning precondition | V3 names actual complete genesis replay after receipt expiry and durable reopen, with original groups and unchanged position floor, as the behavioral tripwire. Optional real missing-positive-group corruption evidence uses the existing owner refusal rather than source-text matching or a nonexistent retention capability. This is a bounded current-owner invariant check, not a guarantee to detect every imaginable future retention design. No speculative store/capability change is required. |
+| F9 anchors | Named symbols and corrected inspected ranges are present. Final base re-anchoring remains required. No claim current20d ranges describe a later integrated base. |
+
+## Preserved boundaries
+
+Position floor remains pos-0, separately tested against empty head and first previousPosition. Genesis remains the corresponding replay checkpoint; discovery.floor is not fed directly to changes.after. No codec, fixture, schema or spec change is proposed. The root-approved two-parser/two-type root exports and private scope assertion remain the only named API/scope amendments; generic parsing does not impose this candidate's optional-field omissions or owner identity.
+
+The packed ledger remains exactly12 requests/one child, ceiling16/1, one Bead, no Link/reopen/wait, with unchanged5s wire/45s aggregate/60s outer/10s lifecycle. Owner/reopen/floor assertions are source/emitted evidence, not relabelled packed discovery success. Scope/descriptor/directory refuse serving; no new ready metadata or profile/admission flag. C3 remains after Snapshot and exact base dispatch.
+
+## Actual inspection and limits
+
+Read v3, dispositions and completed external v2 review in full. Inspected relevant source in frozen `/Users/dbox/repos/wt/vickie/vickie-tx-collection-minimum` at20d61119b5faf7251a5d285c5c34a1049866ffe5: snapshot JSON helper, advertised-limit capture/comparison, source handler test seam, withRead refusal/lifetime and no-pruning readChanges, plus canonical helper/schema definitions already read in this review stream. Inspected the existing external pack harness as source, without executing it. Independently hashed review inputs and counted the required schema members. No tests, builds, services, network, source edits or outward actions. Only this report was written. Frozen Snapshot587a7ee was not modified.

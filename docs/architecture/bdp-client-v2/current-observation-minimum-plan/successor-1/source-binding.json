@@ -1,0 +1,76 @@
+{
+  "kind": "closed-current-observation-plan-successor1",
+  "created": "2026-10-17T18:06:23.639911+00:00",
+  "parentIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/index.json",
+    "sha256": "3142eedc97ff02345077ee5bbfbc2f3fe7b664c0e2a5e8c2c7a13255932b2bd5"
+  },
+  "parentPlan": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/plan.md",
+    "sha256": "c14b4369a63750c0e815910075a9f60b362942772780d8a79112f30b6ddfb0a0"
+  },
+  "nativeReview": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/native-plan-review.md",
+    "sha256": "56f19c988bbc4899218adf6163f8e5a75f810e2572bd9d57af9b1fad153799ab"
+  },
+  "worktree": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum",
+  "baseHead": "bbfa5b2cac0e381b497384e3a8e29cd937ea2738",
+  "inspectedFiles": {
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": "bc9d19959df0249b5b7c195c2f24a2cde4462db56de3e0b816c7fdf01f5ab048",
+    "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts": "21146871e6b5bfa3d9e96ff2db7c4897dd62fac026de538981832de295628f15",
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts": "df501f4671decf2e6fd81ff76864450312bed17c76d0be52cb1c2efb16c37b09",
+    "apps/bdptest/test-support/transactional-execution-binding.ts": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+    "docs/design/transaction-implementation-progress.md": "cf7707ffc7018c9486359192189f1ac8d140734b06aee46e025d8a4db9596314",
+    "docs/specs/bdp.md": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+    "packages/server/src/authority-read.ts": "fd6554c4ee0d08b997fb3622c2f21697f02d58b838f4ae0de10aca4707f67734",
+    "packages/server/src/transaction-changefeed.test.ts": "29f99ffba99c96c2d770ede016fe64af762eea9a3eb9ddaf9de6165bffe5e1bf",
+    "packages/server/src/transaction-changefeed.ts": "1e678ecb1b2c3e59023dbb6a2e6516763907babd79f7926ca572a4764e40fc1e",
+    "packages/server/src/transaction-consistency.test.ts": "904d1f74ff06237da41c45f3dc1d4727a1387dc760950860ef548db51e7f02c4",
+    "packages/server/src/transaction-consistency.ts": "ad51311d6098db32fd47849e0b78d3118162cdf1e80ee9ef4d46324bfa9f436f",
+    "packages/server/src/transaction-discovery.ts": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef",
+    "packages/server/src/transaction-event-sse.test.ts": "d7c257a2c9f78ffd07a18b86e2b480e07e1cdeeddf43cafabfb0cd53a011fbd9",
+    "packages/server/src/transaction-events.test.ts": "708fafc31d031abdff6434110d36d4bfd1126d38cbb977d81af1da1703121673",
+    "packages/server/src/transaction-events.ts": "6c5ab4482f0b00110a71a96b16d44ca5fe713cb5f397ff78778cc6646f632a3a",
+    "packages/server/src/transaction-http.test.ts": "05f9be15d1ef262cf87dc3a07229290499dd0acd553a03a8d2f9febc1d15920a",
+    "packages/server/src/transaction-http.ts": "6ba85bc270f0fd5f81c22b563ad776bb1ee939445b81f1647c9d6baec2a4fc33",
+    "packages/server/src/transaction-installed-configuration.ts": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+    "packages/server/src/transaction-read.test.ts": "40c7c3509af9b7b9e2571368e392b8a88f8545a122c7ba38313d3dcbad923582",
+    "packages/server/src/transaction-read.ts": "dd1ce54966c092ace3164c54a2911f0231b48276f10d024453e33ab4541c659c",
+    "packages/server/src/transaction-receipt-pages.test.ts": "e944bd61590f78a510b427b0f5d6eb7856f6b3715f9f0e5dc590bf8d4724c6a1",
+    "packages/server/src/transaction-runtime.ts": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+    "packages/server/src/transaction-service.test.ts": "ba23d242e73a67765db4de77ff0d43f691feb68641ffdf8071a5ded4dc05cb08",
+    "packages/server/src/transaction-service.ts": "dd300ad4921360c3781cfbf4ade55627f7d45f8a4cf2f8bcab495ae69f3870c1",
+    "packages/server/src/transaction-snapshot.test.ts": "4ab1bb6fa6a6a9e3104b3a9cd11fb045af6002459578275528e31c0d2d6e3122",
+    "packages/server/src/transaction-sse.ts": "1a414cb252b1eb2b5c3695d16aecb59382cbd417876837351e1d80b91b45784c",
+    "packages/server/src/transaction-store.ts": "0ed1a8a059c02ad265ef7814c9dc5cefeec18d82d1ee81b2adc31198747b0e15",
+    "schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+    "scripts/transaction-installed-observation.mjs": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b"
+  },
+  "productionSnapshots": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/production/transaction-consistency.ts": "ad51311d6098db32fd47849e0b78d3118162cdf1e80ee9ef4d46324bfa9f436f",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/production/transaction-http.ts": "6ba85bc270f0fd5f81c22b563ad776bb1ee939445b81f1647c9d6baec2a4fc33",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/production/transaction-read.ts": "dd1ce54966c092ace3164c54a2911f0231b48276f10d024453e33ab4541c659c",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/production/transaction-service.ts": "dd300ad4921360c3781cfbf4ade55627f7d45f8a4cf2f8bcab495ae69f3870c1",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/production/transaction-store.ts": "0ed1a8a059c02ad265ef7814c9dc5cefeec18d82d1ee81b2adc31198747b0e15"
+  },
+  "historicalContext": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/context/scope-sse-format-source-binding.json": "f9e9773d5364dea9490fa68c9b8dcc989ff5faaddf3d039b2a14102feb51f880",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/context/cold-client-audit.md": "d04dcc4e3f61778a34d85eae8ddbfb3b4a651f8832553bbfb7b6c7506c27fb51",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/context/spec.md": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/context/live-ledger.md": "40c689f83fdf1bf2e0ac18f0bdd02aa2eed4c2289f8962540e79d40870d75e17",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/context/design.md": "6e3887bef20acf4e34b5eafccc482a1b6245c974750b7a243f0d3163f26d0268",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/context/consistency-audit.md": "ec4f713fd78154da7e9b9c6055e48f7f615affe910f0d60dd197156dbecc23df",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-plan/context/scope-sse-original-source-binding.json": "c5b377389c581a5344a191d6b71cdad6b61e59cf819c004b1aec863bb0a57b5f"
+  },
+  "newContext": {
+    "context/native-plan-review.md": "56f19c988bbc4899218adf6163f8e5a75f810e2572bd9d57af9b1fad153799ab",
+    "context/fixture-successor-normalized-binding.json": "74cba5a75d6e43858e1ef09f719d1a967052bc9de0ec614e0bf6b397ca597c03",
+    "context/fixture-successor-author-binding.json": "057a33455d96a6206577f02f7bde739cd75bc189ae42f022bf73e969f51001c2"
+  },
+  "chronology": "29 pins already reflect fixture successor057a3345 normalized74cba5a7; original context prose was incomplete. Production5 unchanged. Existing original/format contexts preserved as historical. Only29 current files rechecked, not full679 assertion.",
+  "selectionUnchanged": true,
+  "workloadUnchanged": true,
+  "rootAuthoringReleased": false,
+  "executionReleased": false,
+  "claudeLaunchReleased": false
+}

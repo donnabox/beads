@@ -1,0 +1,444 @@
+{
+  "state": "CLOSED PLAN ONLY; root/native/Claude plan review before authoring; no execution authorized",
+  "inputs": {
+    "frozenMain": "8d6671ed19b0c0406428ccc2d2161768d01e8b9b",
+    "frozenPr150": "d4f3f4be88c7837b71d6646518ca3589d464ba3d",
+    "commonBase": "9df574a9ac980272fa31be9f443a771233b69c6a",
+    "objectReadCheckout": "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum",
+    "candidateCommit": null,
+    "candidateTree": null,
+    "candidateTrackedMap": null
+  },
+  "excluded": [
+    "PR151",
+    "PR154",
+    "PR155",
+    "PR156",
+    "PR157",
+    "PR158",
+    "alias opaque work",
+    "retention ca303411",
+    "amendments PR152/153",
+    "newer main",
+    "main landing",
+    "rebases",
+    "force push",
+    "cleanup/closing PRs",
+    "downstream pins"
+  ],
+  "proposedBranch": "codex/vickie-pr150-main-reconciliation",
+  "proposedParents": [
+    "d4f3f4be88c7837b71d6646518ca3589d464ba3d",
+    "8d6671ed19b0c0406428ccc2d2161768d01e8b9b"
+  ],
+  "inputDocumentHashes": {
+    "authorization.json": "b7e647a9bb49bc3a533fc84c6128187c5adff42e8a4876a2ea5c8c4f884518d1",
+    "reviewed-map.md": "ce70215ab0d384aa681b9ec0cd0649fc6475859815f7b515224520c72383607f",
+    "handoff.md": "6fbad3efe813cd608ae64ac7d4c54a9a65d99741b1958be5cb24d1c6fdd3fe4b"
+  },
+  "overlappingTests": [
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+    "apps/bdptest/src/transactional-depth-key-order-installed.test.ts",
+    "apps/bdptest/src/transactional-matrix.test.ts",
+    "packages/conformance/src/transactional-cumulative.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-sequence.test.ts",
+    "packages/server/src/transaction-set.test.ts",
+    "packages/server/src/transaction-snapshot.test.ts"
+  ],
+  "hiddenLiveReaders": [
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+    "apps/bdptest/src/transactional-fresh-depth-installed.test.ts",
+    "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+    "apps/bdptest/src/transactional-sequence-depth-installed.test.ts"
+  ],
+  "normative": {
+    "destination": "specs/profiles/write/write.md#transactional-http-consistency",
+    "candidateMonolithBlob": "e097e46c3602a9cc802fb2fb609201b896e2cb9f",
+    "candidateMonolithSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+    "commonBodyNormalizedSha256": "5df585eade1e8be6482ee445ad3b24d93aa680da54a4b6e4e009241c4f503290",
+    "normalization": "From Part I; concatenate Core body then Write/conformance after protocol-text markers; replace Markdown link destinations, remove relocation anchor tags, canonicalize schema path, collapse whitespace. Equality is prose-only, not link/runtime proof.",
+    "legacyAnchorCount": 148
+  },
+  "schemaBlob": "a106b40871ed67e712f334575d025f4cdbefb28d",
+  "schemaSha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+  "tools": {
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node": {
+      "realpath": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "sha256": "1ee75375e33b94fc34b3b19aede049e11dae90efb63b374dc96d6bdace70c4b8",
+      "versionExecutionPerformedHere": false
+    },
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs": {
+      "realpath": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "sha256": "67b035e322203961795e8e34ca63a08c37a4386eda94107fb3d28f3246d882ad",
+      "versionExecutionPerformedHere": false
+    },
+    "/opt/homebrew/opt/python@3.14/bin/python3.14": {
+      "realpath": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "sha256": "2477b47fa3ae65b9574eb18a15edb364e96948eaa1875ad3f1c80d780efc9c12",
+      "versionExecutionPerformedHere": false
+    }
+  },
+  "toolRequirements": {
+    "node": "24.16.0",
+    "pnpm": "11.20.0",
+    "Go": "1.26.2",
+    "bdModule": "github.com/steveyegge/beads/cmd/bd@v1.0.5",
+    "bdVersionText": "bd version 1.0.5 (dev)",
+    "bdVersionJson": {
+      "build": "dev",
+      "schema_version": 1,
+      "version": "1.0.5"
+    },
+    "isolatedBdPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/tools/bin/bd",
+    "isolatedGoRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/tools/go",
+    "bdBinarySha256": null,
+    "goBinarySha256": null,
+    "bdBuildInfo": null,
+    "pythonDependencies": [
+      "jsonschema",
+      "referencing"
+    ],
+    "pythonDependencyIdentities": null,
+    "linuxCIPrerequisite": "libicu-dev",
+    "macOSNativePrerequisites": "Discover exact Go CGO/Dolt/ICU requirements and bind platform-specific libs before bootstrap; do not claim Linux equivalence from arbitrary host tools.",
+    "rootProvisioning": "Root session93618 owns official darwin-arm64 Go1.26.2 provisioning; identity.json still required, no assumed completion.",
+    "isolatedBuildEnvironment": {
+      "GOTOOLCHAIN": "local",
+      "GOMAXPROCS": "4",
+      "GOFLAGS": "-p=4",
+      "GOPATH": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/tools/gopath",
+      "GOMODCACHE": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/tools/gomodcache",
+      "GOCACHE": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/tools/gocache",
+      "PKG_CONFIG_PATH": "root measured existing ICU78, read-only"
+    },
+    "independentBootstrap": "Tool provisioning does not depend on candidate source identity; already root-authorized independently. Only product validation waits for actual verified tool identities and candidate freeze."
+  },
+  "toolBlockers": [
+    "Current /opt/homebrew/bin/go resolves /opt/homebrew/Cellar/go/1.26.3/libexec/bin/go, not1.26.2; do not use it implicitly. Provision or locate exact isolated1.26.2 after release and verify distribution/source provenance.",
+    "No isolated bd1.0.5 identity accepted yet; never PATH bd, Janet CLI, existing databases or staging/playgrounds.",
+    "Python jsonschema/referencing environment and identities must be measured/locked before executing Type example checker; no global pip changes."
+  ],
+  "runner": {
+    "automaticRetry": false,
+    "shellChainMasksExit": false,
+    "processGroupOwnership": true,
+    "progressSeconds": 30,
+    "quietDiagnosticSeconds": 120,
+    "quietIsAutomaticFailure": false,
+    "preserveRawStdoutStderrExit": true,
+    "vitestStructuredReporter": "Add JSON file reporter alongside the existing verbose reporter through exact reviewed pnpm test argv; save actual resolved command before execution.",
+    "timeoutMeaning": "Supervisor caps only; retain every existing test and installed deadline. Timeout/failure stops dependent stages, preserves evidence and owned-directory state. TERM then bounded KILL only owned process group; recheck PIDs and locks.",
+    "rootExecutionReleased": false
+  },
+  "timingBasis": {
+    "runId": 38981157039,
+    "head": "d4f3f4be88c7837b71d6646518ca3589d464ba3d",
+    "fullTestStepSeconds": 873.0,
+    "jobSeconds": 1097,
+    "ciWholeJobLimitSeconds": 1200,
+    "note": "Baseline only; combined tree new target. CI timeout unchanged. Local cap1800 is declared prospectively for full suite, not a retry/widening of a failed run."
+  },
+  "stages": [
+    {
+      "id": "tool-provision-and-identity",
+      "argv": null,
+      "timeoutSeconds": 1800,
+      "state": "Root already owns supervised provisioning separately; require actual verified identity.json before validation, do not launch duplicate bootstrap",
+      "postcondition": "Pin tool realpaths/hashes, versions, go build metadata, exact module and bd strict JSON/text identity; no shared tool installation"
+    },
+    {
+      "id": "dependencies",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--frozen-lockfile"
+      ],
+      "timeoutSeconds": 300
+    },
+    {
+      "id": "format:check",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "format:check"
+      ],
+      "timeoutSeconds": 120
+    },
+    {
+      "id": "lint",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ],
+      "timeoutSeconds": 120
+    },
+    {
+      "id": "check:boundaries",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ],
+      "timeoutSeconds": 120
+    },
+    {
+      "id": "typecheck",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ],
+      "timeoutSeconds": 120
+    },
+    {
+      "id": "build",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "timeoutSeconds": 180,
+      "postcondition": "Fresh emitted inventory/source+lock binding; no preexisting dist reuse"
+    },
+    {
+      "id": "full-test",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "test",
+        "--reporter=json",
+        "--outputFile.json=<OUT>/full-test.json"
+      ],
+      "timeoutSeconds": 1800,
+      "termAfterSeconds": 1795,
+      "env": {
+        "BDP_BD_MATRIX_EXECUTABLE": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/tools/bin/bd",
+        "BDP_REQUIRE_BD_MATRIX": "1"
+      },
+      "postcondition": "All exact-target files terminal; bd matrix required, no absent-executable skip accepted; inspect test JSON and all four repaired files executed; cumulative+installed234 fresh records and cleanup checked"
+    },
+    {
+      "id": "e2e:ready:preflight",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "e2e:ready:preflight"
+      ],
+      "timeoutSeconds": 120
+    },
+    {
+      "id": "smoke",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "smoke"
+      ],
+      "timeoutSeconds": 120
+    },
+    {
+      "id": "evidence:verify",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ],
+      "timeoutSeconds": 120,
+      "acceptedExitSemantics": {
+        "0": "Evidence gate passes its existing claim predicate; not full Write qualification",
+        "2": "No evidence claim; fail-closed admission, acceptable CI no-claim result only",
+        "1": "FAIL",
+        "3": "FAIL"
+      }
+    },
+    {
+      "id": "type-examples",
+      "argv": [
+        "<PINNED_ISOLATED_PYTHON>",
+        "scripts/check_type_examples.py"
+      ],
+      "timeoutSeconds": 120,
+      "postcondition": "Shape/examples only; no Types adoption/runtime claim"
+    },
+    {
+      "id": "physical-links-and-index-audit",
+      "argv": null,
+      "timeoutSeconds": 120,
+      "postcondition": "Inspect edited Write links, all148 anchor mappings, spec-layout/profile-contract/profile-boundary/schema-bundle fulltest cases, navigation only old monolith; preserve Memory/Types status and root links"
+    },
+    {
+      "id": "fresh-package-consumer",
+      "argv": null,
+      "timeoutSecondsPerPhase": 120,
+      "state": "CLOSED exact commands/artifact paths to bind after candidate exists",
+      "postcondition": "Pack protocol/server from fresh candidate; safe tar inventory; separate empty external consumer, real install/lock, no workspace fallback, all needed graph versions and source/build/payload/entry hashes verified; no invented consumer SHA"
+    },
+    {
+      "id": "packed-affected-hidden-witnesses",
+      "argv": null,
+      "timeoutSecondsPerCallback": 120,
+      "termAfterSeconds": 115,
+      "state": "CLOSED exact per-callback selectors/provenance gate to prepare against actual clean candidate",
+      "callbacks": [
+        {
+          "path": "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+          "title": "installed Scope/Bead/Link Event SSE matches finite bytes and sparse Bead survives fifteen seconds",
+          "consumerEntryRelativePath": "node_modules/@bdp/server/dist/transaction-installed-process.js",
+          "env": {
+            "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "<MEASURED_CONSUMER>/node_modules/@bdp/server/dist/transaction-installed-process.js",
+            "BDP_TRANSACTIONAL_SOURCE_COMMIT": "<ACTUAL_RECONCILED_COMMIT>"
+          },
+          "argv": [
+            "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+            "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+            "exec",
+            "vitest",
+            "run",
+            "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+            "--testNamePattern",
+            "^installed\\ Scope/Bead/Link\\ Event\\ SSE\\ matches\\ finite\\ bytes\\ and\\ sparse\\ Bead\\ survives\\ fifteen\\ seconds$",
+            "--reporter=verbose",
+            "--reporter=json",
+            "--outputFile.json",
+            "<OUT>/packed-affected-1.json"
+          ],
+          "entryRequirement": "Verify measured contained process entry/hash before dispatch"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+          "title": "installed Event cursors survive restart with Last-Event-ID precedence and source binding",
+          "consumerEntryRelativePath": "node_modules/@bdp/server/dist/transaction-installed-process.js",
+          "env": {
+            "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "<MEASURED_CONSUMER>/node_modules/@bdp/server/dist/transaction-installed-process.js",
+            "BDP_TRANSACTIONAL_SOURCE_COMMIT": "<ACTUAL_RECONCILED_COMMIT>"
+          },
+          "argv": [
+            "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+            "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+            "exec",
+            "vitest",
+            "run",
+            "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+            "--testNamePattern",
+            "^installed\\ Event\\ cursors\\ survive\\ restart\\ with\\ Last\\-Event\\-ID\\ precedence\\ and\\ source\\ binding$",
+            "--reporter=verbose",
+            "--reporter=json",
+            "--outputFile.json",
+            "<OUT>/packed-affected-2.json"
+          ],
+          "entryRequirement": "Verify measured contained process entry/hash before dispatch"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-fresh-depth-installed.test.ts",
+          "title": "serves byte-bounded deep mutations receipts Events and owned-Link Snapshots over packed bytes",
+          "expectedHttp": 13,
+          "consumerEntryRelativePath": "node_modules/@bdp/server/dist/transaction-installed-process.js",
+          "env": {
+            "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "<MEASURED_CONSUMER>/node_modules/@bdp/server/dist/transaction-installed-process.js",
+            "BDP_TRANSACTIONAL_SOURCE_COMMIT": "<ACTUAL_RECONCILED_COMMIT>"
+          },
+          "argv": [
+            "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+            "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+            "exec",
+            "vitest",
+            "run",
+            "apps/bdptest/src/transactional-fresh-depth-installed.test.ts",
+            "--testNamePattern",
+            "^serves\\ byte\\-bounded\\ deep\\ mutations\\ receipts\\ Events\\ and\\ owned\\-Link\\ Snapshots\\ over\\ packed\\ bytes$",
+            "--reporter=verbose",
+            "--reporter=json",
+            "--outputFile.json",
+            "<OUT>/packed-affected-3.json"
+          ],
+          "entryRequirement": "Verify measured contained process entry/hash before dispatch"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+          "title": "serves missing-first current Resources and bounds unproved minimum eligibility",
+          "expectedHttp": 32,
+          "consumerEntryRelativePath": "node_modules/@bdp/server/dist/transaction-installed.js",
+          "env": {
+            "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "<MEASURED_CONSUMER>/node_modules/@bdp/server/dist/transaction-installed.js",
+            "BDP_TRANSACTIONAL_SOURCE_COMMIT": "<ACTUAL_RECONCILED_COMMIT>"
+          },
+          "argv": [
+            "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+            "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+            "exec",
+            "vitest",
+            "run",
+            "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+            "--testNamePattern",
+            "^serves\\ missing\\-first\\ current\\ Resources\\ and\\ bounds\\ unproved\\ minimum\\ eligibility$",
+            "--reporter=verbose",
+            "--reporter=json",
+            "--outputFile.json",
+            "<OUT>/packed-affected-4.json"
+          ],
+          "entryRequirement": "Verify measured contained entry/hash and its unchanged private wrapper contract before dispatch; never substitute the process entry for this module"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-sequence-depth-installed.test.ts",
+          "title": "observes retained sequence member conflict and fresh deep execution over packed bytes",
+          "expectedHttp": 8,
+          "consumerEntryRelativePath": "node_modules/@bdp/server/dist/transaction-installed-process.js",
+          "env": {
+            "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "<MEASURED_CONSUMER>/node_modules/@bdp/server/dist/transaction-installed-process.js",
+            "BDP_TRANSACTIONAL_SOURCE_COMMIT": "<ACTUAL_RECONCILED_COMMIT>"
+          },
+          "argv": [
+            "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+            "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+            "exec",
+            "vitest",
+            "run",
+            "apps/bdptest/src/transactional-sequence-depth-installed.test.ts",
+            "--testNamePattern",
+            "^observes\\ retained\\ sequence\\ member\\ conflict\\ and\\ fresh\\ deep\\ execution\\ over\\ packed\\ bytes$",
+            "--reporter=verbose",
+            "--reporter=json",
+            "--outputFile.json",
+            "<OUT>/packed-affected-5.json"
+          ],
+          "entryRequirement": "Verify measured contained process entry/hash before dispatch"
+        }
+      ],
+      "env": {
+        "BDP_TRANSACTIONAL_SOURCE_COMMIT": "<ACTUAL_RECONCILED_COMMIT>"
+      },
+      "postcondition": "Five existing callbacks across four relocated-reader files on measured fresh consumer; source/schema/package binding and child/store cleanup verified. Reuse proven supervisors, no new evidence framework. Fresh full-suite cumulative234 remains separate workspace evidence."
+    },
+    {
+      "id": "exact-head-ci",
+      "argv": null,
+      "timeoutSeconds": 1200,
+      "state": "After approved branch push, verify actual run.headSha equals candidate and push route; not an execution permission",
+      "postcondition": "All required workflow steps complete successful at exact candidate; missing checks never green; record raw logs and masking/truncation limitations"
+    }
+  ],
+  "cumulativeEvidence": {
+    "freshRequired": true,
+    "manifestAndCoverageBytes": "Preserve exact d4 parent additions, no historical object/digest relabel",
+    "workspaceFullSuiteRequired": true,
+    "freshPacked234RequiredForPackageClaim": false,
+    "publicClaimEligible": false,
+    "evidenceGenerateNotAuthorized": true,
+    "unsupportedProfilesUnadvertised": true,
+    "freshPacked234Decision": "Fresh full pnpm test already runs the actual234 private cumulative witness and cumulative assertions; fresh pnpm smoke packs/installs workspace and checks package surfaces. No duplicate packed234 run required for schema-path-only reconciliation. Do not call workspace234 an external-consumer witness.",
+    "234Basis": "d4 apps/bdptest/src/transactional-matrix.test.ts:627 asserts sum of actual observed scenario exchanges===234; line628 keeps63000ms limit, callback644 keeps120000ms. Distinct from unplanned requirement inventory in transactional-cumulative.test.ts; neither indicates profile completion."
+  },
+  "finalReleaseGates": [
+    "Root/native/Claude plan disposition",
+    "Isolated two-parent resolution and new full source/tree scope review",
+    "Actual native+Claude code review and findings disposition",
+    "Pinned tool/dependency/runtime preparation",
+    "Fresh local matrix and installed/package audits on actual candidate",
+    "Exact candidate green CI before integration PR completion claims",
+    "No main landing/cleanup/downstream pin changes"
+  ],
+  "candidateCommitSequence": "Root isolated branch already starts at d4. Resolve ordinary merge of exact8d, review combined resolution/code, create local two-parent commit d4 then8d for clean provenance before validation; no push until validation/review gates.",
+  "rootExecutionReleased": false
+}

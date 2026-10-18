@@ -1,0 +1,9 @@
+# Snapshot source successor 1
+
+Applies accepted native N1/N2 to the original seven-file source draft: the new test-local minimumReads parameter is NonNullable, and E asserts Retry-After exactly1 for both timeout responses without changing snapshotTimeout. No production behavior or historical helper changed.
+
+Pinned Biome2.5.7 and Node bytes were rehashed against prior Link measured workspace-tools. The same formatter launcher/native binary were used read-only from Link node_modules with explicit Snapshot config/cwd and only seven owned file arguments. Version invocation exited0. One bounded120-second format --write invocation exited0 in0.118seconds, no remaining group processes, fixed four test files. Actual args/stdout/stderr/exit/tool hashes are in format/. No tests, lint, typecheck, builds, imports, installs, services, commits, pushes or review launch ran.
+
+The formatter delta is only three removed separator blank lines, the corrected helper declaration wrapping, two HTTP context assertion line joins and one installed header assertion line join. Exact textual inverse restored every pre-format byte, then reversing N1/N2 restored every original frozen byte. All three production files remain identical to the original draft; all672 unowned files remain baseline-identical. Original author packets and CLOSED unlaunched CODE packet remain unchanged. Full baseline patch, correction/formatting/inverse patches and all679 successor hashes are separate.
+
+Selection/workload/observation-schema bytes are unchanged:22 source callbacks,45 source network+15 handler; installed31+3,three sequential children/two stores. Counts remain prospective. Original native full CODE review found N1/N2 only; successor native closure and actual full Claude CODE review remain pending. Execution remains closed.

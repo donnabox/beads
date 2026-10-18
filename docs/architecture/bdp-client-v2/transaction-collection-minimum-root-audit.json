@@ -1,0 +1,23 @@
+{
+  "source": "71c7aa6f9d81ea32965a1c5d5a15fd4b89bb092c",
+  "tree": "5f4f278136b1ac4fb33cfc4711b0cb111949d025",
+  "clean": true,
+  "verifiedTarballs": [
+    {
+      "artifact": "protocol.tgz",
+      "sha256": "2943f90cd4d0c5ac973dc84c75c80b6b0d944e688b0210990438a482a0a61a8c",
+      "installedMatchesArchive": true
+    },
+    {
+      "artifact": "server.tgz",
+      "sha256": "c6ea9254b268f25099d0e2e96100e6ffeabb900ede4b997c032c118cb2d3b369",
+      "installedMatchesArchive": true
+    }
+  ],
+  "authorLogBindingsMatch": true,
+  "positiveRequests": 36,
+  "counterfactualRequests": 9,
+  "expectedCounterfactual": "304 versus503 conditional shortcut",
+  "publicClaim": false,
+  "limits": "Independent artifact/source/ref/count checks only; did not rerun packed suite or claim exact HEAD/conditional position proof (native P3 pending)."
+}

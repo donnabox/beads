@@ -1,0 +1,2470 @@
+Review the complete actual sixteen-file current-observation minimum CODE implementation in /Users/dbox/repos/wt/vickie/vickie-current-observation-minimum, frozen on base d9c3eb9e61b1982b9bd56aa77e4cdc114384e886 plus the dirty patch below. This is an independent CODE review, not a PLAN review or validation run.
+
+Do not write or modify any files. Output findings only in stdout. Do not execute tests, product imports, builds, installs, formatters, services, git mutations or any external program. Use only Read/Glob/Grep. Inspect broader repository source as needed. Return numbered concrete findings first, each with severity, exact file/line, issue, consequence and minimal correction. Distinguish blockers from optional improvements. If no blockers, say so explicitly. Report inaccessible context or uncertainty; do not infer all referenced files were inspected. No approval is requested for unfinished validation or public profile qualification.
+
+Review the entire patch and affected source/tests, not only the previously discussed plan findings. Full patch and accepted plan are included below. Complete actual files are available at these absolute paths:
+- /Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-consistency.ts
+- /Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-read.ts
+- /Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-http.ts
+- /Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-service.ts
+- /Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-store.ts
+- /Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-consistency.test.ts
+- /Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-read.test.ts
+- /Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-http.test.ts
+- /Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-service.test.ts
+- /Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-receipt-pages.test.ts
+- /Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-snapshot.test.ts
+- /Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-events.test.ts
+- /Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-event-sse.test.ts
+- /Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-changefeed.test.ts
+- /Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts
+- /Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/docs/design/transaction-implementation-progress.md
+
+Critical review focus:
+- Shared waitable current checker: invalid-owner-first; opaque epoch/view failures using typed existing error/context identity and epoch-first tie; compatible opaque Unproved; strict consumer and known path preserved. No inference that arbitrary opaque identity proves expiry.
+- Type/initial Types and successful incident lane classification versus independent locality/data-only capture. Missing/hidden Type minimum-first is the selected allowed implementation choice, not a new protocol MUST. Preserve Resource/alias/incident-anchor404-before-minimum, invalid-param/limit precedence and no failed-eligibility continuation allocation. Keep visibility-gap compatibility/export and counterfactual attribution.
+- Receipt page lexical capture at HTTP/service/owner seams: unauthenticated refusal, call-time capture/lifecycle order, parent/principal/epoch/token nondisclosure before minimum, minimum before expiry/projection. Direct owner is callable and can produce Unproved; service supplies bounded retry. No page AbortSignal invented. Discovery is only the existing internal observer; capture-before-run and invalid-owner-first are intentional, with assembly only after eligible actual entry. No public wire activation.
+- Preserve existing current Resource/collection/alias/fresh Snapshot/receipt-root semantics, current finite Event/Scope SSE/changefeed foreign fanout and direct unsupported fences. Retained Snapshot/continuations S1 and G2 membership remain held; reconnect/Resource SSE/changefeed SSE admission remains excluded. No ordinary Update rewrite, protocol/Types redesign, new public claim or bypass.
+- Review all tests for real behavior discrimination, typings/overloads/exactOptionalPropertyTypes, fixture descriptors/real issued page/limits, schema validation, actual request counters and safe diagnostic fields. Nine new callbacks plus88 expanded legacy titles are source-derived plans, not passing results. Source37 HTTP and installed22+37 are separate; unchanged installed sibling5 is fullCI-only, not part of59. Review report contracts against actual emitted fields, not author prose alone.
+- A real progress/caller-mutation tuple capture and context; B missing/hidden/nondisclosure; C five rows immediate settlement observation, bounded latch/settlement timers cleared, outer finally clock2→release→drain and one close lifetime. Post-close actual owner.withRead RETURNS entry-refused/not-accepting. D is synchronous from retention-clock advancement through failed read/close/offline compare, preserving durable page payload and no hidden reopen/sweep. No indefinite fixed-clock cleanup.
+- E/F have three genuine seed mutations(create32/update32/Link), second receipt's real page, no first-page extra fetch. Source local receipt/read limit2, installed defaults32. Exact37 cap, status/header/schema/conditional/media/HEAD parity, literal Retry-After1 and reference-specific auth context assertions. E emitted runtime requires fresh build before collection. F45swork/5srequest/10ssharedcleanup/60scallback, actual child exit plus close/stdio before remove, observe late/unknown ownership safely and preserve evidence. No unbounded close, retries, deadline widening or count-as-functionality claim. Historical helpers/sibling/prefixes stay appropriately preserved.
+- Review implementation-progress append for honest scope and evidence attribution. No product commands have run for this frozen draft. Static/97 source cases/package/external consumer/required checks/exact-head CI remain separate root-owned validation gates.
+
+Pinned normative spec is context/spec.md below, sha67772742...: read relevant clauses5794–5855 (receiving, actual context, missing-first list/general remaining-read outcomes),5871–5888 (conditionals/HEAD),4630–4660 (receipt pages),5125–5137 (issued URLs/nondisclosure),1890–1940 (Problems/retry). Inspect other normative context if needed; no newer main.
+
+Context access: these are actual absolute file paths, not assumed adjacent working-directory paths. The source-binding/index/preservation maps establish identity; their assertions and report prose are not substitutes for reviewing actual code. Plan review found11 items accepted into successor2; native plan closure is historical attribution, not CODE approval. Current and earlier sole-design snapshots are separately attributed in context-provenance.json. Do not use the mutable live design path.
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/source-binding.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/author-index.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/draft.patch
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/author-report.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/report-schemas.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/selection.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/workload.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/preservation.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/accepted-plan.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/plan-selection.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/plan-workload.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/plan-index.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/plan-dispositions.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/native-plan-closure.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/root-author-release.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/actual-plan-review.txt
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/actual-plan-exit.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/native-plan-findings-audit.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/root-plan-findings-dispositions.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/plan-completion-audit.json
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/design-original-plan-snapshot.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/design-actual-plan-review-snapshot.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/design-current-code-snapshot.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context/spec.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review/context-provenance.json
+
+=== COMPLETE ACCEPTED SUCCESSOR2 PLAN (historical closed-plan labels; source-only release is separately copied) ===
+# Current-observation minimum closure — candidate for review
+
+This is one coherent D1 batch subordinate to the sole design and its D1–D5 finish line. It closes the common foreign-opaque comparison policy, current Type/initial-Type and successful incident-list lanes, and receipt detail pages. It also prepares the existing internal discovery observer for D3 without exposing discovery or advertising a profile. **Authoring and execution are closed.** Root/native/actual-Claude plan disposition precedes a writer.
+
+## Basis and boundaries
+
+Successor2 incorporates actual Claude PLAN findings1–11 after the separate clean-source review reanchor to d9c3eb9e61b1982b9bd56aa77e4cdc114384e886/tree30753e31480a1bef4c17f2b7182c1cc818ba4caf, direct parentbbfa5b2. Its full679 source map remains byte-identical to the reviewed fixture successor. The paragraph below preserves the original dirty planning chronology; it is not a claim that the later clean review ran against dirty source. Exact CI and independent terminal provenance are separately attributed in the successor binding, not retroactively added to the reviewer’s pending-CI context. All authoring/runtime gates remain closed.
+
+Planning basis is `vickie-scope-event-sse-opaque-minimum` at bbfa5b2cac0e381b497384e3a8e29cd937ea2738 plus the reviewed Scope SSE draft and its accepted fixture-successor2. The original candidate's29 inspected-file pins already reflect the one-line fixture correction in transaction-event-sse.test.ts (maximumOperations100→1; file d7c257a2), after the earlier six-site/two-test formatting successor. The original plan prose/context omitted that final chronology; this successor corrects attribution without changing those29 pins. Copied original/format bindings remain historical. New immutable contexts pin fixture author binding057a33455d96a6206577f02f7bde739cd75bc189ae42f022bf73e969f51001c2 and normalized validation binding74cba5a75d6e43858e1ef09f719d1a967052bc9de0ec614e0bf6b397ca597c03. All five proposed production files remain byte-identical to the original reviewed draft and accepted D1 audit. This is an inspected-file planning snapshot, not a new all679 review/freeze or clean-source claim. The copied sole design/ledger retain their original snapshot dates/attribution. Later source authoring must reanchor to root's actually accepted clean commit and verify production and test bytes; no newer main or automatic merge is permitted.
+
+S1 retained Snapshot/Read continuation minimum semantics and G2 metadata-only incident-Link membership in Bead Events remain held. This plan changes neither wire admission selectors for Event reconnect/Resource SSE/changefeed SSE nor retained Snapshot/collection gates. It does change foreign-opaque outcomes on **already lexical/waitable** finite Events, initial Scope SSE and finite start-now changefeed because those callers share the current-context checker. Their test fanout is included rather than hidden behind a new per-route flag.
+
+No TX wire Scope/descriptor/Operation Directory, installed public profile selection, public-admission bypass, evidence-claim flag, RU rewrite, schema/protocol edits, Types redesign, CLI/staging/shared database or historical qualification changes. The Type work here is existing Type read serving under the pinned protocol, not Trish's Types proposal.
+
+## Normative decision and implementation choice
+
+References are to copied `context/spec.md`, hash67772742:
+
+* 5794–5812: strict transaction-consistent current observation and actual response context. 5819–5833: lexical receiving 400 after ordinary target/method/auth but before owner lookup; no context, conditional shortcut,406 or stream.
+* 5835–5841: Bead/Link Resource/properties, alias and initial incident anchor absent/deleted/hidden404 precedes semantic minimum. Preserve this exact list.
+* 5842–5851: remaining reads may return an eligible representation, wait/route, or normative foreign-view/cursor-expired/catch-up-timeout. The stronger Resource U+C bounded-wait MUST expressly does not establish retained precedence or extend that MUST to successful incident lists. We **choose** the existing bounded waiter for Type, initial Type inventory and successful incident lists under the general permitted outcomes; do not label that choice an additional protocol MUST.
+* 4630–4634 and4648–4660: receipt page authentication, principal/epoch nondisclosure, minimum/context/wait, expiry, representation. This settles receipt detail ordering independently of S1. 5125–5137 forbids receipt enumeration and client-invented issued URLs.
+* 5871–5888: minimum/context before304/412; actual current fields, corresponding HEAD metadata and empty body. 1890–1940 fixes Problem families/status/retry.
+
+**Type missing collision is a settled implementation choice, not a new operator question.** The special missing-first clause does not name Types, and no contradictory Type-specific ordering was found. Choose minimum-first for an otherwise valid current Type request: K eligible then404; K behind or U matched context waits then503; incompatible epoch/view returns410/409. Apply the same rule to authorization-hidden Types using only the actual current view; response bodies never disclose the descriptor. This removes the selected `minimum-position-visibility` private gap. It does not generalize Type ordering to Bead/Link/alias/incident anchors. No normative claim says this is the only permitted ordering.
+
+For two incompatible context fields preserve existing recognized-token priority, epoch before view. Opaque spelling alone never proves expiry. Direct `waitable:false` consumers remain strict; only enabled current observers get context-first lexical handling. Malformed capture, invalid owner context and unrelated provider exceptions retain their existing distinct behavior.
+
+## One implementation, five production files
+
+1. `transaction-consistency.ts:115–132`: validate owner position as today. For an unrecognized minimum, preserve `waitable:false` unsupported refusal; for `true`, compare actual epoch then view and throw the existing contextual `TransactionMinimumFailure` before `TransactionMinimumUnproved`. The known-position path remains unchanged. Use the existing error classes/context; no position ordering for opaque strings and no new timeout or retry implementation. Typed direct tests assert TransactionMinimumFailure reason cursor-expired/foreign-view and the identical supplied context object; both mismatches select epoch first. Invalid owner position stays ahead of semantic comparison; strict unrecognized consumers retain Unsupported. Keep `snapshotTransactionMinimum` strict for excluded consumers.
+2. `transaction-read.ts:88–107,210–240`: classify valid data-only current Type descriptors and initial Type collections distinctly from strict excluded paths. Keep locality, descriptor/proxy handling, capture and authority request validation unchanged. Successful initial incident lists become waitable. Add distinct Type/initial-Type kind labels while preserving existing literal resource/missing/initial-collection/strict labels, including bead-links→missing. The successful-observation checker enables any admitted kind except strict. Keep locality validation in isCurrentTransactionMinimumRead and own-data classification in currentReadMinimumKind distinct: classification alone does not establish locality. A nonlocal direct Type with opaque minimum can pass the Type-kind gate but must still fail minimum-position-route; HTTP-parsed Type IDs are scope-prefixed, so this is a direct-API distinction, not a new wire route. In resource-not-found handling, retain the existing early404 for Resource/missing-anchor/alias; the selected Type lane runs the ordinary current checker with waiting enabled instead of converting its consistency failure to `TransactionMinimumVisibilityGap`. TransactionMinimumVisibilityGap and its HTTP translation remain compatibility code even when no ordinary admitted kind can reach the old missing/consistency conversion after the selected Type lane changes. Do not remove the export/handler or widen unrelated strict paths as cleanup. The externally patched minimum-current-resource counterfactual is not evidence that this branch is reachable in the ordinary candidate. Invalid-parameter/limit-exceeded continue to win before semantic comparison. No continuation token may be allocated on failed eligibility.
+3. `transaction-http.ts:571–588,615–634`: receipt page receives `currentReadMinimumHeaders` while retaining the undefined defensive fence/unsupported sentinel. With lexical receiving, malformed controls already fail400 and valid tuples are captured, so this wire undefined sentinel is defensive-only; the converted old500 row no longer exercises it. Keep direct store/service explicit unsupported witnesses, including receipt-pages.test.ts286–287/310–311 and service.test.ts2328–2353. Do not remove them as obsolete assertions. The new Type classification allows its opaque minimum through the existing generic path. Do not duplicate parsing or bypass receiving/authentication. Scope/descriptor/operations wire gaps remain. Native HTTP semantics and the central error-to-Problem translation stay unchanged.
+4. `transaction-service.ts:267–293,578–627`: receiptPage uses data-only lexical capture at its existing point **inside run, after unauthenticated refusal**; wait policy/clock/owner ordering and no-signal API remain. Internal discoveryObserved uses lexical capture at its existing point **before run**, and the shared current checker in its existing owner.withRead observation. Preserve its no-minimum synchronous entry timing and assembly only after eligibility. The current checker intentionally validates actual owner position before comparing epoch/view, unlike the former strict discovery checker’s foreign-context-first order: faulted owner context plus foreign epoch therefore reports invalid owner minimum position. Real-owner discovery contexts remain valid; no extra faulty-provider fixture is added in this scope. This is the D3 observer seam; D3 must separately wire actual discovery through ordinary startup/admission. No output or directory synthesis here.
+5. `transaction-store.ts:2255–2314`: receipt page lexical argument capture stays before owner entry; actual page parent/principal/epoch/token identity stays before semantic minimum, then shared current checker (`true`), then `expireRow` and immutable projection. Direct callers can now receive Unproved; only the service supplies finite retries. Do not claim the service is its only caller. Preserve explicit `unsupported`, missing and prior-epoch behavior, page consistency checks and current context. No expiry/receipt/page write on a failed minimum, no changed retention deadline.
+
+The batch owns exactly **16 files**: these five, nine test files listed in `selection.json`, the existing installed minimum-receiving test, and an append-only scope note in implementation-progress. No new framework/helper module or dependency. Imports made obsolete by changed assertions may be removed in owned files. If source inspection reveals an additional semantic consumer, stop for plan revision rather than silently expand.
+
+## Required sentinel replacement and preservation inventory
+
+All predecessor results remain attributed to their original bytes. Fresh successor observations may reuse a test title but must bind new source and expected outcomes; do not relabel old500 evidence as new409/410/503 proof.
+
+* Consistency lexical-capture callback: its three opaque spellings now expect typed TransactionMinimumFailure with reason cursor-expired or foreign-view and context reference-identical to the supplied context object when waitable; matched context remains TransactionMinimumUnproved and strict consumers remain TransactionMinimumUnsupported. Add one both-mismatch epoch-first direct assertion within this same pure callback; this increases its legacy direct-assertion quantity, not the new A–F traffic totals. These are direct checker errors, not HTTP status observations; preserve invalid-owner precedence and malformed/accessor tests. Malformed/accessor tests unchanged.
+* Read Type collision callback: actual plane (no service waiter) now throws `behind`, `cursor-expired`, `foreign-view` rather than VisibilityGap for its existing three Type collisions. Incident missing/deleted404 stays. The alias incident-fence callback's existing two calls become timeout on successful incident and404 on missing anchor: source-derived 3 target attempts/1wait/4clock calls, not prior2/0/2. Keep two writes; use successor observation label `current-minimum-incident-wait` so the old exclusion is not misrepresented.
+* HTTP Type/incident callback: existing three missing-Type collisions become503/410/409 with current context, while missing incident remains404. Current Resource/collection opaque callback's two old Type/incident500s become503 and its first checkpoint at source5011 remains8; both later checkpoints at5049 and5066 become10. Parser/limit and hidden-resource rows between these checkpoints add no waits. Adjust the associated comment describing the two formerly private refusals. Hidden Resource/incident checks still404 without extra waits.
+* Parser-refusal helper's final control currently uses two Type routes as pre-owner500 sentinels. Replace **only those two targets** with `beads/?cursor=missing` and `snapshot?snapshot=unissued`, retaining `beads/a/` parser404 residue. The first is a valid excluded continuation-shaped Read that exercises the generic strict minimum disjunct; the second exercises the retained Snapshot gate before owner lookup at HTTP407–430. They are private pre-owner refusal controls, not successful issued cursors/handles or expiry witnesses. Preserve total67 calls/three real setup calls and all parser400 oracles. Correct comment; no helper/global request changes.
+* HTTP alias (four foreign requests), fresh Snapshot (four), receipt root (two), finite Scope/Bead/Link Events (four each) and current Scope SSE (two): replace foreign opaque500 expectations with epoch410/view409, actual same-entry fields and schema-valid Problem/empty HEAD. Context failures do not wait. Preserve request order/counts, live positive rows, retained/after/Resource-SSE exclusion rows, group-scan and allocation assertions. Update affected local helper branches/report status distributions to actual new outcomes, not just literal expected status.
+* Direct fresh Snapshot, finite Event and Scope SSE foreign calls likewise become contextual failures before allocation/group SQL preparation. Preserve their preparation-vs-execution limitations. Changefeed's **admitted finite-start-now** foreign opaque direct call becomes cursor-expired; its default strict and after paths remain TypeError/private refusal. Rename its one result label accordingly. Existing finite changefeed HTTP callback has no foreign row and stays unchanged except it may be selected as a regression.
+* Discovery provider/parser callback currently uses `pos-02` as malformed. Replace that single malformed input by `two tokens` and expect lexical TypeError; pos-02 is valid opaque and must not be left in the callback's constant-clock waiter. Other provider/entry/parser failure identities and assembly calls unchanged.
+* Historical installed minimum-receiving callback: **only its owned real receipt page opaque500 oracle becomes503** with current fields/Retry-After and schema Problem. Same22 exchanges and principal404/receiving400 controls. Its source was already amended for root behavior; preserve all predecessor logs. Counterfactual injection modes in minimum-current-resource-installed are deliberate injected500 tests, not stale real-serving sentinels; do not rewrite them.
+
+## Finite new source workload
+
+All values below are prospective source-derived contracts, never observations or completion percentages. Five private current surfaces share A/C fixture logic: local Type resource, initial Type inventory, successful incident list, owned issued receipt page, internal discovery. Use optional callback-local fixture configuration with **two real local descriptors (Bead+Link)**, receiptMaximumItems2 and matching Read pagination/advertised maximum2. The existing fixtures' default Types/maxima remain unchanged. Seed one real batch creating a,b,l using these callback-local Type IDs (never the global create helper's old nonlocal Type); use its actual next page, never synthesize a valid page. Type inventory and one-Link incident list fit one page. Reports discriminate method/target, exact contextual error, owner attempts, waits, clock calls, mutations and cleanup; no credential/raw body capture.
+
+A — `waits for lexical current observations and preserves captured tuples across real progress` (service.test, one callback/store): for each of five surfaces, invoke opaque and pos-01 timeout, current known success, foreign epoch and foreign view =25 service operations. With budget2 and `now:()=>tick++`, each timeout has2 target attempts/1wait/3clock calls; each terminal/success has1/0/1. Total35 target attempts,10 waits,45 clock calls. Seed once; during the first opaque wait commit one actual additional Bead (second mutation, position2), and mutate that supplied tuple to eligible/foreign values. The in-flight capture must remain opaque and end with final actual pos2; subsequent cases derive context from that real commit. No success due to caller mutation. No extra setup discovery/receipt GET; seed and commit return context. Other actual owner probes must be reported separately, not hidden in attempt totals. New discovery assembly is called only on its successful known case, not failed minima.
+
+B — `orders Type refusal and receipt page nondisclosure before projection` (service.test, one callback/store):12 operations: missing Type known/U/foreign epoch/foreign view (4); missing incident U (1); other-principal issued page U (1); unknown page U (1); unauthenticated page U (1); malformed page tuple (1); after one real policy replacement, hidden Type actual-current known/U/foreign view (3). Same budget2 incrementing clock:12 target attempts,2 waits,14 minimum-clock calls. Unaunthenticated/malformed page calls have zero target entry/wait. One policy replacement and one explicit real owner.withRead context capture are separate from those12 attempts. Known missing/hidden Type404; U Type503; foreign Type410/409; incident/page nondisclosure404. Malformed page throws capture TypeError, never Unsupported. Do not claim Type-specific protocol priority; this pins the chosen minimum-first behavior.
+
+C — `drains lexical current observation <type|types|incident|page|discovery> before close` (service.test, five parameter rows/five stores): each row seeds once and has one pending opaque operation plus one close-refused operation. Mutable clock0/budget2 and one gated wait; exact schedule:
+
+1. Create the entered/release deferred values and a local settlement flag. Invoke the opaque operation inside the outer try, preserving any actual synchronous throw. For a returned Promise, immediately attach both fulfillment/rejection handlers to an observed outcome Promise (set the flag and return a discriminated result); do this before awaiting anything. No detached unobserved rejection.
+2. Race entered against premature observed settlement and one1000ms latch-entry timer. Clear the timer in this race's finally, whichever branch wins. Unexpected early resolution/rejection or timeout is a test failure, not permission to skip cleanup or start another operation. Assert the operation is still pending after entry. No repeated timer/renewed minimum deadline.
+3. On the successful entered path, first target attempt has thrown Unproved. Use the single real `owner.withRead(()=>true)` probe and require kind:read; do not use inspect() or a delegate probe. Begin service.close(), immediately observe its fulfillment/rejection, verify it has not completed, and make the one planned close-refused operation. Preserve each API's real synchronous-throw versus rejected-Promise shape; do not force all into one rejects assertion or invoke twice.
+4. The **outer finally** covers invocation, entry race, assertions, probe, close and refused call: set mutable clock=2, resolve release, and clear any live latch timer before awaiting the already-observed operation. Observe close exactly once (reuse the started close Promise, or initiate it in finally if the earlier path never did). Bound settlement/close observation by existing local1000ms observation timers, clearing each in finally; a bound expiry records failure and retains owner/directory evidence rather than removing a possibly live store. No cleanup retries. On the success path the second attempt is Unproved→timeout and close completes after that finite lifetime; then one post-close **real owner** probe `owner.withRead(() => true)` returns `{ kind: "entry-refused", reason: "not-accepting", cause }`, followed by directory removal only after verified clean close. Assert the returned discriminant/reason; this withRead API does not throw or reject after close. Do not substitute inspect() or another service invocation.
+
+Per successful row2 target attempts,1wait,3 minimum-clock calls, one live-owner probe and one post-close probe. Local observation/latch timers are failure guards inside the unchanged5s callback, not product minimum-clock calls or additional traffic. Receipt page has no AbortSignal; do not invent one. The same immediate observed-settlement/entered-race/cleared-timer/finally clock2→release→drain pattern applies to any other new callback that explicitly awaits a gate; A's inline wait/commit does not require an extra latch or service call. Selected existing Read/discovery abort regressions remain unchanged; C proves finite drain, not signal delivery.
+
+D — `preserves receipt page detail when lexical eligibility is unproved` (receipt-pages.test, one synchronous callback/store): use existing five-Bead batch/max2 fixture and real next. Eight direct readReceiptPage calls: known eligible page; opaque; pos-01; foreign epoch; foreign view; other principal; unknown issued-parent page token; finally opaque after advancing retention clock beyond expiry. First succeeds, next two Unproved, foreign failures contextual, two missing, final Unproved. All8 enter the owner once; no waiter. After the first seven calls, close and inspect the actual stored receipt/page-plan/range payload as the baseline. Reopen this same store while its clock is still1000 (second owner open), then advance the clock and make the eighth call. From clock advancement through that direct read, owner close and offline comparison there must be no await, asynchronous callback or event-loop yield: the existing maintenance timer uses the injected clock and could otherwise sweep the expired row. Preserve the default maintenance interval; no timer-budget change or extra operation is needed. Close and inspect offline again, without a further reopen; compare the actual payloads, not an inferred plan. Assert receipt detail, expiry and durable page payload remain; known-minimum expiry semantics are already covered by the selected original page-chain/HTTP ordering callbacks. Do not reopen before the offline assertion (startup maintenance can expire data). This is one store/two owner opens/two offline inspections, not a second fixture or a hidden page request. The fixture.raw helper closes the owner itself; neither second inspection nor cleanup may silently reopen it or trigger maintenance before comparison. Existing afterEach removal/close helpers do not substitute for explicit new successful-close assertions. No SQL-prepare proxy is called a write census. Existing allocation/expiry tests remain selected.
+
+E — `serves current observation minimums with actual issued pages and HTTP parity` (http.test, one callback/store/listener):37 network exchanges exactly, detailed below. Source listener uses existing deterministic budget2 incrementing clock; production defaults unchanged. E explicitly performs the same three setup mutations as F: create32 Beads r00…r31 atpos1, update those32 to obtain the actual issued receipt page atpos2, then create one Link r00→r01 atpos3. Use two callback-local scope-local Bead/Link descriptors, source receiptMaximumItems2 and matching Read pagination/advertised maximum2. Use the second mutation’s real next page for all page cases; any page from the first mutation is not fetched. Production operation/match maxima remain32; no installed cap override. This is the same37-exchange route/method workload as F, with actual emitted runtime. transaction-http.test.ts also imports src handler/service alongside its top-level awaited dist runtime, so a fresh exact build before module collection is required to prevent mixed stale semantics.
+
+New source subtotal: **9 callbacks,9 stores,1 listener,37 HTTP exchanges** (3POST/21GET/13HEAD);**47 service operations** (A25+B12+C10) plus **8 direct owner operations**,55 total. Target attempts A35+B12+C10+D8 =65; live probes C5+B1 and post-close probes C5 are separate. Setup mutations A2+B1+C5+D1+E3 =12. These are only the new source subset; selected predecessor callback workload remains separately attributed. No aggregate sum is used as qualification.
+
+## E/F exact37-exchange wire witness
+
+F appends one new callback `observes installed current observation minima within37requests` to transactional-minimum-receiving-installed.test.ts. Reuse its request/provenance/schema pattern with a callback-local Link descriptor/artifact set, preserving the shared Bead-only artifacts and old callbacks. Installed configuration permits only scope/directory/create/credentials/artifacts, so **do not add a receiptMaximumItems override**. F uses the installed default receipt/page limit and existing32-result fixture; E uses its explicit source limit2 above. Both use these exact same three mutations and the second mutation’s actual next page:
+
+1. POST batch32 Beads r00…r31 (200,pos1,32 results).
+2. POST update-where on those32 Beads (200,pos2,actual paged receipt). Assert real next URL; grant exactly that issued page, verify immutable page body independently from its current context.
+3. POST one Link r00→r01 with callback-local Link Type (200,pos3). This provides a nonempty incident list without altering the retained receipt page. Distinct fixed idempotency keys.
+4. Four ordered targets: local types/task, types/, beads/r00?view=links, actual issued page. For each: knownpos3 GET200 (4), then matched opaque GET/HEAD503, opaque foreign epoch GET/HEAD410, opaque foreign view GET/HEAD409 (24). Matched GET includes If-None-Match:*; matched HEAD includes If-Match:"mismatch" and unacceptable successful media, so refusal must win. Other cases use application/json. Every HEAD compares to corresponding GET metadata/byte length, not its own zero body.
+5. Missing Type opaque GET+HEAD503 (2); missing incident opaque GET404 (1); other-principal actual page opaque GET404 (1); malformed page tuple GET400 (1); anonymous actual page GET401 (1).
+
+3setup+4success+24minimum+6fences=37. Methods POST3/GET21/HEAD13; statuses200×7,503×10,410×8,409×8,404×2,400×1,401×1. Actual context pos3 on observed refusal/success; receiving400 and auth401 context absence are local receiving assertions, not an invented universal401 contract. Type/list/page success schema and concrete expected contents checked; GET Problems validated against pinned bundle; Retry-After exactly1 and private,no-store on timeout. 410 is established epoch mismatch, never unknown-token inference. Keep non-attesting marker, require no development-limit on normative outcomes. No stream, redirect, HEAD mutation, extra fetch, discovery probe or request executor retry. Hard pre-dispatch ceiling37 plus final count37. Request raw fields include exactly one of each minimum field, controlled credentials, actual method/path/body lengths; observations redact secrets.
+
+Installed validation is **two separate title-filtered supervised cohorts** in this file: exact title `rejects malformed read minimum tuples before observation while preserving receipt nondisclosure` (amended historical22) and exact title `observes installed current observation minima within37requests` (new37), each followed by its own audit. Use escaped anchored title filters; do not run the whole file and call it59. The existing unchanged sibling `observes installed opaque receipt root timeout with principal nondisclosure` makes5requests with its own child/store; it is deliberately unselected in these focused runs and remains covered by the later full exact-head CI. Selected scope is59HTTP/2stores/2sequential children; prospective whole-file scope after append is64HTTP/3stores/3children across3callbacks. Preserve the sibling bytes, assertions and default60s deadline. Do not aggregate historical evidence from different builds. New F keeps established45s work budget,5s individual requests,10s shared owned cleanup,60s callback and120s process bound; no wider deadline. Ten real one-second waits fit prospectively but elapsed must be measured. If near bound, stop/review workload split rather than widen. No claim that a source fake-clock pass proves default installed timing.
+
+## Ownership and validation order
+
+All source callbacks retain5s Vitest deadline (no per-row deadline widening); source selection process retains120s, stop on failure. Timers bounded/cleared, mutable-clock waits advanced and released on both success and error. Record operation rejections before close so failures cannot detach. Directory removal follows verified clean owner/runtime/child close only. If close times out or remains unknown, retain directory and actual child exit/PID state; do not fabricate `directoryAbsent:false`. One child/one request executor for new F, pending-request set drained, no cleanup retry. Retention offline inspection is after close and before directory removal.
+
+Before runtime: native+actual-Claude review the full five-production-file policy and test fanout together. Root freezes actual draft selection/report schemas/fullpatch and source/dependency pins. Fresh dependency/tool bootstrap in an isolated author checkout; typecheck, format, lint, boundaries; **build before collecting any source module importing dist**. Source passes must bind actual reports, current source, emitted inventory and cleanup. The exact existing callback manifest in selection.json is finite; run all listed affected callbacks plus their unchanged semantic fence families, not only new A–E. Its legacy request totals are not newly claimed as a combined observation; report actual per-callback JSON/titles from this run. Full exact-head CI is required later to cover nonselected fanout.
+
+Then fresh archive/inventory/tar verification, isolated consumer/lock, root acceptance of actual consumer proof, separate exact-title-filtered installed22/audit and installed37/audit with private process entry and source/build pins; the unchanged5-request sibling belongs only to whole-file/full-CI coverage, not these59 focused exchanges. Shared helpers and protocol schemas stay unchanged. Required preflight/package smoke/historical Read evidence preserve original artifact identities. Only after source+installed+cleanup/native+external disposition may root create ordinary candidate commit, map all tested bytes, push stacked working branch and obtain exact-head green CI. No main landing, release, Preview2 or public profile activation.
+
+## Review gates and stopping conditions
+
+Plan reviewers must check (a) Type minimum-first is allowed rather than a new protocol choice, (b) shared current foreign policy has complete sentinel fanout, (c) same-entry context and failed-page retention oracles are real, (d) exact private page/setup/Link fixture works, (e) counts/close schedules do not hide traffic or renew deadlines, (f) no S1/G2 or public-discovery activation leaks. Any additional changed production file, inferred retained policy, callback needing widened bounds, or inconsistent source-derived count stops authoring for root disposition. Authoring gate=false; source/final commit/package/consumer/runtime results unresolved by design.
+
+D3 dependency: this batch supplies a lexical/current discovery observer only. Actual Scope/descriptor/Directory responses must be integrated with ordinary installed profile startup, authentication, admission and complete D5 carriers in the sole plan. Existing RU private cold discovery and RU response/retry/atomicity checks stay independent. Closing this batch is progress toward the baseline, never a complete Transactional claim.
+
+=== ACTUAL EXPANDED SOURCE/INSTALLED SELECTION (not executed) ===
+{
+  "legacySourceCases": 88,
+  "newSourceCases": 9,
+  "sourceCases": 97,
+  "source": [
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current Type and incident-Link minimums rejects malformed Type ID omitted through a Promise without invoking caller data",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current Type and incident-Link minimums rejects malformed Type ID undefined through a Promise without invoking caller data",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current Type and incident-Link minimums rejects malformed Type ID null through a Promise without invoking caller data",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current Type and incident-Link minimums rejects malformed Type ID number through a Promise without invoking caller data",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current Type and incident-Link minimums rejects malformed Type ID false through a Promise without invoking caller data",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current Type and incident-Link minimums rejects malformed Type ID empty through a Promise without invoking caller data",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current Type and incident-Link minimums rejects malformed Type ID method through a Promise without invoking caller data",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current Type and incident-Link minimums rejects malformed Type ID accessor through a Promise without invoking caller data",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current Type and incident-Link minimums rejects malformed Type ID inherited through a Promise without invoking caller data",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current Type and incident-Link minimums rejects malformed Type ID proxy through a Promise without invoking caller data",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current Type and incident-Link minimums rejects malformed Type ID revoked through a Promise without invoking caller data",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current Type and incident-Link minimums projects immutable current Types and exact incident directions including self-Link deduplication",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current Type and incident-Link minimums keeps types limits, allocation and retained continuation boundaries distinct",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current Type and incident-Link minimums keeps incident limits, allocation and retained continuation boundaries distinct",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current Type and incident-Link minimums waits and cancels current surface 0 without retaining an owner entry",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current Type and incident-Link minimums waits and cancels current surface 1 without retaining an owner entry",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current Type and incident-Link minimums waits and cancels current surface 2 without retaining an owner entry",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current Type and incident-Link minimums pre-aborts, drains and releases a waiting current surface 0",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current Type and incident-Link minimums pre-aborts, drains and releases a waiting current surface 1",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current Type and incident-Link minimums pre-aborts, drains and releases a waiting current surface 2",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current Type and incident-Link minimums keeps compatible missing Types and absent/deleted incident anchors separate from collisions",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current alias minimum subset preserves direct minimum alias receiving validation, cancellation and lifecycle precedence",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current alias minimum subset preserves service minimum alias receiving validation, cancellation and lifecycle precedence",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current alias minimum subset conditions alias mapping and context in one entry without revising either target",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current alias minimum subset rechecks a repointed alias after waiting for a real Resource effect",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current alias minimum subset keeps live alias context failures and compatible absent/deleted/dangling observations distinct",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current alias minimum subset forwards ordinary and minimum Request aborts before SQL and drains an admitted alias wait",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current alias minimum subset does not relabel alias provider or malformed context failures as missing",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current alias minimum subset captures unknown alias minima while resolving each retry against the live owner",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current alias minimum subset captures pos-01 alias minima while resolving each retry against the live owner",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current alias minimum subset preserves absent alias nondisclosure before opaque minimum waiting",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current alias minimum subset preserves deleted alias nondisclosure before opaque minimum waiting",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current alias minimum subset preserves dangling alias nondisclosure before opaque minimum waiting",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current alias minimum subset preserves hidden alias nondisclosure before opaque minimum waiting",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current alias minimum subset returns current alias absence when an admitted opaque wait loses its mapping",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current alias minimum subset drains an aborted opaque alias wait before releasing its owner",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current alias minimum subset preserves incident-Link opaque exclusions beside alias minima",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current minimum perform receiving preserves a direct non-enumerable pre-aborted signal before owner entry",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current minimum perform receiving preserves direct minimum perform receiving validation, cancellation and lifecycle precedence",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "current minimum perform receiving preserves service minimum perform receiving validation, cancellation and lifecycle precedence",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "fullName": "internal discovery owner observation copies exactly one owner entry and parses only after releasing it",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "fullName": "internal discovery owner observation keeps entry refusal distinct from structural validation failure",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "fullName": "internal discovery owner observation captures nested limits once and enforces the captured values after caller mutation",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "fullName": "internal discovery owner observation keeps the replay position floor and complete genesis groups through receipt expiry and reopen",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "fullName": "internal discovery minimum observation preserves synchronous no-minimum timing and ignores its signal and wait policy",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "fullName": "internal discovery minimum observation returns an immutable same-entry eligible prefix for pos-1 after release",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "fullName": "internal discovery minimum observation returns an immutable same-entry eligible prefix for pos-0 after release",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "fullName": "internal discovery minimum observation returns an immutable same-entry eligible prefix for genesis after release",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "fullName": "internal discovery minimum observation captures immutable minimum controls and releases the owner during controlled catch-up",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "fullName": "internal discovery minimum observation releases the owner after an in-entry scopeEpoch refusal",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "fullName": "internal discovery minimum observation releases the owner after an in-entry authorizationView refusal",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "fullName": "internal discovery minimum observation times out after two controlled attempts without assembly and leaves the owner reusable",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "fullName": "internal discovery minimum observation rejects pre-abort before entry and pending abort before retry",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "fullName": "internal discovery minimum observation drains an admitted discovery wait before closing the owner",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "fullName": "internal discovery minimum observation keeps malformed input, entry refusal, provider and parser failures distinct",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-consistency.test.ts",
+      "fullName": "captures lexical current minimums without widening strict consumers or invoking accessors",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-consistency.test.ts",
+      "fullName": "waits for unproved current eligibility with one deadline and preserves terminal failures",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-consistency.test.ts",
+      "fullName": "distinguishes closed minimum receiving syntax from supported position identities",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "uses actual current policy for missing-first and unproved Resource attempts",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-read.test.ts",
+      "fullName": "drains an admitted unknown minimum to timeout and rejects new reads while closing",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-receipt-pages.test.ts",
+      "fullName": "records one atomic page chain, retains original postimages and all tail allocations through expiry",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-receipt-pages.test.ts",
+      "fullName": "captures immutable current context for nondisclosable receipt pages before minimum checks",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-snapshot.test.ts",
+      "fullName": "checks each fresh Snapshot minimum before any handle, record, page or expiry work",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-snapshot.test.ts",
+      "fullName": "does not expire retained Snapshot details on an ineligible fresh attempt",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-snapshot.test.ts",
+      "fullName": "gates fresh Snapshot opaque minima before allocation and expiry",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "fullName": "gates initial Scope Event unknown minima before retained scans",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "fullName": "serves initial finite Scope Event opaque minima through bounded waiting",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "fullName": "gates initial Bead Event unknown minima before retained scans",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "fullName": "serves initial finite Bead Event opaque minima with retained identity and route fences",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "fullName": "gates initial Link Event unknown minima before retained scans",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "fullName": "serves initial finite Link Event opaque minima with retained identity and route fences",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-event-sse.test.ts",
+      "fullName": "gates initial Scope Event SSE opaque minima before scan packets",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-event-sse.test.ts",
+      "fullName": "captures initial Scope Event SSE minima once and recaptures context on retry",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-event-sse.test.ts",
+      "fullName": "drains an aborted initial Scope Event SSE minimum wait before owner close",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-event-sse.test.ts",
+      "fullName": "serves initial Scope Event SSE opaque minima before conditional admission",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "keeps direct and excluded changefeed minimum paths strict",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-changefeed.test.ts",
+      "fullName": "serves finite start-now opaque minima before HTTP shortcuts",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "fullName": "serves canonical current Type and incident minimums with truthful context and parser boundaries",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "fullName": "serves conditioned live aliases and preserves bodyless redirects, refusal context and receiving boundaries",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "fullName": "waits for current Resources and initial collections with unknown minima and preserves residual refusals",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "fullName": "serves fresh Snapshot opaque minima with terminal preflight and retained fences",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "fullName": "serves opaque receipt root minima before HTTP shortcuts with private fences",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "fullName": "rejects collection parser errors before unknown minimum support checks",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "fullName": "preserves parser refusal parity on noncollection and excluded query routes",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "fullName": "preserves receiving and HTTP error precedence for parser refusals",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "fullName": "orders page nondisclosure, minimum waits, expiry and representation using actual owner state",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "fullName": "refuses unsupported root controls after nondisclosure but before read-triggered retention",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "fullName": "keeps failed parent rows unchanged for nonexistent page reads with any controls",
+      "new": false
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "fullName": "waits for lexical current observations and preserves captured tuples across real progress",
+      "new": true
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "fullName": "orders Type refusal and receipt page nondisclosure before projection",
+      "new": true
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "fullName": "drains lexical current observation type before close",
+      "new": true
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "fullName": "drains lexical current observation types before close",
+      "new": true
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "fullName": "drains lexical current observation incident before close",
+      "new": true
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "fullName": "drains lexical current observation page before close",
+      "new": true
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "fullName": "drains lexical current observation discovery before close",
+      "new": true
+    },
+    {
+      "file": "packages/server/src/transaction-receipt-pages.test.ts",
+      "fullName": "preserves receipt page detail when lexical eligibility is unproved",
+      "new": true
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "fullName": "serves current observation minimums with actual issued pages and HTTP parity",
+      "new": true
+    }
+  ],
+  "installed": [
+    {
+      "file": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "title": "rejects malformed read minimum tuples before observation while preserving receipt nondisclosure",
+      "http": 22,
+      "children": 1,
+      "stores": 1,
+      "attribution": "fresh successor of historical callback; owned page oracle changes",
+      "titleFilter": "^rejects malformed read minimum tuples before observation while preserving receipt nondisclosure$",
+      "separateSupervisedAttempt": true,
+      "immediateAudit": true
+    },
+    {
+      "file": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "title": "observes installed current observation minima within37requests",
+      "http": 37,
+      "children": 1,
+      "stores": 1,
+      "attribution": "new callback",
+      "titleFilter": "^observes installed current observation minima within37requests$",
+      "separateSupervisedAttempt": true,
+      "immediateAudit": true
+    }
+  ],
+  "unselectedInstalledSiblings": [
+    {
+      "file": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "title": "observes installed opaque receipt root timeout with principal nondisclosure",
+      "http": 5,
+      "children": 1,
+      "stores": 1,
+      "sourceChange": "none; preserve existing callback bytes",
+      "coverage": "later full exact-head CI only; not focused59"
+    }
+  ]
+}
+=== ACTUAL SOURCE-DERIVED WORKLOAD (not observed) ===
+{
+  "prospective": true,
+  "newSource": {
+    "callbacks": 9,
+    "stores": 9,
+    "ownerOpens": 10,
+    "listeners": 1,
+    "http": 37,
+    "methods": {
+      "POST": 3,
+      "GET": 21,
+      "HEAD": 13
+    },
+    "serviceOperations": 47,
+    "directOwnerPageOperations": 8,
+    "targetAttempts": 65,
+    "separateLiveProbes": 6,
+    "separatePostCloseProbes": 5,
+    "waits": 17,
+    "minimumClockCalls": 74,
+    "setupMutations": 12,
+    "countScope": "Direct counters refer only to A-D, not E wire owner activity or clocks. Source E creates one listener. D uses one store/two opens/two offline inspections.",
+    "postCloseProbeOracle": "owner.withRead returns entry-refused/not-accepting, not a thrown/rejected error"
+  },
+  "newWireMatrix": {
+    "http": 37,
+    "statuses": {
+      "200": 7,
+      "503": 10,
+      "410": 8,
+      "409": 8,
+      "404": 2,
+      "400": 1,
+      "401": 1
+    },
+    "setup": [
+      "POST32 scope-local Beads r00-r31",
+      "POST update32; use this mutation actual issued next page",
+      "POST one scope-local Link r00-to-r01"
+    ],
+    "sourceLimits": {
+      "receiptMaximumItems": 2,
+      "paginationAndAdvertisedMaximum": 2,
+      "productionOperationAndMatchMaxima": 32
+    },
+    "installedLimits": "existing installed defaults; no override"
+  },
+  "installed": {
+    "cohorts": [
+      22,
+      37
+    ],
+    "http": 59,
+    "stores": 2,
+    "children": 2,
+    "selectionMode": "two separate exact title-filtered invocations with immediate audits",
+    "titles": [
+      "rejects malformed read minimum tuples before observation while preserving receipt nondisclosure",
+      "observes installed current observation minima within37requests"
+    ]
+  },
+  "newSourcePlusSelectedInstalledHttp": 96,
+  "legacySource": "Separately selected finite families/titles; record fresh per-callback quantities, do not infer from historical aggregates. No combined legacy HTTP total asserted.",
+  "budgets": {
+    "sourceCallbackSeconds": 5,
+    "sourceSupervisorSeconds": 120,
+    "installedWorkSeconds": 45,
+    "installedRequestSeconds": 5,
+    "installedCleanupSeconds": 10,
+    "installedCallbackSeconds": 60,
+    "installedSupervisorSeconds": 120
+  },
+  "installedUnselectedSibling": {
+    "http": 5,
+    "stores": 1,
+    "children": 1,
+    "coverage": "later full exact-head CI; unchanged callback"
+  },
+  "installedWholeFileAfterAppend": {
+    "callbacks": 3,
+    "http": 64,
+    "stores": 3,
+    "children": 3
+  },
+  "attribution": "source-derived draft counters/assertions; no measured runtime outcomes",
+  "expandedLegacySourceCases": 88,
+  "expandedTotalSourceCases": 97,
+  "newSourceSchedules": {
+    "A": {
+      "operations": 25,
+      "attempts": 35,
+      "waits": 10,
+      "clockCalls": 45,
+      "mutations": 2
+    },
+    "B": {
+      "operations": 12,
+      "attempts": 12,
+      "waits": 2,
+      "clockCalls": 14,
+      "mutations": 1,
+      "liveProbes": 1,
+      "policyReplacements": 1
+    },
+    "C_each_of_5": {
+      "operations": 2,
+      "attempts": 2,
+      "waits": 1,
+      "clockCalls": 3,
+      "mutations": 1,
+      "liveProbes": 1,
+      "postCloseProbes": 1
+    },
+    "D": {
+      "calls": 8,
+      "mutations": 1,
+      "ownerOpens": 2,
+      "offlineInspections": 2
+    },
+    "E": {
+      "http": 37,
+      "mutations": 3,
+      "waits": 10,
+      "listeners": 1,
+      "ownerAttemptCountClaim": false
+    }
+  },
+  "lifecycle": {
+    "C": "Immediate observed outcome; bounded entered-versus-settled race; finally clock2/release before operation and close drainage. Post-close is returned entry-refused/not-accepting. No signal invented for receipt page.",
+    "D": "No await between clock advance and synchronous owner close/offline comparison; no timer sweep inference after asynchronous yield.",
+    "E": "Actual finite fetches, runtime close observed under1000ms local cleanup race; unknown close retains directory.",
+    "F": "45s overall work,5s request,10s shared cleanup including request close/pending drain and child exit+close event;60s callback. Outer cleanup expiry preserves unknown ownership/directory and observes late cleanup rejection. Launcher pre-ready cleanup is its inherited contract, not a callback-observed child."
+  }
+}
+
+=== COMPLETE FROZEN SIXTEEN-FILE PATCH ===
+diff --git a/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts b/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts
+index 55ba338..dc4adba 100644
+--- a/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts
++++ b/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts
+@@ -505,10 +505,11 @@ it("rejects malformed read minimum tuples before observation while preserving re
+         expect(response.headers.get("x-bdp-development-limit")).toBeNull();
+         expect(context(response)).toStrictEqual(expectedContext);
+       } else {
+-        expect(response.status).toBe(500);
+-        expect(response.text).toBe("");
+-        expect(response.headers.get("x-bdp-development-limit")).toBe("minimum-position");
+-        expect(context(response)).toStrictEqual([null, null, null]);
++        expect(problem(response, 503, "catch-up-timeout")).toMatchObject({ retry: "after-delay" });
++        expect(response.headers.get("retry-after")).toBe("1");
++        expect(response.headers.get("cache-control")).toBe("private, no-store");
++        expect(response.headers.has("x-bdp-development-limit")).toBe(false);
++        expect(context(response)).toStrictEqual(expectedContext);
+       }
+     }
+     const missing = await exchange("compatible-missing", "GET", `${scope}beads/missing`, tuple);
+@@ -1042,3 +1043,447 @@ it("observes installed opaque receipt root timeout with principal nondisclosure"
+   if (failures.length > 1)
+     throw new AggregateError(failures, "installed receipt root and cleanup failed");
+ }, 60000);
++
++it("observes installed current observation minima within37requests", async () => {
++  const started = performance.now();
++  const controller = new AbortController();
++  const deadlineReason = new Error("installed current observation receiving deadline");
++  let deadlineExceeded = false,
++    cleanupExceeded = false,
++    launchAttempted = false,
++    closed = false;
++  const deadline = setTimeout(() => {
++    deadlineExceeded = true;
++    controller.abort(deadlineReason);
++  }, 45000);
++  const failures: unknown[] = [];
++  const categories: string[] = [];
++  const fail = (error: unknown, category: string) => {
++    if (!failures.includes(error)) {
++      failures.push(error);
++      categories.push(category);
++    }
++  };
++  let phase = "setup";
++  let directory: string | undefined;
++  let child: Awaited<ReturnType<typeof launchInstalledTransaction>> | undefined;
++  let binding: ReturnType<typeof installedTransactionBinding> | undefined;
++  let attempted = 0;
++  const childLifetime: { close: { code: number | null; signal: NodeJS.Signals | null } | undefined } = { close: undefined };
++  let childDrain: Promise<void> | undefined;
++  const active = new Set<ClientRequest>();
++  const pending = new Set<Promise<unknown>>();
++  const responses: {
++    ordinal: number;
++    label: string;
++    method: string;
++    url: string;
++    credential: string;
++    requestBodyBytes: number;
++    requestBodySha256: string | null;
++    minimumFieldOccurrences: number[];
++    status: number;
++    bodyOctets: number;
++    bodySha256: string;
++    headers: Record<string, string | null>;
++  }[] = [];
++  const writer = randomBytes(32).toString("base64url"),
++    other = randomBytes(32).toString("base64url");
++  const linkType = `${scope}types/relation`;
++  const localArtifacts = {
++    ...artifacts,
++    descriptors: [...artifacts.descriptors, {
++      retrievalUri: linkType,
++      utf8: JSON.stringify({ id: linkType, name: "Relation", describes: "link", conformsTo: [],
++        source: { conformsTo: [beadType], external: "opaque" },
++        target: { conformsTo: [beadType], external: "opaque" },
++      }),
++    }],
++  };
++  try {
++    directory = mkdtempSync(path.join(tmpdir(), "bdp-current-observation-minimum-installed-"));
++    controller.signal.throwIfAborted();
++    launchAttempted = true;
++    child = await launchInstalledTransaction(
++      entry,
++      {
++        scope,
++        directory,
++        create: true,
++        artifacts: localArtifacts,
++        credentials: [
++          { token: writer, principal: "writer", canMutate: true },
++          { token: other, principal: "other", canMutate: false },
++        ],
++      },
++      controller.signal,
++    );
++    childDrain = new Promise<void>((resolve) => {
++      child!.child.once("close", (code, signal) => {
++        childLifetime.close = { code, signal };
++        resolve();
++      });
++    });
++    binding = installedTransactionBinding(child.ready, sourceCommit, fixture);
++    expect(child.ready.scope).toBe(scope);
++    expect(binding.operationTargets.batch).toBe(`${scope}operations/batch`);
++    const address = new URL(child.ready.listenUrl as string);
++    const granted = new Set([`${scope}operations/batch`, `${scope}operations/update-where`, `${scope}types/task`, `${scope}types/`, `${scope}types/missing`, `${scope}beads/r00?view=links`, `${scope}beads/missing?view=links`]);
++    const exchange = async (
++      label: string,
++      method: "GET" | "HEAD" | "POST",
++      url: string,
++      fields: string[] = [],
++      credential: "writer" | "other" | "anonymous" = "writer",
++      requestBody?: string,
++      key?: string,
++    ) => {
++      phase = label;
++      controller.signal.throwIfAborted();
++      expect(++attempted, "installed current observation dispatch bound").toBeLessThanOrEqual(37);
++      expect(granted.has(url), "fixed or actually issued URL grant").toBe(true);
++      const target = new URL(url);
++      expect(target.origin).toBe(new URL(scope).origin);
++      expect([target.hash, target.username, target.password]).toStrictEqual(["", "", ""]);
++      expect(Buffer.byteLength(url)).toBeLessThanOrEqual(8192);
++      const headers = [
++        "Host",
++        new URL(scope).host,
++        "Connection",
++        "close",
++        ...(fields.some((field, i) => i % 2 === 0 && field.toLowerCase() === "accept") ? [] : ["Accept", "application/json"]),
++        ...(credential === "anonymous"
++          ? []
++          : ["Authorization", `Bearer ${credential === "writer" ? writer : other}`]),
++        ...(requestBody === undefined
++          ? []
++          : [
++              "Content-Type",
++              "application/json",
++              "Content-Length",
++              String(Buffer.byteLength(requestBody)),
++              "Idempotency-Key",
++              key ?? "missing-key",
++            ]),
++        ...fields,
++      ];
++      const operation = new Promise<{
++        status: number;
++        headers: Headers;
++        text: string;
++        bytes: number;
++      }>((resolve, reject) => {
++        const request = httpRequest(
++          {
++            hostname: address.hostname,
++            port: Number(address.port),
++            path: target.pathname + target.search,
++            method,
++            agent: false,
++            headers,
++            signal: AbortSignal.any([controller.signal, AbortSignal.timeout(5000)]),
++          },
++          (response) => {
++            const chunks: Buffer[] = [];
++            let bytes = 0;
++            response.on("data", (chunk: Buffer) => {
++              bytes += chunk.length;
++              if (bytes > 32768) {
++                const error = new Error("installed current observation response overflow");
++                response.destroy(error);
++                request.destroy(error);
++                return;
++              }
++              chunks.push(chunk);
++            });
++            response.once("aborted", () =>
++              reject(new Error("installed current observation response aborted")),
++            );
++            response.once("error", reject);
++            response.once("end", () => {
++              const received = new Headers();
++              for (let i = 0; i < response.rawHeaders.length; i += 2)
++                received.append(response.rawHeaders[i]!, response.rawHeaders[i + 1]!);
++              resolve({
++                status: response.statusCode ?? 0,
++                headers: received,
++                text: Buffer.concat(chunks).toString("utf8"),
++                bytes,
++              });
++            });
++          },
++        );
++        active.add(request);
++        request.once("close", () => active.delete(request));
++        request.once("error", reject);
++        request.end(requestBody);
++      });
++      pending.add(operation);
++      void operation.then(
++        () => pending.delete(operation),
++        () => pending.delete(operation),
++      );
++      const response = await operation;
++      const minimumNames = [
++        "bdp-minimum-scope-position",
++        "bdp-scope-epoch",
++        "bdp-authorization-view",
++      ];
++      responses.push({
++        ordinal: attempted,
++        label,
++        method,
++        url,
++        credential,
++        requestBodyBytes: requestBody === undefined ? 0 : Buffer.byteLength(requestBody),
++        requestBodySha256: requestBody === undefined ? null : digest(requestBody),
++        minimumFieldOccurrences: minimumNames.map(
++          (name) => fields.filter((field, i) => i % 2 === 0 && field.toLowerCase() === name).length,
++        ),
++        status: response.status,
++        bodyOctets: response.bytes,
++        bodySha256: digest(response.text),
++        headers: Object.fromEntries(
++          retainedHeaders.map((name) => [name, response.headers.get(name)]),
++        ),
++      });
++      expect(response.headers.get("x-bdp-development")).toBe("non-attesting");
++      return response;
++    };
++    type Response = Awaited<ReturnType<typeof exchange>>;
++    const context = (response: Response) => contextNames.map((name) => response.headers.get(name));
++    const problem = (response: Response, status: number, code: string) => {
++      expect(response.status).toBe(status);
++      expect(response.headers.get("content-type")).toBe("application/problem+json");
++      const value = record(JSON.parse(response.text));
++      expect(validProblem(value), JSON.stringify(validProblem.errors)).toBe(true);
++      expect(value).toMatchObject({ status, code });
++      return value;
++    };
++    const receipt = (response: Response, key: string, position: string) => {
++      expect(response.status).toBe(200);
++      const value = record(JSON.parse(response.text));
++      expect(validReceipt(value), JSON.stringify(validReceipt.errors)).toBe(true);
++      expect(value).toMatchObject({
++        status: "completed",
++        idempotencyKey: key,
++        requiredPosition: position,
++        effectPosition: position,
++      });
++      expect(context(response)[2]).toBe(position);
++      expect([value.scopeEpoch, value.authorizationView]).toStrictEqual(
++        context(response).slice(0, 2),
++      );
++      expect(
++        context(response)
++          .slice(0, 2)
++          .every((v) => typeof v === "string" && /^[A-Za-z0-9_-]{1,256}$/.test(v)),
++      ).toBe(true);
++      return value;
++    };
++    const seed = await exchange("seed", "POST", `${scope}operations/batch`, [], "writer", seedBody, "current-observation-seed");
++    const seeded = receipt(seed, "current-observation-seed", "pos-1");
++    expect(receiptResults(seeded)).toHaveLength(32);
++    const updated = await exchange("issue-page", "POST", `${scope}operations/update-where`, [], "writer", setBody, "current-observation-update");
++    const paged = receipt(updated, "current-observation-update", "pos-2");
++    const pageUrl = paged.next;
++    if (typeof pageUrl !== "string" || typeof paged.id !== "string") throw new Error("actual second mutation page required");
++    const parsedPage = new URL(pageUrl);
++    expect(parsedPage.origin).toBe(new URL(scope).origin);
++    expect([parsedPage.search, parsedPage.hash, parsedPage.username, parsedPage.password]).toEqual(["", "", "", ""]);
++    expect(pageUrl.startsWith(`${paged.id}/pages/`)).toBe(true);
++    expect(pageUrl.slice(`${paged.id}/pages/`.length)).toMatch(/^[A-Za-z0-9_-]+$/);
++    granted.add(pageUrl);
++    const linked = await exchange("link", "POST", `${scope}operations/batch`, [], "writer", JSON.stringify({ operations: [{
++      operation: "createLink", id: "links/l", type: linkType,
++      source: "beads/r00", target: "beads/r01", properties: { n: 0 },
++    }] }), "current-observation-link");
++    receipt(linked, "current-observation-link", "pos-3");
++    const expectedContext = context(linked);
++    expect(expectedContext.slice(0, 2)).toEqual(context(seed).slice(0, 2));
++    const minimum = (position: string, epoch = expectedContext[0]!, view = expectedContext[1]!) => [
++      "BDP-Minimum-Scope-Position", position, "BDP-Scope-Epoch", epoch, "BDP-Authorization-View", view,
++    ];
++    const validType = ajv.compile({ $ref: `${bundle.$id}#/$defs/typeDescriptor` });
++    const validTypes = ajv.compile({ $ref: `${bundle.$id}#/$defs/typesInventory` });
++    const validLinks = ajv.compile({ $ref: `${bundle.$id}#/$defs/currentLinkCollection` });
++    const validPage = ajv.compile({ $ref: `${bundle.$id}#/$defs/mutationReceiptPage` });
++    const pair = async (label: string, url: string, fields: string[], status: number, code: string) => {
++      const get = await exchange(`${label}-get`, "GET", url, [...fields, ...(status === 503 ? ["If-None-Match", "*"] : [])]);
++      const head = await exchange(`${label}-head`, "HEAD", url, [...fields, ...(status === 503 ? ["If-Match", '"mismatch"', "Accept", "image/png"] : [])]);
++      problem(get, status, code);
++      expect(head.status).toBe(status);
++      expect(head.text).toBe("");
++      expect(head.bytes).toBe(0);
++      expect(get.bytes).toBeGreaterThan(0);
++      expect(get.headers.get("content-length")).toBe(String(get.bytes));
++      for (const name of ["content-length", "content-type", "cache-control", "retry-after", ...contextNames])
++        expect(head.headers.get(name), name).toBe(get.headers.get(name));
++      for (const response of [get, head]) {
++        expect(context(response)).toEqual(expectedContext);
++        expect(response.headers.get("content-type")).toBe("application/problem+json");
++        expect(response.headers.get("cache-control")).toBe("private, no-store");
++        expect(response.headers.has("x-bdp-development-limit")).toBe(false);
++        if (status === 503) expect(response.headers.get("retry-after")).toBe("1");
++      }
++    };
++    for (const [label, target] of [["type", `${scope}types/task`], ["types", `${scope}types/`], ["incident", `${scope}beads/r00?view=links`], ["page", pageUrl]] as const) {
++      const known = await exchange(`${label}-known`, "GET", target, minimum("pos-3"));
++      expect(known.status).toBe(200);
++      expect(context(known)).toEqual(expectedContext);
++      const value = record(JSON.parse(known.text));
++      const validate = label === "type" ? validType : label === "types" ? validTypes : label === "incident" ? validLinks : validPage;
++      expect(validate(value), JSON.stringify(validate.errors)).toBe(true);
++      if (label === "type") expect(value).toMatchObject({ id: beadType, describes: "bead" });
++      else if (label === "types") {
++        expect(value.items).toEqual([
++          { id: linkType, name: "Relation", describes: "link" },
++          { id: beadType, name: "Task", describes: "bead" },
++        ]);
++        expect(value.next).toBeNull();
++      } else if (label === "incident") {
++        expect(value).toMatchObject({ items: [{ id: `${scope}links/l`, type: linkType, source: `${scope}beads/r00`, target: `${scope}beads/r01` }], next: null });
++      } else {
++        expect(value.receipt).toBe(paged.id);
++        if (!Array.isArray(value.results) || value.results.length === 0) throw new Error("nonempty real page required");
++        for (const result of value.results) expect(record(result)).toMatchObject({ outcome: "updated", resource: { type: beadType, properties: { n: 1 } } });
++        expect(paged.requiredPosition).toBe("pos-2");
++      }
++      await pair(`${label}-opaque`, target, minimum("opaque"), 503, "catch-up-timeout");
++      await pair(`${label}-epoch`, target, minimum("opaque", "foreign", expectedContext[1]!), 410, "cursor-expired");
++      await pair(`${label}-view`, target, minimum("opaque", expectedContext[0]!, "foreign"), 409, "foreign-view");
++    }
++    await pair("missing-type", `${scope}types/missing`, minimum("opaque"), 503, "catch-up-timeout");
++    const missingIncident = await exchange("missing-incident", "GET", `${scope}beads/missing?view=links`, minimum("opaque"));
++    const otherPage = await exchange("other-page", "GET", pageUrl, minimum("opaque"), "other");
++    for (const response of [missingIncident, otherPage]) {
++      problem(response, 404, "resource-not-found");
++      expect(context(response)).toEqual(expectedContext);
++      expect(response.headers.has("x-bdp-development-limit")).toBe(false);
++    }
++    const malformed = await exchange("malformed-page", "GET", pageUrl, ["BDP-Minimum-Scope-Position", "opaque"]);
++    problem(malformed, 400, "malformed-request");
++    expect(context(malformed)).toEqual([null, null, null]);
++    const anonymous = await exchange("anonymous-page", "GET", pageUrl, minimum("opaque"), "anonymous");
++    problem(anonymous, 401, "unauthenticated");
++    expect(context(anonymous)).toEqual([null, null, null]);
++    expect(attempted).toBe(37);
++    expect(responses).toHaveLength(37);
++    expect(Object.fromEntries([200, 503, 410, 409, 404, 400, 401].map((status) => [status, responses.filter((r) => r.status === status).length]))).toEqual({ 200: 7, 503: 10, 410: 8, 409: 8, 404: 2, 400: 1, 401: 1 });
++    expect(Object.fromEntries(["POST", "GET", "HEAD"].map((method) => [method, responses.filter((r) => r.method === method).length]))).toEqual({ POST: 3, GET: 21, HEAD: 13 });
++    controller.signal.throwIfAborted();
++  } catch (error) {
++    fail(error, phase);
++  } finally {
++    clearTimeout(deadline);
++    controller.abort();
++    const cleanupReason = new Error("installed current observation cleanup deadline");
++    let cleanupTimer: ReturnType<typeof setTimeout> | undefined;
++    // Await both operation settlement and transport close; one deadline also covers child close.
++    const transportDrain = Promise.all(
++      [...active].map(
++        (request) =>
++          new Promise<void>((resolve) => {
++            request.once("close", resolve);
++            request.destroy();
++          }),
++      ),
++    );
++    const cleaning = (async () => {
++      for (const result of await Promise.allSettled([...pending]))
++        if (result.status === "rejected") fail(result.reason, "transport-drain");
++      await transportDrain;
++      if (child) {
++        await child.close();
++        await childDrain;
++      }
++    })();
++    // Retain late failures after the race without letting a late close mark ownership clean.
++    void cleaning.catch((error) => fail(error, "late-cleanup"));
++    try {
++      await Promise.race([
++        cleaning,
++        new Promise<never>((_, reject) => {
++          cleanupTimer = setTimeout(() => {
++            cleanupExceeded = true;
++            child?.child.kill("SIGKILL");
++            reject(cleanupReason);
++          }, 10000);
++        }),
++      ]);
++      if (
++        child &&
++        !cleanupExceeded &&
++        child.child.exitCode === 0 &&
++        child.child.signalCode === null &&
++        childLifetime.close?.code === 0 && childLifetime.close.signal === null
++      )
++        closed = true;
++      else if (launchAttempted)
++        fail(new Error("installed current observation clean close unproved"), "unclean-close");
++    } catch (error) {
++      fail(error, "cleanup");
++    } finally {
++      clearTimeout(cleanupTimer);
++    }
++    if (deadlineExceeded) fail(deadlineReason, "deadline");
++    const stopped =
++      !launchAttempted ||
++      (child !== undefined && (child.child.exitCode !== null || child.child.signalCode !== null));
++    if (!stopped) fail(new Error("installed current observation child stop unknown"), "unknown-stop");
++    try {
++      if (directory && (!launchAttempted || (closed && failures.length === 0)))
++        rmSync(directory, { recursive: true, force: true });
++    } catch (error) {
++      fail(error, "directory-cleanup");
++    }
++    const directoryAbsent = directory === undefined || !existsSync(directory);
++    if (!directoryAbsent)
++      fail(new Error("installed current observation directory preserved"), "directory-retained");
++    try {
++      console.log(
++        JSON.stringify({
++          observation: "private-installed-current-observation-minimum",
++          outcome: failures.length ? "failed" : "passed",
++          declaredSourceCommit: sourceCommit,
++          workspaceDirty,
++          entry: resolvedEntry,
++          entrySha256,
++          binding: binding ?? null,
++          artifactBytes:
++            localArtifacts.descriptors.reduce((n, d) => n + Buffer.byteLength(d.utf8), 0) +
++            localArtifacts.schemas.reduce((n, s) => n + Buffer.byteLength(s.utf8), 0),
++          elapsedMs: performance.now() - started,
++          attempted,
++          exchanges: responses.length,
++          completedResponses: responses,
++          deadlineExceeded,
++          cleanupExceeded,
++          launchAttempted,
++          startupCompleted: child !== undefined,
++          closed,
++          childClose: childLifetime.close ?? null,
++          childPid: child?.child.pid ?? null,
++          childExitCode: child?.child.exitCode ?? null,
++          childSignalCode: child?.child.signalCode ?? null,
++          directory: directory ?? null,
++          directoryAbsent,
++          activeRequests: active.size,
++          pendingOperations: pending.size,
++          failureCount: failures.length,
++          failureCategories: categories,
++          claimEligible: false,
++          retention:
++            "safe response metadata/fingerprints; bodies asserted in memory; no credentials logged",
++          startupLimitation:
++            "pre-ready or unclean ownership preserves directory for supervisor evidence",
++        }),
++      );
++    } catch (error) {
++      fail(error, "report");
++    }
++  }
++  if (failures.length === 1) throw failures[0];
++  if (failures.length > 1)
++    throw new AggregateError(failures, "installed current observation and cleanup failed");
++}, 60000);
+diff --git a/docs/design/transaction-implementation-progress.md b/docs/design/transaction-implementation-progress.md
+index 44e255c..c9dd26f 100644
+--- a/docs/design/transaction-implementation-progress.md
++++ b/docs/design/transaction-implementation-progress.md
+@@ -2060,3 +2060,10 @@ minimum semantics or incident-Link metadata Event membership.
+ Fresh finite changefeed start-now opaque-minimum draft (unexecuted): this subset now uses the existing bounded wait for lexically valid unrecognized minima with the actual current epoch/view, preserving the one-time admission checkpoint while recapturing current context per attempt. This supersedes the earlier unsupported-minimum gap statement only for finite non-SSE start=now (including minimum refusal before unsupported-Accept negotiation). Direct after/genesis, retained continuations, SSE and foreign-context opaque minima remain outside this extension; S1/G2 and public discovery/profile admission stay unresolved or closed as previously recorded. Earlier evidence retains its original source attribution; this draft adds no validation or qualification claim.
+ 
+ Fresh canonical Scope Event SSE reads without URL or raw/header reconnect controls now have a draft matched-context opaque-minimum path through the existing bounded waiter, before packet and stream admission. This separate Event slice does not supersede the preceding finite changefeed start-now paragraph's changefeed SSE exclusion. Resource Event SSE, reconnects, foreign opaque contexts, S1/G2 and public profile discovery/admission remain excluded; no validation or qualification is claimed for this draft.
++
++
++### Current-observation minimum closure (private candidate)
++
++The shared current-context checker now compares epoch then authorization view for an opaque minimum on an admitted waitable observation, before treating eligibility as unproved. Current Type/initial-Type and successful incident-Link reads use the existing bounded waiter; Type missing/hidden collisions use minimum-first ordering under the general remaining-read rule. Resource, alias and incident-anchor missing-first behavior remains. Owned receipt pages capture lexical minima and preserve parent/principal/epoch/token nondisclosure before minimum and retention. Internal discovery observation uses the same checker without exposing discovery or selecting a public profile.
++
++The associated source and installed witnesses cover capture across a real commit, finite draining before owner close, receipt-page retention and conditional/HEAD parity. Their new source-derived workload and predecessor adjustments are recorded separately; this paragraph is not a test-pass or profile-completion claim. Earlier private foreign-opaque outcomes remain historical evidence; this candidate supersedes that behavior only on already-admitted current observers. Strict retained/cursor/reconnect/Resource-SSE/changefeed-SSE paths, S1/G2 decisions and public discovery/admission remain outside this change. Existing counterfactual injection controls are not ordinary-runtime results. Full candidate review and fresh source/packed-consumer validation remain required.
+diff --git a/packages/server/src/transaction-changefeed.test.ts b/packages/server/src/transaction-changefeed.test.ts
+index 6e521c5..b118f64 100644
+--- a/packages/server/src/transaction-changefeed.test.ts
++++ b/packages/server/src/transaction-changefeed.test.ts
+@@ -20,7 +20,6 @@ import { createTransactionService } from "./transaction-service.js";
+ import {
+   TransactionMinimumFailure,
+   TransactionMinimumUnproved,
+-  TransactionMinimumUnsupported,
+ } from "./transaction-consistency.js";
+ import { ScopeServerOperationAbortedError } from "./read-request.js";
+ import {
+@@ -1553,8 +1552,8 @@ it("keeps direct and excluded changefeed minimum paths strict", async () => {
+         undefined,
+         "finite-start-now",
+       ),
+-    ).rejects.toBeInstanceOf(TransactionMinimumUnsupported);
+-    outcomes.push("foreign-unsupported");
++    ).rejects.toMatchObject({ reason: "cursor-expired" });
++    outcomes.push("foreign-cursor-expired");
+     await instance.close();
+     expect(() =>
+       instance.changes({ start: "now" }, minimum, undefined, "finite-start-now"),
+diff --git a/packages/server/src/transaction-consistency.test.ts b/packages/server/src/transaction-consistency.test.ts
+index a5611a6..fb772df 100644
+--- a/packages/server/src/transaction-consistency.test.ts
++++ b/packages/server/src/transaction-consistency.test.ts
+@@ -152,14 +152,35 @@ it("captures lexical current minimums without widening strict consumers or invok
+     expect(() => checkCurrentReadMinimum(supplied, context, true)).toThrow(
+       TransactionMinimumUnproved,
+     );
+-    for (const foreign of [{ scopeEpoch: "other" }, { authorizationView: "other" }])
+-      expect(() => checkCurrentReadMinimum({ ...supplied, ...foreign }, context, true)).toThrow(
+-        TransactionMinimumUnsupported,
+-      );
++    for (const [foreign, reason] of [
++      [{ scopeEpoch: "other" }, "cursor-expired"],
++      [{ authorizationView: "other" }, "foreign-view"],
++    ] as const) {
++      let failure: unknown;
++      try {
++        checkCurrentReadMinimum({ ...supplied, ...foreign }, context, true);
++      } catch (error) {
++        failure = error;
++      }
++      expect(failure).toBeInstanceOf(TransactionMinimumFailure);
++      if (!(failure instanceof TransactionMinimumFailure)) throw new Error("expected minimum failure");
++      expect(failure.reason).toBe(reason);
++      expect(failure.context).toBe(context);
++    }
+     expect(() => checkCurrentReadMinimum(supplied, context, false)).toThrow(
+       TransactionMinimumUnsupported,
+     );
+   }
++  let bothMismatch: unknown;
++  try {
++    checkCurrentReadMinimum({ scopeEpoch: "other", authorizationView: "other", minimumPosition: "opaque" }, context, true);
++  } catch (error) {
++    bothMismatch = error;
++  }
++  expect(bothMismatch).toBeInstanceOf(TransactionMinimumFailure);
++  if (!(bothMismatch instanceof TransactionMinimumFailure)) throw new Error("expected contextual failure");
++  expect(bothMismatch.reason).toBe("cursor-expired");
++  expect(bothMismatch.context).toBe(context);
+   const getter = vi.fn(() => "opaque");
+   for (const value of [
+     new Proxy(tuple(), { get: getter }),
+diff --git a/packages/server/src/transaction-consistency.ts b/packages/server/src/transaction-consistency.ts
+index b3c5b17..1b91ca2 100644
+--- a/packages/server/src/transaction-consistency.ts
++++ b/packages/server/src/transaction-consistency.ts
+@@ -120,12 +120,11 @@ export function checkCurrentReadMinimum(
+   if (position(context.scopePosition) === undefined)
+     throw new Error("invalid owner minimum position");
+   if (position(minimum.minimumPosition) === undefined) {
+-    if (
+-      !waitable ||
+-      minimum.scopeEpoch !== context.scopeEpoch ||
+-      minimum.authorizationView !== context.authorizationView
+-    )
+-      throw new TransactionMinimumUnsupported("minimum-position");
++    if (!waitable) throw new TransactionMinimumUnsupported("minimum-position");
++    if (minimum.scopeEpoch !== context.scopeEpoch)
++      throw new TransactionMinimumFailure("cursor-expired", context);
++    if (minimum.authorizationView !== context.authorizationView)
++      throw new TransactionMinimumFailure("foreign-view", context);
+     throw new TransactionMinimumUnproved(context);
+   }
+   checkTransactionMinimum(minimum, context);
+diff --git a/packages/server/src/transaction-event-sse.test.ts b/packages/server/src/transaction-event-sse.test.ts
+index 1ebda14..1c20d50 100644
+--- a/packages/server/src/transaction-event-sse.test.ts
++++ b/packages/server/src/transaction-event-sse.test.ts
+@@ -994,7 +994,7 @@ it("publication cancels a queued Event frame before its drain permits another wr
+ 
+ it("gates initial Scope Event SSE opaque minima before scan packets", async () => {
+   const { DatabaseSync } = await import("node:sqlite");
+-  const { TransactionMinimumUnproved, TransactionMinimumFailure, TransactionMinimumUnsupported } =
++  const { TransactionMinimumUnproved, TransactionMinimumFailure } =
+     await import("./transaction-consistency.js");
+   const f = ownerFixture();
+   let seedCommits = 0;
+@@ -1104,7 +1104,10 @@ it("gates initial Scope Event SSE opaque minima before scan packets", async () =
+     ]) {
+       expect(
+         scan("foreign", `${scope}events/`, tuple, undefined, false, "initial-scope-sse"),
+-      ).toBeInstanceOf(TransactionMinimumUnsupported);
++      ).toMatchObject({
++        reason: tuple.scopeEpoch !== packet.context.scopeEpoch ? "cursor-expired" : "foreign-view",
++        context: packet.context,
++      });
+     }
+     const strict = [
+       scan("default", `${scope}events/`, minimum),
+@@ -1607,6 +1610,15 @@ it("serves initial Scope Event SSE opaque minima before conditional admission",
+             code: "catch-up-timeout",
+             retry: "after-delay",
+           });
++      } else if (status === 409 || status === 410) {
++        expect(safeContext(stream.headers)).toEqual(expectedContext);
++        expect(stream.headers["x-bdp-development-limit"]).toBeUndefined();
++        expect(stream.headers["content-type"]).toBe("application/problem+json");
++        if (method === "GET")
++          expect(JSON.parse(stream.body)).toMatchObject({
++            status,
++            code: status === 410 ? "cursor-expired" : "foreign-view",
++          });
+       } else if (status === 500) {
+         expect(stream.headers["x-bdp-development-limit"]).toBe("minimum-position");
+         expect(stream.body).toBe("");
+@@ -1743,8 +1755,8 @@ it("serves initial Scope Event SSE opaque minima before conditional admission",
+     await pair([...opaque, ["If-Match", '"wrong"']], 503);
+     await pair([["BDP-Minimum-Scope-Position", "unknown"]], 400);
+     await pair(minimum("pos-2"), 503);
+-    await raw("events/", [["BDP-Scope-Epoch", "foreign-epoch"], ...opaque.slice(1)], 500);
+-    await raw("events/", [opaque[0]!, ["BDP-Authorization-View", "foreign-view"], opaque[2]!], 500);
++    await raw("events/", [["BDP-Scope-Epoch", "foreign-epoch"], ...opaque.slice(1)], 410);
++    await raw("events/", [opaque[0]!, ["BDP-Authorization-View", "foreign-view"], opaque[2]!], 409);
+     await raw(`events/?after=${encodeURIComponent(after)}`, opaque, 500);
+     await raw("events/?after=", opaque, 400);
+     await raw("events/", [...opaque, ["Last-Event-ID", after]], 500);
+@@ -1828,7 +1840,7 @@ it("serves initial Scope Event SSE opaque minima before conditional admission",
+         counts[row.status] = (counts[row.status] ?? 0) + 1;
+         return counts;
+       }, {}),
+-    ).toEqual({ 200: 6, 503: 10, 500: 8, 400: 3, 404: 1, 401: 1, 304: 1, 412: 1 });
++    ).toEqual({ 200: 6, 503: 10, 500: 6, 400: 3, 404: 1, 401: 1, 304: 1, 412: 1, 409: 1, 410: 1 });
+   } catch (error) {
+     failures.push(error);
+   } finally {
+diff --git a/packages/server/src/transaction-events.test.ts b/packages/server/src/transaction-events.test.ts
+index 2581e05..708548d 100644
+--- a/packages/server/src/transaction-events.test.ts
++++ b/packages/server/src/transaction-events.test.ts
+@@ -28,7 +28,6 @@ import {
+ import {
+   TransactionMinimumFailure,
+   TransactionMinimumUnproved,
+-  TransactionMinimumUnsupported,
+ } from "./transaction-consistency.js";
+ 
+ const cleanups: (() => void)[] = [];
+@@ -1373,7 +1372,10 @@ it("gates initial Scope Event unknown minima before retained scans", () => {
+     ]) {
+       groupReads = 0;
+       expect(() => read(source, undefined, { ...minimum, ...foreign })).toThrow(
+-        TransactionMinimumUnsupported,
++        expect.objectContaining({
++          reason: "scopeEpoch" in foreign ? "cursor-expired" : "foreign-view",
++          context: setup.context,
++        }),
+       );
+       expect(groupReads).toBe(0);
+     }
+@@ -1525,8 +1527,8 @@ it("serves initial finite Scope Event opaque minima through bounded waiting", as
+       true,
+     );
+     await pair("events/", {}, 200, undefined, true);
+-    await pair("events/", { ...opaque, "bdp-scope-epoch": "foreign-epoch" }, 500);
+-    await pair("events/", { ...opaque, "bdp-authorization-view": "foreign-view" }, 500);
++    await pair("events/", { ...opaque, "bdp-scope-epoch": "foreign-epoch" }, 410, "cursor-expired", true);
++    await pair("events/", { ...opaque, "bdp-authorization-view": "foreign-view" }, 409, "foreign-view", true);
+     await pair(
+       "events/",
+       { ...opaque, accept: "text/event-stream" },
+@@ -1614,7 +1616,10 @@ it("gates initial Bead Event unknown minima before retained scans", () => {
+     ]) {
+       groupReads = 0;
+       expect(() => read(source, undefined, { ...minimum, ...foreign })).toThrow(
+-        TransactionMinimumUnsupported,
++        expect.objectContaining({
++          reason: "scopeEpoch" in foreign ? "cursor-expired" : "foreign-view",
++          context: setup.context,
++        }),
+       );
+       expect(groupReads).toBe(0);
+     }
+@@ -1819,8 +1824,8 @@ it("serves initial finite Bead Event opaque minima with retained identity and ro
+       true,
+     );
+     await pair("beads/a?view=events", {}, 200, undefined, true);
+-    await pair("beads/a?view=events", { ...opaque, "bdp-scope-epoch": "foreign-epoch" }, 500);
+-    await pair("beads/a?view=events", { ...opaque, "bdp-authorization-view": "foreign-view" }, 500);
++    await pair("beads/a?view=events", { ...opaque, "bdp-scope-epoch": "foreign-epoch" }, 410, "cursor-expired", true);
++    await pair("beads/a?view=events", { ...opaque, "bdp-authorization-view": "foreign-view" }, 409, "foreign-view", true);
+     // Initial Link Events now wait; stream, continuation and media exclusions remain gaps.
+     await pair("links/l?view=events", opaque, 503, "catch-up-timeout", true);
+     await pair("beads/a?view=events", { ...opaque, accept: "text/event-stream" }, 500);
+@@ -1955,7 +1960,10 @@ it("gates initial Link Event unknown minima before retained scans", () => {
+     ]) {
+       groupReads = 0;
+       expect(() => read(source, undefined, { ...minimum, ...foreign })).toThrow(
+-        TransactionMinimumUnsupported,
++        expect.objectContaining({
++          reason: "scopeEpoch" in foreign ? "cursor-expired" : "foreign-view",
++          context: setup.context,
++        }),
+       );
+       expect(groupReads).toBe(0);
+     }
+@@ -2155,8 +2163,8 @@ it("serves initial finite Link Event opaque minima with retained identity and ro
+       true,
+     );
+     await pair("links/l?view=events", {}, 200, undefined, true);
+-    await pair("links/l?view=events", { ...opaque, "bdp-scope-epoch": "foreign-epoch" }, 500);
+-    await pair("links/l?view=events", { ...opaque, "bdp-authorization-view": "foreign-view" }, 500);
++    await pair("links/l?view=events", { ...opaque, "bdp-scope-epoch": "foreign-epoch" }, 410, "cursor-expired", true);
++    await pair("links/l?view=events", { ...opaque, "bdp-authorization-view": "foreign-view" }, 409, "foreign-view", true);
+     // Stream, continuation, reconnect and media exclusions remain private gaps.
+     await pair("links/l?view=events", { ...opaque, accept: "text/event-stream" }, 500);
+     await pair(`links/l?view=events&after=${encodeURIComponent(after)}`, opaque, 500);
+diff --git a/packages/server/src/transaction-http.test.ts b/packages/server/src/transaction-http.test.ts
+index eda8533..e455fb6 100644
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -1,5 +1,5 @@
+ import { createHash } from "node:crypto";
+-import { mkdtempSync, rmSync, readFileSync } from "node:fs";
++import { existsSync, mkdtempSync, rmSync, readFileSync } from "node:fs";
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+ import { connect } from "node:net";
+@@ -3061,9 +3061,14 @@ it("serves canonical current Type and incident minimums with truthful context an
+     ]) {
+       const refused = await send(suffix, { ...headers, ...patch });
+       if (suffix === "types/absent") {
+-        expect(refused.status).toBe(500);
+-        expect(refused.headers.get("x-bdp-development-limit")).toBe("minimum-position-visibility");
+-        expect(refused.headers.has("bdp-scope-position")).toBe(false);
++        const status = "bdp-minimum-scope-position" in patch ? 503 : "bdp-scope-epoch" in patch ? 410 : 409;
++        expect(refused.status).toBe(status);
++        expect(refused.headers.has("x-bdp-development-limit")).toBe(false);
++        assertContext(refused);
++        expect(checkedProblem(await body(refused))).toMatchObject({
++          status,
++          code: status === 503 ? "catch-up-timeout" : status === 410 ? "cursor-expired" : "foreign-view",
++        });
+       } else {
+         expect(refused.status).toBe(404);
+         assertContext(refused);
+@@ -3233,20 +3238,31 @@ it("serves conditioned live aliases and preserves bodyless redirects, refusal co
+         expect(response.headers.has(name)).toBe(false);
+     }
+   }
+-  // Unsupported private foreign-opaque gaps, not qualified foreign-view/expiry results.
++  // Opaque identities preserve actual epoch/view refusal before redirect construction.
+   for (const patch of [{ "bdp-scope-epoch": "foreign" }, { "bdp-authorization-view": "foreign" }]) {
++    let bytes = 0;
+     for (const method of ["GET", "HEAD"] as const) {
+       const response = await get(target, {
+         method,
+         headers: { ...headers, ...patch, "bdp-minimum-scope-position": "unknown" },
+       });
+-      expect(response.status).toBe(500);
+-      expect(response.headers.get("x-bdp-development-limit")).toBe("minimum-position");
++      const status = "bdp-scope-epoch" in patch ? 410 : 409;
++      expect(response.status).toBe(status);
++      expect(response.headers.has("x-bdp-development-limit")).toBe(false);
+       expect(response.headers.has("location")).toBe(false);
+       expect(response.headers.has("etag")).toBe(false);
+-      expect(await response.text()).toBe("");
+-      for (const name of Object.keys(context(created)))
+-        expect(response.headers.has(name)).toBe(false);
++      expect(context(response)).toEqual(context(created));
++      const text = await response.text();
++      if (method === "GET") {
++        bytes = Buffer.byteLength(text);
++        expect(checkedProblem(record(JSON.parse(text)))).toMatchObject({
++          status,
++          code: status === 410 ? "cursor-expired" : "foreign-view",
++        });
++      } else {
++        expect(text).toBe("");
++        expect(response.headers.get("content-length")).toBe(String(bytes));
++      }
+     }
+   }
+   const anonymous = await observe("GET", target, () =>
+@@ -5009,14 +5025,14 @@ it("waits for current Resources and initial collections with unknown minima and
+     expect(response.headers.has("x-bdp-development-limit")).toBe(false);
+   }
+   expect(waits).toBe(8);
+-  // Type routes stop at the strict unknown-token guard; incident-Link refusal
+-  // follows owner classification. Both retain the private label.
++  // Current Type inventory and successful incident lists share bounded eligibility waiting.
+   for (const suffix of ["types/", "beads/a?view=links"]) {
+     const response = await f.get(f.runtime.scope + suffix, { headers: tuple });
+-    expect(response.status).toBe(500);
+-    expect(response.headers.get("x-bdp-development-limit")).toBe("minimum-position");
+-    expect(response.headers.has("bdp-scope-position")).toBe(false);
+-    expect(await response.text()).toBe("");
++    expect(response.status).toBe(503);
++    expect(response.headers.has("x-bdp-development-limit")).toBe(false);
++    expect(response.headers.get("bdp-scope-position")).toBe("pos-1");
++    expect(response.headers.get("retry-after")).toBe("1");
++    expect(checkedProblem(await body(response))).toEqual(timeoutProblem);
+   }
+   // Repeated parameters are normative 400; limit=0 preserves existing parser parity.
+   // Both parser refusals precede semantic minimum support classification.
+@@ -5046,7 +5062,7 @@ it("waits for current Resources and initial collections with unknown minima and
+     expect(response.headers.get("bdp-scope-position")).toBe("pos-1");
+     expect(response.headers.has("x-bdp-development-limit")).toBe(false);
+   }
+-  expect(waits).toBe(8);
++  expect(waits).toBe(10);
+   const published = await f.runtime.replaceAuthorizationPolicy({ timeoutMs: 1000 });
+   let expectedBody: unknown;
+   for (const suffix of ["beads/a", "beads/missing", "beads/a?view=links"]) {
+@@ -5063,7 +5079,7 @@ it("waits for current Resources and initial collections with unknown minima and
+     expect(response.headers.get("bdp-authorization-view")).toBe(published.authorizationView);
+     expect(response.headers.get("bdp-scope-position")).toBe("pos-1");
+   }
+-  expect(waits).toBe(8);
++  expect(waits).toBe(10);
+ });
+ 
+ it("compares retained sequence members and accepts deep input while preserving receiving failures", async () => {
+@@ -5716,9 +5732,10 @@ it("preserves receiving and HTTP error precedence for parser refusals", async ()
+       { accept: "image/png" },
+     ];
+     for (const overlay of overlays) await f.problemPair(suffix, { ...f.opaque, ...overlay });
+-    // Strict Type requests and parser 404 residue retain the old private refusal.
+-    // beads/a?view=links is excluded: it observes the owner, so is not a pre-owner refusal.
+-    for (const excluded of ["types/", "types/task", "beads/a/"]) await f.gapPair(excluded);
++    // Strict continuation and retained Snapshot gates stay pre-owner private refusals.
++    // The parser404 residue preserves its existing route fence.
++    for (const excluded of ["beads/?cursor=missing", "snapshot?snapshot=unissued", "beads/a/"])
++      await f.gapPair(excluded);
+   });
+ });
+ 
+@@ -5801,9 +5818,15 @@ it("serves fresh Snapshot opaque minima with terminal preflight and retained fen
+     for (const field of ["bdp-scope-epoch", "bdp-authorization-view"]) {
+       for (const method of ["GET", "HEAD"] as const) {
+         const result = await get(url, method, { ...minimum, [field]: "foreign" });
+-        expect(result.response.status).toBe(500);
+-        expect(result.response.headers.get("x-bdp-development-limit")).toBe("minimum-position");
++        const status = field === "bdp-scope-epoch" ? 410 : 409;
++        expect(result.response.status).toBe(status);
++        expect(result.response.headers.has("x-bdp-development-limit")).toBe(false);
++        for (const [name, value] of Object.entries(current))
++          expect(result.response.headers.get(name)).toBe(value);
+         if (method === "HEAD") expect(result.text).toBe("");
++        else expect(checkedProblem(record(JSON.parse(result.text)))).toMatchObject({
++          status, code: status === 410 ? "cursor-expired" : "foreign-view",
++        });
+       }
+     }
+     for (const method of ["GET", "HEAD"] as const) {
+@@ -5846,12 +5869,12 @@ it("serves fresh Snapshot opaque minima with terminal preflight and retained fen
+     expect(responses).toHaveLength(27);
+     expect(waits).toBe(8);
+     const statusCounts = Object.fromEntries(
+-      [200, 503, 500, 400, 401].map((status) => [
++      [200, 503, 500, 400, 401, 409, 410].map((status) => [
+         status,
+         responses.filter((response) => response.status === status).length,
+       ]),
+     );
+-    expect(statusCounts).toEqual({ 200: 5, 503: 8, 500: 8, 400: 4, 401: 2 });
++    expect(statusCounts).toEqual({ 200: 5, 503: 8, 500: 4, 400: 4, 401: 2, 409: 2, 410: 2 });
+     await f.runtime.close();
+     console.log(
+       JSON.stringify({
+@@ -5944,16 +5967,20 @@ it("serves opaque receipt root minima before HTTP shortcuts with private fences"
+         accept: "image/png",
+       }),
+     );
+-    // These two private refusals preserve the excluded foreign-opaque gap, not 409/410 conformance.
++    // Incompatible actual context wins before unknown-position eligibility waiting.
+     for (const [method, field] of [
+       ["GET", "bdp-scope-epoch"],
+       ["HEAD", "bdp-authorization-view"],
+     ] as const) {
+       const result = await get(method, "owned-root", root, { ...minimum, [field]: "foreign" });
+-      expect(result.response.status).toBe(500);
+-      expect(result.text).toBe("");
+-      expect(result.response.headers.get("x-bdp-development-limit")).toBe("minimum-position");
+-      expect(Object.values(context(result.response))).toStrictEqual([null, null, null]);
++      const status = field === "bdp-scope-epoch" ? 410 : 409;
++      expect(result.response.status).toBe(status);
++      expect(result.response.headers.has("x-bdp-development-limit")).toBe(false);
++      expect(context(result.response)).toStrictEqual(current);
++      if (method === "HEAD") expect(result.text).toBe("");
++      else expect(checkedProblem(record(JSON.parse(result.text)))).toMatchObject({
++        status, code: "cursor-expired",
++      });
+     }
+     // Shared receiving/auth fences; these rows do not observe the receipt owner.
+     const malformed = await get("GET", "owned-root", root, {
+@@ -5980,7 +6007,7 @@ it("serves opaque receipt root minima before HTTP shortcuts with private fences"
+     expect(checkedProblem(record(JSON.parse(anonymous.text))).code).toBe("unauthenticated");
+     expect(Object.values(context(anonymous.response))).toStrictEqual([null, null, null]);
+     expect(responses.map(({ status }) => status)).toStrictEqual([
+-      200, 503, 503, 503, 500, 500, 400, 404, 404, 401,
++      200, 503, 503, 503, 410, 409, 400, 404, 404, 401,
+     ]);
+     expect(waits).toBe(3);
+     await f.runtime.close();
+@@ -5996,3 +6023,172 @@ it("serves opaque receipt root minima before HTTP shortcuts with private fences"
+     await f.runtime.close();
+   }
+ });
++
++it("serves current observation minimums with actual issued pages and HTTP parity", async () => {
++  const started = performance.now();
++  const scope = "https://current-observation.invalid/acme/";
++  const beadType = `${scope}types/task`, linkType = `${scope}types/relation`;
++  const directory = mkdtempSync(path.join(tmpdir(), "bdp-current-observation-http-"));
++  let tick = 0, waits = 0, attempted = 0, closed = false;
++  let runtime: Awaited<ReturnType<typeof startTransactionRuntime>> | undefined;
++  const failures: unknown[] = [];
++  const responses: { label: string; method: string; url: string; status: number; bytes: number; headers: Record<string, string | null> }[] = [];
++  const contextNames = ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"] as const;
++  const granted = new Set([`${scope}operations/batch`, `${scope}operations/update-where`, `${scope}types/task`, `${scope}types/`, `${scope}types/missing`, `${scope}beads/r00?view=links`, `${scope}beads/missing?view=links`]);
++  const seedBody = JSON.stringify({ operations: Array.from({ length: 32 }, (_, n) => ({
++    operation: "createBead", id: `beads/r${String(n).padStart(2, "0")}`, type: beadType, properties: { n: 0 },
++  })) });
++  const setBody = JSON.stringify({ collection: "beads", selector: `$[?@.type == "${beadType}"]`, cardinality: { min: 32, max: 32 }, change: [{ op: "replace", path: "/n", value: 1 }] });
++  try {
++    runtime = await startTransactionRuntime({
++      directory, scope, port: 0, create: true,
++      types: [parseTypeDescriptor({ id: beadType, name: "Task", describes: "bead", conformsTo: [] }), parseTypeDescriptor({ id: linkType, name: "Relation", describes: "link", conformsTo: [], source: { conformsTo: [beadType], external: "opaque" }, target: { conformsTo: [beadType], external: "opaque" } })],
++      credentials: [{ token, principal: "p", canMutate: true }, { token: otherToken, principal: "other", canMutate: false }],
++    }, { receiptMaximumItems: 2, minimumReads: { budgetMs: 2, now: () => tick++, wait: async () => { waits++; } } });
++    const listenUrl = runtime.listenUrl;
++    const exchange = async (label: string, method: "GET" | "HEAD" | "POST", url: string, fields: string[] = [], credential: "writer" | "other" | "anonymous" = "writer", requestBody?: string, key?: string) => {
++      if (attempted >= 37 || !granted.has(url)) throw new Error("unbound or excess current observation request");
++      attempted++;
++      const target = new URL(url);
++      expect(target.origin).toBe(new URL(scope).origin);
++      const headers = new Headers({ accept: "application/json", host: new URL(scope).host });
++      if (credential !== "anonymous") headers.set("authorization", `Bearer ${credential === "writer" ? token : otherToken}`);
++      if (requestBody !== undefined) { headers.set("content-type", "application/json"); headers.set("idempotency-key", key ?? "missing-key"); }
++      for (let i = 0; i < fields.length; i += 2) headers.set(fields[i]!, fields[i + 1]!);
++      const response = await fetch(new URL(target.pathname + target.search, listenUrl), { method, headers, ...(requestBody === undefined ? {} : { body: requestBody }), signal: AbortSignal.timeout(5000), redirect: "manual" });
++      const text = await response.text(), bytes = Buffer.byteLength(text);
++      expect(response.headers.get("x-bdp-development")).toBe("non-attesting");
++      responses.push({ label, method, url, status: response.status, bytes, headers: Object.fromEntries([...contextNames, "content-type", "content-length", "retry-after", "cache-control", "x-bdp-development-limit"].map((name) => [name, response.headers.get(name)])) });
++      return { status: response.status, headers: response.headers, text, bytes };
++    };
++    type WireResponse = Awaited<ReturnType<typeof exchange>>;
++    const context = (response: WireResponse) => contextNames.map((name) => response.headers.get(name));
++    const problem = (response: WireResponse, status: number, code: string) => {
++      expect(response.status).toBe(status);
++      expect(response.headers.get("content-type")).toBe("application/problem+json");
++      const value = checkedProblem(record(JSON.parse(response.text)));
++      expect(value).toMatchObject({ status, code });
++      return value;
++    };
++    const receiptResults = (value: Record<string, unknown>) => {
++      if (!Array.isArray(value.results)) throw new Error("receipt results required");
++      return value.results;
++    };
++    const receipt = (response: WireResponse, key: string, position: string) => {
++      expect(response.status).toBe(200);
++      const value = record(JSON.parse(response.text));
++      expect(validateSelectorReceipt(value), JSON.stringify(validateSelectorReceipt.errors)).toBe(true);
++      expect(value).toMatchObject({ status: "completed", idempotencyKey: key, requiredPosition: position, effectPosition: position });
++      expect(context(response)[2]).toBe(position);
++      return value;
++    };
++    const seed = await exchange("seed", "POST", `${scope}operations/batch`, [], "writer", seedBody, "current-observation-seed");
++    const seeded = receipt(seed, "current-observation-seed", "pos-1");
++    expect(receiptResults(seeded)).toHaveLength(2);
++    const updated = await exchange("issue-page", "POST", `${scope}operations/update-where`, [], "writer", setBody, "current-observation-update");
++    const paged = receipt(updated, "current-observation-update", "pos-2");
++    const pageUrl = paged.next;
++    if (typeof pageUrl !== "string" || typeof paged.id !== "string") throw new Error("actual second mutation page required");
++    const parsedPage = new URL(pageUrl);
++    expect(parsedPage.origin).toBe(new URL(scope).origin);
++    expect([parsedPage.search, parsedPage.hash, parsedPage.username, parsedPage.password]).toEqual(["", "", "", ""]);
++    expect(pageUrl.startsWith(`${paged.id}/pages/`)).toBe(true);
++    expect(pageUrl.slice(`${paged.id}/pages/`.length)).toMatch(/^[A-Za-z0-9_-]+$/);
++    granted.add(pageUrl);
++    const linked = await exchange("link", "POST", `${scope}operations/batch`, [], "writer", JSON.stringify({ operations: [{
++      operation: "createLink", id: "links/l", type: linkType,
++      source: "beads/r00", target: "beads/r01", properties: { n: 0 },
++    }] }), "current-observation-link");
++    receipt(linked, "current-observation-link", "pos-3");
++    const expectedContext = context(linked);
++    expect(expectedContext.slice(0, 2)).toEqual(context(seed).slice(0, 2));
++    const minimum = (position: string, epoch = expectedContext[0]!, view = expectedContext[1]!) => [
++      "BDP-Minimum-Scope-Position", position, "BDP-Scope-Epoch", epoch, "BDP-Authorization-View", view,
++    ];
++    const validType = ajv.compile({ $ref: `${schema.$id}#/$defs/typeDescriptor` });
++    const validTypes = ajv.compile({ $ref: `${schema.$id}#/$defs/typesInventory` });
++    const validLinks = ajv.compile({ $ref: `${schema.$id}#/$defs/currentLinkCollection` });
++    const validPage = ajv.compile({ $ref: `${schema.$id}#/$defs/mutationReceiptPage` });
++    const pair = async (label: string, url: string, fields: string[], status: number, code: string) => {
++      const get = await exchange(`${label}-get`, "GET", url, [...fields, ...(status === 503 ? ["If-None-Match", "*"] : [])]);
++      const head = await exchange(`${label}-head`, "HEAD", url, [...fields, ...(status === 503 ? ["If-Match", '"mismatch"', "Accept", "image/png"] : [])]);
++      problem(get, status, code);
++      expect(head.status).toBe(status);
++      expect(head.text).toBe("");
++      expect(head.bytes).toBe(0);
++      expect(get.bytes).toBeGreaterThan(0);
++      expect(get.headers.get("content-length")).toBe(String(get.bytes));
++      for (const name of ["content-length", "content-type", "cache-control", "retry-after", ...contextNames])
++        expect(head.headers.get(name), name).toBe(get.headers.get(name));
++      for (const response of [get, head]) {
++        expect(context(response)).toEqual(expectedContext);
++        expect(response.headers.get("content-type")).toBe("application/problem+json");
++        expect(response.headers.get("cache-control")).toBe("private, no-store");
++        expect(response.headers.has("x-bdp-development-limit")).toBe(false);
++        if (status === 503) expect(response.headers.get("retry-after")).toBe("1");
++      }
++    };
++    for (const [label, target] of [["type", `${scope}types/task`], ["types", `${scope}types/`], ["incident", `${scope}beads/r00?view=links`], ["page", pageUrl]] as const) {
++      const known = await exchange(`${label}-known`, "GET", target, minimum("pos-3"));
++      expect(known.status).toBe(200);
++      expect(context(known)).toEqual(expectedContext);
++      const value = record(JSON.parse(known.text));
++      const validate = label === "type" ? validType : label === "types" ? validTypes : label === "incident" ? validLinks : validPage;
++      expect(validate(value), JSON.stringify(validate.errors)).toBe(true);
++      if (label === "type") expect(value).toMatchObject({ id: beadType, describes: "bead" });
++      else if (label === "types") {
++        expect(value.items).toEqual([
++          { id: linkType, name: "Relation", describes: "link" },
++          { id: beadType, name: "Task", describes: "bead" },
++        ]);
++        expect(value.next).toBeNull();
++      } else if (label === "incident") {
++        expect(value).toMatchObject({ items: [{ id: `${scope}links/l`, type: linkType, source: `${scope}beads/r00`, target: `${scope}beads/r01` }], next: null });
++      } else {
++        expect(value.receipt).toBe(paged.id);
++        if (!Array.isArray(value.results) || value.results.length === 0) throw new Error("nonempty real page required");
++        for (const result of value.results) expect(record(result)).toMatchObject({ outcome: "updated", resource: { type: beadType, properties: { n: 1 } } });
++        expect(paged.requiredPosition).toBe("pos-2");
++      }
++      await pair(`${label}-opaque`, target, minimum("opaque"), 503, "catch-up-timeout");
++      await pair(`${label}-epoch`, target, minimum("opaque", "foreign", expectedContext[1]!), 410, "cursor-expired");
++      await pair(`${label}-view`, target, minimum("opaque", expectedContext[0]!, "foreign"), 409, "foreign-view");
++    }
++    await pair("missing-type", `${scope}types/missing`, minimum("opaque"), 503, "catch-up-timeout");
++    const missingIncident = await exchange("missing-incident", "GET", `${scope}beads/missing?view=links`, minimum("opaque"));
++    const otherPage = await exchange("other-page", "GET", pageUrl, minimum("opaque"), "other");
++    for (const response of [missingIncident, otherPage]) {
++      problem(response, 404, "resource-not-found");
++      expect(context(response)).toEqual(expectedContext);
++      expect(response.headers.has("x-bdp-development-limit")).toBe(false);
++    }
++    const malformed = await exchange("malformed-page", "GET", pageUrl, ["BDP-Minimum-Scope-Position", "opaque"]);
++    problem(malformed, 400, "malformed-request");
++    expect(context(malformed)).toEqual([null, null, null]);
++    const anonymous = await exchange("anonymous-page", "GET", pageUrl, minimum("opaque"), "anonymous");
++    problem(anonymous, 401, "unauthenticated");
++    expect(context(anonymous)).toEqual([null, null, null]);
++    expect(attempted).toBe(37);
++    expect(responses).toHaveLength(37);
++    expect(Object.fromEntries([200, 503, 410, 409, 404, 400, 401].map((status) => [status, responses.filter((r) => r.status === status).length]))).toEqual({ 200: 7, 503: 10, 410: 8, 409: 8, 404: 2, 400: 1, 401: 1 });
++    expect(Object.fromEntries(["POST", "GET", "HEAD"].map((method) => [method, responses.filter((r) => r.method === method).length]))).toEqual({ POST: 3, GET: 21, HEAD: 13 });
++    expect(waits).toBe(10);
++  } catch (error) { failures.push(error); }
++  finally {
++    let closeTimer: ReturnType<typeof setTimeout> | undefined;
++    try {
++      if (runtime) {
++        const closing = runtime.close();
++        void closing.catch((error: unknown) => { failures.push(error); });
++        await Promise.race([closing, new Promise<never>((_, reject) => {
++          closeTimer = setTimeout(() => reject(new Error("current observation HTTP close timeout")), 1000);
++        })]);
++        closed = true;
++      }
++    } catch (error) { failures.push(error); }
++    finally { clearTimeout(closeTimer); }
++    if (closed) rmSync(directory, { recursive: true, force: true });
++    console.log(JSON.stringify({ observation: "current-observation-http", elapsedMs: performance.now() - started, attempted, responses, waits, clockCalls: tick, closed, directory, directoryAbsent: !existsSync(directory), failureCount: failures.length }));
++  }
++  if (failures.length) throw new AggregateError(failures, "current observation HTTP and cleanup failed");
++});
+diff --git a/packages/server/src/transaction-http.ts b/packages/server/src/transaction-http.ts
+index 2f01f38..5b4c3fd 100644
+--- a/packages/server/src/transaction-http.ts
++++ b/packages/server/src/transaction-http.ts
+@@ -570,7 +570,7 @@ export function createTransactionHttpHandler(
+       const access = { kind: "authenticated" as const, principal: authorization.principal };
+       if (url.pathname.slice(`${scopeUrl.pathname}receipts/`.length).includes("/pages/")) {
+         const minimum = hasMinimumControls(request)
+-          ? transactionMinimumHeaders(request.headers)
++          ? currentReadMinimumHeaders(request.headers)
+           : undefined;
+         const page = await service.receiptPage(
+           access,
+diff --git a/packages/server/src/transaction-read.test.ts b/packages/server/src/transaction-read.test.ts
+index 5f7db35..e996106 100644
+--- a/packages/server/src/transaction-read.test.ts
++++ b/packages/server/src/transaction-read.test.ts
+@@ -15,12 +15,10 @@ import {
+   createTransactionReadPlane,
+   currentReadMinimumKind,
+   transactionReadContexts,
+-  TransactionMinimumVisibilityGap,
+ } from "./transaction-read.js";
+ import {
+   TransactionMinimumFailure,
+   TransactionMinimumUnproved,
+-  TransactionMinimumUnsupported,
+ } from "./transaction-consistency.js";
+ import { createTransactionService } from "./transaction-service.js";
+ import { createTransactionHttpHandler } from "./transaction-http.js";
+@@ -1684,7 +1682,9 @@ describe("current Type and incident-Link minimums", () => {
+         if (request.kind === "resource") {
+           await expect(
+             plane.minimumFor(principal, { ...f.minimum(), ...patch }).perform(request),
+-          ).rejects.toBeInstanceOf(TransactionMinimumVisibilityGap);
++          ).rejects.toMatchObject({
++            reason: "minimumPosition" in patch ? "behind" : "scopeEpoch" in patch ? "cursor-expired" : "foreign-view",
++          });
+         } else {
+           const missing = await plane
+             .minimumFor(principal, { ...f.minimum(), ...patch })
+@@ -2523,7 +2523,7 @@ describe("current alias minimum subset", () => {
+     f.reset();
+     let performCalls = 0;
+     performCalls++;
+-    await expect(facet.perform(request)).rejects.toBeInstanceOf(TransactionMinimumUnsupported);
++    await expect(facet.perform(request)).rejects.toMatchObject({ reason: "catch-up-timeout" });
+     performCalls++;
+     const missing = await facet.perform({ kind: "bead-links", bead: url("beads/missing") });
+     expect(missing).toMatchObject({
+@@ -2532,11 +2532,11 @@ describe("current alias minimum subset", () => {
+     });
+     expect(contexts(missing).current.scopePosition).toBe("pos-1");
+     expect([f.entries.length, f.mappings.length, waits, clockCalls, f.writes]).toEqual([
+-      2, 0, 0, 2, 2,
++      3, 0, 1, 4, 2,
+     ]);
+     console.log(
+       JSON.stringify({
+-        observation: "alias-minimum-incident-fence",
++        observation: "current-minimum-incident-wait",
+         performCalls,
+         entries: f.entries,
+         aliasLookups: f.mappings.length,
+diff --git a/packages/server/src/transaction-read.ts b/packages/server/src/transaction-read.ts
+index 7dc2c20..a60f7d9 100644
+--- a/packages/server/src/transaction-read.ts
++++ b/packages/server/src/transaction-read.ts
+@@ -85,7 +85,7 @@ function dataOnlyReadRequest(request: ReadRequest): boolean {
+ /** Classify only own data fields. Authority receiving still validates the full request. */
+ export function currentReadMinimumKind(
+   request: ReadRequest,
+-): "resource" | "missing" | "initial-collection" | "strict" {
++): "resource" | "missing" | "initial-collection" | "type" | "initial-types" | "strict" {
+   if (isProxy(request) || !request || typeof request !== "object") return "strict";
+   const fields = Object.getOwnPropertyDescriptors(request);
+   const data = (key: string): unknown => {
+@@ -98,6 +98,13 @@ export function currentReadMinimumKind(
+   )
+     return "resource";
+   if (data("kind") === "bead-links" && data("continuation") === undefined) return "missing";
++  if (data("kind") === "resource" && data("resource") === "type") return "type";
++  if (
++    data("kind") === "collection" &&
++    data("collection") === "types" &&
++    data("continuation") === undefined
++  )
++    return "initial-types";
+   if (
+     data("kind") === "collection" &&
+     (data("collection") === "beads" || data("collection") === "links") &&
+@@ -214,6 +221,10 @@ export function createTransactionReadPlane(
+       const current = transactionReadContexts(observation).current;
+       if (refusal?.code === "resource-not-found") {
+         if (kind === "resource" || kind === "missing" || kind === "alias") return;
++        if (kind === "type") {
++          checkCurrentReadMinimum(minimum, current, true);
++          return;
++        }
+         try {
+           checkCurrentReadMinimum(minimum, current, false);
+           return;
+@@ -231,11 +242,7 @@ export function createTransactionReadPlane(
+           throw error;
+         }
+       }
+-      checkCurrentReadMinimum(
+-        minimum,
+-        current,
+-        kind === "resource" || kind === "initial-collection" || kind === "alias",
+-      );
++      checkCurrentReadMinimum(minimum, current, kind !== "strict");
+     },
+     captureReadAuthorization: (reader, principal) => {
+       const policy = owner.captureReadAuthorization(reader, principal);
+diff --git a/packages/server/src/transaction-receipt-pages.test.ts b/packages/server/src/transaction-receipt-pages.test.ts
+index a1c7b22..c607162 100644
+--- a/packages/server/src/transaction-receipt-pages.test.ts
++++ b/packages/server/src/transaction-receipt-pages.test.ts
+@@ -1,3 +1,4 @@
++import { TransactionMinimumFailure, TransactionMinimumUnproved, type TransactionMinimum } from "./transaction-consistency.js";
+ import { DatabaseSync } from "node:sqlite";
+ import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+ import { tmpdir } from "node:os";
+@@ -336,3 +337,51 @@ it("captures immutable current context for nondisclosable receipt pages before m
+     }),
+   ).toThrow("foreign-view");
+ });
++
++it("preserves receipt page detail when lexical eligibility is unproved", () => {
++  const f = fixture();
++  const seed = f.owner.executeObserved(f.claim()), page = pageUrl(seed.receipt.next);
++  const minimum = { scopeEpoch: seed.context.scopeEpoch, authorizationView: seed.context.authorizationView, minimumPosition: "opaque" };
++  let calls = 0, offlineInspections = 0, ownerOpens = 1;
++  const rows: { label: string; outcome: string; context: unknown }[] = [];
++  const read = (label: string, principal: string, target: string, tuple: TransactionMinimum) => {
++    calls++;
++    try {
++      const result = f.owner.readReceiptPage(principal, target, tuple);
++      rows.push({ label, outcome: result.kind, context: "context" in result ? result.context : null });
++      return result;
++    } catch (error) {
++      rows.push({ label, outcome: error instanceof TransactionMinimumFailure ? error.reason : error instanceof TransactionMinimumUnproved ? "unproved" : "unexpected", context: error instanceof TransactionMinimumFailure || error instanceof TransactionMinimumUnproved ? error.context : null });
++      throw error;
++    }
++  };
++  expect(read("known", "p", page, { ...minimum, minimumPosition: "pos-1" })).toMatchObject({ kind: "page", context: seed.context });
++  for (const token of ["opaque", "pos-01"])
++    expect(() => read(token, "p", page, { ...minimum, minimumPosition: token })).toThrow(TransactionMinimumUnproved);
++  for (const [patch, reason] of [[{ scopeEpoch: "foreign" }, "cursor-expired"], [{ authorizationView: "foreign" }, "foreign-view"]] as const)
++    expect(() => read(reason, "p", page, { ...minimum, ...patch })).toThrow(expect.objectContaining({ reason, context: seed.context }));
++  expect(read("other-principal", "other", page, minimum)).toMatchObject({ kind: "missing", context: seed.context });
++  expect(read("unknown-page", "p", `${seed.receipt.id}/pages/unknown`, minimum)).toMatchObject({ kind: "missing", context: seed.context });
++  const inventory = (db: DatabaseSync) => ({
++    receipts: db.prepare("SELECT * FROM receipts ORDER BY principal,key").all(),
++    plans: db.prepare("SELECT * FROM receipt_pages ORDER BY receipt,principal").all(),
++    ranges: db.prepare("SELECT * FROM receipt_page_ranges ORDER BY receipt,start").all(),
++  });
++  let baseline: ReturnType<typeof inventory> | undefined, after: ReturnType<typeof inventory> | undefined;
++  f.raw((db) => { offlineInspections++; baseline = inventory(db); });
++  f.reopen();
++  ownerOpens++;
++  // No asynchronous yield until the second offline comparison: maintenance uses this clock.
++  f.time(86401001);
++  expect(() => read("past-expiry", "p", page, minimum)).toThrow(TransactionMinimumUnproved);
++  f.raw((db) => { offlineInspections++; after = inventory(db); });
++  expect(after).toEqual(baseline);
++  if (!after) throw new Error("offline receipt inventory missing");
++  expect(after.receipts).toHaveLength(1);
++  expect(after.plans).toHaveLength(1);
++  expect(after.ranges.length).toBeGreaterThan(0);
++  expect(JSON.parse(String(after.receipts[0]!.receipt)).detail).not.toBe("expired");
++  expect([calls, ownerOpens, offlineInspections]).toEqual([8, 2, 2]);
++  rmSync(path.dirname(f.options.file), { recursive: true, force: true });
++  console.log(JSON.stringify({ observation: "current-observation-page-retention", calls, ownerOpens, offlineInspections, rows, payloadUnchanged: true, closed: true }));
++});
+diff --git a/packages/server/src/transaction-service.test.ts b/packages/server/src/transaction-service.test.ts
+index ab43476..25c0272 100644
+--- a/packages/server/src/transaction-service.test.ts
++++ b/packages/server/src/transaction-service.test.ts
+@@ -8,7 +8,7 @@ import {
+ import { ScopeServerOperationAbortedError, requestFromUrl } from "./read-request.js";
+ import { DatabaseSync } from "node:sqlite";
+ import { spawnSync } from "node:child_process";
+-import { mkdtempSync, rmSync } from "node:fs";
++import { existsSync, mkdtempSync, rmSync } from "node:fs";
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+ import { afterEach, describe, expect, it, vi } from "vitest";
+@@ -1724,7 +1724,7 @@ describe("internal discovery minimum observation", () => {
+     const f = tracked({ now: () => 0, wait });
+     const assemble = vi.spyOn(discoveryAssembly, "assembleTransactionDiscovery");
+     expect(() =>
+-      f.service.discoveryObserved({ ...f.minimum(), minimumPosition: "pos-02" }),
++      f.service.discoveryObserved({ ...f.minimum(), minimumPosition: "two tokens" }),
+     ).toThrow("unsupported minimum tuple");
+     expect(f.entries()).toBe(0);
+     let nested: Promise<unknown> | undefined;
+@@ -3762,3 +3762,283 @@ it("drains an opaque receipt root wait before closing its owner", async () => {
+     await service.close();
+   }
+ });
++
++// Callback-local observer counters; construction, mutation and explicit probes are separate.
++const currentObservationSurfaces = ["type", "types", "incident", "page", "discovery"] as const;
++type CurrentObservationSurface = (typeof currentObservationSurfaces)[number];
++function currentObservationFixture(policy: NonNullable<TransactionServiceOptions["minimumReads"]>) {
++  const localBead = `${scope}types/task`, localLink = `${scope}types/relation`;
++  const boundary = cleanup.length;
++  const f = fixture({
++    receiptMaximumItems: 2,
++    types: [
++      parseTypeDescriptor({ id: localBead, name: "Task", describes: "bead", conformsTo: [] }),
++      parseTypeDescriptor({
++        id: localLink, name: "Relation", describes: "link", conformsTo: [],
++        source: { conformsTo: [localBead], external: "opaque" },
++        target: { conformsTo: [localBead], external: "opaque" },
++      }),
++    ],
++  });
++  const owner = f.owner;
++  let recording = false, attempts = 0, mutations = 0, closeCalls = 0, closed = false;
++  const entries: { method: string; context: unknown; minimum: unknown }[] = [];
++  const delegate = {
++    ...owner,
++    withRead: ((callback: Parameters<typeof owner.withRead>[0]) => {
++      if (recording) attempts++;
++      return owner.withRead((reader, context) => {
++        if (recording) entries.push({ method: "withRead", context, minimum: null });
++        return callback(reader, context);
++      });
++    }) as typeof owner.withRead,
++    readReceiptPage(...args: Parameters<typeof owner.readReceiptPage>) {
++      if (recording) attempts++;
++      try {
++        const result = owner.readReceiptPage(...args);
++        if (recording) entries.push({ method: "readReceiptPage", context: "context" in result ? result.context : null, minimum: args[2] ?? null });
++        return result;
++      } catch (error) {
++        if (recording) entries.push({ method: "readReceiptPage", context: error instanceof TransactionMinimumFailure || error instanceof TransactionMinimumUnproved ? error.context : null, minimum: args[2] ?? null });
++        throw error;
++      }
++    },
++    close() {
++      closeCalls++;
++      owner.close();
++      closed = true;
++    },
++  };
++  const service = createTransactionService(delegate, {
++    ownerLifetime: "service",
++    read: {
++      ...f.read,
++      advertisedLimits: { ...f.read.advertisedLimits, page: { defaultItems: 2, maximumItems: 2 } },
++      pagination: { ...f.read.pagination, maxPageItems: 2 },
++    },
++    minimumReads: policy,
++  });
++  // Transfer cleanup only after successful construction. Unknown close retains the directory.
++  cleanup.splice(boundary);
++  const localCreate = (id: string) => ({ ...create(id), type: localBead });
++  const submit = async (operations: unknown[], key: string) => {
++    mutations++;
++    return requireReceipt(await service.submit(batch(operations, key)));
++  };
++  const invoke = (surface: CurrentObservationSurface, minimum: TransactionMinimum, page: string, target?: string, principal = "p") => {
++    if (surface === "page") return service.receiptPage({ kind: "authenticated", principal }, target ?? page, minimum);
++    if (surface === "discovery") return service.discoveryObserved(minimum);
++    const request = requestFromUrl(new URL(target ?? (surface === "type" ? "types/task" : surface === "types" ? "types/" : "beads/a?view=links"), scope), scope);
++    if (isReadProblem(request)) throw new Error("invalid current observation fixture route");
++    return service.readAtMinimum({ kind: "authenticated", principal }, minimum).perform(request);
++  };
++  return {
++    owner, service, invoke, submit, localCreate, entries,
++    async seed() {
++      return submit([localCreate("a"), localCreate("b"), {
++        operation: "createLink", id: "links/l", type: localLink,
++        source: "beads/a", target: "beads/b", properties: {},
++      }], "current-observation-seed");
++    },
++    record(value: boolean) { recording = value; },
++    counts: () => ({ attempts, mutations, closeCalls, closed }),
++    remove() {
++      if (!closed) throw new Error("current observation owner close unproved");
++      rmSync(path.dirname(f.options.file), { recursive: true, force: true });
++      return !existsSync(path.dirname(f.options.file));
++    },
++  };
++}
++function currentObservationPage(value: ReturnType<typeof requireReceipt>) {
++  if (typeof value.receipt.next !== "string") throw new Error("actual issued page required");
++  return value.receipt.next;
++}
++async function currentObservationBound<T>(promise: Promise<T>, label: string): Promise<T> {
++  let timer: ReturnType<typeof setTimeout> | undefined;
++  try {
++    return await Promise.race([promise, new Promise<never>((_, reject) => {
++      timer = setTimeout(() => reject(new Error(label)), 1000);
++    })]);
++  } finally {
++    clearTimeout(timer);
++  }
++}
++it("waits for lexical current observations and preserves captured tuples across real progress", async () => {
++  let tick = 0, waits = 0, operations = 0;
++  let changing: { scopeEpoch: string; authorizationView: string; minimumPosition: string } | undefined;
++  let current: ReturnType<typeof requireReceipt>["context"];
++  const f = currentObservationFixture({ budgetMs: 2, now: () => tick++, wait: async () => {
++    waits++;
++    if (waits === 1) {
++      const advanced = await f.submit([f.localCreate("c")], "current-observation-advance");
++      current = advanced.context;
++      if (!changing) throw new Error("missing mutable tuple");
++      changing.minimumPosition = current.scopePosition;
++      changing.scopeEpoch = "caller-mutated";
++    }
++  } });
++  const rows: { surface: string; minimum: string; outcome: string; context: unknown }[] = [];
++  const failures: unknown[] = [];
++  let directoryAbsent = false;
++  try {
++    const seed = await f.seed(), page = currentObservationPage(seed);
++    current = seed.context;
++    const assemble = vi.spyOn(discoveryAssembly, "assembleTransactionDiscovery");
++    f.record(true);
++    for (const surface of currentObservationSurfaces) {
++      for (const label of ["opaque", "pos-01", "known", "epoch", "view"] as const) {
++        const minimum = {
++          scopeEpoch: label === "epoch" ? "foreign" : current.scopeEpoch,
++          authorizationView: label === "view" ? "foreign" : current.authorizationView,
++          minimumPosition: label === "known" ? current.scopePosition : label === "pos-01" ? "pos-01" : "opaque",
++        };
++        if (operations === 0) changing = minimum;
++        operations++;
++        if (label === "known") {
++          const result = await f.invoke(surface, minimum, page);
++          expect(result).toBeDefined();
++          if (surface === "page") expect(result).toMatchObject({ kind: "page", context: current });
++          else if (surface === "discovery") expect(result).toMatchObject({ context: current });
++          else expect(result).not.toMatchObject({ kind: "problem" });
++          const observedContext = f.entries.at(-1)?.context;
++          expect(observedContext).toEqual(current);
++          rows.push({ surface, minimum: label, outcome: "success", context: observedContext });
++        } else {
++          const failure: unknown = await f.invoke(surface, minimum, page).catch((error: unknown) => error);
++          expect(failure).toBeInstanceOf(TransactionMinimumFailure);
++          const reason = label === "epoch" ? "cursor-expired" : label === "view" ? "foreign-view" : "catch-up-timeout";
++          expect(failure).toMatchObject({ reason, context: current });
++          rows.push({ surface, minimum: label, outcome: reason, context: failure instanceof TransactionMinimumFailure ? failure.context : null });
++        }
++      }
++    }
++    expect(assemble).toHaveBeenCalledTimes(1);
++    expect([operations, f.counts().attempts, waits, tick, f.counts().mutations]).toEqual([25, 35, 10, 45, 2]);
++  } catch (error) { failures.push(error); }
++  finally {
++    f.record(false);
++    try { await currentObservationBound(f.service.close(), "current observation close timeout"); directoryAbsent = f.remove(); }
++    catch (error) { failures.push(error); }
++    console.log(JSON.stringify({ observation: "current-observation-service", operations, entries: f.entries, waits, clockCalls: tick, rows, ...f.counts(), directoryAbsent, failureCount: failures.length }));
++  }
++  if (failures.length) throw new AggregateError(failures, "current observation and cleanup failed");
++});
++it("orders Type refusal and receipt page nondisclosure before projection", async () => {
++  let tick = 0, waits = 0, operations = 0, liveProbes = 0, policyReplacements = 0;
++  const f = currentObservationFixture({ budgetMs: 2, now: () => tick++, wait: async () => { waits++; } });
++  const rows: { label: string; outcome: string }[] = [];
++  const failures: unknown[] = [];
++  let directoryAbsent = false;
++  try {
++    const seed = await f.seed(), page = currentObservationPage(seed);
++    const minimum = { scopeEpoch: seed.context.scopeEpoch, authorizationView: seed.context.authorizationView, minimumPosition: "opaque" };
++    f.record(true);
++    const run = async (label: string, invoke: () => Promise<unknown>, expected: string) => {
++      operations++;
++      const value = await invoke().then((result) => result, (error: unknown) => error);
++      if (["catch-up-timeout", "cursor-expired", "foreign-view"].includes(expected)) {
++        expect(value).toBeInstanceOf(TransactionMinimumFailure);
++        expect(value).toMatchObject({ reason: expected });
++      } else if (expected === "malformed") expect(value).toBeInstanceOf(TypeError);
++      else if (expected === "unauthenticated") expect(value).toMatchObject({ kind: "refused", code: expected });
++      else if (label.includes("page")) expect(value).toMatchObject({ kind: "refused", code: "resource-not-found" });
++      else expect(value).toMatchObject({ kind: "problem", problem: { status: 404, code: "resource-not-found" } });
++      rows.push({ label, outcome: expected });
++    };
++    for (const [label, patch, result] of [
++      ["known", { minimumPosition: "pos-1" }, "missing"],
++      ["opaque", {}, "catch-up-timeout"],
++      ["epoch", { scopeEpoch: "foreign" }, "cursor-expired"],
++      ["view", { authorizationView: "foreign" }, "foreign-view"],
++    ] as const)
++      await run(`missing-type-${label}`, () => f.invoke("type", { ...minimum, ...patch }, page, "types/absent"), result);
++    await run("missing-incident", () => f.invoke("incident", minimum, page, "beads/missing?view=links"), "missing");
++    await run("foreign-page", () => f.invoke("page", minimum, page, page, "other"), "missing");
++    await run("unknown-page", () => f.invoke("page", minimum, page, `${seed.receipt.id}/pages/unknown`), "missing");
++    await run("anonymous-page", () => f.service.receiptPage({ kind: "unauthenticated" }, page, minimum), "unauthenticated");
++    await run("malformed-page", () => f.service.receiptPage(access, page, { ...minimum, minimumPosition: "two tokens" }), "malformed");
++    f.record(false);
++    policyReplacements++;
++    await f.service.replaceAuthorizationPolicy({ timeoutMs: 1000 });
++    liveProbes++;
++    const observed = f.owner.withRead((_reader, context) => context);
++    if (observed.kind !== "read") throw new Error("actual hidden context required");
++    const hidden = { ...minimum, authorizationView: observed.value.authorizationView };
++    f.record(true);
++    for (const [label, patch, result] of [
++      ["known", { minimumPosition: observed.value.scopePosition }, "missing"],
++      ["opaque", {}, "catch-up-timeout"],
++      ["view", { authorizationView: "foreign" }, "foreign-view"],
++    ] as const)
++      await run(`hidden-type-${label}`, () => f.invoke("type", { ...hidden, ...patch }, page), result);
++    expect([operations, f.counts().attempts, waits, tick, liveProbes, policyReplacements, f.counts().mutations]).toEqual([12, 12, 2, 14, 1, 1, 1]);
++  } catch (error) { failures.push(error); }
++  finally {
++    f.record(false);
++    try { await currentObservationBound(f.service.close(), "current nondisclosure close timeout"); directoryAbsent = f.remove(); }
++    catch (error) { failures.push(error); }
++    console.log(JSON.stringify({ observation: "current-observation-nondisclosure", operations, entries: f.entries, waits, clockCalls: tick, liveProbes, policyReplacements, rows, ...f.counts(), directoryAbsent, failureCount: failures.length }));
++  }
++  if (failures.length) throw new AggregateError(failures, "current nondisclosure and cleanup failed");
++});
++it.each(currentObservationSurfaces)("drains lexical current observation %s before close", async (surface) => {
++  let now = 0, clockCalls = 0, waits = 0, operations = 0, liveProbes = 0, postCloseProbes = 0;
++  let settled = false, closeSettled = false;
++  const entered = Promise.withResolvers<void>(), release = Promise.withResolvers<void>();
++  const f = currentObservationFixture({ budgetMs: 2, now: () => { clockCalls++; return now; }, wait: async () => { waits++; entered.resolve(); await release.promise; } });
++  type Outcome = { ok: true; value: unknown } | { ok: false; error: unknown };
++  let observed: Promise<Outcome> | undefined, closing: Promise<Outcome> | undefined;
++  const failures: unknown[] = [];
++  let directoryAbsent = false;
++  const close = () => {
++    if (!closing) closing = f.service.close().then(
++      (value) => { closeSettled = true; return { ok: true as const, value }; },
++      (error: unknown) => { closeSettled = true; return { ok: false as const, error }; },
++    );
++    return closing;
++  };
++  try {
++    const seed = await f.seed(), page = currentObservationPage(seed);
++    const minimum = { scopeEpoch: seed.context.scopeEpoch, authorizationView: seed.context.authorizationView, minimumPosition: "opaque" };
++    f.record(true);
++    operations++;
++    observed = f.invoke(surface, minimum, page).then(
++      (value) => { settled = true; return { ok: true as const, value }; },
++      (error: unknown) => { settled = true; return { ok: false as const, error }; },
++    );
++    const entry = await currentObservationBound(Promise.race([
++      entered.promise.then(() => "entered" as const),
++      observed.then(() => "settled" as const),
++    ]), "current observation wait entry timeout");
++    expect(entry).toBe("entered");
++    expect(settled).toBe(false);
++    liveProbes++;
++    expect(f.owner.withRead(() => true)).toEqual({ kind: "read", value: true });
++    close();
++    await Promise.resolve();
++    expect(closeSettled).toBe(false);
++    operations++;
++    // All selected methods check service admission synchronously at invocation.
++    expect(() => f.invoke(surface, minimum, page)).toThrow("closing or closed");
++  } catch (error) { failures.push(error); }
++  finally {
++    now = 2;
++    release.resolve();
++    if (observed) {
++      try {
++        const outcome = await currentObservationBound(observed, "current observation settlement timeout");
++        expect(outcome).toMatchObject({ ok: false, error: { reason: "catch-up-timeout" } });
++      } catch (error) { failures.push(error); }
++    }
++    try {
++      const outcome = await currentObservationBound(close(), "current observation drain timeout");
++      if (!outcome.ok) throw outcome.error;
++      postCloseProbes++;
++      expect(f.owner.withRead(() => true)).toMatchObject({ kind: "entry-refused", reason: "not-accepting" });
++      directoryAbsent = f.remove();
++    } catch (error) { failures.push(error); }
++    console.log(JSON.stringify({ observation: "current-observation-drain", surface, operations, entries: f.entries, waits, clockCalls, liveProbes, postCloseProbes, settled, closeSettled, ...f.counts(), directoryAbsent, failureCount: failures.length }));
++  }
++  expect([operations, f.counts().attempts, waits, clockCalls, liveProbes, postCloseProbes]).toEqual([2, 2, 1, 3, 1, 1]);
++  if (failures.length) throw new AggregateError(failures, "current observation drain failed");
++});
+diff --git a/packages/server/src/transaction-service.ts b/packages/server/src/transaction-service.ts
+index 0ee2d2f..be3bcd9 100644
+--- a/packages/server/src/transaction-service.ts
++++ b/packages/server/src/transaction-service.ts
+@@ -4,7 +4,7 @@ import { transactionEventRequest, TransactionEventParameterError } from "./trans
+ import type { TransactionSnapshotRequest } from "./transaction-snapshot.js";
+ import type { TransactionChangefeedIntent } from "./transaction-changefeed.js";
+ import {
+-  checkTransactionMinimum,
++  checkCurrentReadMinimum,
+   snapshotTransactionMinimum,
+   snapshotCurrentReadMinimum,
+   waitForTransactionMinimum,
+@@ -265,10 +265,10 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+     /** Internal candidate only: no wire exposure or readiness assertion. Without
+      * a minimum the synchronous observation does not inspect signal. */
+     discoveryObserved(supplied?: TransactionMinimum, signal?: AbortSignal) {
+-      const minimum = supplied === undefined ? undefined : snapshotTransactionMinimum(supplied);
++      const minimum = supplied === undefined ? undefined : snapshotCurrentReadMinimum(supplied);
+       const observe = () => {
+         const observed = owner.withRead((_reader, context) => {
+-          if (minimum !== undefined) checkTransactionMinimum(minimum, context);
++          if (minimum !== undefined) checkCurrentReadMinimum(minimum, context, true);
+           return Object.freeze({
+             scopeEpoch: context.scopeEpoch,
+             authorizationView: context.authorizationView,
+@@ -603,7 +603,7 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+           minimum =
+             supplied === undefined || supplied === "unsupported"
+               ? supplied
+-              : snapshotTransactionMinimum(supplied);
++              : snapshotCurrentReadMinimum(supplied);
+         return waitForTransactionMinimum(() => {
+           const result = owner.readReceiptPage(principal, id, minimum);
+           // Prefix checking is defense in depth, not an independent plan witness.
+diff --git a/packages/server/src/transaction-snapshot.test.ts b/packages/server/src/transaction-snapshot.test.ts
+index 4cfd886..d5d3cf1 100644
+--- a/packages/server/src/transaction-snapshot.test.ts
++++ b/packages/server/src/transaction-snapshot.test.ts
+@@ -16,7 +16,6 @@ import {
+ import { openTransactionStore, type TransactionStoreOptions } from "./transaction-store.js";
+ import {
+   TransactionMinimumUnproved,
+-  TransactionMinimumUnsupported,
+ } from "./transaction-consistency.js";
+ import { prepareTransactionSetCore } from "./transaction-batch.js";
+ import {
+@@ -1477,10 +1476,10 @@ it("gates fresh Snapshot opaque minima before allocation and expiry", () => {
+   for (const kind of ["create", "preflight"] as const) {
+     unproved(kind);
+     expect(() => observe({ kind }, { ...minimum, scopeEpoch: "foreign" })).toThrow(
+-      TransactionMinimumUnsupported,
++      expect.objectContaining({ reason: "cursor-expired", context: first.context }),
+     );
+     expect(() => observe({ kind }, { ...minimum, authorizationView: "foreign" })).toThrow(
+-      TransactionMinimumUnsupported,
++      expect.objectContaining({ reason: "foreign-view", context: first.context }),
+     );
+     expect(() => observe({ kind }, { ...minimum, minimumPosition: "pos-2" })).toThrow("behind");
+   }
+diff --git a/packages/server/src/transaction-store.ts b/packages/server/src/transaction-store.ts
+index 695bf5e..87759bf 100644
+--- a/packages/server/src/transaction-store.ts
++++ b/packages/server/src/transaction-store.ts
+@@ -2275,7 +2275,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+       const condition =
+         minimum === undefined || minimum === "unsupported"
+           ? minimum
+-          : snapshotTransactionMinimum(minimum);
++          : snapshotCurrentReadMinimum(minimum);
+       return enter(() =>
+         atomic(() => {
+           const marker = id.lastIndexOf("/pages/");
+@@ -2306,7 +2306,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+           if (condition === "unsupported") return { kind: "unsupported" as const };
+           const context = readContext();
+           // Identity/nondisclosure precedes minimum; expiry is checked only afterwards.
+-          if (condition) checkTransactionMinimum(condition, context);
++          if (condition) checkCurrentReadMinimum(condition, context, true);
+           const remaining = expireRow(stored, instant()).row;
+           if (!remaining) throw new Error("completed page parent was forgotten");
+           const receipt = parseReceipt(remaining.receipt);
+
+End of frozen input. Return findings only in stdout. Do not write or modify files.

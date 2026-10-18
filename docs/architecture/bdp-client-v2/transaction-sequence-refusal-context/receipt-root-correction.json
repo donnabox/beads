@@ -1,0 +1,23 @@
+{
+  "original": {
+    "preflight.md": "4951e010e6ede619de323cec9937d8e270ab15e43ff80281cf0684e47c2eecc6",
+    "preflight-bounds.json": "b059245610c2b717735fb94563bf9b6404b10fefdcf8031ac43c50867bcc058b",
+    "source.diff": "b5d8185f03217c0602ee589d266f244b5002b8fc5a57f19ac6f17bb14b8f3e97"
+  },
+  "successor": {
+    "preflight.md": "d415f8c5a4b8bca180313528f0874b67702587c7ea6ec028edbcad3a27c9806f",
+    "preflight-bounds.json": "cbeed40827a4b76b5c13cc0764bb89571c9a31ddd76232769f05ec2e75073ee8",
+    "source.diff": "e555a7cfa328993aab66f378fcfda3a07b4d3e6df82cba289effb23aa1405e2f"
+  },
+  "changedSourceFiles": [
+    "apps/bdptest/src/transactional-sequence-refusal-installed.test.ts"
+  ],
+  "requestsUnchanged": true,
+  "controlsUnchanged": true,
+  "newStaticFixtureCases": {
+    "valid": 2,
+    "invalid": 20,
+    "executed": false
+  },
+  "executionAuthorized": false
+}

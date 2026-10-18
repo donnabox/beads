@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/run/collection-external.results.json",
+    "--testNamePattern",
+    "^(?:observes\\ genuine\\ installed\\ initial\\ collection\\ minimums,\\ fixed\\-budget\\ failures,\\ conditionals\\ and\\ retained\\ rows)$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+  "head": "2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96",
+  "tree": "1823346779033dec6255bcab93f69d7149d33055",
+  "sourceIdentity": "897300116c07b9fcaf55ccc6755572b94973d0ce26b0198736108bb0410cbd77",
+  "rootGateSha256": "7399affe403ceb39e0aca749968845eaccf284e7757a420d44c0f330e3287acd",
+  "outerSeconds": 120,
+  "automaticRetries": 0,
+  "overrides": {
+    "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed-process.js",
+    "BDP_TRANSACTIONAL_SOURCE_COMMIT": "2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96"
+  }
+}

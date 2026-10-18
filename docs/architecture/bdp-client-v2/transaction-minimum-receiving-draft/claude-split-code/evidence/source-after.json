@@ -1,0 +1,44 @@
+{
+  "committedSourceHashes": {
+    "apps/bdptest/test-support/transactional-execution-binding.ts": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+    "packages/server/src/read-http.ts": "31934105eff6fff8ded8ce2ca9e3c19028991ca7c3d5f51b848004177e8c9268",
+    "packages/server/src/read-pagination.ts": "ee2462c355aec5b5c4f5fbd7b323ca6d814591c0a46c809ebb4636596e4f52f8",
+    "packages/server/src/transaction-consistency.ts": "00a420c3e9f5dcb1b8814a6476d5ce52edfb7adbbd1c64ab082833f17322a336",
+    "packages/server/src/transaction-http.test.ts": "ca2e4e7663a93060ba2a0788c5ef349a3de4991e3108f81507f37a723d964781",
+    "packages/server/src/transaction-http.ts": "ebb3550110bd6fda638572966e5faa05c15f062f37a10947f6e442fc7d4570f4",
+    "packages/server/src/transaction-installed-process.ts": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7",
+    "packages/server/src/transaction-runtime.ts": "77954f0a85029d76443feac54cd53cda4339ffc126660ace5a9f5af92466c573",
+    "packages/server/src/transaction-schema-http.ts": "1082e8483848794971eae3eb8dfb3b7006749fc4e3b9c17c2cca1adbd94a6130",
+    "packages/server/src/transaction-service.ts": "53f655faf494209996aac2e0f93a4c2c785e471f66aac6af9ea41f92c9cfbe00",
+    "packages/server/src/transaction-store.ts": "fcd6882b29e538db45867c894c06dfbaa6ca588db0c2e403ef1b7abb14f6c706",
+    "scripts/transaction-installed-observation.mjs": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b"
+  },
+  "relevantWorkingHashes": {
+    "docs/specs/bdp.md": "63e93be562334c84c1e967da2fce212e8ef515aa3c9448924c5f9a272ea7b80b",
+    "packages/server/src/transaction-consistency.ts": "00a420c3e9f5dcb1b8814a6476d5ce52edfb7adbbd1c64ab082833f17322a336",
+    "packages/server/src/transaction-http.ts": "ebb3550110bd6fda638572966e5faa05c15f062f37a10947f6e442fc7d4570f4",
+    "packages/server/src/transaction-consistency.test.ts": "4d45ba52c028c3081188a6f76498889d7170cceaaad114004458b86331191bc9",
+    "packages/server/src/transaction-http.test.ts": "ca2e4e7663a93060ba2a0788c5ef349a3de4991e3108f81507f37a723d964781",
+    "packages/server/src/transaction-snapshot-http.test.ts": "61023b5f24396fe484c7820c706b560cb87abd7a3e16670f5a0944fbefd44d8a",
+    "packages/server/src/transaction-schema-http.test.ts": "eee33a0948c9a0981a2a963cec5a8f16102ae5bab32128f83c39956abe0a952b",
+    "packages/server/src/transaction-changefeed.test.ts": "97c3f8604ccbb7f3141a22e5c3d338f51929b308b80614309a7e837801b12043",
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts": "58f4ad828861ea332de7bf4413f48eb4646f32237b76d3a4db310e081b99ffe9",
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts": "cefde296b07d6be86a83d13892a603588c9054bdd54196048a855e74f9e9b7f9",
+    "docs/design/transaction-implementation-progress.md": "9aa001e2da6e37f0e12aa15fd124a489bc951519064370afbb76c9aee9aad185"
+  },
+  "workingDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "promptSha256": "17e927eec62818685cf6d6ed1261dae6072478228a73a689d00d41f11ee48fbe",
+  "plans": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/final-source.json": "273b5d230ddbac111b106463a5af351db14d77082d77e9c090b4802d96c0d923",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/claude-split-code/evidence/full-candidate.patch": "4c9a9c6757f18080821522477591167c21039e92fcdf6c83c3e8ff74c78eaa1d",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/claude-split-code/evidence/context-inventory.json": "9efa8020df218706e7af4ab61d0e3b24e53074dafc8091e6c7c469f059e4f2cc",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/claude-code-preparation/exit.json": "c0e280b76fa8b7a5736d583a79181e395f03b2c15817582adde2d6455a960bcb",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/claude-code-preparation/cleanup.json": "2991785003ea4a22d1bc0567739abb7326ad02a361bbb794e2a42bbfa29e076b",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/receiving-test-repair/source-binding.json": "b7082c68869b1cecd715ed8d6e0ef88c6ba064a2e698beddf02844ed4dc252fb",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/receiving-test-repair/report.md": "b8781d685ba51f503b071cdd4403c7170eee42f4075e893ca356b5fc21217a46",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/type-repair/report.md": "d27155094e33d5b3cfa028257fd499cb34f4b53e57dbf43a9be2c6cf78fb0e80",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v3/native-source-outcome.md": "a9c8580df7ddb255dab76ce20fe68c7077a20f063a83202c7f7692fd95525d7a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/selection.json": "fffb9c32d4e78dc5d4f9dde2b46a273e47ab0052749063a6012582eaa96901b2",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/requests.json": "4f2c549238e06b0a6f1e0c6c63d11380b5b4ce216711a47b475abdcf4233c67e"
+  }
+}

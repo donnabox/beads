@@ -1,0 +1,115 @@
+Verified: plan SHA-256 `4b7b87b6f1675290c341a452df24ac545135fc380e70d5e0b1ba98ec20d12a9d` matches. Inspected read-only at `87423d5` (clean tree) in `vickie-transaction-harness-carrier`. No files written, nothing built or executed.
+
+# Framing: the plan's basis is behind its own prerequisite
+
+The plan pins source inspection to `d907a1e` and says the repin target is root's `31aab4d`. But H1a's carrier is **this** commit, `87423d5`, and it already decided three things the plan re-specifies differently:
+
+| H1a decision at `87423d5` | Plan's treatment |
+|---|---|
+| `runCumulativeTransactionalMatrix` is the private entry point; `runConformanceMatrix` refuses branded TX bundles at all three declared profiles (`runner.ts:317-338`, `:2611-2623`; test `transactional-cumulative.test.ts:243-270`) | F7 refusal described as a prerequisite, entry point never named |
+| TX manifest/fixture/coverage already authored (`test-support/transactional/*.json`), catalogId `transactional-v1`, TX 1 MiB vs RU 4 MiB enforced (`artifact-bundle.ts:160-166`, test `:187-223`) | treated as "comes from H1a", contents not inspected |
+| The receipt follow-up is already authored as `family:"client"`, `operation:"transactional.receipt-read"`, `input:{binding:"receipt",method:"GET"}` (`manifest-v1.json`, mirroring RU's `installed.exact-request`) | plan mandates a **new** family `transactional.receipt-read` |
+
+Everything below follows from that.
+
+---
+
+# Blockers
+
+## B1 · The dynamic receipt mechanism is specified two incompatible ways at once — Blocker (H1b authoring)
+
+**Location:** plan §Mandatory dynamic receipt action items 1, 5, 7 · vs `packages/conformance/test-support/transactional/manifest-v1.json` (scenario `transactional.receipt.readable`, action `retained`) · `apps/bdptest/test-support/read-update-exact-client.ts:118-173` · `packages/conformance/src/runner.ts:840-852`, `:855-872`, `:181-190` · `scenario-action.ts:8`, `:55-64` · `executable-manifest.ts:744-789`.
+
+Item 1 demands a new non-`http` family; items 5 and 7 demand the evidence (`dynamicExactConfiguration`, `dynamicExactConfigurationDigest`, `sourceReceiptObservation`, physical binding) be carried by **the private runner result**. Neither matches the only two mechanisms that exist:
+
+- **Caller lane (what RU does and what H1a authored):** `family:"client"` → `runProgrammaticAction` → `options.actionExecutor`. `createInstalledExactClient` already validates a captured URL against canonical Scope/origin/path, rejects userinfo/query/fragment and non-canonical spellings, snapshots a **single-route** exact mode (`{...mode, routes:[route]}`), dials through a fresh raw executor on the same `dialRoute`, and requires `response.exactRequest` to exist (`read-update-exact-client.ts:57-68`, `:118-143`). But it returns a caller-built `{request, route, observation, status, headers, body}` object, and the runner records only `{id, family, operation}` + `output:{kind:"json"}` + assertion outcomes (`runner.ts:181-190`). The dynamic route, its digest, the source linkage and the wire evidence never enter the report — so items 5 and 7 are unimplementable on this lane, and item 6's "not a reserialized synthetic HTTP reply" is violated in letter.
+- **Runner lane:** `runProgrammaticAction` receives neither `options` nor `exchanges`, so it cannot reach `exactExecution`, cannot snapshot a route, cannot dial, cannot record an exchange. A new family additionally requires editing the published parser vocabulary (`executable-manifest.ts:774`, error text "must be 'http', 'client', or 'lifecycle'"), the published `ScenarioActionFamily` (`scenario-action.ts:8`), and H1a's manifest action — which contradicts the plan's own "No public manifest/normative schema action is added" and "Update only private source-only TX fixture/manifest/report validation for this action".
+
+**Impact:** implementation cannot start. Either the mandated recorder fields don't exist, or the plan's public-surface and H1a-ownership constraints break.
+
+**Fix (recommended, and it is cheap):** keep H1a's encoding and move the *dial* into the private runner. In `runMatrix(..., transactional=true)` only, intercept `family:"client" && operation==="transactional.receipt-read"` in `runScenarioAction` (`runner.ts:822-852`) before `runProgrammaticAction`, resolve `input.binding` through the new ledger, snapshot the single dynamic route, dial via the existing raw executor on the session `dialRoute`, and push an `ObservedExchange` carrying the dynamic fields. Evaluate H1a's existing `/status` and `/body/status` pointers against a **runner-built** projection of the real response — which keeps H1a's authored assertions valid unchanged and satisfies item 6 without any parser, family-type or manifest edit. Then delete item 1's new-family requirement and say explicitly that the privilege is scoped by the private runner branch, not by a family name. Reuse `validateExactRunConfiguration` for the dynamic route — it is deliberately profile-free and standalone (`http-executor.ts:542-560`).
+
+## B2 · Admitting `"transactional"` breaks H1a's own refusal probe — Blocker (same reviewed edit)
+
+**Location:** `packages/conformance/src/transactional-cumulative.test.ts:292-315` (the "hostile cast" probe) · guards at `http-executor.ts:57`, `:443` · plan §Required trusted exact-transport admission countercontrol "Existing Read/RU suites run unchanged".
+
+`invalidExact` there is a fully valid exact mode except for `profile:"transactional"` — routes inside Scope, caps 16384/65536, handle `operator`/`authorization`, and `snapshotExactExecution` supplies `resolveCredentials` itself (`runner.ts:1364`). Today it rejects only because `:443` refuses the profile. After the widening: `snapshotExactExecution` succeeds → `validateRunOptions` passes (`:2611-2623`) → `preflightExactPlans` passes (all four actions are raw POSTs to the predeclared `operations/batch`, `:1403-1453`) → the scenario loop reaches a manifest row and calls `harness.prepare` (`:364-380`, `:577`). The probe's own `expect(input.harness.prepare).not.toHaveBeenCalled()` at `:314` then fails.
+
+**Impact:** the one-line admission edit lands as a red suite; worse, if someone "fixes" it by loosening the assertion, H1a loses its pre-setup refusal control.
+
+**Fix:** list `transactional-cumulative.test.ts` in H1b's reviewed-edit scope and state the replacement control: keep a pre-setup refusal probe that fails on a *malformed* TX exact mode (foreign Scope, unlisted route, bad handle) rather than on the profile name, and keep the no-exactExecution "transport admission pending" case (`:286-288`) which stays valid.
+
+## B3 · Repin the basis to the H1a carrier before authoring — Blocker (plan hygiene, blocks the rest)
+
+**Location:** plan line 3 (pin `d907a1e`, repin target `31aab4d`) · prerequisite 1.
+
+The plan's mechanics are written against a tree that does not contain H1a. Prerequisite 1 correctly refuses to assume the old source has the gate repairs, but the plan then never names what H1a actually produced. `http-executor.ts:57`/`:443` do still hold at `87423d5` (I verified both), so F1's locations survive — but the entry point, brand check, catalogId, authored artifacts and the already-chosen client-action encoding do not appear anywhere in the plan.
+
+**Fix:** repin to the H1a carrier commit (or its integrated equivalent) and add one paragraph recording: `runCumulativeTransactionalMatrix` as the invocation, `isCumulativeTransactionalArtifactBundle` as the brand, `transactional-v1` as the catalogId, and the four authored rows' current action/assertion inventory.
+
+---
+
+# High
+
+## H4 · Four H1a-owned artifacts must change, and the plan owns none of them
+
+**Location:** `test-support/transactional/coverage-v1.json` (`status:"authored-unexecuted"`, `transportAdmission:"pending-h1b"`, every row's reason "H1a carrier fixture only. No target observed.") · pinned by `transactional-cumulative.test.ts:91`, `:97`, and `:99-105` which derives each row's `bindings` from `${action.id}:${assertion.id}` · `manifest-v1.json` contains **zero GET actions** (only POSTs) · plan §File ownership.
+
+The four observations require point and limited-collection GETs, Event GETs and HEAD. Every one is a new manifest action, each new assertion changes the derived coverage `bindings`, and once a target is observed the pinned `status` and "No target observed" reasons are false. The plan's ownership sentence ("Update only private source-only TX fixture/manifest/report validation for **this action**") scopes the edit to the receipt action alone.
+
+**Impact:** either the observations can't be authored, or H1a's suite fails at integration.
+
+**Fix:** add `coverage-v1.json`, `manifest-v1.json` and `transactional-cumulative.test.ts` to H1b's ownership with the expected diffs named (new `status`/`transportAdmission` values, per-row reasons rewritten to the partial-witness language, regenerated `bindings`, and the GET/HEAD action inventory). Use `{binding:"scope", path:"beads/", query:{limit:"32"}}` for collection targets (`runner.ts:2316-2325`) — `preparation.bindings` keys must *exactly* equal `fixture.bindings` keys (`runner.ts:2722-2741`), so new bindings would otherwise force a fixture edit too.
+
+---
+
+# Medium
+
+## M5 · The uniform `?limit=32` / `next:null` rule is wrong for Event collections
+
+**Location:** plan §Fixed request grammar · `packages/server/src/transaction-events.ts:137-140` (Scope Events allows only `after`; anything else throws `TransactionEventParameterError` → `invalid-parameter`, `transaction-http.ts:432-437`) · continuation is `?after=<server-assigned event id>` (`transaction-events.ts:254-257`) · page bounded by **both** `receiptMaximumItems` and `TRANSACTION_EVENT_PAGE_BYTES` (`transaction-store.ts:1340-1352`; `transaction-events.ts:18` = 4 MiB).
+
+`events/?limit=32` is a 400, not a bounded read. And an Event continuation is an unpredeclarable server-assigned URL — the same class the plan refuses to adapt.
+
+**Fix:** split the rule. Beads/links/types: literal `?limit=32` is correct and admissible (`read-request.ts:295-299`; `read-pagination.ts:587-589` refuses only `> maxPageItems`, and `maxPageItems = receiptMaximumItems = 32` via `transaction-runtime.ts:99-100`, `:304`, `transaction-batch.ts:61`). Events: no `limit`, assert `next:null` on an inventory kept under 32 events, and declare a non-null Event `next` a failing fixture assumption exactly as the plan already does for collections.
+
+## M6 · `scripts/smoke-executables.mjs` carries both required gates and isn't in ownership
+
+**Location:** emitted-output tripwire with exact set equality (`:134-355`, "packed server output mismatch") · both-spelling denied-import list (`:452+`) · auto-filter (`:439-442`) resolves only `@bdp/server/dist/<name>` and matches neither prefix for `installed-payload`.
+
+The plan's F9 requirement is correct and the auto-filter gap is real — it just never names the file it must edit. Omission is a hard smoke failure, not a soft one.
+
+**Fix:** add `scripts/smoke-executables.mjs` to ownership alongside `installed-reference.ts`.
+
+## M7 · "Exported report shape is private and bounded" is false for the prescribed fields
+
+**Location:** `packages/conformance/src/index.ts:114`, `:157`, `:158`, `:162` export `ScenarioActionFamily`, `ObservedAction`, `ObservedExchange`, `ScenarioRunResult` · `report.ts:5-21` blocks only `request.exact`, `harnessError` and `transportError.writeState` from a v3 report.
+
+Any per-action dynamic-evidence field is a published type change, and nothing stops it serializing into a reportVersion-3 report.
+
+**Fix:** state the public type delta plainly (optional fields on `ObservedExchange`, v4-only), extend the `report.ts` v3 rejection list to the new field names, and add the `report.test.ts:201`-style case. Keep `declarations.exactConfigurationDigest` untouched — it is computed once per run (`runner.ts:404-405`, `:1383-1401`) and the dynamic route cannot reach it, which is exactly what the plan wants.
+
+---
+
+# Low
+
+- **L8 · Budget sentence inverted.** Plan §Budgets: "not RU's larger copied header setting." RU's **header** cap is already 16,384 (`read-update-matrix.test.ts:210`); its larger cap is the **body**, 131,072 (`:209`) — which is the one that would declare a body the TX server refuses at 65,536. Also "raw-wire evidence 2,097,152" is not a declarable preimage input: it is the hard-coded `RAW_WIRE_EVIDENCE_MAX_BYTES` (`runner.ts:52`, used only at `:1791`) and is **not** in `exactConfigurationDigest`. The two caps that *are* configurable and unstated are the executor's response-side `maximumHeaderBytes` (default 65,536) and `maximumBodyBytes` (default 1,048,576) (`http-executor.ts:156`, `:173-175`). Fix the attribution and pin the response caps.
+- **L9 · "Before setup" has no seam; the per-scenario rebinding already exists.** The only pre-request hook is inside the harness `prepare` callback — `createRawHttpScenarioTarget` builds the session executor from `session.dialRoute` there (`raw-http-scenario-target.ts:104-147`), and the runner validates the returned preparation afterwards (`runner.ts:577-589`). That `:134` line is precisely the port-0 reopen rebinding the plan asks for, and `:55-60` re-snapshots the exact mode (a third consumer of the widened guard). Say "at bootstrap, and inside each scenario's preparation before any action", and name this module as the reuse point. Also record the deliberate divergence from RU: the RU child's ready message omits `listenUrl` (`installed-reference-process.ts:49-60`) because RU pre-allocates a port; `transaction-installed-process.ts` must report it.
+- **L10 · Capability tokens unstated.** `prepare()` must declare `installed-transactional-http` and `transactional-receipt-observation` (fixture `capabilities`); they are checked as a subset of the bound fixture (`runner.ts:578-595`, `:2714-2721`). Mechanical, but currently invisible in the plan.
+- **L11 · Close the non-raw side channel.** At a non-Read profile a non-`raw` http action still validates against the base routes but then dials through `options.execute` (`runner.ts:1034-1041`, `:1059`). Require every TX action to be `raw` (H1a's already are) and `execute` to be a refusing stub or a raw-backed adapter, as RU does (`read-update-matrix.test.ts:371-373`).
+- **L12 · Payload-hash extraction is safe, with one condition.** The digest root is derived from the module's own package (`installed-reference.ts:72`, `new URL("../", import.meta.url)`), and both files emit into the same `dist/`, so moving it is behavior-neutral. If the extracted helper takes the root as a parameter instead, the TX factory must pass the identical `@bdp/server` root or the digest covers a different closure. Say which form.
+- **L13 · Synthetic-manifest prohibition has a consequence worth recording.** `approvedSyntheticManifestDigest` only permits exporting the request `bodyDigest` (`runner.ts:1609-1616`). Refusing it (correct, and matches RU, which never sets it) means the frozen report shows `bodyOctets` but no request `bodyDigest`; the "body digest mismatch" counterfactual still runs in-process.
+
+---
+
+# Confirmed as stated (no action)
+
+Both admission points and line numbers hold at `87423d5`: `http-executor.ts:57` (`profile: "read" | "read-update"`) and `:443`. Routes are frozen and matched **before** credential resolution and dialing (`:670` precedes `:681`). `RESERVED_FIELDS` includes `host` (`:342-354`), `SECRET_FIELD` blocks authored credential headers (`:340-341`), Host is always derived from the canonical URL (`:715`), and only `read` is body-forbidden (`:647`) — so the widening is genuinely two lines plus tests. A separate single-route executor *instance* is the established RU move (`read-update-exact-client.ts:120-123`) and leaves the base route list and its digest untouched. Receipt `id` is an absolute canonical URL with one UUID segment (`transaction-store.ts:929`); `location` is set only on a pending 202 (`transaction-http.ts:141-144`), so completed/failed receipts must be read from the body `id` — exactly what the plan says and what H1a's capture already does. Receipt pagination is unreachable at ≤8 operations (`receiptMaximumItems` default 32 via `transaction-store.ts:175`, `transaction-batch.ts:61,71`). `next` is explicitly `string | null` (`read-pagination.ts:31`, `:311-315`), so the plan's `next:null` is more precise than the prior review's "absent". The changefeed-first / alias-before-receipt ordering holds (`transaction-http.ts:322-340`), and the plan's warning not to test an alias/Event route as a receipt lookup is right. The Host prerequisite is real: `transaction-runtime.ts:170-176` refuses any Host ≠ `listenUrl` host, so until M1's canonical Host mode lands every H1b request is `malformed-request` — RU's shape to copy is the explicit `host` passed at `installed-reference.ts:83`. Port 0 is already accepted and the actual `listenUrl` already returned (`transaction-runtime.ts:96`, `:331-340`); the runtime still returns no identity, so M1's `runtimeConfigurationIdentity` is correctly a prerequisite, and `ServedProfileConfiguration` is a closed whole-record-equality type requiring 64-hex digests (`profile-contract-plan.ts:35-52`, `:136-142`, `:177`) — so the plan's "don't add a field, pair explicitly" is right.
+
+# Later, unrelated profile gaps — keep out of H1b
+
+Correctly declared missing and correctly not blocking: discovery / Service Description / Operation Directory (`transaction-http.ts:152`, `:181`, `:400-406` all `developmentGap`), minimum-position controls, SSE/snapshot/cold start, the finite changefeed (exists at `transaction-http.ts:322-332` and `transaction-changefeed.ts`, deliberately unobserved and unadvertised by this cohort), retention/expiry (`expiresAt = instant() + day`), mutable policy and erasure, CORS/absolute-target, sets/sequence variants, forward/pinned/alias references, concurrent isolation, pending/fenced recovery, readable/restart pagination, and the 246 unexecuted canonical rows. M1's F3–F6 (per-credential `canMutate` in the preimage, the `configurationIdentity` name collision, the runtime-tuple extraction, injected-mismatch-only framing) stay in `transaction-runtime-configuration-plan.md`; the plan's prerequisite 2 already adopts all four dispositions by name.
+
+# Verdict
+
+The plan's own rule — H1b cannot author until ordinary H1a and M1 integration — is correct and is **stronger** than the plan states: H1a's carrier already fixed the entry point, the artifacts and the receipt-action encoding (B3); the admission edit cannot land without simultaneously reworking H1a's refusal probe (B2); and no request can succeed at all before M1's canonical Host mode. The F1/F2/F8/F9/F10/F11 dispositions are substantively right — F8's `next:null` is sharper than the original remedy, F9 and F10 check out exactly — but F2 is resolved against an architecture that does not exist (B1), F11's budget attribution is inverted (L8), and F8's rule doesn't survive contact with the Event route (M5). Fix B1–B3 and H4 before authoring; M5–M7 before the four observations are written.

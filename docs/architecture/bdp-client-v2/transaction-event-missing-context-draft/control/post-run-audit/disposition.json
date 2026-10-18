@@ -1,0 +1,824 @@
+{
+  "at": "2026-10-15T11:12:20.077794+00:00",
+  "auditRole": "Harness author; separate read-only actual evidence audit, not an additional independent code council",
+  "recommendation": "Accept intended eight-failure control evidence separately with explicit dependency spelling-drift disposition; retain failed supervisor/adjudication. No rerun. Root owns acceptance.",
+  "changedStoreMembers": [
+    {
+      "path": "node_modules/.pnpm/vite@8.2.1_@types+node@24.13.3/node_modules/vite/node_modules/.bin/rolldown",
+      "beforeSha256": "3c5e70af297637c9221c80ae51892ac418aaba152a999c4e7b025b129c0bab44",
+      "afterSha256": "924421b1880ccd1dd0748c16865cf0e8639cb62fd2db53921f294819709218e9",
+      "beforeBytes": 2138,
+      "afterBytes": 2264,
+      "reconstructedMatchesOriginalSha256": true,
+      "changedLines": [
+        "  export NODE_PATH=\"/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules/rolldown/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules\"",
+        "  export NODE_PATH=\"/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules/rolldown/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules:$NODE_PATH\"",
+        "# cmd-shim-target=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/rolldown@1.2.3/node_modules/rolldown/bin/cli.mjs"
+      ],
+      "equalTargets": [
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules"
+        },
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules"
+        },
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/rolldown@1.2.3/node_modules/rolldown/bin/cli.mjs",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules/rolldown/bin/cli.mjs",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules/rolldown/bin/cli.mjs"
+        }
+      ],
+      "retainedAfter": "shim-01-after.sh",
+      "retainedBeforeReconstructed": "shim-01-before-reconstructed.sh",
+      "patch": "shim-01.patch"
+    },
+    {
+      "path": "node_modules/.pnpm/@vitest+mocker@4.1.10_vite@8.2.1_@types+node@24.13.3_/node_modules/@vitest/mocker/node_modules/.bin/vite",
+      "beforeSha256": "fb8ff515bd074076dda27d02f27b0e60deb9050d67c7d1de920c3b0f5c54eaa9",
+      "afterSha256": "05ce37c7b3723aa7cc39d75ab91d996dfa7d813973bb8ce9fe435fdeeddc9fb2",
+      "beforeBytes": 2281,
+      "afterBytes": 2407,
+      "reconstructedMatchesOriginalSha256": true,
+      "changedLines": [
+        "  export NODE_PATH=\"/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vite@8.2.1_@types+node@24.13.3/node_modules/vite/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vite@8.2.1_@types+node@24.13.3/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules\"",
+        "  export NODE_PATH=\"/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vite@8.2.1_@types+node@24.13.3/node_modules/vite/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vite@8.2.1_@types+node@24.13.3/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules:$NODE_PATH\"",
+        "# cmd-shim-target=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/vite@8.2.1_@types+node@24.13.3/node_modules/vite/bin/vite.js"
+      ],
+      "equalTargets": [
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules"
+        },
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules"
+        },
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/vite@8.2.1_@types+node@24.13.3/node_modules/vite/bin/vite.js",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vite@8.2.1_@types+node@24.13.3/node_modules/vite/bin/vite.js",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vite@8.2.1_@types+node@24.13.3/node_modules/vite/bin/vite.js"
+        }
+      ],
+      "retainedAfter": "shim-02-after.sh",
+      "retainedBeforeReconstructed": "shim-02-before-reconstructed.sh",
+      "patch": "shim-02.patch"
+    },
+    {
+      "path": "node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/node_modules/.bin/vite",
+      "beforeSha256": "994027660ad2ba537220c10deb6f2b75ab99ab32540b6ea2fd66b618dfe0953d",
+      "afterSha256": "6000fa967d0ef7b0fd4dd56bc4d9cc3e89bbdb81b914c07e790c8ac722e9c722",
+      "beforeBytes": 2266,
+      "afterBytes": 2392,
+      "reconstructedMatchesOriginalSha256": true,
+      "changedLines": [
+        "  export NODE_PATH=\"/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vite@8.2.1_@types+node@24.13.3/node_modules/vite/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vite@8.2.1_@types+node@24.13.3/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules\"",
+        "  export NODE_PATH=\"/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vite@8.2.1_@types+node@24.13.3/node_modules/vite/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vite@8.2.1_@types+node@24.13.3/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules:$NODE_PATH\"",
+        "# cmd-shim-target=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/vite@8.2.1_@types+node@24.13.3/node_modules/vite/bin/vite.js"
+      ],
+      "equalTargets": [
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules"
+        },
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules"
+        },
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/vite@8.2.1_@types+node@24.13.3/node_modules/vite/bin/vite.js",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vite@8.2.1_@types+node@24.13.3/node_modules/vite/bin/vite.js",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vite@8.2.1_@types+node@24.13.3/node_modules/vite/bin/vite.js"
+        }
+      ],
+      "retainedAfter": "shim-03-after.sh",
+      "retainedBeforeReconstructed": "shim-03-before-reconstructed.sh",
+      "patch": "shim-03.patch"
+    },
+    {
+      "path": "node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/node_modules/.bin/why-is-node-running",
+      "beforeSha256": "c78520cd158db9b2218ae512a9acc71a9086868b1357ffdc9886e9f872ca4df1",
+      "afterSha256": "45899b6cf0db3f27531acead7ae05bbf5a3653c1ab19223d11999135af9f7789",
+      "beforeBytes": 2306,
+      "afterBytes": 2432,
+      "reconstructedMatchesOriginalSha256": true,
+      "changedLines": [
+        "  export NODE_PATH=\"/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/why-is-node-running@2.3.0/node_modules/why-is-node-running/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/why-is-node-running@2.3.0/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules\"",
+        "  export NODE_PATH=\"/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/why-is-node-running@2.3.0/node_modules/why-is-node-running/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/why-is-node-running@2.3.0/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules:$NODE_PATH\"",
+        "# cmd-shim-target=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/why-is-node-running@2.3.0/node_modules/why-is-node-running/cli.js"
+      ],
+      "equalTargets": [
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules"
+        },
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules"
+        },
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/why-is-node-running@2.3.0/node_modules/why-is-node-running/cli.js",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/why-is-node-running@2.3.0/node_modules/why-is-node-running/cli.js",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/why-is-node-running@2.3.0/node_modules/why-is-node-running/cli.js"
+        }
+      ],
+      "retainedAfter": "shim-04-after.sh",
+      "retainedBeforeReconstructed": "shim-04-before-reconstructed.sh",
+      "patch": "shim-04.patch"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/.bin/nanoid",
+      "beforeSha256": "72f8c1dbda2fd61e0df008af5596d9f6ac249e1a47581d2d23ad3dbe80b35641",
+      "afterSha256": "327fd965809dded7a56f25f400fa75d7ea06a8214dfd6158419554ab6ccfa4a7",
+      "beforeBytes": 1921,
+      "afterBytes": 2047,
+      "reconstructedMatchesOriginalSha256": true,
+      "changedLines": [
+        "  export NODE_PATH=\"/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/nanoid@3.3.18/node_modules/nanoid/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/nanoid@3.3.18/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules\"",
+        "  export NODE_PATH=\"/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/nanoid@3.3.18/node_modules/nanoid/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/nanoid@3.3.18/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules:$NODE_PATH\"",
+        "# cmd-shim-target=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules/nanoid/bin/nanoid.cjs"
+      ],
+      "equalTargets": [
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules"
+        },
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules"
+        },
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules/nanoid/bin/nanoid.cjs",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules/nanoid/bin/nanoid.cjs",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/nanoid@3.3.18/node_modules/nanoid/bin/nanoid.cjs"
+        }
+      ],
+      "retainedAfter": "shim-05-after.sh",
+      "retainedBeforeReconstructed": "shim-05-before-reconstructed.sh",
+      "patch": "shim-05.patch"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/.bin/rolldown",
+      "beforeSha256": "440a676120ef46be64ff9cc627fe58b62433296d2234a7e56121dcb33548d2dc",
+      "afterSha256": "0acf98f7b7d48f88a97ca8556e218dfc62d7e0fd3a570d912441f2cf28997b9b",
+      "beforeBytes": 1923,
+      "afterBytes": 2049,
+      "reconstructedMatchesOriginalSha256": true,
+      "changedLines": [
+        "  export NODE_PATH=\"/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules/rolldown/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules\"",
+        "  export NODE_PATH=\"/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules/rolldown/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules:$NODE_PATH\"",
+        "# cmd-shim-target=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules/rolldown/bin/cli.mjs"
+      ],
+      "equalTargets": [
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules"
+        },
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules"
+        },
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules/rolldown/bin/cli.mjs",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules/rolldown/bin/cli.mjs",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules/rolldown/bin/cli.mjs"
+        }
+      ],
+      "retainedAfter": "shim-06-after.sh",
+      "retainedBeforeReconstructed": "shim-06-before-reconstructed.sh",
+      "patch": "shim-06.patch"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/.bin/vite",
+      "beforeSha256": "8caa1b0b4ce38d6298a827fac7edb1ef47f5b3b1bbe9ce01c1fbb7dab737eb8f",
+      "afterSha256": "39671b4ecb95611fc6925e7da7affd5bfe4bd79a6231442761bca207249613f9",
+      "beforeBytes": 1955,
+      "afterBytes": 2081,
+      "reconstructedMatchesOriginalSha256": true,
+      "changedLines": [
+        "  export NODE_PATH=\"/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vite@8.2.1_@types+node@24.13.3/node_modules/vite/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vite@8.2.1_@types+node@24.13.3/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules\"",
+        "  export NODE_PATH=\"/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vite@8.2.1_@types+node@24.13.3/node_modules/vite/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vite@8.2.1_@types+node@24.13.3/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules:$NODE_PATH\"",
+        "# cmd-shim-target=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules/vite/bin/vite.js"
+      ],
+      "equalTargets": [
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules"
+        },
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules"
+        },
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules/vite/bin/vite.js",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules/vite/bin/vite.js",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vite@8.2.1_@types+node@24.13.3/node_modules/vite/bin/vite.js"
+        }
+      ],
+      "retainedAfter": "shim-07-after.sh",
+      "retainedBeforeReconstructed": "shim-07-before-reconstructed.sh",
+      "patch": "shim-07.patch"
+    },
+    {
+      "path": "node_modules/.pnpm/node_modules/.bin/why-is-node-running",
+      "beforeSha256": "154534ac1a552afc6ab87e8c36441120e3ce88909ee0bcf5908a9c628f85af7a",
+      "afterSha256": "1655771470182f4fac68a0ab16b0c0b9d557ef31ac47192be628e24ddc109a6c",
+      "beforeBytes": 2025,
+      "afterBytes": 2151,
+      "reconstructedMatchesOriginalSha256": true,
+      "changedLines": [
+        "  export NODE_PATH=\"/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/why-is-node-running@2.3.0/node_modules/why-is-node-running/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/why-is-node-running@2.3.0/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules\"",
+        "  export NODE_PATH=\"/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/why-is-node-running@2.3.0/node_modules/why-is-node-running/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/why-is-node-running@2.3.0/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules:$NODE_PATH\"",
+        "# cmd-shim-target=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules/why-is-node-running/cli.js"
+      ],
+      "equalTargets": [
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules"
+        },
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules"
+        },
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules/why-is-node-running/cli.js",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules/why-is-node-running/cli.js",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/why-is-node-running@2.3.0/node_modules/why-is-node-running/cli.js"
+        }
+      ],
+      "retainedAfter": "shim-08-after.sh",
+      "retainedBeforeReconstructed": "shim-08-before-reconstructed.sh",
+      "patch": "shim-08.patch"
+    },
+    {
+      "path": "node_modules/.pnpm/postcss@8.5.26/node_modules/postcss/node_modules/.bin/nanoid",
+      "beforeSha256": "be9bea889b3bd646a9a1eacc0560b7d72183b57cdd96181b07b10b94c2e54bc5",
+      "afterSha256": "2c32c3130c07a3281fa2aa03841cbf67084155eb0585b5d34a71670464f760e7",
+      "beforeBytes": 2130,
+      "afterBytes": 2256,
+      "reconstructedMatchesOriginalSha256": true,
+      "changedLines": [
+        "  export NODE_PATH=\"/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/nanoid@3.3.18/node_modules/nanoid/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/nanoid@3.3.18/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules\"",
+        "  export NODE_PATH=\"/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/nanoid@3.3.18/node_modules/nanoid/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/nanoid@3.3.18/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules:$NODE_PATH\"",
+        "# cmd-shim-target=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/nanoid@3.3.18/node_modules/nanoid/bin/nanoid.cjs"
+      ],
+      "equalTargets": [
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules"
+        },
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/node_modules",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules"
+        },
+        {
+          "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/nanoid@3.3.18/node_modules/nanoid/bin/nanoid.cjs",
+          "before": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/nanoid@3.3.18/node_modules/nanoid/bin/nanoid.cjs",
+          "sameRealpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/nanoid@3.3.18/node_modules/nanoid/bin/nanoid.cjs"
+        }
+      ],
+      "retainedAfter": "shim-09-after.sh",
+      "retainedBeforeReconstructed": "shim-09-before-reconstructed.sh",
+      "patch": "shim-09.patch"
+    }
+  ],
+  "storeInventoryCount": 2066,
+  "storeAddedRemovedOrOtherChanges": [],
+  "dependencyLinkSpellingChanges": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/vitest",
+      "physicalLinkPath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/vitest",
+      "before": {
+        "link": ".pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest"
+      },
+      "after": {
+        "link": "../../bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest"
+      },
+      "beforeLinkTextSha256": "ceaaf98c751e3c42d7a174dd6afbb02307660e6379ed56e58e4e867357dca615",
+      "afterLinkTextSha256": "9787a899286525cd867f7aca1fa260f4ac30c5fdc5290550ab09214a1860c578"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/vitest",
+      "physicalLinkPath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/vitest",
+      "before": {
+        "link": ".pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest"
+      },
+      "after": {
+        "link": "../../bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest"
+      },
+      "beforeLinkTextSha256": "ceaaf98c751e3c42d7a174dd6afbb02307660e6379ed56e58e4e867357dca615",
+      "afterLinkTextSha256": "9787a899286525cd867f7aca1fa260f4ac30c5fdc5290550ab09214a1860c578"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/typescript",
+      "physicalLinkPath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/typescript",
+      "before": {
+        "link": ".pnpm/typescript@7.0.2/node_modules/typescript",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/typescript@7.0.2/node_modules/typescript"
+      },
+      "after": {
+        "link": "../../bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/typescript@7.0.2/node_modules/typescript",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/typescript@7.0.2/node_modules/typescript"
+      },
+      "beforeLinkTextSha256": "986dfb6a8c82dc58870417c90a9ca54869fab7fe8bc579a1248d5b0f30ba6098",
+      "afterLinkTextSha256": "9a831e4ee8e5766feb8657c455a8bc578ed9a3e394c1eab604a0b5ae0437b06b"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/typescript",
+      "physicalLinkPath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/typescript",
+      "before": {
+        "link": ".pnpm/typescript@7.0.2/node_modules/typescript",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/typescript@7.0.2/node_modules/typescript"
+      },
+      "after": {
+        "link": "../../bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/typescript@7.0.2/node_modules/typescript",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/typescript@7.0.2/node_modules/typescript"
+      },
+      "beforeLinkTextSha256": "986dfb6a8c82dc58870417c90a9ca54869fab7fe8bc579a1248d5b0f30ba6098",
+      "afterLinkTextSha256": "9a831e4ee8e5766feb8657c455a8bc578ed9a3e394c1eab604a0b5ae0437b06b"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/ajv",
+      "physicalLinkPath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/ajv",
+      "before": {
+        "link": ".pnpm/ajv@8.17.1/node_modules/ajv",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/ajv@8.17.1/node_modules/ajv"
+      },
+      "after": {
+        "link": "../../bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/ajv@8.17.1/node_modules/ajv",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/ajv@8.17.1/node_modules/ajv"
+      },
+      "beforeLinkTextSha256": "cf16c57f6bae73b0c94a570e4fddb2a4b42c4e85e73cfc6c3ba313b42543fba7",
+      "afterLinkTextSha256": "0a4033ac3e89bd9145cd8198e5f8246061dd5ff86eba1ac7541de9bc543550b1"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/ajv",
+      "physicalLinkPath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/ajv",
+      "before": {
+        "link": ".pnpm/ajv@8.17.1/node_modules/ajv",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/ajv@8.17.1/node_modules/ajv"
+      },
+      "after": {
+        "link": "../../bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/ajv@8.17.1/node_modules/ajv",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/ajv@8.17.1/node_modules/ajv"
+      },
+      "beforeLinkTextSha256": "cf16c57f6bae73b0c94a570e4fddb2a4b42c4e85e73cfc6c3ba313b42543fba7",
+      "afterLinkTextSha256": "0a4033ac3e89bd9145cd8198e5f8246061dd5ff86eba1ac7541de9bc543550b1"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/@biomejs/biome",
+      "physicalLinkPath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/@biomejs/biome",
+      "before": {
+        "link": "../.pnpm/@biomejs+biome@2.5.7/node_modules/@biomejs/biome",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/@biomejs+biome@2.5.7/node_modules/@biomejs/biome"
+      },
+      "after": {
+        "link": "../../../bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/@biomejs+biome@2.5.7/node_modules/@biomejs/biome",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/@biomejs+biome@2.5.7/node_modules/@biomejs/biome"
+      },
+      "beforeLinkTextSha256": "3f9565423691d5a246bb5e79278f8163d1a51a2211b0aa69609440718441717f",
+      "afterLinkTextSha256": "c40d315b772dd871d004e0b6120e1c920174732facda67986ec0a445d1ca3812"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/@biomejs/biome",
+      "physicalLinkPath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/@biomejs/biome",
+      "before": {
+        "link": "../.pnpm/@biomejs+biome@2.5.7/node_modules/@biomejs/biome",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/@biomejs+biome@2.5.7/node_modules/@biomejs/biome"
+      },
+      "after": {
+        "link": "../../../bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/@biomejs+biome@2.5.7/node_modules/@biomejs/biome",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/@biomejs+biome@2.5.7/node_modules/@biomejs/biome"
+      },
+      "beforeLinkTextSha256": "3f9565423691d5a246bb5e79278f8163d1a51a2211b0aa69609440718441717f",
+      "afterLinkTextSha256": "c40d315b772dd871d004e0b6120e1c920174732facda67986ec0a445d1ca3812"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/@types/node",
+      "physicalLinkPath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/@types/node",
+      "before": {
+        "link": "../.pnpm/@types+node@24.13.3/node_modules/@types/node",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/@types+node@24.13.3/node_modules/@types/node"
+      },
+      "after": {
+        "link": "../../../bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/@types+node@24.13.3/node_modules/@types/node",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/@types+node@24.13.3/node_modules/@types/node"
+      },
+      "beforeLinkTextSha256": "cf303a29a985875f36c2a1fda6a912177566dd9e068641692a56e1891fbccb66",
+      "afterLinkTextSha256": "ce84d933bf38d0d3a6602d55305203610fbcd02d6d75f01318ecd2052746a78b"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/@types/node",
+      "physicalLinkPath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/@types/node",
+      "before": {
+        "link": "../.pnpm/@types+node@24.13.3/node_modules/@types/node",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/@types+node@24.13.3/node_modules/@types/node"
+      },
+      "after": {
+        "link": "../../../bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/@types+node@24.13.3/node_modules/@types/node",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/@types+node@24.13.3/node_modules/@types/node"
+      },
+      "beforeLinkTextSha256": "cf303a29a985875f36c2a1fda6a912177566dd9e068641692a56e1891fbccb66",
+      "afterLinkTextSha256": "ce84d933bf38d0d3a6602d55305203610fbcd02d6d75f01318ecd2052746a78b"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/@babel/parser",
+      "physicalLinkPath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/@babel/parser",
+      "before": {
+        "link": "../.pnpm/@babel+parser@8.0.4/node_modules/@babel/parser",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/@babel+parser@8.0.4/node_modules/@babel/parser"
+      },
+      "after": {
+        "link": "../../../bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/@babel+parser@8.0.4/node_modules/@babel/parser",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/@babel+parser@8.0.4/node_modules/@babel/parser"
+      },
+      "beforeLinkTextSha256": "f95e903ba65bc09380f38e4f0417141ce91c62350e7c4c051af47a17bf2c2dd3",
+      "afterLinkTextSha256": "32da95529eb0219207d6f0f450fd61a0497b94b6ed7edffe7d437fe6f4e42d75"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/@babel/parser",
+      "physicalLinkPath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/@babel/parser",
+      "before": {
+        "link": "../.pnpm/@babel+parser@8.0.4/node_modules/@babel/parser",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/@babel+parser@8.0.4/node_modules/@babel/parser"
+      },
+      "after": {
+        "link": "../../../bdp-integration-logs/transaction-event-missing-context-draft/control/copy/node_modules/.pnpm/@babel+parser@8.0.4/node_modules/@babel/parser",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/@babel+parser@8.0.4/node_modules/@babel/parser"
+      },
+      "beforeLinkTextSha256": "f95e903ba65bc09380f38e4f0417141ce91c62350e7c4c051af47a17bf2c2dd3",
+      "afterLinkTextSha256": "32da95529eb0219207d6f0f450fd61a0497b94b6ed7edffe7d437fe6f4e42d75"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/packages/conformance/node_modules/ajv",
+      "physicalLinkPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/packages/conformance/node_modules/ajv",
+      "before": {
+        "link": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/ajv@8.17.1/node_modules/ajv",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/ajv@8.17.1/node_modules/ajv"
+      },
+      "after": {
+        "link": "../../../node_modules/.pnpm/ajv@8.17.1/node_modules/ajv",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/ajv@8.17.1/node_modules/ajv"
+      },
+      "beforeLinkTextSha256": "6b811a10467eb9c4a062dd3e6b5f04cd5a9ff7b468133ca643a49d251aa6d0a2",
+      "afterLinkTextSha256": "ff2ca1dc8efb12843974f39e4363f7b4520baef0464090465d146f8903734ebe"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/packages/protocol/node_modules/ajv-formats",
+      "physicalLinkPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/packages/protocol/node_modules/ajv-formats",
+      "before": {
+        "link": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/ajv-formats@3.0.1_ajv@8.17.1/node_modules/ajv-formats",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/ajv-formats@3.0.1_ajv@8.17.1/node_modules/ajv-formats"
+      },
+      "after": {
+        "link": "../../../node_modules/.pnpm/ajv-formats@3.0.1_ajv@8.17.1/node_modules/ajv-formats",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/ajv-formats@3.0.1_ajv@8.17.1/node_modules/ajv-formats"
+      },
+      "beforeLinkTextSha256": "fcd24594a8ea3d481dce2fc07c2b064a26f4e59c9d6733bb587fcb74302b3aa3",
+      "afterLinkTextSha256": "6cd4d4e3dc5d4c154e84802d5887c4c83e89f92c58f11e18ee5b9b1f1bf901e6"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/packages/protocol/node_modules/ajv",
+      "physicalLinkPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/packages/protocol/node_modules/ajv",
+      "before": {
+        "link": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/ajv@8.17.1/node_modules/ajv",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/ajv@8.17.1/node_modules/ajv"
+      },
+      "after": {
+        "link": "../../../node_modules/.pnpm/ajv@8.17.1/node_modules/ajv",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/ajv@8.17.1/node_modules/ajv"
+      },
+      "beforeLinkTextSha256": "6b811a10467eb9c4a062dd3e6b5f04cd5a9ff7b468133ca643a49d251aa6d0a2",
+      "afterLinkTextSha256": "ff2ca1dc8efb12843974f39e4363f7b4520baef0464090465d146f8903734ebe"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/packages/server/node_modules/vitest",
+      "physicalLinkPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/packages/server/node_modules/vitest",
+      "before": {
+        "link": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest"
+      },
+      "after": {
+        "link": "../../../node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest"
+      },
+      "beforeLinkTextSha256": "d01a120a397d0c74bb9a669bf33b5cfabed4f8679ddce8ba0d5fc44438f75bd1",
+      "afterLinkTextSha256": "d45ae3183a475998d89e5e4c43a498987f9377bea5c4794765250a2d5a6f8b05"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/packages/server/node_modules/fast-uri",
+      "physicalLinkPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy/packages/server/node_modules/fast-uri",
+      "before": {
+        "link": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/fast-uri@3.1.5/node_modules/fast-uri",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/fast-uri@3.1.5/node_modules/fast-uri"
+      },
+      "after": {
+        "link": "../../../node_modules/.pnpm/fast-uri@3.1.5/node_modules/fast-uri",
+        "realpath": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/fast-uri@3.1.5/node_modules/fast-uri"
+      },
+      "beforeLinkTextSha256": "9cbb0f4848a27e7bcefd34ea7d715bb448d4e6421dbb0296bb2897cdbd5beca7",
+      "afterLinkTextSha256": "fc84267e3b7fc20086105f6acf42818b21448456511d4996358ec23163cbdd0b"
+    }
+  ],
+  "changedPhysicalLinks": 11,
+  "changedLogicalLinkViews": 17,
+  "allDependencyRealpathsUnchanged": true,
+  "positiveAndCopyFileCountsEach": 1105,
+  "positiveAndCopyHashesAllMatch": true,
+  "sourceBindingSha256": "acf190e742dfb669fe5607085a3ac60c5ecb66f4f86b1f05025424a7873615b0",
+  "sourceDiffSha256": "e0c25b193ef1191d10916728c54eb6a894c5f29992e0da768bd585ef089e98e3",
+  "head": "88c9408e908590ab1a4c64c9b9dee1a8b705999c",
+  "tree": "b2d9f2c18502e0778c51123be8b4564af052d803",
+  "guardSha256": "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84",
+  "actualSelectedCase": "serves contextual missing Event responses for Bead and Link JSON and SSE GET and HEAD",
+  "actualNamedFailures": [
+    "missing-event-context:Bead:JSON:GET",
+    "missing-event-context:Bead:JSON:HEAD",
+    "missing-event-context:Bead:SSE:GET",
+    "missing-event-context:Bead:SSE:HEAD",
+    "missing-event-context:Link:JSON:GET",
+    "missing-event-context:Link:JSON:HEAD",
+    "missing-event-context:Link:SSE:GET",
+    "missing-event-context:Link:SSE:HEAD"
+  ],
+  "actualResponseCount": 11,
+  "actualObservation": {
+    "observation": "source-missing-event-context",
+    "verdict": "see-final-vitest-result",
+    "deadlineExceeded": false,
+    "attempts": 11,
+    "completedResponses": [
+      {
+        "method": "POST",
+        "url": "https://example.test/events/operations/batch",
+        "accept": "application/json",
+        "status": 200,
+        "headers": {
+          "content-type": "application/json",
+          "content-length": "670",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "bdp-scope-epoch": "19aff42f-4c21-4d6c-b278-36a3576a31c6",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1"
+        },
+        "bodySha256": "cacfbc5b497feea8b1c1e07273ab9b1f3f6af000c8d314da8d48a88635c9a23e"
+      },
+      {
+        "method": "GET",
+        "url": "https://example.test/events/events/",
+        "accept": "application/json",
+        "status": 200,
+        "headers": {
+          "content-type": "application/json",
+          "content-length": "587",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "bdp-scope-epoch": "19aff42f-4c21-4d6c-b278-36a3576a31c6",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1"
+        },
+        "bodySha256": "b48ecd14f81c8e4778829b80a72c5f2102cdff528d896e1833c952bce039ed4f"
+      },
+      {
+        "method": "GET",
+        "url": "https://example.test/events/beads/missing?view=events",
+        "accept": "application/json",
+        "status": 404,
+        "headers": {
+          "content-type": "application/problem+json",
+          "content-length": "134",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "bdp-scope-epoch": null,
+          "bdp-authorization-view": null,
+          "bdp-scope-position": null
+        },
+        "bodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1"
+      },
+      {
+        "method": "HEAD",
+        "url": "https://example.test/events/beads/missing?view=events",
+        "accept": "application/json",
+        "status": 404,
+        "headers": {
+          "content-type": "application/problem+json",
+          "content-length": "134",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "bdp-scope-epoch": null,
+          "bdp-authorization-view": null,
+          "bdp-scope-position": null
+        },
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "method": "GET",
+        "url": "https://example.test/events/beads/missing?view=events",
+        "accept": "text/event-stream",
+        "status": 404,
+        "headers": {
+          "content-type": "application/problem+json",
+          "content-length": "134",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "bdp-scope-epoch": null,
+          "bdp-authorization-view": null,
+          "bdp-scope-position": null
+        },
+        "bodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1"
+      },
+      {
+        "method": "HEAD",
+        "url": "https://example.test/events/beads/missing?view=events",
+        "accept": "text/event-stream",
+        "status": 404,
+        "headers": {
+          "content-type": "application/problem+json",
+          "content-length": "134",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "bdp-scope-epoch": null,
+          "bdp-authorization-view": null,
+          "bdp-scope-position": null
+        },
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "method": "GET",
+        "url": "https://example.test/events/links/missing?view=events",
+        "accept": "application/json",
+        "status": 404,
+        "headers": {
+          "content-type": "application/problem+json",
+          "content-length": "134",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "bdp-scope-epoch": null,
+          "bdp-authorization-view": null,
+          "bdp-scope-position": null
+        },
+        "bodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1"
+      },
+      {
+        "method": "HEAD",
+        "url": "https://example.test/events/links/missing?view=events",
+        "accept": "application/json",
+        "status": 404,
+        "headers": {
+          "content-type": "application/problem+json",
+          "content-length": "134",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "bdp-scope-epoch": null,
+          "bdp-authorization-view": null,
+          "bdp-scope-position": null
+        },
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "method": "GET",
+        "url": "https://example.test/events/links/missing?view=events",
+        "accept": "text/event-stream",
+        "status": 404,
+        "headers": {
+          "content-type": "application/problem+json",
+          "content-length": "134",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "bdp-scope-epoch": null,
+          "bdp-authorization-view": null,
+          "bdp-scope-position": null
+        },
+        "bodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1"
+      },
+      {
+        "method": "HEAD",
+        "url": "https://example.test/events/links/missing?view=events",
+        "accept": "text/event-stream",
+        "status": 404,
+        "headers": {
+          "content-type": "application/problem+json",
+          "content-length": "134",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "bdp-scope-epoch": null,
+          "bdp-authorization-view": null,
+          "bdp-scope-position": null
+        },
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "method": "GET",
+        "url": "https://example.test/events/beads/missing?view=events",
+        "accept": "text/event-stream",
+        "status": 401,
+        "headers": {
+          "content-type": "application/problem+json",
+          "content-length": "136",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": "Bearer realm=\"bdp-transaction-development\"",
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "bdp-scope-epoch": null,
+          "bdp-authorization-view": null,
+          "bdp-scope-position": null
+        },
+        "bodySha256": "9d3ea90197aca7525a1eb9d6c0f2845d5ad3656852c3d5ca1f4fd2df55b346c3"
+      }
+    ],
+    "closed": true,
+    "startupCompleted": true,
+    "directory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/omit-context-control.tmp/bdp-events-http-UslqoJ",
+    "directoryAbsent": true,
+    "failureCount": 0,
+    "responseDigest": "03b96b6ad3f7a6683086789a6bd5e1d1c7d21f1ffa81170fcfc094af9cb66fe4"
+  },
+  "testExit": 1,
+  "originalSupervisorExit": 1,
+  "originalSupervisorErrors": [
+    "source-postcheck:RuntimeError"
+  ],
+  "originalAdjudication": {
+    "verdict": "CONTROL_NOT_ACCEPTED",
+    "actualSupervisorExit": 1,
+    "reason": "Dependency bytes changed"
+  },
+  "independentCleanup": {
+    "sampledPids": [
+      84147,
+      84149,
+      84155,
+      84158,
+      84166,
+      84177
+    ],
+    "processGroup": 84147,
+    "stillPresent": [],
+    "runtimeDirectoryAbsent": true,
+    "retainedTempEntries": [
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/omit-context-control.tmp/node-compile-cache"
+    ]
+  },
+  "originalEvidenceHashes": {
+    "omit-context-control.exit.json": "0fb0e3fcc169087c66623be2f8cd47e6413076e1c08ff472773c4d517b35efc7",
+    "omit-context-control.adjudication.json": "11a973c6647c5a88ab9d74a96cbdcb77825b5c05273f28db3d74f3f06cc8d04e",
+    "omit-context-control.json": "e205c7800434c73c81a88600e12eb12e6e23ffc32cf34cb2952be9c5e24b3968",
+    "omit-context-control.log": "83ea0009e0e7ad916ef01e5903a5a632dc6eb572b817f4f1b7d262e8c7be7050"
+  },
+  "limits": "Pre/post inventories do not attribute the exact writer syscall. No test/install/build/service or extra HTTP in this audit. Original graph-inclusive sourceUnchanged:false remains untouched; separate direct source/dist checks verify actual equality."
+}

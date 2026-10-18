@@ -1,0 +1,1662 @@
+Focused independent CODE-REPAIR supplement. Do not write or modify any files. Output findings only in stdout. No tools, commands, imports, tests, network, services or agents. No model override. Complete within900s. Return concise numbered actionable findings with severity, exact location, cause, concrete impact and smallest correction; if none, say no actionable finding plus limits.
+
+Review ONLY whether this exact external successor correctly closes accepted F3 startup classification, F7 defensive abort-before-destroy, F8 dormant request shape and F9 milestone cap bookkeeping, and whether those deltas introduce a defect in the full supplied callback. Check unchanged oracle/count/lifecycle boundaries using complete relevant context below. Do not rerun a broad plan review or invent execution evidence. Native closure and source dispositions are evidence to challenge, not your verdict.
+
+Root accepted source dispositions of all16 prior findings. Signal-only exit relaxation is rejected because actual entry handles SIGTERM and drains with code0. Reject-all-BDP would break intentional CI BD variables. Dedicated external supervisors scrub BDP/loader overrides and require approved RU ENTRY/MODE/OUTPUT; default fullCI retains unrelated variables, no global process.env mutation. Header emitters, child fixed stderr, metadata/provenance/schema/plain-object snapshot and point-read projection now close previous excerpt gaps. Preserve exact media, clean exit, complete parsed Resource and full replay equality.
+
+Future positive remains10HTTP/one productchild and one guard-removal derivative6HTTP/one productchild; one callback each,30swork/45scallback/120scommand unchanged. Both actual200 schemas precede named exactly-one-winner rejection; no nonexistent loser dereference or execution beyond6. NativeL1 pre-ready PID/launcher-error masking stays explicit. Entry hash alone does not attest source HEAD; archive/full dependency/config binding belongs to future external preparation. Mode is metadata, not qualification.
+
+External preview only, not applied or executed. Surrounding HEAD may change because root owns distinct receiptCI repair/merge; exact listed target/reference bytes are the immutable scope. Missing evidence is a limitation, not automatically a verified defect. Original review/preview remain immutable.
+
+TARGET read-update-guarded-overlap-draft/review-successor/read-update-guarded-overlap-installed.test.ts
+1: /** Private ordinary Read+Update witness; no cumulative or public qualification. */
+2: import { execFileSync, type ChildProcess } from "node:child_process";
+3: import { createHash, randomBytes } from "node:crypto";
+4: import { existsSync, mkdtempSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync } from "node:fs";
+5: import { request, type ClientRequest, type IncomingMessage } from "node:http";
+6: import { tmpdir } from "node:os";
+7: import path from "node:path";
+8: import { fileURLToPath } from "node:url";
+9: import { isDeepStrictEqual } from "node:util";
+10: import { expect, it } from "vitest";
+11: import { parseBeadRecord, parseReadUpdateDiscovery, parseReadUpdateMutationResult,
+12:   parseReadUpdateOperationDirectory, parseReadUpdateProblem, type BeadRecord } from "@bdp/protocol";
+13: 
+14: const root = fileURLToPath(new URL("../../../", import.meta.url));
+15: const scope = "https://reference.invalid/acme/";
+16: const digest = (bytes: string | Uint8Array) => createHash("sha256").update(bytes).digest("hex");
+17: type Configuration = { scope: string; listener: { host: string; port: number } };
+18: type Exit = { code: number | null; signal: NodeJS.Signals | null };
+19: type Launched = { child: ChildProcess; ready: Record<string, unknown>; close(): Promise<Exit> };
+20: // Existing emitted launcher imports only when the selected test module is loaded, after build.
+21: const helpers = (await import(new URL("../../../scripts/installed-reference-observation.mjs", import.meta.url).href)) as {
+22:   availablePort(): Promise<number>;
+23:   referenceConfiguration(directory: string, port: number, token: string): Configuration;
+24:   launchInstalledReference(entry: string, configuration: Configuration): Promise<Launched>;
+25: };
+26: type Classification = "oracle" | "work-deadline" | "exchange-deadline" | "transport" | "startup" | "cleanup";
+27: class WitnessError extends Error {
+28:   constructor(readonly classification: Classification, readonly code: string) { super(code); }
+29: }
+30: type Kind = "invoked" | "end-called" | "socket-assigned" | "connected" | "finish" |
+31:   "response-start" | "response-end" | "error" | "aborted" | "request-close" |
+32:   "response-close" | "settled" | "socket-close";
+33: type Pair = "A" | "B";
+34: type Milestone = { ordinal: number; request: Pair; kind: Kind; socket?: number };
+35: type Response = { status: number; headers: IncomingMessage["headers"]; body: unknown };
+36: const expectedProblem = { type: "https://github.com/gastownhall/bdp/problems/conflict",
+37:   code: "revision-mismatch", status: 409, retry: "after-state-change" };
+38: const absentMutationHeaders = ["etag", "location", "bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"];
+39: function grant(value: string): string {
+40:   const url = new URL(value);
+41:   if (url.href !== value || !value.startsWith(scope) || url.username || url.password || url.search || url.hash ||
+42:       value.length > 8192 || Buffer.byteLength(value) > 8192)
+43:     throw new WitnessError("oracle", "overlap:canonical-target");
+44:   return value;
+45: }
+46: function mutation(response: Response): void {
+47:   expect(response.headers["cache-control"]).toBe("private, no-store");
+48:   expect(response.headers["x-bdp-development"]).toBe("non-attesting");
+49:   expect(response.headers["content-type"]).toBe(response.status === 200 ? "application/json" : "application/problem+json");
+50:   for (const name of absentMutationHeaders) expect(response.headers[name]).toBeUndefined();
+51: }
+52: function completeUpdate(response: Response, seed: BeadRecord, n: number): BeadRecord | undefined {
+53:   if (response.status !== 200 && response.status !== 409)
+54:     throw new WitnessError("transport", "overlap:unexpected-mutation-status");
+55:   mutation(response);
+56:   if (response.status === 409) { parseReadUpdateProblem(response.body); return undefined; }
+57:   const result = parseReadUpdateMutationResult(response.body);
+58:   expect(result.outcome).toBe("updated");
+59:   const resource = parseBeadRecord(result.resource);
+60:   expect(resource.id).toBe(seed.id); expect(resource.type).toBe(seed.type);
+61:   expect(resource.properties).toStrictEqual({ n });
+62:   expect(resource.metadata).toStrictEqual(seed.metadata);
+63:   expect(resource.ownedLinks).toStrictEqual(seed.ownedLinks);
+64:   expect(resource.links).toStrictEqual(seed.links);
+65:   expect(resource.revision).not.toBe(seed.revision);
+66:   return resource;
+67: }
+68: 
+69: it("preserves one guarded winner and both retained dispositions across overlapping ordinary Read+Update requests", async () => {
+70:   const failures: unknown[] = [];
+71:   const cleanupFailures: string[] = [];
+72:   let classification: Classification | null = null;
+73:   let startupPhase = true;
+74:   let namedOracle: string | null = null;
+75:   let directory: string | undefined;
+76:   let launched: Launched | undefined;
+77:   let exit: Exit | undefined;
+78:   let entry: string | undefined;
+79:   let entrySha256: string | undefined;
+80:   let sourceCommit: string | undefined;
+81:   let workspaceDirty: boolean | undefined;
+82:   let mode: "default-emitted-CI" | "fresh-consumer-positive" | "emitted-derivative" | undefined;
+83:   let configuration: Configuration | undefined;
+84:   let attempted = 0;
+85:   let bodyBytes = 0;
+86:   let revisionJsonBytes: number | undefined;
+87:   let winner: Pair | null = null;
+88:   let pairSchemasValid = false;
+89:   let overlapObserved: boolean | null = null;
+90:   let connectionsBeforeResponse: boolean | null = null;
+91:   let finishesBeforeResponse: boolean | null = null;
+92:   let eventOverflow = false;
+93:   let droppedEvents = 0;
+94:   let socketSerial = 0;
+95:   const milestones: Milestone[] = [];
+96:   const seen = new Set<string>();
+97:   const records: { number: number; method: string; url: string; status: number; bodyOctets: number; bodySha256: string;
+98:     requestBodyOctets: number; requestBodySha256: string | null; headers: Record<string, string | null> }[] = [];
+99:   const active = new Set<ClientRequest>();
+100:   const pending: Promise<Response>[] = [];
+101:   const closing: Promise<void>[] = [];
+102:   const controller = new AbortController();
+103:   let workDeadline = false;
+104:   const timer = setTimeout(() => { workDeadline = true; controller.abort(new WitnessError("work-deadline", "overlap:work-deadline")); }, 30000);
+105:   function mark(pair: Pair | undefined, kind: Kind, socket?: number): void {
+106:     if (!pair) return;
+107:     const key = `${pair}:${kind}`;
+108:     if (seen.has(key)) return;
+109:     if (milestones.length >= 32) { eventOverflow = true; droppedEvents++; return; }
+110:     seen.add(key);
+111:     milestones.push({ ordinal: milestones.length + 1, request: pair, kind, ...(socket === undefined ? {} : { socket }) });
+112:   }
+113:   const granted = new Set<string>([scope]);
+114:   const token = randomBytes(32).toString("base64url");
+115:   function send(url: string, method: "GET" | "POST" = "GET", body?: string, key?: string, pair?: Pair): Promise<Response> {
+116:     controller.signal.throwIfAborted();
+117:     if (!configuration || !granted.has(url) || grant(url) !== url || attempted >= 10)
+118:       throw new WitnessError("oracle", "overlap:dispatch-allowlist");
+119:     const bytes = body === undefined ? 0 : Buffer.byteLength(body);
+120:     if (bytes > 65536 || (method === "POST") !== (body !== undefined) || (body !== undefined) !== (key !== undefined))
+121:       throw new WitnessError("oracle", "overlap:request-shape-bound");
+122:     const headers = { authorization: `Bearer ${token}`, accept: "application/json", connection: "close",
+123:       ...(body === undefined ? {} : { "content-type": "application/json", "content-length": String(bytes), "idempotency-key": key! }) };
+124:     if (Buffer.byteLength(JSON.stringify(headers)) > 16384)
+125:       throw new WitnessError("oracle", "overlap:request-header-bound");
+126:     const number = ++attempted; bodyBytes += bytes; mark(pair, "invoked");
+127:     let req: ClientRequest | undefined;
+128:     let incoming: IncomingMessage | undefined;
+129:     let settled = false;
+130:     let deadline: ReturnType<typeof setTimeout> | undefined;
+131:     let resolveClosed!: () => void;
+132:     const closed = new Promise<void>((resolve) => { resolveClosed = resolve; });
+133:     closing.push(closed);
+134:     const promise = new Promise<Response>((resolve, reject) => {
+135:       const finish = (error?: unknown, response?: Response) => {
+136:         if (settled) return;
+137:         settled = true;
+138:         if (deadline) clearTimeout(deadline);
+139:         controller.signal.removeEventListener("abort", abort);
+140:         mark(pair, "settled");
+141:         if (error !== undefined) reject(error); else resolve(response!);
+142:       };
+143:       const fail = (error: WitnessError) => { incoming?.destroy(); req?.destroy(); finish(error); };
+144:       const abort = () => fail(new WitnessError(workDeadline ? "work-deadline" : "cleanup", "overlap:aborted"));
+145:       deadline = setTimeout(() => fail(new WitnessError("exchange-deadline", "overlap:exchange-deadline")), 5000);
+146:       controller.signal.addEventListener("abort", abort, { once: true });
+147:       try {
+148:         const target = new URL(url);
+149:         req = request({ hostname: configuration!.listener.host, port: configuration!.listener.port,
+150:           path: target.pathname, method, headers, agent: false, maxHeaderSize: 16384 }, (response) => {
+151:           incoming = response; mark(pair, "response-start");
+152:           const chunks: Buffer[] = []; let received = 0;
+153:           response.on("data", (chunk: Buffer) => {
+154:             received += chunk.length;
+155:             if (received > 32768) { fail(new WitnessError("transport", "overlap:response-body-bound")); return; }
+156:             if (!settled) chunks.push(chunk);
+157:           });
+158:           response.once("aborted", () => { mark(pair, "aborted"); fail(new WitnessError("transport", "overlap:response-aborted")); });
+159:           response.once("error", () => { mark(pair, "error"); fail(new WitnessError("transport", "overlap:response-error")); });
+160:           response.once("close", () => {
+161:             mark(pair, "response-close");
+162:             if (!response.complete) fail(new WitnessError("transport", "overlap:premature-close"));
+163:           });
+164:           response.once("end", () => {
+165:             mark(pair, "response-end");
+166:             if (settled) return;
+167:             try {
+168:               const data = Buffer.concat(chunks); const text = new TextDecoder("utf-8", { fatal: true }).decode(data);
+169:               const value: unknown = data.length ? JSON.parse(text) : undefined;
+170:               const status = response.statusCode ?? 0;
+171:               const safeHeaders = Object.fromEntries(["content-type", "cache-control", "content-length", "x-bdp-development",
+172:                 ...absentMutationHeaders].map((name) => [name, typeof response.headers[name] === "string" ? response.headers[name] : null]));
+173:               records.push({ number, method, url, status, bodyOctets: data.length, bodySha256: digest(data),
+174:                 requestBodyOctets: bytes, requestBodySha256: body === undefined ? null : digest(body), headers: safeHeaders });
+175:               finish(undefined, { status, headers: response.headers, body: value });
+176:             } catch { fail(new WitnessError("transport", "overlap:response-json")); }
+177:           });
+178:         });
+179:         active.add(req);
+180:         req.once("socket", (socket) => {
+181:           const id = ++socketSerial; mark(pair, "socket-assigned", id);
+182:           socket.once("connect", () => mark(pair, "connected", id));
+183:           socket.once("close", () => mark(pair, "socket-close", id));
+184:         });
+185:         req.once("finish", () => mark(pair, "finish"));
+186:         req.once("error", () => { mark(pair, "error"); finish(new WitnessError("transport", "overlap:request-error")); });
+187:         req.once("close", () => { mark(pair, "request-close"); active.delete(req!); resolveClosed(); });
+188:         mark(pair, "end-called"); req.end(body);
+189:       } catch { fail(new WitnessError("transport", "overlap:request-construction")); if (!req) resolveClosed(); }
+190:     });
+191:     // Attach a rejection handler immediately, including A before constructing B.
+192:     void promise.catch(() => undefined); pending.push(promise); return promise;
+193:   }
+194:   try {
+195:     const defaultEntry = realpathSync(path.join(root, "packages/server/dist/installed-reference-process.js"));
+196:     const override = process.env.BDP_RU_GUARDED_OVERLAP_ENTRY;
+197:     if (override !== undefined && !path.isAbsolute(override)) throw new WitnessError("startup", "overlap:absolute-entry");
+198:     entry = realpathSync(override ?? defaultEntry);
+199:     if (!statSync(entry).isFile()) throw new WitnessError("startup", "overlap:regular-entry");
+200:     if (override === undefined) { expect(entry).toBe(defaultEntry); mode = "default-emitted-CI"; }
+201:     else {
+202:       const declaredMode = process.env.BDP_RU_GUARDED_OVERLAP_MODE;
+203:       if (declaredMode !== "fresh-consumer-positive" && declaredMode !== "emitted-derivative")
+204:         throw new WitnessError("startup", "overlap:external-entry-mode");
+205:       mode = declaredMode;
+206:     }
+207:     entrySha256 = digest(readFileSync(entry));
+208:     sourceCommit = execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8", timeout: 5000 }).trim();
+209:     workspaceDirty = execFileSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8", timeout: 5000 }).length !== 0;
+210:     directory = mkdtempSync(path.join(tmpdir(), "bdp-ru-guarded-overlap-"));
+211:     configuration = helpers.referenceConfiguration(directory, await helpers.availablePort(), token);
+212:     controller.signal.throwIfAborted();
+213:     try { launched = await helpers.launchInstalledReference(entry, configuration); }
+214:     catch (error) { classification = workDeadline ? "work-deadline" : "startup"; throw error; }
+215:     startupPhase = false;
+216:     controller.signal.throwIfAborted();
+217:     const probe = await send(scope);
+218:     expect(probe.status).toBe(204); expect(probe.headers["x-bdp-development"]).toBe("non-attesting");
+219:     const link = probe.headers.link;
+220:     if (typeof link !== "string") throw new WitnessError("oracle", "overlap:service-description");
+221:     const matched = /^<([^>]+)>; rel="service-desc"; type="application\/json"$/.exec(link);
+222:     if (!matched?.[1]) throw new WitnessError("oracle", "overlap:service-description");
+223:     const descriptor = grant(new URL(matched[1], scope).href); granted.add(descriptor);
+224:     const discoveryResponse = await send(descriptor); expect(discoveryResponse.status).toBe(200);
+225:     const discovery = parseReadUpdateDiscovery(discoveryResponse.body);
+226:     expect(discovery.scope).toBe(scope); expect(discovery.profile).toBe("read-update");
+227:     expect(discovery).not.toHaveProperty("historicalResolution");
+228:     expect(discovery.limits?.request).toStrictEqual({ bodyBytes: 65536 });
+229:     const directoryUrl = grant(discovery.operations); granted.add(directoryUrl);
+230:     const directoryResponse = await send(directoryUrl); expect(directoryResponse.status).toBe(200);
+231:     const operations = parseReadUpdateOperationDirectory(directoryResponse.body);
+232:     const create = grant(new URL(operations.createBead, directoryUrl).href);
+233:     const update = grant(new URL(operations.updateBead, directoryUrl).href);
+234:     granted.add(create); granted.add(update);
+235:     const seedBody = JSON.stringify({ id: "beads/overlap", type: `${scope}types/task`, properties: { n: 0 } });
+236:     expect(Buffer.byteLength(seedBody)).toBe(94);
+237:     const made = await send(create, "POST", seedBody, "overlap-seed");
+238:     expect(made.status).toBe(200); mutation(made);
+239:     const created = parseReadUpdateMutationResult(made.body); expect(created.outcome).toBe("created");
+240:     const seed = parseBeadRecord(created.resource);
+241:     expect(seed.id).toBe(`${scope}beads/overlap`); expect(seed.type).toBe(`${scope}types/task`);
+242:     expect(seed.properties).toStrictEqual({ n: 0 }); granted.add(grant(seed.id));
+243:     revisionJsonBytes = Buffer.byteLength(JSON.stringify(seed.revision));
+244:     const makeBody = (value: number) => JSON.stringify({ bead: seed.id, expectedRevision: seed.revision,
+245:       propertiesChange: [{ op: "replace", path: "/n", value }] });
+246:     const aBody = makeBody(1); const bBody = makeBody(2);
+247:     expect(Buffer.byteLength(aBody)).toBe(135 + revisionJsonBytes);
+248:     expect(Buffer.byteLength(bBody)).toBe(135 + revisionJsonBytes);
+249:     const aPending = send(update, "POST", aBody, "overlap-a", "A");
+250:     const bPending = send(update, "POST", bBody, "overlap-b", "B");
+251:     const pair = await Promise.allSettled([aPending, bPending]);
+252:     const rejected = pair.filter((value): value is PromiseRejectedResult => value.status === "rejected");
+253:     if (rejected.length) {
+254:       classification = workDeadline ? "work-deadline" : rejected.some((value) => value.reason instanceof WitnessError && value.reason.classification === "exchange-deadline") ? "exchange-deadline" : "transport";
+255:       throw new AggregateError(rejected.map((value) => value.reason), "overlap:pair-transport");
+256:     }
+257:     const a = (pair[0] as PromiseFulfilledResult<Response>).value;
+258:     const b = (pair[1] as PromiseFulfilledResult<Response>).value;
+259:     const firstSettle = Math.min(...milestones.filter((e) => e.kind === "settled").map((e) => e.ordinal));
+260:     const milestone = (id: Pair, kind: Kind) => milestones.find((e) => e.request === id && e.kind === kind);
+261:     const required = (["A", "B"] as const).every((id) => ["invoked", "end-called", "socket-assigned", "settled"].every((kind) => milestone(id, kind as Kind)));
+262:     overlapObserved = required ? !eventOverflow && (["A", "B"] as const).every((id) => milestone(id, "end-called")!.ordinal < firstSettle && milestone(id, "invoked")!.ordinal < firstSettle) &&
+263:       milestone("A", "socket-assigned")!.socket !== milestone("B", "socket-assigned")!.socket : null;
+264:     const firstResponse = Math.min(...milestones.filter((e) => e.kind === "response-start").map((e) => e.ordinal));
+265:     const beforeResponse = (kind: Kind) => (["A", "B"] as const).every((id) => milestone(id, kind)) ?
+266:       (["A", "B"] as const).every((id) => milestone(id, kind)!.ordinal < firstResponse) : null;
+267:     connectionsBeforeResponse = beforeResponse("connected"); finishesBeforeResponse = beforeResponse("finish");
+268:     if (overlapObserved !== true) throw new WitnessError("transport", "overlap:incomplete-observation");
+269:     const aResource = completeUpdate(a, seed, 1); const bResource = completeUpdate(b, seed, 2);
+270:     pairSchemasValid = true;
+271:     const valid = (a.status === 200 && b.status === 409 && isDeepStrictEqual(b.body, expectedProblem)) ||
+272:       (b.status === 200 && a.status === 409 && isDeepStrictEqual(a.body, expectedProblem));
+273:     namedOracle = "overlap:exactly-one-winner";
+274:     expect(valid, namedOracle).toBe(true);
+275:     namedOracle = null; winner = a.status === 200 ? "A" : "B";
+276:     const winningResource = winner === "A" ? aResource : bResource;
+277:     const current = await send(seed.id); expect(current.status).toBe(200);
+278:     expect(parseBeadRecord(current.body)).toStrictEqual(winningResource);
+279:     const replayA = await send(update, "POST", aBody, "overlap-a");
+280:     mutation(replayA); expect(replayA.status).toBe(a.status); expect(replayA.body).toStrictEqual(a.body);
+281:     const replayB = await send(update, "POST", bBody, "overlap-b");
+282:     mutation(replayB); expect(replayB.status).toBe(b.status); expect(replayB.body).toStrictEqual(b.body);
+283:     const final = await send(seed.id); expect(final.status).toBe(200);
+284:     expect(parseBeadRecord(final.body)).toStrictEqual(winningResource);
+285:     expect(attempted).toBe(10); expect(bodyBytes).toBe(634 + 4 * revisionJsonBytes);
+286:   } catch (error) {
+287:     failures.push(error);
+288:     classification ??= error instanceof WitnessError ? error.classification : workDeadline ? "work-deadline" : startupPhase ? "startup" : "oracle";
+289:   } finally {
+290:     clearTimeout(timer);
+291:     controller.abort(new WitnessError("cleanup", "overlap:aborted"));
+292:     for (const req of active) req.destroy();
+293:     // Both teardown branches run even if the other fails; no additional runtime is started.
+294:     let drainTimer: ReturnType<typeof setTimeout> | undefined;
+295:     const drain = Promise.race([
+296:       Promise.all([Promise.allSettled(pending), Promise.all(closing)]),
+297:       new Promise<never>((_resolve, reject) => { drainTimer = setTimeout(() => reject(new WitnessError("cleanup", "overlap:request-drain-deadline")), 5000); }),
+298:     ]).finally(() => { if (drainTimer) clearTimeout(drainTimer); });
+299:     const close = (async () => {
+300:       if (!launched) return;
+301:       exit = await launched.close();
+302:       if (exit.code !== 0 || exit.signal !== null) throw new WitnessError("cleanup", "overlap:child-exit");
+303:     })();
+304:     const cleanup = await Promise.allSettled([drain, close]);
+305:     for (const [index, result] of cleanup.entries()) if (result.status === "rejected") {
+306:       failures.push(result.reason); cleanupFailures.push(index === 0 ? "request-drain" : "child-close");
+307:     }
+308:     if (directory) { try { rmSync(directory, { recursive: true, force: true }); }
+309:       catch (error) { failures.push(error); cleanupFailures.push("directory-remove"); } }
+310:     if (eventOverflow && classification === null) { failures.push(new WitnessError("transport", "overlap:event-overflow")); classification = "transport"; }
+311:     const record = { observation: "private-installed-read-update-guarded-overlap", claimEligible: false,
+312:       outcome: failures.length ? "failed" : "passed", mode: mode ?? null, entry: entry ?? null, entrySha256: entrySha256 ?? null,
+313:       sourceCommit: sourceCommit ?? null, workspaceDirty: workspaceDirty ?? null, ready: launched ? Object.fromEntries(["event", "scope", "profile", "history", "claimEligible", "configurationIdentity", "payloadIdentity", "artifactIdentity", "policyIdentity", "authenticationIdentity"].map((key) => [key, launched?.ready[key] ?? null])) : null,
+314:       attempted, completedResponses: records.sort((a, b) => a.number - b.number), bodyBytes, revisionJsonBytes: revisionJsonBytes ?? null,
+315:       pairSchemasValid, winner, overlapObserved, connectionsBeforeResponse, finishesBeforeResponse, eventOverflow, droppedEvents, milestones,
+316:       missingMilestones: (["A", "B"] as const).flatMap((id) => (["invoked", "end-called", "socket-assigned", "connected", "finish", "response-start", "response-end", "settled", "request-close", "response-close", "socket-close"] as const).filter((kind) => !seen.has(`${id}:${kind}`)).map((kind) => `${id}:${kind}`)),
+317:       terminationClass: classification ?? (cleanupFailures.length ? "cleanup" : null), namedOracle,
+318:       cleanupFailures, failureCount: failures.length, workDeadline, childPid: launched?.child.pid ?? null,
+319:       childExitCode: exit?.code ?? null, childSignalCode: exit?.signal ?? null, directory: directory ?? null,
+320:       directoryAbsent: directory === undefined ? null : !existsSync(directory),
+321:       startupLimitation: "Before readiness PID unavailable; inherited launcher may mask original startup failure. Only surfaced failure plus external process evidence retained.",
+322:       retention: "Full schemas/replay/Resource assertions in memory; safe fingerprints and milestone ordinals retained. Client outstanding overlap only; no simultaneous admission/fairness claim. Losing replay equality cannot distinguish reevaluation. Source attribution externally verified, not child attested. Entry hash alone does not bind emitted bytes to sourceCommit." };
+323:     const output = process.env.BDP_RU_GUARDED_OVERLAP_OUTPUT;
+324:     if (output) { try { if (!path.isAbsolute(output)) throw new Error("overlap:absolute-output"); writeFileSync(output, `${JSON.stringify(record)}\n`, { flag: "wx" }); }
+325:       catch (error) { failures.push(error); record.outcome = "failed"; record.failureCount = failures.length;
+326:         record.cleanupFailures.push("report-write"); record.terminationClass ??= "cleanup"; } }
+327:     console.log(JSON.stringify(record));
+328:   }
+329:   if (failures.length) throw new AggregateError(failures, "ordinary Read+Update guarded overlap witness failed");
+330: }, 45000);
+
+TARGET read-update-guarded-overlap-draft/review-successor/correction.patch
+--- preview/read-update-guarded-overlap-installed.test.ts
++++ review-successor/read-update-guarded-overlap-installed.test.ts
+@@ -70,6 +70,7 @@
+   const failures: unknown[] = [];
+   const cleanupFailures: string[] = [];
+   let classification: Classification | null = null;
++  let startupPhase = true;
+   let namedOracle: string | null = null;
+   let directory: string | undefined;
+   let launched: Launched | undefined;
+@@ -105,8 +106,8 @@
+     if (!pair) return;
+     const key = `${pair}:${kind}`;
+     if (seen.has(key)) return;
++    if (milestones.length >= 32) { eventOverflow = true; droppedEvents++; return; }
+     seen.add(key);
+-    if (milestones.length >= 32) { eventOverflow = true; droppedEvents++; return; }
+     milestones.push({ ordinal: milestones.length + 1, request: pair, kind, ...(socket === undefined ? {} : { socket }) });
+   }
+   const granted = new Set<string>([scope]);
+@@ -116,7 +117,7 @@
+     if (!configuration || !granted.has(url) || grant(url) !== url || attempted >= 10)
+       throw new WitnessError("oracle", "overlap:dispatch-allowlist");
+     const bytes = body === undefined ? 0 : Buffer.byteLength(body);
+-    if (bytes > 65536 || (method === "POST") !== (body !== undefined && key !== undefined))
++    if (bytes > 65536 || (method === "POST") !== (body !== undefined) || (body !== undefined) !== (key !== undefined))
+       throw new WitnessError("oracle", "overlap:request-shape-bound");
+     const headers = { authorization: `Bearer ${token}`, accept: "application/json", connection: "close",
+       ...(body === undefined ? {} : { "content-type": "application/json", "content-length": String(bytes), "idempotency-key": key! }) };
+@@ -210,7 +211,8 @@
+     configuration = helpers.referenceConfiguration(directory, await helpers.availablePort(), token);
+     controller.signal.throwIfAborted();
+     try { launched = await helpers.launchInstalledReference(entry, configuration); }
+-    catch (error) { classification = "startup"; throw error; }
++    catch (error) { classification = workDeadline ? "work-deadline" : "startup"; throw error; }
++    startupPhase = false;
+     controller.signal.throwIfAborted();
+     const probe = await send(scope);
+     expect(probe.status).toBe(204); expect(probe.headers["x-bdp-development"]).toBe("non-attesting");
+@@ -283,10 +285,11 @@
+     expect(attempted).toBe(10); expect(bodyBytes).toBe(634 + 4 * revisionJsonBytes);
+   } catch (error) {
+     failures.push(error);
+-    classification ??= error instanceof WitnessError ? error.classification : workDeadline ? "work-deadline" : "oracle";
++    classification ??= error instanceof WitnessError ? error.classification : workDeadline ? "work-deadline" : startupPhase ? "startup" : "oracle";
+   } finally {
++    clearTimeout(timer);
++    controller.abort(new WitnessError("cleanup", "overlap:aborted"));
+     for (const req of active) req.destroy();
+-    clearTimeout(timer);
+     // Both teardown branches run even if the other fails; no additional runtime is started.
+     let drainTimer: ReturnType<typeof setTimeout> | undefined;
+     const drain = Promise.race([
+@@ -316,7 +319,7 @@
+       childExitCode: exit?.code ?? null, childSignalCode: exit?.signal ?? null, directory: directory ?? null,
+       directoryAbsent: directory === undefined ? null : !existsSync(directory),
+       startupLimitation: "Before readiness PID unavailable; inherited launcher may mask original startup failure. Only surfaced failure plus external process evidence retained.",
+-      retention: "Full schemas/replay/Resource assertions in memory; safe fingerprints and milestone ordinals retained. Client outstanding overlap only; no simultaneous admission/fairness claim. Losing replay equality cannot distinguish reevaluation. Source attribution externally verified, not child attested." };
++      retention: "Full schemas/replay/Resource assertions in memory; safe fingerprints and milestone ordinals retained. Client outstanding overlap only; no simultaneous admission/fairness claim. Losing replay equality cannot distinguish reevaluation. Source attribution externally verified, not child attested. Entry hash alone does not bind emitted bytes to sourceCommit." };
+     const output = process.env.BDP_RU_GUARDED_OVERLAP_OUTPUT;
+     if (output) { try { if (!path.isAbsolute(output)) throw new Error("overlap:absolute-output"); writeFileSync(output, `${JSON.stringify(record)}\n`, { flag: "wx" }); }
+       catch (error) { failures.push(error); record.outcome = "failed"; record.failureCount = failures.length;
+
+
+TARGET read-update-guarded-overlap-draft/review-successor/report.md
+# RU review successor — external only
+
+Original preview and actual review preserved unchanged. Root accepted the full16 source dispositions and selected four small local test hardenings plus explicit retention wording; see root-dispositions.json and correction.patch. The product doc amendment, request ledger, selector, full oracles and prospective16HTTP/two-child bounds are unchanged. Expanded source hashes supplement the named basis, not installed closure. No product application, formatting, import, test, build or service execution. Actual merged parent remains pending. Native closure and actual focused Claude supplement required before repository execution.
+
+Dedicated external supervisors clear inherited BDP/loader overrides and inject approved ENTRY/MODE/OUTPUT; default full CI retains unrelated BDP matrix variables. No global environment mutation or acceptance of signal-only child termination.32milestone cap is unexercised headroom above26 possible slots. Safe-record privacy does not claim arbitrary replacement child stderr sanitization.
+
+
+TARGET read-update-guarded-overlap-draft/review-successor/source-binding.json
+{
+  "status": "EXTERNAL_PREVIEW_NOT_REPO_APPLIED",
+  "workspaceBasis": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "observedHead": "1a37f7209e3ff6f409f43491d670c881259406ba",
+  "authoritativeRuBasis": "015cac1aa4fa827cc4a2c647dff08454c6c8e6f8",
+  "anticipatedReceiptCandidate": "1a37f7209e3ff6f409f43491d670c881259406ba",
+  "actualMergedParent": "PENDING_ROOT_VERIFIED_RECEIPT_MERGE_REANCHOR",
+  "plan": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-plan-v2.md",
+    "sha256": "7de8ee2cb33d1cfd9d7d3c556cae3998838e68c58f5cca72d70cff7c84084cef"
+  },
+  "dispositions": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-claude-source-dispositions.md",
+    "sha256": "e6257a068aa142fa1bf614534f4741f4557d3459997802242544f79ae9e98539"
+  },
+  "rootPlanAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-root-plan-acceptance.json",
+    "sha256": "798076754d4ad0c8748ad4de2cae334e9bcd2892815a62db027ef6ba28081d0d"
+  },
+  "files": {
+    "apps/bdptest/src/read-update-guarded-overlap-installed.test.ts": {
+      "previewPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/review-successor/read-update-guarded-overlap-installed.test.ts",
+      "sha256": "c0d65166e9587311d101883727cbba8bdb5baa0c31bc240e87ed55a45e74d56c",
+      "bytes": 23411,
+      "new": true
+    },
+    "docs/design/update-implementation-progress.md": {
+      "previewPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/review-successor/update-implementation-progress.md",
+      "sha256": "8c6caae7f8ba4ccb2a2492596cc09dee6fbbfd630a9595ac04f5446f4b150cde",
+      "bytes": 42438,
+      "new": false
+    }
+  },
+  "sourceHashes": {
+    "scripts/installed-reference-observation.mjs": "ca897f4a7659969df123037b5847d5765b357d9b8e1652f367bb204450db6278",
+    "packages/server/src/installed-reference.ts": "c311a724d5d81710264b443da6800e960f49402f10383889de59714949b9eec7",
+    "packages/server/src/installed-reference-process.ts": "149f98c04e096a9eab9a291bd4aac3f7db34ba57578e63cb4439e0e3e24fc654",
+    "packages/server/src/development-runtime.ts": "37e222682645e9d8f2d5fcf62de208640fb6216c9e9f2f279ab6017e8b9d6ca9",
+    "packages/server/src/development-composition.ts": "a7113a8a3164dc6f4b1f6b5bdcbf74cee811e5b8a0474d241ac30706997ee54f",
+    "packages/server/src/member-executor.ts": "cfce8e561f9315948c6b3b3def25893a7dfde78e2cc338fa142b859ae209771f",
+    "packages/server/src/resource-evaluator.ts": "89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
+    "packages/server/src/recovery-store.ts": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9",
+    "packages/protocol/src/index.ts": "92e547e807ec2d23223c47dbc4e04867d55db89ac9aab5fbd55f33349f92bdc6",
+    "docs/specs/bdp.md": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+    "apps/bdptest/src/development-matrix.test.ts": "858e6f85bf40bde4327df52e34a2aceab235b8130e7539a816651ce19f71e1ac",
+    "packages/server/src/read-http-routing.ts": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42",
+    "packages/server/src/read-request.ts": "57675afc647df3e8ad1f26a40aef72584aa388ade6af4a465e3ffef16670f6a2",
+    "packages/server/src/development-authority.ts": "d49f89da345234f7eaee83dd872a5c2d7a1a8d38ffc794e5e69d333976d22d49",
+    "packages/server/src/authority-read.ts": "fd6554c4ee0d08b997fb3622c2f21697f02d58b838f4ae0de10aca4707f67734",
+    "packages/protocol/src/read-values.ts": "6ff2cd2456a5487ded968bac6651164ed4a82ad665b8896986accfd662688482",
+    "packages/protocol/src/read-update-values.ts": "d1fdbc660d5e2c009275c152bdcebda46031700920aa03bfea89f39564c89de2",
+    "packages/protocol/src/read-update-problems.ts": "1a6315705b72fad1f1a287053c17858130c91317ed08c95f6d68a1ecc620a211",
+    "packages/protocol/src/json-values.ts": "9a1cd0b12ccd41913e2874673fdb2a24ae7925d7e4e880f50cecc717dadec591",
+    "packages/protocol/schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+    ".github/workflows/ci.yml": "fd0a08da61f74abe19c8db16d879bfff85d8090643bf4da326d3e597ae129be3"
+  },
+  "oldDocSha256": "208ba97d6948cf6214fbb5ca218ac92cbe716796cdaf365e49097bd661e301b1",
+  "diffSha256": "3f6f29facd7c8467583747c27a7aac408069f8360f1670a3f4be94ce22583d84",
+  "repositoryStatus": "",
+  "execution": false,
+  "predecessorBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/preview/source-binding.json",
+    "sha256": "c4534f14df45f9f5d2a2f5d212cbf21f788e58c0685566f148796f59da6d84be"
+  }
+}
+
+
+TARGET read-update-guarded-overlap-draft/review-successor/root-dispositions.json
+{
+  "at": "2026-10-15T13:51:55.815225+00:00",
+  "decision": "accept all16 source dispositions; release only external successor and focused closure; no product execution",
+  "review": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-code-claude/stdout.txt",
+    "sha256": "cdf542a216b67795420bd4df66921488293b7cee64ad5586c33129061d47b9d8"
+  },
+  "sourceDispositions": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-code-claude/source-dispositions.md",
+    "sha256": "c1296f09ee56f4571c9a7d1571444c80d086308a79aa314bfda3fd2caaa78df6"
+  },
+  "selectedRepairs": [
+    "F3 startup phase classification with explicit deadline preservation",
+    "F7 optional defensive abort before request destruction; no demonstrated original race claimed",
+    "F8 dormant request shape guard tightened",
+    "F9 retained milestone accounting follows cap admission"
+  ],
+  "unchanged": [
+    "strict clean child exit",
+    "full schema and exact media/Resource/replay oracles",
+    "one named counterfactual failure",
+    "10positive+6negative requests and two productchildren",
+    "all runtime and timeout bounds"
+  ],
+  "clarifications": [
+    "F2 inherited BDP scrub applies to dedicated external supervisor; default CI retains unrelated matrix variables, production entry reads explicit IPC configuration only. No global env mutation.",
+    "F4 successor binds additional cited sources; list is not fresh installed dependency proof.",
+    "F9 cap32 is unexercised headroom above26 possible entries.",
+    "F13 privacy claim applies to safe record; actual bound entry emits only fixed failure stderr.",
+    "F14 dedicated runs require approved OUTPUT; CI uses captured console log.",
+    "F15 entry hash alone does not attest source HEAD.",
+    "F16 immutable citation erratum accepted."
+  ],
+  "successorBindingSha256": "1fb4184d86e3d11f4f5ffbf59bf2e8517888692f1c78964ac1c9cd22229c3f0d",
+  "actualMergedParent": null
+}
+
+
+TARGET read-update-guarded-overlap-draft/review-successor/requests.json
+{
+  "status": "PROPOSED_UNEXECUTED_EXTERNAL_PREVIEW",
+  "calls": [
+    {
+      "n": 1,
+      "method": "GET",
+      "targetSource": "configured Scope",
+      "body": null,
+      "key": null
+    },
+    {
+      "n": 2,
+      "method": "GET",
+      "targetSource": "actual service-desc Link",
+      "body": null,
+      "key": null
+    },
+    {
+      "n": 3,
+      "method": "GET",
+      "targetSource": "parsed discovery.operations",
+      "body": null,
+      "key": null
+    },
+    {
+      "n": 4,
+      "method": "POST",
+      "targetSource": "parsed directory.createBead",
+      "body": "{\"id\":\"beads/overlap\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}}",
+      "key": "overlap-seed"
+    },
+    {
+      "n": 5,
+      "method": "POST",
+      "targetSource": "parsed directory.updateBead",
+      "body": "materialized A=135+L",
+      "key": "overlap-a"
+    },
+    {
+      "n": 6,
+      "method": "POST",
+      "targetSource": "same discovered update target",
+      "body": "materialized B=135+L",
+      "key": "overlap-b"
+    },
+    {
+      "n": 7,
+      "method": "GET",
+      "targetSource": "actual seed Resource.id",
+      "body": null,
+      "key": null
+    },
+    {
+      "n": 8,
+      "method": "POST",
+      "targetSource": "same update target",
+      "body": "exact materialized A",
+      "key": "overlap-a"
+    },
+    {
+      "n": 9,
+      "method": "POST",
+      "targetSource": "same update target",
+      "body": "exact materialized B",
+      "key": "overlap-b"
+    },
+    {
+      "n": 10,
+      "method": "GET",
+      "targetSource": "actual seed Resource.id",
+      "body": null,
+      "key": null
+    }
+  ],
+  "headers": {
+    "all": [
+      "Authorization: Bearer <local random token>",
+      "Accept: application/json",
+      "Connection: close"
+    ],
+    "postOnly": [
+      "Content-Type: application/json",
+      "idempotency-key: <literal per ledger>",
+      "Content-Length: <actual UTF8 body bytes>"
+    ],
+    "getForbidden": [
+      "body",
+      "content-type",
+      "idempotency-key"
+    ],
+    "never": [
+      "content-encoding",
+      "duplicate authored headers"
+    ]
+  },
+  "seedBytes": 94,
+  "seedSha256": "b76738409399066a7a7e9a05124d345773db6618130b419a2eb8261e57b8927e",
+  "updateFixedBytesExcludingJsonRevision": 135,
+  "positiveBodyBytes": "634+4L",
+  "negativeBodyBytes": "364+2Lnegative",
+  "requestBodyCeiling": 65536,
+  "requestHeaderCeiling": 16384,
+  "positiveConservativeBodyBytes": 262238,
+  "negativeConservativeBodyBytes": 131166,
+  "combinedConservativeBodyBytes": 393404,
+  "responseBodyCeilingPerRequest": 32768,
+  "combinedResponseBodyCeiling": 524288,
+  "positive": {
+    "cases": 1,
+    "http": 10,
+    "productChildren": 1,
+    "owners": 1,
+    "directories": 1,
+    "productListeners": 1,
+    "portReservationListeners": 1
+  },
+  "negative": {
+    "cases": 1,
+    "http": 6,
+    "productChildren": 1,
+    "owners": 1,
+    "directories": 1,
+    "productListeners": 1,
+    "portReservationListeners": 1
+  },
+  "concurrencyMaximum": 2,
+  "milestones": {
+    "possibleSlots": 26,
+    "maximumRetained": 32,
+    "deduplicatedBy": "pair request/kind",
+    "overflow": "recorded and witness fails/inconclusive"
+  },
+  "timingMs": {
+    "work": 30000,
+    "exchange": 5000,
+    "requestDrain": 5000,
+    "launcherReady": 10000,
+    "launcherClose": 10000,
+    "test": 45000,
+    "supervisor": 120000
+  },
+  "cleanup": "Destroy active requests; request draining (max5s) and existing child close(max10s) run concurrently after work ends, then remove own directory; aggregate separate failures. Does not add runtime/deadline allowance.",
+  "toolingPerCallback": [
+    "two git execFileSync calls with5s deadlines",
+    "Vitest and supervisor processes externally inventoried"
+  ],
+  "derivativeTooling": "One separately authorized derivative installed-payload helper invocation; no product child",
+  "negativeOracle": "overlap:exactly-one-winner, after both schema-valid200s; exact status/body conjunction false at6, before7-10. No transport/schema/cleanup failure accepted as control.",
+  "derivativePreparation": "No derivative created. Copy actual fresh consumer closure externally after positive success, bind graph/member/symlink resolutions, delete sole emitted expectedRevision guard, preserve before/after; root-owned retention/disposal."
+}
+
+
+TARGET read-update-guarded-overlap-draft/review-successor/selection.json
+{
+  "title": "preserves one guarded winner and both retained dispositions across overlapping ordinary Read+Update requests",
+  "topLevel": true,
+  "callbacks": 1,
+  "path": "apps/bdptest/src/read-update-guarded-overlap-installed.test.ts",
+  "regex": "^preserves one guarded winner and both retained dispositions across overlapping ordinary Read\\+Update requests$",
+  "prospectiveArgv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "exec",
+    "vitest",
+    "run",
+    "apps/bdptest/src/read-update-guarded-overlap-installed.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=PENDING_APPROVED_OUTPUT",
+    "-t",
+    "^preserves one guarded winner and both retained dispositions across overlapping ordinary Read\\+Update requests$"
+  ],
+  "gate": "NOT EXECUTABLE until actual merged-parent reanchor, repository application/freeze/council and root execution release",
+  "environments": [
+    "BDP_RU_GUARDED_OVERLAP_ENTRY",
+    "BDP_RU_GUARDED_OVERLAP_MODE",
+    "BDP_RU_GUARDED_OVERLAP_OUTPUT"
+  ],
+  "modeContract": "Without entry default-emitted-CI; with absolute existing regular-file entry require fresh-consumer-positive or emitted-derivative. Mode is declared harness metadata, not attestation."
+}
+
+
+TARGET read-update-guarded-overlap-draft/review-successor-native-closure.md
+# Native RU successor closure
+
+No actionable finding in the exact external successor. Full330line successor and literal delta read, all21 source-reference hashes checked, and original preview preserved. Applied successor testc0d65166e9587311d101883727cbba8bdb5baa0c31bc240e87ed55a45e74d56c, binding1fb4184d86e3d11f4f5ffbf59bf2e8517888692f1c78964ac1c9cd22229c3f0d and full draft3f6f29facd7c8467583747c27a7aac408069f8360f1670a3f4be94ce22583d84 match. The correction text exactly equals the diff against original2a15f4d1. Product worktree is not authored by this packet.
+
+F3: startupPhase remains true through setup and launch readiness, then becomes false before actual HTTP. Ordinary pre-launch filesystem/Git/port exceptions now report startup; explicit WitnessError and work-deadline classification retain priority. Existing launcher rejection classification is explicitly work-deadline if that timer fired, otherwise startup. No body/oracle failure is reclassified after readiness.
+
+F7: finally clears the work timer, then aborts outstanding local exchanges before destroying active requests. Their already-installed abort handlers use fail/finish to settle, remove listeners and clear exchange timers. Fully settled requests have removed those handlers; a successful positive is not converted to failure by cleanup abort. Existing workDeadline and primary failures are not overwritten; abort is idempotent if already expired. Child close and request drain remain concurrent, bounded and independently collected. This is defensive hardening, not retroactive proof of the prior speculative race.
+
+F8: POST iff body and body iff key rejects every mismatched shape before dispatch; all ten/six existing ledger calls remain admitted. F9: seen is now updated only after retained-cap admission, so future dropped milestones remain missing. Current26possible slots/32cap remains unexercised headroom. Retention wording explicitly denies entry-hash-alone source binding.
+
+Requests/selection/doc amendment/full proposed doc are byte-identical. Strict clean exit, complete200/409/schema/media/Resource/replay assertions and named two-success rejection remain unchanged. No HTTP/child/callback/time/cap increase. Dedicated external BDP scrub versus default CI variables is explicit in successor report/root dispositions; no global environment mutation was introduced.
+
+No code executed/imported/formatted/built/tested, no product file changed. Actual merged-parent reanchor, final static checks and real evidence remain pending. This source closure allows only the already-authorized focused actual Claude supplement, not product execution.
+
+
+TARGET read-update-guarded-overlap-code-claude/source-dispositions.md
+# Source dispositions — actual RU Claude code review
+
+All16 actual findings and final context-gap bullets were read in full. Actual review exited0/759.966s; stdoutcdf542a216b67795420bd4df66921488293b7cee64ad5586c33129061d47b9d8 remains immutable. This disposition reads full relevant repository code rather than treating supplied-excerpt omissions as product defects.
+
+Frozen external test2a15f4d1a0d6392b4df3041fcd7cfaebcf6abefb9d886648f36917b64c0fb58b and all original target/plan/reference hashes remain unchanged. Surrounding checkout now1a37f7209e3ff6f409f43491d670c881259406ba, clean, after the separate matrix deadline repair. Additional source hashes are in source-disposition-binding.json. No preview/product changes, imports, tests, builds, services or review retries were performed.
+
+Recommended required correction: F3 startup classification, plus accurate external-environment/binding/review-citation documentation (F2/F4/F16). F7 is useful optional defensive teardown, not a demonstrated current race. Do not relax clean child exit, exact media, complete Resource/schema/whole-body equality or the named counterfactual oracle. Root owns final disposition and any successor authoring.
+
+|Finding|Source-grounded disposition and smallest next step|
+|---|---|
+|F1 High — SIGTERM exit|**Disproved by full entry source.** installed-reference-process.ts33–35 installs SIGTERM/SIGINT/disconnect handlers;61–65 awaits stop, drains runtime.close and disconnects IPC. It does not terminate by the default SIGTERM action after readiness. The normal close therefore expects code0/signalnull; error path76–81 sets exit2. Keep preview299 strict clean-exit assertion. Accepting signalSIGTERM would weaken cleanup proof and could mask an undrained child. No code fix.|
+|F2 High — inherited BDP overrides|**Clarify external preparation boundary; proposed rejection is incompatible with CI.** Neither installed-reference-process, installed-reference, development runtime nor other production server source reads process.env/BDP overrides (repo-wide search found only an unrelated schema-corpus test output variable). Configuration is explicit IPC. Current ci.yml66–69 intentionally supplies BDP_BD_MATRIX_EXECUTABLE and BDP_REQUIRE_BD_MATRIX to the whole pnpm test step. Rejecting all non-RU BDP names in this callback would fail valid CI and mutate/overconstrain unrelated tests. Dedicated local positive/control supervisors must scrub inherited BDP overrides before launching their test process, preserving exactly approved RU ENTRY/MODE/OUTPUT; qualify plan wording accordingly. Do not globally edit process.env or reject the full suite's unrelated variables. Runtime-source attribution still requires actual graph/config/payload evidence; no demonstrated silent override path exists here.|
+|F3 Medium — startup errors called oracle|**Real small reporting defect.** preview193–214 performs realpath/stat/read/Git/temp/port setup; ordinary exceptions before launch currently reach catch284–286 as oracle because only the launcher call sets startup. Missing dist/Git/permission failures are setup failures, not response oracles. Add one local startup-phase flag covering setup through successful ready acquisition, then clear it. Preserve explicit WitnessError classification first and workDeadline priority before falling back to startup/oracle, so legitimate deadline classification is not lost. No new requests/test registration or timeout needed.|
+|F4 Medium — omitted binding sources|**Useful artifact precision, not observed source drift.** Original preview claims eleven named unchanged sources, not a complete runtime dependency closure. Actual code-review launch binding already adds read-http-routing.ts, read-values.ts, read-update-values.ts and read-update-problems.ts. Clean known HEAD/status also pins repository context. Add remaining cited read-request.ts/development-authority.ts, authority-read.ts and schema/json snapshot sources to a successor external binding for clarity; preserve original manifest. Their actual hashes are recorded here. Future fresh consumer closure remains mandatory and is not replaced by this list. No product edit.|
+|F5 Medium — exact headers unsupported by supplied excerpt|**Resolved; keep exact checks.** development-runtime.ts85–96 json() emits exactly application/json or application/problem+json, private,no-store, content length and non-attesting marker. Mutation path476–480 adds Vary and calls json; no ETag/Location/TX context fields are set. Composed read writer383–398 explicitly adds x-bdp-development after applying read semantics, including the204 response built by read-http-routing.ts31–38. No charset is added. These omitted excerpts were review-context gaps, not a reason to weaken media matching.|
+|F6 Medium — metadata/links/Read equality|**Resolved; retain full equality.** resource-evaluator.ts805–811 preserves common metadata when no metadataChange is present. VersionRecipe1110–1120 distinguishes commonMetadata from its internal version-context metadata; materializeVersion1135–1158 emits commonMetadata as metadata and native context separately as revisionProvenance. development-authority.ts253 sets recordChangeContext:false for this ordinary owner; neither input adds provenance. Unowned seeded task has no Link creation/owned-Link additions. authority-read.ts795–808 returns the stored checked Resource for point reads, not an added links page. storedRecord(resource-evaluator.ts354–380) and read-values.ts137–209 apply the same explicit legacy metadata projection. Bead schema774–814 places revisionProvenance alongside metadata and disallows unknown fields. json-values.ts35–69 snapshots plain objects into{}, so null-prototype speculation does not defeat toStrictEqual. Do not narrow to only seeded metadata keys or a partial Resource.|
+|F7 Medium — destroy/drain race|**No demonstrated current failing path; optional robustness.** Each sequential send is awaited; A/B are both constructed in one turn and awaited via allSettled before subsequent assertions/finally. The same URL/key/body/byte bounds already admitted forA cannot ordinarily fail synchronously forB (same byte length, literal valid key); request construction errors are converted to rejected promises. All normal oracle/control paths reach finally with pending promises settled. The claim that destroy() can only settle on its own timer is also too strong without Node transport-state evidence. Even on a defensive outstanding path the exchange timer was armed before the later5s drain timer, so equal numeric limits alone do not establish a deadline race. Nevertheless controller.abort in finally before request destruction explicitly settles any remaining promises through the existing abort/fail/finish path and is a small sound hardening if root accepts it. Preserve prior primary classification/failure and do not set workDeadline merely for cleanup. No new callback/request/timeout; do not call this a proven positive/control defect.|
+|F8 Low — GET shape hole|**True dormant invariant gap; optional one-line hardening.** Current ledger has only GETwithoutbody/key and POSTwithboth, so no actual dispatch is affected. The predicate permits GETwithbody/nokey until native construction rejects it. Require POST iff bodypresent and bodypresent iff keypresent if root elects to tighten this local helper. Preserve existing exact request ledger.|
+|F9 Low — overflow/missing flags|**Optional future-proof precision, not active evidence loss.** Closed Kind13×Pair2 and dedup mean26maximum, so32cap is unexercised headroom. No current drop can occur. If future kinds expand, seen-before-cap could hide a dropped item from missingMilestones; moving seen.add after the cap guard or deriving missing from retained entries is harmless. Describe cap as headroom, not an executed overflow test. No added case required.|
+|F10 Low — tautological guards|**No functional defect.** defaultEntry already is the intended resolved default path; entry comparison documents that branch, while grant throws on invalid inputs. Optional cleanup would only remove redundant equality, not improve current safety. Do not add simplistic root containment: accepted external entries deliberately lie outside the worktree, and legitimate package resolution can use symlinks. Exact entry/payload binding remains external.|
+|F11 Low — overlap assertion strength|**Accepted deliberate proof boundary, no change.** Same-turn independent sends are intentionally designed to make both calls outstanding before settlement; actual trace and separate agent:false requests support that limited claim. The local incremented socket IDs alone are not independent proof of OS socket identity or server admission. Plan, report and retention already deny simultaneous admission/fairness/diversity. Keep guards against later restructuring; do not expand the claim.|
+|F12 Low — explicit pairStatuses|**Redundant optional field; decline scope growth.** completedResponses has stable request numbers5/6, both actual statuses and body digests, recorded before namedOracle with pairSchemasValid. The external adjudicator must require exactly two200 at5/6 for the control plus exact named failure/no cleanup failure. A second copied status array adds no evidence; no defect in deriving it from genuine records.|
+|F13 Low — report privacy vs throw path|**Main credential-leak premise disproved for the bound entry; retain scoped caveat.** installed-reference-process.ts76–81 intentionally emits only the fixed string 'installed reference qualification failed' and never config/credentials/exceptions. Launcher57 wraps that stderr; merely having received IPC credentials does not establish any echo. Existing pre-ready masking/PID limitation remains. Arbitrary replacement binaries are outside bound accepted entry/derivative scope. ETag from reads is a Resource revision token, not an authentication credential, and is explicitly among selected response metadata. State privacy claim as the safe record's contract; do not claim arbitrary external child stderr is sanitized by the launcher. No helper or schema weakening required.|
+|F14 Low — optional output|**Execution-gate obligation, not unconditional test defect.** Callback always prints one safe JSON record. Full raw supervisor/CI logs are the fallback; Vitest result JSON alone is insufficient. Require approved absolute OUTPUT for the two dedicated evidence runs and retain stdout plus actual Vitest JSON, using existing flagwx. Default full CI may use captured raw console logs without a new output path. No extra run or product API.|
+|F15 Low — source/head vs build|**Already explicit external provenance boundary.** Preview records real HEAD/dirty/entry bytes and says source attribution is externally verified, not child attested; plan requires fresh build and source/archive/consumer/full closure. Default-emitted-CI means path mode, not a proof of fresh build. An optional retention sentence can explicitly say entry hash is not by itself bound to HEAD; do not invent source attestation or duplicate packaging inside the test.|
+|F16 Low — native line citations|**Accepted citation erratum.** Preserve original native reporte9f40a24. Correct preview anchors: completeUpdate52–67; setup/discovery193–232; schemas267–268; valid conjunction269–270; namedOracle271–272; state/replay275–282; teardown287–325. Original prose conclusions remain, but263–266 was not the named oracle. This table is the immutable correction record; no source change.|
+
+## Cross-finding recommendation
+
+Minimal recommended successor is startup classification plus root-selected defensive abort-before-destroy; optional dormant shape/cap fixes may be included only by root's explicit scope decision. External companion/plan/binding should distinguish dedicated-supervisor BDP scrubbing from full CI, include newly cited hashes and require safe OUTPUT for local evidence. Preserve all original preview/review records, full200/409/schema/media/Resource/replay oracles, strict clean child exit,10+6HTTP/two product children and30swork/45scallback/120scommand. No new callback, runtime/scheduler change, timeout increase or public/cumulative claim is justified by these findings.
+
+Verified no-preview-drift and no-source-drift on the exact original review inputs. All conclusions here are static, not new execution evidence; first positive and guard-removal controls remain unrun. Full future source/static checks, exact fresh-consumer/provenance and actual process cleanup still decide execution acceptance.
+
+
+SOURCE scripts/installed-reference-observation.mjs:1-103
+```
+1: /** Same bounded real-process observations for emitted and packed/installed bytes.
+2:  * No store mutation or scheduler/control API. Not a conformance artifact. */
+3: import assert from "node:assert/strict";
+4: import { spawn } from "node:child_process";
+5: import { randomBytes } from "node:crypto";
+6: import { createServer, createConnection } from "node:net";
+7: import { request } from "node:http";
+8: import { once } from "node:events";
+9: import path from "node:path";
+10: export async function availablePort() {
+11:   const server = createServer();
+12:   server.listen(0, "127.0.0.1");
+13:   await once(server, "listening");
+14:   const port = server.address().port;
+15:   await new Promise((resolve, reject) => server.close((e) => (e ? reject(e) : resolve())));
+16:   return port;
+17: }
+18: export async function launchInstalledReference(entry, configuration) {
+19:   const child = spawn(process.execPath, [entry], {
+20:     cwd: "/tmp",
+21:     stdio: ["ignore", "pipe", "pipe", "ipc"],
+22:   });
+23:   let stdout = "",
+24:     stderr = "";
+25:   child.stdout.on("data", (b) => {
+26:     stdout += b;
+27:     if (stdout.length > 65536) child.kill("SIGKILL");
+28:   });
+29:   child.stderr.on("data", (b) => {
+30:     stderr += b;
+31:     if (stderr.length > 65536) child.kill("SIGKILL");
+32:   });
+33:   const exited = new Promise((resolve) =>
+34:     child.once("exit", (code, signal) => resolve({ code, signal })),
+35:   );
+36:   const bounded = async (promise) => {
+37:     let timer;
+38:     try {
+39:       return await Promise.race([
+40:         promise,
+41:         new Promise((_, reject) => {
+42:           timer = setTimeout(() => {
+43:             child.kill("SIGKILL");
+44:             reject(Error("installed child deadline"));
+45:           }, 10000);
+46:         }),
+47:       ]);
+48:     } finally {
+49:       clearTimeout(timer);
+50:     }
+51:   };
+52:   try {
+53:     const ready = await bounded(
+54:       new Promise((resolve, reject) => {
+55:         child.once("error", reject);
+56:         child.once("message", resolve);
+57:         void exited.then(() => reject(Error(`installed child exited: ${stderr}`)));
+58:         child.send({ configuration });
+59:       }),
+60:     );
+61:     assert.equal(ready.event, "qualification.ready");
+62:     assert.equal(ready.claimEligible, false);
+63:     assert.match(ready.configurationIdentity, /^[a-f0-9]{64}$/);
+64:     assert.match(ready.payloadIdentity, /^[a-f0-9]{64}$/);
+65:     assert.match(ready.artifactIdentity, /^development-schema5-[a-f0-9]{64}$/);
+66:     assert.match(ready.policyIdentity, /^[a-f0-9]{64}$/);
+67:     assert.match(ready.authenticationIdentity, /^[a-f0-9]{64}$/);
+68:     assert.equal(ready.profile, "read-update");
+69:     assert.equal(ready.history, false);
+70:     return {
+71:       child,
+72:       ready,
+73:       exited,
+74:       wait: () => bounded(exited),
+75:       output: () => ({ stdout, stderr }),
+76:       close: async () => {
+77:         if (child.exitCode === null && child.signalCode === null) child.kill("SIGTERM");
+78:         return bounded(exited);
+79:       },
+80:     };
+81:   } catch (error) {
+82:     child.kill("SIGKILL");
+83:     await bounded(exited);
+84:     throw error;
+85:   }
+86: }
+87: export function referenceConfiguration(
+88:   directory,
+89:   port,
+90:   token,
+91:   scope = "https://reference.invalid/acme/",
+92: ) {
+93:   return {
+94:     scope,
+95:     listener: { host: "127.0.0.1", port },
+96:     directory,
+97:     create: true,
+98:     credentials: [{ token, principal: "operator" }],
+99:     policies: { operator: { create: true, write: true, hidden: [], readOnly: [] } },
+100:     contracts: { descriptors: [], schemas: [] },
+101:     maximumEndpointMultiplicity: [],
+102:   };
+103: }
+```
+
+SOURCE packages/server/src/installed-reference-process.ts:1-82
+```
+1: /** Private installed qualification bootstrap. No package export, bin or CLI flag.
+2:  * No clock/store/outcome control. Configuration arrives only through inherited IPC.
+3:  */
+4: import process from "node:process";
+5: import { realpathSync } from "node:fs";
+6: import { fileURLToPath } from "node:url";
+7: import { administrativeData } from "./development-contracts.js";
+8: import { startInstalledReferenceCandidate } from "./installed-reference.js";
+9: 
+10: async function main() {
+11:   if (!process.send || process.argv.length !== 2) throw new TypeError("inherited IPC required");
+12:   const send = process.send.bind(process);
+13:   const input = await new Promise<unknown>((resolve, reject) => {
+14:     const timer = setTimeout(() => reject(new Error("configuration deadline")), 10000);
+15:     process.once("disconnect", () => {
+16:       clearTimeout(timer);
+17:       reject(new Error("configuration disconnected"));
+18:     });
+19:     process.once("message", (message) => {
+20:       clearTimeout(timer);
+21:       resolve(message);
+22:     });
+23:   });
+24:   const { configuration } = administrativeData(input, ["configuration"]);
+25:   let stop!: () => void;
+26:   let stopping = false;
+27:   const stopped = new Promise<void>((resolve) => {
+28:     stop = () => {
+29:       stopping = true;
+30:       resolve();
+31:     };
+32:   });
+33:   process.once("SIGTERM", () => stop());
+34:   process.once("SIGINT", () => stop());
+35:   process.once("disconnect", () => stop());
+36:   process.on("message", (message) => {
+37:     try {
+38:       const value = administrativeData(message, ["command"]);
+39:       if (value.command !== "close") throw new TypeError("unsupported control");
+40:     } catch {
+41:       process.exitCode = 2;
+42:     }
+43:     stop();
+44:   });
+45:   if (!process.connected) stop();
+46:   const runtime = await startInstalledReferenceCandidate(configuration);
+47:   try {
+48:     if (process.connected && !stopping)
+49:       send({
+50:         event: "qualification.ready",
+51:         scope: runtime.scope,
+52:         claimEligible: false,
+53:         configurationIdentity: runtime.configurationIdentity,
+54:         artifactIdentity: runtime.artifactIdentity,
+55:         payloadIdentity: runtime.payloadIdentity,
+56:         policyIdentity: runtime.policyIdentity,
+57:         authenticationIdentity: runtime.authenticationIdentity,
+58:         profile: runtime.profile,
+59:         history: runtime.history,
+60:       });
+61:     await stopped;
+62:   } finally {
+63:     await runtime.close();
+64:     if (process.connected) process.disconnect();
+65:   }
+66: }
+67: function isEntrypoint(): boolean {
+68:   const entry = process.argv[1];
+69:   if (entry === undefined) return false;
+70:   try {
+71:     return realpathSync(entry) === realpathSync(fileURLToPath(import.meta.url));
+72:   } catch {
+73:     return false;
+74:   }
+75: }
+76: if (isEntrypoint())
+77:   void main().catch(() => {
+78:     // Never echo credentials, input configuration or callback exceptions.
+79:     process.stderr.write("installed reference qualification failed\n");
+80:     process.exitCode = 2;
+81:     if (process.connected) process.disconnect();
+82:   });
+```
+
+SOURCE packages/server/src/development-runtime.ts:85-122
+```
+85: function json(response: ServerResponse, status: number, body: unknown, problem = false): void {
+86:   if (response.destroyed) return;
+87:   const bytes = stringifyJsonValue(body);
+88:   response.writeHead(status, {
+89:     "content-type": problem ? "application/problem+json" : "application/json",
+90:     "cache-control": "private, no-store",
+91:     "content-length": Buffer.byteLength(bytes),
+92:     "x-bdp-development": "non-attesting",
+93:   });
+94:   response.end(response.req.method === "HEAD" ? undefined : bytes);
+95: }
+96: function refused(response: ServerResponse, code: ReceivingError["code"]): void {
+97:   response.setHeader("connection", "close");
+98:   if (code === "unauthenticated")
+99:     response.setHeader("www-authenticate", 'Bearer realm="bdptest-development"');
+100:   const problem =
+101:     code === "unsupported-media-type"
+102:       ? parseReadUpdateProblem({
+103:           type: "https://github.com/gastownhall/bdp/problems/request",
+104:           code,
+105:           status: 415,
+106:           retry: "never",
+107:         })
+108:       : readProblem(code);
+109:   json(response, problem.status ?? 500, problem, true);
+110: }
+111: function empty(response: ServerResponse, status: number, allow?: string): void {
+112:   if (response.destroyed) return;
+113:   response.writeHead(status, {
+114:     "cache-control": "private, no-store",
+115:     "content-length": "0",
+116:     "x-bdp-development": "non-attesting",
+117:     ...(allow === undefined ? {} : { allow }),
+118:   });
+119:   response.end();
+120: }
+121: function readJson(
+122:   request: IncomingMessage,
+```
+
+SOURCE packages/server/src/development-runtime.ts:377-399
+```
+377:       if (request.method !== "POST" && mutationTarget) {
+378:         empty(response, 405, "POST");
+379:         return;
+380:       }
+381:       if (composedRead && !mutationTarget) {
+382:         // The trusted receiver's credential, Origin and raw-target gates already ran.
+383:         // No request body, database handle or mutation callback is routed by this seam.
+384:         if (request.method !== "GET" && request.method !== "HEAD") {
+385:           empty(response, 405, "GET, HEAD");
+386:           return;
+387:         }
+388:         const headers = new Headers();
+389:         for (let i = 0; i < request.rawHeaders.length; i += 2)
+390:           headers.append(request.rawHeaders[i] ?? "", request.rawHeaders[i + 1] ?? "");
+391:         const input = new Request(url, { method: request.method, headers });
+392:         const selected = applyReadHttpSemantics(input, await composedRead(input));
+393:         selected.headers.set("x-bdp-development", "non-attesting");
+394:         const bytes = selected.body === undefined ? undefined : stringifyJsonValue(selected.body);
+395:         if (bytes !== undefined)
+396:           selected.headers.set("content-length", String(Buffer.byteLength(bytes)));
+397:         response.writeHead(selected.status, Object.fromEntries(selected.headers));
+398:         response.end(bytes);
+399:         return;
+```
+
+SOURCE packages/server/src/development-runtime.ts:445-483
+```
+445:         header(request, "content-type")?.split(";", 1)[0]?.trim().toLowerCase() !==
+446:         "application/json"
+447:       )
+448:         throw new ReceivingError("unsupported-media-type");
+449:       if (header(request, "content-encoding") !== undefined)
+450:         throw new ReceivingError("unsupported-media-type");
+451:       const key = header(request, "idempotency-key");
+452:       if (name === "sequence" ? key !== undefined : key === undefined)
+453:         throw new ReceivingError("malformed-request");
+454:       const text = await body(request);
+455:       if (response.destroyed || closing) throw new ReceivingError("temporarily-unavailable");
+456:       // After admission, delivery is only an observer. Disconnect never cancels
+457:       // committed/admitted work; an exact-key retry retrieves its disposition.
+458:       const result =
+459:         operation !== undefined && key !== undefined
+460:           ? await principalAuthority.mutate(
+461:               operation,
+462:               text,
+463:               key,
+464:               acceptsJson(request.headers.accept ?? null),
+465:             )
+466:           : await principalAuthority.sequence(text, acceptsJson(request.headers.accept ?? null));
+467:       if ("kind" in result && result.kind === "not-acceptable") {
+468:         response.setHeader("vary", "Accept");
+469:         empty(response, 406);
+470:         return;
+471:       }
+472:       response.setHeader("vary", "Accept");
+473:       const problem = "code" in result;
+474:       json(response, problem ? (result.status ?? 500) : 200, result, problem);
+475:     } catch (error) {
+476:       if (error instanceof ReceivingError) refused(response, error.code);
+477:       else if (error instanceof ReadUpdateCarrierError || error instanceof JsonSyntaxError)
+478:         refused(response, "malformed-request");
+479:       else empty(response, 500);
+480:     }
+481:   };
+482:   const server = createServer({ maxHeaderSize: 16 * 1024 }, (request, response) => {
+483:     const task = handle(request, response);
+```
+
+SOURCE packages/server/src/development-composition.ts:11-83
+```
+11: export function createDevelopmentComposition(scopePath: string): DevelopmentHttpComposition {
+12:   return Object.freeze<DevelopmentHttpComposition>({
+13:     scopePath,
+14:     createReadRoute(authority, directory) {
+15:       const { scope } = authority;
+16:       const serviceDescription = new URL("bdp.json", scope).href;
+17:       const operations = new URL("operations/", scope).href;
+18:       function problem(value: ReadProblem) {
+19:         const response = routing.jsonResponse(value);
+20:         response.headers.set("content-type", "application/problem+json");
+21:         return { ...response, status: value.status ?? 500 };
+22:       }
+23:       async function discovery() {
+24:         const result = await authority.discover();
+25:         if (result.kind === "problem") return problem(result.problem);
+26:         const { limits, ...data } = result.data;
+27:         return routing.jsonResponse(
+28:           parseReadUpdateDiscovery({
+29:             ...data,
+30:             bdpVersion: "0",
+31:             profile: "read-update",
+32:             operations,
+33:             limits: {
+34:               page: limits.page,
+35:               selector: limits.selector,
+36:               request: { bodyBytes: authority.limits.requestBodyBytes },
+37:               sequence: { operations: authority.limits.sequenceOperations },
+38:               validation: {
+39:                 diagnostics: authority.limits.diagnosticCount,
+40:                 diagnosticBytes: authority.limits.diagnosticBytes,
+41:               },
+42:             },
+43:           }),
+44:         );
+45:       }
+46:       const route = routing.createReadHttpRoute({
+47:         scope,
+48:         probe: async () => ({ serviceDescription }),
+49:         problem,
+50:         discover: discovery,
+51:         async alias(suffix, request) {
+52:           if (isReadProblem(suffix)) return problem(suffix);
+53:           const result = await authority.resolveAlias(request.url);
+54:           return result.kind === "problem"
+55:             ? problem(result.problem)
+56:             : {
+57:                 status: 307,
+58:                 headers: new Headers({
+59:                   location: result.target,
+60:                   "content-length": "0",
+61:                   "cache-control": "private, no-store",
+62:                 }),
+63:               };
+64:         },
+65:         async perform(parsed) {
+66:           const result = await authority.perform(parsed);
+67:           return result.kind === "problem"
+68:             ? problem(result.problem)
+69:             : result.kind === "success"
+70:               ? routing.scopeDataResponse(
+71:                   parsed,
+72:                   result.body,
+73:                   "resourceRevision" in result.observation
+74:                     ? result.observation.resourceRevision
+75:                     : undefined,
+76:                 )
+77:               : problem(readProblem("resource-not-found"));
+78:         },
+79:       });
+80:       return async (request) => {
+81:         // Gate every route through the current owner; no pre-auth/static directory escape.
+82:         const gate = await authority.discover();
+83:         if (gate.kind === "problem") return problem(gate.problem);
+```
+
+SOURCE packages/server/src/read-http-routing.ts:24-42
+```
+24:       return { status: 405, headers: new Headers({ allow: "GET, HEAD", "content-length": "0" }) };
+25:     const url = new URL(request.url);
+26:     const scopeUrl = new URL(routes.scope);
+27:     if (url.origin !== scopeUrl.origin) return routes.problem(notFound());
+28:     const probe = await routes.probe(request);
+29:     const aliasPath = classifyAliasPath(url, routes.scope);
+30:     if (aliasPath !== undefined) return routes.alias(aliasPath, request);
+31:     if (url.pathname === scopeUrl.pathname)
+32:       return {
+33:         status: 204,
+34:         headers: new Headers({
+35:           link: `<${probe.serviceDescription}>; rel="service-desc"; type="application/json"`,
+36:         }),
+37:       };
+38:     if (url.href === probe.serviceDescription) return routes.discover(request);
+39:     const parsed = requestFromUrl(url, routes.scope);
+40:     return isReadProblem(parsed) ? routes.problem(parsed) : routes.perform(parsed, request);
+41:   };
+42: }
+```
+
+SOURCE packages/server/src/development-authority.ts:40-50
+```
+40: /** One immutable tuple consumed by owner, receiver and installed identity. */
+41: export const DEVELOPMENT_OWNER_LIMITS = Object.freeze({
+42:   update: Object.freeze({
+43:     sequenceOperations: 32,
+44:     requestBodyBytes: 64 * 1024,
+45:     propertiesBytes: 64 * 1024,
+46:     diagnosticBytes: 512 * 1024,
+47:     diagnosticCount: 32,
+48:   }),
+49:   read: Object.freeze({
+50:     page: Object.freeze({ defaultItems: 20, maximumItems: 100 }),
+```
+
+SOURCE packages/server/src/development-authority.ts:242-257
+```
+242:         clock,
+243:         contracts: configured?.contracts.registry ?? {
+244:           get(id, bytes) {
+245:             if (types[id] !== bytes) return undefined;
+246:             const descriptor = descriptors.find((candidate) => candidate.id === id);
+247:             return descriptor === undefined ? undefined : { descriptor };
+248:           },
+249:         },
+250:         captureMemberContext(_reader, principal) {
+251:           return {
+252:             ...capturedConfiguration(),
+253:             recordChangeContext: false,
+254:             policy: capturedPolicy(principal),
+255:           };
+256:         },
+257:       },
+```
+
+SOURCE packages/server/src/resource-evaluator.ts:139-161
+```
+139: const failures = {
+140:   "resource-not-found": ["not-found", 404, "after-state-change"],
+141:   forbidden: ["authorization", 403, "after-state-change"],
+142:   "identity-taken": ["conflict", 409, "never"],
+143:   "alias-path-taken": ["conflict", 409, "after-state-change"],
+144:   "type-not-installed": ["validation", 422, "after-state-change"],
+145:   "revision-mismatch": ["conflict", 409, "after-state-change"],
+146:   "incident-links-exist": ["conflict", 409, "after-state-change"],
+147:   "aggregate-constraint-violation": ["conflict", 409, "after-state-change"],
+148:   "limit-exceeded": ["size", 413, "never"],
+149:   "revision-allocation-unsafe": ["conflict", 409, "after-state-change"],
+150: } as const;
+151: function fail(code: keyof typeof failures): never {
+152:   const [family, status, retry] = failures[code];
+153:   throw new Failure(
+154:     parseReadUpdateProblem({
+155:       type: `https://github.com/gastownhall/bdp/problems/${family}`,
+156:       code,
+157:       status,
+158:       retry,
+159:     }),
+160:   );
+161: }
+```
+
+SOURCE packages/server/src/resource-evaluator.ts:354-380
+```
+354:   const value = JSON.parse(stored.bodyJson) as unknown;
+355:   // Legacy retained bodies have no common metadata member. Project the empty
+356:   // object for reads without changing their stored bytes or revision token.
+357:   const withMetadata = (candidate: unknown): unknown =>
+358:     candidate && typeof candidate === "object" && !Array.isArray(candidate)
+359:       ? { ...candidate, metadata: "metadata" in candidate ? candidate.metadata : {} }
+360:       : candidate;
+361:   let projected = withMetadata(value);
+362:   if (stored.kind === "bead" && projected && typeof projected === "object") {
+363:     const bead = projected as Record<string, unknown>;
+364:     const owned = bead.ownedLinks;
+365:     if (owned && typeof owned === "object" && !Array.isArray(owned))
+366:       projected = {
+367:         ...bead,
+368:         ownedLinks: Object.fromEntries(
+369:           Object.entries(owned).map(([type, links]) => [
+370:             type,
+371:             Array.isArray(links) ? links.map(withMetadata) : links,
+372:           ]),
+373:         ),
+374:       };
+375:   }
+376:   const record = stored.kind === "bead" ? parseBeadRecord(projected) : parseLinkRecord(projected);
+377:   if (resourcePath(scope, record.id, stored.kind) !== stored.id)
+378:     throw new Error("stored Resource identity differs from its index");
+379:   return record;
+380: }
+```
+
+SOURCE packages/server/src/resource-evaluator.ts:799-813
+```
+799:     ? (before?.properties ?? {})
+800:     : "propertiesChange" in input && input.propertiesChange !== undefined
+801:       ? patch(before?.properties ?? {}, input.propertiesChange, "properties", options)
+802:       : "properties" in input
+803:         ? (input.properties ?? {})
+804:         : (before?.properties ?? {});
+805:   const commonMetadata = deleting
+806:     ? (before?.metadata ?? {})
+807:     : "metadataChange" in input && input.metadataChange !== undefined
+808:       ? patch(before?.metadata ?? {}, input.metadataChange, "metadata", options)
+809:       : "metadata" in input
+810:         ? (input.metadata ?? {})
+811:         : (before?.metadata ?? {});
+812:   if (!deleting) validatePropertyContracts(effective, properties, options.limits, fault);
+813:   for (const { type: declaringType, side, constraint, address, actual } of endpointChecks) {
+```
+
+SOURCE packages/server/src/resource-evaluator.ts:861-897
+```
+861:     ownership !== undefined && (Object.hasOwn(ownership, type) || Object.hasOwn(ownership, "*"));
+862:   const noOp =
+863:     !creating &&
+864:     !deleting &&
+865:     equal(properties, before?.properties) &&
+866:     equal(commonMetadata, before?.metadata ?? {});
+867:   const contextInput = "revisionProvenance" in input ? input.revisionProvenance : undefined;
+868:   // Protocol defaults: omitted and {} both carry only undetermined states.
+869:   const needsContext =
+870:     !noOp &&
+871:     (options.recordChangeContext ||
+872:       (contextInput !== undefined &&
+873:         (Object.hasOwn(contextInput, "agent") || Object.hasOwn(contextInput, "message"))));
+874:   const metadata = (prior: ResourceRecord | undefined): VersionRecipe["metadata"] => {
+875:     if (noOp && prior)
+876:       return {
+877:         context: { kind: "preserved", value: prior.revisionProvenance },
+878:       };
+879:     const actor = contextInput?.actor;
+880:     return {
+881:       ...(actor === undefined ? {} : { actor }),
+882:       context: needsContext ? { kind: "native" } : { kind: "preserved", value: undefined },
+883:     };
+884:   };
+885:   const revision = noOp ? before?.revision : deleting ? undefined : allocateRevision();
+886:   let subjectRecipe: VersionRecipe | undefined = deleting
+887:     ? undefined
+888:     : {
+889:         id: uri,
+890:         type,
+891:         revision: revision as string,
+892:         properties,
+893:         commonMetadata,
+894:         metadata: metadata(before),
+895:         endpoints,
+896:       };
+897:   const ownedLinks = (
+```
+
+SOURCE packages/server/src/resource-evaluator.ts:1017-1029
+```
+1017:       ? !after || !options.policy.canCreate(after)
+1018:       : !before || !options.policy.canWrite(before, after)
+1019:   )
+1020:     fail("forbidden");
+1021:   if (source && sourceAfter && !options.policy.canWrite(source, sourceAfter)) fail("forbidden");
+1022:   if (
+1023:     "expectedRevision" in input &&
+1024:     input.expectedRevision !== undefined &&
+1025:     input.expectedRevision !== before?.revision
+1026:   )
+1027:     fail("revision-mismatch");
+1028:   if (deleting && resourceKind === "bead" && tx.incidentLinks(id).length)
+1029:     fail("incident-links-exist");
+```
+
+SOURCE packages/server/src/resource-evaluator.ts:1106-1165
+```
+1106: interface VersionRecipe {
+1107:   readonly id: string;
+1108:   readonly type: string;
+1109:   readonly revision: string;
+1110:   readonly properties: BeadRecord["properties"];
+1111:   readonly commonMetadata: NonNullable<BeadRecord["metadata"]>;
+1112:   readonly endpoints: { readonly source: Reference; readonly target: Reference } | undefined;
+1113:   readonly metadata: {
+1114:     readonly actor?: RevisionActor;
+1115:     readonly context:
+1116:       | { readonly kind: "native" }
+1117:       | { readonly kind: "preserved"; readonly value: RevisionProvenance | undefined };
+1118:   };
+1119:   readonly ownedLinks?: Readonly<Record<string, readonly PreparedLink[]>>;
+1120: }
+1121: type PreparedLink =
+1122:   | { readonly kind: "existing"; readonly value: LinkRecord }
+1123:   | { readonly kind: "replacement"; readonly value: VersionRecipe };
+1124: function materializeVersion(
+1125:   recipe: VersionRecipe,
+1126:   nativeContext: RevisionProvenance | undefined,
+1127:   materialized: Map<VersionRecipe, ResourceRecord>,
+1128: ): ResourceRecord {
+1129:   const existing = materialized.get(recipe);
+1130:   if (existing) return existing;
+1131:   const context =
+1132:     recipe.metadata.context.kind === "native" ? nativeContext : recipe.metadata.context.value;
+1133:   if (recipe.metadata.context.kind === "native" && context === undefined)
+1134:     throw new TypeError("native version requires its commit observation");
+1135:   const record = freeze({
+1136:     id: recipe.id,
+1137:     type: recipe.type,
+1138:     revision: recipe.revision,
+1139:     properties: recipe.properties,
+1140:     metadata: recipe.commonMetadata,
+1141:     ...(context === undefined && recipe.metadata.actor === undefined
+1142:       ? {}
+1143:       : {
+1144:           revisionProvenance: {
+1145:             ...context,
+1146:             ...(recipe.metadata.actor === undefined ? {} : { actor: recipe.metadata.actor }),
+1147:           },
+1148:         }),
+1149:     ...(recipe.endpoints ?? {}),
+1150:     ...(recipe.ownedLinks === undefined
+1151:       ? {}
+1152:       : {
+1153:           ownedLinks: Object.fromEntries(
+1154:             Object.entries(recipe.ownedLinks).map(([type, links]) => [
+1155:               type,
+1156:               links.map((link) =>
+1157:                 link.kind === "existing"
+1158:                   ? link.value
+1159:                   : materializeVersion(link.value, nativeContext, materialized),
+1160:               ),
+1161:             ]),
+1162:           ),
+1163:         }),
+1164:   }) as ResourceRecord;
+1165:   materialized.set(recipe, record);
+```
+
+SOURCE packages/server/src/authority-read.ts:793-809
+```
+793:       : observed(notFound(), observation);
+794:   }
+795:   if (intent.kind === "resource" || intent.kind === "properties") {
+796:     const record = graph.point(intent.id.slice(scope.length));
+797:     if (record === undefined) return observed(notFound(), observation);
+798:     const isLinkRecord = "source" in record;
+799:     if ((intent.resource === "link") !== isLinkRecord)
+800:       throw new AuthorityReadError("integrity", "requested Resource kind disagrees with row");
+801:     if (!graph.visible(record, policy)) return observed(notFound(), observation);
+802:     return Object.freeze({
+803:       kind: "success",
+804:       body: intent.kind === "properties" ? record.properties : record,
+805:       observation: Object.freeze({ ...observation, resourceRevision: record.revision }),
+806:     });
+807:   }
+808:   if (intent.kind === "collection" && intent.collection === "types") {
+809:     const items = prepared.types
+```
+
+SOURCE packages/protocol/src/read-values.ts:137-210
+```
+137: 
+138: function projectLegacyBeadMetadata(value: unknown, path: string): Record<string, unknown> {
+139:   const record = readRecord(value, path);
+140:   const owned = record.ownedLinks;
+141:   const ownedLinks =
+142:     owned === undefined
+143:       ? undefined
+144:       : Object.fromEntries(
+145:           Object.entries(readRecord(owned, `${path}.ownedLinks`)).map(([type, links]) => [
+146:             type,
+147:             Array.isArray(links)
+148:               ? links.map((link, index) =>
+149:                   projectLegacyLinkMetadata(
+150:                     link,
+151:                     `${path}.ownedLinks[${JSON.stringify(type)}][${index}]`,
+152:                   ),
+153:                 )
+154:               : links,
+155:           ]),
+156:         );
+157:   return {
+158:     ...record,
+159:     ...(Object.hasOwn(record, "metadata") ? {} : { metadata: Object.freeze({}) }),
+160:     ...(ownedLinks === undefined ? {} : { ownedLinks }),
+161:     ...(record.links === undefined
+162:       ? {}
+163:       : { links: projectLegacyLinkPageMetadata(record.links, `${path}.links`) }),
+164:   };
+165: }
+166: 
+167: /** Parse and deeply snapshot one Bead record. */
+168: export function parseBeadRecord(value: unknown, path = "Bead record"): BeadRecord {
+169:   const record = projectLegacyBeadMetadata(snapshotProtocolRecord(value, path), path);
+170:   validateFromSchema(getProtocolValueValidators().beadRecord, record, path);
+171:   parseCanonicalTypeId(record.id, `${path}.id`);
+172:   parseResourceTypeId(record.type, `${path}.type`);
+173:   const ownedLinks =
+174:     record.ownedLinks === undefined
+175:       ? undefined
+176:       : Object.fromEntries(
+177:           Object.entries(record.ownedLinks as Readonly<Record<string, readonly unknown[]>>).map(
+178:             ([key, owned]) => {
+179:               parseResourceTypeId(key, `${path}.ownedLinks key`);
+180:               let previousId: string | undefined;
+181:               const projected = owned.map((item, index) => {
+182:                 const itemPath = `${path}.ownedLinks[${JSON.stringify(key)}][${index}]`;
+183:                 const owned_ = parseLinkRecord(item, itemPath);
+184:                 if (owned_.type !== key)
+185:                   throw new ProtocolArtifactValidationError(
+186:                     `${itemPath}.type must equal its entry's Link Type key`,
+187:                   );
+188:                 if (referenceUri(owned_.source) !== record.id)
+189:                   throw new ProtocolArtifactValidationError(
+190:                     `${itemPath}.source must be the containing Bead`,
+191:                   );
+192:                 if (previousId !== undefined && compareCanonicalIds(previousId, owned_.id) >= 0)
+193:                   throw new ProtocolArtifactValidationError(
+194:                     `${itemPath}.id must ascend in code-unit order within its entry`,
+195:                   );
+196:                 previousId = owned_.id;
+197:                 return owned_;
+198:               });
+199:               return [key, Object.freeze(projected)] as const;
+200:             },
+201:           ),
+202:         );
+203:   const links =
+204:     record.links === undefined ? undefined : parseLinkCollection(record.links, `${path}.links`);
+205:   return Object.freeze({
+206:     ...record,
+207:     metadata: record.metadata ?? Object.freeze({}),
+208:     ...(ownedLinks === undefined ? {} : { ownedLinks: Object.freeze(ownedLinks) }),
+209:     ...(links === undefined ? {} : { links }),
+210:   }) as unknown as BeadRecord;
+```
+
+SOURCE packages/protocol/src/read-values.ts:536-541
+```
+536: export function snapshotProtocolRecord(
+537:   value: unknown,
+538:   path: string,
+539: ): Readonly<Record<string, unknown>> {
+540:   return readRecord(snapshotJsonValue(value, path), path);
+541: }
+```
+
+SOURCE packages/protocol/src/read-update-values.ts:410-453
+```
+410: export function parseReadUpdateDiscovery(value: unknown): ReadUpdateDiscovery {
+411:   const result = parseReadUpdateShape(value, "discovery");
+412:   for (const name of ["scope", "beads", "links", "types", "operations", "aliases"])
+413:     parseCanonicalHttpUrl(result[name], name);
+414:   for (const policy of (result.maximumEndpointMultiplicity as readonly {
+415:     linkConformsTo: string;
+416:   }[]) ?? [])
+417:     parseCanonicalTypeId(policy.linkConformsTo);
+418:   return result as unknown as ReadUpdateDiscovery;
+419: }
+420: export function parseReadUpdateOperationDirectory(value: unknown): ReadUpdateOperationDirectory {
+421:   return parseReadUpdateShape(
+422:     value,
+423:     "operationDirectory",
+424:   ) as unknown as ReadUpdateOperationDirectory;
+425: }
+426: function validateResultResource(
+427:   result: Readonly<Record<string, unknown>>,
+428: ): BeadRecord | LinkRecord | undefined {
+429:   let projected: BeadRecord | LinkRecord | undefined;
+430:   if (result.resource !== undefined) {
+431:     const resource = result.resource as Record<string, unknown>;
+432:     projected = "source" in resource ? parseLinkRecord(resource) : parseBeadRecord(resource);
+433:   }
+434:   if (result.source !== undefined) parseCanonicalHttpUrl(result.source);
+435:   if (result.deleted !== undefined) {
+436:     const deleted = result.deleted as { resource: { id: string; type: string } };
+437:     parseCanonicalHttpUrl(deleted.resource.id);
+438:     parseCanonicalTypeId(deleted.resource.type);
+439:   }
+440:   if (result.alias !== undefined) parseCanonicalHttpUrl(result.alias);
+441:   if (result.target !== undefined) parseCanonicalHttpUrl(result.target);
+442:   return projected;
+443: }
+444: export function parseReadUpdateMutationResult(value: unknown): ReadUpdateMutationResult {
+445:   const result = parseReadUpdateShape(value, "mutationResult");
+446:   const resource = validateResultResource(result);
+447:   return Object.freeze({
+448:     ...result,
+449:     ...(resource === undefined ? {} : { resource }),
+450:   }) as unknown as ReadUpdateMutationResult;
+451: }
+452: export function parseReadUpdateAliasResult(value: unknown): ReadUpdateAliasResult {
+453:   const result = parseReadUpdateShape(value, "aliasResult");
+```
+
+SOURCE packages/protocol/src/json-values.ts:35-73
+```
+35: export function snapshotJsonValue(value: unknown, label = "JSON value"): AdmittedJsonValue {
+36:   const frames: Frame[] = [];
+37:   const active = new WeakSet<object>();
+38:   const fail = (path: Path | undefined, message: string): never => {
+39:     throw new ProtocolArtifactValidationError(`${location(label, path)} ${message}`);
+40:   };
+41:   const start = (entry: unknown, path: Path | undefined): AdmittedJsonValue => {
+42:     if (entry === null || typeof entry === "boolean") return entry;
+43:     if (typeof entry === "string") {
+44:       if (!isUnicodeScalarString(entry)) fail(path, "must not contain an unpaired surrogate");
+45:       return entry;
+46:     }
+47:     if (typeof entry === "number") {
+48:       if (!Number.isFinite(entry)) fail(path, "must contain a finite JSON number");
+49:       return entry;
+50:     }
+51:     if (typeof entry !== "object") return fail(path, "must contain only JSON values");
+52:     if (active.has(entry)) fail(path, "must not contain a cycle");
+53:     const array = Array.isArray(entry);
+54:     if (!array) {
+55:       const prototype = Object.getPrototypeOf(entry);
+56:       if (prototype !== Object.prototype && prototype !== null)
+57:         fail(path, "must be a plain object");
+58:     }
+59:     const keys = array ? undefined : Object.keys(entry);
+60:     const length = array ? entry.length : keys?.length;
+61:     if (typeof length !== "number" || !Number.isSafeInteger(length) || length < 0)
+62:       return fail(path, "must have a valid JSON container length");
+63:     const target: Container = array ? [] : {};
+64:     active.add(entry);
+65:     frames.push({ source: entry, target, keys, length, index: 0, path });
+66:     return target;
+67:   };
+68:   const result = start(value, undefined);
+69:   while (frames.length) {
+70:     const frame = frames[frames.length - 1];
+71:     if (!frame) break;
+72:     if (frame.index === frame.length) {
+73:       Object.freeze(frame.target);
+```
+
+SOURCE packages/protocol/schemas/bdp-v0.schema.json:774-815
+```
+774:     "beadRecord": {
+775:       "type": "object",
+776:       "required": ["id", "type", "revision", "properties"],
+777:       "properties": {
+778:         "id": {
+779:           "$ref": "#/$defs/absoluteHttpUrl"
+780:         },
+781:         "type": {
+782:           "$ref": "#/$defs/absoluteHttpUrl"
+783:         },
+784:         "revision": {
+785:           "type": "string",
+786:           "minLength": 1
+787:         },
+788:         "properties": {
+789:           "$ref": "#/$defs/properties"
+790:         },
+791:         "metadata": {
+792:           "$ref": "#/$defs/metadata"
+793:         },
+794:         "links": {
+795:           "$ref": "#/$defs/linkCollection"
+796:         },
+797:         "ownedLinks": {
+798:           "type": "object",
+799:           "propertyNames": {
+800:             "$ref": "#/$defs/absoluteHttpUrl"
+801:           },
+802:           "additionalProperties": {
+803:             "type": "array",
+804:             "items": {
+805:               "$ref": "#/$defs/linkRecord"
+806:             }
+807:           }
+808:         },
+809:         "revisionProvenance": {
+810:           "$ref": "#/$defs/revisionProvenance"
+811:         }
+812:       },
+813:       "additionalProperties": false
+814:     },
+815:     "linkRecord": {
+```
+
+SOURCE .github/workflows/ci.yml:60-76
+```
+60:       - run: pnpm format:check
+61:       - run: pnpm lint
+62:       - run: pnpm check:boundaries
+63:       - run: pnpm typecheck
+64:       # Real Node child-process tests resolve workspace package exports from dist.
+65:       - run: pnpm build
+66:       - run: pnpm test
+67:         env:
+68:           BDP_BD_MATRIX_EXECUTABLE: ${{ runner.temp }}/bdp-tools/bd
+69:           BDP_REQUIRE_BD_MATRIX: "1"
+70:       - run: pnpm e2e:ready:preflight
+71:       - run: pnpm smoke
+72:       - name: Read-cohort evidence gate
+73:         # Exit 2 alone passes: it means no evidence is claimed and shipping
+74:         # admission stays fail-closed. Exit 1 (claimed but unproved) and exit 3
+75:         # (the gate could not inspect the claim — missing or stale build) both
+76:         # fail the job; a claim that cannot be checked is not a passing state.
+```

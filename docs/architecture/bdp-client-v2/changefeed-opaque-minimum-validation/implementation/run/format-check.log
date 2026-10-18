@@ -1,0 +1,81 @@
+apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts format ━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    779 779 │           processEvents.close.signal !== null
+    780 780 │         )
+    781     │ - ········fail("unclean-close",·new·Error("installed·opaque·changefeed·clean·exit·was·not·established"));
+        781 │ + ········fail(
+        782 │ + ··········"unclean-close",
+        783 │ + ··········new·Error("installed·opaque·changefeed·clean·exit·was·not·established"),
+        784 │ + ········);
+    782 785 │         else cleanClose = true;
+    783 786 │       } catch (error) {
+  
+
+packages/server/src/transaction-changefeed.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    1029 1029 │   }, 60000);
+    1030 1030 │   
+    1031      │ - 
+    1032 1031 │   it.each(["unknown", "pos-01"])(
+    1033 1032 │     "waits for fresh finite changefeed opaque minimum without recapturing admission: %s",
+    ········· │ 
+    1262 1261 │     };
+    1263 1262 │     let instance: ReturnType<typeof service> | undefined;
+    1264      │ - ··let·observed:
+    1265      │ - ····|·Promise<{·ok:·true·}·|·{·ok:·false;·error:·unknown·}>
+    1266      │ - ····|·undefined;
+         1263 │ + ··let·observed:·Promise<{·ok:·true·}·|·{·ok:·false;·error:·unknown·}>·|·undefined;
+    1267 1264 │     let closing: Promise<{ ok: true } | { ok: false; error: unknown }> | undefined;
+    1268 1265 │     try {
+    ········· │ 
+    1424 1421 │       let errorName: string | null = null;
+    1425 1422 │       try {
+    1426      │ - ······const·outcome·=·await·instance.changes(
+    1427      │ - ········{·start:·"now"·},
+    1428      │ - ········{
+    1429      │ - ··········scopeEpoch:·config.scopeEpoch,
+    1430      │ - ··········authorizationView:·config.authorizationView,
+    1431      │ - ··········minimumPosition:·"unknown",
+    1432      │ - ········},
+    1433      │ - ········controller.signal,
+    1434      │ - ········"finite-start-now",
+    1435      │ - ······).then(
+    1436      │ - ········()·=>·({·ok:·true·as·const·}),
+    1437      │ - ········(error:·unknown)·=>·({·ok:·false·as·const,·error·}),
+    1438      │ - ······);
+         1423 │ + ······const·outcome·=·await·instance
+         1424 │ + ········.changes(
+         1425 │ + ··········{·start:·"now"·},
+         1426 │ + ··········{
+         1427 │ + ············scopeEpoch:·config.scopeEpoch,
+         1428 │ + ············authorizationView:·config.authorizationView,
+         1429 │ + ············minimumPosition:·"unknown",
+         1430 │ + ··········},
+         1431 │ + ··········controller.signal,
+         1432 │ + ··········"finite-start-now",
+         1433 │ + ········)
+         1434 │ + ········.then(
+         1435 │ + ··········()·=>·({·ok:·true·as·const·}),
+         1436 │ + ··········(error:·unknown)·=>·({·ok:·false·as·const,·error·}),
+         1437 │ + ········);
+    1439 1438 │         if (outcome.ok) throw new Error("preflight unexpectedly succeeded");
+    1440 1439 │         errorName = outcome.error instanceof Error ? outcome.error.name : "non-Error";
+    ········· │ 
+    1597 1596 │     if (failures.length) throw new AggregateError(failures, "changefeed boundaries failed");
+    1598 1597 │   });
+    1599      │ - 
+    1600 1598 │   
+    1601 1599 │   it("serves finite start-now opaque minima before HTTP shortcuts", async () => {
+  
+
+Checked 5 files in 8ms. No fixes applied.
+Found 2 errors.
+format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+  
+

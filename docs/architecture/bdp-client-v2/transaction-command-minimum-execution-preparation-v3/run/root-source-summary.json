@@ -1,0 +1,137 @@
+{
+  "sourceBinding": "ff9c63417fbb348bf8ad9863483096ccc0329beb5c05b532333cf75cd0726a38",
+  "diff": "891a3dd1d17d9f754dc81ef6223bdb61de4c330e15bc5ab7760559ca5c563106",
+  "cases": 8,
+  "cohorts": [
+    {
+      "name": "http-positive",
+      "passedTitles": [
+        "ignores partial and malformed copied read controls on each mutation carrier",
+        "ignores complete copied tuples on every Transactional mutation target",
+        "copied read controls preserve key revision and negotiation admission",
+        "keeps receipt minimum enforcement after commands ignore copied controls",
+        "preserves authentication on commands carrying copied read controls without reserving keys"
+      ],
+      "resultsSha256": "6dae26455840bf19ee25a636b70a3bac76f5f40b2107eb52d39fc662b95bc000",
+      "exitSha256": "349bab81713aceec1fad2df1caa533fccb122c3edbd3011009207c3552fa3066",
+      "expectedWorkload": {
+        "cases": 5,
+        "httpExpected": 80,
+        "httpMaximum": 80,
+        "post": 54,
+        "get": 25,
+        "head": 1,
+        "storeDirectories": 5,
+        "ownerOpens": 11,
+        "listenerLifetimes": 11,
+        "children": 0,
+        "readonlySqliteHandles": 6
+      },
+      "clean": true
+    },
+    {
+      "name": "service-exclusions",
+      "passedTitles": [
+        "nonexecuting sequence refusal observation keeps excluded sequence responses unobserved and without refusal context"
+      ],
+      "resultsSha256": "7f45d517cc88a3a9c711eb4fbea66bcf686fe70ba75b185daee4b3ebe2c123bc",
+      "exitSha256": "09816d6840b45c22d71f066fd257c3bd5add4f708549520e8d9dd6cf656c153e",
+      "expectedWorkload": {
+        "cases": 1,
+        "httpExpected": 0,
+        "httpMaximum": 0,
+        "directHandlerCalls": 6,
+        "storeDirectories": 1,
+        "ownerOpens": 1,
+        "listenerLifetimes": 0,
+        "children": 0,
+        "serviceConstructions": 1
+      },
+      "clean": true
+    },
+    {
+      "name": "catalog-citations",
+      "passedTitles": [
+        "draft Transactional catalog strictly parses and binds every citation to the current specification text"
+      ],
+      "resultsSha256": "8ff8336f249ed227f27da87b8934b482511164ff9fec12338983e0adbfdb15bf",
+      "exitSha256": "137fffd0440544287a87704100dddbfcde8830bee2485afce675397bedefaf29",
+      "expectedWorkload": {
+        "cases": 1,
+        "httpExpected": 0,
+        "httpMaximum": 0,
+        "storeDirectories": 0,
+        "ownerOpens": 0,
+        "listenerLifetimes": 0,
+        "children": 0
+      },
+      "clean": true
+    },
+    {
+      "name": "ru-emitted",
+      "passedTitles": [
+        "ignores copied read minimum fields on Update singleton and sequence commands"
+      ],
+      "resultsSha256": "40d12fd516ed6e912bc18e989e9d62f42c7ae2f3a09ca7c02a20e9231656f0d8",
+      "exitSha256": "f8bde83f1c5ebed9c4cdfa260edf3e6a303114c7f3aec02bebd084012fd083ff",
+      "expectedWorkload": {
+        "cases": 1,
+        "httpExpected": 6,
+        "httpMaximum": 6,
+        "post": 4,
+        "get": 2,
+        "head": 0,
+        "storeDirectories": 1,
+        "ownerOpens": 1,
+        "listenerLifetimes": 2,
+        "children": 1,
+        "auxiliaryPortProbes": 1
+      },
+      "clean": true
+    }
+  ],
+  "ruObservation": {
+    "observation": "private-update-command-minimum",
+    "outcome": "passed",
+    "childPid": 97756,
+    "childExitCode": 0,
+    "childClosed": true,
+    "directoryAbsent": true,
+    "directory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-execution-preparation-v3/run/ru-emitted.tmp/bdp-installed-irPF19",
+    "completedResponses": [
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/create-bead",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/copied-singleton",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/create-bead",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/sequence",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/copied-sequence",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/sequence",
+        "status": 200
+      }
+    ],
+    "claimEligible": false
+  },
+  "scope": "Focused only; HTTP count80 source inferred from executed bound test bodies,6 RU actual response observations; not full suite or qualification",
+  "auditCorrection": "Initial read-only root audit filtered pending but not skipped; corrected filter on same saved results. No product rerun."
+}

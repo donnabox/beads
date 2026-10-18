@@ -1,0 +1,82 @@
+## Review — C4a-prep discovery-limits projection only
+
+Verified against frozen source `b20c929` in `/Users/dbox/repos/wt/vickie/vickie-tx-discovery-assembly`. No files written, no builds or tests run. `docs/specs/bdp.md` and `schemas/bdp-v0.schema.json` are byte-identical between `0fafcf1` and `b20c929`, so the plan's spec line citations are checkable at this basis.
+
+### Source truth that holds (stated so the findings below are read as bounded, not as a rewrite)
+
+- **16 / 524288 are the single enforcing values for the Transactional lane.** `TRANSACTION_RUNTIME_LIMITS` (`transaction-batch.ts:62–72`, frozen) is consumed by the *only* `evaluateTransaction` call site (`transaction-store.ts:1208–1227`, `limits:` at `:1224`) and both numeric-admission sites (`:831–832`, `:942–943`). The per-call seams are `maximumInducedEvents`/`maximumMatchedResources` only (`transaction-batch.ts:595–631`) — there is no diagnostics seam. The RU lane's different `diagnosticCount: 32` (`development-authority.ts:46–47`, projected at `development-composition.ts:37–41`) belongs to a separate authority and cannot contaminate this projection.
+- **Byte accounting matches the spec wording.** `resource-evaluator.ts:180–225` measures the serialized diagnostics *array* (brackets + commas + complete entries) and sets `diagnosticsTruncated` — spec `:2706–2707` "UTF-8 bytes of … the serialized `diagnostics` list".
+- **Validation is in fact the only group with an affirmative MUST-advertise.** Sole hit is `:3469`; `:3333`, `:4967`, `:5119` are all conditional-on-advertising. The plan's optional/mandatory split is sound.
+- **No schema/parser/export/type change is needed.** `$defs.transactionalAdvertisedLimits.validation = {diagnostics, diagnosticBytes}` matches the normative fixture `fixtures/transactional/discovery.json`; `parseTransactionalDiscovery` is Ajv-driven with no hardcoded group list (`transaction-discovery-values.ts:34–76`); `limits` is an open `Record` (`read-update-values.ts:381`). Public surface stays closed: server exports only `.` and `./development`; protocol root exports exactly the two parsers/two types (`index.ts:636–641`); `index.ts:288–306` still refuses non-Read advertisement; all three routes still refuse (`transaction-http.ts:195,223–224,537–544`).
+- **The three-file budget survives existing callers.** `discoveryObserved` is used only by `transaction-service.test.ts` (self-comparison at `:1151`, `toMatchObject` elsewhere) and `transaction-read.test.ts:813` (directory/operations only). Both fixtures use selector `4096/32/256`. 17 members (16 required + `limits`) matches `transaction-discovery.test.ts:63–75`, and `cursorTtlMilliseconds` non-serialization is already pinned at `:72`.
+
+---
+
+### High
+
+**1. The Read/set-Selector coherence check duplicates an existing enforcing check and misses the one mismatch class it can actually catch.**
+*Location:* plan line 67 · `authority-read.ts:367–389` · `transaction-read.ts:48–55` · `transaction-service.ts:65–97` · `transaction-set.ts:16`
+
+`authority-read.ts:388` already throws `AuthorityReadError("configuration", "advertised Read limits must match enforcement")` when `advertisedLimits.selector` ≠ `selectorLimits` (and page/cursorTtl vs pagination). `createTransactionReadPlane` feeds both into that check at service construction (`transaction-service.ts:97`), i.e. before any `discoveryObserved()` can run. So "captured Read values agree with enforcement" is *already* a single enforcing source for the Read side; re-implementing it in the projection violates the plan's own single-enforcing-source rule. The genuinely reachable incoherence is the other one: advertised == Read-enforced but both ≠ `TRANSACTION_SELECTOR_LIMITS` (`transaction-set.ts:16`, fixed `4096/32/256`, not configuration-derived).
+
+*Impact:* as written, the slice's "mismatched Selector bytes/depth/nodes each rejected" tests either re-prove an existing guarantee or exercise a state the service cannot reach, while the real mismatch class (Read config diverging from the fixed set core) can be read out of scope.
+
+*Correction:* state that the advertised-vs-Read-enforced side is closed at `authority-read.ts:388` and must not be duplicated; the new check in `assembleTransactionDiscovery` compares the captured advertised triple against imported `TRANSACTION_SELECTOR_LIMITS` only.
+
+**2. The premise that "arbitrary private seams can differ" is false for the installed configuration surface.**
+*Location:* plan line 67 · `transaction-runtime-configuration.ts:89–97`, `:134–197`, `:291–297`, `:336–340`
+
+There is no configuration seam for the Read Selector triple. `TRANSACTION_RUNTIME_DEFAULTS.selector` is fixed at `:97`; `captureSeams` (`:134–197`) accepts no `selector` key; `settings` (`:291–297`) overrides only `transport`, `receiptMaximumItems` and `maintenanceIntervalMs`. So `settings.selector` is always `{4096,32,256}` — identical to the set core. Only a direct in-source `createTransactionService` caller can produce a mismatch.
+
+*Impact:* the row and the done-when read as guarding a configurable surface that does not exist. Worse for dispatch: the required test cannot be written through the runtime configuration path at all.
+
+*Correction:* restate as defense-in-depth against a future seam or a direct in-source caller, and say explicitly that the mismatch test constructs the service/assembler directly.
+
+**3. The installed-evidence condition is wrong: the C3 packed proof is invalidated by the source change itself, not only by an emitted-payload change.**
+*Location:* plan line 80 · `apps/bdptest/src/transactional-discovery-installed.test.ts:255–278`
+
+Observable installed behavior is unchanged — the three routes still emit bodyless 500 + `x-bdp-development-limit: transactional-discovery`, and the ledger is confirmed at exactly `toHaveLength(12)` / one child, within C3's documented 16/1 ceiling (`transaction-cold-discovery-next-plan-v3.md:97`). But `transaction-discovery.ts` is in the emitted graph reached by the installed entry (`transaction-installed-process.js` → `transaction-installed.ts:4` → `transaction-runtime.ts` → `transaction-http.ts:56`), so the pack harness's tarball SHA256s and `declaredSourceCommit` no longer bind the new source.
+
+*Impact:* the condition "only if emitted payload changes" permits skipping fresh installed evidence while the progress doc would still read as if the refusal boundary is proven at the projection commit — the exact evidence-honesty failure this plan family forbids.
+
+*Correction:* replace the condition with a stated disposition: either (a) re-run the unchanged 12/1 ledger against the new frozen commit (headroom exists under 16/1), or (b) record in the progress doc that the C3 packed proof binds `b20c929` only and the projection commit carries no fresh installed proof.
+
+---
+
+### Medium
+
+**4. The enforced-limits inventory omits `request.targetBytes` and mislabels the HTTP target bound as having no matching member.**
+*Location:* plan lines 69 and 72 · `transaction-http.ts:63` (`TRANSACTION_HTTP_TARGET_BYTES = 8192`), `:263` (enforced on `url.pathname + url.search`) · `transaction-runtime.ts:120` · schema `transactionalAdvertisedLimits.request.targetBytes` · spec `:1060–1062`
+
+Line 72 classifies the "HTTP header cap" as internal with "no matching automatic public discovery field". True of `maxHeaderSize` (`transaction-runtime.ts:263`); false of the request-target bound, which is enforced, has an exact matching optional member, and is advertised in the normative fixture. Line 69's request row covers `bodyBytes` only.
+
+*Impact:* omission is lawful (optional group), but the table is presented as *the* critical-path disclosure inventory, and a missing enforced group with a matching member weakens the line-74 conclusion.
+
+*Correction:* add a `request.targetBytes` row (optional under `:1044–1074`, omitted for this slice) and narrow the last row to header size, SSE slots/packet bytes, owner storage/capture bounds and the minimum-wait budget.
+
+**5. Catalog traceability names four rows the slice does not close and omits the one row whose MUST it does close.**
+*Location:* plan line 31 · `packages/conformance/catalog/read-update-v1.json:1551` · `transactional-v1.json:628`
+
+The mandatory clause lives in the inherited `read-update.validation.diagnostics` row, whose `selectedText` is verbatim "an authority that omits entries beyond a bound MUST advertise that bound…". The named `transactional.discovery.limits` row is about the optional `transaction` group and receipt/replay retention, not validation.
+
+*Impact:* the slice's sole mandatory obligation has no named anchor, making later credit accounting ambiguous.
+
+*Correction:* name `read-update.validation.diagnostics` (and optionally `transactional.receipt.validation-diagnostics`) — still no catalog/manifest edits, still no row credit claimed.
+
+---
+
+### Low
+
+**6. `sequence.operations` citation is wrong and its omission rationale does not apply.** Plan line 70 cites "HTTP:325"; the sequence-carrier bound is `transaction-http.ts:312–313` and `transaction-batch.ts:238` (`:325` is the submission authorization block). The configurable lower seam (`transaction-http.ts:156–164` → `:340` → `transaction-store.ts:1081–1082`) applies to the *submission* operation count, not to the sequence path, which uses the fixed 32 unconditionally. Omission stays lawful; split the rationale and fix the citation.
+
+**7. `transaction-batch.ts:60–61`'s "No profile advertisement" becomes false, with no room in the three-file budget.** The only in-budget route to the enforcement values is a value import of `TRANSACTION_RUNTIME_LIMITS` from that module. The plan already budgets exactly this kind of comment-only fix for `transaction-runtime.ts` at line 145, but only for activation. Either budget a 4th comment-only file or record the staleness in the progress doc and schedule the fix with activation — state which.
+
+**8. Record the provenance asymmetry and rule out the alternative explicitly.** `assembleTransactionDiscovery`'s third parameter is `ServerAdvertisedReadLimits` (`index.ts:140–147`) — page/selector/cursorTtl only, correctly closed because the Read profile admits no `validation` group (spec `:1044–1047`, `:3808–3810`). So threading validation through Read options would be a layer violation; the module import is the right call and is **cycle-safe** (`transaction-discovery.ts` is not in `transaction-batch.ts`'s 12-module import closure; `transaction-http.ts` already imports both). Two consequences to write down: page/selector come from the caller's captured copy while validation comes from a module constant invisible to the caller, so `transaction-service.test.ts:1148–1163`'s caller-mutation test can no longer vary validation; and the discovery unit test will transitively load the mutation-evaluator graph and run `transaction-batch.ts:74`'s module-level `snapshotReadUpdateRuntimeLimits` at import.
+
+**9. Name the existing evidence that makes "Required" airtight.** `transaction-store.test.ts:2615–2660` already proves the Transactional lane truncates at exactly `diagnosticCount: 16` **and** exactly `diagnosticBytes: 524288` (`const bound = TRANSACTION_RUNTIME_LIMITS.diagnosticBytes`; 16 entries exact, 15 when one byte over) in a real receipt `validation-failed` problem with `diagnosticsTruncated: true`; `:2825` covers the non-truncating case. Spec `:3469`'s MUST is conditional on actual omission, so this is the proof it is engaged rather than vacuous. Cite it in the disclosure-law row.
+
+**10. Page-group asymmetry is unrecorded.** `page.maximumItems` is tied to the owner's `receiptMaximumItems` (`transaction-service.ts:87–92`) and to `pagination.maxPageItems` (`authority-read.ts:381–388`), and receipt pages fill to `maximumItems` (`transaction-service.ts:176–180`, `:407–414`) — `defaultItems` governs only collection reads without an explicit limit. Given the plan cites TX `:3831–3833`, one sentence in the progress doc should say so, so the advertised `defaultItems` is not later read as a receipt page size.
+
+**11. Citation nits.** `transaction-discovery.ts:46–52` → the limits literal is `:45–52` (`limits: {` is line 45). "batch:66–69" also spans `scopeSourceBytes` (`:67`), which is not one of the three named values (line 69 does separately warn against that confusion). "runtime configuration:91–100" → `selector` is at `:97`, `TRANSACTION_RUNTIME_DEFAULTS` opens at `:89`. ":2707–2711" → the bullet begins at `:2706`. `:2598–2602`, `:3468–3472`, `:3817–3820`, `:3830–3833`, `:3797–3802`, `:4275–4278`, `:5590–5594`, `transaction-store.ts:199`, `transaction-set.ts:16,132–143`, `transaction-batch.ts:62–72,831–832,942–943`, `transaction-store.ts:1082` all check out exactly.
+
+Also confirmed with no action needed: the plan's "existing parser tests" claim at line 80 is already satisfied outside the owned files — `transaction-discovery-values.test.ts:35` rejects `limits.retention.idempotency` and `:32` rejects an unknown member, so no protocol-file ownership is required.

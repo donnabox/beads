@@ -1,0 +1,29 @@
+{
+  "source": "2e742307845f52c23c4a16e6150fcf2201713fb5",
+  "artifacts": {
+    "manifest": {
+      "bytes": 620090,
+      "sha256": "97d90c968b107b2ca1fe2191c7d2c3be168c7c52bc530580f9d8b6278b272453",
+      "nodes": 16373,
+      "preservedRawObjects": 11,
+      "wholeParentReconstructed": true
+    },
+    "coverage": {
+      "bytes": 88043,
+      "sha256": "dafedd035ca20f684559c739ebf2e6155f8446ce8062c3fa60ff86967b259bbd",
+      "nodes": 1974,
+      "preservedRawObjects": 11,
+      "wholeParentReconstructed": true
+    }
+  },
+  "stage": "independent root preflight, no installed execution",
+  "actions": 187,
+  "assertions": 1872,
+  "newAssertions": 333,
+  "changedFiles": [
+    "apps/bdptest/src/transactional-matrix.test.ts",
+    "packages/conformance/src/transactional-cumulative.test.ts",
+    "packages/conformance/test-support/transactional/coverage-v1.json",
+    "packages/conformance/test-support/transactional/manifest-v1.json"
+  ]
+}

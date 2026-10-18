@@ -1,0 +1,250 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-minimum-combined-validation/packages.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/packages.py
+@@ -110,7 +110,7 @@
+   else:walk('')
+   for dep in sorted(m.get('dependencies',{})):bind(resolve_dep(manifest,dep).parent,identity+'>'+dep,[*ancestors,root])
+  bind((C/'node_modules/@bdp/server').resolve(strict=True),'@bdp/server',[])
+- entry=(C/'node_modules/@bdp/server/dist/transaction-installed.js').resolve(strict=True);assert entry.is_relative_to(C.resolve())
++ entry=(C/'node_modules/@bdp/server/dist/transaction-installed-process.js').resolve(strict=True);assert entry.is_relative_to(C.resolve())
+  write((control+'.provenance.json') if control else 'installed-provenance.json',{'mutation':mutation,'status':'VERIFIED_BEFORE_CHILD','sourceCommit':g['finalHead'],'sourceTree':g['finalTree'],'consumer':str(C),'entryRealpath':str(entry),'entrySha256':sha(entry.read_bytes()),'packages':packages,'installedProductionGraph':graph,'expectedProductionVersionsFromFrozenLock':expected,'sourceLockSha256':g['sourceLockSha256'],'consumerLockSha256':sha((C/'pnpm-lock.yaml').read_bytes()),'consumerManifestSha256':sha((C/'package.json').read_bytes()),'consumerSettingsSha256':sha((C/'pnpm-workspace.yaml').read_bytes()),'payloadIdentity':payload.hexdigest(),'payloadRecursiveVisits':visits,'payloadFileVisits':filecount,'limitations':'Read-only independent fixed dependency closure hash; compare against actual child result. Not source attestation or Node/TLS/deployment identity.'})
+  if not control:write('installed-consumer-inventory.json',consumer_inventory())
+ else:raise ValueError(mode)
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-minimum-combined-validation/cache-inventory-repair/before/gate.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/gate.py
+@@ -1,9 +1,9 @@
+-"""Closed exact combined-branch gate. Root supplies actual identities and phase releases."""
++"""Closed exact fresh-depth-branch gate. Root supplies actual identities and phase releases."""
+ from pathlib import Path
+ import hashlib,json,subprocess,os
+-P=Path(__file__).resolve().parent;D=P;L=P.parent
+-W=Path('/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained');E=P/'run';GUARD=L/'guarded-action.py';COMMANDS=P/'commands.json'
+-COMMANDS_SHA='c21793c3bdd46ad59854382bf141ca08d15fdfc5c14b177a11973d03b6721490'
++P=Path(__file__).resolve().parent;D=P;L=P.parent.parent
++W=Path('/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving');E=P/'run';GUARD=L/'guarded-action.py';COMMANDS=P/'commands.json'
++COMMANDS_SHA='e9bb36f2509902d3b34ad844d1e25f9e0182f30b48ccd49a7403849b0dbdbeab'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def require(ok,message):
+  if not ok:raise RuntimeError(message)
+@@ -15,18 +15,22 @@
+ def input_files():return {p:sha((W/p).read_bytes()) for p in git('ls-files').decode().splitlines()}
+ def source_hashes():
+  g=gate();b=document(g,'sourceBinding')
+- require(b['head']==g['finalHead'] and b['tree']==g['finalTree'] and b['workspace']==str(W),'Combined identity missing')
++ require(b['head']==g['finalHead'] and b['tree']==g['finalTree'] and b['workspace']==str(W),'Fresh-depth identity missing')
+  require(git('rev-parse','HEAD').decode().strip()==b['head'] and git('rev-parse','HEAD^{tree}').decode().strip()==b['tree'],'Actual Git identity changed')
+- require(not git('status','--porcelain').strip(),'Combined source must be clean')
+- require(git('show','-s','--format=%P',b['head']).decode().split()==b['parents'],'Ordered combined parents changed')
+- require(b['minimumHead']=='5ca22ec4e710cc4417a80d27bff69e1d8424c115','Wrong incoming branch')
+- git('merge-base','--is-ancestor',b['minimumHead'],b['head'])
+- require(b['diffBase']=='df80f8cb86b7763bc7bb005492e43d8840527045','Unexpected branch baseline')
+- require(set(git('diff','--name-only',b['diffBase'],b['head']).decode().splitlines())==set(b['files']) and len(b['files'])==20,'Combined union scope differs')
++ require(not git('status','--porcelain').strip(),'Fresh-depth source must be clean')
++ require(git('show','-s','--format=%P',b['head']).decode().split()==b['parents'],'Ordered fresh-depth parents changed')
++ prepared_document=json.loads((P/'prepared-source.json').read_text())
++ require(isinstance(prepared_document['finalBase'],str) and len(prepared_document['finalBase'])==40 and b['diffBase']==prepared_document['finalBase'],'Actual final branch base pending/changed')
++ git('merge-base','--is-ancestor',prepared_document['reviewBase'],b['diffBase'])
++ git('merge-base','--is-ancestor',b['diffBase'],b['head'])
++ prepared=prepared_document['files']
++ require(len(prepared)==18 and all(isinstance(v,str) and len(v)==64 for v in prepared.values()),'Final18 source hashes pending')
++ require(set(git('diff','--name-only',b['diffBase'],b['head']).decode().splitlines())==set(prepared)==set(b['files']),'Final18 scope differs')
++ require({p:v['sha256'] for p,v in b['files'].items()}==prepared,'Final source differs from reviewed bytes')
+  actual={p:sha((W/p).read_bytes()) for p in b['files']}
+- require(actual=={p:v['sha256'] for p,v in b['files'].items()},'Combined source hashes changed')
+- require(sha(git('diff','--binary',b['diffBase'],b['head']))==b['diffSha256'],'Combined patch changed')
+- require(document(g,'inputBinding')==input_files(),'Tracked combined inputs changed')
++ require(actual=={p:v['sha256'] for p,v in b['files'].items()},'Fresh-depth source hashes changed')
++ require(sha(git('diff','--binary',b['diffBase'],b['head']))==b['diffSha256'],'Fresh-depth patch changed')
++ require(document(g,'inputBinding')==input_files(),'Tracked fresh-depth inputs changed')
+  if (E/'installed-consumer-inventory.json').exists():
+   require(json.loads((E/'installed-consumer-inventory.json').read_text())==consumer_inventory(),'Consumer graph changed')
+  return actual
+@@ -48,15 +52,15 @@
+  return x
+ def verify_build(g):
+  i=json.loads((E/'build-output-inventory.json').read_text());completed('fresh-build');completed('build-inventory')
+- require(i['head']==g['finalHead'] and i['tree']==g['finalTree'] and i['inputFiles']==input_files(),'Fresh combined build attribution differs')
+- require(i['packageFiles']==build_outputs() and i['emittedFiles']==emitted_files(),'Combined outputs changed')
++ require(i['head']==g['finalHead'] and i['tree']==g['finalTree'] and i['inputFiles']==input_files(),'Fresh depth build attribution differs')
++ require(i['packageFiles']==build_outputs() and i['emittedFiles']==emitted_files(),'Fresh-depth outputs changed')
+  for k in ['buildStart','buildExit','buildLog']:
+   v=i[k];require(sha(Path(v['path']).read_bytes())==v['sha256'],'Build record changed')
+ def proof_for(mode=None):return E/'installed-provenance.json'
+ def verify_mirror():
+  m=json.loads((E/'control-mirror.json').read_text());C=P/'mirror'
+  require(m['combinedHead']==gate()['finalHead'],'Wrong control source')
+- require(m['changedFiles']==['packages/server/dist/transaction-batch.js'],'Wrong mutation scope')
++ require(m['changedFiles']==['packages/server/dist/transaction-snapshot.js'],'Wrong mutation scope')
+  for n,h in m['positiveFiles'].items():require(sha((W/n).read_bytes())==h,'Control positive changed '+n)
+  for n,h in m['copyFiles'].items():require(sha((C/n).read_bytes())==h,'Control copy changed '+n)
+  for n,v in m['links'].items():
+@@ -81,10 +85,14 @@
+  for n,h in g['preparationSha256'].items():require(sha((P/n).read_bytes())==h,'Preparation changed '+n)
+  order=cfg['executionOrder'];approved=g['approvedCommandIds'];require(approved==order[:len(approved)] and name in approved,'Stage not released')
+  spec=dict(cfg['commands'][name]);require(g['phaseRelease'][spec['phase']] is True,'Phase closed')
++ if spec['phase']=='source':
++  require(a.get('sourceValidationAuthorized') is True and a.get('sourceCouncilAccepted') is True,'Diagnostic source authorization/council absent')
++ else:
++  require(g['councilAccepted'] is True,'Full council still pending for control/package/installed')
+  source=source_hashes()
+  for prior in order[:order.index(name)]:completed(prior)
+  require(spec['supervisorSeconds']==120 and spec['automaticRetries']==0,'Limits differ')
+- require(set(g['toolHashes'])=={'/Users/dbox/.nvm/versions/node/v24.16.0/bin/node','/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs',str(W/'node_modules/vitest/vitest.mjs'),str(W/'node_modules/@biomejs/biome/bin/biome')},'Exact tool pins absent')
++ require(set(g['toolHashes'])=={'/Users/dbox/.nvm/versions/node/v24.16.0/bin/node','/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs',str(W/'node_modules/vitest/vitest.mjs'),str(W/'node_modules/@biomejs/biome/bin/biome'),'/opt/homebrew/opt/python@3.14/bin/python3.14'},'Exact tool pins absent')
+  for p,h in g['toolHashes'].items():require(sha(Path(p).read_bytes())==h,'Tool changed')
+  require(sha((W/'pnpm-lock.yaml').read_bytes())==g['sourceLockSha256'],'Source lock changed')
+  if spec['phase']!='source':verify_build(g)
+@@ -95,12 +103,11 @@
+   require(proof['sourceCommit']==g['finalHead'] and proof['sourceTree']==g['finalTree'],'Installed source mismatch')
+   C=Path(proof['consumer']).resolve(strict=True)
+   require(sha((C/'pnpm-lock.yaml').read_bytes())==g['consumerLockSha256']==proof['consumerLockSha256'],'Consumer lock changed')
+-  entry=(C/'node_modules/@bdp/server/dist'/('transaction-installed-process.js' if 'sequence' in name else 'transaction-installed.js')).resolve(strict=True)
++  entry=(C/'node_modules/@bdp/server/dist'/'transaction-installed-process.js').resolve(strict=True)
+   require(entry.is_relative_to(C),'Workspace fallback')
+   tar=json.loads((E/'tar-source-provenance.json').read_text());info=tar['packages']['server']['files']['dist/'+entry.name]
+   require(sha(entry.read_bytes())==info['sha256'],'Entry differs from archive')
+   if spec['phase']=='installed':
+    spec['validatedBdpOverrides']={'BDP_TRANSACTIONAL_INSTALLED_ENTRY':str(entry),'BDP_TRANSACTIONAL_SOURCE_COMMIT':g['finalHead']}
+-   if name=='minimum-installed':spec['validatedBdpOverrides']['BDP_TRANSACTIONAL_MINIMUM_CURRENT_MODE']='positive'
+  spec['workload']={k:spec[k] for k in ['cases','http','expectedHTTP','maxHTTP','owners','listeners','directories','productChildren'] if k in spec}
+  return {**g,'sourceSha256':source,'sourceDiffSha256':source_patch_hash(),'preparationSha256':sha((P/'supervise.py').read_bytes())},spec
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-minimum-combined-validation/control.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/control.py
+@@ -1,7 +1,9 @@
+-"""Separate single emitted strict-preparation counterfactual; no positive/source mutation."""
++"""Separate single emitted Snapshot-comparator counterfactual; no positive/source mutation."""
+ from gate import *
+ import sys,shutil,re
+ mode=sys.argv[1];g,spec=load_gate('prepare-control' if mode=='prepare' else 'review-control');C=P/'mirror'
++reporter_pins=json.loads((P/'control-reporter-sources.json').read_text())
++for relative,h in reporter_pins.items():require(sha((W/relative).read_bytes())==h,'Reporter source changed '+relative)
+ if mode=='prepare':
+  require(not C.exists(),'Control copy exists; no retry');C.mkdir()
+  files=set(git('ls-files').decode().splitlines());links={}
+@@ -30,36 +32,44 @@
+   dest=C/target.relative_to(W);require(dest.exists(),'Missing copied link target '+r)
+   out=C/r;out.parent.mkdir(parents=True,exist_ok=True);out.symlink_to(os.path.relpath(dest,out.parent),target_is_directory=dest.is_dir())
+   linkproof[r]={'link':os.readlink(out),'realpath':str(out.resolve(strict=True))}
+- target=C/'packages/server/dist/transaction-batch.js';original=target.read_text()
+- old='export function prepareTransactionSequenceForReceiving(scope, text) {\n    return prepareSequence(scope, text);\n}'
+- new='export function prepareTransactionSequenceForReceiving(scope, text) {\n    return prepareTransactionSequence(scope, text);\n}'
++ target=C/'packages/server/dist/transaction-snapshot.js';original=target.read_text()
++ old='jsonValueEqual(link, records.get(link.id.slice(scope.length))?.value)'
++ new='isDeepStrictEqual(link, records.get(link.id.slice(scope.length))?.value)'
++ require('import { isDeepStrictEqual } from "node:util";' in original,'Existing shallow equality import missing')
+  require(original.count(old)==1,'Exact emitted receiving function changed; stop before mutation')
+  target.write_text(original.replace(old,new))
+  after={r:sha((C/r).read_bytes()) for r in before};changed=[r for r in before if before[r]!=after[r]]
+- require(changed==['packages/server/dist/transaction-batch.js'],'Mutation scope differs')
+- record={'combinedHead':g['finalHead'],'positiveFiles':before,'copyFiles':after,'links':linkproof,'changedFiles':changed,'old':old,'new':new}
++ require(changed==['packages/server/dist/transaction-snapshot.js'],'Mutation scope differs')
++ for relative,h in reporter_pins.items():require(before[relative]==after[relative]==h,'Copied reporter differs '+relative)
++ record={'reporterSources':reporter_pins,'combinedHead':g['finalHead'],'positiveFiles':before,'copyFiles':after,'links':linkproof,'changedFiles':changed,'old':old,'new':new}
+  with (E/'control-mirror.json').open('x') as f:f.write(json.dumps(record,indent=2)+'\n')
+  verify_mirror();print(json.dumps({'copiedFiles':len(before),'links':len(links),'changedFiles':changed}))
+ elif mode=='review':
+  x=completed('strict-control');r=json.loads((E/'strict-control.results.json').read_text())
+  cases=[c for f in r['testResults'] for c in f.get('assertionResults',[]) if c['status'] not in ['pending','skipped','todo']]
+- require(len(cases)==1 and cases[0]['fullName']=='compares retained sequence members before private depth refusal and preserves receiving failures' and cases[0]['status']=='failed','Wrong negative callback')
+- errors=cases[0].get('failureMessages',[]);require(len(errors)==1 and 'sequence-depth:retained-member-conflict' in errors[0] and 'AssertionError' in errors[0],'Wrong named negative failure')
++ require(len(cases)==1 and cases[0]['fullName']=='captures and reopens deep owned Links without losing JSON value equality' and cases[0]['status']=='failed','Wrong negative callback')
++ errors=cases[0].get('failureMessages',[])
++ require(len(errors)==1 and 'fresh-depth:snapshot-capture' in errors[0],'Missing unique JSON wrapper failure')
++ require(all(not f.get('message') and not f.get('failureMessage') for f in r['testResults']),'File/setup failure')
++ # JSON omits cause; bind only the named verbose failed-test block, not global text/code frames.
++ rawlog=(E/'strict-control.log').read_text();plain=re.sub(r'\x1b\[[0-?]*[ -/]*[@-~]','',rawlog);lines=plain.splitlines()
++ title='captures and reopens deep owned Links without losing JSON value equality'
++ heading='FAIL  packages/server/src/transaction-snapshot.test.ts > '+title
++ starts=[i for i,line in enumerate(lines) if line.strip().startswith('FAIL ')]
++ require(len(starts)==1 and lines[starts[0]].strip()==heading,'Wrong/ambiguous verbose failed-test block')
++ start=starts[0];ends=[i for i in range(start+1,len(lines)) if re.fullmatch(r'[⎯─━-]+\[1/1\][⎯─━-]+',lines[i].strip())]
++ require(len(ends)==1,'Missing unique failed-test block divider');end=ends[0];block=lines[start+1:end]
++ wrappers=[i for i,line in enumerate(block) if line=='Error: fresh-depth:snapshot-capture']
++ causes=[i for i,line in enumerate(block) if line=='Caused by: RangeError: Maximum call stack size exceeded']
++ require(len(wrappers)==len(causes)==1 and wrappers[0]<causes[0],'Missing actual wrapper then nested RangeError in named block')
++ require(sum(line.startswith('Caused by: ') for line in block)==1,'Unexpected additional cause')
++ direct_path=E/'strict-control.direct-exit.json';direct=json.loads(direct_path.read_text())
++ require(direct['stage']=='strict-control' and direct['directReturnCode']==1 and direct['terminationSignal'] is None and not direct['errors'],'Wrong direct Vitest termination')
++ require(direct['argv']==json.loads(COMMANDS.read_text())['commands']['strict-control']['directArgv'] and direct['cwd']==str(C),'Wrong direct invocation')
++ require(direct['commandsSha256']==sha(COMMANDS.read_bytes()) and direct['mirrorSha256']==sha((E/'control-mirror.json').read_bytes()),'Direct invocation binding changed')
++ require(direct['sourceBefore']==direct['sourceAfter']==source_hashes() and x['exit']==0,'Direct source or guarded adapter failure')
+  require(r['numFailedTests']==1 and r['numPassedTests']==0 and not r.get('unhandledErrors') and not r.get('errors') and not r.get('numRuntimeErrorTestSuites',0),'Unrelated negative failure')
+- obs=[]
+- for line in (E/'strict-control.log').read_text().splitlines():
+-  if line.startswith('{'):
+-   try:v=json.loads(line)
+-   except json.JSONDecodeError:continue
+-   if v.get('observation')=='private-source-sequence-depth':obs.append(v)
+- require(len(obs)==1,'Missing unique actual source observation');o=obs[0]
+- require(o['attempts']==2 and o['outcome']=='failed' and o['failureCount']==1 and o['cleanupCompleted'] and not o['deadlineExceeded'] and not o['cleanupExceeded'] and o['claimEligible'] is False,'Wrong failure/lifecycle')
+- responses=o['completedResponses'];require(len(responses)==2,'Wrong actual responses');seed,fail=responses
+- require(seed['status']==200 and seed['headers']['bdp-scope-position']=='pos-1' and seed['responseBodyBytes']>0,'Missing seed')
+- require(fail['status']==500 and fail['responseBodyBytes']==0 and fail['responseBodySha256']==sha(b''),'Wrong strict refusal')
+- require(all(fail['headers'][k] is None for k in ['bdp-scope-epoch','bdp-authorization-view','bdp-scope-position','x-bdp-development-limit']),'Strict refusal discloses context/marker')
+- require(fail['method']=='POST' and fail['url'].endswith('/acme/operations/sequence') and seed['method']=='POST' and seed['url'].endswith('/acme/operations/create-bead'),'Wrong actual routes')
+- verify_mirror();record={'accepted':True,'actualRawExit':1,'actualHTTP':2,'observation':o,'resultSha256':sha((E/'strict-control.results.json').read_bytes()),'logSha256':sha((E/'strict-control.log').read_bytes()),'limitations':'Exactly one expected source counterfactual, not passing positive execution or product qualification.'}
++ verify_mirror();record={'accepted':True,'actualDirectVitestExit':1,'actualGuardExit':x['exit'],'supervisorExit':x['supervisorExit'],'directExitRecordSha256':sha(direct_path.read_bytes()),'verboseFailedBlock':{'startLine':start+1,'endLine':end+1,'sha256':sha(('\n'.join(lines[start:end+1])+'\n').encode())},'http':0,'httpAttribution':'Pinned selected callback uses explicit emitted owner and no HTTP; not independent packet capture','resultSha256':sha((E/'strict-control.results.json').read_bytes()),'logSha256':sha((E/'strict-control.log').read_bytes()),'limitation':'Named catch surrounds capture only after successful deep Link commit/assertions. Exact nested verbose RangeError, direct Vitest exit1 and supervisor cleanup mandatory. Root must inspect the first actual captured named block. Source aliases remain copied source; only owner and comparator closure explicitly emitted.'}
+  with (E/'strict-control.adjudication.json').open('x') as f:f.write(json.dumps(record,indent=2)+'\n')
+- print(json.dumps({'acceptedExpectedFailure':True,'actualHTTP':2}))
++ print(json.dumps({'acceptedExpectedFailure':True,'http':0}))
+ else:raise ValueError(mode)
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-minimum-combined-validation/review-sequence.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/review-installed.py
+@@ -1,32 +1,43 @@
+-"""Read actual safe installed sequence report and exact callback, no product imports."""
++"""Read actual safe installed cohort report and exact callback, no product imports."""
+ from gate import *
+-import re
+-name='sequence-installed';g,spec=load_gate('review-sequence-installed');x=completed(name);proof=json.loads(proof_for().read_text())
+-log=E/(name+'.log');result=E/(name+'.results.json');rows=json.loads((P/'sequence-requests.json').read_text());observations=[]
++import re,sys
++name=sys.argv[1];oracle=json.loads((P/'installed-oracles.json').read_text())[name];g,spec=load_gate('review-'+name);x=completed(name);proof=json.loads(proof_for().read_text())
++require(oracle['sha256']==sha((W/oracle['file']).read_bytes()),'Installed oracle source binding pending/changed')
++log=E/(name+'.log');result=E/(name+'.results.json');rows=oracle['requests'];observations=[]
+ for line in log.read_text().splitlines():
+  if line.startswith('{'):
+   try:v=json.loads(line)
+   except json.JSONDecodeError:continue
+-  if v.get('observation')=='private-installed-sequence-depth':observations.append(v)
+-require(len(observations)==1,'Missing unique installed sequence observation');o=observations[0]
+-require(o['outcome']=='passed' and o['failureCount']==0 and o['attempted']==o['exchanges']==8 and o['claimEligible'] is False,'Wrong outcome/count')
++  if v.get('observation')==oracle['observation']:observations.append(v)
++require(len(observations)==1,'Missing unique installed observation');o=observations[0]
++require(o['outcome']=='passed' and o['failureCount']==0 and o['attempted']==o['exchanges']==oracle['http'] and o['claimEligible'] is False,'Wrong outcome/count')
+ require(o['workspaceDirty'] is False and o['declaredSourceCommit']==g['finalHead'],'Wrong source attribution')
+ C=Path(proof['consumer']).resolve();entry=(C/'node_modules/@bdp/server/dist/transaction-installed-process.js').resolve(strict=True)
+ require(o['entry']==str(entry) and o['entrySha256']==sha(entry.read_bytes()),'Wrong installed executable')
+ for k in ['closed','launchAttempted','startupCompleted','stopKnown','directoryAbsent']:require(o[k] is True,'Incomplete lifecycle '+k)
+ require(not o['deadlineExceeded'] and not o['cleanupExceeded'] and o['childExitCode']==0 and o['childSignalCode'] is None,'Unclean child')
+ require(o['childPid'] not in {int(v) for v in subprocess.check_output(['ps','-axo','pid='],text=True).split()},'Child remains')
+-require(not Path(o['directory']).exists() and Path(o['directory']).name.startswith('bdp-sequence-depth-installed-'),'Store remains')
++require(not Path(o['directory']).exists() and Path(o['directory']).name.startswith(oracle['directoryPrefix']),'Store remains')
+ served=o['binding']['served'];require(served['sourceCommit']==g['finalHead'] and served['installedPayloadDigest']==proof['payloadIdentity'] and served['scope']=='https://reference.invalid/acme/' and served['profile']=='transactional' and served['history'] is False,'Served identity mismatch')
+ fixture=W/'packages/conformance/test-support/transactional/fixture-v1.json';require(served['fixtureDigest']==sha(fixture.read_bytes()) and served['fixtureId']==json.loads(fixture.read_text())['id'],'Fixture binding mismatch')
+-require(len(o['completedResponses'])==8,'Missing responses')
++require(len(o['completedResponses'])==oracle['http'],'Missing responses')
+ for actual,expected in zip(o['completedResponses'],rows,strict=True):
+- for a,b in [('ordinal','index'),('label','label'),('method','method'),('url','url'),('accept','accept'),('key','key'),('status','status'),('requestBodyBytes','bodyBytes'),('requestBodySha256','bodySha256')]:require(actual[a]==expected[b],'Ordered request/response differs '+a)
+- require(actual['bodyOctets']<=65536 and re.fullmatch('[a-f0-9]{64}',actual['bodySha256']),'Response framing')
++ for a,b in [('ordinal','index'),('label','label'),('method','method'),('accept','accept'),('key','key'),('status','status'),('requestBodyBytes','bodyBytes'),('requestBodySha256','bodySha256')]:require(actual[a]==expected[b],'Ordered request/response differs '+a)
++ if expected['url'] is not None:require(actual['url']==expected['url'],'Wrong actual target')
++ else:
++  require(name=='fresh-installed' and actual['ordinal']==13 and re.fullmatch(r'https://reference\.invalid/acme/receipts/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}',actual['url']),'Actual receipt target absent/invalid')
++  require(actual['targetBytes']==len(actual['url'].encode()) and actual['targetSha256']==sha(actual['url'].encode()),'Actual dynamic target framing changed')
++ if expected['contextPosition'] is not None:require(actual['headers']['bdp-scope-position']==expected['contextPosition'],'Wrong response context position')
++ require(type(actual['bodyOctets']) is int and 0<=actual['bodyOctets']<=oracle['responseBodyCap'] and re.fullmatch('[a-f0-9]{64}',actual['bodySha256']),'Response framing')
++if name=='fresh-installed':
++ require(o['qualifiedEntryRequested'] is True and o['failureCategories']==[],'Development fallback or failure')
++ require(o['prerequisites']==['genuine-deep-owned-link-created','full-receipt-resource-Event-Snapshot-oracles','no-op-replay-rollback-position-stability'],'Missing nonvacuous oracles')
++ sizes=[v['bodyOctets'] for v in o['completedResponses']]
++ require(o['responseBytesTotal']==sum(sizes) and o['responseBytesMaximum']==max(sizes),'Unbound response measurements')
+ r=json.loads(result.read_text());active=[c for f in r['testResults'] for c in f.get('assertionResults',[]) if c['status'] not in ['pending','skipped','todo']]
+-require(len(active)==1 and active[0]['status']=='passed' and active[0]['fullName']=='observes retained sequence member conflict before private depth refusal over packed bytes','Wrong callback')
++require(len(active)==1 and active[0]['status']=='passed' and active[0]['fullName']==oracle['fullName'],'Wrong callback')
+ require(r['success'] and r['numPassedTests']==1 and r['numFailedTests']==0 and not r.get('unhandledErrors') and not r.get('errors') and not r.get('numRuntimeErrorTestSuites',0),'Unrelated runtime failure')
+ verify_build(g)
+-record={'accepted':True,'actualHTTP':8,'actualChildExit':0,'observation':o,'proofSha256':sha(proof_for().read_bytes()),'resultSha256':sha(result.read_bytes()),'logSha256':sha(log.read_bytes()),'limitation':'Full schema/receipt/Resource equality is asserted in the selected test; persisted report retains fingerprints, not raw sensitive bodies. No public qualification.'}
+-with (E/'sequence-installed.adjudication.json').open('x') as f:f.write(json.dumps(record,indent=2)+'\n')
+-print(json.dumps({'accepted':True,'actualHTTP':8,'childPidAbsent':o['childPid']}))
++record={'accepted':True,'actualHTTP':oracle['http'],'actualChildExit':0,'observation':o,'proofSha256':sha(proof_for().read_bytes()),'resultSha256':sha(result.read_bytes()),'logSha256':sha(log.read_bytes()),'limitation':'Full schema/receipt/Resource equality is asserted in the selected test; persisted report retains fingerprints, not raw sensitive bodies. No public qualification.'}
++with (E/(name+'.adjudication.json')).open('x') as f:f.write(json.dumps(record,indent=2)+'\n')
++print(json.dumps({'accepted':True,'actualHTTP':oracle['http'],'childPidAbsent':o['childPid']}))

@@ -1,0 +1,28 @@
+## Review: `apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts` (new, 846 lines) + progress-doc hunk
+
+I traced every oracle in the new test against the production paths rather than accepting the packet's claims. Verified correct (not findings, recorded so root does not re-litigate):
+
+- **Seed/position:** `pos-3` is right. Position = `metadata('position')` (`transaction-store.ts:651`), advanced only when `result.events.length > 0` (`:1374-1379`); `scopeEvent` is only called from `applyResource` (`transaction-batch.ts:692,791,810`), so the `putAlias` member commits no group → 3 of 4 members advance. `pos-4` is genuinely "ahead". `Buffer.byteLength(seedBody) === 562` checks out by hand count.
+- **404-precedes-minimum:** `transaction-read.ts:207-225` returns early for `resource-not-found` when kind ≠ `strict`; `currentReadMinimumKind` (`:86-100`) yields `resource`/`missing` for every row target, including `?view=properties` / `?view=links` (`read-request.ts:220-237`, `isCurrentTransactionMinimumRead:46-56`). Hidden-after-publication rows reach the same refusal via `graph.visible` (`authority-read.ts:785,801,820`), and alias misses carry `phase:"observed"` → context headers are present as asserted.
+- **503 oracle:** opaque position + matching epoch/view → `TransactionMinimumUnproved` → `waitForTransactionMinimum` (budget `minimumReadBudgetMs: 1000`) → `catch-up-timeout`, `retry-after: 1`, body exactly `{type,code,status,retry}` (`transaction-http.ts:112,627-640`; `transaction-consistency.ts:122-131,174-176`). Schema `$defs` accept both bodies (`directProblemCode` includes `catch-up-timeout`).
+- **HEAD content-length:** `applyReadHttpSemantics` sets it from `stringifyJsonValue(body)` and `deliver` does not overwrite it (`transaction-runtime.ts:88-95`); key order is irrelevant to the byte-length comparison.
+- **Publication:** `emptyTransactionAuthorization()` returns exactly `{revision:1,bindingKind:"scope",generation:1,uuid,readPolicy:"empty",canMutate:false}` (`transaction-authorization.ts:28-37`); the seed leaves `owner IS NULL` (`transaction-store.ts:1394`) so the `:1905` precondition holds, policy replacement touches no `position`, and `revokeLeases()` only affects stream leases (`:1875-1890`) — none are held.
+- **Host/loopback, 401/405/400 rows, configuration capture, launcher lifetime (incl. pre-ready), report safety:** all consistent. The control-mode fall-through at line 688 (500 prerequisite, then the positive oracle fails with the phase-named category) is the established house convention — see `transactional-same-key-overlap-installed.test.ts:674-685` — not an authoring slip.
+
+### Findings
+
+**1. Low–Medium — indistinguishability oracle only compares 15 named headers.** `transactional-minimum-current-resource-installed.test.ts:728-729` (and the evidence record at `:515-517`). Row 29 is the security-relevant check that a *hidden existing* Resource is byte-identical to a *missing* one, but it compares only `retainedHeaders`; anything outside that list (e.g. `vary`, a future `x-bdp-*`) is neither asserted nor retained in the report, so a disclosing header would pass silently and leave no trace. Smallest fix: in the row-29 branch compare full raw sets, e.g. build `const raw = (r) => [...r.headers].filter(([n]) => !["date","connection","keep-alive"].includes(n)).sort()` and `expect(raw(response)).toEqual(raw(firstHidden!))`.
+
+**2. Low — 401 row does not assert `WWW-Authenticate`.** `:742-745`. `problem()` sets `Bearer realm="bdp-transaction-development"` (`transaction-http.ts:110-111`) and the header is retained, but removing it would not fail this test even though RFC 9110 §11.6.1 requires it on 401. Fix: add `expect(response.headers.get("www-authenticate")).toBe('Bearer realm="bdp-transaction-development"')` inside the `row.status === 401` path.
+
+**3. Low — report overflow discards all evidence.** `:836-838`. On overflow the test records a `report` failure and prints nothing, losing the observation exactly when it is most needed. Estimated actual size is ~30 KB, so this is a conditional robustness gap, not a live failure. Fix: emit a reduced report (same object with `completedResponses` omitted or sliced) in the overflow branch instead of printing nothing.
+
+**4. Low–Medium — progress doc understates what the change contains.** `docs/design/transaction-implementation-progress.md:1999-2003`: "At this draft checkpoint no runtime tests, installed cohorts or qualification have been established." The same change adds an installed observation test, and per the bound records no installed or control run occurred. As written a reader cannot distinguish "no test authored" from "test authored and passing". Fix: one sentence — "An installed minimum-current observation test is authored but unexecuted; no installed or counterfactual control run is recorded."
+
+### Material context (not defects)
+
+- A pre-ready launch failure deliberately leaves the temp directory (containing the private bootstrap) on disk and adds two extra failures (`unknown-stop`, `directory-retained`) on top of the real cause; this matches the documented `startupLimitation` and the sibling.
+- Deadline budget is tighter than the sibling (30 s inner / 45 s outer vs 45 s / 60 s) for 32 exchanges including four ~1 s server waits; measured need is ~8 s, so the margin is adequate but smaller than precedent.
+- The test requires a built `packages/server/dist/transaction-installed.js`; without it module load fails in `realpathSync`, by design.
+
+No correctness, security, or regression defect found in the test's assertions themselves.

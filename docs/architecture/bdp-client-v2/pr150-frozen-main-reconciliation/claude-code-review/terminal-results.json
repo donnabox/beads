@@ -1,0 +1,112 @@
+[
+  {
+    "duration_api_ms": 777631,
+    "stop_reason": "end_turn",
+    "session_id": "c8145df9-ee63-43a7-ab3f-0603d270f811",
+    "total_cost_usd": 8.416613,
+    "usage": {
+      "input_tokens": 122,
+      "cache_creation_input_tokens": 234155,
+      "cache_read_input_tokens": 9138770,
+      "output_tokens": 59928,
+      "output_tokens_details": {
+        "thinking_tokens": 39746
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 234155,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 6883,
+          "cache_read_input_tokens": 238244,
+          "cache_creation_input_tokens": 657,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 657
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 6793,
+        "outputTokens": 15,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.006868000000000001,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-opus-5[1m]": {
+        "inputTokens": 122,
+        "outputTokens": 59928,
+        "cacheReadInputTokens": 9138770,
+        "cacheCreationInputTokens": 234155,
+        "webSearchRequests": 0,
+        "costUSD": 8.409745,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 39746,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "permission_denials": [],
+    "terminal_reason": "completed",
+    "fast_mode_state": "off",
+    "fast_mode_disabled_reason": "sdk_opt_in_required",
+    "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+        "background": 0,
+        "foreground": 0,
+        "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+        "parent": 0,
+        "user": 0,
+        "system": 0
+      },
+      "refused": {
+        "depth_limit": 0,
+        "concurrency_limit": 0,
+        "budget": 0
+      },
+      "by_type": {}
+    },
+    "is_error": false,
+    "num_turns": 86,
+    "subtype": "success",
+    "api_error_status": null,
+    "result": "I inspected the actual combined worktree, both frozen parent patches, the base-relative patches, the snapshots and the frozen validation records. No commands, builds, tests or writes were run; everything below is from Read/Glob/Grep.\n\n---\n\n# CODE review \u2014 staged uncommitted merge at `/Users/dbox/repos/wt/vickie/vickie-pr150-main-reconciliation`\n\n**Verdict: the resolution as authored is correct and minimal. I found no blocking bug in the combined source.** Four findings follow \u2014 one must-hold sequencing precondition, one unverifiable history fact in the evidence gate, and three low-severity accuracy/attribution items.\n\n## 1. Structural facts I independently established\n\n| Claim | How verified |\n|---|---|\n| `docs/specs/bdp.md` is incoming byte-exact | **Absent** from `second-parent.patch` entirely (file list at `second-parent.patch:1\u201310137`), so the staged blob equals 8d. Cross-checks: `source-freeze.json:159` and `incoming-manifest.json:199` both record `d38501c7\u20260985`. The worktree file is navigation-only, 148 anchor pairs, every destination `../../specs/...` |\n| Exactly one conflict; parent union is exact | Intersecting the two base-relative diff file lists (`candidate-from-common-base.patch` = 35 paths, `incoming-from-common-base.patch` = 99 rename-aware paths) yields **exactly 9** overlaps: `docs/specs/bdp.md` + the 8 named tests. `second-parent.patch` touches exactly the candidate's 35 paths **minus** `docs/specs/bdp.md` **plus** `specs/profiles/write/write.md` |\n| No conflict markers; index == worktree | Grep for `^(<{7}|={7}|>{7})` across the tree: no matches. `unstaged.patch` is empty |\n| Root schema deleted | `Glob schemas/*` at repo root: no files \u2014 satisfies `packages/conformance/src/spec-layout.test.ts:73` |\n\n## 2. Relocated minimum-read block \u2014 correct\n\n`specs/profiles/write/write.md:3817\u20133849` sits inside `### Transactional HTTP consistency` (`:3800`) and before `### Transactional Resource read context` (`:3860`). I compared it line-for-line against the frozen candidate monolith `candidate-monolith.md:5819\u20135851`: **byte-identical**, including\n\n- `:3824` `identity is known or supported; semantic handling follows the rules below.` (replacing \"existing semantic consistency decisions remain\")\n- `:3832\u20133837` uniform `404 resource-not-found` before semantic minimum comparison/waiting, with actual observation context and no hidden-target disclosure, ordinary validation and the lexical receiving rule still preceding\n- `:3839\u20133847` bounded minimum-read wait then `503 catch-up-timeout` / `retry: \"after-delay\"`, no stale success / fabricated expiry / lexical refusal\n- `:3848\u20133849` the retained exclusion sentence (continuations/Snapshots, successful incident-Link lists)\n\nThe block adds no heading, no anchor and no Markdown link, so `docs/design/spec-path-map.json`, the physical link audit (`spec-layout.test.ts:33\u201348`), and the level-2 inventory check (`profile-catalog-boundaries.test.ts:234\u2013240`) are structurally untouched. Problem codes used by the prose exist in the combined tree (`specs/profiles/core/bdp-v0.schema.json`: 8 occurrences; `packages/server/src/transaction-consistency.ts`, `transaction-http.ts`).\n\n## 3. Sealed citation preservation \u2014 correct, and the mechanism holds\n\n`packages/conformance/catalog/transactional-v1.json:1177\u20131181` (`transactional.changefeed.consistency-fields`) selects `It never reports success with an older position.` from `source: docs/specs/bdp.md`, `anchor: #transactional-http-consistency`. That file is absent from **both** parent patches \u2192 sealed bytes untouched.\n\nThe sentence survives at `write.md:3841\u20133842`, re-wrapped across a line break. The resolution chain checks out:\n\n- `test-support/spec-source.ts:24` maps `docs/specs/bdp.md` \u2192 assembled Core+Write+conformance\n- `src/markdown.ts:67\u201369` + `:37\u201340` bound the section at the next heading of level \u2264 3, i.e. through `write.md:3859`\n- `src/catalog.ts:175` + `normalizeWhitespace` at `:356\u2013357` (`/\\s+/g \u2192 \" \"`) tolerate the wrap\n\nI also checked the inverse risk \u2014 that the rewrite silently invalidated a citation elsewhere. Greps across the whole tree for every removed/reworded fragment (`does one of three things`, `existing semantic consistency decisions`, `eligible replica`, `cursor-expired, or catch-up-timeout`, `representation at that position`) return **no** catalog or test dependency; the only hits are the new prose itself, one historical design doc (`docs/design/w1-transactional-packet.md:7100`) and an unrelated test title. `#transactional-http-consistency` is cited by exactly one scenario.\n\n## 4. Four hidden schema readers \u2014 correct\n\n`first-parent.patch` (d4 \u2192 result) contains exactly **one** hunk per file, path + formatter layout only, callback bodies untouched:\n\n| File | d4 line | now | enclosing callback |\n|---|---|---|---|\n| `transactional-event-sse-installed.test.ts` | 531 | **532** | inside `it(\u2026restart with Last-Event-ID precedence and source binding)` at `:320` |\n| `transactional-fresh-depth-installed.test.ts` | 71 | **72** | module top level |\n| `transactional-minimum-current-resource-installed.test.ts` | 87 | **88** | module top level |\n| `transactional-sequence-depth-installed.test.ts` | 79 | **80** | module top level |\n\nEach reads `path.join(root, \"specs/profiles/core/bdp-v0.schema.json\")` where `root` is the workspace repo root (`transactional-event-sse-installed.test.ts:15` and equivalents) \u2014 **workspace** schema read, not packed child code, as root disposition #4 requires. Per-callback entries match the plan exactly: `transactional-minimum-current-resource-installed.test.ts:53\u201355` defaults to `packages/server/dist/transaction-installed.js`; the other three default to `transaction-installed-process.js` (`transactional-event-sse-installed.test.ts:25\u201328`). All five `commands.json` selectors (`:360, :393, :426, :459, :492`) match verbatim top-level `it(` titles with **no** `describe` wrapper, so the `^\u2026$` patterns bind. The first SSE callback (`:80`, ending `:318`) never reaches the repaired read at `:532` \u2014 legacy fence confirmed.\n\nFormatting is consistent with the gate rather than invented: `biome.json:14` sets `lineWidth: 100`; the original one-liners were 99 (indented) and 95 (top-level) characters and become 117/113 after the +18-character path, forcing exactly the three-line break main itself emitted for the identical construct (`first-parent.patch:239\u2013242, 297\u2013300, 327\u2013330`). `format:check` remains future verification.\n\n## 5. Eight automatic overlaps \u2014 candidate semantics plus incoming layout, intact\n\nI compared hunk headers between `candidate-from-common-base.patch` (base \u2192 d4) and `second-parent.patch` (8d \u2192 result) for all 35 files:\n\n- 27 non-overlap files: **identical** hunk headers, except the four hidden readers which are uniformly `+2` new-side lines (1003\u21921005, 865\u2192867, 639\u2192641, 739\u2192741) \u2014 exactly the wrap.\n- `transactional-collection-minimum-installed.test.ts` and `transactional-depth-key-order-installed.test.ts`: uniform `+2` **old-side** offset shift with **identical hunk sizes** \u2014 main's 2-line wrap earlier in the file, d4's behavioral hunks fully applied.\n- `transactional-matrix.test.ts`, `transactional-cumulative.test.ts`, `transaction-http.test.ts`, `transaction-sequence.test.ts`, `transaction-set.test.ts`, `transaction-snapshot.test.ts`: **identical** headers (main's change there was a 1-line import/read swap, no shift), and no second-parent hunk at the swapped line \u2192 main's relocated path survives.\n\nByte-level spot check of `transactional-cumulative.test.ts` hunks `@@ -1112 @@`, `@@ -1133 @@`, `@@ -1159 @@` in both patches: character-for-character identical, including `\u2026toHaveLength(241)`.\n\nd4's load-bearing assertions are at the claimed lines in the combined tree: `apps/bdptest/src/transactional-matrix.test.ts:627` exchange sum `234`, `:628` `63000`, `:644` `120000` \u2014 distinct from `transactional-cumulative.test.ts:199` (`234` *unplanned* requirements). `coverage-v1.json:3\u20135` retains `claimEligible: false` / `status: \"bounded-observation\"` / `transportAdmission: \"private-exact-available\"`.\n\n## 6. Source assembly, schema identity, evidence preservation\n\n- `packages/conformance/test-support/spec-source.ts` is inherited byte-exact (absent from `second-parent.patch`); repository-boundary guard at `:26\u201327`, and `spec-layout.test.ts:61\u201367` exercises it.\n- Final-tree sweep (`rg bdp-v0.schema.json`, excluding `docs/`): **no live filesystem reader of the old root path remains.** Every residual mention is classified \u2014 stable `$id` URLs (`core.md:57,1043,1155`, both schema copies `:3`, `packages/protocol/src/index.ts:15`), the package subpath export (`packages/protocol/package.json:16\u201317`) and package-local reads (`read-values.ts:27`), the policy pin (`installed-schema-graph.policy.test.ts:28` + `test-support/schema-graph-policy.json:21`), historical comments (`schema-read-projection.ts:62`, `matrices/README.md:657`, `specs/profiles/types/README.md:22`), and the intentional non-existence assertion (`spec-layout.test.ts:73`).\n- `specs/profiles/core/bdp-v0.schema.json` and `packages/protocol/schemas/bdp-v0.schema.json` are absent from both parent patches \u2192 unchanged bytes, stable `$id`, byte-equality check intact.\n- `docs/design/evidence/**`, `packages/conformance/catalog/**`, `development/**`, `matrices/**`, `fixtures/**` and `packages/protocol/src/index.ts`: absent from both patches \u2192 no resealing or relabeling.\n- `.github/workflows/ci.yml:7` retains d4's `codex/vickie-*` push branch; `:19` keeps `timeout-minutes: 20`; `:77` still masks the raw evidence exit.\n\n---\n\n# Findings\n\n## F1 \u2014 Must-hold precondition (not a source defect): the candidate commit must exist before `evidence:verify` and before `packed-affected-3`\n\n`scripts/read-cohort-evidence.mjs:54\u201360` puts `SCHEMA_BUNDLE_PATH = \"specs/profiles/core/bdp-v0.schema.json\"` into `VERIFICATION_INPUT_PATHS`, and `:131\u2013136` throws `EvidenceGateError(\"verification inputs carry uncommitted changes\u2026\")` when `git status --porcelain -- <those paths>` is nonempty. That error is caught at `:393\u2013400` and returns **raw exit 1** \u2014 the one code `ci.yml:77`'s `|| test $? -eq 2` does not absorb.\n\nIn the present staged state `specs/profiles/core/bdp-v0.schema.json` is a staged rename (`merge-resolution.json:13`), so running the gate now yields raw 1 for purely state reasons \u2014 neither the required 0 nor the NO_CLAIM 2. The same applies to `apps/bdptest/src/transactional-fresh-depth-installed.test.ts:421\u2013422` (`expect(workspaceDirty).toBe(false)` under `BDP_TRANSACTIONAL_INSTALLED_ENTRY`; it is the **only** one of the five callbacks that hard-asserts this \u2014 the other four merely record `workspaceDirty` in their reports), and to `commands.json:374/407/440/473/506` whose `BDP_TRANSACTIONAL_SOURCE_COMMIT` is the unbound `<ACTUAL_RECONCILED_COMMIT>`.\n\nSmallest repair: none in source. Commit the candidate first (already required by the plan and by `validation/adaptation.md:3`), bind the actual SHA, and do **not** read a dirty-tree raw 1 as an evidence regression.\n\n## F2 \u2014 Medium: the evidence gate's `evidenceCommit` resolution across the newly added second parent is unverified\n\n`scripts/read-cohort-evidence.mjs:138\u2013164` resolves `evidenceCommit = git log --max-count=1 --format=%H HEAD -- docs/design/evidence/read-cohort/read-v1.json packages/server/src/read-conformance-capability.ts`, then checks `merge-base --is-ancestor runHead evidenceCommit` and confines `diff --name-only runHead evidenceCommit` to `ALLOWED_EVIDENCE_DELTA_PATHS` (`:23\u201326`).\n\nThe merge introduces a second parent whose history was never reachable from d4. Both paths are content-identical across base/d4/8d (absent from both base-relative diffs), and git's default history simplification should follow only the TREESAME first parent, preserving `evidenceCommit = dbaf63a24219e1ea3f80394746853598b0d4464a`. **I could not confirm this** \u2014 I executed nothing and cannot see whether any commit between `9df574a9` and `8d6671ed` touches either path (content equality does not imply no touch-and-revert). Failure mechanism: a main-side `evidenceCommit` makes `changedPathsSinceRunHead` include paths outside the two allowed ones \u2192 raw exit 1, which the frozen rule would misread as a product regression.\n\nSmallest repair: no source change. Add a validation postcondition that the emitted `evidence.verified` event (fields assembled at `:376\u2013391`) still carries `runHead: e5f7d0c4\u2026`, `evidenceCommit: dbaf63a2\u2026`, `constant: 674982be\u2026`, `47` / `46` / `89` \u2014 exactly `validation/parent-evidence-baseline.json:13` \u2014 and classify any `evidenceCommit` change as a history fact to diagnose, separate from the raw-0 requirement.\n\n## F3 \u2014 Low: `docs/design/spec-authority-migration.md:30\u201332` is now inaccurate for this tree\n\nIt asserts: *\"A normalized comparison against the base proves that Parts I\u2013IV and all end matter retain exactly the same text, allowing only Markdown link destinations, the schema filesystem path and whitespace.\"*\n\nOn the combined tree that is false for `#transactional-http-consistency`: `write.md:3823\u20133824` and `:3832\u20133849` carry d4's PR141 normative delta, which is not a link/path/whitespace difference from the common base. No gate reads this file (grep across `*.{ts,mjs,mts,py,json,yml}` for `spec-authority-migration`: no matches), so this is an accuracy defect the reconciliation introduces into an inherited claim, not a test failure.\n\nSmallest repair: one sentence in that section scoping the equality statement to main `8d6671ed`'s relocation and naming the transplanted block. If root prefers no prose churn (consistent with the plan's `protocol/src/index.ts` guidance), state the scoping in the integration PR body instead.\n\n## F4 \u2014 Low / optional: same class, `specs/README.md:22\u201326`\n\n\"This editorial move does not change discovery values, profile inheritance, operation semantics, or capability advertisements\" stays literally true of the *move*, but now sits in a tree that does change Transactional read semantics. Covered if F3's note is added; otherwise worth one line in the PR body. No source change needed.\n\n## F5 \u2014 Low / attribution, to restate verbatim in the final report\n\nThe packed-consumer stage proves external-entry and package provenance, **not** packed schema-path coverage: all four repaired reads derive `root` from the workspace test file, so the relocated schema is read from the candidate checkout even under `BDP_TRANSACTIONAL_INSTALLED_ENTRY`; only the child server comes from the packed consumer. And `transactional-event-sse-installed.test.ts:80` (callback 1) never executes the repaired read. Root disposition #4 already says this; the risk is that the final report reads as packed schema-path evidence.\n\n## F6 \u2014 Low / informational, inherited\n\n`readProtocolSpecification` (`test-support/spec-source.ts:14\u201321`) strips the preface only where `<!-- protocol-text -->` exists; grep finds the marker in `write.md:15` and `conformance.md:13` but **not** in `core.md`, so core.md's preface is included in the assembled citation source. Inherited main behavior, unchanged by this merge and bounded by `profile-catalog-boundaries.test.ts:234\u2013240`. Noting it only so a future inventory failure is not misattributed here.\n\n---\n\n# Evidence I could not inspect\n\n- **No execution of any kind.** Every statement about `format:check`, `lint`, `check:boundaries`, `typecheck`, `build`, `test`, `smoke`, `evidence:verify`, the five packed callbacks or exact-head CI is a reasoned expectation from the source, not a result. Tests and candidate CI remain future verification.\n- **No git commands and no hash recomputation.** Parent identity, tree identity, dirty status, blob equalities and both parent unions are established from the frozen patches, manifests and worktree bytes \u2014 by patch presence/absence and manifest agreement, not by recomputing any SHA-256 or object id. F2 is the one place where this limitation is load-bearing.\n- **The 3.5 MB d4 CI log** (`exact-head-ci.log`) is not among my inputs. I read only the quoted `evidence.verified` record at `parent-evidence-baseline.json:13`; I verified neither the stated line 11324 nor the log's hash. The underlying event/source return-0 reasoning is taken as recorded, not re-derived.\n- **Tooling and unbound slots:** `tools/go`, `tools/bin/bd`, `tools/python-venv`, `identity.json`, the Go distribution digest, bd build info, consumer hashes and Python dependency identities \u2014 not inspected; `<ACTUAL_RECONCILED_COMMIT>` and the measured-consumer values are still unbound by design.\n- **The validation runner itself** (`validation/run.py`, `guarded-action.py`, `runner-adaptation.patch`) \u2014 not inspected. I did read `commands.json`, which does **not** itself encode a clean-tree precondition; the `gate.source_check` the native audit attributes to the runner is therefore unconfirmed by me (relevant to F1).\n- **Not read exhaustively:** the remaining incoming editorial files (I inspected those bearing on the resolution, citations, schema paths, layout, CI, evidence and package surface, not all 99); the catalogs beyond the one cited scenario; and the 1506-line `manifest-v1.json` / 204-line `coverage-v1.json` additions, which I verified by diff-hunk identity rather than line by line.",
+    "ttft_ms": 1571,
+    "type": "result",
+    "duration_ms": 776726,
+    "uuid": "5bdb05db-fc6c-4c0c-80c8-dc7b95f08506",
+    "ttft_stream_ms": 1056,
+    "time_to_request_ms": 12,
+    "first_content_frame_ms": 1059,
+    "queued_turn_count": 0
+  }
+]

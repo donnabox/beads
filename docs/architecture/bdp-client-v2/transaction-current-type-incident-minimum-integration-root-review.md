@@ -1,0 +1,7 @@
+# Root integration verification
+
+Final candidate2a78699d8e7c5d9f744d583776ee54ac9056b28d tree78707366a5e4a14691fe0912a2805a5c2ce3c936 is clean. Root independently compared all seven production/test donor hashes to exact4f2 and5401; inspected report, all recorded validation exits, source file/archive hashes and actual final document diff. The ordinary merge6da4116's document exactly equals recorded progress-conflict.md after removing only the three conflict markers; no other resolution was hidden. Final direct successor changes only that document.
+
+External original99c5 findings1/4 are closed by reviewed4f2 and independent native receiving closure96f33af2. Findings2/3 are correctly addressed in2a786: external Type identities separated from HTTP gaps, disclosure moved to canonical minimum section and compatible404 subjects expanded, original pinned citation preserved. All other behavior remains donor code.
+
+Final combined527/11, fresh three minimum scenarios38/1+10/1+20/1, two RU positives and separate emitted probe are recorded on2a786. This is the installed reference subset, not profile qualification. Independent integration closure and exact-head CI are separate gates before main merge. Once integration closure is clean, the already council-approved alias plan may start from this frozen source while CI runs; this does not waive merge readiness or discovery advertisement gates.

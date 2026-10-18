@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Grep,Glob",
+    "--allowedTools",
+    "Read,Grep,Glob",
+    "--add-dir",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs",
+    "--no-session-persistence"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-catalog",
+  "pid": 78916,
+  "processGroup": 78916,
+  "started": "2026-10-15T04:43:20.761303+00:00",
+  "timeoutSeconds": 900,
+  "promptSha256": "0087b0b656a0b39768f0fb7501432212a486f75fa3df496d17c17d5469380f8f",
+  "sourceBeforeSha256": "32915afbc3e07b7410dbf514bc9a0890f6db236dc887bc286ec99d662fd4fe24",
+  "reviewKind": "actual CLI plan review, supplied plan plus read-only Read/Grep/Glob source access"
+}

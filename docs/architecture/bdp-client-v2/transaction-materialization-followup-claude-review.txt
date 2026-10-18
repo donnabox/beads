@@ -1,0 +1,95 @@
+## Review: `2fc4bb8` vs `e2f1385` (frozen checkout `vickie-materialization-followup`)
+
+No files written, nothing built, no stress run. Reads only: `git diff`/`git show`, source inspection, and `bdp-integration-logs/transaction-materialization-followup/` + the prior `transaction-materialization-owned-claude-review.txt`.
+
+### Verified closed (so the findings read in context)
+
+- **Serialization arithmetic reproduces exactly.** `A=8192`, `H=1048576`, `N=7Q=458752`, `K=M+32=64`. Group `min(256·(2.5R+N+S)+K·A+H, K·(max(9R+4S,5R+2N+2S)+A)+H) = min(303562752, 169345024) = 169345024` — matches `transaction-events.ts:28-31` derivation and the new `transaction-events.test.ts:469` literal. Receipt `64·(2R+Q+A)+32·128+S+H = 39391232` matches the report. The three superseded doc table rows (305397760/173346816, 304349184/96800768, 253493248/58527744) all recompute to the byte. `TRANSACTION_EVENT_FIRST_PAGE_BYTES = 5R+N+A+1024 = 1778688` is M-independent, so leaving that literal unchanged is correct.
+- **F1 genuinely closed.** All four fields validated against the tuple at `transaction-batch.ts:557-566`, before the `normalizedState` check and before effects; TX type requires all four (`:538-543`) with a third `@ts-expect-error` case; negative matrix uses field-specific `TRANSACTION_RUNTIME_LIMITS[field]+1`. `options.limits.diagnosticBytes/Count` really are consumed (`resource-evaluator.ts:180-219` via the passed-through options), so this is load-bearing, not decorative.
+- **F3 closed as asked.** Exact `toEqual` now on owned created/updated/deleted result entries including conditional `source`/`sourceRevision`, and on the `upsert` wrapper — a `previous:` sibling on any of those now fails. The `deleted.resource` is pinned to `{id,type,revision}` with no body.
+- **F6 closed.** Both metrics are now separate columns and every number in the report's table matches the retained `*.summary.json` / `*.log` (M64 `1072128`/`958528`/`8.349s`/exit `-9`; M32 `540304`/`562976`/`4.161s`; no-op `249584`/`285472`/`0.435s`). "A killed child's last self-report is not its peak" is stated.
+- **Stress figures are truthful where they are measurable.** `stress-dense-m32.log` independently confirms `groupBytes 35207784`, `receiptBytes 8385225`, `resultCount 33`, `eventBytes 288170`, `numericValues 13061`, `normalizedCombinedPatchBytes 287461`, `sourceBytes 262144`, `linkBytes 261849–261850`. The M64 log ends at `reopened` with no `verified` line — the "inconclusive final verification" claim is exact, not softened.
+- **Prior-store refusal is real.** `compatibility.mjs:13` asserts `/installation mismatch/`, then `assert.deepEqual(readFileSync(file), bytes)` (database bytes unchanged), then old-owner reopen replays the serialized receipt. The failed prototype probe is retained with exit `1` and the report describes its cause correctly.
+- **Test counts and scope.** 323/9 + 103/7 = 426/16 ✓; final 117/4 ✓; red `16 failed | 18 passed` = 12 diagnostic + 4 numeric ✓; last-test `1 passed | 52 skipped` ✓. All 13 test files referencing `TRANSACTION_RUNTIME_LIMITS`/`matchedResources`/`openTransactionStore`/`evaluateTransaction`/`prepareTransaction*`/`TRANSACTION_EVENT_GROUP_BYTES` are inside the 16 run. No stale `253493248`/`58527744` outside the doc. `maximumInducedEvents` cannot raise (`:567-574`), `afterEach` restores the spy, and `matchedResources` is charged only by set operations (`:833`).
+
+---
+
+### Findings
+
+**1. MEDIUM — The live derived group bound is documented at its superseded value**
+`docs/design/transaction-implementation-progress.md:1030`
+
+The "Private finite Event serving" section still says, present tense, "The admitted materialization tuple **below** bounds one encoded group to **253493248** bytes." The tuple below is now M=32, and `transaction-events.ts:28` derives 169,345,024 — which this commit pins at `transaction-events.test.ts:469` and which `transaction-store.ts:1299` enforces before selecting a group body. The commit relabelled :1057, :1067, :1080 and :1101 to past tense but left this sentence, which is the one that documents the reader's precheck. The report's "the existing finite Event bound derives automatically; only its test's literal changed" is true of the code and false of the authority record, by 84,148,224 bytes.
+
+*Failure scenario:* the Event repair worker (which the report says owns its separate reader and was only "notified") sizes a buffer, a conformance expectation or a refusal threshold to the documented 253,493,248 and the live precheck refuses at 169,345,024 — a 33% discrepancy in the one number this commit changed.
+*Remedy:* at :1030 substitute 169345024, or reword to "the superseded 64-match tuple bounded one encoded group to 253493248 bytes; the current 32-match tuple bounds it to 169345024."
+
+---
+
+**2. MEDIUM — The doc asserts a permanent 256-Event test that this commit deleted, contradicting its own new section**
+`docs/design/transaction-implementation-progress.md:1105`
+
+":1105 — "the distinct permanent boundary test **exercises** all 256 Events using 64 owned deletes." This commit rescaled exactly that test (`transaction-owned.test.ts:899`) to "observes 128/129 real Events under a lowered evaluator cap", 33 owners, 128 Events — and its own appended text at :1148-1150 says "the earlier 256/257 and 4,096 observations are historical, not relabelled as current default-boundary tests." The file now contradicts itself, which is the identical F5 defect the commit set out to reconcile; the surrounding paragraph was correctly moved to past tense at :1101 and this sentence was missed.
+
+*Failure scenario:* a reader resolving the two statements picks :1105, concludes a permanent 256-Event observation exists, and treats E=256 as measured rather than as a cap pinned only by a rejected-raised-bound test — the exact relabelling the report promises not to do.
+*Remedy:* reword :1105 to past tense and bind it to the superseded tuple, e.g. "That case measured 128 Events; under that 64-match tuple the then-current boundary test exercised all 256 Events using 64 owned deletes."
+
+---
+
+**3. MEDIUM — The decisive stress fixture spends 33 of the 64 proof units; the reachable operations-plus-matches shape is unmeasured and not in the disclosure list**
+`bdp-integration-logs/transaction-materialization-followup/stress.mjs:45-56`; report.md §"Result and scope"; doc:1071
+
+The proof's per-unit budget is `K = M + maximumOperations = 32 + 32 = 64` (`transaction-events.ts:27`, doc:1071). `matchedResources` is incremented only inside the set-operation branch (`transaction-batch.ts:833`), so one admitted transaction may carry 32 matched set members **plus 31 explicit owned resource operations** — 63 of 64 units. The measured fixture submits exactly one operation (the `updateWhere` built at `stress.mjs:45`) against 32 matches, i.e. 33 units; `assert.equal(resultCount, count+1)` at :56 confirms it. Each added explicit owned update contributes two ≤R upserts (~524 KB of group) and one ~262 KB receipt entry *without* drawing more from the single 65,536-byte Q, so the reachable shape is group ≈51 MB against the measured 35,207,784, over a seeded graph of 63 full-R source/Link pairs instead of 32 — a seeded baseline essentially equal to the killed M64 run's (`293056` KiB at seed end there vs `279584` KiB here at 32 pairs). The F2 disposition closes the prior finding with a per-record feasibility argument ("owned source embeds the Link, so two independently exact-R records are impossible for this shape"), which is correct but addresses record size only, not unit count. The disclosure list names collection scans, accumulated history and "other graph shapes"; it never names this combination, while §"Result and scope" says the tuple "completed the stronger workload."
+
+*Failure scenario:* an admitted transaction of 31 explicit owned `updateLink`s plus one 32-match `updateWhere` lands in the same RSS band as the M64 run the supervisor killed — i.e. the measurement that rejected M64 has not been applied to M32's own reachable shape, so "measured headroom" at M32 rests on a workload at roughly half the serialized budget.
+*Remedy:* one additional supervised dense variant seeding 31 extra `n≠0` pairs and submitting 31 explicit `updateLink` operations alongside the `updateWhere`; **or**, if no new run, one sentence in report.md §"Result and scope" and in doc §"Stronger owned materialization measurement" stating that the measured workload spends 1 of 32 permitted explicit operations and that a single transaction combining the full operation budget with the full match budget is reachable and unmeasured.
+
+---
+
+**4. MEDIUM — No emitted-process artifact records which tuple the stress and the prior-store probe actually measured**
+`stress.mjs:5-6,19,56`; `compatibility.mjs:8,14`; `build.log` / `build-m32.log`
+
+`stress.mjs` imports only `openTransactionStore` and `prepareTransactionSetCore` from `dist/`, and takes its match count from `BDP_STRESS_MATCHES`; it never imports `TRANSACTION_RUNTIME_LIMITS`. A 32-member workload therefore runs identically on an M32 and an M64 `dist/` — and that is not hypothetical: `preliminary-dense-m32-on-m64.*` is precisely that run. `assert.equal(resultCount, count+1)` only proves 32 matches were *accepted*, which both builds do; there is no negative probe (33 matches must refuse). `build.log` and `build-m32.log` are byte-identical (`$ pnpm clean && tsc -b` / `$ tsc -b --clean && node scripts/clean-build.mjs`), so the only thing separating `stress-dense-m32.*` from `preliminary-dense-m32-on-m64.*` is file mtime. The companion probe asserts the **old** build's `matchedResources === 64` at `compatibility.mjs:8` but never asserts the current build's value, then prints `newMatched:32` and `refusalBeforeMaintenance:true` as hardcoded literals in the PASS line (:14). What the probe actually establishes is "the current tuple *differs* from the frozen M64 tuple" (via `assert.throws`) and "no bytes were written" (via `deepEqual`); "is 32" and "before maintenance" are asserted by fiat in the output.
+
+*Failure scenario:* a partial or stale `tsc -b` leaves `dist/` at the previous tuple; the dense run completes at `540304` KiB and is filed as the M32 qualification with nothing in the package contradicting it. The report's "the actual emitted M32/E256 tuple completed the stronger workload" then rests on unrecorded build state rather than on evidence — the same gap F11's exit-code discipline was adopted to remove.
+*Remedy:* in `stress.mjs`, import `TRANSACTION_RUNTIME_LIMITS` from the same `dist/transaction-batch.js` and `assert.equal(TRANSACTION_RUNTIME_LIMITS.matchedResources, matchMaximum)`, logging the full tuple in the `open` stage; in `compatibility.mjs`, import the current build's tuple, assert `matchedResources === 32`, and derive the logged `newMatched` from it instead of writing the literal.
+
+---
+
+**5. LOW — Retained variant runs cannot be reproduced from the retained scripts**
+`bdp-integration-logs/transaction-materialization-followup/stress.mjs`, `noop-stress.mjs`
+
+Of seven retained supervised runs, five (`stress-dense-m64`, `m32-source-residual1024`, `m32-trailing-whitespace`, `preliminary-dense-m32-on-m64`, `preliminary-noop-m32-on-m64`, all logged 03:39–03:43) were produced by earlier revisions of the single `stress.mjs`/`noop-stress.mjs` paths, which the final 03:46 revision overwrote. The comment at `stress.mjs:29` ("No arbitrary 1KiB headroom") is the only surviving trace of the variant that produced the decisive aborted M64 run on which the M64→M32 decision rests. Separately, `noop-stress.mjs:32-37` still carries a dead earlier dense branch (`Array(10000).fill('1e20')`, no exponent padding) that the supervisor never routes to and that produced none of the reported dense figures. report.md's "intermediate source-residual/whitespace variants are retained under explicitly named files" describes retained *outputs*; the variants themselves are gone.
+
+*Failure scenario:* a later reviewer asked to re-run the aborted M64 case under a different gate cannot reconstruct its fixture, and the only dense fixture in `noop-stress.mjs` is a superseded one that would reproduce different numbers.
+*Remedy:* copy each variant's script beside its log under the same explicit name (`stress-dense-m64.mjs`, `m32-source-residual1024.mjs`, …), or make one script select the variant from an env var that the supervisor records in the summary; and delete or explicitly label the dead dense branch in `noop-stress.mjs`.
+
+---
+
+**6. LOW — The upsert-wrapper closure has no cardinality assertion and compares `resource` to itself**
+`packages/server/src/transaction-owned.test.ts:209-214`
+
+The F3 deliverable is `for (const change of f.group().changes) expect(change).toEqual({operation:"upsert", resourceKind: "source" in change.resource ? "link" : "bead", resource: change.resource})`. Both derived fields are read off the object under test: `resource: change.resource` is a tautology (the body is pinned only in the separate test at :641), and the loop has no length assertion, so a group with zero changes satisfies this specific check vacuously. The sibling-rejection property F3 asked for does hold; the resource-content and presence properties do not come from this assertion.
+
+*Failure scenario:* a change that drops the source upsert from an owned update leaves this wrapper assertion passing (it would be caught indirectly by the revision-chain assertions later in the test, but not by the check added to guard the premise).
+*Remedy:* add `expect(f.group().changes).toHaveLength(2)` before the loop — the same count already asserted at :316 — and compare against `f.record(change.resource.id.slice(scope.length))` as :641 does, rather than against `change.resource`.
+
+---
+
+**7. LOW — Only `1e20` is pinned exactly; the other three numeric witnesses have 1.3×–7× slack**
+`packages/server/src/transaction-materialization.test.ts:299-302`
+
+`expect(Buffer.byteLength(literal)).toBeLessThanOrEqual(7 * Buffer.byteLength(token))` is the only constraint on `-9e20`, `9e9` and `-0.0000010000000000000002`, whose observed ratios are 4.4, 3.33 and 1.0 — a normalization change that pushed any of them to just under 7× would pass. The tight guard is `if (token === "1e20") expect(literal).toBe("100000000000000000000")`, applied to one of four cases. Note also that both sides of `expect(stringifyJsonValue(change.slice(0,2))).toBe(normalized)` run through `stringifyJsonValue`, so that assertion correctly proves the stored Event holds normalized values rather than retained lexical/lossless tokens (its stated purpose) but cannot by itself detect a serializer change. F4's requested `<=7` witness is delivered; this is about its resolution.
+
+*Failure scenario:* a V8 or `stringifyJsonValue` change that alters small/negative-exponent spelling (e.g. widening `-0.0000010000000000000002`) passes both the per-token bound and the document-level bound, and the `E*N` term silently loses margin with no failing test.
+*Remedy:* pin the expected normalized output for all four tokens the way `1e20` is pinned — four added string literals in the `it.each` body — so the witness fails on any expansion change rather than only above 7×.
+
+---
+
+**8. LOW — After the rescale, no test observes the default E=256 refusal with the real cap**
+`packages/server/src/transaction-owned.test.ts:899-919`; `transaction-set.test.ts:901`
+
+The only Event-expansion refusal now observed against a real workload runs under the `maximumInducedEvents: 128` seam; 256 survives solely as a *rejected raised bound* (`it.each([0,-1,1.5,257,Infinity])`) and as a tuple literal. Under M=32 a matched `deleteWhere` tops out at 4×32 = 128 induced Events, so reaching 256 now requires combining explicit operations with the set operation — the same unexercised K-unit combination as finding 3. The report and doc are explicit that the test does not claim to reach the default boundary, so this is a disclosed-but-uncovered path rather than a misstatement; the doc's "256 remains the owner cap" is nonetheless backed by a bound-validation test, not an observed refusal.
+
+*Failure scenario:* a change to the owned-fact fan-out (facts per deletion, or cascade shape) alters where the real 256 cap bites, and no test observes it; only the lowered-cap variant and the `257` rejection would still pass.
+*Remedy:* add one clause at the doc's "256 remains the owner cap" sentence stating that the default cap's refusal is pinned by bound validation and exercised only through the lowered evaluator seam; optionally, raise `ownsOutgoing` max in one fixture so a single explicit cascading delete plus the set delete reaches 256/257 again, which also closes the cheapest half of finding 3.

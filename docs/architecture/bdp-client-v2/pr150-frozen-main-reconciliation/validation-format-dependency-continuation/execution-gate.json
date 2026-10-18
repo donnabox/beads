@@ -1,0 +1,55 @@
+{
+  "rootExecutionReleased": true,
+  "approvedStages": [
+    "type-examples",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "packed-affected-1",
+    "packed-affected-2",
+    "packed-affected-3",
+    "packed-affected-4",
+    "packed-affected-5"
+  ],
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/candidate-source.json",
+    "sha256": "27b75c94374685505b3503f9a321767831350b25906cae37364ca95bc556fc5f"
+  },
+  "finalHead": "d7197e97a29bff8f075028419afad05388e2e655",
+  "finalTree": "630a94d0ca1545f898cb8a8b614d4b7d2dd6d454",
+  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+  "workspaceTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/workspace-tools.json",
+    "sha256": "b786d3cbd749a07cb938407f09cc62ac46d25f90e7d572c51c47f9ca4591cbd6"
+  },
+  "rootResultsAccepted": [
+    "full-test",
+    "packed-affected-1",
+    "packed-affected-2",
+    "packed-affected-3",
+    "packed-affected-4",
+    "packed-affected-5"
+  ],
+  "consumerLockSha256": "aa5ca8adb3ce1ac034ec434149a36fd6538649f2e68732df95da88093b65c991",
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-format-dependency-continuation/run/installed-provenance.json",
+    "sha256": "36a6d1163d0bd0a24805aac7c606f33f5189f76e12a3aa2f59c811cf42aedb19"
+  },
+  "consumerInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-format-dependency-continuation/run/installed-consumer-inventory.json",
+    "sha256": "60d59e2f18ffe75376b2d18750599b54fb7cbef7448d60bd7cb19e8da4cb2273"
+  },
+  "preparationIndexSha256": "ec3b0fab6caabbf5f743932750dbbaab8ffdae00f7de9bb31cf8570429d0896d",
+  "note": "CLOSED continuation:11 accepted stages explicitly reused from pinned predecessor origins,14 new stages remain. Full-test acceptance seeded solely from indexed original root-full-suite-acceptance record; no fresh full-suite claim. New Python binding/probe acceptance pending; old tools retained unchanged.",
+  "expectedParentEvidenceExit": 0,
+  "newPythonEnvironment": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-format-dependency-continuation/new-python-environment.json",
+    "sha256": "0a457e46b8fa0df8091fba8aaeb6d2d2cfef45f73bd360f88efb417511f171f6"
+  },
+  "newPythonEnvironmentAccepted": true
+}

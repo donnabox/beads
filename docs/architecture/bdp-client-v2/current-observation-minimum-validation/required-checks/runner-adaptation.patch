@@ -1,0 +1,98 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/required-checks/run.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks/run.py
+@@ -1,7 +1,7 @@
+ """Single bounded stage. Usage: run.py final STAGE; workspace tools are captured after guarded offline install. Closed without root gate."""
+ import os,sys
+ if len(sys.argv)!=3 or sys.argv[1]!='final':raise SystemExit('usage: run.py final STAGE')
+-os.environ['SCOPE_EVENT_SSE_REQUIRED_VALIDATION_PHASE']=sys.argv[1]
++os.environ['CURRENT_OBSERVATION_REQUIRED_VALIDATION_PHASE']=sys.argv[1]
+ import sys
+ sys.dont_write_bytecode=True
+ from gate import *
+@@ -12,14 +12,14 @@
+ env=os.environ.copy()
+ for k in list(env):
+  if k.startswith(('BDP_','VITEST_')) or k in ['NODE_OPTIONS','NODE_PATH','NODE_DEBUG','PYTHONOPTIMIZE','BIOME_BINARY','npm_execpath','npm_node_execpath','FORCE_COLOR']:env.pop(k)
+-env.update({'PATH':'/Users/dbox/.nvm/versions/node/v24.16.0/bin:'+env.get('PATH',''),'CI':'true','NO_COLOR':'1','PYTHONDONTWRITEBYTECODE':'1','SCOPE_EVENT_SSE_REQUIRED_VALIDATION_PHASE':MODE})
++env.update({'PATH':'/Users/dbox/.nvm/versions/node/v24.16.0/bin:'+env.get('PATH',''),'CI':'true','NO_COLOR':'1','PYTHONDONTWRITEBYTECODE':'1','CURRENT_OBSERVATION_REQUIRED_VALIDATION_PHASE':MODE})
+ env.update(spec.get('environment',{}))
+ # Task-owned runtime roots avoid ancestor .beads discovery in the home checkout.
+-tmp=Path(tempfile.mkdtemp(prefix='vickie-scope-sse-required-'+name+'-',dir='/private/tmp'))
++tmp=Path(tempfile.mkdtemp(prefix='vickie-current-observation-required-'+name+'-',dir='/private/tmp'))
+ require(tmp.parent==Path('/private/tmp') and tmp.resolve()==tmp,'Unexpected owned temp path')
+ env['TMPDIR']=str(tmp);env['npm_config_cache']=str(tmp/'npm-cache')
+ write(name+'.started.json',{'argv':spec['argv'],'cwd':spec['cwd'],'head':g['finalHead'],'tree':g['finalTree'],'sourceIdentity':g['_sourceIdentity'],'rootGateSha256':sha((P/('bootstrap-gate.json' if MODE=='bootstrap' else 'execution-gate.json')).read_bytes()),'outerSeconds':120,'automaticRetries':0,'overrides':spec.get('environment',{}),'temporaryDirectory':str(tmp),'npmCache':str(tmp/'npm-cache')})
+-env['SCOPE_EVENT_SSE_REQUIRED_VALIDATION_STAGE']=name;env['SCOPE_EVENT_SSE_REQUIRED_VALIDATION_ATTEMPT']=sha((E/(name+'.started.json')).read_bytes())
++env['CURRENT_OBSERVATION_REQUIRED_VALIDATION_STAGE']=name;env['CURRENT_OBSERVATION_REQUIRED_VALIDATION_ATTEMPT']=sha((E/(name+'.started.json')).read_bytes())
+ start=time.monotonic();p=None;seen=set();forced=False;errors=[]
+ def rows():
+  return [r.split(None,3) for r in subprocess.check_output(['ps','-axo','pid=,ppid=,pgid=,comm='],text=True,timeout=2).splitlines() if len(r.split(None,3))==4]
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/required-checks/gate.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks/gate.py
+@@ -1,8 +1,8 @@
+ from pathlib import Path
+ import json,hashlib,subprocess,os,importlib.util
+ P=Path(__file__).resolve().parent
+-V=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation")
+-W=Path("/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum")
++V=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/implementation")
++W=Path("/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum")
+ E=P/'run';MODE='final'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def require(ok,message):
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/required-checks/commands.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks/commands.json
+@@ -7,7 +7,7 @@
+   ],
+   "commands": {
+     "boundaries": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "scripts/check-dependency-boundaries.mjs"
+@@ -20,7 +20,7 @@
+       ]
+     },
+     "preflight": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "node_modules/vitest/vitest.mjs",
+@@ -28,7 +28,7 @@
+         "scripts/e2e-ready.test.mjs",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/required-checks/run/preflight.results.json"
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks/run/preflight.results.json"
+       ],
+       "outerSeconds": 120,
+       "termAfterSeconds": 115,
+@@ -38,7 +38,7 @@
+       ]
+     },
+     "package-smoke": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -52,7 +52,7 @@
+       ]
+     },
+     "historical-read-evidence": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "scripts/read-cohort-evidence.mjs"
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/required-checks/expectations.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/required-checks/expectations.json
+@@ -26,5 +26,5 @@
+     "termAfterSeconds": 115,
+     "automaticRetries": 0
+   },
+-  "workloadAttribution": "Seven exact existing preflight callbacks; smoke retains complete workspace pack/install/executable lifecycle and installed-reference probes. No overall HTTP/child totals are invented. Four required checks remain separate from eight source/two installed SSE callbacks."
++  "workloadAttribution": "Seven exact existing preflight callbacks; smoke retains complete workspace pack/install/executable lifecycle and installed-reference probes. No aggregate traffic/child count invented. These four required checks remain separate from97source cases and installed22/new37; historical Read evidence is not fresh Transactional qualification."
+ }

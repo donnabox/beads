@@ -1,0 +1,452 @@
+{
+  "status": "DRAFT_ONLY_CLOSED_NO_EXECUTION",
+  "checkout": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+  "evidence": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run",
+  "sourcePreparation": "../transaction-command-minimum-execution-preparation-v3",
+  "commands": {
+    "restore-command-prepare": {
+      "phase": "control",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/controls.py",
+        "restore-command"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [],
+      "ownedTempPrefixes": [],
+      "control": "restore-command"
+    },
+    "restore-command-setup": {
+      "phase": "control",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/restore-command",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "restore-command-prepare",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "control": "restore-command"
+    },
+    "restore-command-build": {
+      "phase": "control",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/restore-command",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "restore-command-setup",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "control": "restore-command"
+    },
+    "restore-command-test": {
+      "phase": "control",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/restore-command",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-http.test.ts",
+        "--testNamePattern",
+        "^ignores partial and malformed copied read controls on each mutation carrier$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/restore-command-test.results.json"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "restore-command-build",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": [
+        "bdp-tx-http-"
+      ],
+      "control": "restore-command",
+      "workload": {
+        "caseExecutions": 1,
+        "httpExpected": 1,
+        "httpMaximum": 27,
+        "owners": 1,
+        "listeners": 1,
+        "storeDirectories": 1,
+        "children": 0,
+        "expectedTestExit": 1
+      }
+    },
+    "restore-command-review": {
+      "phase": "control",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/adjudicate.py",
+        "restore-command"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "restore-command-test",
+          "exit": 1
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "control": "restore-command"
+    },
+    "bypass-receipt-prepare": {
+      "phase": "control",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/controls.py",
+        "bypass-receipt"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [],
+      "ownedTempPrefixes": [],
+      "control": "bypass-receipt"
+    },
+    "bypass-receipt-setup": {
+      "phase": "control",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/bypass-receipt",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "bypass-receipt-prepare",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "control": "bypass-receipt"
+    },
+    "bypass-receipt-build": {
+      "phase": "control",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/bypass-receipt",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "bypass-receipt-setup",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "control": "bypass-receipt"
+    },
+    "bypass-receipt-test": {
+      "phase": "control",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/bypass-receipt",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-http.test.ts",
+        "--testNamePattern",
+        "^keeps receipt minimum enforcement after commands ignore copied controls$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/bypass-receipt-test.results.json"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "bypass-receipt-build",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": [
+        "bdp-tx-http-"
+      ],
+      "control": "bypass-receipt",
+      "workload": {
+        "caseExecutions": 1,
+        "httpExpected": 2,
+        "httpMaximum": 6,
+        "owners": 1,
+        "listeners": 1,
+        "storeDirectories": 1,
+        "children": 0,
+        "expectedTestExit": 1
+      }
+    },
+    "bypass-receipt-review": {
+      "phase": "control",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/adjudicate.py",
+        "bypass-receipt"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "bypass-receipt-test",
+          "exit": 1
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "control": "bypass-receipt"
+    },
+    "node-version": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [],
+      "ownedTempPrefixes": []
+    },
+    "package-directory": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/packages.py",
+        "directory"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "node-version",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "pack-protocol": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--dir",
+        "/Users/dbox/repos/wt/vickie/vickie-command-minimum/packages/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/packages"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "package-directory",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "pack-server": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--dir",
+        "/Users/dbox/repos/wt/vickie/vickie-command-minimum/packages/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/packages"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "package-directory",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "verify-tar": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/packages.py",
+        "tar"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "pack-protocol",
+          "exit": 0
+        },
+        {
+          "id": "pack-server",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "prepare-consumer": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/packages.py",
+        "consumer"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "verify-tar",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "consumer-install": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/consumer",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "prepare-consumer",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "verify-installed": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/packages.py",
+        "installed"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "consumer-install",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "fresh-tx": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+        "--testNamePattern",
+        "^ignores command read controls while enforcing a later installed receipt minimum$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/run/fresh-tx.results.json"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "verify-installed",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": [
+        "bdp-collection-minimum-installed-"
+      ],
+      "workload": {
+        "caseExecutions": 1,
+        "httpExpected": 18,
+        "httpMaximum": 18,
+        "post": 8,
+        "get": 9,
+        "head": 1,
+        "urls": 9,
+        "owners": 1,
+        "listeners": 1,
+        "storeDirectories": 1,
+        "children": 1
+      },
+      "output": "Existing private-installed-command-minimum console JSON; no output env hook"
+    },
+    "fresh-tx-review": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v3/adjudicate.py",
+        "fresh-tx"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "fresh-tx",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    }
+  },
+  "limits": {
+    "sourceControlsOnly": {
+      "cases": 2,
+      "httpExpected": 3,
+      "httpMaximum": 33,
+      "children": 0,
+      "owners": 2,
+      "listeners": 2,
+      "runtimeStoreDirectories": 2,
+      "disposableSourceDirectories": 2
+    },
+    "freshTX": {
+      "cases": 1,
+      "httpExpected": 18,
+      "httpMaximum": 18,
+      "children": 1
+    },
+    "noAutomaticRetries": true,
+    "countBasis": "Prospective bounds; control reached-prefix count comes from named failure in bound source, installed actual counts from genuine helper report"
+  },
+  "historicalDraftBindingSha256": "cf5d2cd13a57d4a01220f931bdd308a71c8709f5d185592b2f6a08347631c24e",
+  "historicalDraftPatchSha256": "8f0123c9484a74a5c4995dea84833561056f603c8da64d5f9139107b85d44df8",
+  "prospectiveSourceBindingSha256": "455372e6767b204095b3884c0c25cc3baa182ec9368b668d5e336c9816cd4dad",
+  "actualSourceManifestRequiredBeforeRelease": true
+}

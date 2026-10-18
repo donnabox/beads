@@ -1,0 +1,2053 @@
+Review the EXACT frozen receipt missing-context code change below, not a new plan or a broad redesign. Do not write or modify any files. Output findings only in stdout. Tools disabled; all supplied code is actual pinned source. No model override. Return numbered concrete findings Critical/High/Medium/Low with path/location, issue, impact and smallest correction; distinguish actual defects from missing supplied proof. If no blocking findings, state so. Avoid demanding full-profile evidence for this explicitly partial existing-contract repair.
+
+Root authorizes one actual review; implementation is frozen at eight paths against actual merged main015cac1aa4fa827cc4a2c647dff08454c6c8e6f8/tree2e16329e195eb8214836de20340a5887236d78f0, branchcodex/vickie-receipt-missing-context. Native code review found no blocker; do not defer independent judgment to it. Source positives were accepted by root after assembly began; compact exact outcome follows. Control/fresh installed remain unexecuted in this packet. Author formatting is source preparation only. The stale pending-merge wording in frozen v3 is superseded by the actual merged parent above, with no design change.
+
+Review priorities: same-entry immutable current context and no extra owner observation; authentication/principal/epoch/minimum/expiry/integrity ordering; required root404 vs optional defense-only page404 vs contextless401; two exact HTTP projections and HEAD semantics; frozen-owner delegating counters and genuine ahead-minimum no-wait oracle; hard status/body/metadata prerequisites before exactly8soft context tuples; bounded source13dispatch and installed14dispatch witnesses, real32+1result page, issued id/next binding and negative unknown sibling distinction; credential-safe observations, abort/drain and primary+cleanup retention; correct control viability/type feasibility/fanout. No new semantics for pending Snapshot/metadata decisions, no public qualification.
+
+Accepted workload remains14sourcecallbacks/68HTTP +1emitted13HTTPcontrol +1freshinstalled14HTTP:16executions/95HTTP/18owneropens/16directories/8listeners/1productchild/2readonlyhandles. Source fixtures and local tests are not all raw wire counters; this is prospective source-derived inventory. New source and installed callbacks each45scohort/5sexchange/60stest, existing launcher10sreadiness/close, external120ssupervision; nested caps are not additive completion guarantees. Installed bodies3728/179/92bytes total3999; update-where uses change, not propertiesChange. Existing runtime defaultreceiptMaximumItems32 is unchanged; selected32 updates create33results (one matched summary+32outcomes). Installed create:true is fresh/exclusive; both distinct credentials accepted; no hidden startup HTTP. Page schema requiresreceipt/results/next and no new page route is granted until actual schema/canonical id+next validated. Fresh archives/eight-package closure/payload provenance remains later external validation, not caller-label attestation.
+
+Compact unchanged helper contracts and relevant complete production functions follow the complete diff. Some unaffected helper snippets stop at a named boundary; missing excerpt context alone is not evidence of a regression. Current source branch/test layout is frozen; no historical outcome is relabeled.
+
+ACCEPTED V3 EXACT PRODUCTION CONTRACT (historical dependency wording omitted; fullplan hash bound externally):
+
+Only three production paths:
+
+1. `packages/server/src/transaction-store.ts`: root `readReceipt`854–884 already returns frozen `{receipt:undefined,context}` in its existing enter/atomic callback. Do not change it or add a second read. In `readReceiptPage`2008–2089, keep principal/string validation and the existing two namespace-defense branches (`marker<0`, parent not under exact Scope receipts prefix) unchanged, including missing-only shape and no receipt-plan lookup. After those checks, exactly three genuine missing branches return frozen `{kind:"missing",context:readContext()}` inside the same existing entry: no saved visible parent at2048 after completed-parent plan-integrity check; prior epoch at2054 after stored-parent/id integrity checks; unknown token at2057 after pagePlan validation. Evaluate readContext at each return, never hoist it ahead of those checks. Preserve missing-plan/parent/chain integrity throws before constructing any normal response; preserve unknown-token-before-minimum-before-expiry and no retention side effect on nonexistent pages. The private missing variant therefore permits absent context only for the two unchanged namespace-defense paths. Existing current context is frozen by readContext590–598. Do not move metadata reads across owner lifetime guards or change failure sanitization.
+2. `packages/server/src/transaction-service.ts`: make authenticated root404 carry required context while401 remains exact/contextless (type50–53). Internal receipt helper202–210 should return a checked receipt or frozen404 using the original owner observation, instead of discarding it as undefined. The private helper has exactly two callsites,489 and580; remove both obsolete nullish fallbacks. Ordinary receipt570–583 and supported minimum470–497 consume that result directly; the unsupported path preserves its existing unsupported outcome for visible receipts and adds the actual observed context only for nondisclosable absence. Page429–468 splits401 from404, freezes its new forwarded missing result and forwards context when present on the owner's missing variant; it must not synthesize a context for the two namespace-defense results. No extra owner access, wait, service API/export or lifetime change. Missing with malformed/partial minimum still wins exactly where the current owner already so decides; visible unsupported behavior remains unchanged.
+3. `packages/server/src/transaction-http.ts`: root/page refused projections532/544 narrow on code resource-not-found before passing their supplied context to existing transactionHttpProblem107–112;401 supplies undefined. Keep root404 context required in its distinct union member; page404 permits absent context only for the preserved private defenses. Preserve auth389, route/namespace483–485, target/method rules243–258, minimum decoding521–545, statuses, body/cache/conditions and non-attesting marker. A401 or namespace-defense result lacking context remains contextless. No inferred minimum preflight, lookup by key, receipt enumeration, runtime setting or discovery activation.
+
+The scope distinction above is intentional: the existing private page API can be called with outside-Scope/non-page strings; its no-lookup defense is not a newly observed canonical receipt absence. Do not broaden this repair to arbitrary route404 or change those input guards. A canonical missing root uses existing readReceipt observation even for both nonlisting receipt namespace forms (/receipts and /receipts/). They remain404, not listing Resources. Selected service case242 covers trailing-slash namespace; no extra HTTP namespace call is added and slash/no-slash wire coverage is not claimed.
+
+Metadata integrity limitation: newly retaining page absence context can surface existing corruption rather than a contextless404. readContext590–598 throws a plain Error; enter348–359 only releases busy. atomic369–401 rethrows a plain error after clean rollback without setting ownerFailure. Uncertain commit, unclean rollback or nonconstraint SQLite error invokes fence360–368; background maintenance1360–1377 separately records sticky failure and closes. Persistent corrupt data can cause repeated errors without a sticky owner fence. Do not mask faults, fabricate epoch/context or claim new maintenance/fault qualification. No corruption test/budget or metadata/store-format change is added.
+
+
+ROOT DISPOSITIONS (original plan review; all23 dispositions accepted with listed mandatory corrections):
+{
+  "at": "2026-10-15T12:06:48.962114+00:00",
+  "scope": "receipt-root/page missing current context",
+  "originalPlanSHA256": "618e69a22bf6f0d5acc01dbbee6001dbd63b17d16fee4529c18e000bfcf47d18",
+  "originalLedgerSHA256": "133d93f01d6fb85bf111b016a49a0467470ce09694b8dff7dd1b40b591f5ce9d",
+  "actualClaudeSHA256": "84560b126c82859fed06f6d5b3923b224dd4f9c07a5c8a4f6d5fa595acb09878",
+  "sourceAuditSHA256": "9a8595132244550a273e23b48d6ce49cef586f438760942514b45b4682a2fcdf",
+  "decision": "accept all23 numbered source-grounded dispositions, with derived unknown sibling URL option selected; successor packet and actual merged Event parent required before authoring",
+  "mandatoryCorrections": [
+    "request2 uses change;179B/3999B total",
+    "missing page context captured at each return after existing integrity checks",
+    "404 union preserves required root context;401 distinct",
+    "same-view ahead minimum with zero-wait counter, no latency claim",
+    "page.receipt equals actual root; root and page provenance distinct",
+    "per-request hard metadata/body prerequisites then one soft three-field tuple",
+    "source local streaming bounded fetch with redirect:error and abort signals for all13 requests",
+    "metadata validation fault with clean rollback is nonsticky; real SQLite/uncertain rollback fencing preserved",
+    "45s aggregate abort and existing grace bounds remain distinct; do not sum per-request maxima",
+    "401 transport/service attribution and exact partial-scope limitations"
+  ],
+  "preserved": [
+    "original23finding review and original plan/ledger unchanged",
+    "eight-path production/test/doc scope",
+    "14sourcecases/68HTTP plus13HTTP emittedcontrol plus14HTTP installed",
+    "no new product decisions or public profile claim"
+  ],
+  "authoringReleased": false,
+  "executionReleased": false
+}
+
+COMPLETE EIGHT-PATH PATCH, including complete new installed test:
+```diff
+diff --git a/docs/design/transaction-implementation-progress.md b/docs/design/transaction-implementation-progress.md
+index 19f908e..4d09f11 100644
+--- a/docs/design/transaction-implementation-progress.md
++++ b/docs/design/transaction-implementation-progress.md
+@@ -1859,3 +1859,23 @@ is computed by the Read HTTP semantics before body removal and preserved by the
+ runtime emitter. Prior source/installed evidence retains its original attribution.
+ This is no public profile qualification, discovery activation, retained Snapshot
+ minimum ruling or metadata-only incident-Link Event membership ruling.
++
++
++### Context for observed missing receipt roots and pages
++
++This draft retains the current immutable Scope context on authenticated missing
++receipt roots and on the three genuine missing-page owner returns. The HTTP
++projection carries that same observation on404 while preserving the existing
++uniform Problem, principal/epoch nondisclosure, minimum-before-expiry ordering,
++contextless401 and private namespace defenses. No second owner read is added.
++Metadata corruption follows existing error/fencing classification rather than
++fabricating context; a plain metadata error after clean rollback is not claimed
++to create a sticky owner fence.
++
++The bounded draft adds owner, service and HTTP tests and one fourteen-request
++private installed witness using a genuinely issued receipt page. At this draft
++checkpoint no new tests, build, control or installed execution has run. The
++proposed emitted HTTP control omits only the two context projections. Earlier
++Event and receipt evidence retains its original source attribution. Visible
++unsupported minimum handling remains a private limitation; this draft adds no
++public profile qualification, discovery activation or pending product ruling.
+diff --git a/packages/server/src/transaction-http.test.ts b/packages/server/src/transaction-http.test.ts
+index ef9f0d9..7700679 100644
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -341,7 +341,7 @@ describe("source-private actual Transactional HTTP", () => {
+     ] as const) {
+       const response = await f.get(id(receipt), { headers: { ...controls, authorization } });
+       expect(response.status).toBe(status);
+-      expect(response.headers.has("bdp-scope-position")).toBe(status === 410);
++      expect(response.headers.has("bdp-scope-position")).toBe(status !== 401);
+     }
+     const missing = await f.get(`${f.runtime.scope}receipts/unknown`, { headers: controls });
+     expect(missing.status).toBe(404);
+@@ -2042,7 +2042,7 @@ it("orders page nondisclosure, minimum waits, expiry and representation using ac
+     if (principal === token)
+       expect(unsupported.headers.get("x-bdp-development-limit")).toBe("minimum-position");
+     for (const header of ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"])
+-      expect(unsupported.headers.has(header)).toBe(false);
++      expect(unsupported.headers.has(header)).toBe(principal !== token);
+   }
+   expect((await f.get(`${id(receipt)}/pages`)).status).toBe(404);
+   for (const method of ["GET", "HEAD"]) {
+@@ -2055,11 +2055,11 @@ it("orders page nondisclosure, minimum waits, expiry and representation using ac
+         headers: { ...headers, authorization: auth, "bdp-scope-epoch": "foreign" },
+       });
+       expect(denied.status).toBe(status);
+-      expect(denied.headers.has("bdp-scope-position")).toBe(false);
++      expect(denied.headers.has("bdp-scope-position")).toBe(status === 404);
+     }
+     const unknown = await f.get(`${id(receipt)}/pages/unknown`, { method, headers });
+     expect(unknown.status).toBe(404);
+-    expect(unknown.headers.has("bdp-scope-position")).toBe(false);
++    expect(unknown.headers.get("bdp-scope-position")).toBe("pos-1");
+     const timeout = await f.get(next, { method, headers });
+     expect(timeout.status).toBe(503);
+     expect(timeout.headers.get("retry-after")).toBe("1");
+@@ -2173,7 +2173,7 @@ it("refuses unsupported root controls after nondisclosure but before read-trigge
+         if (status === 500)
+           expect(response.headers.get("x-bdp-development-limit")).toBe("minimum-position");
+         for (const header of ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"])
+-          expect(response.headers.has(header)).toBe(false);
++          expect(response.headers.has(header)).toBe(status === 404);
+         if (status === 500 || method === "HEAD") expect(await response.text()).toBe("");
+       }
+     }
+@@ -2201,7 +2201,7 @@ it("keeps failed parent rows unchanged for nonexistent page reads with any contr
+         });
+         expect(response.status).toBe(404);
+         for (const header of ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"])
+-          expect(response.headers.has(header)).toBe(false);
++          expect(response.headers.get(header)).toBe(created.headers.get(header));
+         if (method === "GET")
+           expect(checkedProblem(await body(response)).code).toBe("resource-not-found");
+         else expect(await response.text()).toBe("");
+@@ -3809,3 +3809,279 @@ it("serves Selector syntax and prior-key precedence over capacity", async () =>
+   expect(inventory.map((row) => row.key)).toEqual(["accept", "later", "seed"]);
+   expect(inventory.find((row) => row.key === "seed")?.receipt).toEqual(seed);
+ });
++
++it("serves current missing receipt root and page context without changing nondisclosure or HEAD", async () => {
++  const cleanupBoundary = cleanup.length;
++  const failures: unknown[] = [];
++  const controller = new AbortController();
++  const deadlineReason = new Error("receipt context cohort deadline");
++  let deadlineExceeded = false;
++  const deadline = setTimeout(() => {
++    deadlineExceeded = true;
++    controller.abort(deadlineReason);
++  }, 45000);
++  let attempted = 0,
++    tupleChecks = 0;
++  const names = ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"] as const;
++  const retainedNames = [
++    ...names,
++    "content-type",
++    "content-length",
++    "cache-control",
++    "x-bdp-development",
++    "x-bdp-development-limit",
++    "www-authenticate",
++    "retry-after",
++    "etag",
++    "last-modified",
++  ];
++  const observations: {
++    method: string;
++    url: string;
++    status: number;
++    bodyOctets: number;
++    headers: Record<string, string | null>;
++  }[] = [];
++  let registeredCleanup = 0,
++    completedCleanup = 0;
++  try {
++    const f = await fixture({ receiptMaximumItems: 2 });
++    const exchange = async (
++      url: string,
++      method: "GET" | "HEAD" | "POST",
++      credential: string | undefined,
++      requestBody?: string,
++      key?: string,
++    ) => {
++      controller.signal.throwIfAborted();
++      expect(++attempted, "receipt context dispatch bound").toBeLessThanOrEqual(13);
++      const requestAbort = new AbortController();
++      const timer = setTimeout(
++        () => requestAbort.abort(new Error("receipt exchange deadline")),
++        5000,
++      );
++      try {
++        const response = await fetch(url, {
++          method,
++          redirect: "error",
++          signal: AbortSignal.any([controller.signal, requestAbort.signal]),
++          headers: {
++            accept: "application/json",
++            ...(credential === undefined ? {} : { authorization: `Bearer ${credential}` }),
++            ...(requestBody === undefined
++              ? {}
++              : {
++                  "content-type": "application/json",
++                  "idempotency-key": key ?? "receipt-context-seed",
++                }),
++          },
++          ...(requestBody === undefined ? {} : { body: requestBody }),
++        });
++        const reader = response.body?.getReader();
++        const chunks: Uint8Array[] = [];
++        let bytes = 0;
++        try {
++          if (reader)
++            for (;;) {
++              const chunk = await reader.read();
++              if (chunk.done) break;
++              if (bytes + chunk.value.byteLength > 32768) {
++                requestAbort.abort(new Error("receipt response body limit"));
++                throw new Error("receipt response exceeds32768bytes");
++              }
++              bytes += chunk.value.byteLength;
++              chunks.push(chunk.value);
++            }
++        } catch (error) {
++          try {
++            await reader?.cancel();
++          } catch (cleanupError) {
++            throw new AggregateError([error, cleanupError], "receipt body read and cleanup failed");
++          }
++          throw error;
++        } finally {
++          reader?.releaseLock();
++        }
++        const text = new TextDecoder("utf-8", { fatal: true }).decode(Buffer.concat(chunks, bytes));
++        const headers = Object.fromEntries(
++          retainedNames.map((name) => [name, response.headers.get(name)]),
++        );
++        observations.push({ method, url, status: response.status, bodyOctets: bytes, headers });
++        expect(headers["x-bdp-development"]).toBe("non-attesting");
++        return { status: response.status, headers, text, bytes };
++      } finally {
++        clearTimeout(timer);
++      }
++    };
++    const seed = await exchange(
++      f.runtime.targets.batch,
++      "POST",
++      token,
++      batch([create("a"), create("b"), create("c")]),
++    );
++    expect(seed.status).toBe(200);
++    const receipt = record(JSON.parse(seed.text));
++    expect(validateSelectorReceipt(receipt), JSON.stringify(validateSelectorReceipt.errors)).toBe(
++      true,
++    );
++    expect(receipt).toMatchObject({
++      status: "completed",
++      requiredPosition: "pos-1",
++      effectPosition: "pos-1",
++    });
++    expect(receipt.results).toHaveLength(2);
++    if (typeof receipt.next !== "string") throw new Error("expected issued next page");
++    const root = id(receipt),
++      pageUrl = receipt.next;
++    const page = await exchange(pageUrl, "GET", token);
++    expect(page.status).toBe(200);
++    const pageValue = JSON.parse(page.text);
++    const validPage = ajv.compile({ $ref: `${schema.$id}#/$defs/mutationReceiptPage` });
++    expect(validPage(pageValue), JSON.stringify(validPage.errors)).toBe(true);
++    expect(pageValue).toMatchObject({ receipt: root, next: null });
++    expect(pageValue.results).toHaveLength(1);
++    const firstContext = names.map((name) => seed.headers[name]);
++    expect(firstContext[0]).toBeTruthy();
++    expect(firstContext[1]).toBeTruthy();
++    expect(firstContext[2]).toBe("pos-1");
++    expect(names.map((name) => page.headers[name])).toStrictEqual(firstContext);
++    const problem = {
++      type: "https://github.com/gastownhall/bdp/problems/not-found",
++      code: "resource-not-found",
++      retry: "after-state-change",
++      status: 404,
++    };
++    const missing = async (
++      url: string,
++      method: "GET" | "HEAD",
++      credential: string,
++      expected: (string | null | undefined)[],
++      label: string,
++      getLength?: string | null,
++    ) => {
++      const response = await exchange(url, method, credential);
++      expect(response.status, label).toBe(404);
++      expect(response.headers["content-type"]).toBe("application/problem+json");
++      expect(response.headers["cache-control"]).toBe("private, no-store");
++      for (const name of [
++        "etag",
++        "last-modified",
++        "retry-after",
++        "www-authenticate",
++        "x-bdp-development-limit",
++      ])
++        expect(response.headers[name]).toBeNull();
++      if (method === "GET") {
++        const value = record(JSON.parse(response.text));
++        expect(checkedProblem(value)).toStrictEqual(problem);
++        expect(Number(response.headers["content-length"])).toBe(response.bytes);
++      } else {
++        expect(response.text).toBe("");
++        expect(response.bytes).toBe(0);
++        expect(response.headers["content-length"]).toBe(getLength);
++      }
++      tupleChecks++;
++      expect
++        .soft(
++          names.map((name) => response.headers[name]),
++          label,
++        )
++        .toStrictEqual(expected);
++      return response.headers["content-length"];
++    };
++    const unknownRoot = `${root.slice(0, root.lastIndexOf("/") + 1)}unknown`;
++    for (const [url, credential, label] of [
++      [unknownRoot, token, "unknown-root"],
++      [root, otherToken, "foreign-root"],
++      [pageUrl, otherToken, "foreign-page"],
++    ] as const) {
++      const length = await missing(
++        url,
++        "GET",
++        credential,
++        firstContext,
++        `${label} GET at first head`,
++      );
++      await missing(url, "HEAD", credential, firstContext, `${label} HEAD at first head`, length);
++    }
++    const later = await exchange(
++      f.runtime.targets.createBead,
++      "POST",
++      token,
++      JSON.stringify({ id: "beads/later", type: bead, properties: { title: "later" } }),
++      "receipt-context-advance",
++    );
++    expect(later.status).toBe(200);
++    const laterReceipt = JSON.parse(later.text);
++    expect(
++      validateSelectorReceipt(laterReceipt),
++      JSON.stringify(validateSelectorReceipt.errors),
++    ).toBe(true);
++    expect(laterReceipt).toMatchObject({
++      status: "completed",
++      requiredPosition: "pos-2",
++      effectPosition: "pos-2",
++    });
++    const laterContext = names.map((name) => later.headers[name]);
++    expect(laterContext).toStrictEqual([firstContext[0], firstContext[1], "pos-2"]);
++    await missing(root, "GET", otherToken, laterContext, "foreign-root GET at later head");
++    await missing(pageUrl, "GET", otherToken, laterContext, "foreign-page GET at later head");
++    for (const [url, method] of [
++      [root, "GET"],
++      [pageUrl, "HEAD"],
++    ] as const) {
++      const response = await exchange(url, method, undefined);
++      expect(response.status).toBe(401);
++      expect(response.headers["www-authenticate"]).toBe(
++        'Bearer realm="bdp-transaction-development"',
++      );
++      for (const name of names) expect(response.headers[name]).toBeNull();
++      if (method === "GET")
++        expect(checkedProblem(record(JSON.parse(response.text)))).toMatchObject({
++          code: "unauthenticated",
++          status: 401,
++        });
++      else {
++        expect(response.text).toBe("");
++        expect(response.bytes).toBe(0);
++      }
++    }
++    expect(attempted).toBe(13);
++    expect(observations).toHaveLength(13);
++    expect(tupleChecks).toBe(8);
++    controller.signal.throwIfAborted();
++  } catch (error) {
++    failures.push(error);
++  } finally {
++    controller.abort();
++    const callbacks = cleanup.splice(cleanupBoundary).reverse();
++    registeredCleanup = callbacks.length;
++    for (const close of callbacks) {
++      try {
++        await close();
++        completedCleanup++;
++      } catch (error) {
++        failures.push(error);
++      }
++    }
++    clearTimeout(deadline);
++    if (deadlineExceeded && !failures.includes(deadlineReason)) failures.push(deadlineReason);
++    console.log(
++      JSON.stringify({
++        observation: "source-receipt-missing-context",
++        attempted,
++        responses: observations,
++        tupleChecks,
++        registeredCleanup,
++        completedCleanup,
++        deadlineExceeded,
++        primaryOrCleanupFailureCount: failures.length,
++        retention:
++          "status, selected safe headers and body lengths; full Problem/receipt/page values asserted in memory",
++      }),
++    );
++  }
++  if (failures.length === 1) throw failures[0];
++  if (failures.length > 1)
++    throw new AggregateError(failures, "receipt context observation and cleanup failed");
++}, 60000);
+diff --git a/packages/server/src/transaction-http.ts b/packages/server/src/transaction-http.ts
+index e60d333..7e2c98f 100644
+--- a/packages/server/src/transaction-http.ts
++++ b/packages/server/src/transaction-http.ts
+@@ -529,7 +529,11 @@ export function createTransactionHttpHandler(
+           url.href,
+           minimum ?? (hasMinimumControls(request) ? "unsupported" : undefined),
+         );
+-        if (page.kind === "refused") return transactionHttpProblem(page.code);
++        if (page.kind === "refused")
++          return transactionHttpProblem(
++            page.code,
++            page.code === "resource-not-found" ? page.context : undefined,
++          );
+         if (page.kind === "unsupported") return developmentGap("minimum-position");
+         return context(
+           page.kind === "expired"
+@@ -541,7 +545,11 @@ export function createTransactionHttpHandler(
+       const result = hasMinimumControls(request)
+         ? await service.receiptAtMinimum(access, url.href, minimum ?? "unsupported")
+         : service.receipt(access, url.href);
+-      if (result.kind === "refused") return transactionHttpProblem(result.code);
++      if (result.kind === "refused")
++        return transactionHttpProblem(
++          result.code,
++          result.code === "resource-not-found" ? result.context : undefined,
++        );
+       // Missing barrier support cannot disclose a foreign receipt, nor permit a
+       // conditional shortcut to serve an unchecked minimum checkpoint.
+       if (result.kind === "unsupported") return developmentGap("minimum-position");
+diff --git a/packages/server/src/transaction-receipt-pages.test.ts b/packages/server/src/transaction-receipt-pages.test.ts
+index ad671ea..a1c7b22 100644
+--- a/packages/server/src/transaction-receipt-pages.test.ts
++++ b/packages/server/src/transaction-receipt-pages.test.ts
+@@ -288,3 +288,51 @@ it("refuses page parents outside the receipt namespace before plan lookup", () =
+   }
+   expect(prepare.mock.calls.some(([sql]) => sql.includes("FROM receipt_pages"))).toBe(false);
+ });
++
++it("captures immutable current context for nondisclosable receipt pages before minimum checks", () => {
++  const f = fixture(),
++    first = f.owner.executeObserved(f.claim(operations(3))),
++    next = pageUrl(first.receipt.next);
++  const visible = f.owner.readReceiptPage("p", next);
++  expect(visible).toMatchObject({ kind: "page", context: first.context });
++  const misses = [
++    ["other", next],
++    ["p", `${first.receipt.id}/pages/unknown`],
++    ["p", `${scope}receipts/unknown/pages/unknown`],
++  ] as const;
++  const ahead = {
++    scopeEpoch: first.context.scopeEpoch,
++    authorizationView: first.context.authorizationView,
++    minimumPosition: "pos-99",
++  };
++  const retained = [];
++  for (const [principal, url] of misses) {
++    for (const minimum of [undefined, "unsupported", ahead] as const) {
++      const result = f.owner.readReceiptPage(principal, url, minimum);
++      expect(result).toStrictEqual({ kind: "missing", context: first.context });
++      expect(Object.isFrozen(result)).toBe(true);
++      if (result.kind !== "missing") throw new Error("expected missing page");
++      expect(Object.isFrozen(result.context)).toBe(true);
++      retained.push(result);
++    }
++  }
++  expect(first.context.scopePosition).toBe("pos-1");
++  const later = f.owner.executeObserved(
++    f.claim([{ operation: "createBead", id: "beads/later", type, properties: { n: 3 } }], "later"),
++  );
++  expect(later.context).toStrictEqual({ ...first.context, scopePosition: "pos-2" });
++  for (const [principal, url] of misses)
++    expect(f.owner.readReceiptPage(principal, url)).toStrictEqual({
++      kind: "missing",
++      context: later.context,
++    });
++  for (const result of retained)
++    expect(result).toStrictEqual({ kind: "missing", context: first.context });
++  expect(() =>
++    f.owner.readReceiptPage("p", next, {
++      ...ahead,
++      authorizationView: "foreign",
++      minimumPosition: "pos-2",
++    }),
++  ).toThrow("foreign-view");
++});
+diff --git a/packages/server/src/transaction-service.test.ts b/packages/server/src/transaction-service.test.ts
+index f626df9..81a3d55 100644
+--- a/packages/server/src/transaction-service.test.ts
++++ b/packages/server/src/transaction-service.test.ts
+@@ -234,7 +234,12 @@ describe("private same-owner Transactional service", () => {
+       status: 401,
+       code: "unauthenticated",
+     });
+-    const hidden = { kind: "refused", status: 404, code: "resource-not-found" };
++    const hidden = {
++      kind: "refused",
++      status: 404,
++      code: "resource-not-found",
++      context: first.context,
++    };
+     expect(
+       service.receipt({ kind: "authenticated", principal: "other" }, first.receipt.id),
+     ).toEqual(hidden);
+@@ -2162,3 +2167,141 @@ it("preserves schema observation reentrancy, owner-fault causes and synchronous
+   await service.close();
+   expect(() => service.schemaObserved()).toThrow("closing or closed");
+ });
++
++it("preserves current receipt absence context across ordinary and minimum service entrypoints", async () => {
++  const f = fixture({ receiptMaximumItems: 2 });
++  const owner = f.owner;
++  type RootResult = ReturnType<typeof owner.readReceipt>;
++  type OrdinaryRootResult = Exclude<RootResult, { readonly kind: "unsupported" }>;
++  let roots = 0,
++    pages = 0,
++    waits = 0,
++    tick = 0;
++  function countedReceipt(
++    principal: string,
++    id: string,
++    minimum?: TransactionMinimum,
++  ): OrdinaryRootResult;
++  function countedReceipt(principal: string, id: string, minimum: "unsupported"): RootResult;
++  function countedReceipt(
++    principal: string,
++    id: string,
++    minimum?: TransactionMinimum | "unsupported",
++  ): RootResult {
++    roots++;
++    return minimum === "unsupported"
++      ? owner.readReceipt(principal, id, minimum)
++      : owner.readReceipt(principal, id, minimum);
++  }
++  const service = createTransactionService(
++    {
++      ...owner,
++      readReceipt: countedReceipt,
++      readReceiptPage(...args: Parameters<typeof owner.readReceiptPage>) {
++        pages++;
++        return owner.readReceiptPage(...args);
++      },
++    },
++    {
++      ownerLifetime: "service",
++      read: {
++        ...f.read,
++        advertisedLimits: {
++          ...f.read.advertisedLimits,
++          page: { defaultItems: 2, maximumItems: 2 },
++        },
++        pagination: { ...f.read.pagination, maxPageItems: 2 },
++      },
++      minimumReads: {
++        budgetMs: 2,
++        now: () => tick++,
++        wait: async () => {
++          waits++;
++        },
++      },
++    },
++  );
++  cleanup.push(() => service.close());
++  const first = requireReceipt(
++    await service.submit(batch([create("a"), create("b"), create("c")])),
++  );
++  expect(first.context.scopePosition).toBe("pos-1");
++  if (typeof first.receipt.next !== "string") throw new Error("expected issued page");
++  const foreign = { kind: "authenticated", principal: "other" } as const;
++  const ahead = {
++    scopeEpoch: first.context.scopeEpoch,
++    authorizationView: first.context.authorizationView,
++    minimumPosition: "pos-99",
++  };
++  const retained = [];
++  for (const minimum of [undefined, "unsupported", ahead] as const) {
++    const before = { roots, pages, waits };
++    const root =
++      minimum === undefined
++        ? service.receipt(foreign, first.receipt.id)
++        : await service.receiptAtMinimum(foreign, first.receipt.id, minimum);
++    expect(root).toStrictEqual({
++      kind: "refused",
++      status: 404,
++      code: "resource-not-found",
++      context: first.context,
++    });
++    expect(Object.isFrozen(root)).toBe(true);
++    expect(roots).toBe(before.roots + 1);
++    expect(pages).toBe(before.pages);
++    expect(waits).toBe(before.waits);
++    const page = await service.receiptPage(foreign, first.receipt.next, minimum);
++    expect(page).toStrictEqual({
++      kind: "refused",
++      code: "resource-not-found",
++      context: first.context,
++    });
++    expect(Object.isFrozen(page)).toBe(true);
++    expect(pages).toBe(before.pages + 1);
++    expect(roots).toBe(before.roots + 1);
++    expect(waits).toBe(before.waits);
++    retained.push(root, page);
++  }
++  const beforeAnonymous = { roots, pages };
++  const anonymous = { kind: "unauthenticated" } as const;
++  expect(service.receipt(anonymous, first.receipt.id)).toStrictEqual({
++    kind: "refused",
++    status: 401,
++    code: "unauthenticated",
++  });
++  expect(await service.receiptAtMinimum(anonymous, first.receipt.id, ahead)).toStrictEqual({
++    kind: "refused",
++    status: 401,
++    code: "unauthenticated",
++  });
++  expect(await service.receiptPage(anonymous, first.receipt.next, ahead)).toStrictEqual({
++    kind: "refused",
++    code: "unauthenticated",
++  });
++  expect({ roots, pages }).toStrictEqual(beforeAnonymous);
++  const later = requireReceipt(await service.submit(batch([create("later")], "later")));
++  expect(later.context).toStrictEqual({ ...first.context, scopePosition: "pos-2" });
++  const beforeLater = { roots, pages };
++  expect(service.receipt(foreign, first.receipt.id)).toStrictEqual({
++    kind: "refused",
++    status: 404,
++    code: "resource-not-found",
++    context: later.context,
++  });
++  expect(await service.receiptPage(foreign, first.receipt.next)).toStrictEqual({
++    kind: "refused",
++    code: "resource-not-found",
++    context: later.context,
++  });
++  expect({ roots, pages }).toStrictEqual({
++    roots: beforeLater.roots + 1,
++    pages: beforeLater.pages + 1,
++  });
++  for (const result of retained) {
++    if (result.kind !== "refused" || result.code !== "resource-not-found")
++      throw new Error("expected hidden receipt");
++    expect(result.context).toStrictEqual(first.context);
++    expect(Object.isFrozen(result.context)).toBe(true);
++  }
++  expect(waits).toBe(0);
++});
+diff --git a/packages/server/src/transaction-service.ts b/packages/server/src/transaction-service.ts
+index b875ec7..00c3048 100644
+--- a/packages/server/src/transaction-service.ts
++++ b/packages/server/src/transaction-service.ts
+@@ -50,7 +50,12 @@ export type TransactionServiceSubmissionResult =
+ export type TransactionServiceReceiptResult =
+   | ReceiptObservation
+   | { readonly kind: "refused"; readonly status: 401; readonly code: "unauthenticated" }
+-  | { readonly kind: "refused"; readonly status: 404; readonly code: "resource-not-found" };
++  | {
++      readonly kind: "refused";
++      readonly status: 404;
++      readonly code: "resource-not-found";
++      readonly context: TransactionReadContext;
++    };
+ export interface TransactionServiceOptions {
+   readonly ownerLifetime: "service";
+   readonly read: TransactionReadOptions;
+@@ -203,10 +208,15 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+     principal: string,
+     id: string,
+     minimum?: TransactionMinimum,
+-  ): ReceiptObservation | undefined {
++  ): ReceiptObservation | Extract<TransactionServiceReceiptResult, { readonly status: 404 }> {
+     const observed = owner.readReceipt(principal, id, minimum);
+     return observed.receipt === undefined
+-      ? undefined
++      ? Object.freeze({
++          kind: "refused",
++          status: 404,
++          code: "resource-not-found",
++          context: observed.context,
++        })
+       : checked({ ...observed, receipt: observed.receipt });
+   }
+   async function executeSequence(
+@@ -438,7 +448,12 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+           readonly page: TransactionReceiptPage;
+           readonly context: TransactionReadContext;
+         }
+-      | { readonly kind: "refused"; readonly code: "unauthenticated" | "resource-not-found" }
++      | { readonly kind: "refused"; readonly code: "unauthenticated" }
++      | {
++          readonly kind: "refused";
++          readonly code: "resource-not-found";
++          readonly context?: TransactionReadContext;
++        }
+       | { readonly kind: "expired"; readonly context: TransactionReadContext }
+       | { readonly kind: "unsupported" }
+     > {
+@@ -462,7 +477,11 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+           )
+             throw new Error("invalid receipt page projection");
+           return result.kind === "missing"
+-            ? { kind: "refused" as const, code: "resource-not-found" as const }
++            ? Object.freeze({
++                kind: "refused" as const,
++                code: "resource-not-found" as const,
++                ...(result.context === undefined ? {} : { context: result.context }),
++              })
+             : result;
+         }, minimumReads);
+       });
+@@ -481,19 +500,15 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+         if (supplied === "unsupported") {
+           const observed = owner.readReceipt(principal, id, supplied);
+           if ("kind" in observed) return observed;
+-          return Object.freeze({ kind: "refused", status: 404, code: "resource-not-found" });
++          return Object.freeze({
++            kind: "refused",
++            status: 404,
++            code: "resource-not-found",
++            context: observed.context,
++          });
+         }
+         const minimum = snapshotTransactionMinimum(supplied);
+-        return waitForTransactionMinimum(
+-          () =>
+-            receipt(principal, id, minimum) ??
+-            Object.freeze({
+-              kind: "refused" as const,
+-              status: 404 as const,
+-              code: "resource-not-found" as const,
+-            }),
+-          minimumReads,
+-        );
++        return waitForTransactionMinimum(() => receipt(principal, id, minimum), minimumReads);
+       });
+     },
+     submit(request: TransactionSubmission): Promise<TransactionServiceSubmissionResult> {
+@@ -576,10 +591,7 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+       check();
+       if (access.kind === "unauthenticated")
+         return Object.freeze({ kind: "refused", status: 401, code: "unauthenticated" });
+-      return (
+-        receipt(access.principal, id) ??
+-        Object.freeze({ kind: "refused", status: 404, code: "resource-not-found" })
+-      );
++      return receipt(access.principal, id);
+     },
+     /** Stop accepting work, drain admitted work even when the client dropped its
+      * delivery, then close cursors and this service-owned database. No disconnect
+diff --git a/packages/server/src/transaction-store.ts b/packages/server/src/transaction-store.ts
+index eecc48f..5ea8cb3 100644
+--- a/packages/server/src/transaction-store.ts
++++ b/packages/server/src/transaction-store.ts
+@@ -2016,7 +2016,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+           readonly context: TransactionReadContext;
+         }
+       | { readonly kind: "expired"; readonly context: TransactionReadContext }
+-      | { readonly kind: "missing" }
++      | { readonly kind: "missing"; readonly context?: TransactionReadContext }
+       | { readonly kind: "unsupported" } {
+       if (
+         typeof principal !== "string" ||
+@@ -2045,16 +2045,17 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+             const parent = disclosedReceipt(principal, parentId);
+             if (parent && parseReceipt(parent.receipt).status === "completed")
+               throw new Error("receipt page plan missing");
+-            return { kind: "missing" as const };
++            return Object.freeze({ kind: "missing" as const, context: readContext() });
+           }
+           const stored = row(principal, String(saved.key));
+           if (!stored) throw new Error("receipt page parent missing");
+           const original = parseReceipt(stored.receipt);
+           if (original.id !== parentId) throw new Error("receipt page parent mismatch");
+-          if (original.scopeEpoch !== epoch) return { kind: "missing" as const };
++          if (original.scopeEpoch !== epoch)
++            return Object.freeze({ kind: "missing" as const, context: readContext() });
+           const plan = pagePlan(original),
+             index = plan.pages.findIndex((page) => page.token === token);
+-          if (index < 0) return { kind: "missing" as const };
++          if (index < 0) return Object.freeze({ kind: "missing" as const, context: readContext() });
+           if (condition === "unsupported") return { kind: "unsupported" as const };
+           const context = readContext();
+           // Identity/nondisclosure precedes minimum; expiry is checked only afterwards.
+diff --git a/apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts b/apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts
+new file mode 100644
+index 0000000..b0fe829
+--- /dev/null
++++ b/apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts
+@@ -0,0 +1,502 @@
++/** Private installed receipt absence observations; no profile qualification. */
++import { execFileSync, type ChildProcess } from "node:child_process";
++import { createHash, randomBytes } from "node:crypto";
++import { existsSync, mkdtempSync, readFileSync, realpathSync, rmSync } from "node:fs";
++import { tmpdir } from "node:os";
++import path from "node:path";
++import { fileURLToPath } from "node:url";
++import { expect, it } from "vitest";
++import { Ajv2020 } from "ajv/dist/2020.js";
++import { isJsonSchemaDateTime, isJsonSchemaUri } from "@bdp/protocol";
++import { createRawHttpExchangeExecutor, type HttpMethod } from "@bdp/conformance";
++import { installedTransactionBinding } from "../test-support/transactional-execution-binding.js";
++
++const root = fileURLToPath(new URL("../../../", import.meta.url));
++const { launchInstalledTransaction } = (await import(
++  new URL("../../../scripts/transaction-installed-observation.mjs", import.meta.url).href
++)) as {
++  launchInstalledTransaction(
++    entry: string,
++    configuration: unknown,
++    signal?: AbortSignal,
++  ): Promise<{
++    child: ChildProcess;
++    ready: Record<string, unknown>;
++    close(): Promise<void>;
++  }>;
++};
++const scope = "https://reference.invalid/acme/";
++const beadType = `${scope}types/task`;
++const schemaUri = `${scope}schemas/properties`;
++const artifacts = {
++  descriptors: [
++    {
++      retrievalUri: beadType,
++      utf8: JSON.stringify({
++        id: beadType,
++        name: "Task",
++        describes: "bead",
++        conformsTo: [],
++        propertiesSchema: schemaUri,
++      }),
++    },
++  ],
++  schemas: [
++    {
++      retrievalUri: schemaUri,
++      utf8: JSON.stringify({
++        $id: schemaUri,
++        type: "object",
++        properties: { n: { type: "number" } },
++        required: ["n"],
++        additionalProperties: false,
++      }),
++    },
++  ],
++};
++const entry =
++  process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY ??
++  path.join(root, "packages/server/dist/transaction-installed-process.js");
++if (process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY && !process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT)
++  throw new Error("installed receipt entry override requires declared source commit");
++const resolvedEntry = realpathSync(entry);
++const digest = (value: string | Uint8Array) => createHash("sha256").update(value).digest("hex");
++const entrySha256 = digest(readFileSync(resolvedEntry));
++const workspaceDirty =
++  execFileSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8" }).length > 0;
++const sourceCommit =
++  process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT ??
++  execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
++const fixture = {
++  bytes: readFileSync(
++    path.join(root, "packages/conformance/test-support/transactional/fixture-v1.json"),
++  ),
++};
++const ajv = new Ajv2020({ allErrors: true, strict: true });
++ajv.addFormat("uri", { type: "string", validate: isJsonSchemaUri });
++ajv.addFormat("date-time", { type: "string", validate: isJsonSchemaDateTime });
++const bundle = JSON.parse(readFileSync(path.join(root, "schemas/bdp-v0.schema.json"), "utf8"));
++ajv.addSchema(bundle);
++const validReceipt = ajv.compile({ $ref: `${bundle.$id}#/$defs/mutationReceipt` });
++const validPage = ajv.compile({ $ref: `${bundle.$id}#/$defs/mutationReceiptPage` });
++const validProblem = ajv.compile({ $ref: `${bundle.$id}#/$defs/transactionalProblem` });
++const contextNames = ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"] as const;
++const retainedHeaders = [
++  ...contextNames,
++  "content-type",
++  "content-length",
++  "cache-control",
++  "retry-after",
++  "www-authenticate",
++  "x-bdp-development",
++  "x-bdp-development-limit",
++  "etag",
++  "last-modified",
++];
++
++it("observes genuine installed receipt root and page absence context at current heads", async () => {
++  const controller = new AbortController();
++  const deadlineReason = new Error("installed receipt context deadline");
++  let deadlineExceeded = false;
++  const deadline = setTimeout(() => {
++    deadlineExceeded = true;
++    controller.abort(deadlineReason);
++  }, 45000);
++  const failures: unknown[] = [];
++  let directory: string | undefined;
++  let child: Awaited<ReturnType<typeof launchInstalledTransaction>> | undefined;
++  let binding: ReturnType<typeof installedTransactionBinding> | undefined;
++  let closed = false;
++  let attempted = 0;
++  const responses: {
++    method: HttpMethod;
++    url: string;
++    accept: string;
++    status: number;
++    bodyOctets: number | undefined;
++    wireSha256: string | null;
++    bodySha256: string;
++    headers: Record<string, string | null>;
++  }[] = [];
++  const writer = randomBytes(32).toString("base64url");
++  const other = randomBytes(32).toString("base64url");
++  const seedBody = JSON.stringify({
++    operations: Array.from({ length: 32 }, (_, n) => ({
++      operation: "createBead",
++      id: `beads/r${String(n).padStart(2, "0")}`,
++      type: beadType,
++      properties: { n: 0 },
++    })),
++  });
++  const setBody = JSON.stringify({
++    collection: "beads",
++    selector: `$[?@.type == "${beadType}"]`,
++    cardinality: { min: 32, max: 32 },
++    change: [{ op: "replace", path: "/n", value: 1 }],
++  });
++  const advanceBody = JSON.stringify({ id: "beads/later", type: beadType, properties: { n: 0 } });
++  try {
++    directory = mkdtempSync(path.join(tmpdir(), "bdp-receipt-missing-context-installed-"));
++    controller.signal.throwIfAborted();
++    child = await launchInstalledTransaction(
++      entry,
++      {
++        scope,
++        directory,
++        create: true,
++        artifacts,
++        credentials: [
++          { token: writer, principal: "writer", canMutate: true },
++          { token: other, principal: "other", canMutate: false },
++        ],
++      },
++      controller.signal,
++    );
++    binding = installedTransactionBinding(child.ready, sourceCommit, fixture);
++    expect(child.ready.scope).toBe(scope);
++    expect(child.ready.claimEligible).toBe(false);
++    expect(child.ready.history).toBe(false);
++    expect(binding.operationTargets.batch).toBe(`${scope}operations/batch`);
++    const address = new URL(child.ready.listenUrl as string);
++    // Only operation routes are known before a real receipt issues its exact page.
++    const routes: { method: HttpMethod; url: string }[] = [
++      { method: "POST", url: `${scope}operations/batch` },
++      { method: "POST", url: `${scope}operations/update-where` },
++      { method: "POST", url: `${scope}operations/create-bead` },
++    ];
++    const executor = () =>
++      createRawHttpExchangeExecutor(
++        { transport: "plain", host: address.hostname, port: Number(address.port) },
++        {
++          requestTimeoutMs: 5000,
++          maximumBodyBytes: 32768,
++          maximumHeaderBytes: 65536,
++          exactMode: {
++            scope,
++            profile: "transactional",
++            routes,
++            maximumRequestHeaderBytes: 16384,
++            maximumRequestBodyBytes: 65536,
++            defaultCredentialRef: "writer",
++            credentialHandles: [
++              { id: "writer", headerNames: ["authorization"] },
++              { id: "other", headerNames: ["authorization"] },
++              { id: "anonymous", headerNames: [] },
++            ],
++            resolveCredentials: ({ credentialRef }) =>
++              credentialRef === "anonymous"
++                ? {}
++                : {
++                    authorization: `Bearer ${credentialRef === "other" ? other : writer}`,
++                  },
++          },
++        },
++      );
++    const exchange = async (
++      url: string,
++      method: HttpMethod,
++      accept: string,
++      requestBody?: string,
++      credential: "writer" | "other" | "anonymous" = "writer",
++      key?: string,
++    ) => {
++      controller.signal.throwIfAborted();
++      expect(++attempted, "installed receipt dispatch bound").toBeLessThanOrEqual(14);
++      const response = await executor()({
++        method,
++        url,
++        signal: controller.signal,
++        credentialRef: credential,
++        raw: {
++          headerLines: [
++            { name: "accept", value: accept },
++            ...(requestBody === undefined
++              ? []
++              : [
++                  { name: "content-type", value: "application/json" },
++                  { name: "idempotency-key", value: key ?? "receipt-context-seed" },
++                ]),
++          ],
++          ...(requestBody === undefined ? {} : { bodyBytes: Buffer.from(requestBody) }),
++        },
++      });
++      // Persist only bounded safe response fields/fingerprints, never credential headers.
++      responses.push({
++        method,
++        url,
++        accept,
++        status: response.status,
++        bodyOctets: response.bodyOctets,
++        wireSha256: response.wireResponseBytes ? digest(response.wireResponseBytes) : null,
++        bodySha256: digest(response.bodyText),
++        headers: Object.fromEntries(
++          retainedHeaders.map((name) => [name, response.headers[name] ?? null]),
++        ),
++      });
++      expect(response.exactRequest?.writeState).toBe("complete");
++      expect(response.url).toBe(url);
++      expect(response.exactRequest?.source).toBe("raw-http1-serializer");
++      expect(response.exactRequest?.bodyPresent).toBe(requestBody !== undefined);
++      expect(response.exactRequest?.bodyOctets).toBe(
++        requestBody === undefined ? 0 : Buffer.byteLength(requestBody),
++      );
++      expect(response.exactRequest?.bodyDigest).toBe(
++        requestBody === undefined ? undefined : digest(requestBody),
++      );
++      const headers = response.exactRequest?.headerLines ?? [];
++      expect(headers.find((header) => header.name.toLowerCase() === "host")?.value).toBe(
++        "reference.invalid",
++      );
++      expect(headers.find((header) => header.name.toLowerCase() === "accept")?.value).toBe(accept);
++      if (requestBody !== undefined) {
++        expect(
++          headers.find((header) => header.name.toLowerCase() === "idempotency-key")?.value,
++        ).toBe(key ?? "receipt-context-seed");
++        expect(headers.find((header) => header.name.toLowerCase() === "content-type")?.value).toBe(
++          "application/json",
++        );
++      }
++      expect(response.wireResponseBytes?.length).toBeGreaterThan(0);
++      expect(Number.isSafeInteger(response.bodyOctets)).toBe(true);
++      expect(response.bodyOctets).toBeGreaterThanOrEqual(0);
++      expect(response.headers["x-bdp-development"]).toBe("non-attesting");
++      return response;
++    };
++    expect([seedBody, setBody, advanceBody].map((body) => Buffer.byteLength(body))).toStrictEqual([
++      3728, 179, 92,
++    ]);
++    const receiptAt = (
++      response: Awaited<ReturnType<typeof exchange>>,
++      key: string,
++      position: string,
++    ) => {
++      expect(response.status).toBe(200);
++      const value = JSON.parse(response.bodyText);
++      expect(validReceipt(value), JSON.stringify(validReceipt.errors)).toBe(true);
++      expect(value).toMatchObject({
++        status: "completed",
++        idempotencyKey: key,
++        requiredPosition: position,
++        effectPosition: position,
++      });
++      expect(response.headers["bdp-scope-position"]).toBe(position);
++      return value;
++    };
++    const seed = await exchange(
++      `${scope}operations/batch`,
++      "POST",
++      "application/json",
++      seedBody,
++      "writer",
++      "receipt-context-seed",
++    );
++    const seedReceipt = receiptAt(seed, "receipt-context-seed", "pos-1");
++    expect(seedReceipt.results).toHaveLength(32);
++    expect(seedReceipt.next).toBeNull();
++    const update = await exchange(
++      `${scope}operations/update-where`,
++      "POST",
++      "application/json",
++      setBody,
++      "writer",
++      "receipt-context-paged",
++    );
++    const receipt = receiptAt(update, "receipt-context-paged", "pos-2");
++    expect(receipt.results).toHaveLength(32);
++    const receiptRoot = receipt.id,
++      pageUrl = receipt.next;
++    // Validate the actually issued root and page before adding exact wire grants.
++    if (typeof receiptRoot !== "string" || typeof pageUrl !== "string")
++      throw new Error("issued root/page required");
++    const rootUrl = new URL(receiptRoot),
++      issuedPage = new URL(pageUrl);
++    for (const [value, url] of [
++      [receiptRoot, rootUrl],
++      [pageUrl, issuedPage],
++    ] as const) {
++      expect(Buffer.byteLength(value)).toBeLessThanOrEqual(8192);
++      expect(url.href).toBe(value);
++      expect(url.origin).toBe(new URL(scope).origin);
++      expect([url.search, url.hash, url.username, url.password]).toStrictEqual(["", "", "", ""]);
++    }
++    const rootSuffix = receiptRoot.slice(`${scope}receipts/`.length);
++    expect(receiptRoot.startsWith(`${scope}receipts/`)).toBe(true);
++    expect(rootSuffix).toMatch(/^[A-Za-z0-9_-]+$/);
++    expect(pageUrl.startsWith(`${receiptRoot}/pages/`)).toBe(true);
++    expect(pageUrl.slice(`${receiptRoot}/pages/`.length)).toMatch(/^[A-Za-z0-9_-]+$/);
++    const unknownRoot = `${receiptRoot.slice(0, receiptRoot.lastIndexOf("/") + 1)}unknown`;
++    expect(unknownRoot).not.toBe(receiptRoot);
++    for (const url of [receiptRoot, pageUrl, unknownRoot])
++      for (const method of ["GET", "HEAD"] as const) routes.push({ method, url });
++    const tail = await exchange(pageUrl, "GET", "application/json");
++    expect(tail.status).toBe(200);
++    const tailPage = JSON.parse(tail.bodyText);
++    expect(validPage(tailPage), JSON.stringify(validPage.errors)).toBe(true);
++    expect(tailPage.receipt).toBe(receiptRoot);
++    expect(tailPage.next).toBeNull();
++    expect(tailPage.results).toHaveLength(1);
++    const firstContext = contextNames.map((name) => update.headers[name]);
++    expect(firstContext[0]).toBeTruthy();
++    expect(firstContext[1]).toBeTruthy();
++    expect(firstContext[2]).toBe("pos-2");
++    expect(firstContext.slice(0, 2)).toStrictEqual(
++      contextNames.slice(0, 2).map((name) => seed.headers[name]),
++    );
++    expect(contextNames.map((name) => tail.headers[name])).toStrictEqual(firstContext);
++    const problem = {
++      type: "https://github.com/gastownhall/bdp/problems/not-found",
++      code: "resource-not-found",
++      retry: "after-state-change",
++      status: 404,
++    };
++    const missing = async (
++      url: string,
++      method: "GET" | "HEAD",
++      credential: "writer" | "other",
++      expected: (string | undefined)[],
++      label: string,
++      getLength?: string,
++    ) => {
++      const response = await exchange(url, method, "application/json", undefined, credential);
++      expect(response.status, label).toBe(404);
++      expect(response.headers["content-type"]).toBe("application/problem+json");
++      expect(response.headers["cache-control"]).toBe("private, no-store");
++      for (const name of [
++        "etag",
++        "last-modified",
++        "retry-after",
++        "www-authenticate",
++        "x-bdp-development-limit",
++      ])
++        expect(response.headers[name]).toBeUndefined();
++      if (method === "GET") {
++        const value = JSON.parse(response.bodyText);
++        expect(validProblem(value), JSON.stringify(validProblem.errors)).toBe(true);
++        expect(value).toStrictEqual(problem);
++        expect(Number(response.headers["content-length"])).toBe(response.bodyOctets);
++      } else {
++        expect(response.bodyText).toBe("");
++        expect(response.bodyOctets).toBe(0);
++        expect(response.headers["content-length"]).toBe(getLength);
++      }
++      expect(
++        contextNames.map((name) => response.headers[name]),
++        label,
++      ).toStrictEqual(expected);
++      return response.headers["content-length"];
++    };
++    for (const [url, credential, label] of [
++      [unknownRoot, "writer", "unknown-root"],
++      [receiptRoot, "other", "foreign-root"],
++      [pageUrl, "other", "foreign-page"],
++    ] as const) {
++      const length = await missing(
++        url,
++        "GET",
++        credential,
++        firstContext,
++        `${label} GET at first head`,
++      );
++      await missing(url, "HEAD", credential, firstContext, `${label} HEAD at first head`, length);
++    }
++    const advanced = await exchange(
++      `${scope}operations/create-bead`,
++      "POST",
++      "application/json",
++      advanceBody,
++      "writer",
++      "receipt-context-advance",
++    );
++    receiptAt(advanced, "receipt-context-advance", "pos-3");
++    const laterContext = contextNames.map((name) => advanced.headers[name]);
++    expect(laterContext).toStrictEqual([firstContext[0], firstContext[1], "pos-3"]);
++    await missing(receiptRoot, "GET", "other", laterContext, "foreign-root GET at later head");
++    await missing(pageUrl, "GET", "other", laterContext, "foreign-page GET at later head");
++    for (const [url, method] of [
++      [receiptRoot, "GET"],
++      [pageUrl, "HEAD"],
++    ] as const) {
++      const response = await exchange(url, method, "application/json", undefined, "anonymous");
++      expect(response.status).toBe(401);
++      expect(response.headers["www-authenticate"]).toBe(
++        'Bearer realm="bdp-transaction-development"',
++      );
++      for (const name of contextNames) expect(response.headers[name]).toBeUndefined();
++      if (method === "GET") {
++        const value = JSON.parse(response.bodyText);
++        expect(validProblem(value), JSON.stringify(validProblem.errors)).toBe(true);
++        expect(value).toMatchObject({ code: "unauthenticated", status: 401 });
++      } else {
++        expect(response.bodyText).toBe("");
++        expect(response.bodyOctets).toBe(0);
++      }
++    }
++    expect(attempted).toBe(14);
++    expect(responses).toHaveLength(14);
++    expect(responses.map(({ method, url }) => ({ method, url }))).toStrictEqual([
++      { method: "POST", url: `${scope}operations/batch` },
++      { method: "POST", url: `${scope}operations/update-where` },
++      { method: "GET", url: pageUrl },
++      ...[unknownRoot, receiptRoot, pageUrl].flatMap((url) =>
++        ["GET", "HEAD"].map((method) => ({ method, url })),
++      ),
++      { method: "POST", url: `${scope}operations/create-bead` },
++      { method: "GET", url: receiptRoot },
++      { method: "GET", url: pageUrl },
++      { method: "GET", url: receiptRoot },
++      { method: "HEAD", url: pageUrl },
++    ]);
++    controller.signal.throwIfAborted();
++  } catch (error) {
++    failures.push(error);
++  } finally {
++    controller.abort();
++    try {
++      if (child) {
++        await child.close();
++        closed = true;
++      }
++    } catch (error) {
++      failures.push(error);
++    }
++    try {
++      if (directory) rmSync(directory, { recursive: true, force: true });
++    } catch (error) {
++      failures.push(error);
++    }
++    clearTimeout(deadline);
++    if (deadlineExceeded && !failures.includes(deadlineReason)) failures.push(deadlineReason);
++    console.log(
++      JSON.stringify({
++        observation: "private-installed-receipt-missing-context",
++        outcome: failures.length === 0 ? "passed" : "failed",
++        // Caller label verified by external supervisor/package provenance, not child attestation.
++        declaredSourceCommit: sourceCommit,
++        workspaceDirty,
++        entry: resolvedEntry,
++        entrySha256,
++        binding: binding ?? null,
++        artifactBytes:
++          artifacts.descriptors.reduce((n, d) => n + Buffer.byteLength(d.utf8), 0) +
++          artifacts.schemas.reduce((n, s) => n + Buffer.byteLength(s.utf8), 0),
++        deadlineExceeded,
++        attempted,
++        exchanges: responses.length,
++        completedResponses: responses,
++        closed,
++        startupCompleted: child !== undefined,
++        childPid: child?.child.pid ?? null,
++        childExitCode: child?.child.exitCode ?? null,
++        childSignalCode: child?.child.signalCode ?? null,
++        directory: directory ?? null,
++        directoryAbsent: directory === undefined || !existsSync(directory),
++        failureCount: failures.length,
++        claimEligible: false,
++        retention: "response fingerprints and selected headers; full body assertions ran in memory",
++      }),
++    );
++  }
++  if (failures.length === 1) throw failures[0];
++  if (failures.length > 1)
++    throw new AggregateError(failures, "installed receipt observation and cleanup failed");
++}, 60000);
+
+```
+
+UNCHANGED TEST/BINDING HELPER CONTRACTS (source-grounded compact summary; full helper file hashes in binding):
+transaction-http.test.ts1–176 loads emitted ../dist/transaction-runtime.js, strict AJV2020+uri/date-time formats, mutationReceipt/transactionalProblem validators. record rejects null/nonobject/array; id requires string; checkedProblem asserts schema then returns original object. token/otherToken/readToken are three fixed test credentials. create(name) returns createBead beads/name with Bead type and title:name; batch JSON encodes {operations}. fixture registers directory removal BEFORE startup, starts actual runtime receiptMaximumItems seam, then registers close; new test captures boundary and drains reversed registrations. Fixture startup has0HTTP; legacy post/get helpers are not used by new callback. afterEach restores spies and drains remaining callbacks.
+transaction-service.test.ts23–146 fixture opens real store at time1000, registers directory+owner close; read default/max2/32 and pagination32 are overridden consistently to2 in new test. create/batch are real prepared submission contracts; requireReceipt throws unless kindreceipt. New test creates only its one service facade; fixture.open not called. transaction-receipt-pages.test.ts10–85 fixture uses max2, actual store, clock1000; claim calls owner.admit(p,key,prepareTransaction(JSON operations)) and requires owned; operations(n) generates n distinct createBeads; pageUrl requires string. No fabricated observed results.
+installedTransactionBinding21–96 checks profiletransactional/historyfalse/claimEligiblefalse/canonicalmode,64hexruntimeidentity, physicalURLhttp://127.0.0.1:port/ with no userinfo/query/hash; requires exact12 operationtargets (sixResource,twoalias,twoset,batch,sequence) derived from ready.scope. It binds declared source/payload/contracts/policy/authentication/fixture with existing conformance binder. No wire/probe call. Caller source label is not child attestation; exact fresh payload/archive/consumer proof remains external. Current raw executor clones/validates allowed route list at construction; executor creation sends0HTTP, exact dispatch returns actual raw serializer body/header facts.
+
+ACTUAL SOURCE packages/server/src/transaction-store.ts:348-401
+```ts
+  function enter<T>(run: () => T): T {
+    if (ownerFailure) throw ownerFailure;
+    if (maintenanceFailure)
+      throw new Error("transaction maintenance failed; owner fenced", maintenanceFailure);
+    if (closed || busy) throw new Error("transaction store closed or reentrant");
+    busy = true;
+    try {
+      return run();
+    } finally {
+      busy = false;
+    }
+  }
+  function fence(cause: unknown): Error {
+    clearInterval(maintenanceTimer);
+    // Cleanup can add the original application error to an earlier storage
+    // failure. Replace the wrapper; mutating its cause would create a cycle.
+    ownerFailure = new Error("transaction storage failure; owner fenced; reopen before use", {
+      cause,
+    });
+    return ownerFailure;
+  }
+  function atomic<T>(run: () => T): T {
+    if (ownerFailure) throw ownerFailure;
+    let committing = false;
+    try {
+      db.exec("BEGIN IMMEDIATE");
+      const value = run();
+      committing = true;
+      db.exec("COMMIT");
+      return value;
+    } catch (error) {
+      let cleanRollback = false;
+      let cause: unknown = error;
+      try {
+        if (db.isTransaction) {
+          db.exec("ROLLBACK");
+          cleanRollback = !db.isTransaction;
+        }
+      } catch (rollback) {
+        cause = new AggregateError([error, rollback], "transaction and rollback failed");
+      }
+      const sqlite =
+        error instanceof Error && "code" in error && String(error.code).startsWith("ERR_SQLITE");
+      const constraint =
+        sqlite &&
+        "errcode" in error &&
+        typeof error.errcode === "number" &&
+        Number.isInteger(error.errcode) &&
+        (error.errcode & 0xff) === 19;
+      // Even a COMMIT that throws after taking effect has an uncertain outcome.
+      // Reopen determines its durable state; compensation must not guess at it.
+      if (committing || !cleanRollback || (sqlite && !constraint)) throw fence(cause);
+      throw error;
+    }
+```
+
+ACTUAL SOURCE packages/server/src/transaction-store.ts:590-600
+```ts
+  function readContext(): TransactionReadContext {
+    const position = metadata("position");
+    if (!/^(0|[1-9][0-9]*)$/.test(position) || !Number.isSafeInteger(Number(position)))
+      throw new Error("invalid transaction read position");
+    return Object.freeze({
+      scopeEpoch: epoch,
+      authorizationView: view,
+      scopePosition: `pos-${position}`,
+    });
+  }
+  /** Prepare once per owner observation, not once per scanned group. The
+```
+
+ACTUAL SOURCE packages/server/src/transaction-store.ts:854-889
+```ts
+    readonly receipt: TransactionReceipt | undefined;
+    readonly context: TransactionReadContext;
+  };
+  function readReceipt(principal: string, id: string, minimum?: TransactionMinimum): ReceiptRead;
+  function readReceipt(
+    principal: string,
+    id: string,
+    minimum: "unsupported",
+  ): ReceiptRead | { readonly kind: "unsupported" };
+  function readReceipt(
+    principal: string,
+    id: string,
+    minimum?: TransactionMinimum | "unsupported",
+  ): ReceiptRead | { readonly kind: "unsupported" } {
+    if (typeof principal !== "string" || !principal || !principal.isWellFormed())
+      throw new TypeError("invalid trusted principal");
+    if (typeof id !== "string") throw new TypeError("receipt URL required");
+    const condition =
+      minimum === undefined || minimum === "unsupported"
+        ? minimum
+        : snapshotTransactionMinimum(minimum);
+    return enter(() =>
+      atomic(() => {
+        const stored = disclosedReceipt(principal, id);
+        if (stored && condition === "unsupported")
+          return Object.freeze({ kind: "unsupported" as const });
+        const context = readContext();
+        if (!stored) return Object.freeze({ receipt: undefined, context });
+        if (condition !== undefined && condition !== "unsupported")
+          checkTransactionMinimum(condition, context);
+        const remaining = expireRow(stored, instant()).row;
+        if (!remaining) return Object.freeze({ receipt: undefined, context });
+        return observeReceipt(parseReceipt(remaining.receipt), context);
+      }),
+    );
+  }
+```
+
+ACTUAL SOURCE packages/server/src/transaction-store.ts:2010-2097
+```ts
+      id: string,
+      minimum?: TransactionMinimum | "unsupported",
+    ):
+      | {
+          readonly kind: "page";
+          readonly page: TransactionReceiptPage;
+          readonly context: TransactionReadContext;
+        }
+      | { readonly kind: "expired"; readonly context: TransactionReadContext }
+      | { readonly kind: "missing"; readonly context?: TransactionReadContext }
+      | { readonly kind: "unsupported" } {
+      if (
+        typeof principal !== "string" ||
+        !principal ||
+        !principal.isWellFormed() ||
+        typeof id !== "string"
+      )
+        throw new TypeError("trusted principal and page URL required");
+      const condition =
+        minimum === undefined || minimum === "unsupported"
+          ? minimum
+          : snapshotTransactionMinimum(minimum);
+      return enter(() =>
+        atomic(() => {
+          const marker = id.lastIndexOf("/pages/");
+          if (marker < 0) return { kind: "missing" as const };
+          const parentId = id.slice(0, marker),
+            token = id.slice(marker + 7);
+          if (!parentId.startsWith(`${scope}receipts/`)) return { kind: "missing" as const };
+          const saved = db
+            .prepare("SELECT * FROM receipt_pages WHERE receipt=? AND principal=?")
+            .get(parentId, principal);
+          if (!saved) {
+            // A visible completed parent must have its durable plan, even after expiry.
+            // Nonexistent pages must not trigger retention on failed parents.
+            const parent = disclosedReceipt(principal, parentId);
+            if (parent && parseReceipt(parent.receipt).status === "completed")
+              throw new Error("receipt page plan missing");
+            return Object.freeze({ kind: "missing" as const, context: readContext() });
+          }
+          const stored = row(principal, String(saved.key));
+          if (!stored) throw new Error("receipt page parent missing");
+          const original = parseReceipt(stored.receipt);
+          if (original.id !== parentId) throw new Error("receipt page parent mismatch");
+          if (original.scopeEpoch !== epoch)
+            return Object.freeze({ kind: "missing" as const, context: readContext() });
+          const plan = pagePlan(original),
+            index = plan.pages.findIndex((page) => page.token === token);
+          if (index < 0) return Object.freeze({ kind: "missing" as const, context: readContext() });
+          if (condition === "unsupported") return { kind: "unsupported" as const };
+          const context = readContext();
+          // Identity/nondisclosure precedes minimum; expiry is checked only afterwards.
+          if (condition) checkTransactionMinimum(condition, context);
+          const remaining = expireRow(stored, instant()).row;
+          if (!remaining) throw new Error("completed page parent was forgotten");
+          const receipt = parseReceipt(remaining.receipt);
+          if (receipt.detail === "expired") return { kind: "expired" as const, context };
+          observeReceipt(receipt, context); // same projection/integrity policy, no second clock
+          const boundary = plan.pages[index];
+          if (!boundary) throw new Error("receipt page boundary missing");
+          const results = (receipt.results as readonly unknown[]).slice(
+            boundary.start,
+            boundary.end,
+          );
+          // Freeze the selected page entries before they escape the owner entry.
+          const freeze = (value: unknown): void => {
+            if (value && typeof value === "object") {
+              Object.values(value).forEach(freeze);
+              Object.freeze(value);
+            }
+          };
+          const next = plan.pages[index + 1];
+          const page = {
+            receipt: parentId,
+            results,
+            next: next ? pageUrl(parentId, next.token) : null,
+          };
+          freeze(page);
+          return Object.freeze({ kind: "page" as const, page, context });
+        }),
+      );
+    },
+    readReceipt,
+    /** Private diagnostic of authority locator state, not a replica projection. */
+    aliasTarget(path: string): string | undefined {
+      return enter(() => {
+        const target = alias(path);
+        return target === undefined ? undefined : `${scope}${target}`;
+```
+
+ACTUAL SOURCE packages/server/src/transaction-store.ts:723-739
+```ts
+  function createPagePlan(principal: string, key: string, receipt: TransactionReceipt): void {
+    const entries = receipt.results as readonly unknown[];
+    db.prepare("INSERT INTO receipt_pages VALUES(?,?,?,?,?)").run(
+      receipt.id,
+      principal,
+      key,
+      entries.length,
+      receiptMaximumItems,
+    );
+    for (let start = receiptMaximumItems; start < entries.length; start += receiptMaximumItems)
+      db.prepare("INSERT INTO receipt_page_ranges VALUES(?,?,?,?)").run(
+        randomUUID(),
+        receipt.id,
+        start,
+        Math.min(start + receiptMaximumItems, entries.length),
+      );
+  }
+```
+
+ACTUAL SOURCE packages/server/src/transaction-store.ts:1272-1300
+```ts
+              scopeEpoch: epoch,
+              authorizationView: view,
+              checkpoint: position,
+              position,
+              previousPosition: `pos-${previous}`,
+              projectionAdvance: false,
+              transaction: core.transaction,
+              changes: result.changes,
+              erasures: [],
+              eventCount: result.events.length,
+              events: result.events,
+            };
+            const effective = result.events.length > 0;
+            if (effective) {
+              db.prepare("INSERT INTO groups VALUES(?,?)").run(previous + 1, json(group));
+              db.prepare("UPDATE metadata SET value=? WHERE name='position'").run(
+                String(previous + 1),
+              );
+            }
+            receipt = {
+              ...core,
+              status: "completed",
+              detail: "available",
+              requiredPosition: effective ? position : `pos-${previous}`,
+              ...(effective ? { effectPosition: position } : {}),
+              results: result.results,
+              next: null,
+              expiresAt,
+            };
+```
+
+ACTUAL SOURCE packages/server/src/transaction-service.ts:440-514
+```ts
+      access:
+        | { readonly kind: "unauthenticated" }
+        | { readonly kind: "authenticated"; readonly principal: string },
+      id: string,
+      supplied?: TransactionMinimum | "unsupported",
+    ): Promise<
+      | {
+          readonly kind: "page";
+          readonly page: TransactionReceiptPage;
+          readonly context: TransactionReadContext;
+        }
+      | { readonly kind: "refused"; readonly code: "unauthenticated" }
+      | {
+          readonly kind: "refused";
+          readonly code: "resource-not-found";
+          readonly context?: TransactionReadContext;
+        }
+      | { readonly kind: "expired"; readonly context: TransactionReadContext }
+      | { readonly kind: "unsupported" }
+    > {
+      return run(async () => {
+        if (access.kind === "unauthenticated") return { kind: "refused", code: "unauthenticated" };
+        const principal = access.principal,
+          minimum =
+            supplied === undefined || supplied === "unsupported"
+              ? supplied
+              : snapshotTransactionMinimum(supplied);
+        return waitForTransactionMinimum(() => {
+          const result = owner.readReceiptPage(principal, id, minimum);
+          // Prefix checking is defense in depth, not an independent plan witness.
+          if (
+            result.kind === "page" &&
+            (result.page.results.length < 1 ||
+              result.page.results.length > maximum ||
+              (result.page.next !== null &&
+                (!result.page.next.startsWith(`${result.page.receipt}/pages/`) ||
+                  result.page.results.length !== maximum)))
+          )
+            throw new Error("invalid receipt page projection");
+          return result.kind === "missing"
+            ? Object.freeze({
+                kind: "refused" as const,
+                code: "resource-not-found" as const,
+                ...(result.context === undefined ? {} : { context: result.context }),
+              })
+            : result;
+        }, minimumReads);
+      });
+    },
+    receiptAtMinimum(
+      access:
+        | { readonly kind: "unauthenticated" }
+        | { readonly kind: "authenticated"; readonly principal: string },
+      id: string,
+      supplied: TransactionMinimum | "unsupported",
+    ): Promise<TransactionServiceReceiptResult | { readonly kind: "unsupported" }> {
+      return run(async () => {
+        if (access.kind === "unauthenticated")
+          return Object.freeze({ kind: "refused", status: 401, code: "unauthenticated" });
+        const principal = access.principal;
+        if (supplied === "unsupported") {
+          const observed = owner.readReceipt(principal, id, supplied);
+          if ("kind" in observed) return observed;
+          return Object.freeze({
+            kind: "refused",
+            status: 404,
+            code: "resource-not-found",
+            context: observed.context,
+          });
+        }
+        const minimum = snapshotTransactionMinimum(supplied);
+        return waitForTransactionMinimum(() => receipt(principal, id, minimum), minimumReads);
+      });
+    },
+    submit(request: TransactionSubmission): Promise<TransactionServiceSubmissionResult> {
+```
+
+ACTUAL SOURCE packages/server/src/transaction-service.ts:582-601
+```ts
+    /** Authentication is transport-supplied, never inferred from actor or URL.
+     * Current owner policy is all-visible; principal binding still denies foreign
+     * receipts uniformly. No key lookup, receipt listing or fabricated page URL. */
+    receipt(
+      access:
+        | { readonly kind: "unauthenticated" }
+        | { readonly kind: "authenticated"; readonly principal: string },
+      id: string,
+    ): TransactionServiceReceiptResult {
+      check();
+      if (access.kind === "unauthenticated")
+        return Object.freeze({ kind: "refused", status: 401, code: "unauthenticated" });
+      return receipt(access.principal, id);
+    },
+    /** Stop accepting work, drain admitted work even when the client dropped its
+     * delivery, then close cursors and this service-owned database. No disconnect
+     * cancellation of accepted writes exists: stream cancellation is separate. */
+    close(): Promise<void> {
+      if (closing) return closing;
+      accepting = false;
+```
+
+ACTUAL SOURCE packages/server/src/transaction-http.ts:107-120
+```ts
+export function transactionHttpProblem(
+  code: ReadProblemCode,
+  observation?: TransactionReadContext,
+): HttpResponse {
+  const response = problem(readProblem(code));
+  return observation ? context(response, observation) : response;
+}
+function context(response: HttpResponse, observation: TransactionReadContext): HttpResponse {
+  response.headers.set("bdp-scope-epoch", observation.scopeEpoch);
+  response.headers.set("bdp-authorization-view", observation.authorizationView);
+  response.headers.set("bdp-scope-position", observation.scopePosition);
+  return response;
+}
+function streamResponse(request: Request, observation: TransactionReadContext): HttpResponse {
+```
+
+ACTUAL SOURCE packages/server/src/transaction-http.ts:243-258
+```ts
+  // method vocabulary excludes TRACE/TRACK/CONNECT.
+  function methodResponse(url: URL, method: string): HttpResponse | undefined {
+    if (url.origin !== scopeUrl.origin || !url.pathname.startsWith(scopeUrl.pathname))
+      return transactionHttpProblem("resource-not-found");
+    if (names.has(url.href)) return method === "POST" ? undefined : empty(405, "POST");
+    // Operation targets use exact canonical URLs. A missing target, alternate
+    // encoded spelling, or query-bearing command URL is not a Read resource.
+    if (
+      url.pathname.startsWith(`${scopeUrl.pathname}operations/`) &&
+      url.href !== new URL("operations/", scope).href
+    )
+      return transactionHttpProblem("resource-not-found");
+    return method === "GET" || method === "HEAD" ? undefined : empty(405, "GET, HEAD");
+  }
+  async function route(
+    request: Request,
+```
+
+ACTUAL SOURCE packages/server/src/transaction-http.ts:385-391
+```ts
+        ...(result.limit ? { limit: result.limit } : {}),
+        ...(result.pointer ? { pointer: result.pointer } : {}),
+      });
+    }
+    if (authorization.kind === "unauthenticated") return transactionHttpProblem("unauthenticated");
+    if (url.pathname === new URL("snapshot", scope).pathname) {
+      const fields = [...url.searchParams.keys()];
+```
+
+ACTUAL SOURCE scripts/transaction-installed-observation.mjs:1-97
+```ts
+/** Bounded inherited-IPC launcher. No request or observation emulation. */
+import { spawn } from "node:child_process";
+import { mkdir } from "node:fs/promises";
+export async function launchInstalledTransaction(entry, configuration, signal) {
+  signal?.throwIfAborted();
+  // Explicit launcher-owned provisioning; reopen keeps the directory/create:false.
+  if (configuration.create) await mkdir(configuration.directory, { recursive: true, mode: 0o700 });
+  signal?.throwIfAborted();
+  const child = spawn(process.execPath, [entry], {
+    cwd: "/tmp",
+    stdio: ["ignore", "pipe", "pipe", "ipc"],
+  });
+  let bytes = 0;
+  for (const stream of [child.stdout, child.stderr])
+    stream.on("data", (chunk) => {
+      bytes += chunk.length;
+      if (bytes > 65536) child.kill("SIGKILL");
+    });
+  const exited = new Promise((resolve) =>
+    child.once("exit", (code, signal) => resolve({ code, signal })),
+  );
+  async function bounded(promise) {
+    let timer;
+    try {
+      return await Promise.race([
+        promise,
+        new Promise((_, reject) => {
+          timer = setTimeout(() => {
+            child.kill("SIGKILL");
+            reject(new Error("installed transaction process deadline"));
+          }, 10000);
+        }),
+      ]);
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  async function drainFailure(error) {
+    child.kill("SIGKILL");
+    try {
+      await bounded(exited);
+    } catch (cleanup) {
+      throw new AggregateError([error, cleanup], "installed transaction cleanup failed");
+    }
+    throw error;
+  }
+  let closing;
+  const close = () =>
+    (closing ??= (async () => {
+      try {
+        if (child.connected) child.send({ command: "close" });
+        const result = await bounded(exited);
+        if (result.code !== 0 || result.signal !== null)
+          throw new Error("installed transaction child did not close cleanly");
+      } catch (error) {
+        await drainFailure(error);
+      } finally {
+        signal?.removeEventListener("abort", onAbort);
+      }
+    })());
+  const onAbort = () => {
+    void close().catch(() => {});
+  };
+  signal?.addEventListener("abort", onAbort, { once: true });
+  if (signal?.aborted) onAbort();
+  let detachReadyAbort = () => {};
+  try {
+    const ready = await bounded(
+      new Promise((resolve, reject) => {
+        const abort = () => reject(signal.reason);
+        signal?.addEventListener("abort", abort, { once: true });
+        detachReadyAbort = () => signal?.removeEventListener("abort", abort);
+        if (signal?.aborted) {
+          abort();
+          return;
+        }
+        child.once("error", reject);
+        child.once("message", resolve);
+        void exited.then(() => reject(new Error("installed transaction exited before ready")));
+        child.send({ configuration });
+      }),
+    );
+    signal?.throwIfAborted();
+    if (!ready || ready.event !== "qualification.ready" || JSON.stringify(ready).length > 65536)
+      throw new Error("invalid installed ready message");
+    return { child, ready, close };
+  } catch (error) {
+    try {
+      await close();
+    } catch (cleanup) {
+      throw new AggregateError([error, cleanup], "installed transaction startup cleanup failed");
+    }
+    throw error;
+  } finally {
+    detachReadyAbort();
+  }
+}
+```
+
+ACTUAL SOURCE packages/server/src/transaction-set.ts:73-90
+```ts
+export function prepareSetShape(
+  scope: string,
+  operation: TransactionSetOperation,
+  input: Readonly<Record<string, LosslessJsonValue>>,
+): PreparedTransactionSet {
+  const fields = ["collection", "selector", "cardinality", "revisionProvenance"];
+  if (operation === "updateWhere") fields.push("change");
+  if (
+    Object.keys(input).some((key) => !fields.includes(key)) ||
+    (input.collection !== "beads" && input.collection !== "links") ||
+    typeof input.selector !== "string" ||
+    (operation === "updateWhere" && input.change === undefined)
+  )
+    throw new TypeError("invalid private set shape");
+  const cardinality = input.cardinality;
+  if (cardinality !== undefined) {
+    if (
+      !cardinality ||
+```
+
+ACTUAL SOURCE docs/specs/bdp.md:5797-5804
+```ts
+
+Transactional Scope-bounded responses carry:
+
+```http
+BDP-Scope-Epoch: opaque-scope-epoch
+BDP-Authorization-View: opaque-authorization-view
+BDP-Scope-Position: opaque-position-42
+```
+```
+
+ACTUAL SOURCE docs/specs/bdp.md:5827-5835
+```ts
+### Transactional Resource read context
+
+Every Transactional Scope-bounded read reports the Scope epoch, Authorization
+View token, and position of the transaction-consistent projected prefix it
+observed. It reports them through the fields defined under
+[Transactional HTTP consistency](#transactional-http-consistency). Read and Read+Update use Resource
+revisions, entity tags, and snapshot-preserving pagination without exposing
+Scope-history tokens.
+
+```
+
+ACTUAL SOURCE packages/server/src/transaction-consistency.ts:57-121
+```ts
+  constructor(
+    readonly reason: "behind" | "foreign-view" | "cursor-expired" | "catch-up-timeout",
+    readonly context: TransactionReadContext,
+  ) {
+    super(`transaction minimum read: ${reason}`);
+  }
+}
+/** Runs within the representation's owner entry, after authorization. */
+export function checkTransactionMinimum(
+  minimum: TransactionMinimum,
+  context: TransactionReadContext,
+): void {
+  if (minimum.scopeEpoch !== context.scopeEpoch)
+    throw new TransactionMinimumFailure("cursor-expired", context);
+  if (minimum.authorizationView !== context.authorizationView)
+    throw new TransactionMinimumFailure("foreign-view", context);
+  const required = position(minimum.minimumPosition),
+    current = position(context.scopePosition);
+  if (required === undefined || current === undefined)
+    throw new Error("invalid owner minimum position");
+  if (current < required) throw new TransactionMinimumFailure("behind", context);
+}
+export interface TransactionMinimumWaitOptions {
+  readonly budgetMs?: number;
+  readonly now?: () => number;
+  readonly wait?: (milliseconds: number) => Promise<void>;
+}
+/** No SQLite entry survives an await. The original finite deadline never renews. */
+export async function waitForTransactionMinimum<T>(
+  attempt: () => T | Promise<T>,
+  options: TransactionMinimumWaitOptions = {},
+  signal?: AbortSignal,
+): Promise<T> {
+  const budget = options.budgetMs ?? 1000,
+    now = options.now ?? (() => performance.now()),
+    wait = options.wait ?? ((milliseconds) => delay(milliseconds));
+  if (
+    !Number.isSafeInteger(budget) ||
+    budget <= 0 ||
+    budget > 2147483647 ||
+    typeof now !== "function" ||
+    typeof wait !== "function"
+  )
+    throw new TypeError("finite minimum-read wait policy required");
+  const started = now();
+  if (!Number.isFinite(started)) throw new TypeError("invalid minimum-read clock");
+  const deadline = started + budget;
+  let previous = started;
+  if (!Number.isFinite(deadline)) throw new TypeError("invalid minimum-read deadline");
+  for (;;) {
+    if (signal?.aborted) throw new ScopeServerOperationAbortedError();
+    try {
+      return await attempt();
+    } catch (error) {
+      if (!(error instanceof TransactionMinimumFailure) || error.reason !== "behind") throw error;
+      const current = now();
+      if (!Number.isFinite(current) || current < previous)
+        throw new TypeError("invalid minimum-read clock");
+      previous = current;
+      if (current >= deadline)
+        throw new TransactionMinimumFailure("catch-up-timeout", error.context);
+      await wait(Math.min(5, deadline - current));
+    }
+  }
+}
+```
+
+ACTUAL SOURCE packages/server/src/transaction-installed-configuration.ts:27-40
+```ts
+  const scope = parseCanonicalScope(text(own.scope, 8192));
+  const directory = text(own.directory, 16384);
+  if (!path.isAbsolute(directory) || typeof own.create !== "boolean")
+    throw new TypeError("explicit provisioning required");
+  const credentials = administrativeArray(own.credentials, 32).map((v) => {
+    const c = administrativeData(v, ["token", "principal", "canMutate"]);
+    const token = text(c.token, 256),
+      principal = text(c.principal, 16384);
+    if (!/^[A-Za-z0-9_-]{32,256}$/.test(token) || typeof c.canMutate !== "boolean")
+      throw new TypeError("invalid installed credential");
+    return Object.freeze({ token, principal, canMutate: c.canMutate });
+  });
+  if (!credentials.length || new Set(credentials.map((c) => c.token)).size !== credentials.length)
+    throw new TypeError("unique credentials required");
+```
+
+ACTUAL SOURCE docs/specs/bdp.md:4632-4635
+```ts
+| a receipt URL `receipts/{token}` | `GET`, `HEAD` | `200` receipt in its current representation; `401`; `404` for an unknown token, another principal's receipt, a retracted receipt, a forgotten failed receipt, or a prior epoch's receipt; `409` `foreign-view` or `410` `cursor-expired` for incompatible minimum-position context; `429`, `503` |
+| a receipt page URL | `GET`, `HEAD` | `200` page; `401`; `404` under the same non-disclosure rule; `409` `foreign-view` or `410` `cursor-expired` for incompatible minimum-position context; `410` `cursor-expired` after the receipt's detail expired; `429`, `503` |
+| a receipt or page URL | any other method | `405`, `Allow: GET, HEAD` (`OPTIONS` as above) |
+| the `receipts` root | any method | `404` `resource-not-found` for `GET` and `HEAD`, `405` with `Allow: GET, HEAD` otherwise |
+```
+
+ACTUAL SOURCE docs/specs/bdp.md:4650-4656
+```ts
+context and consistency wait, then page expiry, then the representation.
+An incompatible view returns `409` `foreign-view`; an expired context
+returns `410` `cursor-expired`; a failed catch-up wait returns `503`
+`catch-up-timeout`, under the shared consistency rules. These checks never
+let a caller who may not see the receipt learn about its pages or history.
+
+### Batch operation record schema
+```
+
+ACTUAL ROOT SOURCE POSITIVE ACCEPTANCE (not reviewer execution; no control/installed/CI claim):
+{
+  "status": "accepted",
+  "sourceBindingSha256": "edc5c98c8e5c82f2073e1bf35aa84098efe9552c7dbc74537784de75788cca5a",
+  "stages": {
+    "build.exit.json": "8eda3c0212bd819026f1d5998babf8fa469c0bdfaf57560206d29d0be1fa8a53",
+    "typecheck.exit.json": "dc77c6317598dec4c87478262d6cc81492bc21a52c1b531148a4347bc8721891",
+    "read-seal.exit.json": "2a0faa8c6a402c8bbfc4fb84f9306566aa72e8e872808fc1ea71b9e880682a25",
+    "boundaries.exit.json": "4fde2426cc058e743254a5ef6d6634c28d3f084515a0631672d4991d8c22fba4",
+    "format-check.exit.json": "fd4f551b69e96d70b3c815261d016f593ad05083dd4f578f76bceef9c791663e",
+    "receipt-service-positive.exit.json": "890231a358b156a4b1c13cbff0784eeb05f67c848baae13f382b632e0b3303c9",
+    "lint.exit.json": "49b444287a835646a08d0bbed7b042c1a264ca950d5895e60ad0714bed0dce5d",
+    "receipt-pages-positive.exit.json": "1d6ce57018647d23d05a03b5f0f716cf1fcf96286fc12377942fe6a15518bc6f",
+    "receipt-http-positive.exit.json": "31cfb3165789ff93ad1cfa92e4b5dc53d1a17904b7f98d9df0ef62f607976991",
+    "offline-setup.exit.json": "cf5c58cf05560383b7e6dc5e7d260ea9dad3a315a84376b3a351f34205ace59a"
+  },
+  "passedSelectedCases": 14,
+  "observedNewHttpResponses": 13,
+  "sourceDerivedSelectedHttp": 68,
+  "newHttpTupleAssertions": 8,
+  "sampledPidsIndependentlyAbsent": [
+    6500,
+    6502,
+    6510,
+    6653,
+    6655,
+    6660,
+    6673,
+    6718,
+    6720,
+    6725,
+    6738,
+    6739,
+    6765,
+    6824,
+    6826,
+    6832,
+    6835,
+    6845,
+    6881,
+    6883,
+    6892,
+    6908,
+    6914,
+    6943,
+    6945,
+    6950,
+    6963,
+    7005,
+    7007,
+    7012,
+    7026,
+    7038,
+    7100,
+    7102,
+    7107,
+    7110,
+    7120,
+    7149,
+    7151,
+    7155,
+    7159,
+    7166,
+    7194,
+    7196,
+    7200,
+    7205,
+    7212
+  ],
+  "cleanup": "two new HTTP callbacks completed; all stage runtime roots absent; compile caches preserved",
+  "limits": "full CI/control/fresh installed remain outstanding; no profile qualification"
+}

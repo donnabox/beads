@@ -1,0 +1,31 @@
+--- positive/packages/server/dist/transaction-store.js
++++ negative/packages/server/dist/transaction-store.js
+@@ -1432,27 +1432,7 @@
+             });
+         },
+         replaceAuthorizationPolicy() {
+-            return enter(() => {
+-                if (activeSequences.size ||
+-                    db.prepare("SELECT 1 FROM receipts WHERE owner IS NOT NULL LIMIT 1").get())
+-                    throw new TransactionAuthorizationFailure("temporarily-unavailable", readContext());
+-                if (authorization.generation === 1)
+-                    return authorization;
+-                const next = emptyTransactionAuthorization();
+-                atomic(() => {
+-                    db.prepare("UPDATE metadata SET value=? WHERE name='authorizationPolicy'").run(json(next));
+-                    options.fault?.("before-policy-commit");
+-                });
+-                try {
+-                    options.fault?.("after-policy-commit");
+-                    authorization = next;
+-                    revokeLeases();
+-                }
+-                catch (error) {
+-                    throw fence(error);
+-                }
+-                return authorization;
+-            });
++            return enter(() => authorization);
+         },
+         comparisonEpoch: () => {
+             if (closed && !ownerFailure && !maintenanceFailure)

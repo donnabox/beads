@@ -1,0 +1,61 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving
+
+ ↓ packages/server/src/transaction-snapshot.test.ts > captures a schema-valid frozen empty genesis without changing graph, receipts or position
+ ↓ packages/server/src/transaction-snapshot.test.ts > captures complete canonical streams larger than a page and transaction, survives mutation and reopen, then rendezvous with feed
+ ↓ packages/server/src/transaction-snapshot.test.ts > expiry is fixed, inclusive at the promised instant, reclaims in entry and permanently distinguishes issued from unknown
+ ↓ packages/server/src/transaction-snapshot.test.ts > after-snapshot-copy preserves the appropriate durable disposition without graph effects
+ ↓ packages/server/src/transaction-snapshot.test.ts > after-snapshot-commit preserves the appropriate durable disposition without graph effects
+ ✓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: missing-record rather than rebuilding current graph 77ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: changed-record rather than rebuilding current graph 8ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: oversized-record rather than rebuilding current graph 8ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: missing-range rather than rebuilding current graph 8ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: wrong-kind rather than rebuilding current graph 7ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: wrong-context rather than rebuilding current graph 7ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: wrong-anchor rather than rebuilding current graph 7ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: wrong-expiry rather than rebuilding current graph 5ms
+ ↓ packages/server/src/transaction-snapshot.test.ts > page token is bound through its Snapshot and stream and cannot be borrowed
+ ✓ packages/server/src/transaction-snapshot.test.ts > refuses missing owned or endpoint data before issuing a capture 5ms
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses prior format before maintenance and preserves actual file bytes; changed current configuration is also refused
+ ↓ packages/server/src/transaction-snapshot.test.ts > checks total authority count and byte bounds before loading malformed bodies
+ ↓ packages/server/src/transaction-snapshot.test.ts > fences uncertain before-COMMIT, then recovery determines whether a capture was issued
+ ↓ packages/server/src/transaction-snapshot.test.ts > fences uncertain after-COMMIT, then recovery determines whether a capture was issued
+ ↓ packages/server/src/transaction-snapshot.test.ts > failed Snapshot rollback fences tentative pages until reopen
+ ↓ packages/server/src/transaction-snapshot.test.ts > an abrupt exit during capture leaves no issued tentative handle after reopen
+ ↓ packages/server/src/transaction-snapshot.test.ts > accepts the 4096-resource boundary and canonical identity order, refuses one more
+ ↓ packages/server/src/transaction-snapshot.test.ts > actual complete R-sized records bind 32MiB capture, 4MiB pages and 64MiB aggregate before handle count
+ ↓ packages/server/src/transaction-snapshot.test.ts > permanent 65536 issued-identity bound refuses new issuance even after all detail expired
+ ↓ packages/server/src/transaction-snapshot.test.ts > independent expected inventory rejects coherent omissions and early termination even when individual wire records remain valid
+ ✓ packages/server/src/transaction-snapshot.test.ts > new private Snapshot entry points do not escape package public exports 1ms
+ ↓ packages/server/src/transaction-snapshot.test.ts > retains bounded recognition of issued page tokens after expiry/reopen, while unknown or borrowed continuations stay 404
+ ↓ packages/server/src/transaction-snapshot.test.ts > packs below the byte cap when successor token grows at page 9
+ ↓ packages/server/src/transaction-snapshot.test.ts > packs below the byte cap when successor token grows at page 99
+ ↓ packages/server/src/transaction-snapshot.test.ts > shares one validated authority-record pass across owned topology and reuses hot SQL
+ ↓ packages/server/src/transaction-snapshot.test.ts > orders canonical percent-encoded BMP and supplementary identities with matching owned streams
+ ↓ packages/server/src/transaction-snapshot.test.ts > persists the actual view and refuses different-view before retracting a pending claim
+ ↓ packages/server/src/transaction-snapshot.test.ts > persists the actual view and refuses prior-format-9 before retracting a pending claim
+ ↓ packages/server/src/transaction-snapshot.test.ts > startup sweep validates the same canonical position as reads and rolls back pending recovery on refusal
+ ↓ packages/server/src/transaction-snapshot.test.ts > decodes only the bounded live subset when compact expired history grows
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses forged-expired classification before pending recovery and preserves the file
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses missing-expired classification before pending recovery and preserves the file
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses nonboolean-expired classification before pending recovery and preserves the file
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses malformed-json classification before pending recovery and preserves the file
+ ↓ packages/server/src/transaction-snapshot.test.ts > validates a cold expired commitment on lookup without decoding all cold history during capture
+ ↓ packages/server/src/transaction-snapshot.test.ts > rejects orphaned records during startup recovery with rollback and no file mutation
+ ↓ packages/server/src/transaction-snapshot.test.ts > rejects orphaned pages during startup recovery with rollback and no file mutation
+ ↓ packages/server/src/transaction-snapshot.test.ts > asserts the internal expiry-before-capture precondition instead of ignoring retained expired detail
+ ↓ packages/server/src/transaction-snapshot.test.ts > continues to refuse impossible excess live handles as integrity corruption
+ ↓ packages/server/src/transaction-snapshot.test.ts > pairs expected preflight and retained failures inside the same entry after atomic rollback
+ ↓ packages/server/src/transaction-snapshot.test.ts > paired observation preserves unexpected after-snapshot-copy failure and its committed disposition
+ ↓ packages/server/src/transaction-snapshot.test.ts > paired observation preserves unexpected after-snapshot-commit failure and its committed disposition
+ ↓ packages/server/src/transaction-snapshot.test.ts > checks each fresh Snapshot minimum before any handle, record, page or expiry work
+ ↓ packages/server/src/transaction-snapshot.test.ts > does not expire retained Snapshot details on an ineligible fresh attempt
+ ✓ packages/server/src/transaction-snapshot.test.ts > captures and reopens deep owned Links without losing JSON value equality 837ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > rejects deep owned-Link divergence before Snapshot issuance 348ms
+
+ Test Files  1 passed (1)
+      Tests  12 passed | 39 skipped (51)
+   Start at  00:37:33
+   Duration  1.78s (transform 386ms, setup 19ms, import 378ms, tests 1.32s, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/run/transaction-snapshot-positive.results.json

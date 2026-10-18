@@ -1,0 +1,74 @@
+{
+  "rootRelease": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/root-metadata-correction.json",
+    "sha256": "28cb317e364b090f9d58250fd8c2b7785cb18ab8a5d759087422f531d8491393"
+  },
+  "nativeReview": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/native-preparation-review.md",
+    "sha256": "34055dac10075a01fb873e94990770fea3392e5c7dd8fe86be55debead56f45b"
+  },
+  "pathMappings": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-metadata-successor-1"
+  },
+  "changedArtifacts": [
+    {
+      "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/adaptation-report.md",
+      "beforeSha256": "fe52127993ee0dcb073df6d5798ccf675576703cc9e9fff1f4ea4c9f6bdb8259",
+      "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/adaptation-report.md",
+      "afterSha256": "a950fbf2963614dc41b46908a63d64f88903662bb6494c96c9504af8be8bdda0"
+    },
+    {
+      "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/commands.json",
+      "beforeSha256": "6a9dcd66e0c5caad97b87fe3b714c1a1512f80348560ab3087d843745c16c804",
+      "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/commands.json",
+      "afterSha256": "be119ee83850a2d0b9fda13da9b2055c6243c2afc0b774b6d2f260892acabbc7"
+    },
+    {
+      "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/execution-gate.json",
+      "beforeSha256": "4d5723c1885bd37aeac17b9147542865b65c88474151a30b977e08699c274e46",
+      "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/execution-gate.json",
+      "afterSha256": "e79fea5490a5c4b0824c151ee31c3f0c72f3e377a9c74846cafab98637d1cf45"
+    },
+    {
+      "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/implementation-hashes.json",
+      "beforeSha256": "0d93a4ca72085344477896df0a84c00d1ab7c9960763a62496423b273f4c6639",
+      "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/implementation-hashes.json",
+      "afterSha256": "0fd67fd942f4da9d9045832450a2ac62f2dc8aa4063e1f0b7adda250ffe45184"
+    },
+    {
+      "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/implementation/reference-pins.json",
+      "beforeSha256": "fe27a6ae3e06ce364e2b475e6ff7b082f43fcd636ed92f7c3eef81f786952db9",
+      "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/reference-pins.json",
+      "afterSha256": "4931cc4a3ec8f5303bd7531efb8c06a92fd98ab3481e13845a56a1b2a9d0ea9b"
+    },
+    {
+      "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks/commands.json",
+      "beforeSha256": "3f065a4c0106e7a158d50b8227fea1a7730aa10a8c23a7c1f588f99caf6e872a",
+      "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-metadata-successor-1/commands.json",
+      "afterSha256": "d09f4cefa9ffd041526a546f11c9680e57153350bffca0e1dce06eaa9b8e2a17"
+    },
+    {
+      "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks/execution-gate.json",
+      "beforeSha256": "29b59c1fe3b6830c1b6a3b7b943ddb90d7425fd6ae238a5fc5c3ec9c7e65877f",
+      "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-metadata-successor-1/execution-gate.json",
+      "afterSha256": "3de8ddcf084cc2ffba495148fb512181b92ef88e57fdc8d09faf542be3793fd2"
+    },
+    {
+      "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks/gate.py",
+      "beforeSha256": "108e06c51fa90acbad82e5cc9411a8c232d0ffee467b1ae6700c82e8056a6b91",
+      "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-metadata-successor-1/gate.py",
+      "afterSha256": "25e477366056ced666e146e26701c83000bcdf1146e2f804f5cef0ee5fa9dd79"
+    },
+    {
+      "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks/references.json",
+      "beforeSha256": "b7a5de12ed2ebf03ee857f618a70b4f8b480161ea2bc08bd94df0594bb2483de",
+      "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-metadata-successor-1/references.json",
+      "afterSha256": "8ab5d821310a0eaea0c82473819f83061f9706998017619fb33f553fa536c70a"
+    }
+  ],
+  "unchangedSourceBindingSha256": "6837b28c3ec6c75bf9c085f002029932a65b3c32e7da482cf3497b3f7d8dd4c9",
+  "unchangedSourceFiles": 679,
+  "executionReleased": false,
+  "historicalArtifacts": "Original packets and copied predecessor adaptation patches/skeletons remain unchanged; new patch records actual complete-before/after metadata delta."
+}

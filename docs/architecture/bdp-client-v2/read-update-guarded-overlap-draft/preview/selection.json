@@ -1,0 +1,28 @@
+{
+  "title": "preserves one guarded winner and both retained dispositions across overlapping ordinary Read+Update requests",
+  "topLevel": true,
+  "callbacks": 1,
+  "path": "apps/bdptest/src/read-update-guarded-overlap-installed.test.ts",
+  "regex": "^preserves one guarded winner and both retained dispositions across overlapping ordinary Read\\+Update requests$",
+  "prospectiveArgv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "exec",
+    "vitest",
+    "run",
+    "apps/bdptest/src/read-update-guarded-overlap-installed.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=PENDING_APPROVED_OUTPUT",
+    "-t",
+    "^preserves one guarded winner and both retained dispositions across overlapping ordinary Read\\+Update requests$"
+  ],
+  "gate": "NOT EXECUTABLE until actual merged-parent reanchor, repository application/freeze/council and root execution release",
+  "environments": [
+    "BDP_RU_GUARDED_OVERLAP_ENTRY",
+    "BDP_RU_GUARDED_OVERLAP_MODE",
+    "BDP_RU_GUARDED_OVERLAP_OUTPUT"
+  ],
+  "modeContract": "Without entry default-emitted-CI; with absolute existing regular-file entry require fresh-consumer-positive or emitted-derivative. Mode is declared harness metadata, not attestation."
+}

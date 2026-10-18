@@ -1,0 +1,216 @@
+--- before-rebind/gate.py
++++ gate.py
+@@ -15,7 +15,7 @@
+     return value
+ def binding_sha():return json.loads((P/"execution-gate.json").read_text())["sourceBinding"]["sha256"]
+ COMMANDS=P/"commands.json"
+-COMMANDS_SHA="9d75b45b3dcbe16be088c93c570cd1ea86d34c5eca638b22d7461f1ddceda3ec"
++COMMANDS_SHA="42fd87698feb1b0d51914d144837f046e9b5296c4b21c9979baee948d833c6e4"
+ GUARD_SHA="fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84"
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def require(ok,message):
+@@ -63,7 +63,9 @@
+     require(result["exit"]==result["supervisorExit"]==0 and result["sourceUnchanged"] and result["sourceSha256After"]==inventory["sourceSha256"],"Build failed/changed")
+     require(start["argv"]==[g["node"],g["pnpm"],"build"] and start["cwd"]==str(W),"Wrong build command")
+     for key in ("timeout","forcedCleanup","errors","remainingAfterCleanup","sampledPidsStillPresent","runtimeDirectoriesStillPresent"):require(not result[key],"Unclean build")
+-    require(inventory["inputFiles"]==input_files(),"Tracked build inputs differ")
++    require(start["buildInputFiles"]==inventory["inputFiles"]==result["buildInventorySnapshot"]["inputFiles"]==input_files(),"Contemporaneous tracked build inputs differ")
++    require(start["head"]==g["finalHead"] and start["workspaceDirty"] is False,"Fresh clean candidate build required")
++    require(inventory["packageFiles"]==result["buildInventorySnapshot"]["packageFiles"] and inventory["emittedFiles"]==result["buildInventorySnapshot"]["emittedFiles"],"Build output record differs")
+     require(inventory["packageFiles"]==build_outputs(),"Package output bytes differ")
+     require(inventory["emittedFiles"]==emitted_files(),"Emitted graph bytes differ")
+     require(start["head"]==inventory["buildHead"] and start["workspaceDirty"]==inventory["buildWorkspaceDirty"],"Historical build chronology changed")
+@@ -94,12 +96,14 @@
+     git("merge-base","--is-ancestor",AUTHORING_PARENT,g["finalBase"])
+     git("merge-base","--is-ancestor",g["finalBase"],g["finalHead"])
+     final=document(g,"finalSource")
+-    require(final["head"]==g["finalHead"] and final["tree"]==g["finalTree"] and final["base"]==g["finalBase"] and final["parents"]==g["finalParents"] and final["sourceBindingSha256"]==binding_sha(),"Final source document differs")
++    require(final["head"]==g["finalHead"] and final["tree"]==g["finalTree"] and final["parents"]==[g["finalBase"]] and final["parents"]==g["finalParents"] and final["sourceBindingSha256"]==binding_sha(),"Final source document differs")
+     source=source_hashes()
++    require(final["sourceFiles"]==source,"Final six hashes differ")
++    require(sha(git("diff","--binary",g["finalBase"],"HEAD"))==final["diffSha256"]==source_binding()["patchSha256"],"Final feature patch differs")
+     require(set(git("diff","--name-only",g["finalBase"],"HEAD").decode().splitlines())==set(source),"Six-file scope differs")
+     require(sha((W/"pnpm-lock.yaml").read_bytes())==g["sourceLockSha256"],"Source lock differs")
+     require(g["node"]=="/Users/dbox/.nvm/versions/node/v24.16.0/bin/node" and g["pnpm"]=="/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs","Tool paths changed")
+-    verify_build(g)
++    if name != "fresh-build": verify_build(g)
+     spec=dict(cfg["commands"][name]);require(spec["supervisorSeconds"]==120,"Wrong time bound")
+     for prior in order[:order.index(name)]:completed(prior)
+     if spec["phase"] in ("installed","review"):
+--- before-rebind/supervise.py
++++ supervise.py
+@@ -1,7 +1,7 @@
+ """Bounded installed/package supervisor; adapted from reviewed source supervisor."""
+ import datetime,json,os,signal,subprocess,sys,time
+ from pathlib import Path
+-from gate import P,D,W,E,L,GUARD,COMMANDS,COMMANDS_SHA,require,sha,git,source_hashes,source_patch_hash,load_gate,input_files
++from gate import P,D,W,E,L,GUARD,COMMANDS,COMMANDS_SHA,require,sha,git,source_hashes,source_patch_hash,load_gate,input_files,build_outputs,emitted_files
+ 
+ def adjudicate_source(spec):
+     if "selectedFullNames" not in spec:
+@@ -165,6 +165,13 @@
+             errors.append("source-postcheck:" + type(exc).__name__)
+             post_hashes = {}
+             source_unchanged = False
++        build_snapshot = None
++        if name == "fresh-build" and code == 0 and source_unchanged and not errors:
++            try:
++                require(start["buildInputFiles"] == input_files(), "Tracked input changed during build")
++                build_snapshot = {"inputFiles": input_files(), "packageFiles": build_outputs(), "emittedFiles": emitted_files()}
++            except Exception as exc:
++                errors.append("build-inventory:" + type(exc).__name__)
+         adjudication = None
+         if code == 0 and not timed and not forced and not errors:
+             try:
+@@ -177,6 +184,7 @@
+         result = {
+             "name": name, "argv": spec["argv"], "guardedArgv": [sys.executable, str(GUARD), *spec["argv"]],
+             "cwd": spec["cwd"], "started": started, "adjudication": adjudication,
++            "buildInventorySnapshot": build_snapshot,
+             "elapsedSeconds": time.monotonic() - begin, "exit": code,
+             "supervisorExit": supervisor_exit, "timeout": timed, "forcedCleanup": forced,
+             "errors": errors, "processGroup": proc.pid if proc else None,
+@@ -196,6 +204,13 @@
+         }
+         with Path(str(stem) + ".exit.json").open("x") as f:
+             f.write(json.dumps(result, indent=2) + "\n")
++        if name == "fresh-build" and supervisor_exit == 0:
++            inventory = {**build_snapshot, "buildHead": start["head"], "buildWorkspaceDirty": start["workspaceDirty"], "sourceSha256": start["sourceSha256"]}
++            for key, suffix in (("buildStart", ".started.json"), ("buildExit", ".exit.json"), ("buildLog", ".log")):
++                path = Path(str(stem) + suffix)
++                inventory[key] = {"path": str(path), "sha256": sha(path.read_bytes())}
++            with (E / "build-inventory.json").open("x") as f:
++                f.write(json.dumps(inventory, indent=2) + "\n")
+         print(json.dumps({"command": name, "supervisorExit": supervisor_exit,
+                           "elapsedSeconds": result["elapsedSeconds"], "result": str(stem) + ".exit.json"}), flush=True)
+         for sig, previous in old_signals.items():
+--- before-rebind/commands.json
++++ commands.json
+@@ -4,6 +4,7 @@
+   "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+   "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+   "executionOrder": [
++    "fresh-build",
+     "node-version",
+     "package-directory",
+     "pack-protocol",
+@@ -25,7 +26,12 @@
+         "--version"
+       ],
+       "supervisorSeconds": 120,
+-      "requires": [],
++      "requires": [
++        {
++          "id": "fresh-build",
++          "supervisorExit": 0
++        }
++      ],
+       "ownedTempPrefixes": []
+     },
+     "package-directory": {
+@@ -288,6 +294,18 @@
+         "cooperativeMs": 90000,
+         "vitestMs": 120000
+       }
++    },
++    "fresh-build": {
++      "phase": "build",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
++        "build"
++      ],
++      "supervisorSeconds": 120,
++      "requires": [],
++      "ownedTempPrefixes": []
+     }
+   },
+   "ownedPaths": [
+--- before-rebind/prepared-source.json
++++ prepared-source.json
+@@ -4,14 +4,14 @@
+   "parent": "67a2842e3f1918e70978f745587cf11eaf0df5a8",
+   "parentTree": "596abe870220fb61ce606f8382a9da52d554d063",
+   "sourceFiles": {
+-    "apps/bdptest/src/read-update-matrix.test.ts": "71c8787444eb32151a314065a5af578327fe4bca98ee8508dae20a8564f804ed",
++    "apps/bdptest/src/read-update-matrix.test.ts": "3009ce7fe3085b140b23f8062358ba2d342bd491fde3f3b6c19f75f618e87c7b",
+     "packages/conformance/matrices/read-update-v1.json": "80f74625b6074892b707365859572f8bc0b8c10478d36ac307370ef6027f5fc3",
+     "packages/conformance/src/cumulative-artifact.test.ts": "d3e8a462694174cf34db94700df51f3de6943aa1072dbf4bd04de7560db9b523",
+     "packages/conformance/src/profile-contract-plan.test.ts": "8d649bf6f88b6faeafd7b629d9bb541dab7e818e00818e577de41dd0700f70a4",
+     "packages/conformance/src/read-update-artifact-set.test.ts": "9d337a232a0f2311aff2394a52b31e64c41e8516fcaa5d4a7a5bd7c2d36ecd47",
+     "packages/conformance/test-support/read-update-coverage-v1.json": "85b717f1817d8ea295d0a7c51f8914bdfb942d1786d414924d3d5f80be7cd10a"
+   },
+-  "patchSha256": "6b3e72708040aa61f003c675cd4322612ba9fde93ed3791edb7fa8f1fa4fcdf1",
++  "patchSha256": "905a53a4a11a60c75821c3aed34e0c84732eddbef2b9ce93e8e5b9da2b338657",
+   "plan": {
+     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cumulative-qualification-plan/review-successor/plan.md",
+     "sha256": "c32d39ef9ea2c2a35b1f0d491dd4a71c8a1184fef0ea9193898001d6ae177dc0"
+--- before-rebind/selection.json
++++ selection.json
+@@ -1,5 +1,5 @@
+ {
+-  "sourceBindingSha256": "9f944ea60841bc36e4d34df82afd5f8fefdd880acb4bb5c4845f9e9f942b2c3a",
++  "sourceBindingSha256": "4d27dc264f5db2c54bce46439789462090a7ad5a187fdc121cd9e5571c54c42d",
+   "cpu": [
+     {
+       "file": "packages/conformance/src/read-update-artifact-set.test.ts",
+@@ -78,5 +78,5 @@
+     "maximumHttp": 2345,
+     "children": 61
+   },
+-  "limitations": "Runtime commands are proposals only; actual clean commit, fresh archives, consumer and provenance gate remain pending. No runtime stage executed."
++  "limitations": "Prospective installed workload unchanged; candidate is clean bb9600. Fresh build, packages and runtime remain gated; original source CPU failure and narrow repair validation retain separate attribution."
+ }
+--- before-rebind/execution-gate.example.json
++++ execution-gate.example.json
+@@ -1,9 +1,12 @@
+ {
+   "released": false,
+   "session": "2026-10-08T20:26:35Z-81e5",
+-  "finalHead": null,
+-  "finalTree": null,
+-  "finalSource": null,
++  "finalHead": "bb9600f1b8b6f623e753543ed5792005eb9aacee",
++  "finalTree": "aa8f7af9c4cdfafbd80547449ec2369f92071ab7",
++  "finalSource": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/final-source.json",
++    "sha256": "89b6169c920a207acf64d31b326041cfcdd6e177d025f580b539b36ff8f65938"
++  },
+   "integrationAcceptance": null,
+   "rootAcceptance": null,
+   "sourceValidationAcceptance": null,
+@@ -12,21 +15,23 @@
+   "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+   "consumerLockSha256": null,
+   "preparationSha256": {
+-    "gate.py": "613d4a6b12f0da64902226ea018ac909c3f62495ae0fd9538274014d55379c5f",
+-    "supervise.py": "1764ff4ec582f9ffc8d71b084745383feba2e965006d64ab20fb3c988a180c4a",
++    "gate.py": "5f69a79ef4f895e76d3795bd12c447b9beadfaec61e49c79431f67e1022304bb",
++    "supervise.py": "c7379208470579df06925671bbde5b611711104d9484eede8870e47c1bb9afb3",
+     "packages.py": "6058efca737ed860056949e730534a73bef8074d2f3d7dfda454c7774989f1b7",
+-    "commands.json": "9d75b45b3dcbe16be088c93c570cd1ea86d34c5eca638b22d7461f1ddceda3ec",
+-    "prepared-source.json": "9f944ea60841bc36e4d34df82afd5f8fefdd880acb4bb5c4845f9e9f942b2c3a",
++    "commands.json": "42fd87698feb1b0d51914d144837f046e9b5296c4b21c9979baee948d833c6e4",
++    "prepared-source.json": "4d27dc264f5db2c54bce46439789462090a7ad5a187fdc121cd9e5571c54c42d",
+     "report-contract.json": "22f8ad5968c742053316fe86cac16ee77fab57fd1368f0883dccb0779b34d4e0",
+-    "selection.json": "63c404e268ead8a31df37d70de8bd47dc24860964bb704a561cb86dfdb5a9452"
++    "selection.json": "42f4dc063b2395404d64928658acb2af478bbf627dd5dd33c58d0b09b749b9db"
+   },
+-  "note": "CLOSED. Actual clean candidate, source/council/build acceptance and installed provenance pending. Historical source CPU failure remains unaccepted. No run directory or live gate created.",
++  "note": "CLOSED clean bb9600 rebind. Root release/acceptance null. Fresh build first, contemporaneous input/output records; no reconstructed dirty build qualification.",
+   "approvedCommandIds": [],
+-  "finalBase": null,
+-  "finalParents": null,
++  "finalBase": "67a2842e3f1918e70978f745587cf11eaf0df5a8",
++  "finalParents": [
++    "67a2842e3f1918e70978f745587cf11eaf0df5a8"
++  ],
+   "sourceBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/source-binding.json",
+-    "sha256": "9f944ea60841bc36e4d34df82afd5f8fefdd880acb4bb5c4845f9e9f942b2c3a"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/coverage-fence-repair/source-binding.json",
++    "sha256": "4d27dc264f5db2c54bce46439789462090a7ad5a187fdc121cd9e5571c54c42d"
+   },
+   "buildOutputInventory": null,
+   "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",

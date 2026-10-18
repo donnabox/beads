@@ -1,0 +1,1411 @@
+Review this proposed two-path ordinary Read+Update guarded-overlap witness plan. Do not write or modify any files. Output findings only in stdout. Tools are disabled; use supplied actual source and explicitly identify any uncertainty rather than assuming missing code. No model override is requested. Provide numbered findings with severity, location, issue, concrete evidence, impact and smallest bounded correction. Focus on concrete feasibility, actual contract/input/status/replay semantics, meaningful client overlap versus server admission, bounded HTTP/lifecycle/cleanup, emitted counterfactual module binding, arithmetic and installed provenance. Do not demand Transactional rewrite, new scheduling hook, stronger simultaneous admission semantics, public qualification or broad tests. No code or execution is authorized by this review.
+
+ROOT ACCEPTED L1 DISPOSITION (part of reviewed proposal, takes precedence over original plan cleanup wording): callback aggregates its own primary/cleanup errors. On failed startup the unchanged launcher may mask the initial error if bounded exit cleanup itself fails; retain only surfaced launcher error plus external process evidence and pre-ready PID/child fields null/unknown. Do not claim hidden error retained. Two-path scope/helper unchanged. Please assess other concrete gaps without re-reporting this accepted correction as unresolved.
+
+BASIS: actual merged main015cac1aa4fa827cc4a2c647dff08454c6c8e6f8. All supplied RU source files equal that commit. A separate frozen receipt draft is not merged and does not alter these files; later actual merged-parent reanchor is mandatory before authoring. Historical plan parent chronology is not a merge claim. Native reviewer previously authored feasibility note but not formal plan. This is one actual external plan review, separate from code/implementation acceptance.
+
+FULL FROZEN PLAN
+# Read+Update guarded overlap — bounded private witness plan
+
+Proposed follow-up only; receipt-context serving remains first. This adds a private observation of ordinary Read+Update guarded requests, without changing the owner, Transactional execution, public admission or cumulative qualification. No implementation, tests, builds or new external review are authorized by this plan.
+
+## Basis and purpose
+
+Inspected clean checkout /Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence at db5a4d6a41814e59704ebef60fda02a2d57e9ad2/tree2e16329e195eb8214836de20340a5887236d78f0, ordinary parent3df82ac480f50c8f486b4e456336366e7acbdf87 atop verified main88c9408e908590ab1a4c64c9b9dee1a8b705999c. The latest successor changes only one test timeout; it is not assumed merged or CI-green. Reanchor to actual accepted main after the higher-priority serving lane before authoring.
+
+Predecessor: read-update-guarded-overlap-feasibility.md. Existing normative basis: docs/specs/bdp.md2091–2114 (singleton body/key/direct-result/replay/cache rules),3498–3499 (stale expectedRevision), and6774–6777 (guarded race, stale guard and idempotent retry obligations). The catalog already contains read-update.singleton.expected-revision-race at packages/conformance/catalog/read-update-v1.json395. Its cumulative test-support coverage entry4134 remains omitted/wholeContract:false. The separate development coverage209–217 and development.race adapter at apps/bdptest/src/development-matrix.test.ts139–144 already exercise a Promise.all development route; that is not an installed canonical-wire or cumulative qualification grant. Preserve all those records unchanged.
+
+Concrete value: demonstrate that two outstanding client requests against the actual ordinary installed RU owner, with distinct keys and one shared current revision, produce exactly one committed update and a retained revision-mismatch refusal. Then verify each key's replay and the complete final Resource. This can supply a future narrowly attributed evidence input; it does not itself retire the cumulative omitted requirement.
+
+Actual owner path: installed-reference-process.ts → installed-reference.ts19–29 → development-runtime.ts457–477 → principalAuthority.mutate → member-executor.ts593/its evaluator call → recovery-store.ts799–801. The synchronous transaction wrapper381–390 surrounds evaluation and commit; resource-evaluator.ts1023–1027 checks expectedRevision against the current Resource. No Transactional service/receipt/sequence replacement or server scheduling hook is proposed.
+
+## Two owned paths, one new callback
+
+1. New apps/bdptest/src/read-update-guarded-overlap-installed.test.ts: one literal callback, small file-local bounded HTTP observer, schema/body/state/replay assertions, safe report and cleanup.
+2. docs/design/update-implementation-progress.md: accurately record the partial private witness and its eventual actual source/evidence, preserving cumulative/public gates.
+
+No catalog, coverage, manifest, runner, source helper, launcher, package, workflow, runtime, owner or evaluator edit. The emitted counterfactual lives only in an external disposable dependency-copy directory. No other case is registered. Exact new title:
+
+`preserves one guarded winner and both retained dispositions across overlapping ordinary Read+Update requests`
+
+Exact selection: the new file with anchored literal title above, --maxWorkers=1, verbose plus JSON reporter. All prior BDP environment overrides are cleared except the explicitly pinned test-local entry/output bindings approved for that command. An optional file-local BDP_RU_GUARDED_OVERLAP_ENTRY chooses the actual external consumer entry; default is the existing emitted installed-reference-process.js for ordinary full CI. The test reads actual local Git state and actual entry bytes; it must not accept an arbitrary supplied source-commit label as attestation.
+
+Reuse availablePort, referenceConfiguration and launchInstalledReference from scripts/installed-reference-observation.mjs17–102 unchanged. Do not call its large observeInstalledReference scenario. Use the factory's actual read-update/no-History ready binding and provisioned reference task Type; no Type inventory traversal claim. The temporary availablePort reservation is one additional short-lived TCP listener lifetime per invocation, not HTTP or a second product owner.
+
+## Exactly what overlap is observed
+
+Use two independent Node ClientRequest objects with agent:false and Connection:close for requests A/B. Construct and end A, attach its rejection/fulfillment observation immediately; construct and end B in the same JavaScript turn and attach its observation before awaiting either. Await both through Promise.allSettled, not early-rejecting Promise.all. The request helper must return immediately; it must contain no await/queue before constructing the request.
+
+Record bounded monotonic event ordinals, not wall-clock simultaneity: invoked, end-called, socket-assigned, connected when actually observed, finish, response-start, response-end, error, settled and socket-close. At most one event of each kind per request except explicitly bounded error information; maximum32 events for the pair is sufficient and must be enforced. Assign local socket IDs without dumping socket/header objects. Require A and B invoked/end-called before either settlement callback, separate request identities and separate assigned socket identities. This proves overlapping client-outstanding calls on two requests; it does not imply simultaneous server admission.
+
+Record the actual milestone order and derive whether both connection or finish events preceded the first response only when both events were observed. If not, record false/unknown as appropriate; do not fail a correct owner merely because the OS/Node schedule serializes the wire. ClientRequest finish means handed to the local transport, not server receipt or admission. No sleep, artificial server barrier, automatic repetition, quota increase or claim of concurrent synchronous owner evaluation is permitted. A stronger requirement for both requests admitted before either response is a different experiment needing separate review; this plan does not promise it.
+
+The winner is nondeterministic. Never pin A or B as the winner. This single schedule does not prove all possible races, distributed writers, crash/reopen durability, or Link/owned-Link behavior.
+
+## Ten-request positive ledger
+
+Scope is https://reference.invalid/acme/. Resolve discovery/directory links from genuine responses and parse them with existing RU parsers. Guard returned targets to the exact canonical Scope and the discovered createBead/updateBead identities, with no userinfo/query/fragment, length and byte limits. Do not generate an operation path and label it discovered.
+
+| # | Request | Key and oracle |
+|---|---|---|
+|1|GET configured Scope|204, actual service-desc Link, non-attesting marker|
+|2|GET that descriptor|200, parseReadUpdateDiscovery; exact Scope/read-update/no History|
+|3|GET discovery.operations|200, parseReadUpdateOperationDirectory; retain create/update targets|
+|4|POST discovered createBead|key overlap-seed; create beads/overlap of locally provisioned types/task with properties n:0;200, full RU mutation schema, outcome created; retain actual Resource/revision R|
+|5|POST discovered updateBead, invocation A|key overlap-a; same Resource and expectedRevision R; replace /n with1|
+|6|POST same update target, invocation B|key overlap-b; same Resource and expectedRevision R; replace /n with2|
+|7|GET actual seed Resource id|200; full parsed Resource equals winner postimage|
+|8|Replay request A exactly|same key/body; status and complete parsed response equal original A|
+|9|Replay request B exactly|same key/body; status and complete parsed response equal original B|
+|10|GET same Resource|200; complete Resource still equals winner, including revision/provenance|
+
+For5/6 first validate bounded transport completion, acceptable200/409 status class, media/cache/marker and the corresponding full RU mutation-result/Problem schema. Every200 must have outcome updated, the exact requested n and seed id/type/metadata/owned-Link plane, an actual revision different from R, and a valid complete postimage. Do not require the new revisionProvenance to equal the seed's previous-version provenance. Both requests use effectful distinct values, not semantic no-ops.
+
+Then assert named `overlap:exactly-one-winner`: status multiset exactly[200,409]. The loser must equal the current source's four-field direct Problem:
+type https://github.com/gastownhall/bdp/problems/conflict, code revision-mismatch, status409, retry after-state-change. resource-evaluator.ts139–160 constructs these fields; member-executor.ts196–201 rejects positional fields in stored dispositions. Do not add sequence operationIndex/name or Transactional receipt/Scope fields. Successful singleton envelope is the complete parsed RU mutation result, with no receipt wrapper. Both mutation dispositions require private,no-store, correct media type, no ETag or Location, and no three Transactional context headers. Replays compare complete original bodies in memory, not regenerated expected opaque tokens. Reads7/10 compare the full winner Resource, not only n.
+
+The seed literal is94UTF8 bytes, SHA-256 b76738409399066a7a7e9a05124d345773db6618130b419a2eb8261e57b8927e:
+`{"id":"beads/overlap","type":"https://reference.invalid/acme/types/task","properties":{"n":0}}`.
+
+Each compact update body is135 bytes plus L, the actual UTF8 length of JSON.stringify(R), using the retained canonical subject and property order bead/expectedRevision/propertiesChange. A/B differ only in value1/2. Record actual materialized byte counts and hashes after R is observed; never fabricate a fixed revision-length body hash. Positive total request-body bytes634+4L. Each request remains within the existing65536-byte request ceiling, checked before dispatch; header ceiling16384. This gives a conservative positive body allowance262238bytes including both replays, without assuming an opaque token size. The fixture's actual lengths should be much smaller, but that is not execution evidence.
+
+## Minimal bounded observer and teardown
+
+Do not use requestInstalled's unbounded response-text accumulation. The new file-local node:http reader uses known loopback listener host/port with exact granted URL path, explicit Content-Length, Accept:application/json, no redirects/retries and no Agent reuse. Count dispatch before end(body). Enforce5s absolute exchange deadline from invocation (destroy request/response on expiry),16384-byte response-header bound and32768-byte streaming body bound before appending. Attach error/aborted/premature-close handling, one-shot settlement, and clear timers in every terminal path. Retain request handles so outer cleanup can destroy both outstanding requests and await their settled promises. Parsing is after complete bounded bytes, with parsing errors rejecting rather than escaping an event callback.
+
+Use a30s test-local work deadline covering startup/requests, followed by the existing bounded10s launcher close; callback timeout45s leaves cleanup room. Do not increase the launcher's existing10s ready/close bounds or any product timeout. An external command supervisor remains120s. These are proposed test-local bounds to freeze in the measured draft, not established elapsed times.
+
+Always preserve the primary failure and cleanup failures. Finally destroy/drain active requests, await any outstanding pair, close/reap the child even on schema/assertion failure, then remove the owned bdp-ru-guarded-overlap- directory. Register handles immediately after acquisition and reuse the existing launcher's own failed-start cleanup; do not invoke the launcher again. Emit a safe bounded record after teardown even when assertions fail: exact entry realpath/hash, genuine ready identity fields, actual local source/dirty state, request count/ordered association, status and body fingerprints, named oracle failure, pair event order, child PID/exit/signal and directory presence. No bearer credential, raw configuration, arbitrary exception object, socket object or request-header values are logged. Full schema/replay/state comparisons run in memory; fingerprints alone are not claimed to prove those bodies. External review checks actual selected result and final PID/temp absence.
+
+## One emitted guard control; sixteen total local requests
+
+After the positive succeeds, copy its exact external consumer's server/protocol and complete production dependency closure into one isolated external derivative, retaining source and positive bytes. Bind all copied regular files and symlink resolutions to the accepted consumer; don't install packages inside the copy or run pnpm there. The source test runs from its unchanged checkout with only its actual child entry redirected to the derivative.
+
+At the emitted resource-evaluator.js equivalent of1023–1027, omit only the expectedRevision mismatch guard. Exact before/after bytes and a one-site patch count are required; no TypeScript mutation/rebuild, new runtime hook, scheduler change or source binding override. Verify the child's actual relative module chain reaches that file and bare dependencies resolve through the copied unchanged graph. Hash the derivative's own runtime payload and compare the genuine ready payload to it; never demand that a mutated payload equal the positive one.
+
+Run the same single callback once. The first six requests are identical in structure; both updates should be200 complete valid updated postimages. The unchanged named[200,409] assertion must fail there, before reads/replays7–10. Both pair requests must be settled and recorded before this assertion. Accept only one failed callback with that precise oracle and the two genuine200/schema-valid update results; transport errors, wrong media, generic timeout or cleanup failure are not a successful control. No second mutant or retry is authorized.
+
+Local dynamic ledger: positive10HTTP/1child + negative6HTTP/1child =16HTTP,2callback executions,2ordinary RU owners/store directories,2product listener lifetimes plus2short-lived port-reservation listener lifetimes (4TCP listeners total). At most2HTTP exchanges outstanding per invocation. No in-process server fixture, hidden requests, reopen or polling. Negative body bytes364+2Lnegative, where its independently seeded revision may differ. Combined conservative body allowance393404bytes; total response-body allowance16×32768=524288bytes. Actual measurement must record materialized body counts and milestone completeness separately from these maxima.
+
+Avoid an additional source-built positive just for duplication: after static checks and review, root may freeze an ordinary candidate and run the one fresh packaged positive then the emitted derivative. The new callback will also execute once against emitted workspace bytes in full exact-head CI (10HTTP/1child); that CI execution is separately attributed. If root instead requires a precommit source-built positive, amend the local ledger explicitly to26HTTP/3children before release; it is not implicit permission.
+
+## Installation, review and acceptance boundaries
+
+Before executing: actual merged-parent reanchor, two-path frozen draft, exact selection/body/cleanup packet, source review and actual Claude review, then root release. PinnedNode24.16.0/pnpm11.20.0 and required offline setup/type/build/format/lint/boundary/Read checks remain unchanged. Build before importing emitted launcher/configuration dependencies. No test imports during measurement-only planning.
+
+Fresh protocol/server archives and isolated offline consumer must bind exact clean source, archive contents and installed members with only accepted publication normalization, existing eight-package production closure, entry and recursively hashed payload. Preserve actual configuration/artifact/policy/authentication ready identities. A configuration or caller source label is not child source attestation. The default emitted full-CI run is not called a fresh consumer install.
+
+Done when the exact10-request positive establishes client-call overlap, a nondeterministic single guarded winner, exact direct loser, two retained replays and complete unchanged final state; the one emitted derivative produces precisely the named two-success rejection at request6; both invocations are cleaned up and independently bound to their genuine bytes. Any extra callback/request/child, wrong input shape, insufficient reader bound or ambiguous dependency resolution stops for root disposition.
+
+Keep claimEligible:false and cumulative expected-revision-race omitted/wholeContract:false. This witness can inform a later evidence-mapping decision, but no new conformance vocabulary, profile admission bypass or whole-contract/public qualification is part of this plan. It does not displace the accepted receipt serving fix.
+
+FULL NATIVE SOURCE REVIEW
+# Guarded Update overlap — native plan review
+
+No blocking input, serving-semantics, workload or counterfactual finding. One Low wording correction below should be carried into the future draft instructions. This is plan review only, not authoring/execution approval or evidence of a runtime defect.
+
+Reviewed full plan `4ed2467fda024c3c1cf71266198e2ea2e8bf4c8d3e355e9e00dd55c741c3d819` against actual merged main `015cac1aa4fa827cc4a2c647dff08454c6c8e6f8`. All eleven inspected serving/spec/helper files listed below are byte-identical to that commit despite the separately frozen receipt draft. Plan's db5a/88c chronology is historical; mechanically reanchor to accepted main after receipt integration before authoring, as already gated.
+
+## L1 — qualify failed-start cleanup evidence at the unchanged launcher boundary
+
+Location: plan lines69–71; scripts/installed-reference-observation.mjs17–86, especially catch81–85. The new callback can preserve its primary assertion/transport error alongside its own drain/close/remove errors, but the existing launcher does `await bounded(exited)` before `throw error` in its startup catch. A second failure/deadline there can replace the original startup error. The caller also receives no child handle/PID until readiness succeeds. Therefore “always preserve the primary failure and cleanup failures” must not be read as an already-proven property of this unchanged helper.
+
+Smallest disposition: retain the two-path scope and existing helper. State that callback-owned cleanup aggregates errors independently; a failed launch retains the surfaced launcher error and external supervisor process evidence, with unavailable pre-ready child fields explicitly null/unknown. Record the helper's inherited startup-error masking limitation; do not fabricate the original error/PID or claim it was retained. No extra invocation, helper edit, runtime seam or timeout is needed. This does not affect the positive or intended guard-removal control path, which both require genuine readiness.
+
+## Source-grounded acceptance checks
+
+- **Actual ordinary owner, no TX rewrite.** installed-reference.ts19–29 constructs the ordinary installed composition; development-runtime.ts457–477 dispatches singleton POST to principalAuthority.mutate. member-executor.ts593 invokes executeMember; recovery-store.ts799–801 enters the synchronous transaction at381–390. resource-evaluator.ts1023–1027 compares expectedRevision against current before.revision. Removing exactly that emitted guard leaves ordinary mutation/identity machinery intact. No additional serving defect is asserted.
+- **Inputs and fields.** The default reference configuration scope is canonical https://reference.invalid/acme/ regardless of listener port (helper87–102). Its existing real observation creates task properties n and updates /n at helper197–215, establishing the proposed fixture compatibility without new Type traversal. Singleton bodies omit operation/name and carry distinct HTTP keys, matching spec2091–2114. Evaluator139–160 constructs exactly conflict/revision-mismatch/409/after-state-change; member-executor196–201 rejects positional metadata in retained dispositions. No TX receipt/context fields are expected.
+- **Overlap claim is appropriately limited.** Two immediate ClientRequest instances with agent:false and Connection:close, promises observed before either await, can prove both calls were outstanding and had distinct request/socket identities. They cannot prove simultaneous server admission; the plan explicitly declines that claim, treats connection/finish milestones observationally and allows either winner. The existing development adapter's Promise.all at development-matrix139–144 is historical coverage, not fresh canonical installed evidence.
+- **Decisive oracle and sensitive control.** Validate both completed response schema/classes and every200 postimage before the named [200,409] assertion. Guard removal should yield two200 updated postimages with different requested n values, then stop at request6. Full equality of key-specific replays and full final Resource in the positive checks retained dispositions/state beyond status counting. The mutant cannot pass merely by timeout, cleanup failure or unrelated schema error. The same callback and six-request negative prefix fit the proposed bound.
+- **Wire envelope.** development-runtime85–94 supplies exact JSON/problem media, private,no-store and the non-attesting marker, with no mutation ETag/Location/TX tuple. Full postimage checks preserve seed identity/type/metadata/owned-Link facts while correctly allowing new revisionProvenance. Returned operation URLs are parsed and bounded before dispatch; the negative target body is not an invented route.
+- **Bounded reader.** Existing requestInstalled104–143 is correctly rejected for new use because it buffers unbounded text and hides cancellation handles. Proposed file-local node:http observer can enforce parser maxHeaderSize16384 and32768 body bytes before retention, absolute5s deadline, explicit content length, no redirects/retries, safe one-shot parse/settle/error handling and active-handle draining. Ensure actual draft uses the native parser header limit rather than an after-buffer header-size assertion. This is a measured-draft checkpoint, not a new scope request.
+- **Count and byte arithmetic.** Independently reproduced seed94UTF8 bytes/hashb7673840 and update135 + UTF8(JSON.stringify(R)). Positive bodies634+4L; negative364+2Lnegative. Conservative request totals262238 +131166 =393404bytes; response body ceiling16×32768=524288. Exactly positive10/1 and negative6/1:16HTTP,2child/owner/store lifetimes,2product listeners plus2availablePort reservation listeners. At most2pending HTTP calls. One new callback/2ownedpaths, no extra source-built positive or hidden Type GET. If a source-built positive is later required,26/3 is an explicit separate amendment, not implicit permission.
+- **Lifecycle/provenance boundaries.** Thirty-second work deadline, existing10-second launcher readiness/close,45-second callback and120-second supervisor are future test bounds, not observed durations. Final draft must wire the work abort to active requests and record milestone completeness; one missed socket-close milestone cannot become a server-admission claim. Fresh archives, actual eight-package closure, exact entry/module resolutions and derivative-specific payload hash must be checked. Running unchanged source test against an isolated child entry is valid when that child’s relative/bare dependency graph is actually verified, rather than relying on a copied filename. No source-label attestation or public/whole-contract credit is permitted.
+
+## Review provenance and boundaries
+
+I previously authored the feasibility note and prepared unrelated receipt execution artifacts; I did not author this formal overlap plan. This is an independent source/plan consistency read, with that prior feasibility overlap disclosed. No product imports, tests, builds, services, package operations, source edits or external review invocation occurred. Only this report was written through the session guard. The two pending product rulings are unrelated and need not be reopened.
+
+## Inspected source identities
+
+| Path | SHA256 at015cac and working bytes |
+|---|---|
+| `scripts/installed-reference-observation.mjs` | `ca897f4a7659969df123037b5847d5765b357d9b8e1652f367bb204450db6278` |
+| `packages/server/src/installed-reference.ts` | `c311a724d5d81710264b443da6800e960f49402f10383889de59714949b9eec7` |
+| `packages/server/src/installed-reference-process.ts` | `149f98c04e096a9eab9a291bd4aac3f7db34ba57578e63cb4439e0e3e24fc654` |
+| `packages/server/src/development-runtime.ts` | `37e222682645e9d8f2d5fcf62de208640fb6216c9e9f2f279ab6017e8b9d6ca9` |
+| `packages/server/src/development-composition.ts` | `a7113a8a3164dc6f4b1f6b5bdcbf74cee811e5b8a0474d241ac30706997ee54f` |
+| `packages/server/src/member-executor.ts` | `cfce8e561f9315948c6b3b3def25893a7dfde78e2cc338fa142b859ae209771f` |
+| `packages/server/src/resource-evaluator.ts` | `89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff` |
+| `packages/server/src/recovery-store.ts` | `48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9` |
+| `packages/protocol/src/index.ts` | `92e547e807ec2d23223c47dbc4e04867d55db89ac9aab5fbd55f33349f92bdc6` |
+| `docs/specs/bdp.md` | `f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e` |
+| `apps/bdptest/src/development-matrix.test.ts` | `858e6f85bf40bde4327df52e34a2aceab235b8130e7539a816651ce19f71e1ac` |
+
+ACTUAL SOURCE EXCERPTS (one-based lines, full-file SHA256 identities)
+
+FILE scripts/installed-reference-observation.mjs SHA256 ca897f4a7659969df123037b5847d5765b357d9b8e1652f367bb204450db6278
+1: /** Same bounded real-process observations for emitted and packed/installed bytes.
+2:  * No store mutation or scheduler/control API. Not a conformance artifact. */
+3: import assert from "node:assert/strict";
+4: import { spawn } from "node:child_process";
+5: import { randomBytes } from "node:crypto";
+6: import { createServer, createConnection } from "node:net";
+7: import { request } from "node:http";
+8: import { once } from "node:events";
+9: import path from "node:path";
+10: export async function availablePort() {
+11:   const server = createServer();
+12:   server.listen(0, "127.0.0.1");
+13:   await once(server, "listening");
+14:   const port = server.address().port;
+15:   await new Promise((resolve, reject) => server.close((e) => (e ? reject(e) : resolve())));
+16:   return port;
+17: }
+18: export async function launchInstalledReference(entry, configuration) {
+19:   const child = spawn(process.execPath, [entry], {
+20:     cwd: "/tmp",
+21:     stdio: ["ignore", "pipe", "pipe", "ipc"],
+22:   });
+23:   let stdout = "",
+24:     stderr = "";
+25:   child.stdout.on("data", (b) => {
+26:     stdout += b;
+27:     if (stdout.length > 65536) child.kill("SIGKILL");
+28:   });
+29:   child.stderr.on("data", (b) => {
+30:     stderr += b;
+31:     if (stderr.length > 65536) child.kill("SIGKILL");
+32:   });
+33:   const exited = new Promise((resolve) =>
+34:     child.once("exit", (code, signal) => resolve({ code, signal })),
+35:   );
+36:   const bounded = async (promise) => {
+37:     let timer;
+38:     try {
+39:       return await Promise.race([
+40:         promise,
+41:         new Promise((_, reject) => {
+42:           timer = setTimeout(() => {
+43:             child.kill("SIGKILL");
+44:             reject(Error("installed child deadline"));
+45:           }, 10000);
+46:         }),
+47:       ]);
+48:     } finally {
+49:       clearTimeout(timer);
+50:     }
+51:   };
+52:   try {
+53:     const ready = await bounded(
+54:       new Promise((resolve, reject) => {
+55:         child.once("error", reject);
+56:         child.once("message", resolve);
+57:         void exited.then(() => reject(Error(`installed child exited: ${stderr}`)));
+58:         child.send({ configuration });
+59:       }),
+60:     );
+61:     assert.equal(ready.event, "qualification.ready");
+62:     assert.equal(ready.claimEligible, false);
+63:     assert.match(ready.configurationIdentity, /^[a-f0-9]{64}$/);
+64:     assert.match(ready.payloadIdentity, /^[a-f0-9]{64}$/);
+65:     assert.match(ready.artifactIdentity, /^development-schema5-[a-f0-9]{64}$/);
+66:     assert.match(ready.policyIdentity, /^[a-f0-9]{64}$/);
+67:     assert.match(ready.authenticationIdentity, /^[a-f0-9]{64}$/);
+68:     assert.equal(ready.profile, "read-update");
+69:     assert.equal(ready.history, false);
+70:     return {
+71:       child,
+72:       ready,
+73:       exited,
+74:       wait: () => bounded(exited),
+75:       output: () => ({ stdout, stderr }),
+76:       close: async () => {
+77:         if (child.exitCode === null && child.signalCode === null) child.kill("SIGTERM");
+78:         return bounded(exited);
+79:       },
+80:     };
+81:   } catch (error) {
+82:     child.kill("SIGKILL");
+83:     await bounded(exited);
+84:     throw error;
+85:   }
+86: }
+87: export function referenceConfiguration(
+88:   directory,
+89:   port,
+90:   token,
+91:   scope = "https://reference.invalid/acme/",
+92: ) {
+93:   return {
+94:     scope,
+95:     listener: { host: "127.0.0.1", port },
+96:     directory,
+97:     create: true,
+98:     credentials: [{ token, principal: "operator" }],
+99:     policies: { operator: { create: true, write: true, hidden: [], readOnly: [] } },
+100:     contracts: { descriptors: [], schemas: [] },
+101:     maximumEndpointMultiplicity: [],
+102:   };
+103: }
+104: export function requestInstalled(config, token, target, method = "GET", value, key, headers = {}) {
+105:   return new Promise((resolve, reject) => {
+106:     const body = value === undefined ? undefined : JSON.stringify(value);
+107:     const incoming = request(
+108:       {
+109:         hostname: config.listener.host,
+110:         port: config.listener.port,
+111:         path: target,
+112:         method,
+113:         headers: {
+114:           authorization: `Bearer ${token}`,
+115:           ...(body === undefined
+116:             ? {}
+117:             : { "content-type": "application/json", "content-length": Buffer.byteLength(body) }),
+118:           ...(key === undefined ? {} : { "idempotency-key": key }),
+119:           ...headers,
+120:         },
+121:         timeout: 5000,
+122:       },
+123:       (response) => {
+124:         let text = "";
+125:         response.setEncoding("utf8");
+126:         response.on("data", (b) => {
+127:           text += b;
+128:         });
+129:         response.on("end", () =>
+130:           resolve({
+131:             status: response.statusCode,
+132:             headers: response.headers,
+133:             text,
+134:             value: text ? JSON.parse(text) : undefined,
+135:           }),
+136:         );
+137:         response.on("error", reject);
+138:       },
+139:     );
+140:     incoming.on("timeout", () => incoming.destroy(Error("request deadline")));
+141:     incoming.on("error", reject);
+142:     incoming.end(body);
+143:   });
+144: }
+145: export async function observeInstalledReference(entry, directory) {
+195:         ...Object.keys(type.value.ownsOutgoing ?? {}).filter((id) => id !== "*"),
+196:         ...(type.value.source?.conformsTo ?? []),
+197:         ...(type.value.target?.conformsTo ?? []),
+198:       ])
+199:         assert.ok(id.startsWith(`${scope}types/`));
+200:     }
+201:     const bead = { id: "beads/a", type: `${scope}types/task`, properties: { n: 1 } };
+202:     const made = await post("createBead", bead, "create");
+203:     assert.equal(made.status, 200);
+204:     const a = made.value.resource;
+205:     assert.equal(a.id, `${scope}beads/a`);
+206:     const changed = await post(
+207:       "updateBead",
+208:       {
+209:         bead: a.id,
+210:         expectedRevision: a.revision,
+211:         propertiesChange: [{ op: "replace", path: "/n", value: 2 }],
+212:       },
+213:       "update",
+214:     );
+215:     assert.equal(changed.status, 200);
+216:     assert.deepEqual((await wire(a.id)).value, changed.value.resource);
+217:     const resource = await wire(a.id);
+218:     assert.equal((await wire(a.id, "HEAD")).headers.etag, resource.headers.etag);
+219:     assert.equal(
+
+FILE packages/server/src/installed-reference.ts SHA256 c311a724d5d81710264b443da6800e960f49402f10383889de59714949b9eec7
+1: /** Exact installed candidate factory. Public startup may call this only behind
+2:  * independently verified profile evidence; P1a provides no such admission. */
+3: import { installedPayloadIdentity } from "./installed-payload.js";
+4: import { startDevelopmentReferenceRuntime } from "./development-runtime.js";
+5: import { createDevelopmentComposition } from "./development-composition.js";
+6: import { captureInstalledReferenceConfiguration } from "./installed-reference-configuration.js";
+7: 
+8: export async function startInstalledReferenceCandidate(input: unknown) {
+9:   const config = captureInstalledReferenceConfiguration(input);
+10:   const payloadIdentity = await installedPayloadIdentity();
+11:   const composition = createDevelopmentComposition(new URL(config.scope).pathname);
+12:   const first = config.credentials[0];
+13:   if (first === undefined) throw new TypeError("credential required");
+14:   const runtime = await startDevelopmentReferenceRuntime(
+15:     { directory: config.directory, port: config.port, create: config.create, token: first.token },
+16:     undefined,
+17:     undefined,
+18:     composition,
+19:     { configuration: config.configuration, credentials: config.credentials },
+20:     { scope: config.scope, host: config.host, schemas: config.schemas },
+21:   );
+22:   return Object.freeze({
+23:     ...runtime,
+24:     configurationIdentity: config.identity,
+25:     artifactIdentity: config.artifactIdentity,
+26:     payloadIdentity,
+27:     policyIdentity: config.policyIdentity,
+28:     authenticationIdentity: config.authenticationIdentity,
+29:     profile: config.profile,
+30:     history: config.history,
+31:     claimEligible: false as const,
+32:   });
+33: }
+
+FILE packages/server/src/installed-reference-process.ts SHA256 149f98c04e096a9eab9a291bd4aac3f7db34ba57578e63cb4439e0e3e24fc654
+1: /** Private installed qualification bootstrap. No package export, bin or CLI flag.
+2:  * No clock/store/outcome control. Configuration arrives only through inherited IPC.
+3:  */
+4: import process from "node:process";
+5: import { realpathSync } from "node:fs";
+6: import { fileURLToPath } from "node:url";
+7: import { administrativeData } from "./development-contracts.js";
+8: import { startInstalledReferenceCandidate } from "./installed-reference.js";
+9: 
+10: async function main() {
+11:   if (!process.send || process.argv.length !== 2) throw new TypeError("inherited IPC required");
+12:   const send = process.send.bind(process);
+13:   const input = await new Promise<unknown>((resolve, reject) => {
+14:     const timer = setTimeout(() => reject(new Error("configuration deadline")), 10000);
+15:     process.once("disconnect", () => {
+16:       clearTimeout(timer);
+17:       reject(new Error("configuration disconnected"));
+18:     });
+19:     process.once("message", (message) => {
+20:       clearTimeout(timer);
+21:       resolve(message);
+22:     });
+23:   });
+24:   const { configuration } = administrativeData(input, ["configuration"]);
+25:   let stop!: () => void;
+26:   let stopping = false;
+27:   const stopped = new Promise<void>((resolve) => {
+28:     stop = () => {
+29:       stopping = true;
+30:       resolve();
+31:     };
+32:   });
+33:   process.once("SIGTERM", () => stop());
+34:   process.once("SIGINT", () => stop());
+35:   process.once("disconnect", () => stop());
+36:   process.on("message", (message) => {
+37:     try {
+38:       const value = administrativeData(message, ["command"]);
+39:       if (value.command !== "close") throw new TypeError("unsupported control");
+40:     } catch {
+41:       process.exitCode = 2;
+42:     }
+43:     stop();
+44:   });
+45:   if (!process.connected) stop();
+46:   const runtime = await startInstalledReferenceCandidate(configuration);
+47:   try {
+48:     if (process.connected && !stopping)
+49:       send({
+50:         event: "qualification.ready",
+51:         scope: runtime.scope,
+52:         claimEligible: false,
+53:         configurationIdentity: runtime.configurationIdentity,
+54:         artifactIdentity: runtime.artifactIdentity,
+55:         payloadIdentity: runtime.payloadIdentity,
+56:         policyIdentity: runtime.policyIdentity,
+57:         authenticationIdentity: runtime.authenticationIdentity,
+58:         profile: runtime.profile,
+59:         history: runtime.history,
+60:       });
+61:     await stopped;
+62:   } finally {
+63:     await runtime.close();
+64:     if (process.connected) process.disconnect();
+65:   }
+66: }
+67: function isEntrypoint(): boolean {
+68:   const entry = process.argv[1];
+69:   if (entry === undefined) return false;
+70:   try {
+71:     return realpathSync(entry) === realpathSync(fileURLToPath(import.meta.url));
+72:   } catch {
+73:     return false;
+74:   }
+75: }
+76: if (isEntrypoint())
+77:   void main().catch(() => {
+78:     // Never echo credentials, input configuration or callback exceptions.
+79:     process.stderr.write("installed reference qualification failed\n");
+80:     process.exitCode = 2;
+81:     if (process.connected) process.disconnect();
+82:   });
+
+FILE packages/server/src/development-runtime.ts SHA256 37e222682645e9d8f2d5fcf62de208640fb6216c9e9f2f279ab6017e8b9d6ca9
+78: function header(request: IncomingMessage, name: string): string | undefined {
+79:   const values: string[] = [];
+80:   for (let i = 0; i < request.rawHeaders.length; i += 2)
+81:     if (request.rawHeaders[i]?.toLowerCase() === name) values.push(request.rawHeaders[i + 1] ?? "");
+82:   if (values.length > 1) throw new ReceivingError("malformed-request");
+83:   return values[0];
+84: }
+85: function json(response: ServerResponse, status: number, body: unknown, problem = false): void {
+86:   if (response.destroyed) return;
+87:   const bytes = stringifyJsonValue(body);
+88:   response.writeHead(status, {
+89:     "content-type": problem ? "application/problem+json" : "application/json",
+90:     "cache-control": "private, no-store",
+91:     "content-length": Buffer.byteLength(bytes),
+92:     "x-bdp-development": "non-attesting",
+93:   });
+94:   response.end(response.req.method === "HEAD" ? undefined : bytes);
+95: }
+96: function refused(response: ServerResponse, code: ReceivingError["code"]): void {
+97:   response.setHeader("connection", "close");
+98:   if (code === "unauthenticated")
+99:     response.setHeader("www-authenticate", 'Bearer realm="bdptest-development"');
+100:   const problem =
+101:     code === "unsupported-media-type"
+102:       ? parseReadUpdateProblem({
+103:           type: "https://github.com/gastownhall/bdp/problems/request",
+104:           code,
+105:           status: 415,
+106:           retry: "never",
+107:         })
+108:       : readProblem(code);
+109:   json(response, problem.status ?? 500, problem, true);
+110: }
+111: function empty(response: ServerResponse, status: number, allow?: string): void {
+112:   if (response.destroyed) return;
+113:   response.writeHead(status, {
+114:     "cache-control": "private, no-store",
+115:     "content-length": "0",
+116:     "x-bdp-development": "non-attesting",
+117:     ...(allow === undefined ? {} : { allow }),
+118:   });
+119:   response.end();
+120: }
+121: function readJson(
+122:   request: IncomingMessage,
+123:   response: ServerResponse,
+124:   url: URL,
+125:   value: unknown,
+126:   revision?: string,
+350:           {
+351:             status: 200,
+352:             headers: new Headers({
+353:               "content-type": "application/json",
+354:               "cache-control": "private, no-store",
+355:             }),
+356:             body: schema.value,
+357:           },
+358:         );
+359:         if (selected.status === 200)
+360:           selected.headers.set("content-length", String(Buffer.byteLength(schema.utf8)));
+361:         response.writeHead(selected.status, Object.fromEntries(selected.headers));
+362:         response.end(
+363:           selected.status === 200 && request.method !== "HEAD" ? schema.utf8 : undefined,
+364:         );
+365:         return;
+366:       }
+367:       const targetRoot = composition === undefined ? "/development/" : `${scopePath}operations/`;
+368:       const name = pathAndQuery.startsWith(targetRoot) ? pathAndQuery.slice(targetRoot.length) : "";
+369:       const operation = Object.hasOwn(operations, name) ? operations[name] : undefined;
+370:       const mutationTarget = operation !== undefined || name === "sequence";
+371:       if (
+372:         pathAndQuery.startsWith(targetRoot) &&
+373:         (composition === undefined || pathAndQuery !== targetRoot) &&
+374:         !mutationTarget
+375:       )
+376:         throw new ReceivingError("resource-not-found");
+377:       if (request.method !== "POST" && mutationTarget) {
+378:         empty(response, 405, "POST");
+379:         return;
+380:       }
+381:       if (composedRead && !mutationTarget) {
+382:         // The trusted receiver's credential, Origin and raw-target gates already ran.
+383:         // No request body, database handle or mutation callback is routed by this seam.
+384:         if (request.method !== "GET" && request.method !== "HEAD") {
+385:           empty(response, 405, "GET, HEAD");
+386:           return;
+387:         }
+388:         const headers = new Headers();
+389:         for (let i = 0; i < request.rawHeaders.length; i += 2)
+390:           headers.append(request.rawHeaders[i] ?? "", request.rawHeaders[i + 1] ?? "");
+391:         const input = new Request(url, { method: request.method, headers });
+392:         const selected = applyReadHttpSemantics(input, await composedRead(input));
+393:         selected.headers.set("x-bdp-development", "non-attesting");
+394:         const bytes = selected.body === undefined ? undefined : stringifyJsonValue(selected.body);
+395:         if (bytes !== undefined)
+396:           selected.headers.set("content-length", String(Buffer.byteLength(bytes)));
+397:         response.writeHead(selected.status, Object.fromEntries(selected.headers));
+398:         response.end(bytes);
+399:         return;
+400:       }
+401:       if (request.method === "GET" || request.method === "HEAD") {
+402:         if (rawUrl === "/") {
+403:           readJson(request, response, url, {
+404:             development: true,
+405:             claimEligible: false,
+406:             scope,
+407:             operations: [...Object.keys(operations), "sequence"].map(
+408:               (name) => `${scope}development/${name}`,
+409:             ),
+410:           });
+411:           return;
+412:         }
+413:         // No service-desc or BDP discovery profile. Reads use the same authority
+414:         // as writes and reuse the qualified Read HTTP projection helpers.
+415:         const result = await principalAuthority.read(url);
+416:         if (result.kind === "problem")
+417:           json(response, result.problem.status ?? 500, result.problem, true);
+418:         else if (result.kind === "success") {
+419:           const resource = result.request.kind === "resource" && result.request.resource !== "type";
+420:           const value = result.body;
+421:           const revision =
+422:             resource &&
+423:             typeof value === "object" &&
+424:             value !== null &&
+425:             "revision" in value &&
+426:             typeof value.revision === "string"
+427:               ? value.revision
+428:               : undefined;
+429:           readJson(request, response, url, value, revision);
+430:         } else if (result.kind === "target") {
+431:           response.writeHead(307, {
+432:             location: result.target,
+433:             "cache-control": "private, no-store",
+434:             "x-bdp-development": "non-attesting",
+435:           });
+436:           response.end();
+437:         } else refused(response, "resource-not-found");
+438:         return;
+439:       }
+440:       if (request.method !== "POST" || !mutationTarget) {
+441:         empty(response, 405, "GET, HEAD");
+442:         return;
+443:       }
+444:       if (
+445:         header(request, "content-type")?.split(";", 1)[0]?.trim().toLowerCase() !==
+446:         "application/json"
+447:       )
+448:         throw new ReceivingError("unsupported-media-type");
+449:       if (header(request, "content-encoding") !== undefined)
+450:         throw new ReceivingError("unsupported-media-type");
+451:       const key = header(request, "idempotency-key");
+452:       if (name === "sequence" ? key !== undefined : key === undefined)
+453:         throw new ReceivingError("malformed-request");
+454:       const text = await body(request);
+455:       if (response.destroyed || closing) throw new ReceivingError("temporarily-unavailable");
+456:       // After admission, delivery is only an observer. Disconnect never cancels
+457:       // committed/admitted work; an exact-key retry retrieves its disposition.
+458:       const result =
+459:         operation !== undefined && key !== undefined
+460:           ? await principalAuthority.mutate(
+461:               operation,
+462:               text,
+463:               key,
+464:               acceptsJson(request.headers.accept ?? null),
+465:             )
+466:           : await principalAuthority.sequence(text, acceptsJson(request.headers.accept ?? null));
+467:       if ("kind" in result && result.kind === "not-acceptable") {
+468:         response.setHeader("vary", "Accept");
+469:         empty(response, 406);
+470:         return;
+471:       }
+472:       response.setHeader("vary", "Accept");
+473:       const problem = "code" in result;
+474:       json(response, problem ? (result.status ?? 500) : 200, result, problem);
+475:     } catch (error) {
+476:       if (error instanceof ReceivingError) refused(response, error.code);
+477:       else if (error instanceof ReadUpdateCarrierError || error instanceof JsonSyntaxError)
+478:         refused(response, "malformed-request");
+479:       else empty(response, 500);
+480:     }
+481:   };
+482:   const server = createServer({ maxHeaderSize: 16 * 1024 }, (request, response) => {
+483:     const task = handle(request, response);
+484:     pending.add(task);
+485:     void task.finally(() => pending.delete(task));
+
+FILE packages/server/src/development-composition.ts SHA256 a7113a8a3164dc6f4b1f6b5bdcbf74cee811e5b8a0474d241ac30706997ee54f
+1: /** Private cumulative Read+Update composition; not a public profile admission. */
+2: import {
+3:   parseReadUpdateDiscovery,
+4:   isReadProblem,
+5:   readProblem,
+6:   type ReadProblem,
+7: } from "@bdp/protocol";
+8: import * as routing from "./read-http-routing.js";
+9: import type { DevelopmentHttpComposition } from "./development-runtime.js";
+10: 
+11: export function createDevelopmentComposition(scopePath: string): DevelopmentHttpComposition {
+12:   return Object.freeze<DevelopmentHttpComposition>({
+13:     scopePath,
+14:     createReadRoute(authority, directory) {
+15:       const { scope } = authority;
+16:       const serviceDescription = new URL("bdp.json", scope).href;
+17:       const operations = new URL("operations/", scope).href;
+18:       function problem(value: ReadProblem) {
+19:         const response = routing.jsonResponse(value);
+20:         response.headers.set("content-type", "application/problem+json");
+21:         return { ...response, status: value.status ?? 500 };
+22:       }
+23:       async function discovery() {
+24:         const result = await authority.discover();
+25:         if (result.kind === "problem") return problem(result.problem);
+26:         const { limits, ...data } = result.data;
+27:         return routing.jsonResponse(
+28:           parseReadUpdateDiscovery({
+29:             ...data,
+30:             bdpVersion: "0",
+31:             profile: "read-update",
+32:             operations,
+33:             limits: {
+34:               page: limits.page,
+35:               selector: limits.selector,
+36:               request: { bodyBytes: authority.limits.requestBodyBytes },
+37:               sequence: { operations: authority.limits.sequenceOperations },
+38:               validation: {
+39:                 diagnostics: authority.limits.diagnosticCount,
+40:                 diagnosticBytes: authority.limits.diagnosticBytes,
+41:               },
+42:             },
+43:           }),
+44:         );
+45:       }
+46:       const route = routing.createReadHttpRoute({
+47:         scope,
+48:         probe: async () => ({ serviceDescription }),
+49:         problem,
+50:         discover: discovery,
+51:         async alias(suffix, request) {
+52:           if (isReadProblem(suffix)) return problem(suffix);
+53:           const result = await authority.resolveAlias(request.url);
+54:           return result.kind === "problem"
+55:             ? problem(result.problem)
+56:             : {
+57:                 status: 307,
+58:                 headers: new Headers({
+59:                   location: result.target,
+60:                   "content-length": "0",
+61:                   "cache-control": "private, no-store",
+62:                 }),
+63:               };
+64:         },
+65:         async perform(parsed) {
+66:           const result = await authority.perform(parsed);
+67:           return result.kind === "problem"
+68:             ? problem(result.problem)
+69:             : result.kind === "success"
+70:               ? routing.scopeDataResponse(
+71:                   parsed,
+72:                   result.body,
+73:                   "resourceRevision" in result.observation
+74:                     ? result.observation.resourceRevision
+75:                     : undefined,
+76:                 )
+77:               : problem(readProblem("resource-not-found"));
+78:         },
+79:       });
+80:       return async (request) => {
+81:         // Gate every route through the current owner; no pre-auth/static directory escape.
+82:         const gate = await authority.discover();
+83:         if (gate.kind === "problem") return problem(gate.problem);
+84:         if (request.url === operations && (request.method === "GET" || request.method === "HEAD"))
+85:           return routing.jsonResponse(directory);
+86:         return route(request);
+87:       };
+88:     },
+89:   });
+90: }
+
+FILE packages/server/src/member-executor.ts SHA256 cfce8e561f9315948c6b3b3def25893a7dfde78e2cc338fa142b859ae209771f
+130:         }
+131:       : {}),
+132:   });
+133: }
+134: function record(value: unknown): Record<string, unknown> {
+135:   if (!value || typeof value !== "object" || Array.isArray(value))
+136:     throw new MemberIntegrityError("expected stored object");
+137:   return value as Record<string, unknown>;
+138: }
+139: function text(value: unknown, label: string): asserts value is string {
+140:   if (typeof value !== "string" || !value || !value.isWellFormed())
+141:     throw new TypeError(`${label} requires nonempty scalar text`);
+142: }
+143: function epoch(value: unknown): asserts value is number {
+144:   if (typeof value !== "number" || !Number.isSafeInteger(value) || value < 0)
+145:     throw new TypeError("safe nonnegative epoch milliseconds required");
+146: }
+147: function rootId(scope: string, value: string, kind: "bead" | "link"): void {
+148:   if (
+149:     !value.startsWith(scope) ||
+150:     resolveCanonicalLocalResourceId(parseCanonicalScope(scope), kind, value.slice(scope.length)) !==
+151:       value
+152:   )
+153:     throw new MemberIntegrityError("stored Resource identity escaped its canonical Scope/kind");
+154: }
+155: function aliasId(scope: string, value: string): void {
+156:   if (!value.startsWith(`${scope}alias/`))
+157:     throw new MemberIntegrityError("stored alias escaped its Scope");
+158:   // Alias suffix obeys the same canonical safe-segment grammar as Resource IDs.
+159:   rootId(scope, `${scope}beads/${value.slice(scope.length + 6)}`, "bead");
+160: }
+161: function guardedJson(value: string): unknown {
+162:   const admitted = admitJsonNumbers(decodeJsonDocument(value), {
+163:     diagnostic() {
+164:       throw new MemberIntegrityError("stored wire outcome contains an inadmissible number");
+165:     },
+166:   });
+167:   if (!admitted.ok) throw new MemberIntegrityError("stored wire numeric integrity failure");
+168:   return admitted.value;
+169: }
+170: interface Envelope {
+171:   readonly format: typeof envelopeFormat;
+172:   readonly operation: ReadUpdateOperation;
+173:   readonly disposition: MemberDisposition;
+174: }
+175: function linkScope(record: LinkRecord, scope: string): void {
+176:   rootId(scope, record.id, "link");
+177:   for (const reference of [record.source, record.target]) {
+178:     const uri = typeof reference === "string" ? reference : reference.uri;
+179:     if (uri.startsWith(scope)) rootId(scope, uri, "bead");
+180:   }
+181: }
+182: function evaluatedDisposition(result: {
+183:   readonly effect: "success" | "failure";
+184:   readonly outcome: MemberDisposition;
+185: }): MemberDisposition {
+186:   if ("code" in result.outcome !== (result.effect === "failure"))
+187:     throw new MemberIntegrityError("evaluator effect differs from its disposition");
+188:   return result.outcome;
+189: }
+190: function parseDisposition(
+191:   value: unknown,
+192:   operation: ReadUpdateOperation,
+193:   scope: string,
+194: ): MemberDisposition {
+195:   const body = record(value);
+196:   if (Object.hasOwn(body, "operationIndex") || Object.hasOwn(body, "operationName"))
+197:     throw new MemberIntegrityError("stored disposition must be unpositioned");
+198:   if (Object.hasOwn(body, "code")) {
+199:     if (Object.hasOwn(body, "outcome"))
+200:       throw new MemberIntegrityError("stored Problem must be positionable without outcome");
+201:     return parseReadUpdateProblem(body);
+202:   }
+203:   const alias = operation === "putAlias" || operation === "deleteAlias";
+204:   if (alias) {
+205:     const result = parseReadUpdateAliasResult(body);
+206:     aliasId(scope, result.alias);
+207:     if ((operation === "deleteAlias") !== (result.outcome === "deleted"))
+208:       throw new MemberIntegrityError("alias result differs from operation");
+209:     if (result.outcome !== "deleted") rootId(scope, result.target, "bead");
+210:     return result;
+550:     keys.every((key) => first[key] === (next as typeof first)[key])
+551:   );
+552: }
+553: 
+554: /** One synchronous member under the authority's exclusive immutable-turn owner.
+555:  * No admission, expiry, whole-attempt cleanup, scheduler or HTTP policy here.
+556:  * New/unaffected population provenance or reviewed compatibility is required
+557:  * before corrected empty-context equality is used against historical stores. */
+558: export function runMember(
+559:   store: RecoveryStore,
+560:   admission: Admission,
+561:   principal: StablePrincipal,
+562:   carrier: PreparedReadUpdateCarrier,
+563:   index: number,
+564:   creators: (earlierIndex: number) => MemberCreatorBinding,
+565:   supplied: MemberExecutorOptions,
+566: ): MemberTurn {
+567:   const options = snapshotOptions(supplied);
+568:   const principalId = principal.id;
+569:   text(principalId, "authenticated principal");
+570:   if (principalId !== admission.principal || options.scope !== store.scope)
+571:     throw new TypeError("member principal/Scope does not match its Admission/store");
+572:   assertPreparedReadUpdateCarrier(carrier, options.scope);
+573:   if (
+574:     !Number.isSafeInteger(index) ||
+575:     index < 0 ||
+576:     index >= carrier.operations.length ||
+577:     carrier.keys.length !== admission.keys.length ||
+578:     carrier.keys.some((key, i) => key !== admission.keys[i])
+579:   )
+580:     throw new TypeError("member index/complete Admission key inventory differs");
+581:   const original = carrier.operations[index];
+582:   const key = carrier.keys[index];
+583:   if (!original || key === undefined) throw new TypeError("prepared carrier lost its member");
+584:   const operation = original.operation;
+585:   const prepared = prepareMemberDependencies(carrier, index, options.scope, creators);
+586:   if (prepared.kind === "transient-dependency") {
+587:     store.releaseOwnedClaim(admission, key);
+588:     return turn(problem("idempotency-in-progress"), "in-progress", operation);
+589:   }
+590:   let staged:
+591:     | { disposition: MemberDisposition; outcomeJson?: string; creator?: CreationBinding }
+592:     | undefined;
+593:   const completion = store.executeMember(admission, key, (tx): MemberDecision => {
+594:     const context = capture(options, tx, principal, principalId);
+595:     const member = normalizePreparedMemberIdentity(
+596:       carrier,
+597:       index,
+598:       {
+599:         scope: options.scope,
+600:         resolveAlias(locator) {
+601:           const target = tx.alias(locator.slice(options.scope.length + 6));
+602:           return target === undefined ? undefined : `${options.scope}${target}`;
+603:         },
+604:       },
+605:       prepared,
+606:     );
+607:     const values = prepareMemberExecution(member, options.numericBudget);
+608:     let disposition: MemberDisposition;
+609:     if (!values.admission.ok) disposition = problem("validation-failed", values.admission);
+610:     else if (values.unavailableBinding) disposition = problem("binding-unavailable");
+611:     else {
+612:       const executable = values.executable;
+613:       if (!executable) throw new MemberIntegrityError("admitted executable pair is absent");
+614:       if (executable.operation === "putAlias" || executable.operation === "deleteAlias")
+615:         disposition = evaluatedDisposition(
+616:           evaluateAliasMutation(tx, executable, {
+617:             scope: options.scope,
+618:             policy: context.policy,
+619:             limits: options.limits,
+620:           }),
+621:         );
+622:       else
+623:         disposition = evaluatedDisposition(
+624:           evaluateResourceMutation(
+625:             {
+626:               ...tx,
+627:               alias(path) {
+628:                 const captured = capturedMemberAlias(member, path);
+629:                 return captured.captured ? captured.target : tx.alias(path);
+630:               },
+631:             },
+632:             executable,
+633:             {
+634:               scope: options.scope,
+635:               contracts: options.contracts,
+
+FILE packages/server/src/resource-evaluator.ts SHA256 89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff
+130:       readonly resolutions: readonly [];
+131:       readonly changed: readonly [];
+132:       readonly deleted: readonly [];
+133:     };
+134: class Failure extends Error {
+135:   constructor(readonly problem: ReadUpdateProblem) {
+136:     super(problem.code);
+137:   }
+138: }
+139: const failures = {
+140:   "resource-not-found": ["not-found", 404, "after-state-change"],
+141:   forbidden: ["authorization", 403, "after-state-change"],
+142:   "identity-taken": ["conflict", 409, "never"],
+143:   "alias-path-taken": ["conflict", 409, "after-state-change"],
+144:   "type-not-installed": ["validation", 422, "after-state-change"],
+145:   "revision-mismatch": ["conflict", 409, "after-state-change"],
+146:   "incident-links-exist": ["conflict", 409, "after-state-change"],
+147:   "aggregate-constraint-violation": ["conflict", 409, "after-state-change"],
+148:   "limit-exceeded": ["size", 413, "never"],
+149:   "revision-allocation-unsafe": ["conflict", 409, "after-state-change"],
+150: } as const;
+151: function fail(code: keyof typeof failures): never {
+152:   const [family, status, retry] = failures[code];
+153:   throw new Failure(
+154:     parseReadUpdateProblem({
+155:       type: `https://github.com/gastownhall/bdp/problems/${family}`,
+156:       code,
+157:       status,
+158:       retry,
+159:     }),
+160:   );
+161: }
+162: /** First emitter fault survives every Type, result getter and later callback
+163:  * until the member leaves its owning transaction. It never becomes a refusal.
+164:  */
+165: function createDiagnosticFault() {
+975:       subjectRecipe,
+976:       deleting ? id : undefined,
+977:     );
+978:   }
+979:   if (!deleting && endpoints) {
+980:     for (const policy of options.maximumEndpointMultiplicity) {
+981:       if (!effective.some((entry) => entry.descriptor.id === policy.linkConformsTo)) continue;
+982:       const address = referenceUri(endpoints[policy.endpoint]);
+983:       const endpointId = local(scope, address);
+984:       if (endpointId === undefined) continue;
+985:       let count = 1;
+986:       for (const link of tx.incidentLinks(endpointId)) {
+987:         if (link.id === id || link[policy.endpoint] !== endpointId) continue;
+988:         const record = storedRecord(link, scope);
+989:         if (contracts(record.type).some((entry) => entry.descriptor.id === policy.linkConformsTo))
+990:           count++;
+991:       }
+992:       if (count > policy.max) fail("aggregate-constraint-violation");
+993:     }
+994:   }
+995:   // Preparation has made no graph writes. Recipes are private, never provisional
+996:   // Resource records passed to policy/storage. Their inventory checks ran once.
+997:   if (subjectRecipe) freeze(subjectRecipe);
+998:   if (sourceRecipe) freeze(sourceRecipe);
+999:   // C is a conditional logical commit point only under the owner's exclusive
+1000:   // single-connection, synchronous, immutable-snapshot contract. Final checks
+1001:   // below may still refuse; only the outer S6 COMMIT permits a success to escape.
+1002:   // Adding concurrent readers/WAL, async or reentrant owners reopens this proof.
+1003:   const context =
+1004:     subjectRecipe?.metadata.context.kind === "native" ||
+1005:     sourceRecipe?.metadata.context.kind === "native"
+1006:       ? makeContext(contextInput, observeCommitTime(options.observeCommitTime))
+1007:       : undefined;
+1008:   const materialized = new Map<VersionRecipe, ResourceRecord>();
+1009:   const after = subjectRecipe
+1010:     ? materializeVersion(subjectRecipe, context, materialized)
+1011:     : undefined;
+1012:   const sourceAfter = sourceRecipe
+1013:     ? (materializeVersion(sourceRecipe, context, materialized) as BeadRecord)
+1014:     : undefined;
+1015:   if (
+1016:     creating
+1017:       ? !after || !options.policy.canCreate(after)
+1018:       : !before || !options.policy.canWrite(before, after)
+1019:   )
+1020:     fail("forbidden");
+1021:   if (source && sourceAfter && !options.policy.canWrite(source, sourceAfter)) fail("forbidden");
+1022:   if (
+1023:     "expectedRevision" in input &&
+1024:     input.expectedRevision !== undefined &&
+1025:     input.expectedRevision !== before?.revision
+1026:   )
+1027:     fail("revision-mismatch");
+1028:   if (deleting && resourceKind === "bead" && tx.incidentLinks(id).length)
+1029:     fail("incident-links-exist");
+1030:   if ("propertiesChange" in input || "metadataChange" in input) {
+1031:     const limits = options.limits;
+1032:     const changes = [
+1033:       ...("propertiesChange" in input ? (input.propertiesChange ?? []) : []),
+1034:       ...("metadataChange" in input ? (input.metadataChange ?? []) : []),
+1035:     ];
+1036:     if (limits.patchOperations !== undefined && changes.length > limits.patchOperations)
+1037:       fail("limit-exceeded");
+1038:     for (const change of changes)
+1039:       if (
+1040:         (limits.patchPathBytes !== undefined &&
+1041:           Buffer.byteLength(change.path) > limits.patchPathBytes) ||
+1042:         (limits.patchPathDepth !== undefined &&
+1043:           (change.path === "" ? 0 : change.path.split("/").length - 1) > limits.patchPathDepth)
+1044:       )
+1045:         fail("limit-exceeded");
+1046:   }
+1047:   const writes: EvaluatorStoredResource[] = [];
+1048:   for (const record of [after, sourceAfter]) {
+1049:     if (!record) continue;
+1050:     const bodyJson = stringifyJsonValue(record);
+1051:     if (
+1052:       (options.limits.propertiesBytes !== undefined &&
+1053:         Buffer.byteLength(stringifyJsonValue(record.properties)) >
+1054:           options.limits.propertiesBytes) ||
+1055:       (options.limits.representationBytes !== undefined &&
+1056:         Buffer.byteLength(bodyJson) > options.limits.representationBytes)
+1057:     )
+1058:       fail("limit-exceeded");
+1059:     if (!noOp) {
+1060:       const stored = { id: local(scope, record.id) as string, bodyJson };
+1061:       writes.push(
+1062:         "source" in record
+1063:           ? {
+1064:               ...stored,
+1065:               kind: "link",
+1066:               source: local(scope, referenceUri(record.source)) ?? referenceUri(record.source),
+1067:               target: local(scope, referenceUri(record.target)) ?? referenceUri(record.target),
+1068:             }
+1069:           : { ...stored, kind: "bead" },
+1070:       );
+
+FILE packages/server/src/recovery-store.ts SHA256 48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9
+365:   const admissions = new WeakSet<Admission>();
+366:   const run = (sql: string, ...args: SQLInputValue[]) => db.prepare(sql).run(...args);
+367:   const get = (sql: string, ...args: SQLInputValue[]) => db.prepare(sql).get(...args);
+368:   const meta = (name: string): string => {
+369:     const value = get("SELECT value FROM metadata WHERE name=?", name)?.value;
+370:     if (typeof value !== "string")
+371:       throw new RecoveryStoreError("integrity", `missing store metadata: ${name}`);
+372:     return value;
+373:   };
+374:   const available = () => {
+375:     if (closed)
+376:       throw new RecoveryStoreError("closed", "recovery store is closed; reopen before use");
+377:     if (fenced)
+378:       throw new RecoveryStoreError("fenced", "recovery store is fenced; reopen before use");
+379:     if (active) throw new RecoveryStoreError("nested-access", "nested store access is forbidden");
+380:   };
+381:   const transaction = <T>(callback: () => T): T => {
+382:     available();
+383:     active = true;
+384:     let committing = false;
+385:     try {
+386:       db.exec("BEGIN IMMEDIATE");
+387:       const result = callback();
+388:       rejectAsync(result);
+389:       committing = true;
+390:       db.exec("COMMIT");
+391:       return result;
+392:     } catch (error) {
+393:       let cleanRollback = false;
+394:       if (db.isTransaction) {
+395:         try {
+396:           db.exec("ROLLBACK");
+397:           cleanRollback = !db.isTransaction;
+398:         } catch {
+399:           fenced = true;
+400:         }
+401:       }
+402:       const ordinaryConstraint = !committing && cleanRollback && sqliteConstraint(error);
+403:       if (committing || (sqliteError(error) && !ordinaryConstraint)) fenced = true;
+775:         throw new RecoveryStoreError("invalid-input", "carrier keys must be nonempty and unique");
+776:       for (const key of carrierKeys) requireText(key, "idempotency key");
+777:       return transaction(() => {
+778:         const states = Object.freeze(carrierKeys.map((key) => keyState(principal, key)));
+779:         if (validate) rejectAsync(validate(states));
+780:         const attemptId = randomUUID();
+781:         for (let index = 0; index < carrierKeys.length; index++)
+782:           if (states[index]?.kind === "unknown")
+783:             run(
+784:               "INSERT INTO key_state(principal,key,state,owner) VALUES (?,?,'claimed',?)",
+785:               principal,
+786:               carrierKeys[index] as string,
+787:               attemptId,
+788:             );
+789:         const admission = Object.freeze({
+790:           attemptId,
+791:           principal,
+792:           keys: carrierKeys,
+793:           states,
+794:         });
+795:         admissions.add(admission);
+796:         return admission;
+797:       });
+798:     },
+799:     executeMember(admission, key, evaluate) {
+800:       checkAdmission(admission, key);
+801:       return transaction(() => {
+802:         const current = keyState(admission.principal, key);
+803:         if (current.kind === "unknown")
+804:           run(
+805:             "INSERT INTO key_state(principal,key,state,owner) VALUES (?,?,'claimed',?)",
+806:             admission.principal,
+807:             key,
+808:             admission.attemptId,
+809:           );
+810:         else if (current.kind !== "claimed" || current.attemptId !== admission.attemptId)
+811:           return { kind: "existing", state: current };
+812:         db.exec("SAVEPOINT member_effects");
+813:         let valid = true;
+814:         const check = () => {
+815:           if (!valid)
+816:             throw new RecoveryStoreError("expired-facade", "expired member transaction facade");
+817:         };
+818:         const tx: MemberTransaction = {
+819:           ...reader(check),
+820:           putResource(resource) {
+821:             check();
+822:             putResource(resource);
+823:           },
+824:           deleteResource(id) {
+825:             check();
+826:             if (
+827:               get(
+828:                 "SELECT id FROM resources WHERE kind='link' AND (source=? OR target=?) LIMIT 1",
+829:                 id,
+830:                 id,
+
+FILE packages/protocol/src/index.ts SHA256 92e547e807ec2d23223c47dbc4e04867d55db89ac9aab5fbd55f33349f92bdc6
+1: export type {
+2:   PropertyValidationDiagnostic,
+3:   PropertyDiagnosticEmitter,
+4:   PropertyValidationResult,
+5:   PropertyValidator,
+6: } from "./property-validation.js";
+7: export { snapshotJsonValue, stringifyJsonValue } from "./json-values.js";
+8: import { parseHistoryMissing } from "./history-values.js";
+9: import type { RevisionProvenance, HistoryCapability, HistoryMissing } from "./history-values.js";
+10: export * from "./history-values.js";
+11: 
+12: /** Identifies this package. */
+13: export const packageName = "@bdp/protocol";
+14: 
+15: export const BDP_V0_SCHEMA_ID = "https://github.com/gastownhall/bdp/schemas/bdp-v0.schema.json";
+16: 
+17: export const BDP_PROBLEM_FAMILY_PREFIX = "https://github.com/gastownhall/bdp/problems/";
+18: 
+19: export {
+20:   REFERENCE_BEAD_TYPES,
+21:   REFERENCE_BLOCKING_LINK_TYPE_ID,
+22:   REFERENCE_TYPE_DESCRIPTORS,
+23:   REFERENCE_TYPE_SUMMARIES,
+24: } from "./reference-domain.js";
+25: export {
+26:   createTypeConformanceIndex,
+27:   type TypeConformanceIndex,
+28:   type MeasuredTypeConformanceIndex,
+29:   type TypeConformanceLimits,
+30:   type TypeConformanceStatistics,
+31: } from "./type-conformance.js";
+32: export {
+33:   parseLinkHeader,
+34:   type LinkHeaderParameter,
+35:   type LinkHeaderValue,
+36: } from "./link-header.js";
+37: 
+38: /**
+39:  * The three cumulative BDP conformance profile tokens, as they appear on the
+40:  * wire and in discovery. See **Scope discovery and human documentation** in
+41:  * `docs/specs/bdp.md` for the normative spelling: `read`, `read-update`, and
+42:  * `transactional`. `read` is
+43:  * lowest, `transactional` highest; each higher token cumulatively claims every
+44:  * lower one.
+45:  *
+46:  * The tokens live here rather than in `@bdp/config` because the protocol module
+47:  * owns wire vocabulary. Only a token union and a validator are exported — no
+48:  * schema, routing, or discovery behavior. Downstream packages (config today,
+49:  * client and server tomorrow) reuse this single source of truth so no consumer
+50:  * invents its own spelling.
+51:  */
+52: export type ProtocolProfile = "read" | "read-update" | "transactional";
+53: 
+54: export const PROTOCOL_PROFILES: readonly ProtocolProfile[] = [
+55:   "read",
+56:   "read-update",
+57:   "transactional",
+58: ];
+59: 
+60: export function isProtocolProfile(value: unknown): value is ProtocolProfile {
+61:   return typeof value === "string" && (PROTOCOL_PROFILES as readonly string[]).includes(value);
+62: }
+63: 
+64: export type RetryDisposition = "never" | "after-state-change" | "after-delay";
+65: 
+66: export type AbsoluteHttpUrl = string;
+67: export type AbsoluteUri = string;
+68: 
+69: export interface CollectionPage<TItem> {
+70:   readonly items: readonly TItem[];
+71:   readonly next: AbsoluteHttpUrl | null;
+72: }
+73: 
+74: export interface ReadAdvertisedLimits {
+75:   readonly page?: {
+76:     readonly defaultItems: number;
+77:     readonly maximumItems: number;
+78:   };
+79:   readonly request?: {
+80:     readonly targetBytes: number;
+81:     readonly bodyBytes: number;
+82:   };
+83:   readonly resource?: {
+84:     readonly representationBytes: number;
+85:     readonly propertiesBytes: number;
+86:   };
+87:   readonly selector?: {
+88:     readonly bytes: number;
+89:     readonly depth: number;
+90:     readonly nodes: number;
+91:   };
+92:   readonly retention?: {
+93:     readonly idempotency?: string;
+94:     readonly receipt?: string;
+95:     readonly maximumSnapshotLifetime?: string;
+96:     readonly replay?: string;
+97:   };
+98: }
+99: 
+100: export interface MaximumEndpointMultiplicityPolicy {
+101:   readonly linkConformsTo: AbsoluteHttpUrl;
+102:   readonly endpoint: "source" | "target";
+103:   readonly max: number;
+104: }
+105: 
+106: export interface ReadDiscovery {
+107:   readonly historicalResolution?: HistoryCapability;
+108:   readonly bdpVersion: "0";
+109:   readonly profile: ProtocolProfile;
+110:   readonly scope: AbsoluteHttpUrl;
+111:   readonly beads: AbsoluteHttpUrl;
+112:   readonly links: AbsoluteHttpUrl;
+113:   readonly types: AbsoluteHttpUrl;
+114:   /**
+115:    * The alias root, when this authority serves aliases: repointable names
+116:    * beneath `alias/` that resolve to canonical Bead URLs with one 307.
+117:    * Omitted by authorities without aliases (capability honesty).
+118:    */
+119:   readonly aliases?: AbsoluteHttpUrl;
+120:   /** The advertised collection order; omission means the canonical-uri baseline. */
+121:   readonly order?: "canonical-uri";
+122:   readonly limits?: ReadAdvertisedLimits;
+123:   readonly maximumEndpointMultiplicity?: readonly MaximumEndpointMultiplicityPolicy[];
+124: }
+125: 
+126: export function isReadDiscovery(value: unknown): value is ReadDiscovery {
+127:   if (typeof value !== "object" || value === null) return false;
+128:   const candidate = value as Record<string, unknown>;
+129:   return (
+130:     candidate.bdpVersion === "0" &&
+131:     (candidate.profile === "read" ||
+132:       candidate.profile === "read-update" ||
+133:       candidate.profile === "transactional") &&
+134:     ["scope", "beads", "links", "types"].every((key) => isAbsoluteHttpUrl(candidate[key]))
+135:   );
+136: }
+137: 
+138: function isAbsoluteHttpUrl(value: unknown): value is AbsoluteHttpUrl {
+139:   if (typeof value !== "string" || !URL.canParse(value)) return false;
+140:   const protocol = new URL(value).protocol;
+141:   return protocol === "http:" || protocol === "https:";
+142: }
+143: 
+144: export interface TypeSummary {
+145:   readonly id: AbsoluteHttpUrl;
+146:   readonly name: string;
+147:   readonly describes: "bead" | "link";
+148: }
+149: 
+150: export type ExternalEndpointPolicy = "none" | "opaque" | "bead";
+151: 
+152: export interface EndpointConstraint {
+153:   readonly conformsTo: readonly AbsoluteHttpUrl[];
+154:   /**
+155:    * Whether this endpoint may reference an out-of-Scope target: "none"
+156:    * rejects external URIs at creation, "opaque" admits any external URI,
+157:    * and "bead" admits external URIs that are bead-shaped (a canonical
+158:    * .../beads/{id} URL) at creation time — declared intent, not an ongoing
+159:    * guarantee. Absent means "opaque", preserving the pre-policy behavior.
+160:    */
+
+FILE docs/specs/bdp.md SHA256 f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e
+2080:   "updateBead": "update-bead",
+2081:   "deleteBead": "delete-bead",
+2082:   "createLink": "create-link",
+2083:   "updateLink": "update-link",
+2084:   "deleteLink": "delete-link",
+2085:   "putAlias": "put-alias",
+2086:   "deleteAlias": "delete-alias",
+2087:   "sequence": "sequence"
+2088: }
+2089: ```
+2090: 
+2091: Concretely, each Read+Update singleton target accepts `POST` with an
+2092: `application/json` body containing its operation record with `operation`
+2093: and `name` removed — the bundle defines `createBeadRequest`,
+2094: `updateBeadRequest`, `deleteBeadRequest`, `createLinkRequest`,
+2095: `updateLinkRequest`, `deleteLinkRequest`, `putAliasRequest`, and
+2096: `deleteAliasRequest` — and one required
+2097: `Idempotency-Key` field carrying a key under
+2098: [Idempotency keys](#idempotency-keys). A singleton never accepts `@name`,
+2099: bare or within a Pinned Reference; the bundle's singleton request
+2100: definitions reject the spelling, so it is carrier syntax rejected before
+2101: execution with `malformed-request`.
+2102: A successful singleton returns `200 OK` whose body is the mutation result
+2103: defined under [Mutation results](#mutation-results) — or, for an alias
+2104: target, the alias result defined under [Alias targets](#alias-targets) —
+2105: and carries no `ETag`
+2106: and no `Location`: the operation target is not the Resource's URL, and the
+2107: result's `resource.id` and `resource.revision` say what those fields would.
+2108: A failed singleton
+2109: returns the direct problem at its code's HTTP status; a singleton whose
+2110: key is retained, in flight, conflicting, or expired answers exactly as the
+2111: corresponding sequence member would, as a direct response. Singleton and
+2112: sequence forms share one idempotency namespace, one semantic-identity
+2113: rule, and one retention rule. Mutation responses carry
+2114: `Cache-Control: private, no-store`. A mutation target responds
+2115: `405 Method Not Allowed` with `Allow: POST` to every other method, and the
+2116: Operation Directory responds `405` with `Allow: GET, HEAD` to every method
+2117: but those two; both follow the Read profile's `405` rule — no BDP Problem
+2118: body — and its `OPTIONS` rule: when cross-origin access is enabled,
+2119: `OPTIONS` is answered according to the CORS rules rather than with `405`
+2120: and joins `Allow`; listing it in `Allow` is not the preflight behavior. The
+2121: bundle defines the Read+Update discovery document as `readUpdateDiscovery`
+2122: and the directory response above as `readUpdateOperationDirectory`.
+2123: 
+2124: BDP v0 does not additionally define `POST` on collections or `PUT`, `PATCH`,
+2125: or `DELETE` on individual Resource URLs. BDP v0 also does not add a POST-based
+3485:   supplied `id` has the `{id-path}` of a live alias is `alias-path-taken`. This is
+3486:   inherently an existence signal for the identity the creator chose, hidden
+3487:   or deleted alike: the non-reuse guarantee cannot be non-disclosing for a
+3488:   supplied spelling, and BDP accepts that one exception to its
+3489:   no-enumeration-oracle posture rather than allocate a second identity. An
+3490:   alias put is a cheaper existence probe than a creation — it allocates no
+3491:   Resource, mints no version, and is deletable — gated only by permission
+3492:   to put aliases, which is therefore what that permission grants.
+3493: - `alias-path-taken`: a Bead creation whose supplied `id` has the
+3494:   `{id-path}` of a live alias, under [Alias targets](#alias-targets). The
+3495:   path is held by an alias rather than by a committed identity, so the
+3496:   condition clears when the alias is deleted and the retry disposition is
+3497:   `after-state-change`, where `identity-taken`'s is `never`.
+3498: - `revision-mismatch`: the member's `expectedRevision` is not the Resource's
+3499:   current revision.
+3500: - `revision-allocation-unsafe`: a positively established persistent,
+3501:   repair-required allocation conflict, with the direct pre-admission and retained
+3502:   admitted-failure handling under [Revision allocation failures](#revision-allocation-failures); transient inspection
+3503:   failure remains `temporarily-unavailable`.
+3504: - `incident-links-exist`: a Bead deletion reached while a live Link is
+3505:   incident upon the Bead. A non-disclosing authority withholds the hidden
+6765: | `read-update.singleton.document-patch-validation` | A patch yielding a non-object document or Type-invalid `properties` fails the whole update without changing either document |
+6766: | `read-update.singleton.delete-bead` | `delete-bead` returns the deleted identity, the identity then reads as `404`, and a live incident Link fails it with `incident-links-exist` |
+6767: | `read-update.singleton.incident-links-nondisclosure` | A Bead deletion blocked by hidden incident Links fails with `incident-links-exist` and withholds the hidden Links that caused it |
+6768: | `read-update.singleton.create-link` | `create-link` resolves endpoint spellings to canonical URLs and echoes a pin byte-identically |
+6769: | `read-update.singleton.update-link` | `update-link` returns the Link postimage; an unowned Link's update moves only the Link's own revision and versions no endpoint |
+6770: | `read-update.singleton.delete-link` | `delete-link` returns the deleted identity and the Link then reads as `404` |
+6771: | `read-update.singleton.owned-link-source-revision` | An effectful owned-Link creation, update, or deletion carries `source` and `sourceRevision` and versions the source; an unowned one carries neither and versions no endpoint |
+6772: | `read-update.singleton.owned-link-no-op` | A semantic no-op update of an owned Link retains the Link's revision and the entire `revisionProvenance` envelope and reports the source's unchanged revision in `sourceRevision` |
+6773: | `read-update.singleton.attribution` | The `revisionProvenance` input is recorded on every version an effectful mutation mints, the owned source's included; a semantic no-op keeps the prior version's revision and the entire `revisionProvenance` envelope |
+6774: | `read-update.singleton.expected-revision` | A matching `expectedRevision` applies; a stale one fails with `revision-mismatch` and changes nothing |
+6775: | `read-update.singleton.expected-revision-race` | Of two concurrent guarded updates of one Resource, exactly one applies and the other fails with `revision-mismatch` |
+6776: | `read-update.singleton.hidden-subject` | A subject or in-Scope endpoint hidden from the request's Authorization View fails with the uniform `resource-not-found`, never `revision-mismatch` or `forbidden` |
+6777: | `read-update.singleton.idempotency-key-required` | A missing, malformed, or repeated `Idempotency-Key` field is rejected with `malformed-request` before execution |
+6778: | `read-update.singleton.unauthenticated` | An unauthenticated request to a mutation target is rejected with `unauthenticated` before admission and creates no disposition |
+6779: | `read-update.singleton.idempotent-retry` | The same key with the same semantic identity returns the retained disposition, including the same allocated identity, without re-execution |
+6780: | `read-update.singleton.idempotency-conflict` | The same key with a different semantic identity fails with `idempotency-conflict` and leaves the retained disposition unchanged |
+6781: | `read-update.singleton.unsupported-media-type` | A non-JSON or undeclared request body media type is rejected with `unsupported-media-type`; media-type parameters are ignored |
+6782: | `read-update.singleton.method-405` | Mutation targets answer other methods with a bodyless `405` and `Allow: POST`; with cross-origin access enabled, `OPTIONS` is answered by the CORS rules and joins `Allow` |
+6783: | `read-update.singleton.no-local-bindings` | A singleton request that spells `@name`, bare or within a Pinned Reference, is rejected before execution with `malformed-request` |
+6784: | `read-update.singleton.result-headers` | A singleton success carries no `ETag` and no `Location`; `resource.id` and `resource.revision` say what those fields would |
+6785: | `read-update.alias.put-creates` | `put-alias` creates an alias to exactly one canonical in-Scope Bead and reports the absolute alias URL and the canonical target with outcome `created` |
+
+FILE apps/bdptest/src/development-matrix.test.ts SHA256 858e6f85bf40bde4327df52e34a2aceab235b8130e7539a816651ce19f71e1ac
+115:         ? {}
+116:         : {
+117:             identity: {
+118:               urlSerializationStable: new URL(identity).href === identity,
+119:               ...(input.excludedIdentity === undefined
+120:                 ? {}
+121:                 : {
+122:                     differsFromExcludedIdentity:
+123:                       identity !== new URL(string(input.excludedIdentity), execution.scope).href,
+124:                   }),
+125:               inScope: identity.startsWith(execution.scope),
+126:               root: segments[0],
+127:               childSegments: segments.length - 1,
+128:               emptySegments: segments.filter((value) => value.length === 0).length,
+129:             },
+130:           }),
+131:       status: response.status,
+132:       headers: response.headers,
+133:       ...(response.kind === "json" ? { body: response.body } : {}),
+134:     };
+135:   }
+136:   return async (execution) => {
+137:     if (execution.family === "lifecycle") return processes.execute(execution);
+138:     if (execution.family !== "client") throw new Error("unsupported development action family");
+139:     if (execution.operation === "development.raw")
+140:       return executeDevelopmentRawAction(execution, token);
+141:     if (execution.operation === "development.request") return request(execution);
+142:     if (execution.operation === "development.race")
+143:       return Promise.all([request(execution), request(execution, true)]);
+144:     throw new Error("unsupported development action");
+145:   };
+146: }
+147: 
+148: async function runDevelopmentMatrix(
+149:   bundle: ConformanceArtifactBundle,
+150:   selection?: string[],
+151:   controls: {
+152:     signal?: AbortSignal;
+153:     afterAction?: (execution: ScenarioActionExecution) => void;
+154:   } = {},
+155: ) {

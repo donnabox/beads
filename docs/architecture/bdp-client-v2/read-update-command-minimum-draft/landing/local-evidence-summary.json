@@ -1,0 +1,37 @@
+{
+  "candidate": "3bb2f2449ce345e118d04c07eadd777363add544",
+  "tree": "69497d4ffc2089ce56790a9a257ecdff2eb0b47b",
+  "base": "df80f8cb86b7763bc7bb005492e43d8840527045",
+  "synthetic": "3d6d0ca74e94a528873b245046e15b8ff9960501",
+  "netFeaturePaths": 5,
+  "reviewedSourceHashes": 6,
+  "productionChangeInFeature": false,
+  "wholeContract": false,
+  "observedActions": 11,
+  "portableAssertions": 47,
+  "acceptedScopes": [
+    "harness",
+    "literals with F1 partial-credit correction",
+    "fanout plus partial-credit correction"
+  ],
+  "historicalTimeoutsRemainInconclusive": 3,
+  "finalLocalStages": 17,
+  "cpuPassed": 8,
+  "integratedSmokeHttp": 13,
+  "positivePassedAssertions": 47,
+  "controlPassedAssertions": 7,
+  "controlFailedAssertion": "singleton-replay.outcome",
+  "sourceArchiveInstalledMembers": 317,
+  "sampledPidsIndependentlyAbsent": 80,
+  "evidence": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/final-source.json": "79180b9f51821e6689e32a40d6deb38b9a41643846357c20ca214d95ec5c539b",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/actual-results.json": "3a40a24b6ca37b50fb63582999fbb59ffc1f0abf5044dbd2025061548e53c5fe",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/integration-validation/root-integration-acceptance.json": "51911e32b3c4a442cda793a0696ff0d9b56f692202718f26b963b79308f868c3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/partial-credit-repair/combined-council-record.json": "58d0634a4d64cd5e44d1ca62c053a5e01aed9070031c1efaba88dfefbc20c22a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/partial-credit-repair/root-final-council-and-integration-release.json": "fb0c01631971c8203b9463667534f6490881529743ec2cc94c5a0ebebb447705",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/partial-credit-repair/correction-commit.json": "7f614e7ab3e6fc213bc84d9003dfd9f2447382b65741bf5cca75e99b5be0ea78",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/landing/synthetic-initial.json": "e9caa771cf955d1a2d9fdc9b141e165eda75b507a5aa2d60cf7e08780521a502"
+  },
+  "ciStatus": "PENDING exact run38847936635/job116802565397; this file records preterminal local evidence only",
+  "publicationOrMergeAuthorization": false
+}

@@ -1,0 +1,43 @@
+# Minimum-receiving TEST/EVIDENCE review
+
+Candidate c18c712 / tree 596abe8. Findings are on test and evidence code only; production semantics deferred to the wire scope.
+
+## Coverage regressions introduced by the changed hunks
+
+**1. [High] `apps/bdptest/src/transactional-snapshot-installed.test.ts:628-632`** — the eight-handle callback's only unsupported-control exchange now sends `{"bdp-minimum-scope-position":"genesis"}` alone, which is rejected at the syntax gate. The following `expect(new Set([...prior, last].map(s => s.id)).size).toBe(8)` therefore no longer demonstrates that an *unsupported position identity* is nonallocating — it only shows a malformed field allocates nothing, which is a strictly earlier gate. The callback's stated proof is lost. Smallest fix: supply the complete tuple (current epoch/view, as the sibling repair at `transaction-http.test.ts:2172` does) and keep `500` / `minimum-position`; add the bare-position case as an extra exchange if the 400 path is also wanted.
+
+**2. [Medium] `packages/server/src/transaction-http.test.ts:2043-2050`** — the previous assertions encoded the nondisclosure ordering (owner `500`, foreign `404`, context headers present only for the foreign principal). Collapsing both principals to `400` removes the only place in that callback where page nondisclosure is distinguished from unsupported-control refusal, yet the callback is titled "orders page nondisclosure, minimum waits, expiry…". Fix: pass `minimumHeaders(receipt, "pos-99")` to retain the 500/404 split, and add one separate incomplete-tuple request asserting `400` for both principals.
+
+**3. [Medium] `packages/server/src/transaction-changefeed.test.ts:723-737`** — same pattern: the sole refusal-before-conditional-shortcut probe on `changes/?after=genesis` is now a syntax rejection, so no complete-tuple `500`/`minimum-position` case remains on the changefeed route. Fix: add a second request `{...headers, "bdp-minimum-scope-position": "pos-99"}` asserting the preserved 500 before the `satisfied` request.
+
+## Unsound discriminators in the repaired existing callbacks
+
+**4. [Medium] `packages/server/src/transaction-snapshot-http.test.ts:423` — `Object.keys(headers).length < 3`.** Header *count* is not tuple completeness: a case carrying `if-none-match` plus two minimum fields is misclassified as complete (expects 500, production gives 400), a complete tuple with one invalid value is misclassified the same way, and `{}` satisfies `< 3` so an all-absent case would be asserted as `400` when settled behavior requires an ordinary read. Fix: compute completeness from the three field names and `/^[A-Za-z0-9_-]{1,256}$/` only.
+
+**5. [Medium] `transactional-snapshot-installed.test.ts:904` and `transaction-schema-http.test.ts:249-252`.** The first branches on the literal value `"unknown"`; the second on the literal triple `pos-0`/`epoch`/`view`. Both encode "which case is this" rather than "is the tuple syntactically complete". A future complete tuple with any other unsupported position, or any other epoch/view literal, silently routes to the wrong arm. Fix: one shared local predicate (`names.every(n => token.test(headers[n] ?? ""))`) used in all three files; the schema-http structure is otherwise the right pattern to copy.
+
+## New installed test
+
+**6. [Medium] `transactional-minimum-receiving-installed.test.ts` — `same-view-ahead` vs. the per-request client bound.** `exchange` caps every request at `AbortSignal.timeout(5000)`, but this exchange deliberately provokes `503 catch-up-timeout`, whose duration is a server default that the launch configuration does not pin. If the server's catch-up wait is ≥5 s the client aborts first and the failure surfaces as a transport error, not a semantic one. Fix: give `exchange` an optional per-request bound and use a value above the server's catch-up timeout for this one exchange, or pin the wait in the launch configuration.
+
+**7. [Medium] Assertions with no source-level counterpart.** `cache-control: private, no-store` on the malformed 400, the exact `content-type` (no `; charset`), the bodyless 405, and HEAD-content-length-equals-GET are asserted only in the installed cohort, which has not yet run. All are free to prove at source: `minimumReceivingWire` already captures headers, so add the `cache-control` and content-type assertions to `transaction-http.test.ts`'s raw-wire callback and a body assertion to its 405 case, so an installation run fails on semantics rather than header formatting.
+
+**8. [Medium] No valid complete-tuple read of the issued receipt/page.** `pageUrl` and `receiptRoot` are exercised only through 400/404/500 paths; the "complete valid tuples retain existing context/minimum semantics" branch is never checked on the routes this change most affects. Fix: add `exchange("compatible-page", "GET", pageUrl, tuple)` asserting 200 and `context(...) === expectedContext`, and raise both `toBeLessThanOrEqual(22)` and `expect(attempted).toBe(22)` to 23 (and `responses` length).
+
+**9. [Low-Med] Provenance TOCTOU.** `entrySha256` is taken from `realpathSync(entry)` but `launchInstalledTransaction(entry, …)` spawns the unresolved path, so a symlink re-point between digest and spawn makes the recorded digest describe bytes that were not executed. Fix: spawn `resolvedEntry`.
+
+**10. [Low] Spurious second failure on cleanup timeout.** The `cleanupExceeded` branch sends `SIGKILL` and rejects immediately; `stopped` then reads `exitCode`/`signalCode` before the exit event lands, adding an `unknown-stop` failure and retaining the temp directory. Fix: await the child's `exit` (short bound) after the kill before computing `stopped`.
+
+**11. [Low] Duplicate-field occurrences are recorded but never asserted.** `minimumFieldOccurrences` is the only evidence that `raw-duplicate-*` and `single-comma-value` actually reached the wire as repeats; nothing asserts it. Fix: after each such exchange, assert the recorded vector contains a `2`.
+
+**12. [Low] `transaction-http.test.ts` direct-seam test.** `expect(entries).toStrictEqual([])` runs once after 30 requests, so a leaked owner read cannot be attributed to a suffix — move it inside the loop with the suffix as the message. Relatedly, `malformedEntries` is captured immediately after that assertion and is therefore always `[]`; drop it or capture it as the pre-assertion snapshot. Also `directGetBytes` uses `JSON.stringify` while `transaction-runtime.ts:89` delivers via `stringifyJsonValue`; use the same serializer to keep the HEAD-length comparison meaningful.
+
+**13. [Low] `transaction-http.test.ts:2175-2176`** — `String(receipt.scopeEpoch)` yields the token-valid string `"undefined"` if the field is absent, so the repair would still pass while testing the wrong gate. Use the existing `minimumHeaders(receipt, "unknown")` helper, as line 2201 does.
+
+Verified sound, for the record: the 22-exchange budget matches the 22 `exchange` calls; `[3728, 179]` are the correct `seedBody`/`setBody` byte lengths; `toHaveLength(32)` on both receipts is consistent with the 32-item root cap plus `next` spill; `Object.defineProperty` on an existing spread property preserves enumerability, so the facade instrumentation is intact and the `["readReceipt"]` positive control proves it is wired; `malformedLength` is always populated by a GET before the HEAD comparison.
+
+## Indispensable missing context
+
+- **Whether `bindServedProfileConfiguration`'s return value retains the `fixture` bytes.** `installedTransactionBinding` is passed `{bytes: <fixture-v1.json>}` and the installed test logs `binding` whole via `JSON.stringify`. If `served` carries those bytes, the evidence record becomes a multi-megabyte index-keyed object and arguably retains raw configuration contrary to the packet's retention rule. Only lines 1–93 of the binding module were supplied. If it does retain them, the fix is to log a projection (`runtimeConfigurationIdentity`, `authorityMode`, digest fields) instead of `binding`.
+- **The server's default catch-up timeout** (needed to size finding 6) and **whether a 405 carries a problem body** (needed to confirm the installed `method.text === ""` assertion).
+- The elided case arrays at `transaction-snapshot-installed.test.ts:901`, `transaction-snapshot-http.test.ts:420`, and `transaction-schema-http.test.ts`'s `minimumCases`, plus the `headers` value in scope at `transaction-http.test.ts:373`. Findings 4 and 5 are defects in the discriminators as written regardless, but whether any *current* case is misclassified cannot be settled without them.

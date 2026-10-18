@@ -1,0 +1,205 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence
+
+ × packages/conformance/src/transactional-cumulative.test.ts > binds the canonical cumulative TX selection and exact source digests without qualification 15ms
+   → scenario manifest: validation failed (6 issue(s))
+ × packages/conformance/src/transactional-cumulative.test.ts > rejects noncanonical selections, History, wrong factories, retired and misprofiled rows 13ms
+   → expected [Function] to throw error including 'catalogId' but got 'scenario manifest: validation failed …'
+ × packages/conformance/src/transactional-cumulative.test.ts > copies source bytes before binding and exposes all missing obligations without executing them 5ms
+   → scenario manifest: validation failed (6 issue(s))
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > enforces TX1MiB and preserves RU4MiB at factory and planner boundaries
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > denies genuine TX bundles through public runner declared read
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > denies genuine TX bundles through public runner declared read-update
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > denies genuine TX bundles through public runner declared transactional
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > private runner refuses lookalikes, RU bundles, wrong profiles and absent exact transport before setup
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > keeps private cumulative factories, TX runner, receipt recorder and brand predicate out of public exports
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > refuses reserved receipt actions in an ordinary RU run before setup or a programmable callback
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > uses preparation rather than HTTP timeout for private reopen lifecycle
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > retains safe wire receipt reason with correct attribution over raw HTTP (harness-error/receipt wire headers mismatch/batch)
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > retains safe wire receipt reason with correct attribution over raw HTTP (harness-error/receipt wire headers mismatch/update-where)
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > retains safe validator receipt reason with correct attribution over raw HTTP (harness-error/source receipt validator unavailable/batch)
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > retains safe validator receipt reason with correct attribution over raw HTTP (harness-error/source receipt validator unavailable/update-where)
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > retains safe wire-id receipt reason with correct attribution over raw HTTP (harness-error/receipt wire body mismatch/batch)
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > retains safe wire-id receipt reason with correct attribution over raw HTTP (harness-error/receipt wire body mismatch/update-where)
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > retains safe source-id receipt reason with correct attribution over raw HTTP (fail/source receipt identity invalid/batch)
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > retains safe source-id receipt reason with correct attribution over raw HTTP (fail/source receipt identity invalid/update-where)
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > retains safe source-schema receipt reason with correct attribution over raw HTTP (fail/source receipt schema invalid/batch)
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > retains safe source-schema receipt reason with correct attribution over raw HTTP (fail/source receipt schema invalid/update-where)
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > retains safe retained receipt reason with correct attribution over raw HTTP (fail/retained receipt differs from original wire facts/batch)
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > retains safe retained receipt reason with correct attribution over raw HTTP (fail/retained receipt differs from original wire facts/update-where)
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > preserves every original TX scenario and coverage object while adding one bounded partial cross-carrier row
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > pins required context presence before equality in set and cross-carrier rows
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > pins the one-page matched-plus-updated witness without advertised-limit or other-outcome credit
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > pins complete conflict responses and rejects retained-record equality weakening
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > rejects removing mandatory context presence from either comparison side
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > pins the completed-key conflict law, five presentations, and semantic request difference
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > pins the complete matching no-op partition and its exact selected clauses
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > rejects independent no-op oracle weakening in n-noop:bead-retained-record
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > rejects independent no-op oracle weakening in n-noop:no-effect
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > rejects independent no-op oracle weakening in n-noop:present-bdp-scope-position
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > rejects independent no-op oracle weakening in n-noop-groups:group-inventory
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > pins complete operation-time deletion safety and its exact selected clause
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > rejects deletion-safety oracle weakening: unchanged-link
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > rejects deletion-safety oracle weakening: problem-index
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > rejects deletion-safety oracle weakening: rollback-metadata
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > resolves every authored TX schema and rejects the undefined deleted-point reference
+ × packages/conformance/src/transactional-cumulative.test.ts > pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects 10ms
+   → scenario manifest: validation failed (6 issue(s))
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > canonical cumulative profile contracts > derives read obligations including companions, excluding diagnostics and optional History
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > canonical cumulative profile contracts > derives read-update obligations including companions, excluding diagnostics and optional History
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > canonical cumulative profile contracts > derives transactional obligations including companions, excluding diagnostics and optional History
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > canonical cumulative profile contracts > replaces Read closed discovery transitively, preserving shared limits
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > canonical cumulative profile contracts > requires every catalog to have an explicit directory classification
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > canonical cumulative profile contracts > cannot turn injected/shrunken catalogs into a runner-accepted selection
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > canonical cumulative profile contracts > rejects delta-only sources, conflicting companion copies and bad retirements
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > canonical cumulative profile contracts > keeps optional History outside baseline and rejects mismatched selection
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > canonical cumulative profile contracts > keeps surviving discovery clauses through both retirements, with removal counterfactuals
+ ✓ packages/conformance/src/profile-contract-plan.test.ts > canonical cumulative profile contracts > inherits partial TX command-minimum evidence while preserving RU omission 22ms
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > canonical cumulative profile contracts > locks every inheritance-audit row and replacement to the catalogs
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > truthful executable readiness > preserves missing inherited/write obligations and rejects unsupported carriers as readiness
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > truthful executable readiness > does not admit version1 normative TX or unknown catalog carrier
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > truthful executable readiness > does not admit version2 normative TX or unknown catalog carrier
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > truthful executable readiness > pins carrier read/read-v1/v2
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > truthful executable readiness > pins carrier read-update/read-update-v1/v1
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > truthful executable readiness > pins carrier read/read-update-v1/v2
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > truthful executable readiness > separates missing setup and unresolved applicability without waivers
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > truthful executable readiness > exposes real inherited Read prerequisites retired at RU alongside carrier blockers
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > truthful executable readiness > blocks missing, unready and cyclic prerequisites for a supported carrier
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > truthful executable readiness > bounds shared prerequisite DAG work across every canonical Read obligation
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > truthful executable readiness > does not turn supported prerequisites into blockers when only the carrier is unsupported
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > truthful executable readiness > rejects retired, diagnostic, History, misprofiled or wrong-fixture rows
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > captured source and exact configuration binding > derives immutable fixture identity/capabilities/digest from exact fixture bytes
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > captured source and exact configuration binding > refuses different captured scope
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > captured source and exact configuration binding > refuses different captured profile
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > captured source and exact configuration binding > refuses different captured history
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > captured source and exact configuration binding > refuses different captured sourceCommit
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > captured source and exact configuration binding > refuses different captured installedPayloadDigest
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > captured source and exact configuration binding > refuses different captured installedContractsDigest
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > captured source and exact configuration binding > refuses different captured policyDigest
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > captured source and exact configuration binding > refuses different captured authenticationDigest
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > captured source and exact configuration binding > refuses different captured fixture
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > captured source and exact configuration binding > rejects noncanonical Scope http://127.0.0.1:43210/a%2fb/ using runner predicate
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > captured source and exact configuration binding > rejects noncanonical Scope http://127.0.0.1:43210//x/ using runner predicate
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > captured source and exact configuration binding > rejects noncanonical Scope http://127.0.0.1:43210/%7Ea/ using runner predicate
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > captured source and exact configuration binding > rejects noncanonical Scope https://user:secret@example.test/ using runner predicate
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > captured source and exact configuration binding > uses existing fixture identifier validation: {"id":" reference-read-v1 "}
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > captured source and exact configuration binding > uses existing fixture identifier validation: {"capabilities":[" public-http "]}
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > captured source and exact configuration binding > uses existing fixture identifier validation: {"capabilities":[]}
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > captured source and exact configuration binding > uses existing fixture identifier validation: {"capabilities":["x","x"]}
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > captured source and exact configuration binding > rejects non-exact source byte containers
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > captured source and exact configuration binding > rejects non-exact source byte containers
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > captured source and exact configuration binding > rejects non-exact source byte containers
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > captured source and exact configuration binding > rejects non-exact source byte containers
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > captured source and exact configuration binding > reuses byte, depth and UTF-8 bounds for fixture and manifest
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > captured source and exact configuration binding > copies exact manifest bytes without invoking overridden iteration
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > native snapshot regressions > rejects changing accessors before invocation
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > native snapshot regressions > rejects changing ownKeys and revoked proxies before reflection
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > native snapshot regressions > rejects unequal coercible digests without canonicalizing both as empty objects
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > native snapshot regressions > rejects boxed scope
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > native snapshot regressions > rejects boxed profile
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > native snapshot regressions > rejects boxed sourceCommit
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > native snapshot regressions > rejects boxed installedPayloadDigest
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > native snapshot regressions > rejects boxed installedContractsDigest
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > native snapshot regressions > rejects boxed policyDigest
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > native snapshot regressions > rejects boxed authenticationDigest
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > native snapshot regressions > rejects nested source getters/proxies without reading or freezing caller data
+ ↓ packages/conformance/src/profile-contract-plan.test.ts > native snapshot regressions > rejects inherited/hidden extras and detaches mutable input with null-prototype support
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  apps/bdptest/src/transactional-matrix.test.ts [ apps/bdptest/src/transactional-matrix.test.ts ]
+ManifestValidationError: scenario manifest: validation failed (6 issue(s))
+ ❯ parseExecutableScenarioManifest packages/conformance/src/executable-manifest.ts:495:32
+    493|     }
+    494|   }
+    495|   if (issues.length > 0) throw new ManifestValidationError(issues, sou…
+       |                                ^
+    496|   return {
+    497|     manifestVersion: version as ExecutableManifestVersion,
+ ❯ createBoundArtifactBundle packages/conformance/src/artifact-bundle.ts:170:20
+ ❯ createCumulativeTransactionalArtifactBundle packages/conformance/src/artifact-bundle.ts:136:18
+ ❯ apps/bdptest/src/transactional-matrix.test.ts:44:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { issues: [ { path: '$.scenarios[0].actions[0]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[3]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[4]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[5]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[6]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[7]', message: 'raw source header is secret or executor-owned' } ] }
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/conformance/src/transactional-cumulative.test.ts > binds the canonical cumulative TX selection and exact source digests without qualification
+ManifestValidationError: scenario manifest: validation failed (6 issue(s))
+ ❯ parseExecutableScenarioManifest packages/conformance/src/executable-manifest.ts:495:32
+    493|     }
+    494|   }
+    495|   if (issues.length > 0) throw new ManifestValidationError(issues, sou…
+       |                                ^
+    496|   return {
+    497|     manifestVersion: version as ExecutableManifestVersion,
+ ❯ createBoundArtifactBundle packages/conformance/src/artifact-bundle.ts:170:20
+ ❯ createCumulativeTransactionalArtifactBundle packages/conformance/src/artifact-bundle.ts:136:18
+ ❯ bundle packages/conformance/src/transactional-cumulative.test.ts:43:22
+ ❯ packages/conformance/src/transactional-cumulative.test.ts:83:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { issues: [ { path: '$.scenarios[0].actions[0]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[3]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[4]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[5]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[6]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[7]', message: 'raw source header is secret or executor-owned' } ] }
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  packages/conformance/src/transactional-cumulative.test.ts > rejects noncanonical selections, History, wrong factories, retired and misprofiled rows
+AssertionError: expected [Function] to throw error including 'catalogId' but got 'scenario manifest: validation failed …'
+
+Expected: "catalogId"
+Received: "scenario manifest: validation failed (6 issue(s))"
+
+ ❯ packages/conformance/src/transactional-cumulative.test.ts:143:58
+    141|   );
+    142|   const sources = { ...inputs(), catalog: source(selected.catalog) };
+    143|   expect(() => createConformanceArtifactBundle(sources)).toThrow("cata…
+       |                                                          ^
+    144|   expect(() => createDevelopmentReadUpdateArtifactBundle(sources)).toT…
+    145|   for (const patch of [
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  packages/conformance/src/transactional-cumulative.test.ts > copies source bytes before binding and exposes all missing obligations without executing them
+ManifestValidationError: scenario manifest: validation failed (6 issue(s))
+ ❯ parseExecutableScenarioManifest packages/conformance/src/executable-manifest.ts:495:32
+    493|     }
+    494|   }
+    495|   if (issues.length > 0) throw new ManifestValidationError(issues, sou…
+       |                                ^
+    496|   return {
+    497|     manifestVersion: version as ExecutableManifestVersion,
+ ❯ createBoundArtifactBundle packages/conformance/src/artifact-bundle.ts:170:20
+ ❯ createCumulativeTransactionalArtifactBundle packages/conformance/src/artifact-bundle.ts:136:18
+ ❯ packages/conformance/src/transactional-cumulative.test.ts:185:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { issues: [ { path: '$.scenarios[0].actions[0]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[3]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[4]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[5]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[6]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[7]', message: 'raw source header is secret or executor-owned' } ] }
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  packages/conformance/src/transactional-cumulative.test.ts > pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects
+ManifestValidationError: scenario manifest: validation failed (6 issue(s))
+ ❯ parseExecutableScenarioManifest packages/conformance/src/executable-manifest.ts:495:32
+    493|     }
+    494|   }
+    495|   if (issues.length > 0) throw new ManifestValidationError(issues, sou…
+       |                                ^
+    496|   return {
+    497|     manifestVersion: version as ExecutableManifestVersion,
+ ❯ createBoundArtifactBundle packages/conformance/src/artifact-bundle.ts:170:20
+ ❯ createCumulativeTransactionalArtifactBundle packages/conformance/src/artifact-bundle.ts:136:18
+ ❯ bundle packages/conformance/src/transactional-cumulative.test.ts:43:22
+ ❯ packages/conformance/src/transactional-cumulative.test.ts:2729:10
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { issues: [ { path: '$.scenarios[0].actions[0]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[3]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[4]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[5]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[6]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[7]', message: 'raw source header is secret or executor-owned' } ] }
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  2 failed | 1 passed (3)
+      Tests  4 failed | 1 passed | 94 skipped (99)
+   Start at  00:03:59
+   Duration  560ms (transform 180ms, setup 24ms, import 94ms, tests 67ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation/run/static-cases.results.json

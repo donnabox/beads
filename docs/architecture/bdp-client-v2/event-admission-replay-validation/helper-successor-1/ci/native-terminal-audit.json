@@ -1,0 +1,130 @@
+{
+  "verdict": "exact push-head CI accepted; no actionable discrepancy",
+  "checkedAtUtc": "2026-10-18T00:40:31.676540+00:00",
+  "run": 39082528652,
+  "job": 117542270952,
+  "head": "a56254d682cf4623cab22a552e3d2f695f691795",
+  "tree": "144f278c7f5a08516c4ac99ba553d4cc25bcf560",
+  "soleParent": "9f89271e2563a105410789ca8ca1e77dfb4d0b9f",
+  "indexedArtifactsVerified": 7,
+  "sourceCurrentAndCommittedFiles": 679,
+  "rawLog": {
+    "sha256": "7b00eabdbd0527b97a8545f31d280c57c6bfb452bcde33a24678f865b15d0ea7",
+    "bytes": 3886658
+  },
+  "successfulSteps": 27,
+  "summaries": [
+    {
+      "line": 11686,
+      "text": "2026-10-18T00:37:00.9255806Z  Test Files  186 passed (186)"
+    },
+    {
+      "line": 11687,
+      "text": "2026-10-18T00:37:00.9279293Z       Tests  9464 passed | 1 skipped (9465)"
+    },
+    {
+      "line": 11711,
+      "text": "2026-10-18T00:37:02.7291407Z       Tests  7 passed (7)"
+    }
+  ],
+  "newSourceReportLines": [
+    3128,
+    3131,
+    3134,
+    3137,
+    3140,
+    3143,
+    3146,
+    3149,
+    3160,
+    3163,
+    3166,
+    3174
+  ],
+  "sourceD": {
+    "requests": 37,
+    "elapsedMs": 605.685465
+  },
+  "workspaceWitnesses": [
+    {
+      "line": 2924,
+      "label": "private-event-restart-cursor",
+      "requests": 5,
+      "sessions": 2,
+      "attribution": "development-local",
+      "payload": "495fa1d4afa2e44d7889b1f359fa8c9373c41235bc5d07abea9090e1007b6b77",
+      "finiteStatuses": [
+        200,
+        200,
+        200,
+        400
+      ],
+      "lifecycle": "reported clean; no independent remote process or filesystem inspection"
+    },
+    {
+      "line": 2935,
+      "label": "private-installed-event-admission-replay-minimum",
+      "requests": 10,
+      "sessions": 1,
+      "attribution": "development-local",
+      "payload": "495fa1d4afa2e44d7889b1f359fa8c9373c41235bc5d07abea9090e1007b6b77",
+      "finiteStatuses": [
+        200,
+        200,
+        200,
+        200,
+        503,
+        503,
+        503,
+        503,
+        503
+      ],
+      "lifecycle": "reported clean; no independent remote process or filesystem inspection"
+    }
+  ],
+  "maskedUnparseableObservationLines": [
+    1711,
+    3340,
+    3679,
+    3696,
+    4720,
+    5821,
+    5868,
+    7157
+  ],
+  "smoke": {
+    "event": "installed.reference.observed",
+    "claimEligible": false,
+    "configurationIdentity": "5f5bcc8a2399ea8406a3ce86af0c901da58b6dc5ed7dab1909b63ee389f68e4a",
+    "payloadIdentity": "da80f6d7f6c195328d4356e14f5446a00c4dd36f8755259609d482b51d003e5f",
+    "artifactIdentity": "development-schema5-e1dff401b5caafb04a4d935775d67eeefeae7bcf306d5d100b979a64eef148e7",
+    "allNineTargets": true,
+    "stableScope": "https://reference.invalid/acme/"
+  },
+  "historicalSeal": {
+    "level": "info",
+    "event": "evidence.verified",
+    "executable": "read-cohort-evidence",
+    "artifact": "docs/design/evidence/read-cohort/read-v1.json",
+    "constant": "674982be2123b9b7aae630bf79c3f774122900cd",
+    "runHead": "e5f7d0c43c151426350ceededdc77fe7e372db9b",
+    "evidenceCommit": "dbaf63a24219e1ea3f80394746853598b0d4464a",
+    "schemaReadProjection": "bd7da0fc3f8082e0bfb6f4969c04409f2a610e12408dbc6a0bd14b4b351127cc",
+    "schemaReadProjectionDefinitions": 47,
+    "schemaReadProjectionReachable": 46,
+    "rows": 89
+  },
+  "prCapture": {
+    "head": "a56254d682cf4623cab22a552e3d2f695f691795",
+    "draft": true
+  },
+  "localExternalProofSha256": "be1e750457d4e857890ab6c284b3480fe38e805b2ba17daa3b1b75db15863435",
+  "localExternalPayload": "da80f6d7f6c195328d4356e14f5446a00c4dd36f8755259609d482b51d003e5f",
+  "limitations": [
+    "CI witnesses use workspace dist/development-local; not fresh external consumer proof.",
+    "Eight other observation lines are masked invalid JSON and not reconstructed.",
+    "Reported remote cleanup is not independent remote PID/store absence verification.",
+    "Counts are execution summaries, not profile completion percentages or public qualification.",
+    "Historical Read89 seal retains its historical run and evidence commit."
+  ]
+}

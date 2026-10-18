@@ -1,0 +1,30 @@
+{
+  "at": "2026-10-17T17:40:18.739445+00:00",
+  "nativeClosureSha256": "06e0f943c3af21368083ba33a3d0444495528d08298cab27fc40725a24c67564",
+  "sourceBindingSha256": "af2702018538f2e9776561b1aa3e2b56c1fde41329ee896645f01136c7a05e43",
+  "verifiedSourceFiles": 679,
+  "gateSha256": "1dc8109058a90a634b3f2d1421267d356439334e2e4d1de3b8cdf21cca8f7947",
+  "reusedPrerequisites": [
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "freshReleasedStages": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "review-focused-source",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install"
+  ],
+  "stopOnFirstFailure": true,
+  "externalCallbacksReleased": false,
+  "requiredChecksReleased": false
+}

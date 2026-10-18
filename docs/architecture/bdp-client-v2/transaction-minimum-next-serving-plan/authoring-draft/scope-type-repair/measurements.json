@@ -1,0 +1,18 @@
+{
+  "seedBodyBytes": 610,
+  "seedBodySha256": "7339d6a0c00a9846fd67677a87aa49d43a9f626096ea57397afe469a6daacf87",
+  "artifactUtf8Bytes": 378,
+  "positiveHTTP": 32,
+  "controlsExpectedHTTP": [
+    2,
+    2
+  ],
+  "maximumCombinedHTTP": 96,
+  "productChildren": 3,
+  "scope": "https://event-sse.invalid/acme/",
+  "substitutions": {
+    "https://example.test/bead": "https://event-sse.invalid/acme/types/bead",
+    "https://example.test/link": "https://event-sse.invalid/acme/types/link"
+  },
+  "productionChanged": false
+}

@@ -1,0 +1,21 @@
+packages/server/src/transaction-submission.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    1772 1772 │     expect(() => assertDeepSubmissionValue(left, right)).not.toThrow();
+    1773 1773 │     const differing: unknown = JSON.parse(nested("1"));
+    1774      │ - ··expect(()·=>·assertDeepSubmissionValue(left,·differing)).toThrow("deep·submission·primitive·mismatch");
+         1774 │ + ··expect(()·=>·assertDeepSubmissionValue(left,·differing)).toThrow(
+         1775 │ + ····"deep·submission·primitive·mismatch",
+         1776 │ + ··);
+    1775 1777 │     expect(() => assertDeepSubmissionValue([], {})).toThrow();
+    1776 1778 │     expect(() => assertDeepSubmissionValue({ a: 1 }, { b: 1 })).toThrow();
+  
+
+Checked 2 files in 10ms. No fixes applied.
+Found 1 error.
+format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+  
+

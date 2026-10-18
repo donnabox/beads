@@ -1,0 +1,24 @@
+Review one bounded implementation PLAN, not an implementation or whole-profile qualification. Do not write or modify any files. Output findings only in stdout. Do not execute commands, tests, imports, builds, services or product code. Use Read/Glob/Grep only. No new implementation is released.
+
+Read these exact targets first:
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/next-functional-gap-audit/plan.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/next-functional-gap-audit/audit.md
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/next-functional-gap-audit/binding.json
+/Users/dbox/repos/wt/vickie/bdp-integration-logs/next-functional-gap-audit/plan-binding.json
+
+Plan scope: initial Bead and Link collection GET/HEAD, valid query, no continuation, lexically valid unrecognized minimum with actual matching epoch/view. Current private500 becomes existing bounded wait then503 catch-up-timeout if eligibility remains unproved. Assess this reference implementation choice under general normative consistency rules, without extending the narrower Resource mandate or inventing new law.
+
+Actual checkout: /Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving, HEAD 48067830bb3fe84fff281af399923790ad0e0924. The nine source/spec files were byte-verified against pinned2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96; chronology-only48067830 shares its tree. Packet binding pins actual source and current head. Start at these exact source ranges (reanchor if needed):
+- docs/specs/bdp.md:5329-5332,5794-5800,5841-5851 (general option, specific Resource mandate and incident/continuation exclusion);73-91 for truthful profile admission.
+- packages/server/src/transaction-http.ts:147-150,578-590, plus canonical read receiving/conditional response paths.
+- packages/server/src/transaction-read.ts:86-99 and201-226. Adding initial-collection kind must NOT broaden kind!==strict missing-target shortcut; preserve original resource/missing refusal semantics and descriptor-safe classification.
+- packages/server/src/transaction-consistency.ts:115-170 and packages/server/src/transaction-service.ts:382-420 for unproved versus unsupported context, original finite deadline, signals and retries.
+- packages/server/src/authority-read.ts:976-1017 for materialize/condition-before-finish, retained cursor allocation and owner availability.
+- packages/server/src/transaction-http.test.ts:4819 onward for old mixed negative table and surrounding applicable tests.
+Sole design review-context snapshot: /Users/dbox/repos/wt/vickie/bdp-integration-logs/next-functional-gap-audit/claude-plan-review/context-snapshots/sole-design.md. This is byte-identical to the sole plan at 8a0a16e6b46c99e46310038e40787623241e83c0; original path and hash are recorded in /Users/dbox/repos/wt/vickie/bdp-integration-logs/next-functional-gap-audit/claude-plan-review/sole-design-provenance.json. Read this snapshot, not the live design path (including live paths mentioned by the audit binding). It is a frozen reference copy, not competing plan authority. Read only relevant priority/independent S1/G2/discovery gates if necessary; no new whole-repo or historical review audit.
+
+Focus on actionable blockers or omissions: one shared precise classifier; control/refusal/conditional304/412 precedence; no failed-attempt continuation allocation or held owner/SQLite while waiting; fixed deadlines/cancellation/cleanup; known minima and no-minimum behavior preservation; how proposed direct and installed checks distinguish old500 from503 without fabricating installed evidence. Confirm normative authority is sufficient for this narrow reference choice; identify any genuinely unresolved ambiguity without silently broadening scope.
+
+Exclusions stay unchanged: retained continuations/Snapshot(S1), incident-Link lists and metadata Event membership(G2), Type inventory/points, alias307, receipts/Event/changefeed, unknown+foreign epoch/view including rotation while waiting, discovery/profile admission, Types/History/YAGNI. Existing discovery refusal remains intentional. Do not recommend enabling it as a shortcut.
+
+Read additional relevant source as needed, but remain bounded to this plan. Provide numbered findings with severity, exact path/section, issue, impact and concrete correction. If no actionable findings, say so explicitly. Distinguish settled plan concerns from excluded protocol decisions and future implementation verification. This is review input only; no authoring or test approval is automatic.

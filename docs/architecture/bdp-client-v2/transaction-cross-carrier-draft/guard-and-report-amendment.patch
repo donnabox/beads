@@ -1,0 +1,79 @@
+--- a/packages/conformance/src/transactional-cumulative.test.ts
++++ b/packages/conformance/src/transactional-cumulative.test.ts
+@@ -903,12 +903,19 @@
+   expect(manifest.scenarios.flatMap((r: { actions: unknown[] }) => r.actions)).toHaveLength(199);
+   // Historical root-accepted deletion-safety measurement: M620094/N16373/C88043/A333.
+   // Schema-name repair uses4B of the accepted margin:4092B/64nodes/1024B.
+-  // Measurement-only draft: these smaller guards intentionally remain until root acceptance.
+-  // Delta guards bind here; absolute planning envelopes remain unchanged.
+-  expect(read("manifest").byteLength - 488280).toBeLessThanOrEqual(135906);
+-  expect(read("manifest").byteLength).toBeLessThanOrEqual(650386);
+-  expect(read("coverage").byteLength - 70662).toBeLessThanOrEqual(18405);
+-  expect(read("coverage").byteLength).toBeLessThanOrEqual(91848);
++  // Historical measurement-only draft retained the smaller guards pending root acceptance.
++  // Root-accepted cross-carrier: disk684206/normal695598/nodes18107/coverage99245.
++  // Disk and normal-form fences are separate; margins are4096B/64nodes/1024B.
++  // Historical deletion guards: manifest135906delta/650386absolute,
++  // coverage18405delta/91848absolute, nodes3418delta/17275absolute.
++  expect(read("manifest").byteLength - 488280).toBeLessThanOrEqual(200022);
++  expect(read("manifest").byteLength).toBeLessThanOrEqual(688302);
++  expect(Buffer.byteLength(JSON.stringify(manifest, null, 2) + "\n")).toBeLessThanOrEqual(699694);
++  expect(read("coverage").byteLength - 70662).toBeLessThanOrEqual(29607);
++  expect(read("coverage").byteLength).toBeLessThanOrEqual(100269);
++  expect(
++    Buffer.byteLength(JSON.stringify(JSON.parse(read("coverage").toString()), null, 2) + "\n"),
++  ).toBeLessThanOrEqual(100269);
+   expect(
+     manifest.scenarios.flatMap((r: { actions: { assertions: unknown[] }[] }) =>
+       r.actions.flatMap((a) => a.assertions),
+@@ -925,8 +932,8 @@
+     nodes++;
+     if (value && typeof value === "object") pending.push(...Object.values(value));
+   }
+-  expect(nodes - 13019).toBeLessThanOrEqual(3418);
+-  expect(nodes).toBeLessThanOrEqual(17275);
++  expect(nodes - 13019).toBeLessThanOrEqual(5152);
++  expect(nodes).toBeLessThanOrEqual(18171);
+   // Clause ownership is independent from the exhaustive mechanical assertion mirror.
+   const clauseMap = {
+     "transactional.receipt.pagination": [
+--- a/apps/bdptest/src/transactional-matrix.test.ts
++++ b/apps/bdptest/src/transactional-matrix.test.ts
+@@ -1627,8 +1627,9 @@
+       nodes++;
+       if (value && typeof value === "object") pending.push(...Object.values(value));
+     }
+-    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(650386);
+-    expect(nodes).toBeLessThanOrEqual(17275);
++    // Root-accepted derivative maximum701716B/18263nodes plus4096B/64nodes.
++    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(705812);
++    expect(nodes).toBeLessThanOrEqual(18327);
+     const loaded = createCumulativeTransactionalArtifactBundle(
+       loadProfileContractSelection("transactional"),
+       { fixture: fixtureSource, manifest: { bytes: Buffer.from(wire) } },
+@@ -2028,9 +2029,10 @@
+       nodes++;
+       if (value && typeof value === "object") pending.push(...Object.values(value));
+     }
+-    // Existing derivative guards intentionally remain until root measured acceptance.
+-    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(650386);
+-    expect(nodes).toBeLessThanOrEqual(17275);
++    // Historical measurement-only derivative guards were650386B/17275nodes.
++    // Root-accepted derivative maximum701716B/18263nodes plus4096B/64nodes.
++    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(705812);
++    expect(nodes).toBeLessThanOrEqual(18327);
+     descriptions.push({ control, ...description, normalBytes: Buffer.byteLength(normal), nodes });
+   }
+   expect(descriptions.map((d) => d.positiveIds)).toEqual([
+@@ -2112,6 +2114,11 @@
+         claimEligible: false,
+       }),
+     );
++    if (process.env.BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT)
++      writeFileSync(
++        `${process.env.BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT}-${control}.json`,
++        JSON.stringify({ sourceCommit, entry, ...observed }, null, 2) + "\n",
++      );
+   },
+   120000,
+ );

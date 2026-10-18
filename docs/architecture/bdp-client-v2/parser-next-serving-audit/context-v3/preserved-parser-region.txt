@@ -1,0 +1,18 @@
+    const minimum = hasMinimumControls(request)
+      ? currentReadMinimumHeaders(request.headers)
+      : undefined;
+    if (hasMinimumControls(request) && !minimum) return developmentGap("minimum-position");
+    if (minimum && alias === undefined) {
+      // Aliases have their own conditioned authority path, not a canonical
+      // ReadRequest or a member of the current Resource/collection subset.
+      const parsed = requestFromUrl(url, scope);
+      if (isReadProblem(parsed) && parsed.status === 400) return problem(parsed);
+      // Preserve the early unknown-token label on excluded valid routes and parser 404s.
+      if (
+        !transactionMinimumHeaders(request.headers) &&
+        (isReadProblem(parsed) || currentReadMinimumKind(parsed) === "strict")
+      )
+        return developmentGap("minimum-position");
+      if (isReadProblem(parsed) || !isCurrentTransactionMinimumRead(parsed, scope))
+        return developmentGap("minimum-position-route");
+    }

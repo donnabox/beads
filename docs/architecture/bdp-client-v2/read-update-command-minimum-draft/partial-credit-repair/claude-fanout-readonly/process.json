@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--permission-prompts",
+    "none",
+    "--add-dir",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-plan",
+    "--no-session-persistence"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory",
+  "pid": 64059,
+  "processGroup": 64059,
+  "started": "2026-10-16T03:29:07.996886+00:00",
+  "timeoutSeconds": 900,
+  "promptSha256": "7de16cb39ed67db798a0b88a979686d51dcaf4cf870ca2300e6b30758a4e57d1",
+  "sourceBeforeSha256": "f5f0027de301f2064e7739c8b4aad5a8138722d8b2da1cb92d1f0efb0a2664da",
+  "tempDirectory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/partial-credit-repair/claude-fanout-readonly/tmp",
+  "reviewKind": "read-only Read/Glob/Grep fanout and partial-credit correction review; no model override or product execution"
+}

@@ -1,0 +1,17 @@
+{
+  "path": "packages/server/src/transaction-runtime.test.ts",
+  "beforeSha256": "5c0dafced7ebfba91a9529fd3fb9b958701f0fa155c4901313667a23a042de47",
+  "afterSha256": "5775b00f7f8abd568367a3aa0f98732e601ed3a8c24fba0e0e93093de93a6a21",
+  "correctionSha256": "2432f7d675c6ebfd92f0b0567ad816af77c6f91b7555270cc3b2b1e5aa40e175",
+  "change": "Only two T1 URLs limit1 -> limit2 and initial items exact first.resources.slice(0,2). Actual next and foreign-view409 assertions retained.",
+  "reason": "33 records at limit1 reserve32 continuation entries beyond existing20 cap; limit2 reserves16. No cap or production changes.",
+  "positiveHttp": 21,
+  "controlExpectedHttp": 7,
+  "controlMaximumHttp": 17,
+  "runtimeExecuted": false,
+  "priorFinalBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/final-code/source-binding.json",
+    "sha256": "106e81dac3a936b395a7d1b28c34b0ca1da9f463ff0ec7bdf2c07b6dc0b1f307"
+  },
+  "failedRunPreserved": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v2/run/outcome.json"
+}

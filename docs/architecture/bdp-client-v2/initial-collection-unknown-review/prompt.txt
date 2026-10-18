@@ -1,0 +1,30 @@
+Review the complete frozen four-file initial Bead/Link collection unknown-minimum implementation against its accepted plan. Do not write or modify any files. Output findings only in stdout. Read/Glob/Grep only; do not execute tests, imports, builds, services or shell commands.
+
+Checkout: /Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving, HEAD 2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96. Read the entire 14KB patch at /Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-author/draft.patch (SHA-256 7ab49b685ea70c22d1e87c7ca58c5a7fff4e92a87507798cb82708dc9b432201). Its four current files are authoritative review inputs. No tests have run on this draft. Review code and test correctness, not historical validation paperwork.
+
+Accepted scope and decisions (immutable files):
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/next-functional-gap-audit/plan-v2.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/next-functional-gap-audit/findings-disposition.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/next-functional-gap-audit/root-plan-v2-release.md
+- /Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-author/report.md and callback-selection.json (claims to verify, not independent evidence).
+No live design plan or newer main is a dependency. Prior original plan is superseded by this accepted v2.
+
+Changed files and initial ranges:
+1. packages/server/src/transaction-read.ts:75–120 and 195–245: own-data classification, condition kind and refusal/wait predicates; read 275–350 for receiving/captured condition flow.
+2. packages/server/src/transaction-read.test.ts:610–735: controlled-time test, existing fixture helpers above as necessary.
+3. packages/server/src/transaction-http.test.ts:4819–4950: revised existing callback and exact timeout/control/refusal expectations.
+4. apps/bdptest/src/transactional-collection-minimum-installed.test.ts:380–620: first installed callback, especially new block 506–543. Read its existing execution/cleanup helpers as needed.
+
+Relevant unchanged implementation/spec:
+- packages/server/src/transaction-http.ts:200–260, 400–415, 575–640 for authenticated receiving, classifier admission and final failure rendering.
+- packages/server/src/transaction-consistency.ts:90–180 for known vs unrecognized positions, mismatch branch and finite original deadline.
+- packages/server/src/transaction-service.ts:382–420 and 680–700 for request/signal capture, retries and close/drain.
+- packages/server/src/authority-read.ts:730–800, 852–905, 960–1020 for control validation, same-entry condition and continuation allocation only after that condition.
+- docs/specs/bdp.md:5329–5332 and 5794–5851, pinned SHA-256 67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8.
+Broader repository reads are permitted when needed to verify this narrow patch, but avoid unrelated Types, main, optional History or historical proof machinery.
+
+Assess all changed behavior and test feasibility. The intended change is only initial noncontinued beads/links with a lexically valid unknown minimum and actual matching epoch/view entering the existing bounded waiter. Check proxy/descriptor handling, shared classifier use, preserving resource-or-missing 404 shortcut, exact context, request-control/conditional precedence, original deadline, cancellation, owner availability during waits and no continuation-token allocation. Existing HTTP admission code deliberately stays unchanged. Parser-invalid unknown+limit0/repeatedlimit retains a private500 residual; parser-valid materialized selector/limit refusals newly reach400/413. Those residuals and Type/incident/continuation/Snapshot/foreign-unknown/discovery behavior are excluded unresolved work, not normative approval. Do not infer S1/G2 or a new foreign-context policy.
+
+Check six controlled collection/token combinations (opaque,pos-01,pos-9007199254740992), exact [5,2] waits/three attempts, pre/in-flight abort, retained capacity setup, HTTP eight waits/18 total topology, and installed four added real opaque requests yielding42 total exchanges with one child/store. Confirm exact503/retry/context, GET-to-HEAD length/media/body comparison and conditional barriers. Existing1s waiter/5s request/90s work/120s callback bounds are unchanged. Source tests distinguish old500 from503 and direct retries prove non-immediate failure; installed elapsed is intended to prove real time passage. Do not demand an already declined restored-source control mode or treat unrun tests/static workload as observations.
+
+Return findings first, with severity, current file/line, specific issue, impact and smallest correction. Separate blockers from optional improvements. If no actionable findings, say so explicitly. A completed review does not itself authorize execution, integration, publication or profile qualification.

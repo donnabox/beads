@@ -1,0 +1,29 @@
+--- receipt-installed/supervise.py
++++ overlap-closed/supervise.py
+@@ -8,6 +8,9 @@
+         return {"kind": "command-only", "testVerdict": "not-applicable"}
+     output = next(Path(arg.split("=", 1)[1]) for arg in spec["argv"] if arg.startswith("--outputFile="))
+     report = json.loads(output.read_text())
++    if spec.get("expectedExit") == 1:
++        from review import review
++        return review("negative", preliminary=True)
+     assertions = [case for file in report["testResults"] for case in file.get("assertionResults", [])]
+     executed = [case for case in assertions if case["status"] not in ["pending", "skipped", "todo"]]
+     passed = [case["fullName"] for case in executed if case["status"] == "passed"]
+@@ -165,14 +168,14 @@
+             post_hashes = {}
+             source_unchanged = False
+         adjudication = None
+-        if code == 0 and not timed and not forced and not errors:
++        if code == spec.get("expectedExit", 0) and not timed and not forced and not errors:
+             try:
+                 adjudication = adjudicate_source(spec)
+             except Exception as exc:
+                 errors.append("result-adjudication:" + type(exc).__name__)
+         supervisor_exit = 124 if timed else 1 if (
+             forced or errors or after or still_pids or runtime_dirs or not source_unchanged
+-        ) else (code if code >= 0 else 1)
++        ) else (0 if code == spec.get("expectedExit", 0) else (code if code > 0 else 1))
+         result = {
+             "name": name, "argv": spec["argv"], "guardedArgv": [sys.executable, str(GUARD), *spec["argv"]],
+             "cwd": spec["cwd"], "started": started, "adjudication": adjudication,

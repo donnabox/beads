@@ -1,0 +1,61 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/required-checks-format-successor-1/gate.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/required-checks-fixture-successor-2/gate.py
+@@ -1,7 +1,7 @@
+ from pathlib import Path
+ import json,hashlib,subprocess,os,importlib.util
+ P=Path(__file__).resolve().parent
+-V=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/format-successor-1")
++V=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/fixture-successor-2")
+ W=Path("/Users/dbox/repos/wt/vickie/vickie-scope-event-sse-opaque-minimum")
+ E=P/'run';MODE='final'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/required-checks-format-successor-1/commands.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/required-checks-fixture-successor-2/commands.json
+@@ -28,7 +28,7 @@
+         "scripts/e2e-ready.test.mjs",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/required-checks-format-successor-1/run/preflight.results.json"
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/required-checks-fixture-successor-2/run/preflight.results.json"
+       ],
+       "outerSeconds": 120,
+       "termAfterSeconds": 115,
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/required-checks-format-successor-1/source-binding.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/required-checks-fixture-successor-2/source-binding.json
+@@ -436,7 +436,7 @@
+     "packages/server/src/transaction-dependencies.ts": "ca79b4be097d221560157c5c4eaac4601dab343de54dda1be15d92c44b2b09ba",
+     "packages/server/src/transaction-discovery.test.ts": "977dfae7a1cba9ffe11bdd3633ee26fa15eb8579254c6304eea1d6ac10667356",
+     "packages/server/src/transaction-discovery.ts": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef",
+-    "packages/server/src/transaction-event-sse.test.ts": "0bd45d46a5401c23e98d110c5f2dc0a6159965e8df09dc2c19105c7b282c8f0f",
++    "packages/server/src/transaction-event-sse.test.ts": "d7c257a2c9f78ffd07a18b86e2b480e07e1cdeeddf43cafabfb0cd53a011fbd9",
+     "packages/server/src/transaction-events.test.ts": "708fafc31d031abdff6434110d36d4bfd1126d38cbb977d81af1da1703121673",
+     "packages/server/src/transaction-events.ts": "6c5ab4482f0b00110a71a96b16d44ca5fe713cb5f397ff78778cc6646f632a3a",
+     "packages/server/src/transaction-http.test.ts": "05f9be15d1ef262cf87dc3a07229290499dd0acd553a03a8d2f9febc1d15920a",
+@@ -699,7 +699,7 @@
+     },
+     "packages/server/src/transaction-event-sse.test.ts": {
+       "beforeSha256": "de14cbbbe935205c5ec43ef6cf6a055d3f1ca2b9632ee684c4c13fbfe9eed042",
+-      "afterSha256": "0bd45d46a5401c23e98d110c5f2dc0a6159965e8df09dc2c19105c7b282c8f0f"
++      "afterSha256": "d7c257a2c9f78ffd07a18b86e2b480e07e1cdeeddf43cafabfb0cd53a011fbd9"
+     },
+     "apps/bdptest/src/transactional-event-sse-installed.test.ts": {
+       "beforeSha256": "b762563798d6d72afecfda0a4c8b831de69753df45c82f6050815599a24a1496",
+@@ -723,13 +723,13 @@
+     "packages/server/src/transaction-service.ts",
+     "packages/server/src/transaction-store.ts"
+   ],
+-  "binaryDiffSha256": "fd2c7c1b6ffe60198ef5b561ba7a6a2c7fcd530e79e3436b2f467194e69f6460",
++  "binaryDiffSha256": "725a0f94c39426140d136adc80c1e5647557953eb96af863c4e1c450cbb2ac9f",
+   "authorBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-author/format-successor-1/source-binding.json",
+-    "sha256": "f9e9773d5364dea9490fa68c9b8dcc989ff5faaddf3d039b2a14102feb51f880"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-author/fixture-successor-2/source-binding.json",
++    "sha256": "057a33455d96a6206577f02f7bde739cd75bc189ae42f022bf73e969f51001c2"
+   },
+   "preservation": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-author/format-successor-1/preservation-checks.json",
+-    "sha256": "2975ce08497c0edb0c20a5876cd1ce79cdfa40836719ff800379d34a520eb4ef"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-author/fixture-successor-2/preservation-checks.json",
++    "sha256": "6e71003194f096e750758d7483f56b5470ab6e28c4d88d281c66a971b5b13d15"
+   }
+ }

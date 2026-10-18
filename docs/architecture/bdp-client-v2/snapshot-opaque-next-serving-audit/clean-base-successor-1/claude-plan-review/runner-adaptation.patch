@@ -1,0 +1,11 @@
+--- completed-snapshot-plan/run.py
++++ receipt-clean-plan/run.py
+@@ -1,7 +1,7 @@
+ from pathlib import Path
+ import subprocess,time,json,hashlib,os,signal,datetime,runpy
+ p=Path(__file__).parent
+-w=Path("/Users/dbox/repos/wt/vickie/vickie-link-event-minimum")
++w=Path("/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum")
+ b=json.loads((p/"binding.json").read_text());sha=lambda x:hashlib.sha256(x).hexdigest()
+ def guard(): subprocess.run(["/opt/homebrew/opt/python@3.14/bin/python3.14","/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py","/usr/bin/true"],check=True)
+ assert b["rootLaunchReleased"] is True, "Closed: root must release this one review"

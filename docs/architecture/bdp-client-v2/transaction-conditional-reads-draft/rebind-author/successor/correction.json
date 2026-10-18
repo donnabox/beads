@@ -1,0 +1,62 @@
+{
+  "status": "AUTHORING COMPLETE; frozen for independent root review; no validation execution",
+  "head": "2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96",
+  "tree": "1823346779033dec6255bcab93f69d7149d33055",
+  "removedPortableAssertions": [
+    "anonymous-get:absent-bdp-scope-epoch",
+    "anonymous-get:absent-bdp-authorization-view",
+    "anonymous-get:absent-bdp-scope-position",
+    "anonymous-head:absent-bdp-scope-epoch",
+    "anonymous-head:absent-bdp-authorization-view",
+    "anonymous-head:absent-bdp-scope-position",
+    "anonymous-head:media",
+    "missing-head:media"
+  ],
+  "before": {
+    "newAssertions": 194,
+    "totalAssertions": 2836
+  },
+  "after": {
+    "newAssertions": 186,
+    "totalAssertions": 2828,
+    "newActions": 14,
+    "totalActions": 241
+  },
+  "newRowCompactSha256": "faf0d8e65446c97549081797bf81fb281e95209434445afe99d2aef14dd0947a",
+  "onlyManifestChangesAreEightRemovals": true,
+  "onlyCoverageChangesAreEightIdsAndReason": true,
+  "nonAssertionActionBytesSha256": "ef3574273b54af29f6206b437659cf74d731bfb1fc6f33dd7ac08d0faa526447",
+  "requestActionDataUnchanged": true,
+  "parentRawObjectsPreserved": 32,
+  "derivativeSpecimens": 42,
+  "routeOnlyPreimageSha256": "4073cff9a060f761ef07423dfb89125380d51dcb1716b345caca8cddc2e5f119",
+  "routeOnlyConfigurationDigest": "5a32a664575b83fe55ea3b73b617fc738aefffd56d83affdf66a61d7fd8100e5",
+  "routePreimageUnchanged": true,
+  "sourceGuards": {
+    "canonicalDisk": 871900,
+    "canonicalDiskDeltaFrom488280": 383620,
+    "canonicalNormal": 885192,
+    "canonicalNodes": 23190,
+    "canonicalNodesDeltaFrom13019": 10171,
+    "coverageDiskAndNormal": 134388,
+    "coverageDeltaFrom70662": 63726,
+    "derivativeNormal": 891310,
+    "derivativeNodes": 23346
+  },
+  "appChanges": "Only two duplicate measured byte/node fence pairs and three reference-only explanatory comment lines; executable wire oracle/control/routing/principal/elapsed checks unchanged.",
+  "historicalDiagnosticEvidence": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/outcome-audit.md",
+    "sha256": "3e068ba7d942db94c0967dc9405a54788e0869f6dad15e48aca49c4e7a6dee29",
+    "facts": "194new/2836total predecessor;56source cases passed; does not validate this186new successor"
+  },
+  "remainingGate": "Root native review and fresh separately released validation; no deadline widening",
+  "execution": {
+    "formatOnly": true,
+    "tests": false,
+    "imports": false,
+    "builds": false,
+    "services": false,
+    "commit": false,
+    "push": false
+  }
+}

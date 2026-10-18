@@ -1,0 +1,65 @@
+{
+  "checkedAt": "2026-10-15T13:06:30.400754+00:00",
+  "sampledPids": [
+    18298,
+    18300,
+    18304,
+    18346,
+    18348,
+    18353,
+    18362,
+    18461,
+    18463,
+    18534,
+    18571,
+    18573,
+    18578,
+    18619,
+    18621,
+    18626,
+    18634,
+    18676,
+    18678,
+    18683,
+    18737,
+    18739,
+    18743,
+    18994,
+    18996,
+    19001,
+    19003,
+    19012,
+    19207,
+    19209,
+    19214,
+    19217,
+    19228,
+    19239,
+    19278,
+    19280,
+    19285,
+    19289,
+    19301
+  ],
+  "sampledPidsStillPresent": {},
+  "childPid": 19239,
+  "childAbsent": true,
+  "childExitCode": 0,
+  "directory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/run/installed-positive.tmp/bdp-receipt-missing-context-installed-S9QCiH",
+  "directoryAbsent": true,
+  "retainedTempEntries": {
+    "pack-protocol": [
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/run/pack-protocol.tmp/node-compile-cache"
+    ],
+    "pack-server": [
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/run/pack-server.tmp/node-compile-cache"
+    ],
+    "consumer-install": [
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/run/consumer-install.tmp/node-compile-cache"
+    ],
+    "installed-positive": [
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/run/installed-positive.tmp/node-compile-cache"
+    ]
+  },
+  "limitation": "Sampled PID absence does not assert every short-lived or detached descendant was sampled. Node compile caches retained; no owned runtime directory remains."
+}

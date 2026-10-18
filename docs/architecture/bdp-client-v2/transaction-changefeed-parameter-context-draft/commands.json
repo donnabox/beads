@@ -1,0 +1,155 @@
+{
+  "status": "CLOSED_PROPOSED_COMMANDS",
+  "pathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "commands": [
+    {
+      "id": "offline-setup",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ],
+      "timeoutSeconds": 120,
+      "released": false
+    },
+    {
+      "id": "typecheck",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ],
+      "timeoutSeconds": 120,
+      "released": false
+    },
+    {
+      "id": "build",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "timeoutSeconds": 120,
+      "released": false
+    },
+    {
+      "id": "format-check",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "biome",
+        "format",
+        "packages/server/src/transaction-changefeed.ts",
+        "packages/server/src/transaction-store.ts",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-changefeed.test.ts",
+        "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts"
+      ],
+      "timeoutSeconds": 120,
+      "released": false
+    },
+    {
+      "id": "lint",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ],
+      "timeoutSeconds": 120,
+      "released": false
+    },
+    {
+      "id": "boundaries",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ],
+      "timeoutSeconds": 120,
+      "released": false
+    },
+    {
+      "id": "read-seal",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ],
+      "timeoutSeconds": 120,
+      "released": false
+    },
+    {
+      "id": "source-positive",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-changefeed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/run/source.json",
+        "-t",
+        "^(?:uses\\ bounded\\ context\\-fenced\\ checkpoints,\\ never\\ Event\\ IDs/raw\\ positions/future\\ rows|rejects\\ invalid\\ feed\\ intent\\ \\ with\\ the\\ local\\ parameter\\ convention|rejects\\ invalid\\ feed\\ intent\\ \\?after=genesis\\&start=now\\ with\\ the\\ local\\ parameter\\ convention|rejects\\ invalid\\ feed\\ intent\\ \\?start=then\\ with\\ the\\ local\\ parameter\\ convention|rejects\\ invalid\\ feed\\ intent\\ \\?after=\\ with\\ the\\ local\\ parameter\\ convention|rejects\\ invalid\\ feed\\ intent\\ \\?after=genesis\\&after=genesis\\ with\\ the\\ local\\ parameter\\ convention|rejects\\ invalid\\ feed\\ intent\\ \\?start=now\\&limit=1\\ with\\ the\\ local\\ parameter\\ convention|decides\\ actual\\ HTTP\\ minimum\\ refusal\\ before\\ conditional\\ shortcuts\\ with\\ final\\ context|preserves\\ current\\ context\\ on\\ owner\\-observed\\ changefeed\\ parameter\\ refusals\\ over\\ HTTP)$"
+      ],
+      "timeoutSeconds": 120,
+      "released": false,
+      "expectedCases": 9,
+      "expectedExit": 0
+    },
+    {
+      "id": "emitted-control",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/control/mirror",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/control/mirror/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-changefeed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/control/run/results.json",
+        "-t",
+        "^(?:preserves\\ current\\ context\\ on\\ owner\\-observed\\ changefeed\\ parameter\\ refusals\\ over\\ HTTP)$"
+      ],
+      "timeoutSeconds": 120,
+      "released": false,
+      "expectedCases": 1,
+      "expectedExit": 1
+    },
+    {
+      "id": "installed-positive",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/installed/run/results.json",
+        "-t",
+        "^(?:observes\\ genuine\\ installed\\ current\\ context\\ on\\ changefeed\\ parameter\\ refusals)$"
+      ],
+      "timeoutSeconds": 120,
+      "released": false,
+      "expectedCases": 1,
+      "expectedExit": 0
+    }
+  ],
+  "noAutomaticRetry": true,
+  "controlGate": "Positive source/build then isolated copied runner/product graph proof and emitted patch review. Never mutate/rebuild positive graph.",
+  "installedGate": "Clean frozen commit, fresh protocol/server archives, external consumer, eight-package closure/member/source/payload checks, explicit external entry and final source env; no workspace fallback. Packaging command packet separately reviewed before execution."
+}

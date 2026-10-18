@@ -1,0 +1,40 @@
+{
+  "status": "released",
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "sourceBindingPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/source-binding.json",
+  "sourceBindingSha256": "ccbb687daccb69500faf10f1f768b33ffd1b0bc9ab449b84253cfd242ab7de39",
+  "ownedPaths": [
+    "packages/server/src/transaction-authorization.test.ts",
+    "packages/server/src/transaction-authorization.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "packages/server/src/transaction-changefeed.ts",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "packages/server/src/transaction-events.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-read.ts",
+    "packages/server/src/transaction-runtime-configuration.ts",
+    "packages/server/src/transaction-runtime.test.ts",
+    "packages/server/src/transaction-runtime.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-snapshot.ts",
+    "packages/server/src/transaction-store.ts"
+  ],
+  "authoringReleaseSha256": "fd8751aaa7929f71f17fa87f014275cf620a537c38722d910d87940ff0fd7226",
+  "supervisorSha256": "1033931bdee472c40bf44694fd4d581a9c277f93b10426ad91ca022417d1f919",
+  "commandsSha256": "64dedaf3808db24c76eb36c5e3d696eb658579e9c3deb5d21b618f11bbd91c6c",
+  "expectedHead": "67a2842e3f1918e70978f745587cf11eaf0df5a8",
+  "expectedTree": "596abe870220fb61ce606f8382a9da52d554d063",
+  "authorizedStages": [
+    "typecheck",
+    "format-check",
+    "transport-targeted",
+    "owner-targeted"
+  ],
+  "controlGate": "closed",
+  "installedGate": "closed",
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/root-acceptance.json",
+    "sha256": "dd962009089adeb3e6677293dadf7212933e9405b53210330acd8fc6b69e347b"
+  }
+}

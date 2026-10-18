@@ -1,0 +1,30 @@
+{
+  "id": "omit-context-control",
+  "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "exec",
+    "vitest",
+    "run",
+    "packages/server/src/transaction-http.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/omit-context-control.json",
+    "-t",
+    "^(?:serves\\ current\\ missing\\ receipt\\ root\\ and\\ page\\ context\\ without\\ changing\\ nondisclosure\\ or\\ HEAD)$"
+  ],
+  "selectedFullNames": [
+    "serves current missing receipt root and page context without changing nondisclosure or HEAD"
+  ],
+  "supervisorSeconds": 120,
+  "cases": 1,
+  "expectedTestExit": 1,
+  "http": 13,
+  "owners": 1,
+  "directories": 1,
+  "listeners": 1,
+  "productChildren": 0,
+  "requires": "copied current emitted graph and two projections only; separate closed gate"
+}

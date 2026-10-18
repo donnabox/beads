@@ -1,0 +1,279 @@
+{
+  "verifiedAt": "2026-10-14T19:58:48.527361+00:00",
+  "pr": {
+    "baseRefOid": "7e46cdc93b2fd02094ba7e15e57e743d2ef81daa",
+    "headRefOid": "31e74290fb43974ce6f7b15ed1c421badf180e4c",
+    "isDraft": true,
+    "state": "OPEN",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T19:56:01Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/gastownhall/bdp/actions/runs/38625916119/job/116064895947",
+        "name": "verify",
+        "startedAt": "2026-10-14T19:42:24Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      }
+    ]
+  },
+  "head": "31e74290fb43974ce6f7b15ed1c421badf180e4c",
+  "base": "454e521c1bf966aa1d430e86596f3924ac7d46d0",
+  "expectedMergeTree": "5c14bcc20ec7a72118bc07d2ed5896703211a660",
+  "ci": {
+    "conclusion": "success",
+    "headSha": "31e74290fb43974ce6f7b15ed1c421badf180e4c",
+    "jobs": [
+      {
+        "completedAt": "2026-10-14T19:56:01Z",
+        "conclusion": "success",
+        "databaseId": 116064895947,
+        "name": "verify",
+        "startedAt": "2026-10-14T19:42:24Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-14T19:42:27Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-14T19:42:25Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:42:29Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 2,
+            "startedAt": "2026-10-14T19:42:27Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:42:30Z",
+            "conclusion": "success",
+            "name": "Run pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1",
+            "number": 3,
+            "startedAt": "2026-10-14T19:42:29Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:42:37Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+            "number": 4,
+            "startedAt": "2026-10-14T19:42:30Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:42:46Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16",
+            "number": 5,
+            "startedAt": "2026-10-14T19:42:37Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:42:46Z",
+            "conclusion": "success",
+            "name": "Run test \"$(node --version)\" = \"v24.16.0\"",
+            "number": 6,
+            "startedAt": "2026-10-14T19:42:46Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:42:46Z",
+            "conclusion": "success",
+            "name": "Run test \"$(pnpm --version)\" = \"11.20.0\"",
+            "number": 7,
+            "startedAt": "2026-10-14T19:42:46Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:42:52Z",
+            "conclusion": "success",
+            "name": "Run sudo apt-get update",
+            "number": 8,
+            "startedAt": "2026-10-14T19:42:46Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:42:52Z",
+            "conclusion": "success",
+            "name": "Run sudo apt-get install --yes libicu-dev",
+            "number": 9,
+            "startedAt": "2026-10-14T19:42:52Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:42:52Z",
+            "conclusion": "success",
+            "name": "Run mkdir -p \"$RUNNER_TEMP/bdp-tools\"",
+            "number": 10,
+            "startedAt": "2026-10-14T19:42:52Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:45:34Z",
+            "conclusion": "success",
+            "name": "Run go install github.com/steveyegge/beads/cmd/bd@v1.0.5",
+            "number": 11,
+            "startedAt": "2026-10-14T19:42:52Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:45:34Z",
+            "conclusion": "success",
+            "name": "Verify the Go-installed source-build bd identity",
+            "number": 12,
+            "startedAt": "2026-10-14T19:45:34Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:45:36Z",
+            "conclusion": "success",
+            "name": "Run pnpm install --frozen-lockfile",
+            "number": 13,
+            "startedAt": "2026-10-14T19:45:34Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:45:37Z",
+            "conclusion": "success",
+            "name": "Run pnpm format:check",
+            "number": 14,
+            "startedAt": "2026-10-14T19:45:36Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:45:40Z",
+            "conclusion": "success",
+            "name": "Run pnpm lint",
+            "number": 15,
+            "startedAt": "2026-10-14T19:45:37Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:45:41Z",
+            "conclusion": "success",
+            "name": "Run pnpm check:boundaries",
+            "number": 16,
+            "startedAt": "2026-10-14T19:45:40Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:45:44Z",
+            "conclusion": "success",
+            "name": "Run pnpm typecheck",
+            "number": 17,
+            "startedAt": "2026-10-14T19:45:41Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:45:47Z",
+            "conclusion": "success",
+            "name": "Run pnpm build",
+            "number": 18,
+            "startedAt": "2026-10-14T19:45:44Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:55:48Z",
+            "conclusion": "success",
+            "name": "Run pnpm test",
+            "number": 19,
+            "startedAt": "2026-10-14T19:45:47Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:55:50Z",
+            "conclusion": "success",
+            "name": "Run pnpm e2e:ready:preflight",
+            "number": 20,
+            "startedAt": "2026-10-14T19:55:48Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:55:57Z",
+            "conclusion": "success",
+            "name": "Run pnpm smoke",
+            "number": 21,
+            "startedAt": "2026-10-14T19:55:50Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:55:58Z",
+            "conclusion": "success",
+            "name": "Read-cohort evidence gate",
+            "number": 22,
+            "startedAt": "2026-10-14T19:55:57Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:55:58Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16",
+            "number": 41,
+            "startedAt": "2026-10-14T19:55:58Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:55:58Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+            "number": 42,
+            "startedAt": "2026-10-14T19:55:58Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:55:58Z",
+            "conclusion": "success",
+            "name": "Post Run pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1",
+            "number": 43,
+            "startedAt": "2026-10-14T19:55:58Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:55:58Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 44,
+            "startedAt": "2026-10-14T19:55:58Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:55:58Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 45,
+            "startedAt": "2026-10-14T19:55:58Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/gastownhall/bdp/actions/runs/38625916119/job/116064895947"
+      }
+    ],
+    "status": "completed",
+    "url": "https://github.com/gastownhall/bdp/actions/runs/38625916119"
+  },
+  "reviewArtifacts": {
+    "transaction-comparison-timeout-native-code-review.md": "b93f20324f4500bc9434f1d99a88df00d23da360534ad2635c6b4da9253b3075",
+    "transaction-comparison-timeout-claude-code-review.txt": "ed886cf7e9df7adad9f2b068a3e0a45f1d3fff230bfde0fda07b3167fbc7301f",
+    "transaction-comparison-timeout-final-code-dispositions.md": "47f44922d1af8bcabc092a4f552f7538af8ac1c4ef0890ed51c85b5b91adb6e1",
+    "transaction-comparison-timeout-repair-native-closure.md": "9268b54a54c44ad5ada51118a6a102dbc9de1d1fdd0b80fceccc1708c8df385c",
+    "pr120-w1b-ci-observability/native-review.md": "6bc67ddef3769f684b9315577b1989b38689cebfff3fe5566539cfeb3baa053b",
+    "pr120-w1b-claude-review.txt": "96b3cf6bd72a6139974680a54f10c825894334d1240d09fa995424cbfbf6ef2b",
+    "pr120-w1b-root-dispositions.md": "c7d33522eb16adabb69faff518531e8b73dfa52a4341f3570a173a07704d49d0",
+    "pr120-ci-headroom-v2-claude-review.txt": "b99f5461e51415a69204a6c87c3ac41cc250f99bdb5f29b4f875df6481610a53",
+    "pr120-ci-headroom-authoring-acceptance.md": "8bd965b5930c56f4ad9c8308faa1deafe20d1993108db05c9795196ebe23a901",
+    "pr120-ci-headroom-native-code-closure.md": "4f6eab72509c3fab57e6c95269232d1b1f8cf6ff6bee9f6731c473ccae859e7d",
+    "transaction-comparison-fault-guard-claude-code-review.txt": "172f87e16713899b3d686a603fc6ceb4ceb04ec5204c4172c5b4d2b67d15a49f",
+    "transaction-comparison-fault-guard-code-dispositions.md": "d7711a290648f1984c83784ebcfb4f9f2eee7fbaee0b4f4e30a489977480086f",
+    "transaction-comparison-fault-typing-repair/native-final-closure.md": "8f6a154dc312a1d7c7878054e9422699234d6598be4577bfe2774a3ba030889a",
+    "transaction-comparison-fault-typing-repair/fresh-healthy-installed/native-installed-closure.md": "32f1e98e77abf375b79b26fb5c4d02710f4b8cb4e50df2d13ad6d33e2b9d532f",
+    "maintenance-integration-report.md": "fee8c34357f5a23c0ac83fb080b02a91281f49c3a4b76d196494af2ceb2fad78"
+  },
+  "rootAudit": "transaction-comparison-fault-typing-repair/fresh-healthy-installed/root-packed-audit.json",
+  "sourceAudit": "maintenance-integration-report.json",
+  "releaseAuthorized": false
+}

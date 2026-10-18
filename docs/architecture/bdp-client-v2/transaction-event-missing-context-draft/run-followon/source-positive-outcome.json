@@ -1,0 +1,136 @@
+{
+  "at": "2026-10-15T11:00:47.889227+00:00",
+  "sourceBindingSha256": "acf190e742dfb669fe5607085a3ac60c5ecb66f4f86b1f05025424a7873615b0",
+  "followon": {
+    "owners-followon": {
+      "passed": [
+        "captures immutable current context for missing 'finite' 'Bead' Event source",
+        "captures immutable current context for missing 'finite' 'Link' Event source",
+        "captures immutable current context for missing 'SSE' 'Bead' Event source",
+        "captures immutable current context for missing 'SSE' 'Link' Event source"
+      ],
+      "skipped": 29,
+      "testExit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.3423285828903317,
+      "sourceUnchanged": true
+    },
+    "sse-regression": {
+      "passed": [
+        "Event reconnect syntax, minimum ordering and exact context codes are preserved over HTTP"
+      ],
+      "skipped": 20,
+      "testExit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.4507145001553,
+      "sourceUnchanged": true
+    }
+  },
+  "historicalFirstAttempt": {
+    "passed": 4,
+    "skipped": 29,
+    "supervisorExit": 1,
+    "reason": "exact selection missed four quoted owner titles",
+    "sourceHttpActuallyRecorded": 11
+  },
+  "combinedUniquePassedCases": 9,
+  "combinedHttpModel": 39,
+  "httpRetentionLimitation": "First source callback retained11 safe response records; existing SSE callback passed its source-derived28 dispatch path without persisting a full per-request report, so39 is not an independently intercepted aggregate counter.",
+  "cleanup": {
+    "independentSampledPidsChecked": [
+      80088,
+      80090,
+      80096,
+      80224,
+      80226,
+      80230,
+      80244,
+      80300,
+      80302,
+      80308,
+      80321,
+      80324,
+      80340,
+      80341,
+      80349,
+      80466,
+      80468,
+      80474,
+      80477,
+      80489,
+      80585,
+      80587,
+      80592,
+      80605,
+      80611,
+      80652,
+      80654,
+      80659,
+      80673,
+      80735,
+      80737,
+      80741,
+      80756,
+      80768,
+      80818,
+      80820,
+      80825,
+      80828,
+      80844,
+      82316,
+      82318,
+      82323,
+      82327,
+      82334,
+      82442,
+      82444,
+      82449,
+      82453,
+      82460
+    ],
+    "stillPresent": [],
+    "remainingSampledTemps": {
+      "owners-followon": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run-followon/owners-followon.tmp/node-compile-cache"
+      ],
+      "sse-regression": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run-followon/sse-regression.tmp/node-compile-cache"
+      ]
+    },
+    "resultRecords": {
+      "owners-followon": {
+        "remainingAfterCleanup": [],
+        "sampledPidsStillPresent": {},
+        "runtimeDirectoriesStillPresent": [],
+        "unclassifiedTempEntriesStillPresent": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run-followon/owners-followon.tmp/node-compile-cache"
+        ],
+        "timeout": false,
+        "forcedCleanup": false
+      },
+      "sse-regression": {
+        "remainingAfterCleanup": [],
+        "sampledPidsStillPresent": {},
+        "runtimeDirectoriesStillPresent": [],
+        "unclassifiedTempEntriesStillPresent": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run-followon/sse-regression.tmp/node-compile-cache"
+        ],
+        "timeout": false,
+        "forcedCleanup": false
+      }
+    }
+  },
+  "controlAndInstalled": "not executed; separate closed gates",
+  "artifacts": {
+    "sse-regression.processes.jsonl": "9f0ff3105593cff14c017e155a2ac44027cea5eae8fb574b644fe24746e074f8",
+    "owners-followon.log": "7d6b57fd5bc98116b1a6416401e198c5b24cb46ed98856c1b4f6da07ccb093e4",
+    "owners-followon.processes.jsonl": "3f092426c0d3c092e793df5221c078a6bbaeb7dfbdb3c4861e86f6d0f332eb69",
+    "sse-regression.log": "fe1c8cd5a23287f6c9f0bde1602bfab874ccb91ca7496640e35140640402e065",
+    "sse-regression.started.json": "aff3f886eb96297bf052555b6720282ea62f60a0746803c8f724e20101c3656c",
+    "owners-followon.exit.json": "047a0678f0e78d84569ac7a6de607c60457c582cb4456c366695c2a03509363e",
+    "sse-regression.json": "ef8133409ca55cbfed8b2f61ddb02be6efceb1cd3246f18d9867431fab06921a",
+    "sse-regression.exit.json": "ad9b54ff7db6bad2edb57fb60d8021f36e167d57924523e38367e441b3ea4685",
+    "owners-followon.started.json": "93024a108d6a798d865d8e8e620c92ecfec614c95521125f0bff33383fee7557",
+    "owners-followon.json": "2516ed6e778d4c59f222ccfd5b7c6791a98a3a7712f2e29bc7d301c6a49c1d51"
+  }
+}

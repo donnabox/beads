@@ -1,0 +1,27 @@
+{
+  "accepted": true,
+  "sourceBindingSha256": "db20a737d5f68364208c2b5670f8e38a01ee5666a3d7c94cccef955b49b8257f",
+  "bootstrapReuseAccepted": true,
+  "bootstrapReuseBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation-successor-1/bootstrap-reuse-binding.json",
+    "sha256": "fea2e8b4d6f25ff715e6917b3877e123623c192420006a6b4e42afdff6d03dd1"
+  },
+  "staticValidationAuthorized": true,
+  "runtimeValidationAuthorized": true,
+  "nativeDeltaClosureAccepted": true,
+  "actualClaudeDispositionAccepted": true,
+  "at": "2026-10-17T08:55:58.056139+00:00",
+  "nativePreparationSha256": "bc624b718462ce36188ff0b36e823394cebb6806e2f704e92d727498db50d0a2",
+  "rootVerified": {
+    "indexedFiles": 86,
+    "referencePins": 120,
+    "sourceFiles": 679,
+    "bootstrapRecords": 8,
+    "unchangedDependencyInputs": 17,
+    "actualTools": 11,
+    "freshStages": 19
+  },
+  "limits": "Root verified7fresh stages including12sourcecallbacks/3actualreports and476build entries. Package/consumer creation and installation released; consumer verification waits for actual lock pin; installed runs wait for root accepted provenance.",
+  "staticPrefixSha256": "1450d05ee97ed7c12330579cfa9ed3cd7fdf8634274659533be07c956ca11bcc",
+  "nativeSourceAuditSha256": "a27dbc8ca142717161de7c421f24b9b274426dd5b2ce47be4744a3359ac5cf8a"
+}

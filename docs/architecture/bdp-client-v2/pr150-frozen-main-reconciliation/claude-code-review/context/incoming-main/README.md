@@ -1,0 +1,64 @@
+# Bead Protocol
+
+This repository is the source of truth for the Bead Protocol (BDP).
+
+**The sole specification authority is [`specs/`](specs/README.md).**
+Start with [Core and Read](specs/profiles/core/core.md) and
+[Write](specs/profiles/write/write.md). Their shared draft status is unchanged:
+they are not a conformance target until adopted. Material outside `specs/` is
+implementation, test evidence, navigation or historical design context; it does
+not define or override BDP requirements.
+
+BDP is an HTTP-based protocol for interacting with beads and the links
+between beads. BDP defines the uniform mechanism for reading, creating,
+updating, linking, and deleting beads independent of the type of the bead
+(e.g., Issue, Task, Bug) or link (e.g., Dependency, Parent-Child,
+Assigned-To). Beads and links are nominally typed and have a schema for
+their JSON-valued properties, but the operations on a bead are consistent
+across all bead and link types.
+
+This uniformity and adherence to HTTP and JSON norms lowers the bar of
+entry for people, systems, and agents to interact with beads.
+
+## Work-in-progress Type design
+
+The [Types design specification](specs/profiles/types/types.md) records the evolving optional,
+Scope-wide Types profile, including definitions as Beads, exact revisions,
+conformance, graph constraints and lifecycle decisions. Its [candidate schemas and
+examples](specs/profiles/types/README.md) support design review. Settled design rules and
+open decisions are distinguished explicitly. Landing this work on main does not
+adopt new wire forms, modify the current protocol contract, or claim implementation.
+Issue/Dependency and Memory remain separate domain drafts linked from that document.
+
+## Protocol and reference implementation
+
+A protocol also carries the two problems no single bead-store
+implementation can solve alone: **versioning** — naming and citing exact
+states of a bead with tokens that survive copying, syncing, and storage
+changes — and **federation** — stores referencing each other's beads and
+resolving those references. BDP's core design choices follow from these:
+opaque version tokens, compare-and-swap updates, epoch fencing for history
+rewrites, an ordered change feed, and honest capability advertising.
+
+What's in this repository:
+
+- the normative specification and its canonical JSON Schemas
+  (`specs/profiles/core/bdp-v0.schema.json`);
+- a Node/TypeScript reference stack: a generic client (`bdp`), a
+  deterministic test server (`bdptest`), and a server that adapts the `bd`
+  CLI (`bdpbd`);
+- a black-box conformance suite, and a sealed evidence artifact proving the
+  Read profile against both implementations (see [STATUS.md](STATUS.md)).
+
+Try the [three-minute BDP Read walkthrough](docs/read-demo.md) to follow Links
+and run the same readiness client against both servers.
+The [controlled History client walkthrough](docs/history-client-demo.md) follows
+versions pages and requests old Beads and Links through the actual SDK against
+an explicit HTTP fixture.
+
+Conformance claims are backed by committed, CI-verified evidence — never by
+assertion. See `packages/conformance/matrices/README.md` for how that
+works. Open protocol questions are recorded at the end of the draft so
+deferred work stays visible; contributions there are welcome.
+
+License: MIT (Copyright 2026 Gas City Inc.).

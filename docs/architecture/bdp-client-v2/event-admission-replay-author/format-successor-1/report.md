@@ -1,0 +1,9 @@
+# Event formatter successor — frozen for native equivalence review
+
+One root-authorized pinned Node24/Biome2.5.7 `format --write` invocation completed raw0 in0.245s. The raw log reports5files fixed. Exact command, tool-binding identity, sampled processes and exit are preserved. No forced cleanup, error or sampled survivor occurred. All11 tool realpaths/bytes were checked before and after. No formatter retry, import sorting, lint fix, typecheck, build, test, service, commit or push ran in this correction.
+
+The complete correction changes exactly the5 flagged files; HTTP source and674 other tracked files equal the original frozen draft. Original six-file scope relative to9f89271e remains, with673 files outside it unchanged. `before/` and `after/` contain complete formatter inputs/outputs, with forward/reverse patches and all679 pre/post hashes for independent syntax-equivalence review. Formatter success alone is not a semantic verdict.
+
+Exact selection/workload/report schemas are copied unchanged. Installed historical prefix remains byte-identical. Existing SSE historical content through the last callback remains identical after excluding only inter-append blank whitespace; the original format-successor input remains preserved. Finite Event sentinel lines and production service/store changes are included in the full formatting delta for native review, not hidden as test-only changes. No semantic changes were authored.
+
+Original typecheck pass and actual formatting failure remain original-source evidence. The failed format log contains truncated diagnostic sections; complete before/after files now supply the full formatting delta. Only actual original bootstrap2 may later be reused after explicit unchanged dependency/tool mapping. All19 subsequent stages and4required checks need fresh root release and outcomes on this successor; none is claimed here. Native/root acceptance is pending.

@@ -1,0 +1,24 @@
+{
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+  "reviewBase": "1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05",
+  "finalBase": null,
+  "finalHead": null,
+  "finalTree": null,
+  "parents": null,
+  "diffSha256": null,
+  "files": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "60c527f6a5673161eacf022c0015d09bea2743d153b8b0d0c86160b76fafeb68",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "33032fe07eb06d2a8968fcd8e5a3cf93cb4637c551868c22da9ea0c4edd587a3",
+    "packages/conformance/src/transactional-cumulative.test.ts": "9f70f8a24ea358b2cd613fd392be68057abd7b1552ec8cc6c4bc1a3241de69f6",
+    "apps/bdptest/src/transactional-matrix.test.ts": "136de49e859546e081c39410f1d3ee6fc01e32faf1879084718ad67b553d62ec"
+  },
+  "status": "Corrected reviewed four-file bytes pinned; clean ordinary integrated finalBase/head/tree/parents remain unknown, never inferred",
+  "authorBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/source-binding.json",
+    "sha256": "bf626872ba83bfafab4b957632247684d1169e0b9e3fbf6c627f8c4a644413d6"
+  },
+  "reviewedSourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-correction/source-binding.json",
+    "sha256": "1095d0093a729c9138c22c6419da528fefbece42be5707dd16db1238e91d61ee"
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "status": "FROZEN_CLEAN_INTEGRATED_SOURCE_ROOT_LAUNCH_ONLY",
+  "sections": [
+    {
+      "label": "Review scope and known evidence",
+      "bytes": 3337,
+      "sha256": "c6fab3f31b886a8b46f8c26fc9576c1c60814077a7728e1de4eb28989d6e2a81",
+      "basis": null
+    },
+    {
+      "label": "Complete new installed test: apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "bytes": 23338,
+      "sha256": "cefde296b07d6be86a83d13892a603588c9054bdd54196048a855e74f9e9b7f9",
+      "basis": {
+        "path": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+        "kind": "complete-current-file"
+      }
+    },
+    {
+      "label": "Complete changed source-test and existing Snapshot test diff",
+      "bytes": 25655,
+      "sha256": "bb1891ab70ecfadbe05516d45c14c603ccbd9aecaeeaafab28be4abf44ee51bc",
+      "basis": {
+        "kind": "all-test-patch-sections-except-new-installed-file"
+      }
+    },
+    {
+      "label": "Compact actual production delta",
+      "bytes": 1410,
+      "sha256": "a8ac1f7ed825cc3a5b5cee3530d4afe22e2259f588cdfb04dc5e6a1d99c5b965",
+      "basis": {
+        "kind": "actual validator and placement excerpts",
+        "ranges": [
+          {
+            "path": "packages/server/src/transaction-consistency.ts",
+            "start": 13,
+            "end": 27,
+            "fileSha256": "00a420c3e9f5dcb1b8814a6476d5ce52edfb7adbbd1c64ab082833f17322a336"
+          },
+          {
+            "path": "packages/server/src/transaction-http.ts",
+            "start": 380,
+            "end": 399,
+            "fileSha256": "ebb3550110bd6fda638572966e5faa05c15f062f37a10947f6e442fc7d4570f4"
+          }
+        ]
+      }
+    },
+    {
+      "label": "scripts/transaction-installed-observation.mjs lines1\u201397",
+      "bytes": 3264,
+      "sha256": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+      "basis": {
+        "path": "scripts/transaction-installed-observation.mjs",
+        "start": 1,
+        "end": 97,
+        "fileSha256": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b"
+      }
+    },
+    {
+      "label": "apps/bdptest/test-support/transactional-execution-binding.ts lines1\u201393",
+      "bytes": 3088,
+      "sha256": "4727614cf186847c3d670ed47452da3141a511ffebcf7de39c28e4108215c47e",
+      "basis": {
+        "path": "apps/bdptest/test-support/transactional-execution-binding.ts",
+        "start": 1,
+        "end": 93,
+        "fileSha256": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89"
+      }
+    },
+    {
+      "label": "Actual installed process lifecycle/ready/failure excerpts",
+      "bytes": 1412,
+      "sha256": "efd46986d2753b7b270acccfef8583059cc3e0de87d5e98f2c110ea5e0847f05",
+      "basis": {
+        "ranges": [
+          {
+            "path": "packages/server/src/transaction-installed-process.ts",
+            "start": 24,
+            "end": 64,
+            "fileSha256": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7"
+          },
+          {
+            "path": "packages/server/src/transaction-installed-process.ts",
+            "start": 76,
+            "end": 81,
+            "fileSha256": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7"
+          }
+        ]
+      }
+    },
+    {
+      "label": "packages/server/src/transaction-runtime.ts lines87\u201399",
+      "bytes": 671,
+      "sha256": "5656647fd6fa3b7f2ab5c181c08da324c9628a051e63709f3452d79da22ef6a1",
+      "basis": {
+        "path": "packages/server/src/transaction-runtime.ts",
+        "start": 87,
+        "end": 99,
+        "fileSha256": "77954f0a85029d76443feac54cd53cda4339ffc126660ace5a9f5af92466c573"
+      }
+    },
+    {
+      "label": "packages/server/src/transaction-http.test.ts lines53\u2013101",
+      "bytes": 1652,
+      "sha256": "50deb178bd21ad0784bde1498d7c49ac864458be0a93219c62e56435cfe943f1",
+      "basis": {
+        "path": "packages/server/src/transaction-http.test.ts",
+        "start": 53,
+        "end": 101,
+        "fileSha256": "ca2e4e7663a93060ba2a0788c5ef349a3de4991e3108f81507f37a723d964781"
+      }
+    },
+    {
+      "label": "Evidence boundaries",
+      "bytes": 1094,
+      "sha256": "132b62bdd058857bfd2aa078a739baac61dc67dba713c9c610c4b33ba219c059",
+      "basis": null
+    }
+  ],
+  "extraction": "Each section body is source text normalized to exactly one terminal newline; sections joined by one additional newline. Headings are not included in excerpt hashes.",
+  "coverage": {
+    "completeNewInstalledFile": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+    "completeChangedTestSections": [
+      "diff --git a/apps/bdptest/src/transactional-snapshot-installed.test.ts b/apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "diff --git a/packages/server/src/transaction-changefeed.test.ts b/packages/server/src/transaction-changefeed.test.ts",
+      "diff --git a/packages/server/src/transaction-consistency.test.ts b/packages/server/src/transaction-consistency.test.ts",
+      "diff --git a/packages/server/src/transaction-http.test.ts b/packages/server/src/transaction-http.test.ts",
+      "diff --git a/packages/server/src/transaction-schema-http.test.ts b/packages/server/src/transaction-schema-http.test.ts",
+      "diff --git a/packages/server/src/transaction-snapshot-http.test.ts b/packages/server/src/transaction-snapshot-http.test.ts"
+    ],
+    "productionContext": "Exact validator/placement excerpts; full production diff belongs to separate wire scope"
+  },
+  "promptBytes": 65595,
+  "promptSha256": "17e927eec62818685cf6d6ed1261dae6072478228a73a689d00d41f11ee48fbe",
+  "reviewHead": "c18c71202c90fa2558f34107ad342befabf750fe",
+  "reviewTree": "596abe870220fb61ce606f8382a9da52d554d063",
+  "fullCandidatePatchSha256": "4c9a9c6757f18080821522477591167c21039e92fcdf6c83c3e8ff74c78eaa1d",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/final-source.json",
+    "sha256": "273b5d230ddbac111b106463a5af351db14d77082d77e9c090b4802d96c0d923"
+  }
+}

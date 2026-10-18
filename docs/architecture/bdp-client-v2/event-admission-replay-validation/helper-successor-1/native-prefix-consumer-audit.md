@@ -1,0 +1,17 @@
+# Independent fresh helper prefix/consumer acceptance
+
+**Accepted through15 actual fresh stages. No actionable discrepancy found.** External historical/new callbacks and required checks remain pending at this boundary. The predecessor historical callback pass plus failed auditor remain historical evidence; neither is reused as a successful result in this successor.
+
+Independently verified all15 terminal raw0/accepted records, actual log hashes, source identity/unchanged flags, no forced cleanup/errors/remaining processes/runtime directories. Read actual start/process evidence existence. Fresh census found283 unique sampled PIDs absent. Only the original metadata-successor bootstrap2 is reused under the previously reviewed17 dependency/11 tool/8 record mapping; all later results here are fresh.
+
+Rehashed all679 current source and476 build artifacts, including fresh build start/exit/log linkage. Source identity10928ef28513fb178c3310c6610c689e7b6a39c4262d8363da3082598fd6ddbb and binding07c407cf remain unchanged. Actual source run17passed/60skipped across2files, raw0/10.645629s; immediate corrected auditor raw0/9.379s. Exact selected names match actual results. All16 JSON observations parsed from the new raw log equal the new accepted artifact:12new/4legacy. No predecessor report was substituted.
+
+D reports37 requests with200×11,503×16,410×3,409×3,400×2,404×1,406×1; cleanup-inclusive472.912417ms, two positive streams, closed/removed/failureCount0 and actual directory absent. Six capture cases preserve opaque tuple while real context changespos-1→pos-2; closure and counters pass. Owner SQL preparation counts remain preparations-only with unobserved baselines; drain's synchronous flag remains only synchronous. Source200 aggregate remains prospective/source-derived where unreported, not a reconstructed network census. Lint warnings/information remain nonzero as recorded; no baseline-equivalence claim.
+
+Independently verified fresh package and consumer chain: both actual archives rehashed;321 tar members compared to installed files; recorded source-file digests checked; both archiveSHA512 values occur in actual lock93cb2686e1e1b962dd223710bef867d4791a69d59c04740f614e05d9981d086f. Complete current inventory equals870 file hashes and17 link text/target records. All8 production manifests/versions and dependency-manifest records match. Entry/file digest, source/binding, consumer manifest/settings/lock and tar-proof linkage match.
+
+Recomputed actual path-sensitive payload from current file bytes and dependency graph:14 recursive package visits/475 file visits produce da80f6d7f6c195328d4356e14f5446a00c4dd36f8755259609d482b51d003e5f. Same payload digest as predecessor is expected from unchanged source, but fresh proof/inventory and consumer paths remain separately attributed. Base9f alone is not the dirty implementation or child-attested source.
+
+Fresh verification raw0/9.433370s; exit629ecac4944467b7216dc82239c82c8b20ff3d0dd8c90e068f4c3e3cca22bbf6. Fresh proofbe1e750457d4e857890ab6c284b3480fe38e805b2ba17daa3b1b75db15863435; inventoryb6b7171705e49911c5c2cb9f58efec13eaa762cc4044c31965bea167503a2236. Entrybcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c.
+
+This acceptance ends before actual external behavior. Root must release historical5/new10 with immediate audits and required4 separately. No profile qualification/public admission/release claim. No helper import/execution, product runtime, source edit or gate mutation performed by this audit.

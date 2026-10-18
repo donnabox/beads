@@ -1,0 +1,30 @@
+{
+  "packages/server/src/transaction-event-sse.test.ts": [
+    {
+      "before": "      const result = f.owner.beginEventScan(\n        sourceUrl,\n        after,\n        minimum,\n        invalidReconnect,\n        admission,\n      );",
+      "after": "      const result = f.owner.beginEventScan(sourceUrl, after, minimum, invalidReconnect, admission);"
+    },
+    {
+      "before": "  const { TransactionMinimumUnproved, TransactionMinimumFailure } =\n    await import(\"./transaction-consistency.js\");",
+      "after": "  const { TransactionMinimumUnproved, TransactionMinimumFailure } = await import(\n    \"./transaction-consistency.js\"\n  );"
+    },
+    {
+      "before": "});\n\n\nit(\"serves initial Scope Event SSE opaque minima before conditional admission\"",
+      "after": "});\n\nit(\"serves initial Scope Event SSE opaque minima before conditional admission\""
+    },
+    {
+      "before": "            code: status === 401 ? \"unauthenticated\" :\n              target === \"events/?after=\" ? \"invalid-parameter\" : \"malformed-request\",",
+      "after": "            code:\n              status === 401\n                ? \"unauthenticated\"\n                : target === \"events/?after=\"\n                  ? \"invalid-parameter\"\n                  : \"malformed-request\","
+    },
+    {
+      "before": "      expect(event).toMatchObject({ source: `${scope}events/`, transaction: seed.body.transaction });",
+      "after": "      expect(event).toMatchObject({\n        source: `${scope}events/`,\n        transaction: seed.body.transaction,\n      });"
+    }
+  ],
+  "apps/bdptest/src/transactional-event-sse-installed.test.ts": [
+    {
+      "before": "    await bounded(recorder.until(() => idFrames(recorder).length >= 1), workEnd, \"SSE Event\");",
+      "after": "    await bounded(\n      recorder.until(() => idFrames(recorder).length >= 1),\n      workEnd,\n      \"SSE Event\",\n    );"
+    }
+  ]
+}

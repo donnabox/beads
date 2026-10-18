@@ -1,0 +1,49 @@
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -5134,26 +5134,28 @@
+     let timer: ReturnType<typeof setTimeout> | undefined;
+     try {
+       // A startup failure has no returned owner handle: retain its directory.
+-      if (!f) throw new Error("sequence startup stop state unknown");
+-      const close = callbacks.shift();
+-      if (!close) throw new Error("sequence close callback missing");
+-      await Promise.race([
+-        Promise.resolve().then(close),
+-        new Promise<never>((_, reject) => {
+-          timer = setTimeout(() => {
+-            cleanupExceeded = true;
+-            reject(cleanupReason);
+-          }, 5000);
+-        }),
+-      ]);
+-      for (const remove of callbacks) {
+-        try {
+-          await remove();
+-        } catch (error) {
+-          failures.push(error);
++      const close = f ? callbacks.shift() : undefined;
++      if (!f) failures.push(new Error("sequence startup stop state unknown"));
++      else if (!close) failures.push(new Error("sequence close callback missing"));
++      else {
++        await Promise.race([
++          Promise.resolve().then(close),
++          new Promise<never>((_, reject) => {
++            timer = setTimeout(() => {
++              cleanupExceeded = true;
++              reject(cleanupReason);
++            }, 5000);
++          }),
++        ]);
++        for (const remove of callbacks) {
++          try {
++            await remove();
++          } catch (error) {
++            failures.push(error);
++          }
+         }
++        cleanupCompleted = true;
+       }
+-      cleanupCompleted = true;
+     } catch (error) {
+       failures.push(error);
+     } finally {

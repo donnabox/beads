@@ -1,0 +1,13 @@
+# Combined profile validation — b543923
+
+Exact b54392340de34c6c3e8aa07d959d7b6458338261 composes71549f2 with RU exact artifact retention8e3781c, aggregate test budget5504538 and receipt guard27bad2b. Ordinary ancestry preserves every frozen candidate; only append/context conflicts in transaction progress doc were manually resolved retaining both sections. Runtime/test files merged cleanly. Source clean.
+
+Node24.16.0/pnpm11.20.0: clean/prebuildtype/build, full8,285tests/141files/one optional skip PASS51.64s. Boundaries/format/lint/unchanged89-row Read evidence/bothsmokes/sevenpreflight pass. Logs installed-profiles-b543923/results.json and command logs. Fresh installed package verification follows separately; no inherited observation is relabeled.
+
+Root native reviews pass W2 branch/body-limit repair75f, compiled evidence7b and receipt/budget27b/550. RU independent native212tests/fivefiles plus actual old/new format refusal and same-length capture/same-count inventory probes pass. External RU/W2/receipt-budget reviews pending. Compiled evidence external closes original main findings; small exact-equality/full-inventory/detachment/reproduction followups assigned separately, no correctness defect.064 set review confirms cardinality and required Problem correction;27b addresses its small guard/test gaps.
+
+Prior637 CI38374131399 failed only on cumulative matrix aggregate30000ms (8254passed/1failed/1skip).550 supplies90s cooperative abort and120s outer budget for this40-scenario job, with cleanup/exited-child assertion; inner5s request,10s child launch and30s individual controls remain. New exact CI must pass before readiness. All profile claims remain closed; recorded28whole/101uncovered is diagnostic, not qualification.
+
+Remaining implementation: owned-Link transaction effects, practical materialization budget, required Event/Snapshot/changefeed serving, configured authorization and cumulative required-contract evidence. Product Selector admission decision still pending; independent work continues. No main merge or Preview2 promotion.
+
+Fresh packed verification:93tests/fourfiles PASS39.20s; clean exactb543923 source. Actual payload13a05baa00178461d3e421c892326a61adcbc993b905641159cc4d4f774bac9f; harness89d471885903a3e1dda4939f54993a88696e1b8c336dfef287a0c28966c47d0a.40sessions/609clientexchanges/44setup/21native conditional observations;129required/40authored/28whole/101uncovered, claimEligible:false. Whole member-shape council finding now closed by75f actual aliases/named-Link evidence; no whole-profile inference. External RU review confirms retention and ordering, with small diagnostic/fixture/docs followups assigned; duplicated ceiling refactor explicitly deferred with twin reference. ExactCI38376385086 running.

@@ -1,0 +1,20 @@
+{
+  "head": "40806dd3ac3e74ff94c07330c89ee47dc730080c",
+  "tree": "e870145ffa8f49821ea3a1fb59c1c06506b8bf17",
+  "parent": "427cfef6decbb422b393024e36218affc26007fa",
+  "changed": [
+    ".github/workflows/ci.yml"
+  ],
+  "unchangedTrackedEntries": 662,
+  "parser": "Ruby/Psych3.1.0",
+  "parsedOnlyChange": {
+    "jobs.verify.timeout-minutes": [
+      15,
+      20
+    ]
+  },
+  "stepsUnchanged": 21,
+  "diffCheckPassed": true,
+  "clean": true,
+  "runtimeExecution": false
+}

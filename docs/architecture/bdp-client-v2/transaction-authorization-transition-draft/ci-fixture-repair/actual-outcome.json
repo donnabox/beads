@@ -1,0 +1,54 @@
+{
+  "at": "2026-10-16T02:26:58.331819+00:00",
+  "sourceBindingSha256": "61afa5ea5adbdaddece495c3983bbe20723c09d687f89f86f4804d55fef3ad1f",
+  "correctionSha256": "a7e62900feae145482227a89bad8366d8ebf4e374002411339fce9addea34d11",
+  "outcomes": {
+    "typecheck": {
+      "exit": 0,
+      "seconds": 1.4732504589483142,
+      "sha256": "625b33f76e015501305b60ec868e1340107f7aa64abb4490c4bc9b157e9424a3"
+    },
+    "format-check": {
+      "exit": 0,
+      "seconds": 0.5861744999419898,
+      "sha256": "6f06b6a7560f2e9339260b41568063124c2435a14c56d011b580838cf3c72708"
+    },
+    "affected-files": {
+      "exit": 0,
+      "seconds": 7.592720333021134,
+      "sha256": "9bcd8b97ad727132f9b94195964216a33eb3ae83d93a16ec159299f44eb2bc66"
+    }
+  },
+  "passed": 114,
+  "failed": 0,
+  "skipped": 0,
+  "fileCounts": {
+    "transaction-read.test.ts": 65,
+    "transaction-snapshot.test.ts": 49
+  },
+  "independentlyAbsentPids": [
+    32181,
+    32183,
+    32188,
+    32212,
+    32297,
+    32299,
+    32408,
+    32410,
+    32415,
+    32418,
+    32426
+  ],
+  "productionAndOtherTrackedUnchanged": 673,
+  "emittedUnchanged": 444,
+  "cleanup": {
+    "typecheck": [
+      "node-compile-cache"
+    ],
+    "format-check": [],
+    "affected-files": []
+  },
+  "preparationFailure": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/ci-fixture-repair/preparation-first-failure.json",
+  "priorCIRemainsFailed": true,
+  "buildInstalledNotRerun": true
+}

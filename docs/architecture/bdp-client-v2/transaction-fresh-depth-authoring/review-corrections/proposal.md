@@ -1,0 +1,9 @@
+# Three-file correction proposal
+
+Prepared outside the checkout while original source/installed code reviews run. Do not apply until affected reviews terminate and their findings are read. Original source and report pins remain preserved; successor bindings will be explicit. Runtime remains unexecuted.
+
+1. In the new source submission witness, use callback-local Scope types/ Type IDs (including the after-expiry create) so the genuine compiled contracts satisfy provider configuration. Replace unsupported JSON Patch copy with supported add /copy carrying the same raw12000deep literal, followed by existing append. Same independent expected Resource. Refresh body hashes/bytes; the expanded body remains under64KiB. Existing global fixtures are unchanged.
+2. In installed direct13, apply the launchAttempted/known-stop retention pattern already used by sequence8/new13. Keep a failed-start store when child termination cannot be proven. Existing request bodies, counts and child lifecycle remain unchanged; safe report gains two booleans.
+3. In already-owned transaction-store.ts, replace the recursive observeReceipt and readReceiptPage freeze walkers with one private iterative freezeReceiptValue. Traverse already-frozen parents, preserve full nested immutability and projection/capture ordering; no public export, storage or API change. The source witness independently verifies all nested objects frozen in a genuine deep root receipt and issued/reopened deep page. Adds one source receipt read, no HTTP, owner opens or cases.
+
+Scope remains18 authored files overall; correction touches3. Workload remains42source+3installed+1negativecontrol,81prospectiveHTTP. Prior eight-production review missed the recursive receipt dependency and its acceptance is reopened pending this correction council. This corrects concrete serving and fixture defects; no profile qualification or new protocol decision follows.

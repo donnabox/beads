@@ -1,0 +1,35 @@
+{
+  "status": "closed; generation and execution each require root release",
+  "id": "suppress-policy-publication",
+  "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/emitted-control-preparation-v2/mirror",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/emitted-control-preparation-v2/mirror/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+    "run",
+    "packages/server/src/transaction-runtime.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/emitted-control-preparation-v2/run/control.results.json",
+    "-t",
+    "^narrows\\ current\\ Transactional\\ visibility\\ and\\ fences\\ issued\\ handles\\ after\\ policy\\ publication$"
+  ],
+  "selectedFullNames": [
+    "narrows current Transactional visibility and fences issued handles after policy publication"
+  ],
+  "cases": 1,
+  "expectedHttp": 7,
+  "maximumHttp": 17,
+  "owners": 1,
+  "directories": 1,
+  "listeners": 1,
+  "productChildren": 0,
+  "testTimeoutMs": 30000,
+  "supervisorSeconds": 120,
+  "ownedTempPrefixes": [
+    "bdp-authorization-http-"
+  ],
+  "expectedRawTestExit": 1,
+  "requiredNamedFailure": "authorization-transition:generation-and-lease",
+  "executionSupervisor": "Pending root review of actual generated graph; reuse source supervisor120/115 bound, separate expected-negative adjudication. This generator does not launch commands."
+}

@@ -1,0 +1,64 @@
+{
+  "source": {
+    "head": "a18fa993703185a108df4ad75b6d142072ba8736",
+    "tree": "592c5e6e5c0c790b6e2690495b94ac48705b9069",
+    "parent": "18f5428686dd84fb139c9dbbcbe39d5958012323",
+    "status": "",
+    "testBeforeSha256": "e6a52fa4d645ffef04e4b6e8ccd9bbcb7495624ae0e3f46536e0e9ac6b707974",
+    "testAfterSha256": "b13688d6b02c5901e68251620ab6d7e00f9f675af4025319817f9e8cc6c9bca3",
+    "repairPatchSha256": "18651f9db0489fb1ba60ce3f61433e3d7e6ca822d68c1ae45957f6fd0aa0b996",
+    "workingSourceHashes": {
+      "apps/bdptest/src/transactional-same-key-overlap-installed.test.ts": "b13688d6b02c5901e68251620ab6d7e00f9f675af4025319817f9e8cc6c9bca3",
+      "docs/design/transaction-implementation-progress.md": "21069d8d8eb5d5048a1dbcb38871ea0f8e72b463e9456633b12b4860e024a728"
+    },
+    "committedReferenceHashes": {
+      "apps/bdptest/test-support/transactional-execution-binding.ts": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+      "packages/conformance/test-support/profile-contract-plan.ts": "18c953443e6695cfa48f89677231fecffc349df02bd080f107a5c739db10b728",
+      "scripts/transaction-installed-observation.mjs": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+      "packages/conformance/test-support/transactional/fixture-v1.json": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+    },
+    "scope": "clean ordinary test-only successor; original dirty preparation retained under before-focused"
+  },
+  "sections": [
+    {
+      "title": "Complete exact diff",
+      "bytes": 1086,
+      "sha256": "18651f9db0489fb1ba60ce3f61433e3d7e6ca822d68c1ae45957f6fd0aa0b996"
+    },
+    {
+      "title": "Actual original F3",
+      "bytes": 1264,
+      "sha256": "92b96e3f5b1a5e4cfc0aa180e6f666eebade6672b32cce53eb19bffc32a369c1"
+    },
+    {
+      "title": "Current callback state declarations/deadline/destroyActive:174-231",
+      "bytes": 2237,
+      "sha256": "35cd9de7b04c9a38c893f6d844e29da0a0a70a48336539dc2a578db44c0c1a18"
+    },
+    {
+      "title": "Complete addFailure:252-254",
+      "bytes": 101,
+      "sha256": "1c3092cd83cd3a570edf94296234180561b0218fa5082e12fb4a67ae249f4720"
+    },
+    {
+      "title": "Complete catch, cleanup, observation, serializers and final throws:784-961",
+      "bytes": 6703,
+      "sha256": "bf935c5e8f5b08f0d11a738ca8e232b1aee253546ff4b83989f4e03ac242fce2"
+    },
+    {
+      "title": "Used external/local declaration semantics",
+      "bytes": 1479,
+      "sha256": "d5896240429bd349028b8031f9384b4a1035c23641d9f5ac0293fffba884a6e2"
+    },
+    {
+      "title": "Root synthetic check, narrowly attributed",
+      "bytes": 486,
+      "sha256": "8666852d39af734ad1822e71d9afa046b735d6c6bc65ec43c120e20e93be30a8"
+    }
+  ],
+  "promptBytes": 14487,
+  "promptSha256": "9a47425355e625ecdac12d71012d96b67a6a81c4c554db0cefbca60870510518",
+  "fullChangedDiffIncluded": true,
+  "scope": "exact F3 repair; complete used local flow and explicit other-state semantics; no launch",
+  "previousLargerPacket": "before-focused"
+}

@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/review-installed.py", line 69, in <module>
+    require(r['bodyOctets']==(0 if row['method']=='HEAD' else len(body)) and r['bodySha256']==sha(b'' if row['method']=='HEAD' else body),'Exact Problem body fingerprint')
+  File "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/gate.py", line 10, in require
+    if not ok:raise RuntimeError(message)
+RuntimeError: Exact Problem body fingerprint
+Traceback (most recent call last):
+  File "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py", line 5, in <module>
+    subprocess.run(sys.argv[1:],check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['/usr/bin/python3', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/review-installed.py', 'positive']' returned non-zero exit status 1.

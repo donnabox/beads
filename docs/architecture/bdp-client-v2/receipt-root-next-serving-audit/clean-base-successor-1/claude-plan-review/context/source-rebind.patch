@@ -1,0 +1,60 @@
+--- apps/bdptest/src/transactional-minimum-receiving-installed.test.ts (old dirty planning bytes)
++++ apps/bdptest/src/transactional-minimum-receiving-installed.test.ts (clean PR158)
+@@ -969,7 +969,12 @@
+           }, 10000);
+         }),
+       ]);
+-      if (child && !cleanupExceeded && child.child.exitCode === 0 && child.child.signalCode === null)
++      if (
++        child &&
++        !cleanupExceeded &&
++        child.child.exitCode === 0 &&
++        child.child.signalCode === null
++      )
+         closed = true;
+       else if (launchAttempted)
+         fail(new Error("installed receipt root clean close unproved"), "unclean-close");
+--- packages/server/src/transaction-service.test.ts (old dirty planning bytes)
++++ packages/server/src/transaction-service.test.ts (clean PR158)
+@@ -3599,11 +3599,10 @@
+     ["p", `${scope}receipts/missing`],
+   ] as const) {
+     expect(
+-      await service.receiptAtMinimum(
+-        { kind: "authenticated", principal },
+-        id,
+-        { ...supplied, minimumPosition: "unknown" },
+-      ),
++      await service.receiptAtMinimum({ kind: "authenticated", principal }, id, {
++        ...supplied,
++        minimumPosition: "unknown",
++      }),
+     ).toStrictEqual({ kind: "refused", status: 404, code: "resource-not-found", context: current });
+   }
+   const before = { roots, waits, tick };
+@@ -3616,7 +3615,12 @@
+   });
+   await expect(malformed).rejects.toThrow("unsupported minimum tuple");
+   expect({ roots, waits, tick }).toStrictEqual(before);
+-  expect({ roots, waits, tick, submits }).toStrictEqual({ roots: 10, waits: 4, tick: 11, submits: 2 });
++  expect({ roots, waits, tick, submits }).toStrictEqual({
++    roots: 10,
++    waits: 4,
++    tick: 11,
++    submits: 2,
++  });
+   expect(observations.map((value) => value.kind)).toStrictEqual([
+     "unproved",
+     "unproved",
+@@ -3726,7 +3730,10 @@
+     );
+     expect({ roots, tick }).toStrictEqual(before);
+     release.resolve();
+-    await expect(read).rejects.toMatchObject({ reason: "catch-up-timeout", context: first.context });
++    await expect(read).rejects.toMatchObject({
++      reason: "catch-up-timeout",
++      context: first.context,
++    });
+     await closing;
+     expect(closed).toBe(true);
+     postCloseProbes++;

@@ -1,0 +1,61 @@
+{
+  "sourceBodyBytes": 250,
+  "controlBodyBytes": 250,
+  "installedBodyBytes": 153,
+  "totalBodyBytes": 653,
+  "installedArtifactUtf8": [
+    {
+      "bytes": 170,
+      "sha256": "f448e126550b2809d01dc6b24811d1796e82b2599c35b438550ed3bec65a2a22"
+    },
+    {
+      "bytes": 166,
+      "sha256": "1ed8b24d90a8c278bc466fd48ba1e849afac01326c377e5c6985855e62373f95"
+    }
+  ],
+  "aggregate": {
+    "caseExecutions": 11,
+    "httpExpected": 41,
+    "httpMaximum": 41,
+    "ownerLifetimes": 5,
+    "directories": 5,
+    "listeners": 4,
+    "children": 1,
+    "readOnlyDbHandles": 0,
+    "reopens": 0,
+    "bodyBytesNewSourceControlInstalled": 653,
+    "enforcedNewResponseBodyBytesMaximum": 1114112,
+    "newResponseCapExchanges": 34,
+    "historicalFetchExchangesWithoutNewReaderCap": 7
+  },
+  "sourceFixtures": [
+    {
+      "case": "uses bounded context-fenced checkpoints, never Event IDs/raw positions/future rows",
+      "directoryPrefix": "bdp-feed-",
+      "owners": 1,
+      "listeners": 0,
+      "http": 0,
+      "cleanup": "existing afterEach owner.close then rm; unchanged hook limitations"
+    },
+    {
+      "case": "decides actual HTTP minimum refusal before conditional shortcuts with final context",
+      "directoryPrefix": "bdp-feed-http-",
+      "owners": 1,
+      "listeners": 1,
+      "http": 7,
+      "cleanup": "existing registered runtime.close/rm; unchanged readers/hooks"
+    },
+    {
+      "case": "preserves current context on owner-observed changefeed parameter refusals over HTTP",
+      "directoryPrefix": "bdp-feed-http-",
+      "owners": 1,
+      "listeners": 1,
+      "http": 12,
+      "cleanup": "local primary capture, abort, runtime.close and rm separately attempted, aggregate errors, timer clear, directory absence record"
+    }
+  ],
+  "newInstalledCleanup": "local primary capture, launcher close and rm independently attempted, aggregate errors, child PID/exit/signal/absence via later external audit; startup error before ready leaves PID unknown in callback",
+  "newReader": "redirect:error; per5s + cohort45s combined signal; streaming32768 cap before chunk retention; null HEAD body zero; await cancel on error then release lock",
+  "retention": "Full bodies schema/literal checked in memory; stdout retains safe selected headers and fingerprints, not full raw body/wire. Source log retains response facts; installed raw exactRequest assertions establish outgoing headers in memory.",
+  "productionImportsExecuted": false
+}

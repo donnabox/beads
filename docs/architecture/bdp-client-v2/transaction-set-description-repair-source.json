@@ -1,0 +1,68 @@
+{
+  "head": "e517f6f9667e1087f864921bdce2b446c9bb8225",
+  "tree": "d3a724c7271ffdbd1ca8a812eda16930924dff8b",
+  "parent": "6d0284e4802666791a4bf1795a977e02ac3cb5ea",
+  "clean": true,
+  "changedFile": "packages/conformance/test-support/transactional/fixture-v1.json",
+  "beforeBytes": 721,
+  "afterBytes": 716,
+  "beforeSha256": "ac4d5834911126fcf4b3b436ddfbf2d0c1f1644c0b80bff587e5a875676a2724",
+  "afterSha256": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+  "unchangedFiles": [
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "source": "9eb9339a",
+      "blob": "719dcdd54462d97b20113ba7755a3872adc5a3b3"
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "source": "9eb9339a",
+      "blob": "096f0902c27c2ee82b08e97a018f110e25af827b"
+    },
+    {
+      "path": "packages/conformance/src/transactional-observation.test.ts",
+      "source": "9eb9339a",
+      "blob": "d06f50dc0fbf8018651dbcec22705b4ba04f07fe"
+    },
+    {
+      "path": "packages/conformance/src/transactional-observation.ts",
+      "source": "9eb9339a",
+      "blob": "db125f9b001c1586c5b99e3098443d18b438121a"
+    },
+    {
+      "path": "packages/conformance/test-support/transactional/coverage-v1.json",
+      "source": "9eb9339a",
+      "blob": "c0c7cb2cea579d6e51d400c234adabcb102aa6e4"
+    },
+    {
+      "path": "packages/conformance/test-support/transactional/manifest-v1.json",
+      "source": "9eb9339a",
+      "blob": "d62ccdadf456aba1c24c83b166e154e7c60712e9"
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "source": "06b0e04",
+      "blob": "cce2832e3f2e33b74f8463112d0f21e8ee4d4097"
+    },
+    {
+      "path": "packages/conformance/fixtures/read-update-reference-v1.json",
+      "source": "06b0e04",
+      "blob": "2a3eb1491506a8a0ae250851a1626b7f518ff877"
+    },
+    {
+      "path": "packages/conformance/matrices/read-update-reference-continuation-v1.json",
+      "source": "06b0e04",
+      "blob": "39c5ef30a65206aee65d642b849a5d9169149e78"
+    },
+    {
+      "path": "packages/conformance/src/numeric-model-catalog.test.ts",
+      "source": "06b0e04",
+      "blob": "6a05d986d1f185bcb52b257428ac9a5984dead8f"
+    },
+    {
+      "path": "packages/conformance/test-support/read-update-coverage-v1.json",
+      "source": "06b0e04",
+      "blob": "c57df1172d03c41f3b922a04fe999a163420c4f1"
+    }
+  ]
+}

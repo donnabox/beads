@@ -1,0 +1,73 @@
+{
+  "basis": "67a2842e3f1918e70978f745587cf11eaf0df5a8",
+  "method": "stdlib JSON and literal insertion only; not formatter or product execution",
+  "baseline": {
+    "diskBytes": 3626922,
+    "normalBytes": 1881832,
+    "nodes": 97116,
+    "sha256": "c86b33535f25a1d117ce021a3bb70164f5635bdaee50758e3428c130ccc3227f",
+    "compactSha256": "b61b45f4e0b2075868c416295dc82db90ef1ab4542673bf066e474da79f43abb"
+  },
+  "proposed": {
+    "diskBytes": 3670718,
+    "normalBytes": 1903180,
+    "nodes": 98329,
+    "sha256": "17ce6944eb41d85ecd4d2e337986449d1ba6f0ee2c50683252313c9e9bd61264",
+    "compactSha256": "fc83750510c69b5b5bfe5a6886f96c644d102d1729eb1acbf441450686916b80"
+  },
+  "coverageBaseline": {
+    "diskBytes": 713193,
+    "normalBytes": 525518,
+    "nodes": 14632,
+    "sha256": "f8f0b001928f8488292403b57c973bd918cba224ef9e00fe0691482bf5cfac0c",
+    "compactSha256": "2abf87046938de9a3f24ff00d963a032f44187475bae1f8ed006ed17f335324d"
+  },
+  "coverageProposed": {
+    "diskBytes": 718307,
+    "normalBytes": 528830,
+    "nodes": 14769,
+    "sha256": "85b717f1817d8ea295d0a7c51f8914bdfb942d1786d414924d3d5f80be7cd10a",
+    "compactSha256": "badfbaa0d54a56225feb5fd2419a35de169ea99d130fe3084be75e935e8e91cf"
+  },
+  "newRow": {
+    "diskBytes": 37611,
+    "normalBytes": 21347,
+    "nodes": 1213,
+    "sha256": "88db362fa18ed2c448191206bef5b2c3fa3d2a5c850342f7306e2c95871b6d37",
+    "compactSha256": "7930b51eea68914b24ece231d9b30479e14936572bcd67d18351ffc6562efeff"
+  },
+  "newAssertions": 134,
+  "newActions": 21,
+  "oldScenarioObjects": 54,
+  "oldCoverageObjectsPreserved": 129,
+  "sourceCapManifestBytes": 4194304,
+  "sourceCapManifestNodes": 100000,
+  "sourceCapCoverageBytes": 1048576,
+  "coverageDelta": 5114,
+  "existingCoverageFences": [
+    {
+      "line": 4592,
+      "base": 698614,
+      "allowance": 14579,
+      "proposedOverage": 5114,
+      "proposedAllowance": 19693
+    },
+    {
+      "line": 4972,
+      "base": 703415,
+      "allowance": 9778,
+      "proposedOverage": 5114,
+      "proposedAllowance": 14892
+    },
+    {
+      "line": 5115,
+      "base": 712661,
+      "allowance": 1708,
+      "proposedOverage": 3938,
+      "proposedAllowance": 5646
+    }
+  ],
+  "insertionIndex": 18,
+  "insertionBefore": "read-update.singleton.create-bead",
+  "originalReviewBasis": "73fc0daed2e5fa6843e581de9bf7a46e519562ab"
+}

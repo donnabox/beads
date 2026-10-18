@@ -1,0 +1,46 @@
+--- successor-3/apps/bdptest/src/transactional-event-sse-installed.test.ts
++++ successor-4/apps/bdptest/src/transactional-event-sse-installed.test.ts
+@@ -429,11 +429,12 @@
+   function closeStream(): Promise<void> {
+     if (!stream) return Promise.resolve();
+     const owned = stream;
+-    return (owned.closing ??= track(
++    owned.closing ??= track(
+       owned.recorder.close().then(() => {
+         owned.drained = true;
+       }),
+-    ));
++    );
++    return owned.closing;
+   }
+   function closeSession(session: Session): Promise<void> {
+     if (!session.handle) {
+@@ -441,14 +442,15 @@
+       return Promise.reject(new Error("no returned child handle; stop unknown"));
+     }
+     const handle = session.handle;
+-    return (session.closing ??= track(
++    session.closing ??= track(
+       handle.close().then(() => {
+         session.exit = { code: handle.child.exitCode, signal: handle.child.signalCode };
+         if (session.exit.code !== 0 || session.exit.signal !== null)
+           throw new Error("child normal exit not established");
+         session.closed = true;
+       }),
+-    ));
++    );
++    return session.closing;
+   }
+   const workTimer = setTimeout(() => {
+     // Initiate socket stop before abort causes the launcher's automatic child stop.
+@@ -858,7 +860,9 @@
+     expect(recorder.status).toBe(200);
+     const observedFrames = idFrames(recorder);
+     expect(observedFrames).toHaveLength(1);
+-    observedFrames.forEach((frame) => sameFrame(frame, e1));
++    observedFrames.forEach((frame) => {
++      sameFrame(frame, e1);
++    });
+     expect(() => sameFrame(observedFrames[0]!, e0)).toThrow();
+     localSensitivityControls.push("frame-event-identity");
+     sseEvidence = {

@@ -1,0 +1,112 @@
+--- source-supervisor
++++ installed-supervisor
+@@ -1,106 +1,7 @@
+-"""Closed one-command source supervisor, adapted from reviewed v4 supervisor.
+-Root supplies execution-gate.json; this file does not create/release that gate.
+-Usage: python3 run-source.py COMMAND_ID. Never retries or invokes controls/packages.
+-"""
+-import datetime
+-import hashlib
+-import json
+-import os
+-import signal
+-import subprocess
+-import sys
+-import time
++"""Bounded installed/package supervisor; adapted from reviewed source supervisor."""
++import datetime,json,os,signal,subprocess,sys,time
+ from pathlib import Path
+-
+-P = Path(__file__).resolve().parent
+-D = P.parent
+-W = Path("/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence")
+-E = D / "run"
+-L = Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs")
+-GUARD = L / "guarded-action.py"
+-BINDING = D / "redirect-repair/source-binding.json"
+-COMMANDS = D / "commands.json"
+-BINDING_SHA = "acf190e742dfb669fe5607085a3ac60c5ecb66f4f86b1f05025424a7873615b0"
+-COMMANDS_SHA = "7f2d7dfb8ec33809c27bcf85be759a42365f7d76e7c299666979b5d82bf19291"
+-GUARD_SHA = "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84"
+-HEAD = "88c9408e908590ab1a4c64c9b9dee1a8b705999c"
+-TREE = "b2d9f2c18502e0778c51123be8b4564af052d803"
+-SESSION = "2026-10-08T20:26:35Z-81e5"
+-ORDER = ["offline-setup", "typecheck", "build", "format-check", "lint", "boundaries",
+-         "read-seal", "events-positive", "sse-regression"]
+-
+-def require(ok, message):
+-    if not ok:
+-        raise RuntimeError(message)
+-
+-def sha(value):
+-    return hashlib.sha256(value).hexdigest()
+-
+-def git(*args):
+-    return subprocess.check_output(["git", *args], cwd=W, timeout=10)
+-
+-def source_hashes():
+-    require(sha(BINDING.read_bytes()) == BINDING_SHA, "Successor source binding changed")
+-    binding = json.loads(BINDING.read_text())
+-    require(git("rev-parse", "HEAD").decode().strip() == HEAD, "HEAD changed")
+-    require(git("rev-parse", "HEAD^{tree}").decode().strip() == TREE, "Base tree changed")
+-    require(git("branch", "--show-current").decode().strip() == binding["branch"], "Branch changed")
+-    require(not git("diff", "--cached", "--name-only").strip(), "Unexpected staged changes")
+-    expected_new = {name for name, item in binding["files"].items() if item["new"]}
+-    actual_new = set(git("ls-files", "--others", "--exclude-standard").decode().splitlines())
+-    require(actual_new == expected_new, "Unexpected untracked source")
+-    changed = set(git("diff", "HEAD", "--name-only").decode().splitlines()) | actual_new
+-    require(changed == set(binding["files"]), "Unexpected source scope")
+-    actual = {name: sha((W / name).read_bytes()) for name in binding["files"]}
+-    require(actual == {name: item["sha256"] for name, item in binding["files"].items()}, "Frozen source changed")
+-    return actual
+-
+-def source_patch_hash():
+-    binding = json.loads(BINDING.read_text())
+-    patch = git("diff", "--binary", "HEAD")
+-    for name, item in binding["files"].items():
+-        if item["new"]:
+-            result = subprocess.run(["git", "diff", "--no-index", "--", "/dev/null", name],
+-                                    cwd=W, capture_output=True, timeout=10)
+-            require(result.returncode == 1, "New source diff unavailable")
+-            patch += result.stdout
+-    return sha(patch)
+-
+-def load_gate(name):
+-    require(name in ORDER, "Control, package and installed stages are separately closed")
+-    gate = json.loads((P / "execution-gate.json").read_text())
+-    require(gate["status"] == "released" and gate["session"] == SESSION, "Root source gate closed")
+-    require(gate["controlGate"] == "closed" and gate["installedGate"] == "closed", "Unexpected broader release")
+-    require(gate["supervisorSha256"] == sha(Path(__file__).read_bytes()), "Supervisor binding changed")
+-    require(gate["sourceBindingSha256"] == BINDING_SHA and gate["commandsSha256"] == COMMANDS_SHA, "Gate binding mismatch")
+-    require(gate["expectedHead"] == HEAD and gate["expectedTree"] == TREE, "Gate source identity mismatch")
+-    require(sha(COMMANDS.read_bytes()) == COMMANDS_SHA and sha(GUARD.read_bytes()) == GUARD_SHA, "Commands or session guard changed")
+-    authorized = gate["authorizedStages"]
+-    require(authorized == ORDER[:len(authorized)] and name in authorized, "Stage not authorized")
+-    acceptance = gate["rootAcceptance"]
+-    authority = Path(acceptance["path"])
+-    require(authority.is_relative_to(L) and sha(authority.read_bytes()) == acceptance["sha256"], "Root acceptance missing or changed")
+-    source = source_hashes()
+-    binding = json.loads(BINDING.read_text())
+-    require(source_patch_hash() == binding["diffSha256"], "Full draft diff changed")
+-    for previous in ORDER[:ORDER.index(name)]:
+-        result = json.loads((E / (previous + ".exit.json")).read_text())
+-        require(result["supervisorExit"] == 0 and result["sourceUnchanged"], "Prior command failed or unfinished")
+-        require(result["sourceSha256After"] == source, "Prior command has different source")
+-    matches = [item for item in json.loads(COMMANDS.read_text())["commands"] if item["id"] == name]
+-    require(len(matches) == 1, "Command identity ambiguous")
+-    spec = dict(matches[0])
+-    require(spec["cwd"] == str(W) and spec["supervisorSeconds"] == 120, "Unexpected cwd/bound")
+-    require(spec["argv"][:2] == ["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-                                 "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs"], "Toolchain changed")
+-    spec["ownedTempPrefixes"] = ["bdp-event-finite-", "bdp-events-http-", "bdp-event-http-"]
+-    spec["workload"] = {key: spec[key] for key in ["cases", "http", "owners", "directories", "listeners", "productChildren"] if key in spec}
+-    for argument in spec["argv"]:
+-        if argument.startswith("--outputFile="):
+-            require(not Path(argument.split("=", 1)[1]).exists(), "Test result already exists; no retry")
+-    gate = {**gate, "sourceSha256": source, "sourceDiffSha256": binding["diffSha256"],
+-            "preparationSha256": sha(Path(__file__).read_bytes())}
+-    return gate, spec
++from gate import P,D,W,E,L,GUARD,COMMANDS,COMMANDS_SHA,require,sha,git,source_hashes,source_patch_hash,load_gate
+ 
+ def adjudicate_source(spec):
+     if "selectedFullNames" not in spec:

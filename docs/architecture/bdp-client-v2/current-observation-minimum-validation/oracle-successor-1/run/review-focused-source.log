@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/oracle-successor-1/audit.py", line 120, in <module>
+    for o in by['parser-refusal-source']:scalars(o,{'setupCalls':1,'refusedOwnerEntries':0,'refusedWaits':0,'refusedTokenAllocations':0,'owners':1,'httpRequests':0})
+                                         ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/oracle-successor-1/audit.py", line 40, in scalars
+    def scalars(o,expected):require(all(k in o and type(o[k]) is type(v) and o[k]==v for k,v in expected.items()),'Report scalar mismatch '+str(expected))
+                            ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/oracle-successor-1/gate.py", line 13, in require
+    if not ok:raise RuntimeError(message)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Report scalar mismatch {'setupCalls': 1, 'refusedOwnerEntries': 0, 'refusedWaits': 0, 'refusedTokenAllocations': 0, 'owners': 1, 'httpRequests': 0}

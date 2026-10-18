@@ -1,0 +1,50 @@
+{
+  "released": false,
+  "commands": [
+    {
+      "id": "typecheck",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "scope-policy-targeted",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-authorization-transition/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-authorization.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^captures\\ one\\ Scope\\ policy\\ for\\ distinct\\ principals\\ and\\ renders\\ empty\\ historical\\ advances$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-t11/run/scope-policy-targeted.results.json"
+      ],
+      "selectedFullNames": [
+        "captures one Scope policy for distinct principals and renders empty historical advances"
+      ],
+      "cases": 1,
+      "http": 0,
+      "owners": 1,
+      "directories": 1,
+      "rejectedOpenDirectories": 0,
+      "listeners": 0,
+      "productChildren": 0,
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": [
+        "bdp-tx-authorization-",
+        "bdp-tx-authorization-rejected-"
+      ]
+    }
+  ],
+  "controlGate": "closed",
+  "installedGate": "closed"
+}

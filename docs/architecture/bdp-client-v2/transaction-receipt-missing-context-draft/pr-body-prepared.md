@@ -1,0 +1,5 @@
+Authenticated receipt lookups currently discard the store’s observation context when the root or page is missing or belongs to another principal. Preserve that same-entry context through the service and HTTP 404 response, including HEAD. Unauthenticated requests and early page-namespace defenses remain contextless; identity, minimum-position and expiry checks keep their existing order.
+
+Adds focused owner, service, HTTP and installed-package witnesses using genuinely issued receipt pages. The source tests verify current context after a later commit, hidden lookup behavior before minimum waits, and contextless 401 responses.
+
+Validation so far: typecheck, clean build, format, lint, boundaries and existing Read evidence check passed; all14selected source cases passed. Native review found no blocker. Actual Claude review, emitted regression control, fresh installed witness and exact-head CI are pending. This draft text must be updated with their actual outcomes before publication. No profile advertisement or release.

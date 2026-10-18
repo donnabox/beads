@@ -1,0 +1,17 @@
+{
+  "at": "2026-10-15T13:29:44.801300+00:00",
+  "candidateBase": "3968081f8231566908e69045424b067c3c36dc40",
+  "buildInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/build-output-inventory.json",
+    "sha256": "c536aa8b06aa57e814225d4dc33cf938b23e126a2cdc33f30c1d1cba83c61820"
+  },
+  "historicalInputCount": 666,
+  "verifiedOutputCount": 312,
+  "changedInputs": {
+    "apps/bdptest/src/transactional-matrix.test.ts": "6c0c240afef61831d0573775ea35b0c04b116a55da1d3fb40127b9ede68e939c",
+    "packages/server/src/transaction-http.test.ts": "37084d256def9c1f1cec33fc2c6a0d6e793dba3d29699a57bf105bda0cde68db"
+  },
+  "receiptEightFilesUnchanged": true,
+  "productionAndPackageOutputsUnchanged": true,
+  "installedEvidenceAttribution": "Fresh installed14-response result remains attributed to3968081. Reuse is solely by unchanged eight receipt paths and all312 bound archive/output files; no rerun or successor-built claim. Historical build input HTTP assertion change had already been separately accepted; only additional input difference is cancellation-test helper."
+}

@@ -1,0 +1,23 @@
+{
+  "status": "CLOSED plan-only N1 successor",
+  "changes": [
+    "B/C local store/service ownership without historical global cleanup registrations",
+    "Only observed operation/service closure permits directory removal; unknown preserves directory, no unbounded later fallback",
+    "F uses same local ownership and fail-fast unexpected wait"
+  ],
+  "unchangedFiles": {
+    "selection.json": "d6662e99711769723ff3dfaf7a72c7017ad3d2e4e0a12dc1ec59304588619d8f",
+    "workload.json": "8657dae2ac0dc2eb58810894075d8eb7735d2d4c633e867791b211d98add270d",
+    "report-schemas.json": "37e99f4ac3a1e14adab472e2a031702f680952263be2c5adc03c6e1bca00fa1a",
+    "preservation.json": "ebf08f645d5d796fd68be270354f28fe029cbd545df78721fa76d96cd634ee81"
+  },
+  "sourceFilesVerifiedBeforeAfter": 679,
+  "originalIndexedEntriesPreserved": 13,
+  "scope": "six proposed source files unchanged",
+  "counts": "15source/60HTTP plus separate10+4+10installed/24HTTP unchanged",
+  "deadlines": "all unchanged",
+  "authoringReleased": false,
+  "runtimeReleased": false,
+  "reviewLaunchReleased": false,
+  "required": "native exact closure, eventual clean exact-green Event rebind and actual PLAN council"
+}

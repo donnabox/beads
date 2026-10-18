@@ -1,0 +1,24 @@
+{
+  "closed": true,
+  "author": "b89554c6004edf99d3278518bee1b150dce3fa98",
+  "priorReview": "Empty timeout, preserved; no verdict",
+  "packets": {
+    "harness": {
+      "promptBytes": 65467,
+      "promptSha256": "ec520367f2a0075bbf7334b26b3563749f323184d448b893384e2ec9ec577da2",
+      "runnerSha256": "778e01ea77952cc96c321e322c014bdfc5f83c8f2d8a267313545aebd2cbf80b",
+      "bindingSha256": "d912773c3e41833bb177c0cf4873630546be4f43a101dfdad2b7151312bcda5b"
+    },
+    "cumulative": {
+      "promptBytes": 56792,
+      "promptSha256": "4dcc03fdfe054305865a5c16bbc99f055b4a3fbede08da0213d768fef522e869",
+      "runnerSha256": "a60ff3662768f58c7bcfa08eae0870797eeed4e7c419c34fa76be1ccd4f22648",
+      "bindingSha256": "71ba99e3d45f93e233181081d945cce46e550ffe0412344fdee1f03a3739908b"
+    }
+  },
+  "coverageMapSha256": "e7feb160d6ecb9ea5e965223925a36ae48ea54f985c9d0a6cce4317dd2a4d155",
+  "limits": "900s wall bound; TERM895; no tools/model override/session persistence; source snapshot invariance and process cleanup retained",
+  "sourceUnchanged": true,
+  "launch": "Root must inspect, set binding rootLaunchReleased true and create exact root-release.json; no release exists. No review launched.",
+  "provenance": "Prepared by plan/code author, not an independent code reviewer. Actual two reviews plus root disposition remain necessary."
+}

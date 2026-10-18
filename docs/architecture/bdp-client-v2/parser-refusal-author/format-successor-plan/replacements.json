@@ -1,0 +1,18 @@
+[
+  {
+    "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+    "old": "      for (const collection of [\"beads\", \"links\"])\n        // limit=0 is existing parser parity; unsupported/repeated is normative 400.\n        for (const query of [\"unsupported=x\", \"limit=1&limit=2\", \"limit=0\"])\n          for (const method of [\"GET\", \"HEAD\"] as const)\n            await refusal(`${collection}/?${query}`, method, opaque);\n",
+    "new": "      // limit=0 is existing parser parity; unsupported/repeated is normative 400.\n      for (const collection of [\"beads\", \"links\"])\n        for (const query of [\"unsupported=x\", \"limit=1&limit=2\", \"limit=0\"])\n          for (const method of [\"GET\", \"HEAD\"] as const)\n            await refusal(`${collection}/?${query}`, method, opaque);\n",
+    "oldFileSha256": "87cbd8ee973e8d2368cf6c4563ee6fe96849e55c82f9ae3b8b49aad87718f7e7",
+    "prospectiveFileSha256": "7272c05b95c291c58f346385b6a817cc69023ed7d84d5fa5531ddbecdf28063d",
+    "occurrencesRequired": 1
+  },
+  {
+    "path": "packages/server/src/transaction-http.test.ts",
+    "old": "    for (const collection of [\"beads\", \"links\"])\n      // Unsupported/repeated parameters are normative 400; limit=0 is parser parity.\n      for (const query of [\"unsupported=x\", \"limit=1&limit=2\", \"limit=0\"])\n        for (const headers of controls)\n          await f.problemPair(`${collection}/?${query}`, headers);\n",
+    "new": "    // Unsupported/repeated parameters are normative 400; limit=0 is parser parity.\n    for (const collection of [\"beads\", \"links\"])\n      for (const query of [\"unsupported=x\", \"limit=1&limit=2\", \"limit=0\"])\n        for (const headers of controls) await f.problemPair(`${collection}/?${query}`, headers);\n",
+    "oldFileSha256": "92581a8ee0f5b43bd843e6541d0b8821c88e07e99edf026be381da7a754d9855",
+    "prospectiveFileSha256": "f05bb57bf9d7ddff765f712bea5cbb0c63aca75848fda9adbcecace1e48d3a46",
+    "occurrencesRequired": 1
+  }
+]

@@ -1,0 +1,154 @@
+{
+  "kind": "installed-tx-nine-partial-summary",
+  "sourceCommit": "df51dfcd8d68e3d0a4e91c7be285c3ffd669c3f0",
+  "elapsedMs": 3297.6816249999997,
+  "actions": 139,
+  "sessions": 15,
+  "childLaunches": 16,
+  "closedChildren": 16,
+  "artifacts": {
+    "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+    "manifestDigest": "fb0a71cb5f568a3c65bbae35f2f0946710e5906088dc11dd31fe88c6bbdbcc29",
+    "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+  },
+  "baseline": {
+    "served": {
+      "scope": "https://reference.invalid/acme/",
+      "profile": "transactional",
+      "history": false,
+      "sourceCommit": "df51dfcd8d68e3d0a4e91c7be285c3ffd669c3f0",
+      "installedPayloadDigest": "1b12629fe54c39c8f7864dbb13bdba16bcbe4298b0a5bd420fa19daaa4fb7ec2",
+      "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+      "policyDigest": "daf2d9239fa897986eb5d44019091a446ef96efbe705eb1107ee51fdef10b110",
+      "authenticationDigest": "95caee688546e80037e58c7056936f12690a3d8df1ca4ed569598dbedeb11b31",
+      "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+      "fixtureId": "reference-transactional-v1",
+      "capabilities": [
+        "installed-transactional-http",
+        "transactional-receipt-observation"
+      ]
+    },
+    "operationTargets": {
+      "createBead": "https://reference.invalid/acme/operations/create-bead",
+      "updateBead": "https://reference.invalid/acme/operations/update-bead",
+      "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+      "createLink": "https://reference.invalid/acme/operations/create-link",
+      "updateLink": "https://reference.invalid/acme/operations/update-link",
+      "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+      "putAlias": "https://reference.invalid/acme/operations/put-alias",
+      "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+      "updateWhere": "https://reference.invalid/acme/operations/update-where",
+      "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+      "batch": "https://reference.invalid/acme/operations/batch",
+      "sequence": "https://reference.invalid/acme/operations/sequence"
+    },
+    "runtimeConfigurationIdentity": "8c3af2f4f742103100151ef54530bf58d9ba7c56b9ede8a996b739d29311bf3e",
+    "authorityMode": "canonical"
+  },
+  "claimEligible": false,
+  "states": {
+    "harness-error": 246,
+    "pass": 9
+  },
+  "totalRows": 255,
+  "missingPlanRows": 246,
+  "passedRows": [
+    "transactional.batch.atomic-commit",
+    "transactional.batch.rollback",
+    "transactional.set.mutation",
+    "transactional.set.zero-match",
+    "transactional.set.cardinality",
+    "transactional.set.singleton-targets",
+    "transactional.receipt.readable",
+    "transactional.receipt.pagination",
+    "transactional.idempotency.failed-retained"
+  ],
+  "reopened": [
+    {
+      "action": "reopened-m-update",
+      "sourceAction": "m-update",
+      "sourceGeneration": 3,
+      "servedGeneration": 4
+    },
+    {
+      "action": "reopened-m-delete",
+      "sourceAction": "m-delete",
+      "sourceGeneration": 3,
+      "servedGeneration": 4
+    },
+    {
+      "action": "reopened-z-update",
+      "sourceAction": "z-update",
+      "sourceGeneration": 5,
+      "servedGeneration": 6
+    },
+    {
+      "action": "reopened-z-delete",
+      "sourceAction": "z-delete",
+      "sourceGeneration": 5,
+      "servedGeneration": 6
+    },
+    {
+      "action": "reopened-set-cardinality-failed",
+      "sourceAction": "cardinality-failed",
+      "sourceGeneration": 7,
+      "servedGeneration": 8
+    },
+    {
+      "action": "reopened-set-update-completed",
+      "sourceAction": "set-update",
+      "sourceGeneration": 9,
+      "servedGeneration": 10
+    },
+    {
+      "action": "reopened-set-delete-completed",
+      "sourceAction": "set-delete",
+      "sourceGeneration": 9,
+      "servedGeneration": 10
+    },
+    {
+      "action": "reopened-completed",
+      "sourceAction": "completed",
+      "sourceGeneration": 11,
+      "servedGeneration": 12
+    },
+    {
+      "action": "reopened-failed",
+      "sourceAction": "failed",
+      "sourceGeneration": 11,
+      "servedGeneration": 12
+    },
+    {
+      "action": "reopened-pagination-root",
+      "sourceAction": "p-update",
+      "sourceGeneration": 13,
+      "servedGeneration": 14
+    },
+    {
+      "action": "reopened-pagination-page",
+      "sourceAction": "p-update",
+      "sourceGeneration": 13,
+      "servedGeneration": 14
+    },
+    {
+      "action": "reopened-pagination-page-head",
+      "sourceAction": "p-update",
+      "sourceGeneration": 13,
+      "servedGeneration": 14
+    }
+  ],
+  "dynamicReceiptExchanges": 41,
+  "newRows": [
+    {
+      "id": "transactional.receipt.pagination",
+      "state": "pass",
+      "exchanges": 17,
+      "clientActions": 11,
+      "wireAssertions": 228,
+      "clientAssertions": 109,
+      "maximumDecodedResponseBytes": 8985,
+      "maximumAuthoredBodyBytes": 5104
+    }
+  ],
+  "headroomMs": 86702.318375
+}

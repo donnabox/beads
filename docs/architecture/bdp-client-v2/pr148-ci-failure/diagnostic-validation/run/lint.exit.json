@@ -1,0 +1,59 @@
+{
+  "name": "lint",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/@biomejs/biome/bin/biome",
+    "lint",
+    "apps/bdptest/src/read-update-matrix.test.ts"
+  ],
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/@biomejs/biome/bin/biome",
+    "lint",
+    "apps/bdptest/src/read-update-matrix.test.ts"
+  ],
+  "diagnosticOnly": true,
+  "nativeCodeReviewed": true,
+  "externalReviewPending": false,
+  "councilAccepted": true,
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+  "started": "2026-10-16T21:37:28.697154+00:00",
+  "adjudication": {
+    "kind": "command-only",
+    "testVerdict": "not-applicable"
+  },
+  "elapsedSeconds": 0.8608091671485454,
+  "exit": 0,
+  "supervisorExit": 0,
+  "timeout": false,
+  "forcedCleanup": false,
+  "errors": [],
+  "processGroup": 12381,
+  "remainingBeforeCleanup": [],
+  "remainingAfterCleanup": [],
+  "sampledPids": [
+    12381,
+    12385,
+    12414,
+    12423
+  ],
+  "sampledPidsStillPresent": {},
+  "sampledTempEntries": [],
+  "tempEntriesAfter": [],
+  "remainingTempEntriesForClassification": [],
+  "runtimeDirectoriesStillPresent": [],
+  "unclassifiedTempEntriesStillPresent": [],
+  "sourceUnchanged": true,
+  "sourceSha256After": {
+    "apps/bdptest/src/read-update-matrix.test.ts": "37558e78d79d665363528fb2bf4f81de4f4334cd8438a099030cac7a68e0637b"
+  },
+  "samplingSeconds": 0.05,
+  "commandWindowSeconds": 115,
+  "groupHardDeadlineSeconds": 120,
+  "cleanupBound": "TERM at115s, KILL no later than120s; wait/reap after kill adds no product execution allowance",
+  "samplingLimitation": "Short-lived or detached descendants may evade group sampling; helper counts and independent final checks remain separate.",
+  "tempClassification": "Only the selected fixture prefixes under this attempt TMPDIR are owned runtime roots; all other entries are preserved for review, not deleted or called leaks.",
+  "resultLimitation": "A declared negative raw exit1 may complete its supervisor; subsequent strict review is mandatory. No generic exit1 acceptance or product qualification."
+}

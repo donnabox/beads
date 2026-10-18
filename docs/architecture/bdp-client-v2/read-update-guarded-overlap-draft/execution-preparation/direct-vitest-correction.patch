@@ -1,0 +1,45 @@
+--- before/commands.json
++++ after/commands.json
+@@ -227,9 +227,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+-        "exec",
+-        "vitest",
++        "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+         "run",
+         "apps/bdptest/src/read-update-guarded-overlap-installed.test.ts",
+         "--maxWorkers=1",
+@@ -299,9 +297,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+-        "exec",
+-        "vitest",
++        "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+         "run",
+         "apps/bdptest/src/read-update-guarded-overlap-installed.test.ts",
+         "--maxWorkers=1",
+--- before/gate.py
++++ after/gate.py
+@@ -4,7 +4,7 @@
+ P=Path(__file__).resolve().parent;D=P.parent;L=D.parent;E=P/"run"
+ W=Path("/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence")
+ GUARD=L/"guarded-action.py";COMMANDS=P/"commands.json"
+-COMMANDS_SHA="a6a04b508b689ab6fc512919bc505464eecbb449ceccf2185adf6fae3c5ffe05"
++COMMANDS_SHA="bfddc36e0d78a8f36ca262e314b293b1a0420aacca7095f7d30bf4769badc7ca"
+ # Hard pending value: root-reviewed rebind is required after actual merged-parent application.
+ BINDING_SHA="PENDING_ACTUAL_REPOSITORY_SOURCE_BINDING"
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+--- before/report.md
++++ after/report.md
+@@ -31,3 +31,7 @@
+ ## Remaining gates
+ 
+ Actual mergedreceipt parent; native findings/dispositions on frozenpreview; finaltwo-file repositorysource/format/typefreeze; root-reviewed source binding constant and allpacket hashes; staticrelease; ordinarycleancommit/buildinventoryacceptance; freshconsumerlock/provenance; positiveacceptance; actualone-site derivative/graph/payloadbinding; negativerelease. These placeholders deliberately preventlaunch now. Python scripts were ast-parsed only for syntax; no script/productmodule was imported or executed. MJS remains source-reviewed, not executed. Originalreceiptprep and preview bytes remain untouched.
++
++## Direct Vitest command correction
++
++Per root instruction, only positive and negative argv replace pnpm exec with pinned Node plus the actual existing Vitest.mjs realpath. All selection, deadlines, outputs and workload remain unchanged. Install/pack commands retain pinned pnpm. The original commands, gate, report and hash inventory are preserved under before-direct-vitest/. No command was executed. Actual merged-parent application and source rebind remain mandatory.

@@ -1,0 +1,9 @@
+{
+  "accepted": true,
+  "head": "11742645bc591b3e5affa9fcc2f36c551c6fa803",
+  "stage": "review-sequence-installed",
+  "inputsSha256": "ab4ae4929b696349a293fe7f889fc85192213e0ee6b035fc0f81fd7048342969",
+  "runnerSha256": "55d3e4e920ca6496e027d8b6a06198681beaa9cd07e52a5bd63661b50bbe784e",
+  "note": "Root may copy to root-recovery-release.json and explicitly accept this one data-only adjudication. Do not apply gate patch until successful verification and independent root inspection.",
+  "rootReview": "Inspected full adapter, preserved inputs and fixed adjudicator invocation; data-only recovery with no product or HTTP execution. Gate patch remains unapplied."
+}

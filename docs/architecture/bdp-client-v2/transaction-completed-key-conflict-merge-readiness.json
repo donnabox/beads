@@ -1,0 +1,36 @@
+{
+  "checkedAt": "2026-10-14T11:33:51.360939+00:00",
+  "head": "8d23862a03e65fa378a246310d804f0408b73937",
+  "tree": "ea2c4dc704f50f7c6333ba962454cde28131999f",
+  "mainBefore": "0432d48db8f340016a000d633d799aebbd26db3f",
+  "pullRequest": {
+    "baseRefName": "main",
+    "headRefOid": "8d23862a03e65fa378a246310d804f0408b73937",
+    "isDraft": true,
+    "mergeable": "MERGEABLE",
+    "state": "OPEN",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T11:32:42Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/gastownhall/bdp/actions/runs/38556174933/job/115825757182",
+        "name": "verify",
+        "startedAt": "2026-10-14T11:23:04Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      }
+    ]
+  },
+  "reviewHashes": {
+    "transaction-completed-key-conflict-claude-code-review.txt": "f8f053bf8be19ae2c84192c24d487905f661abc6e3a605d3dc6069cccf266467",
+    "transaction-completed-key-conflict-native-code-review.md": "bdf6d3a8a291945bc4a578a7b1cfa90b57ff36aa37e3d39167fc826d74377222",
+    "transaction-completed-key-conflict-root-code-dispositions.md": "7a416c655bcc27c83b3fc08200254536390f4d2f44bafa42d5347cc476ebdd02",
+    "transaction-completed-key-conflict-repair-native-closure.md": "1c1fcdf9b3416b18d8fee588154cf2e83d924aeb59a4bc5df32430185381e28d",
+    "transaction-completed-key-conflict-integration-native-closure.md": "06b58d3edf0c53c56054c1258fc72002b3284102f2041b445509938a771120dd",
+    "transaction-completed-key-conflict-integration-root-review.md": "13d88cce836fce6b9f793e9badfda241a34051bbff2f8c4b47fba1c330ad9b0e"
+  },
+  "scope": "Completed-key conflict partial conformance evidence; no runtime, public advertisement or release",
+  "ordinaryMergeTree": "ea2c4dc704f50f7c6333ba962454cde28131999f",
+  "actionableFindings": "closed or explicitly deferred in reviewed root dispositions"
+}

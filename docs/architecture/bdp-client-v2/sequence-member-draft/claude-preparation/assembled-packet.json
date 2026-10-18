@@ -1,0 +1,206 @@
+{
+  "status": "ASSEMBLY_COMPLETE_ROOT_LAUNCHED_SEPARATELY",
+  "promptBytes": 640708,
+  "promptSha256": "5167ada30f5e60732c62705bda8bbc244f6a99db55c28af7f5e5d432e242cac2",
+  "bindingSha256": "e877eee777ba0019e0d80544fdd4790aeda6dc8e60e67ed3790d75d502c2ffea",
+  "assemblyRequestSha256": "c3dd54eb4541bd2d8c8159be4dc23dc82b7a0e3d961b27d75c246c7ac3355b30",
+  "sourceBindingSha256": "a6eb425d2616279fed28132c2b59258b7503b186224ba538179704b6364c9e2a",
+  "fullPatchSha256": "53c66bc9a5d07f53749e18628eaba32773458160ab506566ec1fb7960d13c313",
+  "sourceFiles": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "a11a79f6d0f9ffa5933a680a3e4fed87987789c3deca50a38cda8563132d242e",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "346e1edaa22af789f89017fdc2fef6bb01b7564ed72a65344e9fe5635887c74f",
+    "packages/conformance/src/transactional-cumulative.test.ts": "313e6a947b33a3893565ea5db2d9d4a962b46c2e926900598e9285e657a31bf2",
+    "apps/bdptest/src/transactional-matrix.test.ts": "dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de",
+    "packages/conformance/src/transactional-observation.ts": "603fcc1240e43da3c477f42b8b942141c06c989a48a2a88099fd5d90e283159f",
+    "packages/conformance/src/raw-http-scenario-target.ts": "d1afc4d70a066a674db40caa5c26e846d7b6f78c98743b8a504eb4b38d73a581",
+    "apps/bdptest/test-support/transactional-execution-binding.ts": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+    "packages/server/src/transaction-sequence.ts": "019e02f2f392047d568d7464b1c5af0482d6d743ed09a6d0aa4edab151607cbe",
+    "packages/server/src/transaction-events.ts": "c6052433662fcb2d0a202ad4e408a24d4c43f980313fa89659501b4475790db5",
+    "packages/conformance/src/runner.ts": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+    "packages/conformance/src/http-executor.ts": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+    "packages/conformance/src/executable-manifest.ts": "65af0451cd046d57c10b0666e54efbaaecc2225551d3accc5cc1d032322913fa",
+    "packages/server/src/transaction-store.ts": "fcd6882b29e538db45867c894c06dfbaa6ca588db0c2e403ef1b7abb14f6c706",
+    "packages/server/src/transaction-batch.ts": "70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014",
+    "packages/server/src/resource-evaluator.ts": "89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
+    "docs/specs/bdp.md": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+    "schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227"
+  },
+  "sections": [
+    {
+      "name": "review instructions",
+      "bytes": 2983
+    },
+    {
+      "name": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-v8-preparation/transaction-sequence-member-plan-v8.md SHA256 57c662f5e65fae5a4e1d103f1953a2754bbcf9a9d0e8ebb15f418805bab26f74",
+      "bytes": 30165
+    },
+    {
+      "name": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-v8-preparation/companion.json SHA256 3853547b6baa1d50cc6309ad213806c8418a89fc36970c4744faafb35384fdeb",
+      "bytes": 15660
+    },
+    {
+      "name": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-v8-preparation/root-authoring-release.json SHA256 11265470e896b968baf86a6a55cab68a96323e15e819603ecbd5ad71ef99b7d7",
+      "bytes": 2052
+    },
+    {
+      "name": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v4-claude-A-root-dispositions.json SHA256 ebe3688f91ec979e21e79bc52d92776e3d1abde27e021af2c09f8a78154836ef",
+      "bytes": 2894
+    },
+    {
+      "name": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v5-B-preparation-main9a42/actual-review/root-dispositions.json SHA256 8b1ba4cd1a2dfdedc58fa23bc8cdf3b5fd1c25e80e5d7df702be802442fdd44c",
+      "bytes": 1998
+    },
+    {
+      "name": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v5-B-preparation-main9a42/actual-review/source-dispositions.md SHA256 e8b00531af0513090f2cdb9f2af90d0d9baad040e8abfc32525a7d6e98c1495c",
+      "bytes": 13648
+    },
+    {
+      "name": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/root-source-acceptance.json SHA256 15e91b6ab40beda200189a569d9475eaedc6ffc09cb7d0154c4ca9bececbdf39",
+      "bytes": 4506
+    },
+    {
+      "name": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/format-repair/native-measurement-closure.md SHA256 4a6b16e52246b48b24835a06212ee2d933d6669ff9e4139c54bb96ea81689fc6",
+      "bytes": 2309
+    },
+    {
+      "name": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-binding.json SHA256 a6eb425d2616279fed28132c2b59258b7503b186224ba538179704b6364c9e2a",
+      "bytes": 1749
+    },
+    {
+      "name": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/root-fence-acceptance.json SHA256 8c992e7a9b16d59bdd18610be89e96d2028d130dfdcaa112fc796120af63a646",
+      "bytes": 2347
+    },
+    {
+      "name": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/format-repair/measurements.json SHA256 befeb6aba4a4984563395a73622bdf75843a141db93669472a9652bc60e9dfeb",
+      "bytes": 42276
+    },
+    {
+      "name": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/native-code-review.md SHA256 6a36c3cb150517fdc0fe2c3f215f06052ddbdcc94a85036aa5473a1b167bdb25",
+      "bytes": 8511
+    },
+    {
+      "name": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/draft.patch SHA256 53c66bc9a5d07f53749e18628eaba32773458160ab506566ec1fb7960d13c313",
+      "bytes": 108262
+    },
+    {
+      "name": "packages/conformance/src/transactional-observation.ts whole-file SHA256 603fcc1240e43da3c477f42b8b942141c06c989a48a2a88099fd5d90e283159f complete file",
+      "bytes": 14454
+    },
+    {
+      "name": "packages/conformance/src/raw-http-scenario-target.ts whole-file SHA256 d1afc4d70a066a674db40caa5c26e846d7b6f78c98743b8a504eb4b38d73a581 complete file",
+      "bytes": 11678
+    },
+    {
+      "name": "apps/bdptest/test-support/transactional-execution-binding.ts whole-file SHA256 cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89 complete file",
+      "bytes": 7550
+    },
+    {
+      "name": "packages/server/src/transaction-sequence.ts whole-file SHA256 019e02f2f392047d568d7464b1c5af0482d6d743ed09a6d0aa4edab151607cbe complete file",
+      "bytes": 5703
+    },
+    {
+      "name": "packages/server/src/transaction-events.ts whole-file SHA256 c6052433662fcb2d0a202ad4e408a24d4c43f980313fa89659501b4475790db5 complete file",
+      "bytes": 11908
+    },
+    {
+      "name": "packages/conformance/src/runner.ts whole-file SHA256 ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1 complete named block, starts line 190",
+      "bytes": 4539
+    },
+    {
+      "name": "packages/conformance/src/runner.ts whole-file SHA256 ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1 complete named block, starts line 328",
+      "bytes": 18064
+    },
+    {
+      "name": "packages/conformance/src/runner.ts whole-file SHA256 ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1 complete named block, starts line 832",
+      "bytes": 24104
+    },
+    {
+      "name": "packages/conformance/src/runner.ts whole-file SHA256 ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1 complete named block, starts line 1900",
+      "bytes": 1621
+    },
+    {
+      "name": "packages/conformance/src/runner.ts whole-file SHA256 ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1 complete named block, starts line 2014",
+      "bytes": 16553
+    },
+    {
+      "name": "packages/conformance/src/runner.ts whole-file SHA256 ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1 complete named block, starts line 2468",
+      "bytes": 2447
+    },
+    {
+      "name": "packages/conformance/src/runner.ts whole-file SHA256 ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1 complete named block, starts line 2571",
+      "bytes": 6885
+    },
+    {
+      "name": "packages/conformance/src/runner.ts whole-file SHA256 ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1 complete named block, starts line 3272",
+      "bytes": 1569
+    },
+    {
+      "name": "packages/conformance/src/http-executor.ts whole-file SHA256 770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d complete named block, starts line 55",
+      "bytes": 2952
+    },
+    {
+      "name": "packages/conformance/src/executable-manifest.ts whole-file SHA256 65af0451cd046d57c10b0666e54efbaaecc2225551d3accc5cc1d032322913fa complete named block, starts line 31",
+      "bytes": 9243
+    },
+    {
+      "name": "packages/server/src/transaction-store.ts whole-file SHA256 fcd6882b29e538db45867c894c06dfbaa6ca588db0c2e403ef1b7abb14f6c706 complete named block, starts line 1134",
+      "bytes": 8808
+    },
+    {
+      "name": "packages/server/src/transaction-batch.ts whole-file SHA256 70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014 complete named block, starts line 540",
+      "bytes": 23193
+    },
+    {
+      "name": "packages/server/src/resource-evaluator.ts whole-file SHA256 89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff complete named block, starts line 602",
+      "bytes": 21332
+    },
+    {
+      "name": "docs/specs/bdp.md whole-file SHA256 f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e explicit excerpt lines 1880-1915",
+      "bytes": 2112
+    },
+    {
+      "name": "docs/specs/bdp.md whole-file SHA256 f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e explicit excerpt lines 2700-2775",
+      "bytes": 4391
+    },
+    {
+      "name": "docs/specs/bdp.md whole-file SHA256 f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e explicit excerpt lines 4045-4090",
+      "bytes": 3179
+    },
+    {
+      "name": "schemas/bdp-v0.schema.json whole-file SHA256 0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227 transitive local schema definitions",
+      "bytes": 84042
+    },
+    {
+      "name": "apps/bdptest/src/transactional-matrix.test.ts whole-file SHA256 dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de complete named block, starts line 25",
+      "bytes": 13461
+    },
+    {
+      "name": "apps/bdptest/src/transactional-matrix.test.ts whole-file SHA256 dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de complete named block, starts line 1858",
+      "bytes": 57699
+    },
+    {
+      "name": "packages/conformance/src/transactional-cumulative.test.ts whole-file SHA256 313e6a947b33a3893565ea5db2d9d4a962b46c2e926900598e9285e657a31bf2 complete named block, starts line 1",
+      "bytes": 8293
+    },
+    {
+      "name": "packages/conformance/src/transactional-cumulative.test.ts whole-file SHA256 313e6a947b33a3893565ea5db2d9d4a962b46c2e926900598e9285e657a31bf2 complete named block, starts line 670",
+      "bytes": 19350
+    },
+    {
+      "name": "packages/conformance/src/transactional-cumulative.test.ts whole-file SHA256 313e6a947b33a3893565ea5db2d9d4a962b46c2e926900598e9285e657a31bf2 complete named block, starts line 1251",
+      "bytes": 4676
+    },
+    {
+      "name": "packages/conformance/src/transactional-cumulative.test.ts whole-file SHA256 313e6a947b33a3893565ea5db2d9d4a962b46c2e926900598e9285e657a31bf2 complete named block, starts line 2652",
+      "bytes": 11542
+    }
+  ],
+  "runnerSha256": "50d1a0a183470c14ef45963f95098c5eb24872198e7ad8ebf8ea3d486e4f33ee",
+  "launchedByAssembler": false,
+  "rootProcessRecord": {
+    "sha256": "0186ca62902ce322910830c5a17d39be3b6d0065df97f3b75114bfdc304ea1ad",
+    "pid": 98568,
+    "started": "2026-10-15T17:13:08.592990+00:00"
+  },
+  "limitation": "Supplied-context review; complete frozen diff plus selected complete definitions/schema closure. No product execution or review outcome claimed by this assembly report."
+}

@@ -1,0 +1,100 @@
+{
+  "executionOrder": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "negative-controls"
+  ],
+  "commands": {
+    "typecheck": {
+      "id": "typecheck",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "ownedTempPrefixes": [],
+      "workload": {
+        "cases": 0,
+        "productChildren": 0,
+        "HTTP": 0
+      }
+    },
+    "format-check": {
+      "id": "format-check",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/@biomejs/biome/bin/biome",
+        "format",
+        "apps/bdptest/src/read-update-matrix.test.ts"
+      ],
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "ownedTempPrefixes": [],
+      "workload": {
+        "cases": 0,
+        "productChildren": 0,
+        "HTTP": 0
+      }
+    },
+    "lint": {
+      "id": "lint",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/@biomejs/biome/bin/biome",
+        "lint",
+        "apps/bdptest/src/read-update-matrix.test.ts"
+      ],
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "ownedTempPrefixes": [],
+      "workload": {
+        "cases": 0,
+        "productChildren": 0,
+        "HTTP": 0
+      }
+    },
+    "negative-controls": {
+      "id": "negative-controls",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/read-update-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr148-ci-failure/diagnostic-validation/run/negative-controls.results.json",
+        "--testNamePattern",
+        "^detects incorrect independent Read (properties|collection|condition) expectations$"
+      ],
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "selectedFullNames": [
+        "detects incorrect independent Read properties expectations",
+        "detects incorrect independent Read collection expectations",
+        "detects incorrect independent Read condition expectations"
+      ],
+      "ownedTempPrefixes": [
+        "bdp-cumulative-ru-"
+      ],
+      "workload": {
+        "cases": 3,
+        "productChildren": 9,
+        "maximumConcurrentProductChildren": 1,
+        "rootTempDirectories": 3,
+        "childStoreConfigurations": 9,
+        "expectedCompletedHTTP": 29,
+        "fullAuthoredHTTPUpperBound": 49,
+        "HTTPDerivation": "Per callback: bootstrap plus discovery plus target child; discovery 2 GET; target seed 4 POST. Stop at wrong assertion: properties 1 GET, collection 3 GET, condition 7 GET. 3*(2+4)+1+3+7=29. If unexpected assertion behavior reaches all authored actions: 3*(2+4)+2+3+26=49. This is a prospective static model, not an observed quota."
+      }
+    }
+  }
+}

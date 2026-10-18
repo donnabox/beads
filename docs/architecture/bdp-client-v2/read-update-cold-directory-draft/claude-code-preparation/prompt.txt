@@ -1,0 +1,2033 @@
+Review the exact ordinary Update cold-directory cumulative evidence implementation. Do not write or modify any files. Output findings only in stdout. No tools are enabled. Return numbered concrete findings with severity, source location, issue, impact and smallest correction; distinguish supplied-context gaps, nonpassing/diagnostic limitations and optional suggestions from actual defects. Finish by naming any uncovered review dependency, or explicitly none. Do not claim tests or files you did not inspect.
+
+Authority/scope: six test/artifact paths only; production, runner, client helper, schemas, fixtures, catalogs, public admission and runtime limits unchanged. This implements one existing operation-directory membership obligation plus stronger private fixture exercise. It remains partial ordinary Read+Update, claimEligible:false, NOT TX and not whole-profile qualification. Fixed task/relates suffixes and afterstate IDs are fixture knowledge; all nine operation targets actually come from learned directory values. Same fixture and safety allowlist retain independent authority. Do not suggest importing TX receipts/minima or broadening the user’s unresolved decisions.
+
+Accepted plan corrections: use second actual directory GET to capture relative strings through existing programmable-action capture (raw captures accept only absolute URLs); M3 genuine raw-attempt/completion + client-observation mixed ledger, no invented executor action ID; M4 deleted Resource is three-field identity, not full Resource; O3 actual alias404 retry checked in local hook. Keep strict full live Resources and full mutation/alias/sequence envelopes. Counterfactual first validates real200 closed directory, then deletes only copied updateLink field before runner schema assertion; actual three requests, zero client calls, sole named directory:schema failure. It is an assertion-input counterfactual, not a server response defect.
+
+Review correctness, actual capture/target/body provenance, failure retention/cleanup, safe report shape, old controls/composition, full parent preservation, honest coverage and finite budgets. Treat exact data-growth allowances separately from parser/runtime budgets. Explicit non-goals: no shared helper API, generic importer/concurrency DSL, no production change, no public advertisement.
+
+Execution evidence: original fresh pinned build passed. Exact seven CPU callbacks ran: six passed and numeric coverage-growth fence failed70150>66560. Root authorized ONLY fourth historical data allowance correction70150 preserving base648157. On final source typecheck/format and only that affected callback passed; original failure remains. Six unaffected passes are prior-source observations with exact sole comment/fence bridge, not seven reruns. Installed runs and code council pending. Native full code review found no actionable defect before that narrow fence; successor closure separate. Review must still independently evaluate code.
+
+Workload: selected positive21HTTP/2children, selected negative expected3/max21HTTP/2children, full two-shard aggregate2303HTTP/57children including44 setupPOST. Total2327expected/2345max/61children. Selected30s, aggregate90s cooperative/120s outer, request5s; no automatic retries/redirects. No claim future timing guaranteed. All54 old scenario raw objects and129 other coverage objects preserved, whole parents reconstructable. Baseline50+continuation5; whole34/omitted75/uncovered96. Parser baseline100000nodes cap remains; canonical98329; all36 inventoried transformations max98364/1904291 compactbytes. Formatted manifest3670698B; coverage718307B. Four exact data growth allowances19693/14892/5646/70150 only.
+
+The following compact row/coverage retain every semantic value. The four-TS unified diff is complete; two large JSON-file changes are represented by their exact compact inserted/replaced objects plus preservation tests, not millions of unchanged bytes. Full source/diff hashes are bound externally. Unchanged old counterfactual bodies and shared artifact evidence-writer internals are omitted; lifecycle/config and relevant helper contracts below show their integration seams. No omission is evidence those bodies were reviewed by you.
+
+
+Exact final identity {"head":"bb9600f1b8b6f623e753543ed5792005eb9aacee","tree":"aa8f7af9c4cdfafbd80547449ec2369f92071ab7","parents":["67a2842e3f1918e70978f745587cf11eaf0df5a8"],"branch":"codex/vickie-update-cold-directory","clean":true,"sourceFiles":{"apps/bdptest/src/read-update-matrix.test.ts":"3009ce7fe3085b140b23f8062358ba2d342bd491fde3f3b6c19f75f618e87c7b","packages/conformance/matrices/read-update-v1.json":"80f74625b6074892b707365859572f8bc0b8c10478d36ac307370ef6027f5fc3","packages/conformance/src/cumulative-artifact.test.ts":"d3e8a462694174cf34db94700df51f3de6943aa1072dbf4bd04de7560db9b523","packages/conformance/src/profile-contract-plan.test.ts":"8d649bf6f88b6faeafd7b629d9bb541dab7e818e00818e577de41dd0700f70a4","packages/conformance/src/read-update-artifact-set.test.ts":"9d337a232a0f2311aff2394a52b31e64c41e8516fcaa5d4a7a5bd7c2d36ecd47","packages/conformance/test-support/read-update-coverage-v1.json":"85b717f1817d8ea295d0a7c51f8914bdfb942d1786d414924d3d5f80be7cd10a"},"diffSha256":"905a53a4a11a60c75821c3aed34e0c84732eddbef2b9ce93e8e5b9da2b338657","sourceBinding":"/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/coverage-fence-repair/source-binding.json","sourceBindingSha256":"4d27dc264f5db2c54bce46439789462090a7ad5a187fdc121cd9e5571c54c42d","scope":"Root-authorized local ordinary source commit only; no push/publication/council/installed approval implied."}
+
+COMPLETE NEW SCENARIO
+{"id":"read-update.discovery.operation-directory","requiredProfile":"read-update","setup":{"fixture":"reference-read-update-schema-v1","requires":["installed-read-update-http"]},"applicability":{"requires":[]},"actions":[{"id":"scope","family":"http","method":"GET","target":{"binding":"scope"},"raw":{"headerLines":[]},"captures":[{"binding":"service-desc","from":{"kind":"header-link","rel":"service-desc"}}],"assertions":[{"id":"status","kind":"status","equals":204},{"id":"empty","kind":"body-absent"}]},{"id":"discovery","family":"http","method":"GET","target":{"binding":"service-desc"},"raw":{"headerLines":[]},"captures":[{"binding":"operations","from":{"kind":"json-pointer","pointer":"/operations"}},{"binding":"types","from":{"kind":"json-pointer","pointer":"/types"}},{"binding":"beads","from":{"kind":"json-pointer","pointer":"/beads"}},{"binding":"links","from":{"kind":"json-pointer","pointer":"/links"}},{"binding":"aliases","from":{"kind":"json-pointer","pointer":"/aliases"}}],"assertions":[{"id":"status","kind":"status","equals":200},{"id":"schema","kind":"json-schema","schema":"#/$defs/readUpdateDiscovery"},{"id":"profile","kind":"json-pointer","pointer":"/profile","exists":true,"equals":"read-update"},{"id":"no-tx","kind":"json-pointer","pointer":"/transactional","exists":false}]},{"id":"directory","family":"http","method":"GET","target":{"binding":"operations"},"raw":{"headerLines":[]},"captures":[],"assertions":[{"id":"status","kind":"status","equals":200},{"id":"schema","kind":"json-schema","schema":"#/$defs/readUpdateOperationDirectory"}]},{"id":"directory-captures","family":"client","operation":"installed.exact-request","input":{"method":"GET","targetBinding":"operations","credentialRef":"operator"},"captures":[{"binding":"create-bead","from":{"kind":"json-pointer","pointer":"/body/createBead"}},{"binding":"update-bead","from":{"kind":"json-pointer","pointer":"/body/updateBead"}},{"binding":"delete-bead","from":{"kind":"json-pointer","pointer":"/body/deleteBead"}},{"binding":"create-link","from":{"kind":"json-pointer","pointer":"/body/createLink"}},{"binding":"update-link","from":{"kind":"json-pointer","pointer":"/body/updateLink"}},{"binding":"delete-link","from":{"kind":"json-pointer","pointer":"/body/deleteLink"}},{"binding":"put-alias","from":{"kind":"json-pointer","pointer":"/body/putAlias"}},{"binding":"delete-alias","from":{"kind":"json-pointer","pointer":"/body/deleteAlias"}},{"binding":"sequence","from":{"kind":"json-pointer","pointer":"/body/sequence"}}],"assertions":[{"id":"status","kind":"json-pointer","pointer":"/status","exists":true,"equals":200},{"id":"directory-members","kind":"json-pointer","pointer":"/body","exists":true,"equals":{"createBead":"create-bead","updateBead":"update-bead","deleteBead":"delete-bead","createLink":"create-link","updateLink":"update-link","deleteLink":"delete-link","putAlias":"put-alias","deleteAlias":"delete-alias","sequence":"sequence"}},{"id":"written","kind":"json-pointer","pointer":"/observation/writeState","exists":true,"equals":"complete"}]},{"id":"task","family":"http","method":"GET","target":{"binding":"types","path":"task"},"raw":{"headerLines":[]},"captures":[{"binding":"task-type","from":{"kind":"json-pointer","pointer":"/id"}}],"assertions":[{"id":"status","kind":"status","equals":200},{"id":"schema","kind":"json-schema","schema":"#/$defs/typeDescriptor"}]},{"id":"relates","family":"http","method":"GET","target":{"binding":"types","path":"relates"},"raw":{"headerLines":[]},"captures":[{"binding":"relates-type","from":{"kind":"json-pointer","pointer":"/id"}}],"assertions":[{"id":"status","kind":"status","equals":200},{"id":"schema","kind":"json-schema","schema":"#/$defs/typeDescriptor"}]},{"id":"create-a","family":"client","operation":"installed.exact-request","input":{"targetBinding":"create-bead","method":"POST","credentialRef":"operator","body":{"id":"beads/w1-a","properties":{"n":1},"metadata":{"tag":"a"}},"idempotencyKey":"create-a","targetBaseBinding":"operations","bodyBindings":{"type":"task-type"}},"captures":[{"binding":"a-created","from":{"kind":"json-pointer","pointer":"/body/resource"}},{"binding":"a-id","from":{"kind":"json-pointer","pointer":"/body/resource/id"}},{"binding":"a-rev","from":{"kind":"json-pointer","pointer":"/body/resource/revision"}}],"assertions":[{"id":"status","kind":"json-pointer","pointer":"/status","exists":true,"equals":200},{"id":"written","kind":"json-pointer","pointer":"/observation/writeState","exists":true,"equals":"complete"},{"id":"body-schema","kind":"json-schema","schema":"#/$defs/harnessInstalled_mutationResult"},{"id":"no-etag","kind":"json-pointer","pointer":"/headers/etag","exists":false},{"id":"no-location","kind":"json-pointer","pointer":"/headers/location","exists":false},{"id":"outcome","kind":"json-pointer","pointer":"/body/outcome","exists":true,"equals":"created"},{"id":"id","kind":"json-pointer","pointer":"/body/resource/id","exists":true,"equals":"https://reference.invalid/acme/beads/w1-a"},{"id":"type","kind":"json-pointer","pointer":"/body/resource/type","exists":true,"equals":"https://reference.invalid/acme/types/task"},{"id":"properties","kind":"json-pointer","pointer":"/body/resource/properties","exists":true,"equals":{"n":1}},{"id":"metadata","kind":"json-pointer","pointer":"/body/resource/metadata","exists":true,"equals":{"tag":"a"}}]},{"id":"create-b","family":"client","operation":"installed.exact-request","input":{"targetBinding":"create-bead","method":"POST","credentialRef":"operator","body":{"id":"beads/w1-b","properties":{"n":1},"metadata":{"tag":"b"}},"idempotencyKey":"create-b","targetBaseBinding":"operations","bodyBindings":{"type":"task-type"}},"captures":[{"binding":"b-created","from":{"kind":"json-pointer","pointer":"/body/resource"}},{"binding":"b-id","from":{"kind":"json-pointer","pointer":"/body/resource/id"}},{"binding":"b-rev","from":{"kind":"json-pointer","pointer":"/body/resource/revision"}}],"assertions":[{"id":"status","kind":"json-pointer","pointer":"/status","exists":true,"equals":200},{"id":"written","kind":"json-pointer","pointer":"/observation/writeState","exists":true,"equals":"complete"},{"id":"body-schema","kind":"json-schema","schema":"#/$defs/harnessInstalled_mutationResult"},{"id":"no-etag","kind":"json-pointer","pointer":"/headers/etag","exists":false},{"id":"no-location","kind":"json-pointer","pointer":"/headers/location","exists":false},{"id":"outcome","kind":"json-pointer","pointer":"/body/outcome","exists":true,"equals":"created"},{"id":"id","kind":"json-pointer","pointer":"/body/resource/id","exists":true,"equals":"https://reference.invalid/acme/beads/w1-b"},{"id":"type","kind":"json-pointer","pointer":"/body/resource/type","exists":true,"equals":"https://reference.invalid/acme/types/task"},{"id":"properties","kind":"json-pointer","pointer":"/body/resource/properties","exists":true,"equals":{"n":1}},{"id":"metadata","kind":"json-pointer","pointer":"/body/resource/metadata","exists":true,"equals":{"tag":"b"}}]},{"id":"update-bead","family":"client","operation":"installed.exact-request","input":{"targetBinding":"update-bead","method":"POST","credentialRef":"operator","body":{"propertiesChange":[{"op":"replace","path":"/n","value":2}]},"idempotencyKey":"update-bead","targetBaseBinding":"operations","bodyBindings":{"bead":"a-id","expectedRevision":"a-rev"}},"captures":[{"binding":"a-updated","from":{"kind":"json-pointer","pointer":"/body/resource"}},{"binding":"a-updated-rev","from":{"kind":"json-pointer","pointer":"/body/resource/revision"}}],"assertions":[{"id":"status","kind":"json-pointer","pointer":"/status","exists":true,"equals":200},{"id":"written","kind":"json-pointer","pointer":"/observation/writeState","exists":true,"equals":"complete"},{"id":"body-schema","kind":"json-schema","schema":"#/$defs/harnessInstalled_mutationResult"},{"id":"no-etag","kind":"json-pointer","pointer":"/headers/etag","exists":false},{"id":"no-location","kind":"json-pointer","pointer":"/headers/location","exists":false},{"id":"outcome","kind":"json-pointer","pointer":"/body/outcome","exists":true,"equals":"updated"},{"id":"id","kind":"json-pointer","pointer":"/body/resource/id","exists":true,"equals":"https://reference.invalid/acme/beads/w1-a"},{"id":"type","kind":"json-pointer","pointer":"/body/resource/type","exists":true,"equals":"https://reference.invalid/acme/types/task"},{"id":"properties","kind":"json-pointer","pointer":"/body/resource/properties","exists":true,"equals":{"n":2}},{"id":"metadata","kind":"json-pointer","pointer":"/body/resource/metadata","exists":true,"equals":{"tag":"a"}}]},{"id":"create-link","family":"client","operation":"installed.exact-request","input":{"targetBinding":"create-link","method":"POST","credentialRef":"operator","body":{"id":"links/w1-l","properties":{"edge":1},"metadata":{"tag":"link"}},"idempotencyKey":"create-link","targetBaseBinding":"operations","bodyBindings":{"type":"relates-type","source":"a-id","target":"b-id"}},"captures":[{"binding":"link-created","from":{"kind":"json-pointer","pointer":"/body/resource"}},{"binding":"link-id","from":{"kind":"json-pointer","pointer":"/body/resource/id"}},{"binding":"initial-link-revision","from":{"kind":"json-pointer","pointer":"/body/resource/revision"}}],"assertions":[{"id":"status","kind":"json-pointer","pointer":"/status","exists":true,"equals":200},{"id":"written","kind":"json-pointer","pointer":"/observation/writeState","exists":true,"equals":"complete"},{"id":"body-schema","kind":"json-schema","schema":"#/$defs/harnessInstalled_mutationResult"},{"id":"no-etag","kind":"json-pointer","pointer":"/headers/etag","exists":false},{"id":"no-location","kind":"json-pointer","pointer":"/headers/location","exists":false},{"id":"outcome","kind":"json-pointer","pointer":"/body/outcome","exists":true,"equals":"created"},{"id":"id","kind":"json-pointer","pointer":"/body/resource/id","exists":true,"equals":"https://reference.invalid/acme/links/w1-l"},{"id":"type","kind":"json-pointer","pointer":"/body/resource/type","exists":true,"equals":"https://reference.invalid/acme/types/relates"},{"id":"properties","kind":"json-pointer","pointer":"/body/resource/properties","exists":true,"equals":{"edge":1}},{"id":"metadata","kind":"json-pointer","pointer":"/body/resource/metadata","exists":true,"equals":{"tag":"link"}},{"id":"source","kind":"json-pointer","pointer":"/body/resource/source","exists":true,"equals":"https://reference.invalid/acme/beads/w1-a"},{"id":"target","kind":"json-pointer","pointer":"/body/resource/target","exists":true,"equals":"https://reference.invalid/acme/beads/w1-b"},{"id":"unowned-source","kind":"json-pointer","pointer":"/body/source","exists":false},{"id":"unowned-source-revision","kind":"json-pointer","pointer":"/body/sourceRevision","exists":false}]},{"id":"update-link","family":"client","operation":"installed.exact-request","input":{"targetBinding":"update-link","method":"POST","credentialRef":"operator","body":{"propertiesChange":[{"op":"replace","path":"/edge","value":2}],"metadataChange":[{"op":"replace","path":"/tag","value":"updated"}]},"idempotencyKey":"update-link","targetBaseBinding":"operations","bodyBindings":{"link":"link-id","expectedRevision":"initial-link-revision"}},"captures":[{"binding":"updated-link","from":{"kind":"json-pointer","pointer":"/body/resource"}},{"binding":"final-link-revision","from":{"kind":"json-pointer","pointer":"/body/resource/revision"}}],"assertions":[{"id":"status","kind":"json-pointer","pointer":"/status","exists":true,"equals":200},{"id":"written","kind":"json-pointer","pointer":"/observation/writeState","exists":true,"equals":"complete"},{"id":"body-schema","kind":"json-schema","schema":"#/$defs/harnessInstalled_mutationResult"},{"id":"no-etag","kind":"json-pointer","pointer":"/headers/etag","exists":false},{"id":"no-location","kind":"json-pointer","pointer":"/headers/location","exists":false},{"id":"outcome","kind":"json-pointer","pointer":"/body/outcome","exists":true,"equals":"updated"},{"id":"id","kind":"json-pointer","pointer":"/body/resource/id","exists":true,"equals":"https://reference.invalid/acme/links/w1-l"},{"id":"type","kind":"json-pointer","pointer":"/body/resource/type","exists":true,"equals":"https://reference.invalid/acme/types/relates"},{"id":"properties","kind":"json-pointer","pointer":"/body/resource/properties","exists":true,"equals":{"edge":2}},{"id":"metadata","kind":"json-pointer","pointer":"/body/resource/metadata","exists":true,"equals":{"tag":"updated"}},{"id":"source","kind":"json-pointer","pointer":"/body/resource/source","exists":true,"equalsBinding":"a-id"},{"id":"target","kind":"json-pointer","pointer":"/body/resource/target","exists":true,"equalsBinding":"b-id"}]},{"id":"put-alias","family":"client","operation":"installed.exact-request","input":{"targetBinding":"put-alias","method":"POST","credentialRef":"operator","body":{"alias":"alias/w1-locator"},"idempotencyKey":"put-alias","targetBaseBinding":"operations","bodyBindings":{"target":"a-id"}},"captures":[],"assertions":[{"id":"status","kind":"json-pointer","pointer":"/status","exists":true,"equals":200},{"id":"written","kind":"json-pointer","pointer":"/observation/writeState","exists":true,"equals":"complete"},{"id":"body-schema","kind":"json-schema","schema":"#/$defs/harnessInstalled_aliasResult"},{"id":"no-etag","kind":"json-pointer","pointer":"/headers/etag","exists":false},{"id":"no-location","kind":"json-pointer","pointer":"/headers/location","exists":false},{"id":"alias-result","kind":"json-pointer","pointer":"/body","exists":true,"equals":{"outcome":"created","alias":"https://reference.invalid/acme/alias/w1-locator","target":"https://reference.invalid/acme/beads/w1-a"}}]},{"id":"put-alias-get","family":"http","method":"GET","target":{"binding":"w1.alias"},"raw":{"headerLines":[]},"captures":[],"assertions":[{"id":"status","kind":"status","equals":307},{"id":"location","kind":"header","name":"location","equals":"https://reference.invalid/acme/beads/w1-a"},{"id":"empty","kind":"body-absent"}]},{"id":"delete-alias","family":"client","operation":"installed.exact-request","input":{"targetBinding":"delete-alias","method":"POST","credentialRef":"operator","body":{"alias":"alias/w1-locator"},"idempotencyKey":"delete-alias","targetBaseBinding":"operations"},"captures":[],"assertions":[{"id":"status","kind":"json-pointer","pointer":"/status","exists":true,"equals":200},{"id":"written","kind":"json-pointer","pointer":"/observation/writeState","exists":true,"equals":"complete"},{"id":"body-schema","kind":"json-schema","schema":"#/$defs/harnessInstalled_aliasResult"},{"id":"no-etag","kind":"json-pointer","pointer":"/headers/etag","exists":false},{"id":"no-location","kind":"json-pointer","pointer":"/headers/location","exists":false},{"id":"alias-result","kind":"json-pointer","pointer":"/body","exists":true,"equals":{"outcome":"deleted","alias":"https://reference.invalid/acme/alias/w1-locator"}}]},{"id":"read-deleted-alias","family":"http","method":"GET","target":{"binding":"w1.alias"},"raw":{"headerLines":[]},"captures":[],"assertions":[{"id":"status","kind":"status","equals":404},{"id":"schema","kind":"json-schema","schema":"#/$defs/readProblem"},{"id":"problem","kind":"json-pointer","pointer":"/code","exists":true,"equals":"resource-not-found"}]},{"id":"delete-link","family":"client","operation":"installed.exact-request","input":{"targetBinding":"delete-link","method":"POST","credentialRef":"operator","body":{},"idempotencyKey":"delete-link","targetBaseBinding":"operations","bodyBindings":{"link":"link-id","expectedRevision":"final-link-revision"}},"captures":[],"assertions":[{"id":"status","kind":"json-pointer","pointer":"/status","exists":true,"equals":200},{"id":"written","kind":"json-pointer","pointer":"/observation/writeState","exists":true,"equals":"complete"},{"id":"body-schema","kind":"json-schema","schema":"#/$defs/harnessInstalled_mutationResult"},{"id":"no-etag","kind":"json-pointer","pointer":"/headers/etag","exists":false},{"id":"no-location","kind":"json-pointer","pointer":"/headers/location","exists":false},{"id":"outcome","kind":"json-pointer","pointer":"/body/outcome","exists":true,"equals":"deleted"},{"id":"deleted-kind","kind":"json-pointer","pointer":"/body/deleted/resourceKind","exists":true,"equals":"link"},{"id":"deleted-id","kind":"json-pointer","pointer":"/body/deleted/resource/id","exists":true,"equals":"https://reference.invalid/acme/links/w1-l"},{"id":"deleted-type","kind":"json-pointer","pointer":"/body/deleted/resource/type","exists":true,"equals":"https://reference.invalid/acme/types/relates"},{"id":"final-revision","kind":"json-pointer","pointer":"/body/deleted/resource/revision","exists":true,"equalsBinding":"final-link-revision"},{"id":"no-postimage","kind":"json-pointer","pointer":"/body/resource","exists":false},{"id":"unowned-source","kind":"json-pointer","pointer":"/body/source","exists":false},{"id":"unowned-source-revision","kind":"json-pointer","pointer":"/body/sourceRevision","exists":false}]},{"id":"deleted-link","family":"http","method":"GET","target":{"binding":"w1.l"},"raw":{"headerLines":[]},"captures":[],"assertions":[{"id":"status","kind":"status","equals":404},{"id":"schema","kind":"json-schema","schema":"#/$defs/readProblem"},{"id":"problem","kind":"json-pointer","pointer":"/code","exists":true,"equals":"resource-not-found"},{"id":"retry","kind":"json-pointer","pointer":"/retry","exists":true,"equals":"after-state-change"}]},{"id":"delete-bead","family":"client","operation":"installed.exact-request","input":{"targetBinding":"delete-bead","method":"POST","credentialRef":"operator","body":{},"idempotencyKey":"delete-bead","targetBaseBinding":"operations","bodyBindings":{"bead":"a-id","expectedRevision":"a-updated-rev"}},"captures":[],"assertions":[{"id":"status","kind":"json-pointer","pointer":"/status","exists":true,"equals":200},{"id":"written","kind":"json-pointer","pointer":"/observation/writeState","exists":true,"equals":"complete"},{"id":"body-schema","kind":"json-schema","schema":"#/$defs/harnessInstalled_mutationResult"},{"id":"no-etag","kind":"json-pointer","pointer":"/headers/etag","exists":false},{"id":"no-location","kind":"json-pointer","pointer":"/headers/location","exists":false},{"id":"outcome","kind":"json-pointer","pointer":"/body/outcome","exists":true,"equals":"deleted"},{"id":"deleted-kind","kind":"json-pointer","pointer":"/body/deleted/resourceKind","exists":true,"equals":"bead"},{"id":"deleted-id","kind":"json-pointer","pointer":"/body/deleted/resource/id","exists":true,"equals":"https://reference.invalid/acme/beads/w1-a"},{"id":"deleted-type","kind":"json-pointer","pointer":"/body/deleted/resource/type","exists":true,"equals":"https://reference.invalid/acme/types/task"},{"id":"final-revision","kind":"json-pointer","pointer":"/body/deleted/resource/revision","exists":true,"equalsBinding":"a-updated-rev"},{"id":"no-postimage","kind":"json-pointer","pointer":"/body/resource","exists":false}]},{"id":"deleted-bead","family":"http","method":"GET","target":{"binding":"w1.a"},"raw":{"headerLines":[]},"captures":[],"assertions":[{"id":"status","kind":"status","equals":404},{"id":"schema","kind":"json-schema","schema":"#/$defs/readProblem"},{"id":"problem","kind":"json-pointer","pointer":"/code","exists":true,"equals":"resource-not-found"},{"id":"retry","kind":"json-pointer","pointer":"/retry","exists":true,"equals":"after-state-change"}]},{"id":"sequence","family":"client","operation":"installed.exact-request","input":{"targetBinding":"sequence","targetBaseBinding":"operations","method":"POST","credentialRef":"operator","body":{"operations":[{"operation":"updateBead","idempotencyKey":"directory-sequence-b","bead":"beads/w1-b","propertiesChange":[{"op":"replace","path":"/n","value":3}]}]}},"captures":[{"binding":"b-final","from":{"kind":"json-pointer","pointer":"/body/results/0/resource"}}],"assertions":[{"id":"status","kind":"json-pointer","pointer":"/status","exists":true,"equals":200},{"id":"written","kind":"json-pointer","pointer":"/observation/writeState","exists":true,"equals":"complete"},{"id":"schema","kind":"json-schema","schema":"#/$defs/harnessInstalled_sequenceResponse"},{"id":"index","kind":"json-pointer","pointer":"/body/results/0/operationIndex","exists":true,"equals":0},{"id":"outcome","kind":"json-pointer","pointer":"/body/results/0/outcome","exists":true,"equals":"updated"},{"id":"id","kind":"json-pointer","pointer":"/body/results/0/resource/id","exists":true,"equalsBinding":"b-id"},{"id":"type","kind":"json-pointer","pointer":"/body/results/0/resource/type","exists":true,"equalsBinding":"task-type"},{"id":"properties","kind":"json-pointer","pointer":"/body/results/0/resource/properties","exists":true,"equals":{"n":3}},{"id":"metadata","kind":"json-pointer","pointer":"/body/results/0/resource/metadata","exists":true,"equals":{"tag":"b"}},{"id":"no-extra-result","kind":"json-pointer","pointer":"/body/results/1","exists":false}]},{"id":"final-b","family":"http","method":"GET","target":{"binding":"w1.b"},"raw":{"headerLines":[]},"captures":[],"assertions":[{"id":"status","kind":"status","equals":200},{"id":"schema","kind":"json-schema","schema":"#/$defs/currentBeadRecord"},{"id":"postimage","kind":"json-pointer","pointer":"","exists":true,"equalsBinding":"b-final"}]}],"cleanup":{"resetFixture":true}}
+
+COMPLETE REPLACEMENT COVERAGE ROW
+{"id":"read-update.discovery.operation-directory","status":"bounded-observation","wholeContract":true,"reason":"Cold Scope and service description navigation validates the closed nine-member Operation Directory; a second actual directory fetch captures all nine relative targets, each dispatched through the existing installed client. Credit is only the cited directory clause; no profile admission, omitted-order discovery, whole mutation, retry, or Transactional guarantee.","bindings":[{"scenario":"read-update.discovery.operation-directory","assertions":["scope.status","scope.empty","discovery.status","discovery.schema","discovery.profile","discovery.no-tx","directory.status","directory.schema","directory-captures.status","directory-captures.directory-members","directory-captures.written","task.status","task.schema","relates.status","relates.schema","create-a.status","create-a.written","create-a.body-schema","create-a.no-etag","create-a.no-location","create-a.outcome","create-a.id","create-a.type","create-a.properties","create-a.metadata","create-b.status","create-b.written","create-b.body-schema","create-b.no-etag","create-b.no-location","create-b.outcome","create-b.id","create-b.type","create-b.properties","create-b.metadata","update-bead.status","update-bead.written","update-bead.body-schema","update-bead.no-etag","update-bead.no-location","update-bead.outcome","update-bead.id","update-bead.type","update-bead.properties","update-bead.metadata","create-link.status","create-link.written","create-link.body-schema","create-link.no-etag","create-link.no-location","create-link.outcome","create-link.id","create-link.type","create-link.properties","create-link.metadata","create-link.source","create-link.target","create-link.unowned-source","create-link.unowned-source-revision","update-link.status","update-link.written","update-link.body-schema","update-link.no-etag","update-link.no-location","update-link.outcome","update-link.id","update-link.type","update-link.properties","update-link.metadata","update-link.source","update-link.target","put-alias.status","put-alias.written","put-alias.body-schema","put-alias.no-etag","put-alias.no-location","put-alias.alias-result","put-alias-get.status","put-alias-get.location","put-alias-get.empty","delete-alias.status","delete-alias.written","delete-alias.body-schema","delete-alias.no-etag","delete-alias.no-location","delete-alias.alias-result","read-deleted-alias.status","read-deleted-alias.schema","read-deleted-alias.problem","delete-link.status","delete-link.written","delete-link.body-schema","delete-link.no-etag","delete-link.no-location","delete-link.outcome","delete-link.deleted-kind","delete-link.deleted-id","delete-link.deleted-type","delete-link.final-revision","delete-link.no-postimage","delete-link.unowned-source","delete-link.unowned-source-revision","deleted-link.status","deleted-link.schema","deleted-link.problem","deleted-link.retry","delete-bead.status","delete-bead.written","delete-bead.body-schema","delete-bead.no-etag","delete-bead.no-location","delete-bead.outcome","delete-bead.deleted-kind","delete-bead.deleted-id","delete-bead.deleted-type","delete-bead.final-revision","delete-bead.no-postimage","deleted-bead.status","deleted-bead.schema","deleted-bead.problem","deleted-bead.retry","sequence.status","sequence.written","sequence.schema","sequence.index","sequence.outcome","sequence.id","sequence.type","sequence.properties","sequence.metadata","sequence.no-extra-result","final-b.status","final-b.schema","final-b.postimage"]}]}
+
+COMPLETE FOUR TYPESCRIPT DIFF
+diff --git a/apps/bdptest/src/read-update-matrix.test.ts b/apps/bdptest/src/read-update-matrix.test.ts
+index 1d1a2b9..41118f1 100644
+--- a/apps/bdptest/src/read-update-matrix.test.ts
++++ b/apps/bdptest/src/read-update-matrix.test.ts
+@@ -152,4 +152,568 @@ type RetryControl = {
+   binding?: string;
+ };
++
++const coldDirectoryId = "read-update.discovery.operation-directory";
++const coldDirectory = {
++  createBead: "create-bead",
++  updateBead: "update-bead",
++  deleteBead: "delete-bead",
++  createLink: "create-link",
++  updateLink: "update-link",
++  deleteLink: "delete-link",
++  putAlias: "put-alias",
++  deleteAlias: "delete-alias",
++  sequence: "sequence",
++} as const;
++const coldDirectoryRequests = [
++  {
++    id: "scope",
++    family: "http",
++    method: "GET",
++    url: "https://reference.invalid/acme/",
++    expectedStatus: 204,
++  },
++  {
++    id: "discovery",
++    family: "http",
++    method: "GET",
++    url: "https://reference.invalid/acme/bdp.json",
++    expectedStatus: 200,
++  },
++  {
++    id: "directory",
++    family: "http",
++    method: "GET",
++    url: "https://reference.invalid/acme/operations/",
++    expectedStatus: 200,
++  },
++  {
++    id: "directory-captures",
++    family: "client",
++    method: "GET",
++    url: "https://reference.invalid/acme/operations/",
++    expectedStatus: 200,
++  },
++  {
++    id: "task",
++    family: "http",
++    method: "GET",
++    url: "https://reference.invalid/acme/types/task",
++    expectedStatus: 200,
++  },
++  {
++    id: "relates",
++    family: "http",
++    method: "GET",
++    url: "https://reference.invalid/acme/types/relates",
++    expectedStatus: 200,
++  },
++  {
++    id: "create-a",
++    family: "client",
++    method: "POST",
++    url: "https://reference.invalid/acme/operations/create-bead",
++    expectedStatus: 200,
++  },
++  {
++    id: "create-b",
++    family: "client",
++    method: "POST",
++    url: "https://reference.invalid/acme/operations/create-bead",
++    expectedStatus: 200,
++  },
++  {
++    id: "update-bead",
++    family: "client",
++    method: "POST",
++    url: "https://reference.invalid/acme/operations/update-bead",
++    expectedStatus: 200,
++  },
++  {
++    id: "create-link",
++    family: "client",
++    method: "POST",
++    url: "https://reference.invalid/acme/operations/create-link",
++    expectedStatus: 200,
++  },
++  {
++    id: "update-link",
++    family: "client",
++    method: "POST",
++    url: "https://reference.invalid/acme/operations/update-link",
++    expectedStatus: 200,
++  },
++  {
++    id: "put-alias",
++    family: "client",
++    method: "POST",
++    url: "https://reference.invalid/acme/operations/put-alias",
++    expectedStatus: 200,
++  },
++  {
++    id: "put-alias-get",
++    family: "http",
++    method: "GET",
++    url: "https://reference.invalid/acme/alias/w1-locator",
++    expectedStatus: 307,
++  },
++  {
++    id: "delete-alias",
++    family: "client",
++    method: "POST",
++    url: "https://reference.invalid/acme/operations/delete-alias",
++    expectedStatus: 200,
++  },
++  {
++    id: "read-deleted-alias",
++    family: "http",
++    method: "GET",
++    url: "https://reference.invalid/acme/alias/w1-locator",
++    expectedStatus: 404,
++  },
++  {
++    id: "delete-link",
++    family: "client",
++    method: "POST",
++    url: "https://reference.invalid/acme/operations/delete-link",
++    expectedStatus: 200,
++  },
++  {
++    id: "deleted-link",
++    family: "http",
++    method: "GET",
++    url: "https://reference.invalid/acme/links/w1-l",
++    expectedStatus: 404,
++  },
++  {
++    id: "delete-bead",
++    family: "client",
++    method: "POST",
++    url: "https://reference.invalid/acme/operations/delete-bead",
++    expectedStatus: 200,
++  },
++  {
++    id: "deleted-bead",
++    family: "http",
++    method: "GET",
++    url: "https://reference.invalid/acme/beads/w1-a",
++    expectedStatus: 404,
++  },
++  {
++    id: "sequence",
++    family: "client",
++    method: "POST",
++    url: "https://reference.invalid/acme/operations/sequence",
++    expectedStatus: 200,
++  },
++  {
++    id: "final-b",
++    family: "http",
++    method: "GET",
++    url: "https://reference.invalid/acme/beads/w1-b",
++    expectedStatus: 200,
++  },
++] as const;
++const coldDirectoryClientBindings = {
++  "directory-captures": {
++    targetBinding: "operations",
++    bodyBindings: {},
++  },
++  "create-a": {
++    targetBinding: "create-bead",
++    bodyBindings: {
++      type: "task-type",
++    },
++  },
++  "create-b": {
++    targetBinding: "create-bead",
++    bodyBindings: {
++      type: "task-type",
++    },
++  },
++  "update-bead": {
++    targetBinding: "update-bead",
++    bodyBindings: {
++      bead: "a-id",
++      expectedRevision: "a-rev",
++    },
++  },
++  "create-link": {
++    targetBinding: "create-link",
++    bodyBindings: {
++      type: "relates-type",
++      source: "a-id",
++      target: "b-id",
++    },
++  },
++  "update-link": {
++    targetBinding: "update-link",
++    bodyBindings: {
++      link: "link-id",
++      expectedRevision: "initial-link-revision",
++    },
++  },
++  "put-alias": {
++    targetBinding: "put-alias",
++    bodyBindings: {
++      target: "a-id",
++    },
++  },
++  "delete-alias": {
++    targetBinding: "delete-alias",
++    bodyBindings: {},
++  },
++  "delete-link": {
++    targetBinding: "delete-link",
++    bodyBindings: {
++      link: "link-id",
++      expectedRevision: "final-link-revision",
++    },
++  },
++  "delete-bead": {
++    targetBinding: "delete-bead",
++    bodyBindings: {
++      bead: "a-id",
++      expectedRevision: "a-updated-rev",
++    },
++  },
++  sequence: {
++    targetBinding: "sequence",
++    bodyBindings: {},
++  },
++};
++type ColdWrite = {
++  source: string;
++  writeState: string;
++  bodyPresent: boolean;
++  bodyOctets: number;
++  bodyDigest?: string;
++};
++type ColdFact = ColdWrite & {
++  family: "http" | "client";
++  ordinal: number;
++  method: string;
++  url: string;
++  status: number;
++};
++type ColdClient = {
++  request: Record<string, unknown>;
++  status: number;
++  headers: Record<string, unknown>;
++  observation: ColdWrite;
++  body?: unknown;
++};
++function coldObject(value: unknown): Record<string, unknown> {
++  if (value === null || typeof value !== "object" || Array.isArray(value))
++    throw Error("cold directory object missing");
++  return value as Record<string, unknown>;
++}
++function coldString(value: unknown): string {
++  if (typeof value !== "string" || value.length === 0) throw Error("cold directory string missing");
++  return value;
++}
++function coldWrite(value: unknown): ColdWrite {
++  const actual = coldObject(value);
++  if (typeof actual.bodyPresent !== "boolean" || typeof actual.bodyOctets !== "number")
++    throw Error("cold directory serializer fields missing");
++  return {
++    source: coldString(actual.source),
++    writeState: coldString(actual.writeState),
++    bodyPresent: actual.bodyPresent,
++    bodyOctets: actual.bodyOctets,
++    ...(actual.bodyDigest === undefined ? {} : { bodyDigest: coldString(actual.bodyDigest) }),
++  };
++}
++function coldClient(value: unknown): ColdClient {
++  const actual = coldObject(value);
++  if (typeof actual.status !== "number") throw Error("cold directory client status missing");
++  return {
++    request: coldObject(actual.request),
++    status: actual.status,
++    headers: coldObject(actual.headers),
++    observation: coldWrite(actual.observation),
++    ...(actual.body === undefined ? {} : { body: structuredClone(actual.body) }),
++  };
++}
++function assertColdDirectory(
++  result: ArtifactObservation["result"],
++  attempts: { ordinal: number; method: string; url: string }[],
++  raw: { fact: ColdFact; body?: unknown }[],
++  clients: ColdClient[],
++  mixed: ColdFact[],
++  controlled: boolean,
++) {
++  const observed = result.scenarios.find((row) => row.id === coldDirectoryId);
++  if (!observed) throw Error("cold directory runner result missing");
++  const expected = controlled ? coldDirectoryRequests.slice(0, 3) : coldDirectoryRequests;
++  const expectedRaw = expected.filter((r) => r.family === "http");
++  const expectedClients = expected.filter((r) => r.family === "client");
++  expect(attempts).toEqual(
++    expectedRaw.map((r, ordinal) => ({ ordinal, method: r.method, url: r.url })),
++  );
++  expect(raw).toHaveLength(expectedRaw.length);
++  expect(clients).toHaveLength(expectedClients.length);
++  expect(mixed.map(({ family, method, url, status }) => ({ family, method, url, status }))).toEqual(
++    expected.map((r) => ({
++      family: r.family,
++      method: r.method,
++      url: r.url,
++      status: r.expectedStatus,
++    })),
++  );
++  expect(raw.map((r) => r.fact.ordinal)).toEqual(expectedRaw.map((_, i) => i));
++  expect(mixed.filter((r) => r.family === "http")).toEqual(raw.map((r) => r.fact));
++  expect(mixed.filter((r) => r.family === "client").map((r) => r.ordinal)).toEqual(
++    expectedClients.map((_, i) => i),
++  );
++  expect(
++    observed.exchanges.map((r) => ({
++      id: r.request.id,
++      method: r.request.method,
++      url: r.request.url,
++    })),
++  ).toEqual(expectedRaw.map(({ id, method, url }) => ({ id, method, url })));
++  expect((observed.actions ?? []).map((r) => r.action.id)).toEqual(
++    expectedClients.map((r) => r.id),
++  );
++  for (const [i, actual] of raw.entries()) {
++    expect(observed.exchanges[i]?.response?.status).toBe(actual.fact.status);
++    expect(observed.exchanges[i]?.request.exact).toMatchObject({
++      source: actual.fact.source,
++      writeState: actual.fact.writeState,
++      bodyPresent: actual.fact.bodyPresent,
++      bodyOctets: actual.fact.bodyOctets,
++    });
++  }
++  for (const fact of mixed) {
++    expect(fact.source).toBe("raw-http1-serializer");
++    expect(fact.writeState).toBe("complete");
++    expect(fact.bodyPresent).toBe(fact.method === "POST");
++    expect(fact.bodyOctets).toBeLessThanOrEqual(4096);
++    if (fact.method === "GET") expect(fact.bodyOctets).toBe(0);
++  }
++  if (controlled) {
++    expect(observed.state).toBe("fail");
++    expect(
++      observed.exchanges.flatMap((r) =>
++        r.assertions.filter((a) => !a.passed).map((a) => `${r.request.id}:${a.id}`),
++      ),
++    ).toEqual(["directory:schema"]);
++    expect(observed.exchanges[2]?.assertions.map(({ id, passed }) => ({ id, passed }))).toEqual([
++      { id: "status", passed: true },
++      { id: "schema", passed: false },
++    ]);
++    return;
++  }
++  expect(observed.state).toBe("pass");
++  expect(
++    [...observed.exchanges, ...(observed.actions ?? [])].flatMap((r) => r.assertions),
++  ).toHaveLength(134);
++  expect(
++    [...observed.exchanges, ...(observed.actions ?? [])]
++      .flatMap((r) => r.assertions)
++      .every((a) => a.passed),
++  ).toBe(true);
++  const byId = new Map(
++    expectedClients.map((r, i) => {
++      const actual = clients[i];
++      if (!actual) throw Error("cold directory client count mismatch");
++      return [r.id, actual] as const;
++    }),
++  );
++  function client(id: string) {
++    const actual = byId.get(id as (typeof expectedClients)[number]["id"]);
++    if (!actual) throw Error(`cold directory client missing: ${id}`);
++    return actual;
++  }
++  for (const [i, actual] of clients.entries()) {
++    const expected = expectedClients[i];
++    if (!expected) throw Error("unexpected cold directory client");
++    const binding =
++      coldDirectoryClientBindings[expected.id as keyof typeof coldDirectoryClientBindings];
++    expect(actual.request).toMatchObject({
++      method: expected.method,
++      url: expected.url,
++      credentialRef: "operator",
++    });
++    expect(actual.request.targetBinding).toBe(binding.targetBinding);
++    expect(actual.request.bodyBindings).toEqual(binding.bodyBindings);
++    expect(actual.status).toBe(200);
++    if (expected.method === "POST") {
++      expect(actual.headers).not.toHaveProperty("etag");
++      expect(actual.headers).not.toHaveProperty("location");
++      const bytes = Buffer.from(JSON.stringify(actual.request.body));
++      expect(actual.observation.bodyOctets).toBe(bytes.length);
++      expect(actual.observation.bodyDigest).toBe(createHash("sha256").update(bytes).digest("hex"));
++    } else expect(actual.request).not.toHaveProperty("body");
++  }
++  expect(client("directory-captures").body).toEqual(coldDirectory);
++  function resource(id: string, expected: Record<string, unknown>) {
++    const value = coldObject(coldObject(client(id).body).resource);
++    const revision = coldString(value.revision);
++    expect(value).toEqual({ ...expected, revision });
++    expect(client(id).body).toEqual({
++      outcome: id.startsWith("create") ? "created" : "updated",
++      resource: value,
++    });
++    return value;
++  }
++  const aBase = {
++    id: `${scope}beads/w1-a`,
++    type: `${scope}types/task`,
++    properties: { n: 1 },
++    metadata: { tag: "a" },
++  };
++  const bBase = {
++    id: `${scope}beads/w1-b`,
++    type: `${scope}types/task`,
++    properties: { n: 1 },
++    metadata: { tag: "b" },
++  };
++  const aCreated = resource("create-a", aBase);
++  resource("create-b", bBase);
++  const aUpdated = resource("update-bead", { ...aBase, properties: { n: 2 } });
++  const linkBase = {
++    id: `${scope}links/w1-l`,
++    type: `${scope}types/relates`,
++    properties: { edge: 1 },
++    metadata: { tag: "link" },
++    source: aBase.id,
++    target: bBase.id,
++  };
++  const linkCreated = resource("create-link", linkBase);
++  const linkUpdated = resource("update-link", {
++    ...linkBase,
++    properties: { edge: 2 },
++    metadata: { tag: "updated" },
++  });
++  expect(client("delete-link").body).toEqual({
++    outcome: "deleted",
++    deleted: {
++      resourceKind: "link",
++      resource: { id: linkBase.id, type: linkBase.type, revision: linkUpdated.revision },
++    },
++  });
++  expect(client("delete-bead").body).toEqual({
++    outcome: "deleted",
++    deleted: {
++      resourceKind: "bead",
++      resource: { id: aBase.id, type: aBase.type, revision: aUpdated.revision },
++    },
++  });
++  expect(client("put-alias").body).toEqual({
++    outcome: "created",
++    alias: `${scope}alias/w1-locator`,
++    target: aBase.id,
++  });
++  expect(client("delete-alias").body).toEqual({
++    outcome: "deleted",
++    alias: `${scope}alias/w1-locator`,
++  });
++  const sequence = coldObject(client("sequence").body);
++  if (!Array.isArray(sequence.results)) throw Error("cold directory sequence results missing");
++  const final = coldObject(coldObject(sequence.results[0]).resource);
++  expect(final).toEqual({ ...bBase, properties: { n: 3 }, revision: coldString(final.revision) });
++  expect(sequence).toEqual({
++    results: [{ operationIndex: 0, outcome: "updated", resource: final }],
++  });
++  expect(raw.at(-1)?.body).toEqual(final);
++  const bodies: Record<string, unknown> = {
++    "create-a": {
++      id: "beads/w1-a",
++      properties: {
++        n: 1,
++      },
++      metadata: {
++        tag: "a",
++      },
++      type: "https://reference.invalid/acme/types/task",
++    },
++    "create-b": {
++      id: "beads/w1-b",
++      properties: {
++        n: 1,
++      },
++      metadata: {
++        tag: "b",
++      },
++      type: "https://reference.invalid/acme/types/task",
++    },
++    "update-bead": {
++      propertiesChange: [
++        {
++          op: "replace",
++          path: "/n",
++          value: 2,
++        },
++      ],
++      bead: "https://reference.invalid/acme/beads/w1-a",
++      expectedRevision: aCreated.revision,
++    },
++    "create-link": {
++      id: "links/w1-l",
++      properties: {
++        edge: 1,
++      },
++      metadata: {
++        tag: "link",
++      },
++      type: "https://reference.invalid/acme/types/relates",
++      source: "https://reference.invalid/acme/beads/w1-a",
++      target: "https://reference.invalid/acme/beads/w1-b",
++    },
++    "update-link": {
++      propertiesChange: [
++        {
++          op: "replace",
++          path: "/edge",
++          value: 2,
++        },
++      ],
++      metadataChange: [
++        {
++          op: "replace",
++          path: "/tag",
++          value: "updated",
++        },
++      ],
++      link: "https://reference.invalid/acme/links/w1-l",
++      expectedRevision: linkCreated.revision,
++    },
++    "put-alias": {
++      alias: "alias/w1-locator",
++      target: "https://reference.invalid/acme/beads/w1-a",
++    },
++    "delete-alias": {
++      alias: "alias/w1-locator",
++    },
++    "delete-link": {
++      link: "https://reference.invalid/acme/links/w1-l",
++      expectedRevision: linkUpdated.revision,
++    },
++    "delete-bead": {
++      bead: "https://reference.invalid/acme/beads/w1-a",
++      expectedRevision: aUpdated.revision,
++    },
++    sequence: {
++      operations: [
++        {
++          operation: "updateBead",
++          idempotencyKey: "directory-sequence-b",
++          bead: "beads/w1-b",
++          propertiesChange: [
++            {
++              op: "replace",
++              path: "/n",
++              value: 3,
++            },
++          ],
++        },
++      ],
++    },
++  };
++  for (const [id, body] of Object.entries(bodies))
++    expect(client(id).request.body, id).toEqual(body);
++}
++
+ async function run(
+   manifestValue?: unknown,
+@@ -182,4 +746,5 @@ async function run(
+     | (typeof numericRClosureRawControls)[number]
+     | Extract<(typeof schemaPropertyControls)[number], { transport: "raw" }>,
++  directoryControl?: "missing-update-link",
+ ) {
+   signal?.throwIfAborted();
+@@ -333,4 +898,15 @@ async function run(
+   const setupObservations: unknown[] = [];
+   const nativeReadObservations: unknown[] = [];
++  const coldAttempts: { ordinal: number; method: string; url: string }[] = [];
++  const coldRaw: { fact: ColdFact; body?: unknown }[] = [];
++  const coldClients: ColdClient[] = [];
++  const coldMixed: ColdFact[] = [];
++  let coldAliasRetryPassed = false;
++  let coldControlApplications = 0;
++  let coldValidator: ReturnType<typeof createJsonSchemaValidator> | undefined;
++  const validateCold = (schema: string, value: unknown) => {
++    coldValidator ??= createJsonSchemaValidator(installedObservationSchema);
++    expect(coldValidator.validate(schema, value)).toEqual([]);
++  };
+   let currentScenario = "";
+   let counterfactualApplications = 0;
+@@ -449,5 +1025,43 @@ async function run(
+       };
+     }
++    const cold = currentScenario === coldDirectoryId;
++    if (cold) {
++      if (coldAttempts.length >= 10) throw Error("extra cold directory raw attempt");
++      coldAttempts.push({ ordinal: coldAttempts.length, method: sent.method, url: sent.url });
++    }
+     const actual = await target.execute(sent);
++    if (cold) {
++      const fact: ColdFact = {
++        family: "http",
++        ordinal: coldAttempts.length - 1,
++        method: sent.method,
++        url: actual.url,
++        status: actual.status,
++        ...coldWrite(actual.exactRequest),
++      };
++      const body = actual.bodyText === "" ? undefined : JSON.parse(actual.bodyText);
++      coldRaw.push({ fact, ...(body === undefined ? {} : { body }) });
++      coldMixed.push(fact);
++      if (sent.url === `${scope}alias/w1-locator` && actual.status === 404) {
++        validateCold("#/$defs/readProblem", body);
++        expect(coldObject(body).code).toBe("resource-not-found");
++        expect(coldObject(body).retry).toBe("after-state-change");
++        coldAliasRetryPassed = true;
++      }
++      if (sent.method === "GET" && sent.url === `${scope}operations/`) {
++        expect(actual.status).toBe(200);
++        validateCold("#/$defs/readUpdateOperationDirectory", body);
++        expect(body).toEqual(coldDirectory);
++        if (directoryControl === "missing-update-link") {
++          expect(coldControlApplications).toBe(0);
++          const changed = { ...coldObject(body) };
++          delete changed.updateLink;
++          const bodyText = JSON.stringify(changed);
++          counterfactualApplications++;
++          coldControlApplications++;
++          return { ...actual, bodyText, bodyOctets: Buffer.byteLength(bodyText) };
++        }
++      }
++    }
+     if (admissionHit) {
+       counterfactualApplications++;
+@@ -505,7 +1119,21 @@ async function run(
+   async function observe() {
+     if (!target.exactConfiguration) throw Error("exact target configuration missing");
+-    const executeClient = createInstalledExactClient(exactMode, dialRoute, (observation) =>
+-      observations.push({ scenario: currentScenario, observation }),
+-    );
++    const executeClient = createInstalledExactClient(exactMode, dialRoute, (observation) => {
++      observations.push({ scenario: currentScenario, observation });
++      if (currentScenario === coldDirectoryId) {
++        if (coldClients.length >= 11) throw Error("extra cold directory client observation");
++        const actual = coldClient(observation);
++        const ordinal = coldClients.length;
++        coldClients.push(actual);
++        coldMixed.push({
++          family: "client",
++          ordinal,
++          method: coldString(actual.request.method),
++          url: coldString(actual.request.url),
++          status: actual.status,
++          ...actual.observation,
++        });
++      }
++    });
+     const result = await runConformanceMatrix({
+       ...(signal === undefined ? {} : { signal }),
+@@ -963,4 +1591,12 @@ async function run(
+       setupObservations,
+       nativeReadObservations,
++      coldDirectory: {
++        attempts: coldAttempts,
++        rawCompletions: coldRaw.map((r) => r.fact),
++        completions: coldMixed,
++        aliasRetryPassed: coldAliasRetryPassed,
++        checksPassed: false,
++        controlApplications: coldControlApplications,
++      },
+       result,
+     };
+@@ -968,4 +1604,25 @@ async function run(
+     // assertion failures and target cleanup failures.
+     lifecycle?.returned?.(report);
++    if (coldAttempts.length) {
++      saveColdDirectoryReport(report);
++      assertColdDirectory(
++        result,
++        coldAttempts,
++        coldRaw,
++        coldClients,
++        coldMixed,
++        directoryControl !== undefined,
++      );
++      expect(setupObservations.filter((r) => coldObject(r).scenario === coldDirectoryId)).toEqual(
++        [],
++      );
++      expect(
++        nativeReadObservations.filter((r) => coldObject(r).scenario === coldDirectoryId),
++      ).toEqual([]);
++      expect(coldControlApplications).toBe(directoryControl ? 1 : 0);
++      expect(coldAliasRetryPassed).toBe(!directoryControl);
++      report.coldDirectory.checksPassed = true;
++      saveColdDirectoryReport(report);
++    }
+     return report;
+   }
+@@ -991,4 +1648,11 @@ async function run(
+       execution.report.result.scenarios.every((row) => row.cleanupError === undefined));
+   if (execution.ok) execution.report.cleanupComplete = cleanupComplete;
++  if (execution.ok && coldAttempts.length) {
++    try {
++      saveColdDirectoryReport(execution.report);
++    } catch (error) {
++      cleanupErrors.push(error);
++    }
++  }
+   try {
+     lifecycle?.cleaned?.(cleanupComplete ? "complete" : "failed");
+@@ -1017,4 +1681,34 @@ async function run(
+ }
+ 
++function saveColdDirectoryReport(report: Awaited<ReturnType<typeof run>>) {
++  const filename = process.env.BDP_COLD_DIRECTORY_REPORT_PATH;
++  if (!filename) return;
++  if (!path.isAbsolute(filename)) throw Error("cold directory report path must be absolute");
++  const safe = JSON.stringify(
++    {
++      sourceCommit: report.sourceCommit,
++      sourceDirty: report.sourceDirty,
++      targetEntry: report.targetEntry,
++      configuration: report.configuration,
++      baselineReceipt: report.baselineReceipt,
++      reportBinding: report.reportBinding,
++      sessions: report.sessions.filter((r) => r.scenario === coldDirectoryId),
++      claimEligible: false,
++      cleanupComplete: report.cleanupComplete,
++      counterfactualApplications: report.counterfactualApplications,
++      coldDirectory: report.coldDirectory,
++      clientObservations: report.observations.filter(
++        (r) => coldObject(r).scenario === coldDirectoryId,
++      ),
++      result: report.result.scenarios.find((r) => r.id === coldDirectoryId),
++    },
++    null,
++    2,
++  );
++  if (Buffer.byteLength(safe) > 262144 || safe.includes(token) || safe.includes(wrongToken))
++    throw Error("unsafe or oversized cold directory report");
++  writeFileSync(filename, safe, { mode: 0o600 });
++}
++
+ function installedArtifactSet() {
+   const selection = loadProfileContractSelection("read-update");
+@@ -1097,6 +1791,103 @@ async function runShard(
+ }
+ 
++it("pins cold RU directory literals, actual target bindings and parent preservation", () => {
++  const set = installedArtifactSet();
++  const manifest = JSON.parse(
++    source("packages/conformance/matrices/read-update-v1.json").bytes.toString(),
++  );
++  const row = manifest.scenarios.find((r: { id: string }) => r.id === coldDirectoryId);
++  expect(createHash("sha256").update(JSON.stringify(row)).digest("hex")).toBe(
++    "7930b51eea68914b24ece231d9b30479e14936572bcd67d18351ffc6562efeff",
++  );
++  expect(
++    row.actions.map((a: { id: string; family: string }) => ({ id: a.id, family: a.family })),
++  ).toEqual(coldDirectoryRequests.map(({ id, family }) => ({ id, family })));
++  expect(row.actions).toHaveLength(21);
++  expect(coldDirectoryRequests.filter((r) => r.method === "POST")).toHaveLength(10);
++  const validator = createJsonSchemaValidator(installedObservationSchema);
++  for (const action of row.actions) {
++    for (const assertion of action.assertions)
++      if (assertion.kind === "json-schema") validator.resolve(assertion.schema);
++    if (action.family === "client") {
++      const binding =
++        coldDirectoryClientBindings[action.id as keyof typeof coldDirectoryClientBindings];
++      expect(action.input.targetBinding).toBe(binding.targetBinding);
++      expect(action.input.bodyBindings ?? {}).toEqual(binding.bodyBindings);
++      if (action.input.method === "POST") expect(action.input.targetBaseBinding).toBe("operations");
++    }
++  }
++  expect(row.actions[3].assertions).toContainEqual({
++    id: "directory-members",
++    kind: "json-pointer",
++    pointer: "/body",
++    exists: true,
++    equals: coldDirectory,
++  });
++  expect(row.actions[3].captures.map((c: { binding: string }) => c.binding)).toEqual(
++    Object.values(coldDirectory),
++  );
++  const coverage = set.coverage.rows.find((r) => r.id === coldDirectoryId);
++  expect(coverage?.wholeContract).toBe(true);
++  expect(coverage?.bindings).toEqual([
++    {
++      scenario: coldDirectoryId,
++      assertions: row.actions.flatMap((a: { id: string; assertions: { id: string }[] }) =>
++        a.assertions.map((q) => `${a.id}.${q.id}`),
++      ),
++    },
++  ]);
++  expect(coverage?.bindings[0]?.assertions).toHaveLength(134);
++  expect(set.shards.map((s) => s.scenarioIds.length)).toEqual([50, 5]);
++  expect(set.claimEligible).toBe(false);
++  expect(Buffer.byteLength(JSON.stringify(manifest))).toBeLessThanOrEqual(4194304);
++  const countNodes = (value: unknown): number =>
++    1 +
++    (value && typeof value === "object"
++      ? Object.values(value).reduce<number>((n, child) => n + countNodes(child), 0)
++      : 0);
++  expect(countNodes(manifest)).toBeLessThanOrEqual(100000);
++});
++
++it("observes all nine discovered RU operation targets through cold navigation", async () => {
++  const report = await run(undefined, [coldDirectoryId]);
++  expect(report.result.scenarioSelection).toEqual([coldDirectoryId]);
++  expect(report.sessions).toHaveLength(1);
++  expect(report.cleanupComplete).toBe(true);
++  expect(report.claimEligible).toBe(false);
++  expect(report.coldDirectory.checksPassed).toBe(true);
++  expect(report.coldDirectory.completions).toHaveLength(21);
++  expect(report.counterfactualApplications).toBe(0);
++}, 30000);
++
++it("rejects a missing updateLink directory member in actual response assertion input", async () => {
++  const report = await run(
++    undefined,
++    [coldDirectoryId],
++    false,
++    false,
++    undefined,
++    undefined,
++    undefined,
++    undefined,
++    undefined,
++    undefined,
++    undefined,
++    undefined,
++    undefined,
++    undefined,
++    undefined,
++    "missing-update-link",
++  );
++  expect(report.result.scenarioSelection).toEqual([coldDirectoryId]);
++  expect(report.sessions).toHaveLength(1);
++  expect(report.cleanupComplete).toBe(true);
++  expect(report.claimEligible).toBe(false);
++  expect(report.coldDirectory.checksPassed).toBe(true);
++  expect(report.coldDirectory.completions).toHaveLength(3);
++  expect(report.counterfactualApplications).toBe(1);
++}, 30000);
++
+ it("executes the partial cumulative RU matrix against actual installed factory HTTP and afterstate", async () => {
+-  // One aggregate budget for both shards and 54 isolated scenario authorities.
++  // One aggregate budget for both shards and 55 isolated scenario authorities.
+   // Abort cooperatively before the outer ceiling so existing finally blocks close stores.
+   const controller = new AbortController();
+@@ -1262,7 +2053,7 @@ it("executes the partial cumulative RU matrix against actual installed factory H
+     // Pin the existing runner projection; credential identity is bound separately in configuration.
+     expect(report.reportBinding.exactConfigurationDigest).toBe(
+-      "3224c31c83988dc0606cb76ee1f4ba8e6394159bdf7daaccc301461316cc2477",
++      "26da5a286d9887bebbb0fcf73a92c5d09aa7b7fcfdcc9ed91f767f4db1578c69",
+     );
+-    expect(report.uncoveredIds).toHaveLength(97);
++    expect(report.uncoveredIds).toHaveLength(96);
+     expect(report.uncoveredIds).toContain("read-update.http.command-minimum-fields");
+     expect(report.uncoveredIds).toContain("read-update.singleton.update-bead");
+@@ -1281,7 +2072,7 @@ it("executes the partial cumulative RU matrix against actual installed factory H
+         expect(item.observation.observation.bodyOctets).toBeLessThanOrEqual(65536);
+     }
+-    expect(progress.authoredIds).toHaveLength(54);
+-    expect(progress.reviewedWholeIds).toHaveLength(33);
+-    expect(progress.omittedRequiredIds).toHaveLength(76);
++    expect(progress.authoredIds).toHaveLength(55);
++    expect(progress.reviewedWholeIds).toHaveLength(34);
++    expect(progress.omittedRequiredIds).toHaveLength(75);
+     expect(progress.omittedRequiredIds).toContain("read-update.http.command-minimum-fields");
+     expect(progress.shards[1]!.selectedIds).toEqual([
+@@ -1359,5 +2150,5 @@ it("executes the partial cumulative RU matrix against actual installed factory H
+       set.coverage.rows.filter((r) => !r.wholeContract).map((r) => r.id),
+     );
+-    expect(progress.uncoveredIds).toHaveLength(97);
++    expect(progress.uncoveredIds).toHaveLength(96);
+     expect(progress.uncoveredIds).toContain("read-update.http.command-minimum-fields");
+     expect(JSON.stringify(progress)).not.toContain(token);
+@@ -1695,5 +2486,5 @@ it("does not admit an unused fixture binding as a fixed client GET route", async
+   ).toBe("pass");
+   expect(report.reportBinding.exactConfigurationDigest).toBe(
+-    "3224c31c83988dc0606cb76ee1f4ba8e6394159bdf7daaccc301461316cc2477",
++    "26da5a286d9887bebbb0fcf73a92c5d09aa7b7fcfdcc9ed91f767f4db1578c69",
+   );
+ }, 30000);
+@@ -2022,5 +2813,5 @@ it("observes retained retry dispositions across actual installed carriers and cu
+       JSON.stringify(report.result),
+     ).toMatchObject({ state: "pass" });
+-  expect(report.uncoveredIds).toHaveLength(97);
++  expect(report.uncoveredIds).toHaveLength(96);
+   expect(report.uncoveredIds).toContain("read-update.http.command-minimum-fields");
+   expect(report.result.claimEligible).toBe(false);
+@@ -2444,5 +3235,5 @@ it("observes key and media admission against installed HTTP with paired aftersta
+       JSON.stringify(report.result),
+     ).toMatchObject({ state: "pass" });
+-  expect(report.uncoveredIds).toHaveLength(97);
++  expect(report.uncoveredIds).toHaveLength(96);
+   expect(report.uncoveredIds).toContain("read-update.http.command-minimum-fields");
+   expect(report.result.claimEligible).toBe(false);
+@@ -2875,5 +3666,5 @@ it("observes reference syntax and retained category failures against installed H
+       JSON.stringify(report.result),
+     ).toMatchObject({ state: "pass" });
+-  expect(report.uncoveredIds).toHaveLength(97);
++  expect(report.uncoveredIds).toHaveLength(96);
+   expect(report.uncoveredIds).toContain("read-update.http.command-minimum-fields");
+   expect(report.result.claimEligible).toBe(false);
+@@ -4198,7 +4989,6 @@ it("pins numeric admission source growth, old blocks and independent row ledgers
+   expect(nodes(manifest) - NUMERIC_ADMISSION_CONTINUATION_NODES_BASE).toBeLessThanOrEqual(12000);
+   expect(nodes(manifest)).toBeLessThanOrEqual(27158);
+-  expect(coverageBytes.length - NUMERIC_ADMISSION_COVERAGE_BYTES_BASE).toBeLessThanOrEqual(
+-    65 * 1024,
+-  );
++  // Cold-directory coverage grows this historical source-data delta to exactly 70150 bytes.
++  expect(coverageBytes.length - NUMERIC_ADMISSION_COVERAGE_BYTES_BASE).toBeLessThanOrEqual(70150);
+   expect(fixtureBytes.length - NUMERIC_ADMISSION_FIXTURE_BYTES_BASE).toBeLessThanOrEqual(8192);
+   const text = bytes.toString();
+@@ -4587,8 +5377,9 @@ it("pins metadata closure growth, old B actions and final N preservation", () =>
+   // Command-minimum catalog row adds 401B; the 243B excess raises 14336 to 14579.
+   // Both historical bases stay fixed; this measured allowance has zero slack.
++  // Cold directory adds5114B:14579 ->19693; parser and runtime caps stay unchanged.
+   expect(
+     source("packages/conformance/test-support/read-update-coverage-v1.json").bytes.length -
+       METADATA_CLOSURE_COVERAGE_BYTES_BASE,
+-  ).toBeLessThanOrEqual(14579);
++  ).toBeLessThanOrEqual(19693);
+   expect(
+     createHash("sha256")
+@@ -4970,5 +5761,6 @@ it("pins bounded R closure source, changed-action ledger and unchanged companion
+   // The same 401B omitted row exceeds this allowance by 50B: 9728 -> 9778.
+   // Keep the historical base and other fences; no speculative margin is added.
+-  expect(coverage.length - 703415).toBeLessThanOrEqual(9778);
++  // Cold directory adds5114B:9778 ->14892.
++  expect(coverage.length - 703415).toBeLessThanOrEqual(14892);
+   const row = manifest.scenarios.find((r: { id: string }) => r.id === numericRoundTripId) as {
+     actions: readonly NumericRAction[];
+@@ -5113,5 +5905,6 @@ it("pins bounded R closure source, changed-action ledger and unchanged companion
+     ),
+   ).toBe(5546);
+-  expect(coverage.length - 703415 - 5546 - 3700).toBeLessThanOrEqual(1708);
++  // Cold directory consumes1176B prior slack;1708 ->5646 is the measured residual.
++  expect(coverage.length - 703415 - 5546 - 3700).toBeLessThanOrEqual(5646);
+   expect(row.actions!.reduce((n, a) => n + a.assertions.length, 0)).toBe(687);
+   expect(numericRClosureRawControls).toHaveLength(3);
+diff --git a/packages/conformance/src/cumulative-artifact.test.ts b/packages/conformance/src/cumulative-artifact.test.ts
+index 8b6d942..7a4479f 100644
+--- a/packages/conformance/src/cumulative-artifact.test.ts
++++ b/packages/conformance/src/cumulative-artifact.test.ts
+@@ -168,4 +168,5 @@ it("pins cumulative source digest map, catalog order and every coverage binding"
+     "read.http.method-405",
+     "read.http.cache-cors",
++    "read-update.discovery.operation-directory",
+     "read-update.singleton.create-bead",
+     "read-update.singleton.delete-bead",
+diff --git a/packages/conformance/src/profile-contract-plan.test.ts b/packages/conformance/src/profile-contract-plan.test.ts
+index dbcaadf..11dc846 100644
+--- a/packages/conformance/src/profile-contract-plan.test.ts
++++ b/packages/conformance/src/profile-contract-plan.test.ts
+@@ -271,6 +271,6 @@ describe("canonical cumulative profile contracts", () => {
+     };
+     expect(coverage.rows).toHaveLength(130);
+-    expect(coverage.rows.filter((row) => !row.wholeContract)).toHaveLength(97);
+-    expect(coverage.rows.filter((row) => row.status === "omitted")).toHaveLength(76);
++    expect(coverage.rows.filter((row) => !row.wholeContract)).toHaveLength(96);
++    expect(coverage.rows.filter((row) => row.status === "omitted")).toHaveLength(75);
+     const omitted = coverage.rows.filter((row) => row.id === id);
+     expect(omitted).toHaveLength(1);
+diff --git a/packages/conformance/src/read-update-artifact-set.test.ts b/packages/conformance/src/read-update-artifact-set.test.ts
+index da57ef5..f3c7081 100644
+--- a/packages/conformance/src/read-update-artifact-set.test.ts
++++ b/packages/conformance/src/read-update-artifact-set.test.ts
+@@ -152,4 +152,37 @@ function sizedManifest(
+ }
+ 
++function coldDirectorySpan(text: string, key: "scenarios" | "rows") {
++  const start = text.indexOf("[", text.indexOf(JSON.stringify(key))) + 1;
++  let depth = 0,
++    begin = -1,
++    quoted = false,
++    escaped = false;
++  for (let i = start; i < text.length; i++) {
++    const char = text[i];
++    if (quoted) {
++      if (escaped) escaped = false;
++      else if (char === "\\") escaped = true;
++      else if (char === '"') quoted = false;
++      continue;
++    }
++    if (char === '"') {
++      quoted = true;
++      continue;
++    }
++    if (char === "{" || char === "[") {
++      if (depth === 0) begin = i;
++      depth++;
++    } else if (char === "}" || char === "]") {
++      if (depth === 0) break;
++      if (
++        --depth === 0 &&
++        JSON.parse(text.slice(begin, i + 1)).id === "read-update.discovery.operation-directory"
++      )
++        return { start: begin, end: i + 1 };
++    }
++  }
++  throw Error("missing cold directory object");
++}
++
+ describe("private two-artifact Read+Update set", () => {
+   it.each(["setup", "applicability"] as const)(
+@@ -185,4 +218,41 @@ describe("private two-artifact Read+Update set", () => {
+     });
+     const manifest = decode(read("matrices/read-update-v1.json"));
++    const manifestText = Buffer.from(read("matrices/read-update-v1.json").bytes).toString();
++    const span = coldDirectorySpan(manifestText, "scenarios");
++    expect(manifestText.slice(span.end, span.end + 6)).toBe(",\n    ");
++    const parent = manifestText.slice(0, span.start) + manifestText.slice(span.end + 6);
++    expect(createHash("sha256").update(parent).digest("hex")).toBe(
++      "c86b33535f25a1d117ce021a3bb70164f5635bdaee50758e3428c130ccc3227f",
++    );
++    expect(JSON.parse(parent).scenarios).toHaveLength(49);
++    expect(
++      createHash("sha256")
++        .update(read("matrices/read-update-reference-continuation-v1.json").bytes)
++        .digest("hex"),
++    ).toBe("24d754618b51f255b5885d83c53ccf9a06593031e1812739a4f2b504c4a1df8d");
++    const coverageText = Buffer.from(
++      read("test-support/read-update-coverage-v1.json").bytes,
++    ).toString();
++    const coverageSpan = coldDirectorySpan(coverageText, "rows");
++    const previous =
++      '{\n      "id": "read-update.discovery.operation-directory",\n      "status": "omitted",\n      "wholeContract": false,\n      "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit.",\n      "bindings": []\n    }';
++    expect(
++      createHash("sha256")
++        .update(
++          coverageText.slice(0, coverageSpan.start) +
++            previous +
++            coverageText.slice(coverageSpan.end),
++        )
++        .digest("hex"),
++    ).toBe("f8f0b001928f8488292403b57c973bd918cba224ef9e00fe0691482bf5cfac0c");
++    const cold = manifest.scenarios.find(
++      (row: { id: string }) => row.id === "read-update.discovery.operation-directory",
++    );
++    expect(manifest.scenarios.indexOf(cold)).toBe(18);
++    expect(cold.actions).toHaveLength(21);
++    expect(cold.actions.flatMap((a: { assertions: unknown[] }) => a.assertions)).toHaveLength(134);
++    expect(createHash("sha256").update(JSON.stringify(cold)).digest("hex")).toBe(
++      "7930b51eea68914b24ece231d9b30479e14936572bcd67d18351ffc6562efeff",
++    );
+     const last = manifest.scenarios.at(-1);
+     expect(
+
+
+SAFE REPORT CONTRACT
+{"environment":"BDP_COLD_DIRECTORY_REPORT_PATH","path":"absolute caller-supplied distinct path per invocation","maximumBytes":262144,"contains":["actual sourceCommit/sourceDirty/targetEntry","actual configuration/bootstrap/session identities","actual artifact/report bindings","actual runner scenario (including genuine control failure)","actual safe client observations","raw attempts/completions and mixed order facts, no raw headers","checksPassed/aliasRetryPassed/controlApplications","cleanupComplete"],"fullRawResponseBodies":"Private local memory only. Full live Resource/alias/sequence/deleted-identity equality runs before success; do not claim serialized raw response bodies.","retention":"Written after actual runner return before oracle/cleanup; refreshed after passing oracle and actual cleanup. An earlier runner throw fabricates no result. Failure report cannot claim cleanup success.","negative":{"actualHttp":3,"originalDirectoryStatus":200,"inputMutation":"delete only updateLink after genuine directory validation","failed":["read-update.discovery.operation-directory:directory:schema"],"passedAtFailedAction":["status"],"applicationCount":1,"clientCount":0},"positive":{"rawAttempts":10,"rawCompletions":10,"clients":11,"mixed":21,"literalAssertions":134,"supplementalAliasRetry":true},"publicClaim":false}
+
+EXACT UNCHANGED/INTEGRATION CONTEXT apps/bdptest/src/read-update-matrix.test.ts:917-976
+  const target = createRawHttpScenarioTarget(
+    async (scenario, _scope, _seed, fixture, signal) => {
+      currentScenario = scenario.id;
+      sequenceCalls = 0;
+      retryClientIndex = 0;
+      lastPatchKey = "";
+      const configuration = cohortConfiguration(
+        path.join(directory, scenario.id),
+        port,
+        token,
+        scope,
+      );
+      const captured = configModule.captureInstalledReferenceConfiguration(configuration);
+      signal.throwIfAborted();
+      const child = await helpers.launchInstalledReference(entry, configuration);
+      try {
+        lifecycle?.launched?.(child.child);
+        signal.throwIfAborted();
+        assertSameServedProfileConfiguration(baseline, bindReceipt(child.ready));
+        expect(child.ready.scope).toBe(scope);
+        expect(child.ready.configurationIdentity).toBe(captured.identity);
+        expect(child.ready.artifactIdentity).toBe(captured.artifactIdentity);
+        if (sessions[0]) {
+          expect(child.ready.configurationIdentity).toBe(sessions[0].configurationIdentity);
+          expect(child.ready.payloadIdentity).toBe(sessions[0].payloadIdentity);
+        }
+        sessions.push({ scenario: scenario.id, ...child.ready });
+        if (
+          Array.isArray(fixture.readSeedScenarios) &&
+          fixture.readSeedScenarios.includes(scenario.id)
+        )
+          await seedInstalledReadFixture(
+            fixture,
+            scope,
+            createRawHttpExchangeExecutor(dialRoute, { exactMode }),
+            signal,
+            (observation) => setupObservations.push({ scenario: scenario.id, observation }),
+          );
+        return {
+          capabilities: fixture.capabilities,
+          bindings: fixture.bindings,
+          dialRoute,
+          close: async () => {
+            await closeInstalledChild(child);
+          },
+        };
+      } catch (error) {
+        try {
+          await closeInstalledChild(child);
+        } catch (cleanup) {
+          throw new AggregateError([error, cleanup], "scenario execution and cleanup failed", {
+            cause: error,
+          });
+        }
+        throw error;
+      }
+    },
+    { exactMode, requestTimeoutMs: 5000 },
+  );
+  let numericControlRecord: unknown;
+
+EXACT UNCHANGED/INTEGRATION CONTEXT apps/bdptest/test-support/read-update-exact-client.ts:1-174
+/** Real HTTP only. The shared runner owns all result and afterstate assertions. */
+import {
+  createRawHttpExchangeExecutor,
+  snapshotExactHttpMode,
+  type ExactHttpModeOptions,
+  type RawHttpDialRoute,
+  type ScenarioActionExecutor,
+} from "@bdp/conformance";
+
+import {
+  parseCanonicalHttpUrl,
+  parseCanonicalScope,
+  resolveCanonicalLocalResourceId,
+} from "@bdp/protocol";
+
+function record(value: unknown): Record<string, unknown> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) throw Error("record required");
+  return value as Record<string, unknown>;
+}
+function string(value: unknown): string {
+  if (typeof value !== "string" || !value) throw Error("observed string required");
+  return value;
+}
+
+export function createInstalledExactClient(
+  inputMode: ExactHttpModeOptions,
+  inputDialRoute: RawHttpDialRoute,
+  observe: (value: unknown) => void,
+): ScenarioActionExecutor {
+  const mode = snapshotExactHttpMode(inputMode);
+  const dialRoute = Object.freeze({ ...inputDialRoute });
+  return async (execution) => {
+    if (
+      execution.family !== "client" ||
+      execution.operation !== "installed.exact-request" ||
+      execution.scope !== mode.scope
+    )
+      throw Error("unsupported installed client operation");
+    const input = record(execution.input);
+    const allowed = new Set([
+      "targetBinding",
+      "targetBaseBinding",
+      "method",
+      "body",
+      "bodyBindings",
+      "idempotencyKey",
+      "credentialRef",
+      "query",
+    ]);
+    if (Object.keys(input).some((key) => !allowed.has(key))) throw Error("unknown client input");
+    const targetBinding = string(input.targetBinding);
+    const target = string(execution.bindings[targetBinding]);
+    const base =
+      input.targetBaseBinding === undefined
+        ? mode.scope
+        : string(execution.bindings[string(input.targetBaseBinding)]);
+    const url = new URL(target, base);
+    const root = new URL(mode.scope);
+    if (
+      url.origin !== root.origin ||
+      !url.pathname.startsWith(root.pathname) ||
+      url.username ||
+      url.password ||
+      url.hash ||
+      url.search ||
+      parseCanonicalHttpUrl(url.href) !== url.href
+    )
+      throw Error("observed target escaped canonical Scope");
+    const method = input.method;
+    if (method !== "GET" && method !== "POST") throw Error("unsupported client method");
+    if (
+      method === "GET" &&
+      !mode.routes.some((route) => route.method === method && route.url === url.href) &&
+      (target !== url.href || !/^beads\/[^/]+$/.test(url.pathname.slice(root.pathname.length)))
+    )
+      throw Error("captured read target must be a Bead identity");
+    if (
+      method === "POST" &&
+      !mode.routes.some((route) => route.method === method && route.url === url.href)
+    )
+      throw Error("mutation route was not installed");
+    if (
+      method === "GET" &&
+      !mode.routes.some((route) => route.method === method && route.url === url.href)
+    ) {
+      if (
+        resolveCanonicalLocalResourceId(
+          parseCanonicalScope(mode.scope),
+          "bead",
+          url.pathname.slice(root.pathname.length),
+        ) !== url.href
+      )
+        throw Error("captured identity is not canonical");
+    }
+    if (input.query !== undefined) {
+      const query = record(input.query);
+      if (
+        method !== "GET" ||
+        Object.keys(query).length !== 1 ||
+        !["properties", "links"].includes(string(query.view))
+      )
+        throw Error("unsupported observation view");
+      url.searchParams.set("view", string(query.view));
+    }
+    const body = input.body === undefined ? undefined : structuredClone(record(input.body));
+    const bindingSources = input.bodyBindings === undefined ? {} : record(input.bodyBindings);
+    for (const [field, binding] of Object.entries(bindingSources)) {
+      if (
+        !body ||
+        !["type", "bead", "link", "source", "target", "expectedRevision"].includes(field) ||
+        Object.hasOwn(body, field)
+      )
+        throw Error("invalid or shadowed body binding");
+      body[field] = string(execution.bindings[string(binding)]);
+    }
+    if ((method === "POST") !== (body !== undefined)) throw Error("request body/method mismatch");
+    const credentialRef = string(input.credentialRef);
+    const route = Object.freeze({ method, url: url.href });
+    // A captured allocated Bead URL gets one exact route, never a wildcard.
+    const execute = createRawHttpExchangeExecutor(dialRoute, {
+      exactMode: { ...mode, routes: [route] },
+      requestTimeoutMs: 5000,
+    });
+    const response = await execute({
+      method,
+      url: url.href,
+      signal: execution.signal,
+      credentialRef,
+      raw: {
+        headerLines:
+          body === undefined
+            ? []
+            : [
+                { name: "content-type", value: "application/json" },
+                ...(input.idempotencyKey === undefined
+                  ? []
+                  : [{ name: "idempotency-key", value: string(input.idempotencyKey) }]),
+              ],
+        ...(body === undefined ? {} : { bodyBytes: Buffer.from(JSON.stringify(body)) }),
+      },
+    });
+    const actual = response.exactRequest;
+    if (!actual) throw Error("exact serializer observation missing");
+    const observation = {
+      source: actual.source,
+      writeState: actual.writeState,
+      bodyPresent: actual.bodyPresent,
+      bodyOctets: actual.bodyOctets,
+      ...(actual.bodyDigest === undefined ? {} : { bodyDigest: actual.bodyDigest }),
+    };
+    const output = {
+      request: {
+        method,
+        url: url.href,
+        targetBinding,
+        bodyBindings: bindingSources,
+        credentialRef,
+        ...(body === undefined ? {} : { body }),
+      },
+      route,
+      observation,
+      status: response.status,
+      headers: Object.fromEntries(
+        Object.entries(response.headers).filter(([key]) =>
+          ["content-type", "etag", "location"].includes(key),
+        ),
+      ),
+      ...(response.bodyText === "" ? {} : { body: JSON.parse(response.bodyText) }),
+    };
+    // Synthetic fixture data only; never copy secret-bearing exact header lines.
+    observe(structuredClone(output));
+    return output;
+  };
+}
+
+
+EXACT UNCHANGED/INTEGRATION CONTEXT apps/bdptest/test-support/installed-body-schema.ts:1-27
+/** Private harness definitions for the actual transport wrapper's body.
+ * Normative definitions are cloned unchanged; these are not protocol schemas. */
+import schema from "../../../schemas/bdp-v0.schema.json" with { type: "json" };
+export const installedObservationSchema = {
+  ...structuredClone(schema),
+  $defs: {
+    ...structuredClone(schema.$defs),
+    ...Object.fromEntries(
+      [
+        "mutationResult",
+        "sequenceResponse",
+        "aliasResult",
+        "currentBeadRecord",
+        "currentLinkRecord",
+        "readProblem",
+        "readUpdateProblem",
+      ].map((definition) => [
+        `harnessInstalled_${definition}`,
+        {
+          type: "object",
+          required: ["body"],
+          properties: { body: { $ref: `#/$defs/${definition}` } },
+        },
+      ]),
+    ),
+  },
+};
+
+
+EXACT UNCHANGED/INTEGRATION CONTEXT packages/conformance/src/http-executor.ts:23-110
+export interface ExactHttpExchangeRequest {
+  readonly method: HttpMethod;
+  readonly url: string;
+  readonly signal: AbortSignal;
+  readonly headers?: never;
+  readonly rawRequestTarget?: Uint8Array;
+  readonly credentialRef?: string;
+  readonly raw: {
+    readonly headerLines: readonly RawHeaderLine[];
+    readonly bodyBytes?: Uint8Array;
+  };
+}
+
+export interface RawHeaderLine {
+  readonly name: string;
+  readonly value: string;
+}
+
+export type RequestWriteState = "not-started" | "started-completion-unestablished" | "complete";
+
+export interface ExactRequestObservation {
+  readonly source: "raw-http1-serializer";
+  /** Transient secret-bearing data, never safe to serialize directly into a report. */
+  readonly headerLines: readonly RawHeaderLine[];
+  /** Full authored entity metadata, not a claim about a transmitted prefix or server receipt. */
+  readonly bodyPresent: boolean;
+  readonly bodyOctets: number;
+  readonly bodyDigest?: string;
+  readonly writeState: RequestWriteState;
+}
+
+/** Trusted harness configuration, not portable scenario data or target-supplied authority. */
+export interface ExactHttpModeOptions {
+  readonly scope: string;
+  readonly profile: "read" | "read-update" | "transactional";
+  readonly routes: readonly { readonly method: HttpMethod; readonly url: string }[];
+  readonly maximumRequestHeaderBytes: number;
+  readonly maximumRequestBodyBytes: number;
+  readonly defaultCredentialRef: string;
+  readonly credentialHandles: readonly {
+    readonly id: string;
+    /** Empty means a deliberately anonymous handle; names are lower-case. */
+    readonly headerNames: readonly string[];
+  }[];
+  /** Synchronous, trusted nonblocking lookup. Promises/thenables are rejected. */
+  readonly resolveCredentials: (
+    context: Readonly<{
+      scope: string;
+      url: string;
+      method: HttpMethod;
+      credentialRef: string;
+      signal: AbortSignal;
+    }>,
+  ) => Readonly<Record<string, string>>;
+}
+
+export type RawHttpExchangeExecutor = (
+  request: HttpExchangeRequest | ExactHttpExchangeRequest,
+) => Promise<HttpExchangeResponse>;
+
+export interface HttpExchangeResponse {
+  readonly exactRequest?: ExactRequestObservation;
+  readonly url: string;
+  readonly status: number;
+  readonly headers: Readonly<Record<string, string>>;
+  readonly bodyText: string;
+  /** Decoded message-body octets observed below a method-aware HTTP client, when available. */
+  readonly bodyOctets?: number;
+  /**
+   * Exact bounded HTTP/1.x response bytes from status line through framed body.
+   * Only the socket-level executor can supply this pre-normalization evidence.
+   */
+  readonly wireResponseBytes?: Uint8Array;
+  /**
+   * Compatibility view after authorization/runtime decoration. In exact mode,
+   * repeated names retain their last value and this view has no wire-fidelity flag;
+   * only exactRequest.headerLines preserves authoritative ordered occurrences.
+   */
+  readonly effectiveRequest?: {
+    readonly url: string;
+    readonly headers: Readonly<Record<string, string>>;
+    /** Present only when the reported headers match bytes serialized onto the wire. */
+    readonly headersTransmitted?: true;
+  };
+}
+
+export type HttpExchangeExecutor = (request: HttpExchangeRequest) => Promise<HttpExchangeResponse>;
+
+EXACT UNCHANGED/INTEGRATION CONTEXT packages/conformance/src/runner.ts:140-203
+}
+
+export interface AssertionOutcome {
+  readonly id: string;
+  readonly passed: boolean;
+  readonly message?: string;
+}
+
+export interface ExactReportObservation {
+  readonly source: "raw-http1-serializer";
+  readonly writeState: RequestWriteState;
+  readonly headerProjection: "allowlisted-relative-order";
+  readonly headerLines: readonly { readonly name: string; readonly value: "<redacted>" }[];
+  readonly elidedHeaderLines: number;
+  readonly bodyPresent: boolean;
+  readonly bodyOctets: number;
+  readonly bodyDigest?: string;
+}
+
+export interface ObservedExchange extends TransactionalExchangeFields {
+  readonly request: {
+    readonly id: string;
+    readonly method: ScenarioRequest["method"];
+    readonly url: string;
+    readonly headers: Readonly<Record<string, string>>;
+    readonly wireHeadersObserved?: true;
+    readonly exact?: ExactReportObservation;
+  };
+  readonly response?: {
+    readonly url: string;
+    readonly status: number;
+    readonly headers: Readonly<Record<string, string>>;
+    readonly decodedBodyBytes: number;
+    readonly wireBodyOctets?: number;
+    readonly bodyKind: "empty" | "json" | "invalid-json" | "unrepresentable-json";
+  };
+  readonly transportError?: {
+    readonly category: string;
+    readonly message: string;
+    readonly writeState?: RequestWriteState;
+  };
+  readonly harnessError?: {
+    readonly category: "exact-configuration" | "exact-observation";
+    readonly message: string;
+    readonly writeState?: RequestWriteState;
+  };
+  readonly assertions: readonly AssertionOutcome[];
+}
+
+/** Redacted programmable-action evidence. Inputs, bindings, and output values are never reported. */
+export interface ObservedAction {
+  readonly action: {
+    readonly id: string;
+    readonly family: ScenarioProgrammaticAction["family"];
+    readonly operation: string;
+  };
+  readonly output?: { readonly kind: "json" };
+  readonly executionError?: { readonly category: string; readonly message: string };
+  readonly assertions: readonly AssertionOutcome[];
+}
+
+export interface ScenarioRunResult {
+  readonly id: string;
+  readonly requiredProfile: string;
+
+
+EXACT UNCHANGED/INTEGRATION CONTEXT packages/conformance/src/runner.ts:1013-1134
+async function runProgrammaticAction(
+  action: ScenarioProgrammaticAction,
+  bindings: Map<string, JsonValue>,
+  actions: ObservedAction[],
+  execute: ScenarioActionExecutor | undefined,
+  schemaValidator: SchemaValidator | undefined,
+  fixture: ConformanceFixture,
+  scope: string,
+  runProfile: ScenarioRunOptions["profile"],
+  signal: AbortSignal,
+  timeoutMs: number,
+  settlement: { settled: boolean },
+): Promise<void> {
+  const observed: ObservedAction = {
+    action: { id: action.id, family: action.family, operation: action.operation },
+    assertions: [],
+  };
+  actions.push(observed);
+  if (execute === undefined) {
+    actions[actions.length - 1] = {
+      ...observed,
+      executionError: {
+        category: "not-implemented",
+        message: "no programmable action executor was configured",
+      },
+    };
+    throw new ScenarioActionExecutorMissingError(
+      `action '${action.id}' requires a programmable action executor`,
+    );
+  }
+  const deadline = createDeadlineSignal(timeoutMs);
+  const actionSignal = AbortSignal.any([signal, deadline.signal]);
+  let output: unknown;
+  try {
+    settlement.settled = false;
+    const execution: ScenarioActionExecution = {
+      family: action.family,
+      operation: action.operation,
+      scope,
+      bindings: Object.freeze(
+        Object.fromEntries(
+          [...bindings].map(([binding, value]) => [binding, cloneRuntimeJson(value)]),
+        ),
+      ),
+      input: materializeActionInput(action, fixture),
+      signal: actionSignal,
+    };
+    const operation = Promise.resolve()
+      .then(() => execute(execution))
+      .then(
+        (value) => {
+          settlement.settled = true;
+          return value;
+        },
+        (error: unknown) => {
+          settlement.settled = true;
+          throw error;
+        },
+      );
+    output = await enforceDeadline(operation, actionSignal, () =>
+      signal.aborted
+        ? new ScenarioActionExecutionFailure("action execution was aborted")
+        : new ScenarioDeadlineError("action execution timed out"),
+    );
+  } catch (error) {
+    const failure = signal.aborted
+      ? new ScenarioActionExecutionFailure("action execution was aborted", { cause: error })
+      : deadline.signal.aborted
+        ? new ScenarioDeadlineError("action execution timed out", { cause: error })
+        : error instanceof ScenarioDeadlineError ||
+            error instanceof TransactionalHarnessError ||
+            error instanceof TransactionalReceiptFailure
+          ? error
+          : new ScenarioActionExecutionFailure("action execution failed", { cause: error });
+    actions[actions.length - 1] = {
+      ...observed,
+      executionError: {
+        category: failure instanceof ScenarioDeadlineError ? "timeout" : "execution",
+        message: failure.message,
+      },
+    };
+    throw failure;
+  } finally {
+    deadline.clear();
+  }
+
+  const snapshot = snapshotActionOutput(output);
+  const next: ObservedAction = { ...observed, output: { kind: "json" } };
+  actions[actions.length - 1] = next;
+  const body: ObservedBody = { kind: "json", value: snapshot };
+  const outcomes = action.assertions.map((assertion) =>
+    evaluateAssertion(
+      assertion,
+      { url: scope, status: 200, headers: {}, bodyText: "" },
+      body,
+      schemaValidator,
+      fixture,
+      scope,
+      runProfile,
+      new Map(),
+      {},
+      undefined,
+      bindings,
+    ),
+  );
+  actions[actions.length - 1] = { ...next, assertions: outcomes };
+  if (outcomes.some(({ passed }) => !passed))
+    throw new ScenarioAssertionFailure(
+      outcomes
+        .filter(({ passed }) => !passed)
+        .map(({ message }) => message ?? "assertion failed")
+        .join("; "),
+    );
+  for (const capture of action.captures) {
+    const value = jsonPointer(snapshot, capture.from.pointer);
+    if (value === undefined)
+      throw new ScenarioObservationFailure(
+        `capture '${capture.binding}' JSON pointer did not resolve`,
+      );
+    bindings.set(capture.binding, cloneRuntimeJson(value as JsonValue));
+  }
+}
+
+EXACT UNCHANGED/INTEGRATION CONTEXT packages/conformance/src/runner.ts:2230-2295
+  }
+  if (assertion.kind === "json-pointer") {
+    if (body.kind !== "json") return outcome(assertion.id, false, observedBodyIssue(body));
+    const value = jsonPointer(body.value, assertion.pointer);
+    const exists = value !== undefined;
+    if (assertion.equalsBinding !== undefined) {
+      const expected = bindings.get(assertion.equalsBinding);
+      if (expected === undefined)
+        throw new ConformanceRunnerError("JSON assertion capture is unavailable");
+      return outcome(
+        assertion.id,
+        exists && deepEqual(value, expected),
+        "JSON pointer did not equal the earlier observed capture",
+      );
+    }
+    const fixtureExpected =
+      assertion.fixturePointer === undefined
+        ? undefined
+        : jsonPointer(fixture, assertion.fixturePointer);
+    if (assertion.fixturePointer !== undefined && fixtureExpected === undefined)
+      throw new ConformanceRunnerError("fixture oracle pointer did not resolve");
+    let normalizedValue = value;
+    let normalizedFixtureExpected = fixtureExpected;
+    let normalizedEquals = assertion.equals;
+    if (assertion.normalize === "scope-relative-url") {
+      try {
+        normalizedValue = scopeRelativeUrl(value, scope);
+      } catch {
+        normalizedValue = undefined;
+      }
+    } else if (assertion.normalize === "iso-timestamps") {
+      const pointers = assertion.timestampPointers ?? [];
+      const expected =
+        assertion.fixturePointer !== undefined ? normalizedFixtureExpected : assertion.equals;
+      if (
+        !hasCanonicalIsoTimestamps(value, pointers) ||
+        !hasCanonicalIsoTimestamps(expected, pointers)
+      )
+        return outcome(
+          assertion.id,
+          false,
+          "declared timestamp pointer was absent or not a canonical ISO timestamp",
+        );
+      normalizedValue = normalizeIsoTimestampsAtPointers(value, pointers);
+      normalizedFixtureExpected = normalizeIsoTimestampsAtPointers(fixtureExpected, pointers);
+      normalizedEquals = normalizeIsoTimestampsAtPointers(
+        assertion.equals,
+        pointers,
+      ) as typeof assertion.equals;
+    }
+    return assertion.exists
+      ? outcome(
+          assertion.id,
+          exists &&
+            (assertion.equalsRunProfile === true
+              ? normalizedValue === runProfile
+              : assertion.fixturePointer !== undefined
+                ? deepEqual(normalizedValue, normalizedFixtureExpected)
+                : normalizedEquals === undefined || deepEqual(normalizedValue, normalizedEquals)),
+          "JSON pointer was absent or mismatched",
+        )
+      : outcome(assertion.id, !exists, "JSON pointer unexpectedly existed");
+  }
+  if (assertion.kind === "json-array-set") {
+    if (body.kind !== "json") return outcome(assertion.id, false, observedBodyIssue(body));
+    const array = jsonPointer(body.value, assertion.pointer);
+
+
+EXACT UNCHANGED/INTEGRATION CONTEXT packages/conformance/src/runner.ts:2468-2499
+function captureValue(
+  capture: ScenarioCapture,
+  response: HttpExchangeResponse,
+  body: ObservedBody,
+  scope: string,
+): string {
+  let value: unknown;
+  if (capture.from.kind === "response-url") value = response.url;
+  else if (capture.from.kind === "header-link")
+    value = linkHeader(response.headers.link, capture.from.rel, response.url);
+  else {
+    if (body.kind !== "json") throw new ScenarioObservationFailure(observedBodyIssue(body));
+    value = jsonPointer(body.value, capture.from.pointer);
+  }
+  if (typeof value !== "string" || !isHttpUrl(value))
+    throw new ScenarioObservationFailure(
+      `capture '${capture.binding}' did not produce an absolute HTTP(S) URL`,
+    );
+  try {
+    assertConfinedToScope(value, scope, `capture '${capture.binding}'`);
+  } catch (error) {
+    if (capture.from.kind === "header-link")
+      throw new ScenarioOutOfScopeTargetError(
+        "discovered link target is outside the runner's safe fetch boundary",
+        { cause: error },
+      );
+    throw error;
+  }
+  return value;
+}
+
+function resolveTarget(
+
+
+EXACT UNCHANGED/INTEGRATION CONTEXT packages/server/src/resource-evaluator.ts:1073-1102
+  const outcome: ReadUpdateMutationResult = deleting
+    ? {
+        outcome: "deleted",
+        deleted: {
+          resourceKind,
+          resource: {
+            id: before?.id as string,
+            type: before?.type as string,
+            revision: before?.revision as string,
+          },
+        },
+        ...(sourceAfter ? { source: sourceAfter.id, sourceRevision: sourceAfter.revision } : {}),
+      }
+    : {
+        outcome: creating ? "created" : "updated",
+        resource: after as ResourceRecord,
+        ...(sourceAfter ? { source: sourceAfter.id, sourceRevision: sourceAfter.revision } : {}),
+      };
+  // No Resource write happens until every validation/policy/CAS/limit check passes.
+  fault.check();
+  for (const write of writes) tx.putResource(write);
+  if (deleting) tx.deleteResource(id);
+  return freeze({
+    effect: "success",
+    outcome,
+    resolutions,
+    changed: writes.map((write) => write.id),
+    deleted: deleting ? [id] : [],
+  });
+}
+
+
+EXACT UNCHANGED/INTEGRATION CONTEXT packages/server/src/resource-evaluator.ts:1125-1168
+  recipe: VersionRecipe,
+  nativeContext: RevisionProvenance | undefined,
+  materialized: Map<VersionRecipe, ResourceRecord>,
+): ResourceRecord {
+  const existing = materialized.get(recipe);
+  if (existing) return existing;
+  const context =
+    recipe.metadata.context.kind === "native" ? nativeContext : recipe.metadata.context.value;
+  if (recipe.metadata.context.kind === "native" && context === undefined)
+    throw new TypeError("native version requires its commit observation");
+  const record = freeze({
+    id: recipe.id,
+    type: recipe.type,
+    revision: recipe.revision,
+    properties: recipe.properties,
+    metadata: recipe.commonMetadata,
+    ...(context === undefined && recipe.metadata.actor === undefined
+      ? {}
+      : {
+          revisionProvenance: {
+            ...context,
+            ...(recipe.metadata.actor === undefined ? {} : { actor: recipe.metadata.actor }),
+          },
+        }),
+    ...(recipe.endpoints ?? {}),
+    ...(recipe.ownedLinks === undefined
+      ? {}
+      : {
+          ownedLinks: Object.fromEntries(
+            Object.entries(recipe.ownedLinks).map(([type, links]) => [
+              type,
+              links.map((link) =>
+                link.kind === "existing"
+                  ? link.value
+                  : materializeVersion(link.value, nativeContext, materialized),
+              ),
+            ]),
+          ),
+        }),
+  }) as ResourceRecord;
+  materialized.set(recipe, record);
+  return record;
+}
+function observeCommitTime(clock: () => number): string {
+
+
+EXACT UNCHANGED/INTEGRATION CONTEXT packages/server/src/alias-evaluator.ts:151-186
+    if (mutation.operation === "putAlias" && tx.identityWasCommitted(`beads/${path}`))
+      fail("identity-taken");
+    const currentId = tx.alias(path);
+    let proposed: BeadRecord | undefined;
+    let proposedId: string | undefined;
+    if (mutation.operation === "putAlias") {
+      const target = canonical(scope, mutation.input.target);
+      proposedId = pathInScope(scope, target, "beads/");
+      if (proposedId === undefined) badTarget();
+      proposed = loadVisible(proposedId);
+    }
+    if (mutation.operation === "deleteAlias" && currentId === undefined) fail("resource-not-found");
+    const current = currentId === undefined ? undefined : loadVisible(currentId);
+    // Complete both closure checks before disclosing a write-policy refusal.
+    if (proposed && !policy.canWriteBead(proposed)) fail("forbidden");
+    if (current && currentId !== proposedId && !policy.canWriteBead(current)) fail("forbidden");
+    let outcome: ReadUpdateAliasResult;
+    if (mutation.operation === "putAlias") {
+      if (proposed === undefined || proposedId === undefined)
+        throw new Error("putAlias lost its validated target");
+      if (currentId !== proposedId) tx.putAlias(path, proposedId);
+      outcome = {
+        outcome: currentId === undefined ? "created" : "updated",
+        alias,
+        target: proposed.id,
+      };
+    } else {
+      tx.deleteAlias(path);
+      outcome = { outcome: "deleted", alias };
+    }
+    return Object.freeze({ effect: "success", outcome: parseReadUpdateAliasResult(outcome) });
+  } catch (error) {
+    if (error instanceof AliasFailure)
+      return Object.freeze({ effect: "failure", outcome: error.problem });
+    throw error;
+  }
+
+
+EXACT UNCHANGED/INTEGRATION CONTEXT packages/server/src/sequence-executor.ts:176-192
+function project(turn: MemberTurn, carrier: PreparedReadUpdateCarrier, index: number): unknown {
+  const operation = carrier.operations[index];
+  if (!operation) throw new TypeError("lost original member");
+  const position = {
+    operationIndex: index,
+    ...(operation.name === undefined ? {} : { operationName: operation.name }),
+  };
+  if (!("code" in turn.disposition)) return Object.freeze({ ...turn.disposition, ...position });
+  const problem = parseReadUpdateProblem(turn.disposition);
+  const status =
+    problem.status ??
+    (isReadProblemCode(problem.code)
+      ? readProblemDefinitionFor(problem.code).status
+      : updateStatuses[problem.code]);
+  return parseReadUpdateSequenceMemberProblem({ ...problem, status, ...position });
+}
+interface Token {
+
+
+EXACT UNCHANGED/INTEGRATION CONTEXT scripts/installed-reference-observation.mjs:18-85
+export async function launchInstalledReference(entry, configuration) {
+  const child = spawn(process.execPath, [entry], {
+    cwd: "/tmp",
+    stdio: ["ignore", "pipe", "pipe", "ipc"],
+  });
+  let stdout = "",
+    stderr = "";
+  child.stdout.on("data", (b) => {
+    stdout += b;
+    if (stdout.length > 65536) child.kill("SIGKILL");
+  });
+  child.stderr.on("data", (b) => {
+    stderr += b;
+    if (stderr.length > 65536) child.kill("SIGKILL");
+  });
+  const exited = new Promise((resolve) =>
+    child.once("exit", (code, signal) => resolve({ code, signal })),
+  );
+  const bounded = async (promise) => {
+    let timer;
+    try {
+      return await Promise.race([
+        promise,
+        new Promise((_, reject) => {
+          timer = setTimeout(() => {
+            child.kill("SIGKILL");
+            reject(Error("installed child deadline"));
+          }, 10000);
+        }),
+      ]);
+    } finally {
+      clearTimeout(timer);
+    }
+  };
+  try {
+    const ready = await bounded(
+      new Promise((resolve, reject) => {
+        child.once("error", reject);
+        child.once("message", resolve);
+        void exited.then(() => reject(Error(`installed child exited: ${stderr}`)));
+        child.send({ configuration });
+      }),
+    );
+    assert.equal(ready.event, "qualification.ready");
+    assert.equal(ready.claimEligible, false);
+    assert.match(ready.configurationIdentity, /^[a-f0-9]{64}$/);
+    assert.match(ready.payloadIdentity, /^[a-f0-9]{64}$/);
+    assert.match(ready.artifactIdentity, /^development-schema5-[a-f0-9]{64}$/);
+    assert.match(ready.policyIdentity, /^[a-f0-9]{64}$/);
+    assert.match(ready.authenticationIdentity, /^[a-f0-9]{64}$/);
+    assert.equal(ready.profile, "read-update");
+    assert.equal(ready.history, false);
+    return {
+      child,
+      ready,
+      exited,
+      wait: () => bounded(exited),
+      output: () => ({ stdout, stderr }),
+      close: async () => {
+        if (child.exitCode === null && child.signalCode === null) child.kill("SIGTERM");
+        return bounded(exited);
+      },
+    };
+  } catch (error) {
+    child.kill("SIGKILL");
+    await bounded(exited);
+    throw error;
+  }
+
+EXACT SELECTED SCHEMA DEFINITIONS (other shared schema definitions/format machinery omitted; actual CPU resolves every new schema reference)
+{"readUpdateOperationDirectory":{"type":"object","required":["createBead","updateBead","deleteBead","createLink","updateLink","deleteLink","putAlias","deleteAlias","sequence"],"properties":{"createBead":{"const":"create-bead"},"updateBead":{"const":"update-bead"},"deleteBead":{"const":"delete-bead"},"createLink":{"const":"create-link"},"updateLink":{"const":"update-link"},"deleteLink":{"const":"delete-link"},"putAlias":{"const":"put-alias"},"deleteAlias":{"const":"delete-alias"},"sequence":{"const":"sequence"}},"additionalProperties":false},"resourceIdentity":{"type":"object","required":["id","type","revision"],"properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"type":{"$ref":"#/$defs/absoluteHttpUrl"},"revision":{"type":"string","minLength":1}},"additionalProperties":false},"deletedIdentity":{"type":"object","required":["resourceKind","resource"],"properties":{"resourceKind":{"$ref":"#/$defs/resourceKind"},"resource":{"$ref":"#/$defs/resourceIdentity"}},"additionalProperties":false},"mutationResultMembers":{"type":"object","required":["outcome"],"properties":{"outcome":{"$ref":"#/$defs/mutationOutcome"},"resource":{"oneOf":[{"$ref":"#/$defs/beadRecord"},{"$ref":"#/$defs/linkRecord"}]},"deleted":{"$ref":"#/$defs/deletedIdentity"},"source":{"$ref":"#/$defs/absoluteHttpUrl"},"sourceRevision":{"type":"string","minLength":1}},"allOf":[{"if":{"properties":{"outcome":{"const":"deleted"}},"required":["outcome"]},"then":{"required":["deleted"],"properties":{"deleted":{"$ref":"#/$defs/deletedIdentity"},"resource":false}},"else":{"required":["resource"],"properties":{"resource":{"oneOf":[{"$ref":"#/$defs/beadRecord"},{"$ref":"#/$defs/linkRecord"}]},"deleted":false}}},{"if":{"required":["resource"],"properties":{"resource":{"$ref":"#/$defs/beadRecord"}}},"then":{"properties":{"source":false,"sourceRevision":false}}},{"if":{"required":["deleted"],"properties":{"deleted":{"type":"object","required":["resourceKind"],"properties":{"resourceKind":{"const":"bead"}}}}},"then":{"properties":{"source":false,"sourceRevision":false}}}],"dependentRequired":{"source":["sourceRevision"],"sourceRevision":["source"]}},"mutationResult":{"title":"BDP Read+Update mutation result","type":"object","allOf":[{"$ref":"#/$defs/mutationResultMembers"}],"unevaluatedProperties":false},"aliasResultMembers":{"type":"object","required":["outcome","alias"],"properties":{"outcome":{"$ref":"#/$defs/mutationOutcome"},"alias":{"$ref":"#/$defs/absoluteHttpUrl"},"target":{"$ref":"#/$defs/absoluteHttpUrl"}},"allOf":[{"if":{"properties":{"outcome":{"const":"deleted"}},"required":["outcome"]},"then":{"properties":{"target":false}},"else":{"required":["target"]}}]},"aliasResult":{"title":"BDP Read+Update alias result","type":"object","allOf":[{"$ref":"#/$defs/aliasResultMembers"}],"unevaluatedProperties":false},"sequenceMemberResult":{"type":"object","allOf":[{"$ref":"#/$defs/mutationResultMembers"}],"properties":{"operationIndex":{"type":"integer","minimum":0},"operationName":{"$ref":"#/$defs/localName"}},"required":["operationIndex"],"unevaluatedProperties":false},"sequenceMemberAliasResult":{"type":"object","allOf":[{"$ref":"#/$defs/aliasResultMembers"}],"properties":{"operationIndex":{"type":"integer","minimum":0}},"required":["operationIndex"],"unevaluatedProperties":false},"sequenceMemberProblem":{"type":"object","allOf":[{"$ref":"#/$defs/readUpdateProblem"},{"properties":{"code":{"not":{"enum":["revision-unknown","revision-unretained","revision-reorganized","revision-not-tracked","revision-unrepresentable"]}}}}],"required":["status","operationIndex"],"properties":{"status":{"type":"integer"},"operationIndex":{"type":"integer","minimum":0},"operationName":{"$ref":"#/$defs/localName"},"outcome":false}},"sequenceResponse":{"title":"BDP Read+Update sequence response","type":"object","required":["results"],"properties":{"results":{"type":"array","minItems":1,"items":{"oneOf":[{"$ref":"#/$defs/sequenceMemberResult"},{"$ref":"#/$defs/sequenceMemberAliasResult"},{"$ref":"#/$defs/sequenceMemberProblem"}]}}},"additionalProperties":false},"currentBeadRecord":{"allOf":[{"$ref":"#/$defs/beadRecord"},{"type":"object","required":["metadata"],"properties":{"metadata":{"$ref":"#/$defs/metadata"},"links":{"$ref":"#/$defs/currentLinkCollection"},"ownedLinks":{"type":"object","additionalProperties":{"type":"array","items":{"$ref":"#/$defs/currentLinkRecord"}}}}}]},"currentLinkRecord":{"allOf":[{"$ref":"#/$defs/linkRecord"},{"type":"object","required":["metadata"],"properties":{"metadata":{"$ref":"#/$defs/metadata"}}}]},"beadRecord":{"type":"object","required":["id","type","revision","properties"],"properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"type":{"$ref":"#/$defs/absoluteHttpUrl"},"revision":{"type":"string","minLength":1},"properties":{"$ref":"#/$defs/properties"},"metadata":{"$ref":"#/$defs/metadata"},"links":{"$ref":"#/$defs/linkCollection"},"ownedLinks":{"type":"object","propertyNames":{"$ref":"#/$defs/absoluteHttpUrl"},"additionalProperties":{"type":"array","items":{"$ref":"#/$defs/linkRecord"}}},"revisionProvenance":{"$ref":"#/$defs/revisionProvenance"}},"additionalProperties":false},"linkRecord":{"type":"object","required":["id","type","revision","source","target","properties"],"properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"type":{"$ref":"#/$defs/absoluteHttpUrl"},"revision":{"type":"string","minLength":1},"source":{"$ref":"#/$defs/reference"},"target":{"$ref":"#/$defs/reference"},"properties":{"$ref":"#/$defs/properties"},"metadata":{"$ref":"#/$defs/metadata"},"revisionProvenance":{"$ref":"#/$defs/revisionProvenance"}},"additionalProperties":false}}
+
+EXACT CONTEXT apps/bdptest/src/read-update-matrix.test.ts:1629-1681
+  const execution = await observe().then(
+    (report) => ({ ok: true as const, report }),
+    (error: unknown) => ({ ok: false as const, error }),
+  );
+  const cleanupErrors: unknown[] = [];
+  try {
+    await target.close();
+    lifecycle?.afterClose?.();
+  } catch (error) {
+    cleanupErrors.push(error);
+  }
+  try {
+    rmSync(directory, { recursive: true, force: true });
+  } catch (error) {
+    cleanupErrors.push(error);
+  }
+  const cleanupComplete =
+    cleanupErrors.length === 0 &&
+    (!execution.ok ||
+      execution.report.result.scenarios.every((row) => row.cleanupError === undefined));
+  if (execution.ok) execution.report.cleanupComplete = cleanupComplete;
+  if (execution.ok && coldAttempts.length) {
+    try {
+      saveColdDirectoryReport(execution.report);
+    } catch (error) {
+      cleanupErrors.push(error);
+    }
+  }
+  try {
+    lifecycle?.cleaned?.(cleanupComplete ? "complete" : "failed");
+  } catch (error) {
+    cleanupErrors.push(error);
+  }
+  if (
+    cleanupErrors.length ||
+    (!execution.ok && signal?.aborted && execution.error !== signal.reason)
+  ) {
+    const prior = signal?.aborted ? signal.reason : !execution.ok ? execution.error : undefined;
+    throw new AggregateError(
+      [
+        ...new Set([
+          ...(signal?.aborted ? [signal.reason] : []),
+          ...(!execution.ok ? [execution.error] : []),
+          ...cleanupErrors,
+        ]),
+      ],
+      "artifact execution or cleanup failed",
+      { cause: prior ?? cleanupErrors[0] },
+    );
+  }
+  if (!execution.ok) throw execution.error;
+  return execution.report;
+}
+
+EXACT CONTEXT apps/bdptest/src/read-update-matrix.test.ts:58-67
+async function closeInstalledChild(
+  child: Awaited<ReturnType<typeof helpers.launchInstalledReference>>,
+) {
+  await child.close();
+  // A settled exit alone is insufficient: the helper also observes forced SIGKILL exits.
+  expect(child.child.exitCode === 0 || child.child.signalCode === "SIGTERM").toBe(true);
+}
+const token = "cumulative_fixture_operator_0123456789";
+const wrongToken = "cumulative_unknown_operator_0123456789";
+const scope = "https://reference.invalid/acme/";
+
+EXACT CONTEXT packages/conformance/src/runner.ts:1458-1471
+      ),
+  );
+  exchanges[exchanges.length - 1] = { ...next, assertions: outcomes };
+  if (exactFailure) throw new ExactHarnessError("exact-observation");
+  if (corsWitnessFailure !== undefined)
+    throw new ScenarioWireObservationUnavailableError(corsWitnessFailure);
+  if (outcomes.some(({ passed }) => !passed))
+    throw new ScenarioAssertionFailure(
+      outcomes
+        .filter(({ passed }) => !passed)
+        .map(({ message }) => message ?? "assertion failed")
+        .join("; "),
+    );
+  for (const capture of request.captures) {
+
+COMPACT OMITTED-UNCHANGED CONTEXT BOUNDARY (facts checked against pinned full files, not supplied bodies): run has optional final directoryControl only; selectedIds forwards scenarioSelection. It constructs exactMode from fixed artifactRoutes with explicit operator/anonymous/unknown handles, requestTimeout5000, creates bootstrap plus isolated per-scenario installed child. Bootstrap capture and each child bind/assert real served configuration and payload/auth/policy/fixture identities. New row has no readSeedScenarios entry; any setup/nativeRead observation fails new oracle. Existing client callback does one transport then observer; actionExecutor delegates unchanged before unrelated old controls, all those controls are gated to their own scenario IDs. Full aggregate traverses two shards with existing evidence writer, one90s abort timer and120s outer bound, catches/records real failed results and finally clears timer/cleanup. Full aggregate not executed yet. Existing serializer creates exactRequest from actual raw socket writes; its writeState is complete only after required head/body callbacks. These unchanged implementation bodies and historical control bodies are omitted from this focused supplied-context review; report concrete dependency gaps honestly. Complete NEW local oracle/control/report/lifecycle additions are in the full four-TS diff, while existing target construction, actual client helper, captures/assertions and full cleanup are supplied. No changes to those omitted mechanisms are proposed.

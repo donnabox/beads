@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/node_modules/vitest/vitest.mjs",
+    "run",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "packages/server/src/transaction-events.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/format-successor-1/run/focused-source.results.json",
+    "--testNamePattern",
+    "^(?:gates\\ current\\ Event\\ replay\\ minima\\ before\\ cursor\\ validation:\\ scope|gates\\ current\\ Event\\ replay\\ minima\\ before\\ cursor\\ validation:\\ bead|gates\\ current\\ Event\\ replay\\ minima\\ before\\ cursor\\ validation:\\ link|captures\\ current\\ Event\\ replay\\ minimum\\ once\\ across\\ owner\\ entries:\\ scope\\-json|captures\\ current\\ Event\\ replay\\ minimum\\ once\\ across\\ owner\\ entries:\\ bead\\-json|captures\\ current\\ Event\\ replay\\ minimum\\ once\\ across\\ owner\\ entries:\\ link\\-json|captures\\ current\\ Event\\ replay\\ minimum\\ once\\ across\\ owner\\ entries:\\ scope\\-sse|captures\\ current\\ Event\\ replay\\ minimum\\ once\\ across\\ owner\\ entries:\\ bead\\-sse|captures\\ current\\ Event\\ replay\\ minimum\\ once\\ across\\ owner\\ entries:\\ link\\-sse|drains\\ current\\ Event\\ replay\\ admission\\ before\\ owner\\ close:\\ json|drains\\ current\\ Event\\ replay\\ admission\\ before\\ owner\\ close:\\ sse|serves\\ current\\ Event\\ replay\\ minima\\ across\\ media\\ and\\ reconnect\\ selection|serves\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minima\\ through\\ bounded\\ waiting|serves\\ initial\\ finite\\ Bead\\ Event\\ opaque\\ minima\\ with\\ retained\\ identity\\ and\\ route\\ fences|serves\\ initial\\ finite\\ Link\\ Event\\ opaque\\ minima\\ with\\ retained\\ identity\\ and\\ route\\ fences|serves\\ initial\\ Scope\\ Event\\ SSE\\ opaque\\ minima\\ before\\ conditional\\ admission|Event\\ reconnect\\ syntax,\\ minimum\\ ordering\\ and\\ exact\\ context\\ codes\\ are\\ preserved\\ over\\ HTTP)$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+  "head": "9f89271e2563a105410789ca8ca1e77dfb4d0b9f",
+  "tree": "30eaca668f17a191068444f8d6ca1232c80171b2",
+  "sourceIdentity": "10928ef28513fb178c3310c6610c689e7b6a39c4262d8363da3082598fd6ddbb",
+  "rootGateSha256": "0cb0224b89f37fcd7782253a575c1c6dbaf840cbbf7d21825d35f8601ce25c09",
+  "outerSeconds": 120,
+  "automaticRetries": 0,
+  "overrides": {},
+  "temporaryDirectory": "/private/tmp/vickie-event-replay-validation-focused-source-cei5pr3a",
+  "npmCache": "/private/tmp/vickie-event-replay-validation-focused-source-cei5pr3a/npm-cache"
+}

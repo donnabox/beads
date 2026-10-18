@@ -1,0 +1,772 @@
+{
+  "sourceCommit": "a912c23fbd80e70ead382a27e700a70123bf3f21",
+  "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed-process.js",
+  "result": {
+    "scope": "https://reference.invalid/acme/",
+    "profile": "transactional",
+    "seed": 0,
+    "selectedScenarioIds": [
+      "read-update.http.command-minimum-fields"
+    ],
+    "scenarioSelection": [
+      "read-update.http.command-minimum-fields"
+    ],
+    "artifacts": {
+      "catalogDigest": "c4a2ad576f3285ef9007f8bc69b094cf36e06716ed543ab195f4b8a53e9d3967",
+      "manifestDigest": "2b271f5df6c633ae6eadcef002df19aabd73f3c6db49e7bef680aa070d1fc9cb",
+      "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+    },
+    "declarations": {
+      "targetLabel": "private-installed-transactional-partial",
+      "exactConfigurationDigest": "02dd7d9f35e7482c07ce1550a6572232cc48ba6858cd66f8dfc8f5384f3628be"
+    },
+    "claimEligible": false,
+    "reportVersion": 4,
+    "scenarios": [
+      {
+        "id": "read-update.http.command-minimum-fields",
+        "requiredProfile": "read-update",
+        "state": "fail",
+        "requirements": [
+          "docs/specs/bdp.md#mutation-command-preconditions"
+        ],
+        "reason": "expected status 200, got 409; response body must have required property 'id'; response body must have required property 'id'; response body must have required property 'id'; response body must have required property 'id'; response body must have required property 'id'; response body must match exactly one schema in oneOf; header 'content-type' did not equal the expected value; JSON pointer was absent or mismatched; JSON pointer was absent or mismatched; JSON pointer was absent or mismatched; JSON pointer was absent or mismatched; JSON pointer was absent or mismatched; JSON pointer was absent or mismatched; response metadata did not match request 'm-create-b'; JSON pointer was not an array",
+        "exchanges": [
+          {
+            "servedSession": {
+              "scenario": "read-update.http.command-minimum-fields",
+              "generation": 1,
+              "listenUrl": "http://127.0.0.1:49572/",
+              "runtimeConfigurationIdentity": "c2859b254328d9764c1bd55d0845646de631dd6b102bee0199229f9ec0e0e47b",
+              "responseLimits": {
+                "headerBytes": 65536,
+                "bodyBytes": 1048576,
+                "wireBytes": 2097152
+              },
+              "configurationDigest": "211646c44bb1f2df61a1ebe7512277b27309467d1379ef1de1637e93e1531db4"
+            },
+            "request": {
+              "id": "m-create-a",
+              "method": "POST",
+              "url": "https://reference.invalid/acme/operations/create-bead",
+              "headers": {},
+              "exact": {
+                "source": "raw-http1-serializer",
+                "writeState": "complete",
+                "headerProjection": "allowlisted-relative-order",
+                "headerLines": [
+                  {
+                    "name": "content-type",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "idempotency-key",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "accept",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "authorization",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "Accept-Language",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "Accept-Encoding",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "User-Agent",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "Content-Length",
+                    "value": "<redacted>"
+                  }
+                ],
+                "elidedHeaderLines": 5,
+                "bodyPresent": true,
+                "bodyOctets": 102
+              }
+            },
+            "assertions": [
+              {
+                "id": "http-status",
+                "passed": true
+              },
+              {
+                "id": "schema",
+                "passed": true
+              },
+              {
+                "id": "media",
+                "passed": true
+              },
+              {
+                "id": "present-bdp-scope-epoch",
+                "passed": true
+              },
+              {
+                "id": "present-bdp-authorization-view",
+                "passed": true
+              },
+              {
+                "id": "present-bdp-scope-position",
+                "passed": true
+              },
+              {
+                "id": "serving-position",
+                "passed": true
+              },
+              {
+                "id": "request-headers",
+                "passed": true
+              },
+              {
+                "id": "request-body",
+                "passed": true
+              },
+              {
+                "id": "disposition",
+                "passed": true
+              },
+              {
+                "id": "detail",
+                "passed": true
+              },
+              {
+                "id": "key",
+                "passed": true
+              },
+              {
+                "id": "no-next",
+                "passed": true
+              },
+              {
+                "id": "required-position",
+                "passed": true
+              },
+              {
+                "id": "effect-position",
+                "passed": true
+              },
+              {
+                "id": "literal-result",
+                "passed": true
+              },
+              {
+                "id": "no-name",
+                "passed": true
+              },
+              {
+                "id": "no-source",
+                "passed": true
+              },
+              {
+                "id": "no-provenance",
+                "passed": true
+              },
+              {
+                "id": "no-owned-links",
+                "passed": true
+              }
+            ],
+            "response": {
+              "url": "https://reference.invalid/acme/operations/create-bead",
+              "status": 200,
+              "headers": {
+                "cache-control": "<redacted>",
+                "content-length": "<redacted>",
+                "content-type": "<redacted>",
+                "vary": "<redacted>"
+              },
+              "decodedBodyBytes": 672,
+              "wireBodyOctets": 672,
+              "bodyKind": "json"
+            }
+          },
+          {
+            "servedSession": {
+              "scenario": "read-update.http.command-minimum-fields",
+              "generation": 1,
+              "listenUrl": "http://127.0.0.1:49572/",
+              "runtimeConfigurationIdentity": "c2859b254328d9764c1bd55d0845646de631dd6b102bee0199229f9ec0e0e47b",
+              "responseLimits": {
+                "headerBytes": 65536,
+                "bodyBytes": 1048576,
+                "wireBytes": 2097152
+              },
+              "configurationDigest": "211646c44bb1f2df61a1ebe7512277b27309467d1379ef1de1637e93e1531db4"
+            },
+            "request": {
+              "id": "m-replay-a",
+              "method": "POST",
+              "url": "https://reference.invalid/acme/operations/create-bead",
+              "headers": {},
+              "exact": {
+                "source": "raw-http1-serializer",
+                "writeState": "complete",
+                "headerProjection": "allowlisted-relative-order",
+                "headerLines": [
+                  {
+                    "name": "content-type",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "idempotency-key",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "accept",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "authorization",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "Accept-Language",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "Accept-Encoding",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "User-Agent",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "Content-Length",
+                    "value": "<redacted>"
+                  }
+                ],
+                "elidedHeaderLines": 2,
+                "bodyPresent": true,
+                "bodyOctets": 102
+              }
+            },
+            "assertions": [
+              {
+                "id": "http-status",
+                "passed": true
+              },
+              {
+                "id": "schema",
+                "passed": true
+              },
+              {
+                "id": "media",
+                "passed": true
+              },
+              {
+                "id": "present-bdp-scope-epoch",
+                "passed": true
+              },
+              {
+                "id": "present-bdp-authorization-view",
+                "passed": true
+              },
+              {
+                "id": "present-bdp-scope-position",
+                "passed": true
+              },
+              {
+                "id": "serving-position",
+                "passed": true
+              },
+              {
+                "id": "request-headers",
+                "passed": true
+              },
+              {
+                "id": "request-body",
+                "passed": true
+              },
+              {
+                "id": "disposition",
+                "passed": true
+              },
+              {
+                "id": "detail",
+                "passed": true
+              },
+              {
+                "id": "key",
+                "passed": true
+              },
+              {
+                "id": "no-next",
+                "passed": true
+              },
+              {
+                "id": "required-position",
+                "passed": true
+              },
+              {
+                "id": "effect-position",
+                "passed": true
+              },
+              {
+                "id": "same-context",
+                "passed": true
+              },
+              {
+                "id": "literal-result",
+                "passed": true
+              },
+              {
+                "id": "no-name",
+                "passed": true
+              },
+              {
+                "id": "no-source",
+                "passed": true
+              },
+              {
+                "id": "no-provenance",
+                "passed": true
+              },
+              {
+                "id": "no-owned-links",
+                "passed": true
+              }
+            ],
+            "response": {
+              "url": "https://reference.invalid/acme/operations/create-bead",
+              "status": 200,
+              "headers": {
+                "cache-control": "<redacted>",
+                "content-length": "<redacted>",
+                "content-type": "<redacted>",
+                "vary": "<redacted>"
+              },
+              "decodedBodyBytes": 672,
+              "wireBodyOctets": 672,
+              "bodyKind": "json"
+            }
+          },
+          {
+            "servedSession": {
+              "scenario": "read-update.http.command-minimum-fields",
+              "generation": 1,
+              "listenUrl": "http://127.0.0.1:49572/",
+              "runtimeConfigurationIdentity": "c2859b254328d9764c1bd55d0845646de631dd6b102bee0199229f9ec0e0e47b",
+              "responseLimits": {
+                "headerBytes": 65536,
+                "bodyBytes": 1048576,
+                "wireBytes": 2097152
+              },
+              "configurationDigest": "211646c44bb1f2df61a1ebe7512277b27309467d1379ef1de1637e93e1531db4"
+            },
+            "request": {
+              "id": "m-create-b",
+              "method": "POST",
+              "url": "https://reference.invalid/acme/operations/batch",
+              "headers": {},
+              "exact": {
+                "source": "raw-http1-serializer",
+                "writeState": "complete",
+                "headerProjection": "allowlisted-relative-order",
+                "headerLines": [
+                  {
+                    "name": "content-type",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "idempotency-key",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "accept",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "authorization",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "Accept-Language",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "Accept-Encoding",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "User-Agent",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "Content-Length",
+                    "value": "<redacted>"
+                  }
+                ],
+                "elidedHeaderLines": 3,
+                "bodyPresent": true,
+                "bodyOctets": 144
+              }
+            },
+            "assertions": [
+              {
+                "id": "http-status",
+                "passed": true
+              },
+              {
+                "id": "schema",
+                "passed": true
+              },
+              {
+                "id": "media",
+                "passed": true
+              },
+              {
+                "id": "present-bdp-scope-epoch",
+                "passed": true
+              },
+              {
+                "id": "present-bdp-authorization-view",
+                "passed": true
+              },
+              {
+                "id": "present-bdp-scope-position",
+                "passed": true
+              },
+              {
+                "id": "serving-position",
+                "passed": true
+              },
+              {
+                "id": "request-headers",
+                "passed": true
+              },
+              {
+                "id": "request-body",
+                "passed": true
+              },
+              {
+                "id": "disposition",
+                "passed": true
+              },
+              {
+                "id": "detail",
+                "passed": true
+              },
+              {
+                "id": "key",
+                "passed": true
+              },
+              {
+                "id": "no-next",
+                "passed": true
+              },
+              {
+                "id": "required-position",
+                "passed": true
+              },
+              {
+                "id": "effect-position",
+                "passed": true
+              },
+              {
+                "id": "literal-result",
+                "passed": true
+              },
+              {
+                "id": "no-name",
+                "passed": true
+              },
+              {
+                "id": "no-source",
+                "passed": true
+              },
+              {
+                "id": "no-provenance",
+                "passed": true
+              },
+              {
+                "id": "no-owned-links",
+                "passed": true
+              }
+            ],
+            "response": {
+              "url": "https://reference.invalid/acme/operations/batch",
+              "status": 200,
+              "headers": {
+                "cache-control": "<redacted>",
+                "content-length": "<redacted>",
+                "content-type": "<redacted>",
+                "vary": "<redacted>"
+              },
+              "decodedBodyBytes": 672,
+              "wireBodyOctets": 672,
+              "bodyKind": "json"
+            }
+          },
+          {
+            "servedSession": {
+              "scenario": "read-update.http.command-minimum-fields",
+              "generation": 1,
+              "listenUrl": "http://127.0.0.1:49572/",
+              "runtimeConfigurationIdentity": "c2859b254328d9764c1bd55d0845646de631dd6b102bee0199229f9ec0e0e47b",
+              "responseLimits": {
+                "headerBytes": 65536,
+                "bodyBytes": 1048576,
+                "wireBytes": 2097152
+              },
+              "configurationDigest": "211646c44bb1f2df61a1ebe7512277b27309467d1379ef1de1637e93e1531db4"
+            },
+            "request": {
+              "id": "m-replay-b",
+              "method": "POST",
+              "url": "https://reference.invalid/acme/operations/batch",
+              "headers": {},
+              "exact": {
+                "source": "raw-http1-serializer",
+                "writeState": "complete",
+                "headerProjection": "allowlisted-relative-order",
+                "headerLines": [
+                  {
+                    "name": "content-type",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "idempotency-key",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "accept",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "authorization",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "Accept-Language",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "Accept-Encoding",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "User-Agent",
+                    "value": "<redacted>"
+                  },
+                  {
+                    "name": "Content-Length",
+                    "value": "<redacted>"
+                  }
+                ],
+                "elidedHeaderLines": 5,
+                "bodyPresent": true,
+                "bodyOctets": 151
+              }
+            },
+            "assertions": [
+              {
+                "id": "http-status",
+                "passed": false,
+                "message": "expected status 200, got 409"
+              },
+              {
+                "id": "schema",
+                "passed": false,
+                "message": "response body must have required property 'id'; response body must have required property 'id'; response body must have required property 'id'; response body must have required property 'id'; response body must have required property 'id'; response body must match exactly one schema in oneOf"
+              },
+              {
+                "id": "media",
+                "passed": false,
+                "message": "header 'content-type' did not equal the expected value"
+              },
+              {
+                "id": "present-bdp-scope-epoch",
+                "passed": true
+              },
+              {
+                "id": "present-bdp-authorization-view",
+                "passed": true
+              },
+              {
+                "id": "present-bdp-scope-position",
+                "passed": true
+              },
+              {
+                "id": "serving-position",
+                "passed": true
+              },
+              {
+                "id": "request-headers",
+                "passed": true
+              },
+              {
+                "id": "request-body",
+                "passed": true
+              },
+              {
+                "id": "disposition",
+                "passed": false,
+                "message": "JSON pointer was absent or mismatched"
+              },
+              {
+                "id": "detail",
+                "passed": false,
+                "message": "JSON pointer was absent or mismatched"
+              },
+              {
+                "id": "key",
+                "passed": false,
+                "message": "JSON pointer was absent or mismatched"
+              },
+              {
+                "id": "no-next",
+                "passed": false,
+                "message": "JSON pointer was absent or mismatched"
+              },
+              {
+                "id": "required-position",
+                "passed": false,
+                "message": "JSON pointer was absent or mismatched"
+              },
+              {
+                "id": "effect-position",
+                "passed": false,
+                "message": "JSON pointer was absent or mismatched"
+              },
+              {
+                "id": "same-context",
+                "passed": false,
+                "message": "response metadata did not match request 'm-create-b'"
+              },
+              {
+                "id": "literal-result",
+                "passed": false,
+                "message": "JSON pointer was not an array"
+              },
+              {
+                "id": "no-name",
+                "passed": true
+              },
+              {
+                "id": "no-source",
+                "passed": true
+              },
+              {
+                "id": "no-provenance",
+                "passed": true
+              },
+              {
+                "id": "no-owned-links",
+                "passed": true
+              }
+            ],
+            "response": {
+              "url": "https://reference.invalid/acme/operations/batch",
+              "status": 409,
+              "headers": {
+                "cache-control": "<redacted>",
+                "content-length": "<redacted>",
+                "content-type": "<redacted>",
+                "vary": "<redacted>"
+              },
+              "decodedBodyBytes": 122,
+              "wireBodyOctets": 122,
+              "bodyKind": "json"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "sessions": [
+    {
+      "event": "qualification.ready",
+      "authorityMode": "canonical",
+      "runtimeConfigurationIdentity": "c2859b254328d9764c1bd55d0845646de631dd6b102bee0199229f9ec0e0e47b",
+      "artifactIdentity": "development-schema5-c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+      "policyIdentity": "9451d84fc38c5e0631aa500aa8ff8df4a39b74ac3b33966466ea19a6b0961235",
+      "authenticationIdentity": "bbb58d3bbd7aaa4dc2812546fbc6a462c6c1a566474f351fb3a3d0a377f6b490",
+      "scope": "https://reference.invalid/acme/",
+      "profile": "transactional",
+      "history": false,
+      "claimEligible": false,
+      "listenUrl": "http://127.0.0.1:49572/",
+      "targets": {
+        "createBead": "https://reference.invalid/acme/operations/create-bead",
+        "updateBead": "https://reference.invalid/acme/operations/update-bead",
+        "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+        "createLink": "https://reference.invalid/acme/operations/create-link",
+        "updateLink": "https://reference.invalid/acme/operations/update-link",
+        "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+        "putAlias": "https://reference.invalid/acme/operations/put-alias",
+        "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+        "updateWhere": "https://reference.invalid/acme/operations/update-where",
+        "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+        "batch": "https://reference.invalid/acme/operations/batch",
+        "sequence": "https://reference.invalid/acme/operations/sequence"
+      },
+      "payloadIdentity": "144f8c506ad961b6be61f2e25cf19ac8a2a862b25df1ae4edbfd5bdff7b7db7f",
+      "scenario": "read-update.http.command-minimum-fields",
+      "reopen": false
+    }
+  ],
+  "baseline": {
+    "served": {
+      "scope": "https://reference.invalid/acme/",
+      "profile": "transactional",
+      "history": false,
+      "sourceCommit": "a912c23fbd80e70ead382a27e700a70123bf3f21",
+      "installedPayloadDigest": "144f8c506ad961b6be61f2e25cf19ac8a2a862b25df1ae4edbfd5bdff7b7db7f",
+      "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+      "policyDigest": "9451d84fc38c5e0631aa500aa8ff8df4a39b74ac3b33966466ea19a6b0961235",
+      "authenticationDigest": "bbb58d3bbd7aaa4dc2812546fbc6a462c6c1a566474f351fb3a3d0a377f6b490",
+      "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+      "fixtureId": "reference-transactional-v1",
+      "capabilities": [
+        "installed-transactional-http",
+        "transactional-receipt-observation"
+      ]
+    },
+    "operationTargets": {
+      "createBead": "https://reference.invalid/acme/operations/create-bead",
+      "updateBead": "https://reference.invalid/acme/operations/update-bead",
+      "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+      "createLink": "https://reference.invalid/acme/operations/create-link",
+      "updateLink": "https://reference.invalid/acme/operations/update-link",
+      "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+      "putAlias": "https://reference.invalid/acme/operations/put-alias",
+      "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+      "updateWhere": "https://reference.invalid/acme/operations/update-where",
+      "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+      "batch": "https://reference.invalid/acme/operations/batch",
+      "sequence": "https://reference.invalid/acme/operations/sequence"
+    },
+    "runtimeConfigurationIdentity": "c2859b254328d9764c1bd55d0845646de631dd6b102bee0199229f9ec0e0e47b",
+    "authorityMode": "canonical"
+  },
+  "supplemental": {
+    "kind": "command-minimum-wire-supplement",
+    "control": "minimum-batch-body-conflict",
+    "active": true,
+    "observedIds": [
+      "m-create-a",
+      "m-replay-a",
+      "m-create-b",
+      "m-replay-b"
+    ],
+    "performedComparisons": [
+      [
+        "m-replay-a",
+        "m-create-a",
+        "whole-json"
+      ]
+    ],
+    "originalRoot": "https://reference.invalid/acme/receipts/160fcdc2-1fc3-4076-85e3-4b434740c396",
+    "originalResponseDigest": "a530529f66d2edc8ba627875db5d1872de65d70ae22838afa0cc396928f6dfd4"
+  }
+}

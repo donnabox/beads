@@ -1,0 +1,5 @@
+Deep metadata on a retry could trigger the private depth refusal before the server compared its retained idempotency key. Direct batch and singleton requests now validate syntax and compare retained keys in the authoritative owner first, returning409 for a changed request. Fresh deep input keeps its private refusal without consuming the key; equal retries, strict helpers and sequence behavior are preserved.
+
+Validation: typecheck, clean build, format/lint, boundaries, Read evidence verification and17 targeted source tests pass. The isolated emitted early-refusal control catches the regression at the intended409 assertion. Fresh archives installed into an independent consumer pass the13-request service witness, including both carriers, unchanged replay, fresh-key reuse and complete final reads; process/store cleanup verified. Native and actual Claude review findings are dispositioned against the frozen source. Original lint and test-selection failures remain recorded separately.
+
+Exact-head CI remains the landing gate. This change does not activate or qualify either write profile.

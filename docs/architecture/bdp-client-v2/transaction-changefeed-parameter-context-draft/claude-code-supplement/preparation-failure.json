@@ -1,0 +1,9 @@
+{
+  "operation": "prompt size reduction",
+  "failure": "JSONDecodeError Extra data: selected schema JSON section also contained following explanatory prose",
+  "productExecution": false,
+  "reviewLaunched": false,
+  "sourceMutation": false,
+  "promptWrittenBeforeFailure": false,
+  "correction": "Parse first actual JSON value and retain trailing explanatory text"
+}

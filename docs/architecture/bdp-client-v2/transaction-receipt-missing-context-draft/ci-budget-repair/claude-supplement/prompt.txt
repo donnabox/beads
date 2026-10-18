@@ -1,0 +1,595 @@
+Review this exact test-helper-only repair to an existing CI cancellation test. Do not write or modify files. Output findings only in stdout. No tools are enabled. Return numbered concrete blockers/defects with severity, location, impact and smallest fix; say explicitly if no blocker. Do not re-review the unchanged receipt production change, demand a broader framework, or infer runtime results not supplied.
+
+Actual CI on3968081 failed exactly one unchanged existing callback: installed cohort deadline was caught but seen=false at transactional-matrix.test.ts902 after2087ms.9299tests passed,1failed,1skipped; downstream gates skipped. Current helper armed2000ms before bootstrap/scenario setup, so it could expire before intended real-wire gate. No precise startup substage was recorded. Raising only that budget to10000 would be incorrect because runner wraps exact execute including afterExchange in5000ms request timeout.
+
+Root approved optional afterFirstExchangeBudgetMs, positive safe integer <= initial budget. Keep original overall timer armed. After first real target.execute response, arm exactly one additional short timer invoking same real expiry callback; clear both in finally. Only this existing callback opts in:10000ms overall,100ms after-first-wire; existing seen/nonempty-wire/no-publication/deadlinecause/children-drained/<15000ms/20000msVitest assertions unchanged. Pre-aborted existing callback selected alongside it. Default callers and all production APIs/bounds stay unchanged. No mocked response or manual synthetic abort. Pathological request near its own5sec limit can still fail correctly; no scheduling guarantee. Workload source-derived2cases/1HTTP/2children; no new cases. Original eight receipt files are byte-preserved. Root is separately running typecheck/format/two selected cases; no outcome is yet asserted.
+
+Review timer ordering, no extension of original overall ceiling, one-shot behavior, abort propagation/cleanup, unchanged defaults and exact assertion discrimination. Full observe and selected callbacks, actual diff, launcher and runner request deadline follow. This is partial test evidence; no public-profile/release claim, full exact-head CI still required.
+
+## Exact applied diff
+```diff
+diff --git a/apps/bdptest/src/transactional-matrix.test.ts b/apps/bdptest/src/transactional-matrix.test.ts
+index cdb3eaf..bc94052 100644
+--- a/apps/bdptest/src/transactional-matrix.test.ts
++++ b/apps/bdptest/src/transactional-matrix.test.ts
+@@ -97,6 +97,8 @@ type InstalledObservation = {
+ };
+ async function observe(control?: {
+   readonly budgetMs?: number;
++  /** Negative-test deadline begins after the first real exchange, with startup still bounded. */
++  readonly afterFirstExchangeBudgetMs?: number;
+   readonly scenarioSelection?: readonly string[];
+   /** Retain genuine returned evidence before cleanup can fail; never replace it. */
+   readonly onObserved?: (observed: InstalledObservation) => void;
+@@ -118,6 +120,14 @@ async function observe(control?: {
+   const budgetMs = control?.budgetMs ?? 90000;
+   if (!Number.isSafeInteger(budgetMs) || budgetMs < 1 || budgetMs > 90000)
+     throw new Error("invalid cohort budget");
++  const afterFirstExchangeBudgetMs = control?.afterFirstExchangeBudgetMs;
++  if (
++    afterFirstExchangeBudgetMs !== undefined &&
++    (!Number.isSafeInteger(afterFirstExchangeBudgetMs) ||
++      afterFirstExchangeBudgetMs < 1 ||
++      afterFirstExchangeBudgetMs > budgetMs)
++  )
++    throw new Error("invalid after-first-exchange cohort budget");
+   const controller = new AbortController();
+   const signal = control?.signal
+     ? AbortSignal.any([control.signal, controller.signal])
+@@ -149,10 +159,9 @@ async function observe(control?: {
+   let target: ReturnType<typeof createTransactionalExecutionBinding> | undefined;
+   const sessions: Record<string, unknown>[] = [];
+   const deniedReceiptUrls = new Set<string>();
+-  const timer = setTimeout(
+-    () => controller.abort(new Error("installed cohort deadline")),
+-    budgetMs,
+-  );
++  const expireCohort = () => controller.abort(new Error("installed cohort deadline"));
++  const timer = setTimeout(expireCohort, budgetMs);
++  let firstExchangeTimer: ReturnType<typeof setTimeout> | undefined;
+   let observed: InstalledObservation | undefined;
+   let failure: unknown;
+   const cleanupFailures: unknown[] = [];
+@@ -268,6 +277,9 @@ async function observe(control?: {
+         exactExecution: {
+           execute: async (request) => {
+             const response = await target!.target.execute(request);
++            if (afterFirstExchangeBudgetMs !== undefined && firstExchangeTimer === undefined) {
++              firstExchangeTimer = setTimeout(expireCohort, afterFirstExchangeBudgetMs);
++            }
+             if (
+               typeof control?.invalidReceiptCredentials === "string" &&
+               response.status === 200 &&
+@@ -325,6 +337,7 @@ async function observe(control?: {
+       cleanupFailures.push(cleanup);
+     } finally {
+       clearTimeout(timer);
++      clearTimeout(firstExchangeTimer);
+       rmSync(directory, { recursive: true, force: true });
+     }
+   }
+@@ -878,7 +891,8 @@ it("aborts the actual cohort budget after real wire and drains all installed chi
+     published = false;
+   const started = performance.now();
+   const run = observe({
+-    budgetMs: 2000,
++    budgetMs: 10000,
++    afterFirstExchangeBudgetMs: 100,
+     children,
+     afterExchange: async (response, signal) => {
+       expect(response.wireResponseBytes?.length).toBeGreaterThan(0);
+
+```
+## Full observe helper
+```typescript
+type InstalledObservation = {
+  result: Awaited<ReturnType<typeof runCumulativeTransactionalMatrix>>;
+  sessions: Record<string, unknown>[];
+  baseline: ReturnType<typeof installedTransactionBinding>;
+};
+async function observe(control?: {
+  readonly budgetMs?: number;
+  /** Negative-test deadline begins after the first real exchange, with startup still bounded. */
+  readonly afterFirstExchangeBudgetMs?: number;
+  readonly scenarioSelection?: readonly string[];
+  /** Retain genuine returned evidence before cleanup can fail; never replace it. */
+  readonly onObserved?: (observed: InstalledObservation) => void;
+  readonly invalidReceiptCredentials?: boolean | "set-update" | "set-delete";
+  /** Negative-only removal of one already declared canonical set route. */
+  readonly omitRoute?: {
+    readonly method: "POST";
+    readonly url: `${typeof scope}operations/${"update-where" | "delete-where"}`;
+  };
+  readonly signal?: AbortSignal;
+  readonly children?: ChildProcess[];
+  /** Negative-test gate after actual ordinary wire, never a response replacement. */
+  readonly afterExchange?: (response: HttpExchangeResponse, signal: AbortSignal) => Promise<void>;
+  readonly ready?: (ready: Record<string, unknown>) => Record<string, unknown>;
+  readonly manifest?: (value: {
+    scenarios: { id: string; actions: Record<string, unknown>[] }[];
+  }) => void;
+}) {
+  const budgetMs = control?.budgetMs ?? 90000;
+  if (!Number.isSafeInteger(budgetMs) || budgetMs < 1 || budgetMs > 90000)
+    throw new Error("invalid cohort budget");
+  const afterFirstExchangeBudgetMs = control?.afterFirstExchangeBudgetMs;
+  if (
+    afterFirstExchangeBudgetMs !== undefined &&
+    (!Number.isSafeInteger(afterFirstExchangeBudgetMs) ||
+      afterFirstExchangeBudgetMs < 1 ||
+      afterFirstExchangeBudgetMs > budgetMs)
+  )
+    throw new Error("invalid after-first-exchange cohort budget");
+  const controller = new AbortController();
+  const signal = control?.signal
+    ? AbortSignal.any([control.signal, controller.signal])
+    : controller.signal;
+  signal.throwIfAborted();
+  const changed = JSON.parse(manifestSource.bytes.toString()) as {
+    scenarios: { id: string; actions: Record<string, unknown>[] }[];
+  };
+  control?.manifest?.(changed);
+  const runBundle = control?.manifest
+    ? createCumulativeTransactionalArtifactBundle(loadProfileContractSelection("transactional"), {
+        fixture: fixtureSource,
+        manifest: { bytes: Buffer.from(JSON.stringify(changed)) },
+      })
+    : bundle;
+  const directory = mkdtempSync(path.join(tmpdir(), "bdp-tx-installed-"));
+  const operator = randomBytes(32).toString("base64url"),
+    reader = randomBytes(32).toString("base64url");
+  const configuration = {
+    scope,
+    directory: path.join(directory, "bootstrap"),
+    create: true,
+    credentials: [
+      { token: operator, principal: "same", canMutate: true },
+      { token: reader, principal: "same", canMutate: false },
+    ],
+    artifacts: artifacts(),
+  };
+  let target: ReturnType<typeof createTransactionalExecutionBinding> | undefined;
+  const sessions: Record<string, unknown>[] = [];
+  const deniedReceiptUrls = new Set<string>();
+  const expireCohort = () => controller.abort(new Error("installed cohort deadline"));
+  const timer = setTimeout(expireCohort, budgetMs);
+  let firstExchangeTimer: ReturnType<typeof setTimeout> | undefined;
+  let observed: InstalledObservation | undefined;
+  let failure: unknown;
+  const cleanupFailures: unknown[] = [];
+  try {
+    const bootstrap = await launchInstalledTransaction(entry, configuration, signal);
+    control?.children?.push(bootstrap.child);
+    let baseline: ReturnType<typeof installedTransactionBinding>;
+    try {
+      baseline = installedTransactionBinding(bootstrap.ready, sourceCommit, fixtureSource);
+    } finally {
+      await bootstrap.close();
+    }
+    const routes = bundle.manifest.scenarios
+      .flatMap((s) => s.actions ?? [])
+      .flatMap((a) => {
+        if (a.family !== "http") return [];
+        const base =
+          a.target.binding === "scope" ? scope : bundle.fixture.bindings?.[a.target.binding];
+        if (!base) throw new Error("predeclared target unavailable");
+        const url = new URL(a.target.path ?? "", base);
+        for (const [key, value] of Object.entries(a.target.query ?? {})) {
+          if (typeof value !== "string") throw new Error("literal query required");
+          url.searchParams.set(key, value);
+        }
+        return [{ method: a.method, url: url.href }];
+      });
+    const uniqueRoutes = routes.filter(
+      (r, i) => routes.findIndex((o) => o.url === r.url && o.method === r.method) === i,
+    );
+    // Independently authored route inventory, not a second derivation from the manifest.
+    expect(uniqueRoutes).toEqual([
+      { method: "POST", url: `${scope}operations/create-bead` },
+      { method: "POST", url: `${scope}operations/batch` },
+      { method: "POST", url: `${scope}operations/sequence` },
+      { method: "POST", url: `${scope}operations/update-bead` },
+      { method: "GET", url: `${scope}beads/?limit=32` },
+      { method: "GET", url: `${scope}events/` },
+      { method: "GET", url: `${scope}beads/a` },
+      { method: "GET", url: `${scope}links/l` },
+      { method: "GET", url: `${scope}beads/new` },
+      { method: "GET", url: `${scope}changes/?after=genesis` },
+      { method: "GET", url: `${scope}links/?limit=32` },
+      { method: "GET", url: `${scope}beads/b` },
+      { method: "GET", url: `${scope}beads/c` },
+      { method: "POST", url: `${scope}operations/update-where` },
+      { method: "POST", url: `${scope}operations/delete-where` },
+    ]);
+    const omitted = control?.omitRoute;
+    if (omitted) {
+      expect([`${scope}operations/update-where`, `${scope}operations/delete-where`]).toContain(
+        omitted.url,
+      );
+      expect(omitted.method).toBe("POST");
+      expect(
+        uniqueRoutes.filter((r) => r.url === omitted.url && r.method === omitted.method),
+      ).toHaveLength(1);
+    }
+    const exactMode: ExactHttpModeOptions = {
+      scope,
+      profile: "transactional",
+      routes: uniqueRoutes.filter(
+        (r) => !omitted || r.url !== omitted.url || r.method !== omitted.method,
+      ),
+      maximumRequestHeaderBytes: 16384,
+      maximumRequestBodyBytes: 65536,
+      defaultCredentialRef: "operator",
+      credentialHandles: [
+        { id: "operator", headerNames: ["authorization"] },
+        { id: "reader", headerNames: ["authorization"] },
+        { id: "anonymous", headerNames: [] },
+      ],
+      resolveCredentials: ({ credentialRef, url }) =>
+        credentialRef === "anonymous"
+          ? {}
+          : {
+              authorization: `Bearer ${(control?.invalidReceiptCredentials === true && url.startsWith(`${scope}receipts/`)) || deniedReceiptUrls.has(url) ? "deliberately-unknown" : credentialRef === "operator" ? operator : reader}`,
+            },
+    };
+    target = createTransactionalExecutionBinding({
+      baseline,
+      sourceCommit,
+      fixtureSource,
+      exactMode,
+      launch: async (scenario, reopen, signal) => {
+        if (signal.aborted) throw new Error("launch aborted");
+        const child = await launchInstalledTransaction(
+          entry,
+          {
+            ...configuration,
+            directory: path.join(directory, scenario),
+            create: !reopen,
+          },
+          signal,
+        );
+        control?.children?.push(child.child);
+        sessions.push({ ...child.ready, scenario, reopen });
+        return control?.ready ? { ...child, ready: control.ready(child.ready) } : child;
+      },
+    });
+    const result = await runCumulativeTransactionalMatrix(
+      {
+        scope,
+        signal,
+        profile: "transactional",
+        seed: 0,
+        artifactBundle: runBundle,
+        ...(control?.scenarioSelection === undefined
+          ? {}
+          : { scenarioSelection: control.scenarioSelection }),
+        execute: async () => {
+          throw new Error("generic HTTP executor forbidden");
+        },
+        exactExecution: {
+          execute: async (request) => {
+            const response = await target!.target.execute(request);
+            if (afterFirstExchangeBudgetMs !== undefined && firstExchangeTimer === undefined) {
+              firstExchangeTimer = setTimeout(expireCohort, afterFirstExchangeBudgetMs);
+            }
+            if (
+              typeof control?.invalidReceiptCredentials === "string" &&
+              response.status === 200 &&
+              [
+                baseline.operationTargets.updateWhere,
+                baseline.operationTargets.deleteWhere,
+              ].includes(response.url)
+            ) {
+              const receipt = JSON.parse(response.bodyText) as {
+                id?: unknown;
+                idempotencyKey?: unknown;
+              };
+              if (
+                receipt.idempotencyKey === control.invalidReceiptCredentials &&
+                typeof receipt.id === "string"
+              )
+                deniedReceiptUrls.add(receipt.id);
+            }
+            await control?.afterExchange?.(response, signal);
+            signal.throwIfAborted();
+            return response;
+          },
+          configuration: target.target.exactConfiguration!,
+        },
+        harness: {
+          ...target.target.harness,
+          cleanup: async (...args) => {
+            try {
+              await target!.target.harness.cleanup(...args);
+            } catch (error) {
+              cleanupFailures.push(error);
+              throw error;
+            }
+          },
+        },
+        schemaValidator: createJsonSchemaValidator(schema),
+        declaredTargetLabel: "private-installed-transactional-partial",
+        prepareTimeoutMs: 10000,
+        cleanupTimeoutMs: 10000,
+        requestTimeoutMs: 5000,
+      },
+      target.context,
+    );
+    observed = { result, sessions, baseline };
+    control?.onObserved?.(observed);
+  } catch (error) {
+    failure = error;
+  } finally {
+    // The runner can report abort as row state; retain the cohort's original
+    // reason before a subsequent child/session cleanup failure is aggregated.
+    if (failure === undefined && signal.aborted) failure = signal.reason;
+    try {
+      await target?.target.close();
+    } catch (cleanup) {
+      cleanupFailures.push(cleanup);
+    } finally {
+      clearTimeout(timer);
+      clearTimeout(firstExchangeTimer);
+      rmSync(directory, { recursive: true, force: true });
+    }
+  }
+  if (cleanupFailures.length) {
+    const causes = [...new Set([...(failure === undefined ? [] : [failure]), ...cleanupFailures])];
+    throw new AggregateError(causes, "installed cohort cleanup failed");
+  }
+  if (failure !== undefined) throw failure;
+  signal.throwIfAborted();
+  if (!observed) throw new Error("missing installed observation");
+  return observed;
+}
+```
+## Both complete selected callbacks
+```typescript
+it("aborts the actual cohort budget after real wire and drains all installed children", async () => {
+  const children: ChildProcess[] = [];
+  let seen = false,
+    published = false;
+  const started = performance.now();
+  const run = observe({
+    budgetMs: 10000,
+    afterFirstExchangeBudgetMs: 100,
+    children,
+    afterExchange: async (response, signal) => {
+      expect(response.wireResponseBytes?.length).toBeGreaterThan(0);
+      seen = true;
+      await new Promise<void>((_resolve, reject) => {
+        const abort = () => reject(signal.reason);
+        signal.addEventListener("abort", abort, { once: true });
+        if (signal.aborted) abort();
+      });
+    },
+  }).then((value) => {
+    published = true;
+    return value;
+  });
+  const failure = await run.catch((error: unknown) => error);
+  expect(
+    [...errorCauses(failure)].some(
+      (cause) => cause instanceof Error && cause.message === "installed cohort deadline",
+    ),
+  ).toBe(true);
+  expect(seen).toBe(true);
+  expect(published).toBe(false);
+  expect(performance.now() - started).toBeLessThan(15000);
+  expect(children.length).toBeGreaterThanOrEqual(2);
+  expect(children.every((child) => child.exitCode !== null || child.signalCode !== null)).toBe(
+    true,
+  );
+  await new Promise((resolve) => setTimeout(resolve, 30));
+  expect(published).toBe(false);
+}, 20000);
+
+it("refuses a pre-aborted cohort before starting an installed child", async () => {
+  const children: ChildProcess[] = [];
+  await expect(
+    observe({ signal: AbortSignal.abort(new Error("pre-aborted cohort")), children }),
+  ).rejects.toThrow("pre-aborted cohort");
+  expect(children).toHaveLength(0);
+});
+
+```
+
+## packages/conformance/src/runner.ts:1193–1273
+```
+1193:   const requestEndsAt = performance.now() + requestTimeoutMs;
+1194:   const requestDeadline = createDeadlineSignal(requestTimeoutMs);
+1195:   const requestSignal = AbortSignal.any([signal, requestDeadline.signal]);
+1196:   let terminalWitness: Promise<RequestWriteState | undefined> | undefined;
+1197:   let capturedExact: ExactRequestObservation | undefined;
+1198:   try {
+1199:     if (exact) body = prepareExactRequest(request, options, url);
+1200:     else if (reportVersion === 4 && runProfile !== "read") {
+1201:       try {
+1202:         if (options.exactExecution === undefined) throw new Error();
+1203:         validateExactRunConfiguration(options.exactExecution.configuration, url, request.method);
+1204:       } catch {
+1205:         throw new ExactHarnessError("exact-configuration");
+1206:       }
+1207:     }
+1208:     settlement.settled = false;
+1209:     const executionOperation = Promise.resolve()
+1210:       .then(() =>
+1211:         exact && request.raw !== undefined && options.exactExecution !== undefined
+1212:           ? options.exactExecution.execute({
+1213:               method: request.method,
+1214:               url,
+1215:               signal: requestSignal,
+1216:               raw: {
+1217:                 headerLines: request.raw.headerLines,
+1218:                 ...(body === undefined ? {} : { bodyBytes: Uint8Array.from(body) }),
+1219:               },
+1220:               ...(request.credentialRef === undefined
+1221:                 ? {}
+1222:                 : { credentialRef: request.credentialRef }),
+1223:               ...(rawRequestTarget === undefined ? {} : { rawRequestTarget }),
+1224:             })
+1225:           : execute({
+1226:               method: request.method,
+1227:               url,
+1228:               headers,
+1229:               signal: requestSignal,
+1230:               ...(rawRequestTarget === undefined ? {} : { rawRequestTarget }),
+1231:             }),
+1232:       )
+1233:       .then(
+1234:         (value) => {
+1235:           settlement.settled = true;
+1236:           return value;
+1237:         },
+1238:         (error: unknown) => {
+1239:           settlement.settled = true;
+1240:           throw error;
+1241:         },
+1242:       );
+1243:     if (exact)
+1244:       terminalWitness = executionOperation.then(
+1245:         (value) => {
+1246:           try {
+1247:             capturedExact = snapshotExactObservation(value, options.exactExecution?.configuration);
+1248:             return capturedExact.writeState;
+1249:           } catch {
+1250:             return undefined;
+1251:           }
+1252:         },
+1253:         (error: unknown) => observedErrorWriteState(error),
+1254:       );
+1255:     response = await enforceDeadline(executionOperation, requestSignal, () =>
+1256:       signal.aborted
+1257:         ? new HttpTransportError("abort", "HTTP exchange was aborted")
+1258:         : new HttpTransportError("timeout", "HTTP exchange timed out"),
+1259:     );
+1260:     if (exact && performance.now() >= requestEndsAt) {
+1261:       requestDeadline.expire();
+1262:       throw new HttpTransportError("timeout", "HTTP exchange timed out");
+1263:     }
+1264:   } catch (error) {
+1265:     const transport = signal.aborted
+1266:       ? new HttpTransportError("abort", "HTTP exchange was aborted", { cause: error })
+1267:       : requestDeadline.signal.aborted
+1268:         ? new HttpTransportError("timeout", "HTTP exchange timed out", { cause: error })
+1269:         : error instanceof ExactHarnessError
+1270:           ? new HttpTransportError(
+1271:               "configuration",
+1272:               "Exact HTTP configuration was refused",
+1273:               {},
+```
+
+## Complete existing launcher wrapper
+```javascript
+/** Bounded inherited-IPC launcher. No request or observation emulation. */
+import { spawn } from "node:child_process";
+import { mkdir } from "node:fs/promises";
+export async function launchInstalledTransaction(entry, configuration, signal) {
+  signal?.throwIfAborted();
+  // Explicit launcher-owned provisioning; reopen keeps the directory/create:false.
+  if (configuration.create) await mkdir(configuration.directory, { recursive: true, mode: 0o700 });
+  signal?.throwIfAborted();
+  const child = spawn(process.execPath, [entry], {
+    cwd: "/tmp",
+    stdio: ["ignore", "pipe", "pipe", "ipc"],
+  });
+  let bytes = 0;
+  for (const stream of [child.stdout, child.stderr])
+    stream.on("data", (chunk) => {
+      bytes += chunk.length;
+      if (bytes > 65536) child.kill("SIGKILL");
+    });
+  const exited = new Promise((resolve) =>
+    child.once("exit", (code, signal) => resolve({ code, signal })),
+  );
+  async function bounded(promise) {
+    let timer;
+    try {
+      return await Promise.race([
+        promise,
+        new Promise((_, reject) => {
+          timer = setTimeout(() => {
+            child.kill("SIGKILL");
+            reject(new Error("installed transaction process deadline"));
+          }, 10000);
+        }),
+      ]);
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  async function drainFailure(error) {
+    child.kill("SIGKILL");
+    try {
+      await bounded(exited);
+    } catch (cleanup) {
+      throw new AggregateError([error, cleanup], "installed transaction cleanup failed");
+    }
+    throw error;
+  }
+  let closing;
+  const close = () =>
+    (closing ??= (async () => {
+      try {
+        if (child.connected) child.send({ command: "close" });
+        const result = await bounded(exited);
+        if (result.code !== 0 || result.signal !== null)
+          throw new Error("installed transaction child did not close cleanly");
+      } catch (error) {
+        await drainFailure(error);
+      } finally {
+        signal?.removeEventListener("abort", onAbort);
+      }
+    })());
+  const onAbort = () => {
+    void close().catch(() => {});
+  };
+  signal?.addEventListener("abort", onAbort, { once: true });
+  if (signal?.aborted) onAbort();
+  let detachReadyAbort = () => {};
+  try {
+    const ready = await bounded(
+      new Promise((resolve, reject) => {
+        const abort = () => reject(signal.reason);
+        signal?.addEventListener("abort", abort, { once: true });
+        detachReadyAbort = () => signal?.removeEventListener("abort", abort);
+        if (signal?.aborted) {
+          abort();
+          return;
+        }
+        child.once("error", reject);
+        child.once("message", resolve);
+        void exited.then(() => reject(new Error("installed transaction exited before ready")));
+        child.send({ configuration });
+      }),
+    );
+    signal?.throwIfAborted();
+    if (!ready || ready.event !== "qualification.ready" || JSON.stringify(ready).length > 65536)
+      throw new Error("invalid installed ready message");
+    return { child, ready, close };
+  } catch (error) {
+    try {
+      await close();
+    } catch (cleanup) {
+      throw new AggregateError([error, cleanup], "installed transaction startup cleanup failed");
+    }
+    throw error;
+  } finally {
+    detachReadyAbort();
+  }
+}
+
+```
+
+## Actual preserved CI diagnosis
+# PR128 exact-head CI failure
+
+Run38739669955/job116437776256 failed on3968081f8231566908e69045424b067c3c36dc40. Sole failure: apps/bdptest/src/transactional-matrix.test.ts:902, “aborts the actual cohort budget after real wire and drains all installed children”,2087ms. Expected seen=true, actual false. The prior assertion found “installed cohort deadline” in the error causes. All later published/duration/children-drained assertions were not reached, so this failed callback does not prove its cleanup oracle passed.
+
+Source shows observe arms its2000ms test-selected timer at lines152–155 before bootstrap launch/close, route setup and scenario launch; seen is set at885 only after the first returned ordinary exchange has nonempty wire bytes. The result is consistent with pre-wire startup/setup/dispatch consuming the deadline, but no per-stage observation identifies the exact delay. It is not a Vitest20-second timeout or proof of a receipt semantic regression. The entire failing matrix file is byte-identical to base015cac. No timing change or rerun was performed.
+
+Suite9299passed/1failed/1skipped,9301total,174passedfiles/1failedfile,783.14seconds. Job996seconds. Setup/install/format/lint/boundaries/typecheck/build succeeded. Full pnpm test failed; ready preflight, smoke and Read-cohort evidence gate were skipped, as were setup-go/setup-node post steps; remaining post steps completed successfully. No downstream success or headroom claim is made.
+
+The corrected minimum callback passed51ms; new source receipt HTTP case99ms, owner page-context case22ms and installed receipt callback1134ms passed in this failed overall run. These are exact CI callback observations, not an overall qualification.
+
+Actual checkout log pins syntheticde34f7479eba629bef73a979b12e5d6b9773ddba. Remote commit read confirms ordered parents[015cac,3968081] and treea597518b equal candidate. Raw full log retained unchanged: SHA2560d858f06611714eb1ef95cc23541f32d60005a36a5bb4e492d02fb83e9833d35,3329440bytes. Full job/run/PR snapshots and90second polling history preserved. Landing remains blocked on exact-head green CI; root owns diagnosis, any repair and publication.

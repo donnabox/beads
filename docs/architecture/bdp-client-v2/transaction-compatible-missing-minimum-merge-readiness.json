@@ -1,0 +1,34 @@
+{
+  "checkedAt": "2026-10-14T10:45:31.010674+00:00",
+  "head": "dfafd82290fb6f06db1e01522a3684a21d9813a7",
+  "tree": "cfd5313612249cb48211cbea7d3fe46e2edb5daf",
+  "mainBefore": "2172092de12752867b43858ebcbdd2c37d4c727f",
+  "pullRequest": {
+    "baseRefName": "main",
+    "headRefOid": "dfafd82290fb6f06db1e01522a3684a21d9813a7",
+    "isDraft": true,
+    "mergeable": "MERGEABLE",
+    "state": "OPEN",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-14T10:44:30Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/gastownhall/bdp/actions/runs/38550237640/job/115806130725",
+        "name": "verify",
+        "startedAt": "2026-10-14T10:32:05Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      }
+    ]
+  },
+  "reviewHashes": {
+    "transaction-compatible-missing-minimum-claude-code-review.txt": "4f7d94e22141ac269ddc84a20a42eeba05b354570a07911b18ee98d75682c5f4",
+    "transaction-compatible-missing-minimum-root-code-dispositions.md": "5ebe28756982b46baaaa848fd91bcaa80800e2e57461d74a23fb8bc47d065401",
+    "transaction-compatible-missing-minimum-repair-native-closure.md": "6e03a32d9377bbda2344b40886f80d74908246e62b72a7d11b947cfc1873a1ff",
+    "transaction-compatible-missing-minimum-repair-root-review.md": "24559c4eefd845948f5efb71c8fec13b930aed665a07cdefff108ab1e29128a4"
+  },
+  "scope": "Compatible current missing Resource minimum + ordinary delivery validation; no profile advertisement or release",
+  "ordinaryMergeTree": "cfd5313612249cb48211cbea7d3fe46e2edb5daf",
+  "actionableFindings": "closed or explicitly deferred in reviewed root dispositions"
+}

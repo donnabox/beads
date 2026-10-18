@@ -1,0 +1,109 @@
+{
+  "accepted": false,
+  "actionableFindingsResolved": false,
+  "pr": 124,
+  "ciRun": 38677561010,
+  "ciJob": null,
+  "testedCommit": null,
+  "base": "757aedc8008386745d59d5005498a9256d6ea76e",
+  "originalHead": "22777eccc347b9c926de1da92409de9a924ba692",
+  "head": "00d7fff3320eb10d4165718d23d86519cd3b7c5e",
+  "tree": "062c32778217aeb702b2f7798dc82b0d985e9c67",
+  "checkerSHA256": "aa4a71f8285af584eb1255c902ba18598579c53bd3fa0ba1bc6b46a8dd7de8fc",
+  "publicQualification": false,
+  "releaseAuthorized": false,
+  "evidence": {
+    "nativeSource": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/native-repair-closure.md",
+      "sha256": "522bddb69437157a053283b10a984e2a248ecd3df5d860a03852603574f634e0"
+    },
+    "claudeSourceReview": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/claude-code-finalization/review.txt",
+      "sha256": "9abce927f90ea0a891e84f93c39ee7ed312b29e9b7b5b54341b967a513d3c96c"
+    },
+    "claudeSourceExit": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/claude-code-finalization/exit.json",
+      "sha256": "f608829b78cf05f56998545f017d1538f4288928974ba986f19825237f255008"
+    },
+    "sourceDisposition": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/root-positive-release.json",
+      "sha256": "e695b21d25f7199192ef6b2dee4df9a21e0ea5391e089cf46da2c5569217e56a"
+    },
+    "staticResults": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/static-results.json",
+      "sha256": "901381995cd5c73c17afb7737a46654442055447fc51d9cbe5653f8fde661ea6"
+    },
+    "staticExit": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/static-exit.json",
+      "sha256": "34b9380e5ad7e801d359602218e1d4e39408cf550c7a5f866b79e0154af8ad6d"
+    },
+    "sourcePositives": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/run/positive-summary.json",
+      "sha256": "9d0afb8d9f03b1c44231ba13f788139212ea0af84cd561de5adb4fbaecce0cfa"
+    },
+    "specBoundary": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/spec-boundary-result.json",
+      "sha256": "2d48a669139412d252513b28790614688c3ec5d3146adbca871aa0b5c6fa3a1b"
+    },
+    "controls": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/controls-preparation/run/summary.json",
+      "sha256": "c5726b2afbfe25df06fa069a194f6ff777ceb1b5034cdedef27f3b5100f956d7"
+    },
+    "nativeControls": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/controls-preparation/native-actual-control-closure.md",
+      "sha256": "91a3c1ec9cf570ac03f957a81df4435927a29cc5c0992760535aaf6b0a25ee6b"
+    },
+    "repairBinding": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-assertion-repair/source-binding.json",
+      "sha256": "ede245f42c7d4cd477ff04ba3c4d33176006678f0553943800482a96195a7946"
+    },
+    "repairPatch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-assertion-repair/correction.patch",
+      "sha256": "2c841e647af2067abb5d50705be60489eb8c9c868e6346e922a0f2d5ee85298a"
+    },
+    "nativeRepair": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-assertion-repair/native-repair-closure.md",
+      "sha256": "ead495c86843083ced9e178e3fdf13d5cbe8f2e26f88f9edcb5423b42d2576ab"
+    },
+    "claudeRepairReview": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-oracle-repair/claude-review/stdout.txt",
+      "sha256": "7450dc0d65baf4b25dd4efbc89f323b68e6c7fe6d352bec049303bf487dcfeed"
+    },
+    "claudeRepairExit": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-oracle-repair/claude-review/exit.json",
+      "sha256": "7354078ff53dd9fb9e1992f1c0df826ddc05721508ecba1eb5b1e417d1fcc403"
+    },
+    "repairDisposition": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/root-repair-dispositions.json",
+      "sha256": "ef224b894ad0e33f20f9dc3b76ef12a5ed0e3ae694bee8d417279d108d49066a"
+    },
+    "installedProvenance": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation-v2/run/installed-provenance.json",
+      "sha256": "d67f7c6910933e70171637e76d86d95b4cc591161608c416c9c13eb1a996fe84"
+    },
+    "installedExit": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation-v2/run/installed-selector.exit.json",
+      "sha256": "6765734390d683face50121b9af66c8d4e8e2ec47408418e4b0a793bc4965bf9"
+    },
+    "installedResults": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation-v2/run/installed-selector.results.json",
+      "sha256": "accf4d443eb968f8237583ae1f31a7fb6140467f1636667a6a8cca5381da1205"
+    },
+    "installedLog": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation-v2/run/installed-selector.log",
+      "sha256": "0b66dcda703433ebe61912cabdc0d3ca3fe26366a01092ed113bc33d41385694"
+    },
+    "installedCandidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation-v2/run/installed-selector.review-candidate.json",
+      "sha256": "74f2799121749765740e242770a7cd4707a8cd566aef291da5b57a3fc02e290c"
+    },
+    "nativeInstalled": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/installed-preparation-v2/native-actual-outcome.md",
+      "sha256": "2a69083e2331043ffc6979cedc28e16957b14e28dd82365573a873569991015d"
+    },
+    "ciLog": {
+      "path": null,
+      "sha256": null
+    }
+  }
+}

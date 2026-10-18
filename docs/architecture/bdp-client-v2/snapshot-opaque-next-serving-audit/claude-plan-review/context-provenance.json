@@ -1,0 +1,50 @@
+{
+  "capturedAt": "2026-10-17T07:05:44.656815+00:00",
+  "copies": {
+    "plan-v2.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-next-serving-audit/plan-v2.md",
+      "sha256": "ce6af37743d6a0666588c45ba5481444b9da04a95118f892cbb44c6820c32123"
+    },
+    "selection-v2.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-next-serving-audit/selection-v2.json",
+      "sha256": "2f8165811cf7274583f1b4220e27e36495c79c9011dc84e48be0649b7b8ad420"
+    },
+    "plan-v2-binding.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-next-serving-audit/plan-v2-binding.json",
+      "sha256": "d50ad78b2be5cd6f5ace75b2c25cc1ee0a288d1940259bcb4bfe68f951f80d9d"
+    },
+    "recommendation.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-next-serving-audit/plan.md",
+      "sha256": "525a3fb05b96cf52c32cb9a1a9ba3c2fa205f160611fe8b2883d5ad7ee6db464"
+    },
+    "native-recommendation-review.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-next-serving-audit/native-recommendation-review.md",
+      "sha256": "477641ce82f1538a11a70500d81666de85cf22be227d4d998ae40252921a7e6f"
+    },
+    "native-plan-v2-review.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-next-serving-audit/native-plan-v2-review.md",
+      "sha256": "8fe1cf41ca9885f0aee68c99f850cbb9f5f67cbed858efb72c4768201bf1f186"
+    },
+    "required-contract-matrix.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-next-serving-audit/required-contract-matrix.md",
+      "sha256": "36adee4631362abdc34074617deb1429fcb0de9465b1be73f4193b07c7a8e0aa"
+    },
+    "source-binding.json": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-author/successor-1/source-binding.json",
+      "sha256": "d3c609860e833ed5e7e19263001a6a19a3c1e05890dbea25384218c2c7ffaf71"
+    },
+    "planning-source.patch": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-author/successor-1/full.patch",
+      "sha256": "32395d9dd40e2e7d3e762a4d4b18216f92df4c0642f44b2c2e8fa750b51e1421"
+    },
+    "bdp.md": {
+      "source": "/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum/docs/specs/bdp.md",
+      "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8"
+    },
+    "design.md": {
+      "source": "/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md",
+      "sha256": "8a7d8487d5a14dc5950985fd11b6d2570d7b8454efc514c55d3947d4444433d9"
+    }
+  },
+  "bindingPolicy": "Only immutable copies are review-side inputs. No live design, validation outputs or mutable Snapshot council records are bound. Planning source remains exact dirty Snapshot successor; clean green rebind is required before receipt authoring."
+}

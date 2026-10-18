@@ -1,0 +1,133 @@
+{
+  "status": "PREPARATION_ONLY_NO_EXECUTION",
+  "authoringWorkspace": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+  "authoringBase": "18104a03b850553641f24fe83e7318493fa102ca",
+  "finalParent": null,
+  "ownedPaths": [
+    "apps/bdptest/src/transactional-principal-key-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "inputs": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-plan/root-authoring-release.json": "7aab161c88e039b51919696e0d5c3b079eb03e97ee042607e1ec8920bce71c47",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-plan/proposed-successor/plan.md": "783f439e36218efba63820f6b6baf96cb00bcf022fba6665a44a2d64e81148c9",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-plan/proposed-successor/ledger.json": "aa556158f879892795b62ba984ffd1226f4b09344d1a28d2b9bd486cb9532d79",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-plan/proposed-successor/native-closure.md": "330b6d97be5561455362e8c0b0e4eb8d0c9a596871534358f3ab41284376c92f"
+  },
+  "templates": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation/gate.py": "68e9017c30b2c6545f8373c11efa842c0b014d12f7f0641fe6cb1dd3f24a1a58",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation/supervise.py": "1764ff4ec582f9ffc8d71b084745383feba2e965006d64ab20fb3c988a180c4a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation/packages.py": "40fba4f17352258adaa4a2b0e26ac1adedcce36d979ed733c47e63834f15c61f",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation/inventory.py": "7e1dfd2f5b47057fd71595f29e43f456b746de87a237576bf0615fd17ab5c0e5"
+  },
+  "staticCommands": 7,
+  "sourceCases": 0,
+  "cohorts": [
+    {
+      "id": "positive",
+      "mode": "positive",
+      "expectedExit": 0,
+      "expectedHttp": 7,
+      "maxHttp": 7,
+      "children": 1,
+      "owners": 1,
+      "listeners": 1,
+      "directories": 1
+    },
+    {
+      "id": "principal-collapse",
+      "mode": "collapse-b-to-a",
+      "expectedExit": 1,
+      "expectedHttp": 2,
+      "maxHttp": 7,
+      "children": 1,
+      "owners": 1,
+      "listeners": 1,
+      "directories": 1,
+      "expectedFailure": "principal-key:b-independent-create:completed",
+      "actualExpectedStatus": 409,
+      "actualExpectedProblem": {
+        "type": "https://github.com/gastownhall/bdp/problems/conflict",
+        "code": "idempotency-conflict",
+        "status": 409,
+        "retry": "never"
+      },
+      "actualExpectedCurrentPosition": "pos-1"
+    }
+  ],
+  "totals": {
+    "expectedHttp": 9,
+    "maximumHttp": 14,
+    "children": 2,
+    "owners": 2,
+    "listeners": 2,
+    "directories": 2,
+    "reopens": 0,
+    "bootstrapHttp": 0,
+    "readonlyDatabaseHandles": 0
+  },
+  "reportAllowlist": {
+    "observationFields": [
+      "index",
+      "label",
+      "method",
+      "url",
+      "credentialRef",
+      "requestBodyBytes",
+      "requestBodySha256",
+      "writeState",
+      "status",
+      "bodyOctets",
+      "bodySha256",
+      "responseWireSha256",
+      "scopeEpoch",
+      "authorizationView",
+      "scopePosition",
+      "contentType",
+      "contentLength",
+      "validatedNegativeProblem",
+      "comparisonOutcome"
+    ],
+    "bindingFields": [
+      "declaredSourceCommit",
+      "workspaceDirty",
+      "entry",
+      "entrySha256",
+      "readyDerivedBinding",
+      "artifactRetrievalUris",
+      "descriptorSchemaUtf8",
+      "configurationIdentity",
+      "authenticationIdentity",
+      "routeDigest",
+      "payloadDigest",
+      "claimEligible"
+    ],
+    "lifecycleFields": [
+      "attempts",
+      "completedResponses",
+      "childPid",
+      "exitCode",
+      "signalCode",
+      "closed",
+      "directoryAbsent",
+      "safeFailureClassifications",
+      "namedAssertionIds",
+      "elapsedMs"
+    ],
+    "forbidden": [
+      "effectiveRequest",
+      "exactRequest",
+      "headerLines",
+      "token",
+      "tokenMap",
+      "authorizationValues",
+      "runtimeConfiguration",
+      "launcherOptions",
+      "wholeExchange",
+      "arbitraryErrorCause",
+      "requestWire",
+      "secretBearingAssertionDiffs"
+    ],
+    "outputLocation": "absolute evidence/results paths outside store subtree; output-write failures aggregate with primary/cleanup errors"
+  },
+  "constraints": "Report/schema adapter pending frozen authored source; no guessed source/output/lock/payload hashes. No installed execution until final actual sequence-parent integration and explicit root gate."
+}

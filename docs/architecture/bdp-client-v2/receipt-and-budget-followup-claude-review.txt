@@ -1,0 +1,116 @@
+No file was written or modified. Both frozen checkouts confirmed clean at the named SHAs (`git rev-parse` + empty `git status --porcelain`). I did not read `native-review.md` / `native-*` artifacts, and did not run builds or tests.
+
+---
+
+# TARGET 1 — `27bad2b` ("Constrain private receipt failures and prove live key release") vs `064db8a`
+
+Checkout `/Users/dbox/repos/wt/vickie/vickie-transaction-receipt-guards`. Diff is exactly the three claimed files: `transaction-batch.ts` (+34/-10), `transaction-set.test.ts` (+78/-54), `docs/design/transaction-implementation-progress.md` (+15/-7). No store, evaluator, protocol, schema, HTTP, identity, cap or export change.
+
+**No concrete regression found.** Three LOW residuals.
+
+## T1-1 — LOW · drift risk / test coverage · `packages/server/src/transaction-batch.ts:455-478`
+
+**The receipt code and status subsets are hand-transcribed copies of the schema enums with no test tying them together, and 2 of the 13 codes have no coverage through the transaction path.**
+
+`receiptProblemCodes` (13) and `receiptProblemStatuses` (6) are literal arrays. I verified both are *currently* exactly equal to `$defs/receiptProblemCode.enum` and `$defs/receiptProblem.properties.status.enum` in `packages/protocol/schemas/bdp-v0.schema.json:4162`/`4373`. Nothing enforces that. `transactional-wire.test.ts:195-215` pins the *schema* enum against the Read/transactional tables but cannot see this source-private list; the arrays are unexported, so no test reads them.
+
+**Failure scenario:** a ratified addition to `receiptProblemCode`, or a dropped/misspelled entry here, makes `isReceiptCode` reject a legitimate evaluator failure. `receiptProblem` then throws `Error("evaluator failure lacks required receipt Problem fields")` — a clean rollback with the pending reservation deleted — so the caller gets an internal error and **no receipt at all**, where it previously got a terminal refusal receipt. Concretely: `aggregate-constraint-violation` (`resource-evaluator.ts:992`) and `revision-allocation-unsafe` (`resource-evaluator.ts:624`) are both reachable through `applyResource` → `receiptProblem`, and neither string appears anywhere in `packages/server/src/transaction-*.test.ts`. Dropping either from line 455-469 passes the full 566-test regression set.
+
+**Fix:** export the two arrays (or a `isReceiptCode`/`isReceiptStatus` pair) and assert set-equality against the bundle enums in `transaction-set.test.ts`, which already loads `bdp-v0.schema.json` and compiles Ajv against it (`transaction-set.test.ts:33-37`). Alternatively drive the guard off the bundle directly.
+
+## T1-2 — LOW · value domain unchecked · `packages/server/src/transaction-batch.ts:493`
+
+**`type` is now the only required receipt field whose value domain the guard does not check — exactly the asymmetry that motivated this commit's own code/status fix.**
+
+After this change `code` is checked against a 13-value enum, `status` against a 6-value enum, and `retry` against the exact 3-value `$defs/retryDisposition` enum. `type` is still only `typeof problem.type !== "string"`. The schema requires `$defs/absoluteHttpUrl` = `{"format":"uri","pattern":"^https?://.+"}`. `BatchProblem.type: string` (`:482`) widens `AbsoluteHttpUrl`, which is a bare `string` alias, so there is no type-level protection either, and there is no schema validation on the write path (`transaction-store.ts:1016` puts `problem` straight into `json(receipt)`).
+
+**Failure scenario:** an evaluator edit returns `type: "about:blank"` or `type: "validation"`. It passes `receiptProblem`, and the schema-invalid receipt is persisted under the idempotency key and replayed from there. Unreachable today — both evaluators build `type` from literal `https://github.com/gastownhall/bdp/problems/<family>` templates through `parseReadUpdateProblem` — which is the same reachability status `code` and `status` had before this commit.
+
+**Fix:** validate `type` with the already-available `parseCanonicalHttpUrl` (`packages/protocol/src/read-values.ts:291`, imported today by `alias-evaluator.ts`), and add `["type", "not-a-url"]` to the 10-case probe family at `transaction-set.test.ts:922-931`.
+
+## T1-3 — LOW · test coverage (prior finding 4, half-open by design) · `packages/server/src/transaction-batch.ts:55`
+
+**The new induced-Event `it.each` pins the bound *validator* but not the real 4,096 default; the suite still cannot see that constant change.**
+
+`transaction-set.test.ts:894-905` now asserts `"invalid evaluator Event bound"` for `0, -1, 1.5, 4097, Infinity`, and `transaction-batch.ts:548-554` runs that check before the matched-Resource check, so the probe genuinely reaches line 554. But the probe cannot pin the default: with `maximumInducedEvents` mutated to `10`, `4097 > 10` still throws and all five cases still pass. The matched-Resource sibling has both halves (`transaction-set.test.ts:829-871` observes the real 4,096). `docs/design/transaction-implementation-progress.md:850-853` now records this deferral explicitly and does not overclaim.
+
+**Failure scenario:** mutating `const maximumInducedEvents = 4096` (`:55`) is invisible to every test added here; only the separate whole-cap test (`transaction-set.test.ts:...` "enforces one total Event cap") constrains it, and only from below at its lowered seam value.
+
+**Fix:** as previously scoped — one real-default test isolating the Event cap below the match cap (a `deleteWhere` over links yields 3 events per Link, so 1,366 links → 4,098 events refused vs 1,365 → 4,095 accepted, both far under 4,096 matches). Noted as deferred, not as a new ask.
+
+## Target 1 — closure verification
+
+| Prior finding | Status | Evidence I checked |
+|---|---|---|
+| 1 — `code` unchecked, `status` range-checked | **CLOSED** | `receiptProblemCodes`/`receiptProblemStatuses` byte-equal to the schema enums; branch 1 narrowed to `ReceiptProblemCode` (`:511`); `BatchProblem.status` narrowed to the 6-value union (`:483`). No reachable refusal becomes an internal error: both evaluators' failure tables are closed (`resource-evaluator.ts:139-150` → 10 codes / statuses 403,404,409,413,422; `alias-evaluator.ts:51-55` → 3 codes) plus three `validation-failed`/422 sites (`resource-evaluator.ts:196, 230`, `alias-evaluator.ts:89`), all inside both subsets; the five inline sites write 400/422/409/422/413, all in subset. `{...problem, type, code, status}` reassigns already-present keys, so values and insertion order are unchanged. |
+| 2 — reopen masked live retraction | **CLOSED, and its residual too** | `transaction-set.test.ts:947-949` drops the reopen and runs the same key on the still-open owner. `f.run` throws `"expected own admission"` unless `kind === "owned"` (`:69-72`), so a dropped `cleanupThenThrow` delete (`transaction-store.ts:1069-1078`) *and* a retained invalid terminal receipt both now fail the probe — the latter was the gap `owner.inspect()` could not see. `:961` keeps the reopen as a separate durable-replay assertion (`kind: "existing"`). |
+| 3 — no runtime red witness | **CLOSED** | `red-parent.log`: 5 failed / 5 passed / 43 skipped, exit 1. The 5 failures are exactly `code=undefined`, `code=rate-limited`, `code=not-a-code`, `status=500`, `status=200`, each failing on Ajv `/problem/code` `#/$defs/receiptProblemCode/enum` or `/problem/status` enum — and `f.run` validates *after* `owner.execute` returns (`:72-74`), so the invalid receipt was persisted, not merely constructed. |
+| 4 — Event seam unpinned | **HALF-CLOSED** | See T1-3. |
+| 5 — claim wider than probe | **CLOSED** | Four `Omit<WholeLimit, …>` negatives added (`:997-1000`) plus three intersection negatives. `WholeLimit`/`Valid` are plain object types with no index signature (`:970-984`), so the `Omit`s are well-formed, not collapsed. `type-red.log` shows exactly 3 `TS2344` at cols 113/106/111 — arithmetically (pre-`format` 4-space indent, +2) the `code:"rate-limited"`, `status:500` and `WholeLimit status:200` probes, i.e. precisely the three new subset-membership checks. `typecheck` final exit 0. |
+| 6 — first reachable ceiling omitted | **CLOSED** | `docs/…:834-838` now records V8's 536,870,888-code-unit ceiling below SQLite's 1,000,000,000 bytes, and that 2,048 maximum-sized postimages already exceed it. 2048 × 262,144 = 536,870,912 > 536,870,888 ✓, correctly qualified as a projection over the measured ASCII family. |
+| 7 — NIT 106-char line | **CLOSED** | Touched region (lines 786-853) now maxes at 85 characters. Remaining >85 lines in the file (12, 355, 357, …) are pre-existing and untouched. |
+
+Report claims all hold against the logs: `red-parent` 5/5/43, `type-red` 3 errors, focused green 53 passed / 881 ms, final regressions **566 passed / 14 files / 6.15s** no skips, and `boundaries`/`build`/`diff-check`/`format`/`install`/`lint`/`regressions`/`smoke`/`smoke-development`/`typecheck` all exit 0. The report's own correction of the predecessor's reopen attribution is accurate.
+
+---
+
+# TARGET 2 — `5504538` ("cumulative test scheduling budget repair") vs `75f279c`
+
+Checkout `/Users/dbox/repos/wt/vickie/vickie-read-update-budget-repair`. Diff is exactly one test file, `apps/bdptest/src/read-update-matrix.test.ts`, +55/-7. No runtime, evidence or admission change — and `signal` is a pre-existing `ScenarioRunOptions` member (`packages/conformance/src/runner.ts:121`), so no runtime change was needed to plumb it.
+
+**No concrete regression found.** Three LOW findings, all on the new test's evidentiary value rather than on behaviour.
+
+## T2-1 — LOW · assertion cannot fail · `apps/bdptest/src/read-update-matrix.test.ts:44-51`
+
+**The new "actual child exit" assertion is unfalsifiable: it is tautological wherever it runs, and unreachable wherever it would matter.**
+
+`closeInstalledChild` awaits `child.close()` then asserts `exitCode !== null || signalCode !== null`. The helper's close is `scripts/installed-reference-observation.mjs:76-78`:
+
+```js
+close: async () => {
+  if (child.exitCode === null && child.signalCode === null) child.kill("SIGTERM");
+  return bounded(exited);          // exited resolves on child.once("exit", …)
+}
+```
+
+- Resolve path: `bounded(exited)` resolves only after the `'exit'` event, at which point Node has already set `exitCode` or `signalCode`. The assertion is implied by the `await` that precedes it.
+- Timeout path: `bounded` SIGKILLs and **rejects** at 10 s (`:42-45`), so `await child.close()` throws and the assertion is never evaluated.
+- Scenario-session path: `session.close` is invoked through `createRawHttpScenarioTarget`, where `settleCleanup` races it against `AbortSignal.timeout(cleanupTimeoutMs)` with `cleanupTimeoutMs = requestTimeoutMs = 5000` (`raw-http-scenario-target.ts:61`, test `:329`). If the child needs >5 s the race rejects first and the assertion is skipped.
+
+There is no input for which this `expect` reports false. The report presents it as proof of "no live bootstrap leak" and "cancellation cleanup observable"; it establishes neither beyond what `await close()` already establishes.
+
+**Failure scenario it misses:** the helper SIGKILLs on >64 KiB of stdout/stderr without rejecting (`:27, 31`), so a child killed for runaway output resolves `close()` with `signalCode === "SIGKILL"` and passes the assertion unchanged.
+
+**Fix:** assert a distinguishing property — `expect(child.child.signalCode).not.toBe("SIGKILL")`, or pin graceful termination as `exitCode === 0 || signalCode === "SIGTERM"`. For leak coverage, the observable case is a child whose `close()` is never called (`runner.ts:738-745` skips `harness.cleanup` when preparation or an action did not settle); today that is swept by `target.close()` in `run`'s `finally` (`:629`), which is the property worth asserting.
+
+## T2-2 — LOW · weak assertion on the cancellation negative · `apps/bdptest/src/read-update-matrix.test.ts:1199`
+
+**`expect(…state).not.toBe("pass")` leaves the exact cancellation outcome unpinned, though it is a fixed three-field shape.**
+
+`stoppedScenarioResult` (`packages/conformance/src/runner.ts:2746-2756`) returns exactly `{state:"harness-error", category:"not-run", reason:"matrix stopped before this scenario could run"}`. The test accepts any non-pass state.
+
+**Failure scenario:** a regression that makes the pre-aborted run fail for an unrelated reason — e.g. `runScenario` entering and then failing on a bundle/digest mismatch before opening a session — still yields a non-pass state with `sessions`/`observations` empty, so the probe passes while no longer testing the abort short-circuit at `runner.ts:350-352`.
+
+**Fix:** `expect(report.result.scenarios[0]).toMatchObject({ state: "harness-error", category: "not-run" })`, matching how the aggregate test already pins per-row state at `:656-659`.
+
+## T2-3 — LOW · the cooperative abort degrades less legibly than the timeout it replaces · `apps/bdptest/src/read-update-matrix.test.ts:637-638, 727`
+
+**If the 90 s budget fires, the abort reason is discarded and the test fails on a scenario-state mismatch with no mention of the budget — and whether 90 s/120 s is sufficient is not established by the available CI datum.**
+
+`controller.abort(Error("cumulative run budget exceeded"))` sets `signal.reason`. `relayAbort` (`runner.ts:2986-2992`) does forward it into the per-scenario controller, but every consumer discards it: the matrix loop emits `stoppedScenarioResult`'s fixed reason, and `runScenario`'s catch writes the fixed `"scenario run was aborted"` (`runner.ts:620-629`). `runConformanceMatrix` does not reject on abort, so `run()` returns a complete report and the first failure is the per-row `toMatchObject({state: "pass"})` at `:656-659`. The string "cumulative run budget exceeded" is dead code.
+
+Separately, CI 38374131399 killed the test at 30 000 ms, so its true Linux duration is unknown; the report's ~40 s figure is inferred from "about 1 second each" × 40 scenarios. Locally the test is 9 995 ms (`read-update-budget-tests.json`) / 9 782 ms (`read-update-budget-final-tests.json`).
+
+**Failure scenario:** the real Linux duration lands in (90 s, 120 s]. The cooperative abort fires, the run completes, and CI reports a per-row state mismatch on a truncated matrix — strictly harder to diagnose than the original clean `Test timed out in 30000ms`.
+
+**Fix:** after `await run(...)`, check the controller and fail explicitly — `if (controller.signal.aborted) throw controller.signal.reason` — so the budget failure names itself before the row assertions run.
+
+## Target 2 — scope and claim verification
+
+- `signal` is `run`'s 9th parameter (`:109-119`); both call sites pass it positionally with correct placeholders — the aggregate test at `:641-651` (defaults `false, false`) and the negative at `:1185-1195` with `selectedIds = [id]`.
+- Pre-aborted negative: `runner.ts:350-352` pushes `stoppedScenarioResult` and breaks at index 0, so no `runScenario` runs — which is exactly why `sessions`/`observations` are empty and `claimEligible` is false. Assertions are consistent with the runner.
+- Child-exit assertion covers **all** launch sites: both `launchInstalledReference` calls (`:247`, `:294`) now close only via `closeInstalledChild` (`:269`, `:321`, `:325`). `:629`'s `target.close()` is the raw target, not a child.
+- Timeouts unchanged as claimed: only `}, 30000)` → `}, 120000)` on the one aggregate test; inner `requestTimeoutMs: 5000` (`:329`), the launcher's 10 000 ms bound, and every other per-row `}, 30000)` are untouched; the new negative is itself at 30 000. 120 000 − 90 000 = 30 000 reserved, as stated.
+- Cancellation does close children: on abort during preparation `raw-http-scenario-target.ts:126-130` closes the started session, and when `runner.ts:738-745` skips `harness.cleanup`, `target.close()` in `run`'s `finally` closes the still-`active` session. An assertion failure inside `session.close` is *not* swallowed — `settleCleanup` rethrows, `runScenario`'s cleanup `catch` flips the row to `harness-error`, and the row assertion at `:656-659` fails (the message is lost, the failure is not).
+- Local checks match the report: format clean, 26 lint warnings only, "Dependency boundaries valid for 11 workspace packages", `evidence.verified` with `"rows":89` unchanged. First run 58/58 pass; final filtered run 2 passed / 56 skipped, cumulative 9 782 ms + negative 268 ms.
+- The report's own caveats are accurate: it does not claim an induced 90-second stall test, does not claim a lifecycle redesign, and states that the local run does not replace the required Linux CI rerun.

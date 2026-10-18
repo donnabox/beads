@@ -1,0 +1,33 @@
+{
+  "at": "2026-10-16T07:53:02.947832+00:00",
+  "decision": "ACCEPT_FIXTURE_ONLY_FENCES",
+  "authorBindingSha256": "3fae19fb7509b5265a5620a424bcedf2adead23bd1bcc4ffab6df24b8341eb41",
+  "independentReportSha256": "966d6af4f32ca4f18d6e491c4d0401bd565edc66729df29cda8fe284dd43faa1",
+  "preservedRawObjects": 32,
+  "canonical": {
+    "diskBytes": 870122,
+    "normalizedBytes": 883414,
+    "nodes": 23196,
+    "coverageBytes": 133517,
+    "actions": 241,
+    "assertions": 2840
+  },
+  "derivatives": {
+    "count": 42,
+    "maximumNormalizedBytes": 889532,
+    "maximumNodes": 23352
+  },
+  "acceptedThresholds": {
+    "disk": 874218,
+    "normalized": 887510,
+    "nodes": 23260,
+    "coverage": 134541,
+    "derivativeNormalized": 893628,
+    "derivativeNodes": 23416
+  },
+  "marginsUnchanged": true,
+  "runtimeLimitsChanged": false,
+  "validationAuthorized": false,
+  "codeCouncilPending": true,
+  "rootRead": "Full TS diffs, compact14action/198assertion inventory, measurement audit, source report, normative conditional/HEAD section; no root correctness blocker identified yet. This is not independent code council or runtime evidence."
+}

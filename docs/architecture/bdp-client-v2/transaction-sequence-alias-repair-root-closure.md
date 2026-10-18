@@ -1,0 +1,7 @@
+# Alias repair root closure and integration
+
+Root accepts the bounded b3a427e23e9e2c5eb25148aa36c376ab0a3fbffb repair (tree7f850f51b6d3554efea85ddd3e14ebc031c06d81) after reading its full production/test delta, author report and independent native closure. External Claude reviewed original0de38; native independently reviewed the repair and passed75 tests plus two discriminating predecessor guard controls. This does not claim an external rerun on b3a427 or HTTP/profile qualification. The scope-threading deferral and inaccessible-claim boundary-test limitation remain explicit; HTTP finding11 is the next implementation task.
+
+Root ordinary-merged actual PR103 main120ce032e8d3dc974abb1cf7fd98c23d569d6333 into the clean alias checkout, without conflicts. Result70353341c7c51854c490b3c1746c00be13f1d068, tree893dcbb0b6790e4b45d52ce74e3b9bb9642c537b, exact parentsb3a427 and120ce032. Six imported files are exactly the existing C1 collection-minimum delta; no new conflict resolution. Guarded push and remote refs/heads/vickie-tx-sequence-alias verified703533. This merge is an integration base, not newly executed evidence.
+
+Original author update_implementation now exclusively owns HTTP alias/retry/restart integration, narrow progress docs and fresh validation. Snapshot authoring remains held until this shared HTTP slice freezes. No main merge or public profile claim is implied by this root closure.

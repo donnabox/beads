@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-15T05:51:47.124826+00:00",
+  "source": "453b6dab386746bb03aac2c0a293572b8a71c969",
+  "worktree": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+  "rowSha256": "5164c21057c76c2f4dc96634bf441eea45fbffa261e4c091dc3b9c3647be62cd",
+  "rowActions": 11,
+  "authoredAssertions": 192,
+  "onlyCapture": "minimum-a-root from m-create-a /id",
+  "ownership": {
+    "update_implementation": [
+      "packages/conformance/test-support/transactional/manifest-v1.json",
+      "packages/conformance/test-support/transactional/coverage-v1.json",
+      "packages/conformance/src/transactional-cumulative.test.ts",
+      "packages/conformance/src/profile-contract-plan.test.ts"
+    ],
+    "cross_carrier_plan_v2_review": [
+      "apps/bdptest/src/transactional-matrix.test.ts"
+    ]
+  },
+  "rootOwns": "interface changes, integration, measurement acceptance, execution/reviews/publication",
+  "executionAuthorized": false,
+  "note": "Supersedes193-assertion interface; native app reviewer is independent of app author. No test execution authorized.",
+  "rowHashEncoding": "compact JSON"
+}

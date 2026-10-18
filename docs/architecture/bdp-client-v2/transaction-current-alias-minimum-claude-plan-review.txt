@@ -1,0 +1,100 @@
+## Verification preamble
+
+- Plan SHA256 confirmed: `3ee5fc95…d7dc` for `bdp-integration-logs/transaction-current-alias-minimum-plan.md`.
+- Frozen basis confirmed: worktree HEAD is `7791aed7394e30fef2d2c1ed4fed3f43504e42ba`, tree `9023495…`, clean — matches the plan's declared compatible-missing successor.
+- Read: `transaction-read.ts`, `transaction-service.ts`, `transaction-http.ts`, `authority-read.ts` (alias materialization + `observe` + delivery), `transaction-consistency.ts`, `read-request.ts` (`classifyAliasPath`/`requestFromUrl`), `read-http.ts`, `read-http-routing.ts`, `alias-evaluator.ts`, `transaction-store.ts` (receipt/position/alias table), `schemas/bdp-v0.schema.json` (`mutationReceipt`/`receiptResult`/alias defs), `docs/specs/bdp.md` at all six cited anchors, `transaction-read.test.ts`, `transaction-http.test.ts`, `transaction-service.test.ts`, `transactional-collection-minimum-installed.test.ts`, `transactional-alias-installed.test.ts`, `transaction-runtime.ts`/`-configuration.ts`, `scripts/transaction-installed-observation.mjs`, and the sibling Type/incident plan.
+- No files written, no tests/builds/network, no source mutated. Planning review only; no activation or readiness claim.
+
+---
+
+# Actual issues
+
+### 1. [Medium] The file-3 gate edit is under-specified: the alias permit must short-circuit *before* `requestFromUrl`, not merely drop one disjunct
+**Plan:** §35 item 3, §13. **Source:** `packages/server/src/transaction-http.ts:521-536`; `packages/server/src/read-request.ts:142-255`.
+
+`requestFromUrl` has no `alias` arm — every `alias/…` path falls through to the terminal `return notFound()`, a 404 `ReadProblem`. So the gate rejects aliases through **two** disjuncts: `alias !== undefined` *and* `isReadProblem(parsed)`. "Permit a classified well-formed alias through the minimum route gate" read as an edit to the condition at `:529-534` still yields `500 minimum-position-route`, and the plan's declared "three narrow forwarding/gate edits" would be complete while rows 3–17 all fail.
+
+**Impact:** an implementation faithful to the plan's literal text produces a non-functional slice; also leaves `problem(parsed)` at `:527` nominally on the alias path.
+
+**Repair:** state explicitly that the alias case must be taken before the `requestFromUrl` call — e.g. `if (alias === undefined) { …existing parse + Resource predicate… }` wrapping lines 526-535 — so that no alias URL is parsed as a canonical ReadRequest and `:527` is unreachable for aliases.
+
+### 2. [Medium] Structural collision with the Type/incident plan on the same gate expression; landing order must be pinned
+**Plan:** §7, §35 ("including any independently accepted Type/incident extension"). **Source:** `transaction-http.ts:531-534`; `transaction-current-type-incident-minimum-plan.md` §23, §29, items 1–2.
+
+That plan *replaces* the duplicated admission expression with a single shared `isCurrentTransactionMinimumRead(request)` predicate used by both `minimumFor.perform` and the HTTP gate. If the alias permit is woven into the existing disjunct and the Type/incident edit lands second, a wholesale predicate substitution silently deletes it.
+
+**Impact:** regression risk invisible at review time of the second plan.
+
+**Repair:** add one sentence requiring the alias branch to be structurally outside the Resource predicate (per finding 1), so either landing order is safe; and name the preferred order (Type/incident first) in §7.
+
+### 3. [Medium] The plan records the missing+incompatible behavior but not its observable consequence — rows 10 and 14 make alias existence distinguishable at an unsatisfiable bound
+**Plan:** §27, §55, rows 10 and 14. **Source:** `transaction-read.ts:63-80`; `transaction-http.ts:561-574`, `585-586`; `bdp.md:254-269`, `1422-1440`.
+
+Both rows are well-formed alias reads with a recognized future bound (pos-2). Live alias → wait → `503 catch-up-timeout` **with** current context and `Retry-After: 1`. Unknown alias → `TransactionMinimumVisibilityGap` → immediate bodyless `500 minimum-position-visibility` with **no** context and **no** wait. The two rows therefore differ only in whether the alias exists, in a surface whose cited spec text says unknown aliases return the same 404 "under the same authorization projection: aliases are not an enumeration oracle." This is pre-existing in kind for Resources at 7791 and is harmless *only* because this owner is fixed all-visible (`canRead:()=>true`, `transaction-read.ts:88`) — but the plan newly commits it to installed evidence on the alias surface.
+
+**Impact:** the 18-row ledger could later be read as conformance evidence about alias absence disclosure.
+
+**Repair:** one recording sentence in §27/§55: the 503-vs-500 distinguishability and its context/no-context difference are acknowledged artifacts of the still-unqualified missing+incompatible collision, sound only under the current all-visible policy, and not conformance evidence. No ruling requested or implied — the boundary stays unqualified.
+
+### 4. [Medium] Row 9 collides with the host file's `context()` helper, which asserts no ETag
+**Plan:** §38 item 6, row 9. **Source:** `transactional-collection-minimum-installed.test.ts:391-400` (`expect(response.headers.etag).toBeUndefined()`); `read-http-routing.ts:67-80`.
+
+Row 9 is the first 200 Resource read in that file; `scopeDataResponse` sets a strong ETag from the Bead revision. Reusing `context()` fails the row; relaxing `context()` would weaken the no-ETag oracle that rows 3–8/10–18 depend on (the plan's own §49 "no … Resource ETag" check for 307).
+
+**Repair:** specify that row 9 uses a separate context assertion that *additionally* asserts the ETag matches b's creation revision, and that the existing `context()` helper stays byte-preserved.
+
+### 5. [Medium] Rows 11–12 claim an "exact context/body projection" for a HEAD refusal, which cannot carry a body
+**Plan:** rows 11–12, §47. **Source:** `read-http.ts:42-46`; existing convention at `transactional-collection-minimum-installed.test.ts:520-531` and `:732-739`.
+
+`applyReadHttpSemantics` drops the body on HEAD and only sets `content-length`. The plan assigns HEAD to foreign-view 409, so that row can only assert status + context + bodylessness.
+
+**Repair:** reword rows 11–12 and §47 as "GET carries the exact problem body; HEAD is bodyless (`bodyOctets === 0`) with the same status and context."
+
+### 6. [Low-Medium] §27 pairs "existence/visibility" but only the existence half is observable in this slice
+**Plan:** §27, §48. **Source:** `authority-read.ts:782-787`, `:670-673`; `transaction-read.ts:88`.
+
+The target is returned only when `record !== undefined && graph.visible(record, policy)`, but with `canRead:()=>true` the visibility predicate is constant-true for any Bead target. A *dangling* target is reachable with ordinary mutations (deleting the target Bead leaves the `aliases` row: `transaction-store.ts:1173-1176`, `1199+`; note `deleteAlias` on a dangling alias then fails `resource-not-found` via `alias-evaluator.ts:162-163`). The unreadable-target case cannot be witnessed at all.
+
+**Repair:** split the two in §27/§48 — dangling/deleted target is testable with ordinary operations; unreadable-target visibility is *unobservable* under the fixed all-visible policy and must be recorded as untested, not as "preserved behavior."
+
+### 7. [Low] §45's "neither target Bead revision changes" is only half-covered by the declared 7-URL ledger
+**Plan:** §45, §76. **Source:** URL set excludes `beads/a`.
+
+Only b's revision is re-observed on the wire (row 9); a's post-repoint revision never is. Adding it would break the declared 18/7 accounting.
+
+**Repair:** state that a's unchanged revision is a source-level oracle only (file 4/5), keeping 7 URLs.
+
+### 8. [Low] "Read-only credentials may resolve" has no installed witness
+**Plan:** §49. **Source:** fixture `reader` credential exists (`:200`, `:275`) but no ledger row uses it; row 17 is the only non-operator row.
+
+**Repair:** label that check explicitly source-level (file 5), as §51 already does for the catch-up/abort controls, so the 18/1/7 ledger stays closed.
+
+### 9. [Low] Citation drift in several anchors
+**Plan:** §12, §13, §19-§25.
+
+`transaction-service.ts` `readAtMinimum` is **289-304** (plan: 289-308; 305-308 is `snapshot(`). HTTP general minimum gate is **521-536** (plan: "around 525-538"). Alias route member is **197-213** (plan: 196-213). Spec: `Transactional HTTP consistency` runs to **5792** (plan: 5787); read context **5794-5800** (plan: 5793-5799); conditional reads **5802-5811** (plan: 5801-5811). `authority-read.ts:769-787` and the `observe` entry block are accurate.
+
+**Repair:** none required if authoring reanchors by heading/symbol as §19 instructs; correct on next revision.
+
+---
+
+# Optional follow-up (verification, not defects)
+
+10. **Ordinary-alias signal forwarding — confirm no existing expectation flips.** It converts an aborted ordinary alias request from a 307/404 response into `ScopeServerOperationAbortedError` rethrown at `transaction-http.ts:560`. I found nothing that breaks: `development-disconnect.test.ts:128` is a plain reopened `GET alias/prefix-name`, and `node-http-listener.test.ts` / `http-handler.test.ts` have no alias cases. Re-run those plus `read-http.test.ts` on the assigned base before declaring the seven-file inventory closed; an eighth file would need root approval.
+
+11. **Alias + `sourceCondition` has zero existing coverage.** `authority-read.test.ts` never passes `sourceCondition` at all, and `transaction-read.test.ts:1002-1005` only proves the ordinary facet *strips* it. §41's wording is honest, but file 4 is the first proof that `authority-read.ts:1078-1079` + `:983-993` actually evaluate a condition for an alias intent — keep an explicit positive assertion that a behind tuple on a *live* alias is rejected, not merely accepted.
+
+12. **Row 4 (alias HEAD on the wire) is new territory** — no installed test currently HEADs an alias. Low risk (307 carries no body, so `applyReadHttpSemantics` is a no-op), but it is a first-time listener path.
+
+---
+
+# Verified-sound (no change needed)
+
+- **Settled-minimum forwarding mechanism:** `authority-read.ts:1052-1056` accepts `{signal, sourceCondition}` and `:1078-1079` routes the alias intent through the same `observe`, with `checkSourceCondition` evaluated inside the guarded entry (`:983-993`) and no entry spanning a wait (`transaction-consistency.ts:106-119`). No second target GET; the target lookup is inside the entry (`:782-787`). The plan's §15 is accurate.
+- **Alias-only no-position law:** `effective = result.events.length > 0` is false for alias mutations, so `requiredPosition = pos-{previous}` and `effectPosition` is omitted (`transaction-store.ts:1264-1276`) — rows 2/7/15 are exactly right, and the shape validates (`mutationReceipt` permits-but-does-not-require `effectPosition`; `receiptResult`'s created/updated→`resource` requirement is explicitly `not` applied when `alias` is present).
+- **Position arithmetic:** first batch → pos-1 for required/effect/current, independently corroborated by the existing scenario at `:660` and `:695`. Future bound pos-2 is correct.
+- **Conditional/307:** `applyReadHttpSemantics` negotiates only `status===200 && content-type===application/json` or 204 (`read-http.ts:10-39`), so rows 5 and 6 hold — no alias ETag, no 304/412, no 406.
+- **Boundaries/ordering:** anonymous 401 precedes alias routing with no context (`transaction-http.ts:360`); malformed `alias/work?invalid=1` gets the context-free classifier 404 before the gate and before any wait (`:454-455`, `read-request.ts:941-952`); partial tuples keep `minimum-position` (`:524`); methods keep 405/`Allow: GET, HEAD` (`:240-251`).
+- **Retry/cancellation feasibility:** `waitForTransactionMinimum` checks the signal at loop top before any attempt, so a pre-aborted alias request rejects before SQL — extending the existing `it.each(["beads/","beads/a"])` at `transaction-read.test.ts:761-795` with `alias/work` is the natural home. Concurrent wait + immediate minimum reads are already proven safe (`transaction-service.test.ts:715-746`), so the repoint-during-wait design works without holding an owner entry, and `minimumReads.wait` is a plain property (no receiver hazard).
+- **Ledger bounds:** 18 rows sum correctly; 7 distinct URLs check out; 1s real timeout matches `minimumReadBudgetMs: 1000` (`transaction-runtime-configuration.ts:112`); 90s/120s/5s/10s and 32768/16384/65536/80 all match the existing helper and `scripts/transaction-installed-observation.mjs:31`.
+- **Obsolete assertions the plan promises to replace do exist:** `transaction-read.test.ts:1009-1011` (minimumFor alias rejection), `transaction-http.test.ts:1155-1170` (`"alias/missing"` in the `minimum-position-route` list), and `docs/design/transaction-implementation-progress.md:679` ("aliases … retain the development gap when minimum …") is the stale sentence for file 7. The §3 authority path and the sibling Type/incident plan both exist.

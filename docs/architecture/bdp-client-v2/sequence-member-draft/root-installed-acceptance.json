@@ -1,0 +1,246 @@
+{
+  "status": "accepted-bounded-installed-validation",
+  "at": "2026-10-15T17:34:17.226796+00:00",
+  "head": "82f60a25da8799334381f6ebd810f32a3574cd2d",
+  "tree": "3cd1da66ba3a6cbd0bbdaa2442d10002939d826b",
+  "base": "18104a03b850553641f24fe83e7318493fa102ca",
+  "sourceBindingSha256": "a6eb425d2616279fed28132c2b59258b7503b186224ba538179704b6364c9e2a",
+  "stages": {
+    "node-version": {
+      "exitSha256": "7322eb52d3e2cc5ae4313984b3b70ddcc0fbadc1fc970ae21940bfbcefdb362e",
+      "elapsedSeconds": 0.5439012499991804
+    },
+    "package-directory": {
+      "exitSha256": "cd056655af268cb575d1eb4d6c6188502d1c0c6936cc3b880953da70f6c6acd8",
+      "elapsedSeconds": 0.6278607919812202
+    },
+    "pack-protocol": {
+      "exitSha256": "1713608828967a9ead79d67e6e63c2a741ede6d2484f0c94def5ace24e0dc4ed",
+      "elapsedSeconds": 0.8130729168187827
+    },
+    "pack-server": {
+      "exitSha256": "8553bcb006e59725e15be3d4acb438c6ffc94ea7abc87fc1972e0903276574e3",
+      "elapsedSeconds": 0.8265082919970155
+    },
+    "verify-tar": {
+      "exitSha256": "47d4b92df875a5fffc99a6c87cdee47225ac165c49cef5b755d6504eb8c769e7",
+      "elapsedSeconds": 1.0273436249699444
+    },
+    "prepare-consumer": {
+      "exitSha256": "d4e9869225f2269319bd5ace60665d356188cba8f6cfdcbe086ae581007225e3",
+      "elapsedSeconds": 0.7426508329808712
+    },
+    "consumer-install": {
+      "exitSha256": "7747b3163e0a16e537f3668e8e54b0aa289d7592b8bf7cf4f1f91c95b0bd4fa3",
+      "elapsedSeconds": 0.9234544590581208
+    },
+    "verify-installed": {
+      "exitSha256": "7ec25932265438265242910be125e3d2755af6a062a2c7992919c3fcb7c169ed",
+      "elapsedSeconds": 0.8184785419143736
+    },
+    "positive-fifteen": {
+      "exitSha256": "3e8104c5663517608f0dc834e71688e98018886b3d34989fe678b9360ae036a6",
+      "elapsedSeconds": 5.765681290999055
+    },
+    "positive-fifteen-review": {
+      "exitSha256": "49a3b6e3060b1b747f245719708d01f05120fe0bd5c3c157e9fa2b5385612af4",
+      "elapsedSeconds": 0.8388241250067949
+    },
+    "selected-sequence-delete-control": {
+      "exitSha256": "34aeef315d0368ed2056d0f5bdf84d9fa5dc59de5848c27284f12de2d403b25f",
+      "elapsedSeconds": 1.4107233330141753
+    },
+    "selected-sequence-delete-control-review": {
+      "exitSha256": "b994c0c4c3074e260c11fbcf348e9ead96c38a1040ecb9603409079ddeab39d6",
+      "elapsedSeconds": 0.7354886250104755
+    },
+    "cross-batch-control": {
+      "exitSha256": "0ff06b918ca3809df539bfc1920b6af0be67405bbc200a76ae0eb887f5f6763f",
+      "elapsedSeconds": 5.851118791848421
+    },
+    "cross-batch-control-review": {
+      "exitSha256": "1ca8e37709cc41cb0e9de714ea1cc7600d25bd874c38ce0fd11962aecc6028f5",
+      "elapsedSeconds": 0.8287915410473943
+    },
+    "cross-sequence-control": {
+      "exitSha256": "69b9ce3fcda79b33723bd1a1fb58937fba66e4b49bcaf76aaf1618b9c17ba1a7",
+      "elapsedSeconds": 5.914286875165999
+    },
+    "cross-sequence-control-review": {
+      "exitSha256": "58f919ef366acf115c99ce13e317d8592b85d9ecdff9964e640efe6e56544ee8",
+      "elapsedSeconds": 0.9336039591580629
+    }
+  },
+  "cohorts": {
+    "positive-fifteen": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/positive-fifteen.review-candidate.json",
+      "sha256": "ee76d6b00e17f35f47431aea7a9ceba307cb0fb0d3529c5c6a24550a5a8011eb",
+      "http": 213,
+      "children": 23
+    },
+    "selected-sequence-delete-control": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/selected-sequence-delete-control.review-candidate.json",
+      "sha256": "b3ccaf7b28428d6c2269cd5a37d8f2941eb882824539613a79d0a7888d66089e",
+      "http": 1,
+      "children": 2
+    },
+    "cross-batch-control": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/cross-batch-control.review-candidate.json",
+      "sha256": "cce4abba58f8ff5e59c8449cc66f5333f23414dd6d18ae731d298a498bcd11d9",
+      "http": 204,
+      "children": 23
+    },
+    "cross-sequence-control": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/cross-sequence-control.review-candidate.json",
+      "sha256": "27d8b0d55121d562a7d6beb0b07b6c16b9738d353deef321312c00b4ccd71b66",
+      "http": 205,
+      "children": 23
+    }
+  },
+  "sampledPidsIndependentlyAbsent": [
+    4239,
+    4241,
+    4246,
+    4270,
+    4272,
+    4277,
+    4284,
+    4318,
+    4320,
+    4325,
+    4356,
+    4361,
+    4377,
+    4412,
+    4414,
+    4487,
+    4494,
+    4500,
+    4534,
+    4536,
+    4541,
+    4546,
+    4553,
+    4619,
+    4621,
+    4626,
+    4692,
+    4694,
+    4698,
+    4870,
+    4872,
+    4877,
+    4880,
+    4884,
+    4887,
+    4891,
+    4894,
+    4897,
+    4902,
+    4905,
+    4909,
+    4912,
+    4915,
+    4918,
+    4921,
+    4924,
+    4927,
+    4930,
+    4933,
+    4939,
+    4944,
+    4962,
+    4966,
+    4969,
+    4972,
+    4975,
+    5186,
+    5188,
+    5195,
+    5217,
+    5259,
+    5261,
+    5266,
+    5268,
+    5272,
+    5276,
+    5314,
+    5316,
+    5321,
+    5380,
+    5382,
+    5387,
+    5390,
+    5394,
+    5397,
+    5401,
+    5404,
+    5407,
+    5411,
+    5414,
+    5418,
+    5420,
+    5424,
+    5426,
+    5429,
+    5433,
+    5436,
+    5439,
+    5442,
+    5444,
+    5448,
+    5451,
+    5456,
+    5459,
+    5462,
+    5465,
+    5506,
+    5508,
+    5513,
+    5518,
+    5527,
+    5539,
+    5578,
+    5580,
+    5585,
+    5587,
+    5593,
+    5597,
+    5600,
+    5604,
+    5607,
+    5611,
+    5614,
+    5617,
+    5620,
+    5623,
+    5626,
+    5629,
+    5632,
+    5635,
+    5638,
+    5641,
+    5644,
+    5647,
+    5650,
+    5653,
+    5657,
+    5660,
+    5663,
+    5741,
+    5743,
+    5749,
+    5765,
+    5775
+  ],
+  "preservedUnclassifiedTemporaryEntries": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/pack-protocol.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/pack-server.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/consumer-install.tmp/node-compile-cache"
+  ],
+  "installedProvenanceSha256": "a93521f9257f8e01104c973a102147cfe3da2502bab1519181aa9a235d7fff31",
+  "rootReview": "Read complete adjudicator; inspected actual new-row ten200s, three original-wire helper bindings/full replay comparison and exact seven new negative failures; both old cross controls retain expected failure and new row pass. Full in-memory body oracles are source-backed, report redaction not reversed.",
+  "council": "pending-actual-claude; no readiness/main merge approval",
+  "qualification": "15partial authored rows only;241catalog rows remain not-implemented harness-errors, no public claim",
+  "limits": "623observedHTTP,71closedchildren are workload observations not functionality percentages. PID sampling may miss detached/short-lived processes."
+}

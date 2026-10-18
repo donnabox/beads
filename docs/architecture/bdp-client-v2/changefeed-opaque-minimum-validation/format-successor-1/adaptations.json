@@ -1,0 +1,46 @@
+{
+  "state": "CLOSED concrete formatting validation successor; no execution",
+  "predecessor": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation",
+  "sourceSuccessor": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-author/format-successor-1",
+  "sourceChanges": {
+    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": {
+      "before": "6560198780d3d5e8f90b54ed2d012d403d7482c3b6c6a771e16958faf871d3fd",
+      "after": "7beb2ef803aa2bf7befb21bc5bb427d7a40d18428ee69d1425140fa33de5153b"
+    },
+    "packages/server/src/transaction-changefeed.test.ts": {
+      "before": "3413c3280cd93a0f9cc8b40072f9678182e42d7cd0f793114f0a4dcc8e9b8158",
+      "after": "29f99ffba99c96c2d770ede016fe64af762eea9a3eb9ddaf9de6165bffe5e1bf"
+    }
+  },
+  "reusedPrerequisites": [
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "freshStages": 19,
+  "logicalStages": 21,
+  "unchangedSelection": {
+    "source": 17,
+    "sourceHTTP": 44,
+    "newObservations": 9,
+    "historicalObservations": 1,
+    "installedHTTP": [
+      10,
+      4
+    ]
+  },
+  "unchangedHelpers": [
+    "run.py",
+    "audit.py",
+    "packages.py"
+  ],
+  "gatePrecedent": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/alias-opaque-minimum-validation/format-successor-1/gate.py",
+    "sha256": "f6bdb57799d1cd0927f14333bf1465769a39aaa8e4694c984e504de1a2aed07f"
+  },
+  "dependencyInputs": 17,
+  "tools": 11,
+  "originalSourceIdentity": "2c787f2afdb4d4e8d7dbe5a4cacfacc8c7b7e1d64bf670eda387669c4faff82d",
+  "successorSourceIdentity": "c47a8bea7cb18b190235ebe4a560eec5d91eb34257e85db6040dc3fe3ccb8542",
+  "changedInputs": "Source binding, output paths, exact bootstrap mapping, gate origin resolution, closed releases and contextual reports only. No old static result reused.",
+  "executionReleased": false
+}

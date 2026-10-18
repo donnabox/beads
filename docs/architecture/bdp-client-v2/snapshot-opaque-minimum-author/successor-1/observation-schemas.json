@@ -1,0 +1,113 @@
+{
+  "A": {
+    "observation": "fresh-snapshot-opaque-owner",
+    "fields": [
+      "snapshotCalls",
+      "preEntryExcludedCalls",
+      "offlineInspections",
+      "baseline",
+      "after"
+    ]
+  },
+  "B": {
+    "observation": "fresh-snapshot-opaque-capture",
+    "fields": [
+      "kind",
+      "serviceSnapshotCalls",
+      "ownerSnapshotCalls",
+      "waits",
+      "probes",
+      "transactions",
+      "finalPosition"
+    ]
+  },
+  "C": {
+    "observation": "fresh-snapshot-opaque-lifecycle",
+    "fields": [
+      "kind",
+      "serviceSnapshotCalls",
+      "delegatedOwnerCalls",
+      "waits",
+      "probes",
+      "postCloseOwnerRefusals"
+    ]
+  },
+  "D": {
+    "observation": "fresh-snapshot-opaque-http",
+    "fields": [
+      "requests",
+      "responses",
+      "statusCounts",
+      "waits"
+    ],
+    "responseFields": [
+      "method",
+      "path",
+      "status"
+    ],
+    "noInternalAllocationOrExpiryInference": true
+  },
+  "F": {
+    "observation": "fresh-snapshot-opaque-order",
+    "fields": [
+      "label",
+      "serviceSnapshotCalls",
+      "setupOwnerCalls",
+      "checkedOwnerCalls",
+      "clockCalls",
+      "waits"
+    ]
+  },
+  "E": {
+    "observation": "private-installed-snapshot-opaque-minimum",
+    "fields": [
+      "ok",
+      "declaredSourceCommit",
+      "workspaceDirty",
+      "entry",
+      "entrySha256",
+      "binding",
+      "attempted",
+      "exchanges",
+      "responses",
+      "launchStarted",
+      "startupCompleted",
+      "closeAttempted",
+      "closed",
+      "childPid",
+      "childExitCode",
+      "childSignalCode",
+      "ownership",
+      "directory",
+      "directoryAbsent",
+      "aborted",
+      "elapsedSeconds",
+      "claimEligible"
+    ],
+    "responseFields": [
+      "method",
+      "url",
+      "status",
+      "responseBytes",
+      "wireSha256",
+      "elapsedSeconds"
+    ]
+  },
+  "historicalInstalled": {
+    "observation": "private-installed-snapshot",
+    "fields": [
+      "outcome",
+      "aborted",
+      "declaredSourceCommit",
+      "workspaceDirty",
+      "entry",
+      "entrySha256",
+      "binding",
+      "children",
+      "exchanges",
+      "completedResponses",
+      "claimEligible"
+    ],
+    "unchanged": true
+  }
+}

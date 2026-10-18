@@ -1,0 +1,48 @@
+## Read-only review — `claude-installed-existing` (2 installed test files)
+
+**Scope checked:** `production.patch` (9 hunks, 2 files) against the working-tree files pinned in `binding.json` (head `77b4cf9`). Patch `+` line numbers align exactly with the current files (file 1 nets +23 across its hunks; file 2's `launchAttempted`/`stopKnown`/`cleanupReject` cleanup already pre-exists HEAD, so only file 1's cleanup hunk is new). Nothing was executed; no runtime qualification is claimed below.
+
+### Verified as stated in the brief
+
+- **13 + 8 exchange counts, raw body / key / target identity preserved.** The diff touches only `accept`, `status`, `contextPosition` fields plus assertion/cleanup code. Every `body` / `bodyBytes` / `bodySha256` line appears as unchanged context. Byte totals still hold arithmetically: file 1 `3270` / max `621`, file 2 `3179` / max `680` (`:346-347`, `:263-264`).
+- **The two `accept` flips are required, not cosmetic.** `transaction-store.ts:1175-1192` resolves prior-key equality/conflict *before* fresh admission controls, and `not-acceptable` is only reached on a fresh (or `existing`) key. So retained-key rows 2/8 legitimately stay `text/plain` → 409, while fresh rows 4/10 would have returned 406 under `text/plain` and must send `application/json` to observe the new 200.
+- **`sequence` 7/8 staying 406 is consistent with source.** `transaction-http.ts:332-343` negotiates before executing, so 406 precedes any depth/member outcome on that route.
+- **Position bookkeeping is complete and unchanged in net effect.** All 13 and all 8 responses have a `context(...)` assertion. The effect-bearing create simply moved from row 5→4 (and 11→10), so `pos-1..pos-4` and the `pos-2`/`pos-4` table edits are right; file 1's final collection asserts 4 ids in order plus `items === savedResources` (`:593-606`).
+- **Removing the `unsupported-transaction-composition` assertions loses no unique source coverage for the batch/singleton route** — that throw site (`transaction-store.ts:1503-1506`) is gated on `controls === undefined`, which the HTTP path never passes; `transaction-service.test.ts` still pins the header string.
+- **File 1's new cleanup gating is sound.** Every path where `stopped === false` also pushes a failure, so the suite cannot pass while leaving a store behind; and an abort between `mkdtempSync` and `launchAttempted = true` still cleans up (`:363-365`, `:654-672`). Retention on `launchAttempted && child === undefined` is the correct conservative branch: the launcher's pre-ready `close()` (`scripts/transaction-installed-observation.mjs:87-93`) can itself fail with the child still alive, and the test has no handle to prove otherwise.
+- Excluded as instructed: the accepted `store.ts` receipt-freeze recursion finding; the third file; the plan.
+
+---
+
+### Findings
+
+**1. Low (robustness) — the new metadata expectations are pinned only by a label-string match, with no count assertion.**
+`apps/bdptest/src/transactional-depth-key-order-installed.test.ts:351` and `transactional-sequence-depth-installed.test.ts:268`
+Reason: the patch made the depth loop load-bearing. `freshInput.metadata` (`:567-575`) and `records(...)[0]!.metadata` (file 2 `:484`) take the *expected* response metadata straight from the request literal, so the only thing preventing a vacuous "server echoes what we sent" assertion is the `row.label.includes("deep") || row.label.endsWith("fresh-depth")` loop that pins 41 levels + `"leaf"`. If a label is ever renamed, the loop silently matches nothing, the structural floor disappears, and both tests still pass.
+Fix: count matches and assert the expected number, e.g. `let deepChecked = 0; … deepChecked++;` then `expect(deepChecked).toBe(4)` in each file (4 deep rows in each: 2/8 + 4/10 in file 1; 2/5/7/8 in file 2). No HTTP change.
+
+**2. Low — `requests[].contextPosition` is dead data; the patch's `null → "pos-2"/"pos-4"` edits are unverified.**
+`transactional-depth-key-order-installed.test.ts:129-297`, projection at `:609-629`
+Reason: grep confirms 13 literal occurrences and zero reads. Positions are asserted only from the in-code `originalPosition`/`advancedPosition` locals, so the table column the patch just edited can drift from observed behavior without failing.
+Fix: fold it into the existing final projection — `responses[].headers["bdp-scope-position"]` is already retained via `retainedHeaders`, so add `position: headers["bdp-scope-position"]` on the left and `position: contextPosition` on the right of the `toStrictEqual` at `:609-629`. (Values as written are correct, so this should pass as-is.)
+
+**3. Medium — file 2 never reads the deep-metadata resource back from storage, so "fresh deep execution" rests on the response echo alone.**
+`transactional-sequence-depth-installed.test.ts:471-488`
+Reason: file 1 catches echo-vs-persist divergence for the batch/singleton carriers through its final collection GET (`:593-606`), but the sequence carrier is a different code path (`sequence-executor.ts`) and neither installed test reads `beads/sequence-b` or a collection afterwards. A server that accepted and echoed the 41-level metadata but normalized/truncated it on write would pass file 2 unchanged.
+Fix: requires a budget decision, since the 8-exchange count is frozen — either raise file 2 to 9 exchanges with a `GET ${scope}beads/sequence-b` at `pos-2` asserted `toStrictEqual(resource)` (also add the route to `routeBindings` at `:255-259` and update `:262-264`/`:324`/`:515-516` and the byte totals), or explicitly record the gap in the emitted `retention`/limitation string so the evidence does not read as a persistence claim. I'd take the 9th exchange; the alternative leaves the strongest new assertion in that file unanchored.
+
+**4. Low — file 2's two new 200 blocks omit the `content-type` assertion its sibling block makes.**
+`transactional-sequence-depth-installed.test.ts:471-475` (`fresh`) and `:489-493` (`reuse`)
+Reason: the index-2 conflict block asserts `expect(conflict.headers["content-type"]).toBe("application/json")` (`:448`), and file 1's `completed()` asserts it (`:492`). The rewritten blocks assert status, context, limit-header and body schema but not the media type, so a correct body under a wrong `content-type` would pass. (Pre-existing omission at index 6, but the patch rewrote both blocks.)
+Fix: add `expect(fresh.headers["content-type"]).toBe("application/json");` and the same for `reuse`.
+
+**5. Low — file 1's new 409 block drops the `retry-after` / `www-authenticate` absence checks its sibling 409 makes.**
+`transactional-depth-key-order-installed.test.ts:576-586`
+Reason: the base+2 conflict asserts both are undefined (`:552-553`), and the removed 500 block asserted `retry-after` absence. The problem body carries `retry: "never"`, so a stray `Retry-After` on the new conflict would now go unobserved.
+Fix: add `expect(changed.headers["retry-after"]).toBeUndefined();` and `expect(changed.headers["www-authenticate"]).toBeUndefined();`.
+
+### Nits (no action needed)
+
+- `transactional-sequence-depth-installed.test.ts:268` — the `|| row.label.endsWith("fresh-depth")` disjunct matches no label in that file (copy from the twin); harmless, and finding 1's counter would make it visible.
+- `transactional-sequence-depth-installed.test.ts:484` hardcodes `requests[4]` where file 1 derives the index from the dispatch base; if the rows ever shift, file 2's expectation silently reads the wrong body. A `const freshRow = requests[4]` shared with `exchange(5)` would tie them together.
+- File 1's cleanup `await child.close()` (`:646`) lacks file 2's `Promise.race`/`cleanupReject` guard (`:555-561`). Not a defect: the launcher bounds `close()` internally at 10 s per stage and the 10 s timer SIGKILLs, so the await terminates and the overrun is recorded either way. Divergence only.

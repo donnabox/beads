@@ -1,0 +1,14 @@
+{
+  "at": "2026-10-15T03:45:30.684491+00:00",
+  "source": "00d7fff3320eb10d4165718d23d86519cd3b7c5e",
+  "accepted": true,
+  "artifacts": {
+    "installed-assertion-repair/native-repair-closure.md": "ead495c86843083ced9e178e3fdf13d5cbe8f2e26f88f9edcb5423b42d2576ab",
+    "installed-oracle-repair/claude-review/stdout.txt": "7450dc0d65baf4b25dd4efbc89f323b68e6c7fe6d352bec049303bf487dcfeed",
+    "installed-oracle-repair/claude-review/exit.json": "7354078ff53dd9fb9e1992f1c0df826ddc05721508ecba1eb5b1e417d1fcc403",
+    "installed-preparation-v2/root-installed-summary.json": "c3dd232620b8600caf8507f8b5b95978a18b2dd2ae01c37ecfc6bff1c11ad933",
+    "installed-preparation-v2/native-actual-outcome.md": "2a69083e2331043ffc6979cedc28e16957b14e28dd82365573a873569991015d"
+  },
+  "disposition": "Root full-read native and actual Claude supplemental review: no findings. O1 chronology reconciled to actual committed00d7fff; new installed hash527baee6 bound. O2/O3 limitations describe preserved failed22777 run; fresh25-request00d7fff run separately proves remaining requests and clean shutdown. No product change, no new semantics. Root read and accepted actual wire/cleanup audit; auditor authored prep, not claimed independent code council.",
+  "remaining": "Exact-head full CI and actual merge verification; public profiles incomplete."
+}

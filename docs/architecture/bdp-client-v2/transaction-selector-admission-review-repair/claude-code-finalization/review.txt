@@ -1,0 +1,63 @@
+## Review conclusion — Selector admission, original production + final test delta
+
+**No blocking findings remain.** The two defects I had identified in the frozen draft are both correctly resolved by the supplied delta. Two low-severity items stay open. The earlier attempt's exit 143 / empty stdout carries no conclusion; this is the first conclusion issued.
+
+---
+
+## Resolved defects (verified against the delta)
+
+**R1 — TS2352 spy cast (was: blocker).** `transaction-submission.test.ts:1321`. `Parameters<typeof f.store.admit>` resolves to the *last* overload (5 required params incl. `observed: true`), so `vi.fn(...)` yielded `Mock<(p,k,b,c,o:true)=>…>`, which is not comparable to the 3-signature overloaded `admit` ("Target signature provides too few arguments. Expected 5 or more, but got 3"). The repair moves the cast onto a plain arrow expression — the same shape as the already-compiling wrapper at `transaction-submission.test.ts:93-99` — leaving the `vi.fn` uncast behind it. Delegation is preserved: `boundary.admit` → `admit` (the mock) → `store.admit`, so `expect(admit).not.toHaveBeenCalled()` still observes every admission attempt. Consistent with the reported successor typecheck pass.
+
+**R2 — omitted padded multibyte/astral and normalized-identity assertions (was: medium).** Both planned specimens are now present and the arithmetic is correct on independent recount:
+
+- `read-selector.test.ts`: `'$[?@.missing == "é😀"]'` = 3 + 9 + 1 + 2 + 1 + 1 + 2 + 4 + 1 + 1 = **25 bytes** ✓. `slice(0,-1)` removes only the trailing `]` (the astral pair is interior, so no surrogate is split); 24 + 4071 + 1 = **4096**, and 4095 + 2 = **4097** ✓. Both parse as `path == literal` (spaces fall between the closing quote and `]`, so they are skipped tokens, not grammar). This is the first coverage of a 2-byte **and** 4-byte scalar at the exact capacity boundary, cross-checked with `Buffer.byteLength` against `analyzeSelectorGrammar`'s `TextEncoder` count, and the first exercise of `scanQuotedString`'s `codePointAt` astral path (`0x1F600` clears the `0xD800-0xDFFF` guard; `offset += character.length` advances 2 correctly).
+- `transaction-set.test.ts`: raw-`é` vs `\u00e9` now asserts `escapedNormalized.identity === rawNormalized.identity` plus whole-object equality. The `.replace("é", String.raw`\u00e9`)` is safe — backslash has no special meaning in a replacement string, and `update()` introduces no other `é`. This closes the "JSON escapes are decoded once by the existing lossless JSON admission; identity is over the decoded Selector" requirement.
+
+Both land inside existing case bodies — **zero added registrations**, so 90 cases / 94 HTTP / 39 owners / installed 25 are unchanged, as stated.
+
+**Packet arithmetic note confirmed.** Independently re-derived: `N(k+1)=2N(k)+2`, `D(k+1)=D(k)+2` from `N0=2, D0=2` gives T6 = **254 nodes / depth 14**; `$[?` … `]` contributes no node; each enclosing pair adds +1/+1 → g=2 → 256/16 (836 B), g=3 → 257/17 (838 B). The corrected note is right.
+
+---
+
+## Open findings
+
+### F1 — Spec step 5 implies Selector capacity precedes the operations-count cap (Low)
+
+**Location:** `docs/specs/bdp.md`, admission step 5 (~line 4517 post-patch). Spec bytes are unchanged by the delta.
+
+**Impact:** The new text puts fixed Selector capacity first and `transaction.operations` second inside step 5. The implementation is the reverse — `transaction-store.ts` checks `operations.length > controls.maximumOperations` before the Selector summary loop — and the tests pin that order (`transaction-submission.test.ts` "outer" case expects `limit: "transaction.operations"` when both are violated). The accepted plan is explicit that this selection is "a stable diagnostic selection, **not** … a requirement that all implementations choose the same simultaneous-violation report," so the text should not imply an order at all. A second implementer reading the text would report `selector.bytes` where this authority reports `transaction.operations`.
+
+**Fix:** Keep the `operations` sentence first within step 5, and/or add one clause: "Where more than one admission bound is exceeded, the authority MAY report any one of them." Documentation-only; no code, count, or test change.
+
+### F2 — Revised existing preparation case no longer asserts the error type (Low)
+
+**Location:** `packages/server/src/transaction-set.test.ts:384` — `.toThrow(expect.objectContaining({ pointer: "/operations/0/selector" }))`.
+
+**Impact:** The plan says to "change only invalid Selector expectation to `TransactionSelectorSyntaxError` with original pointer." As written, any error that happens to carry a `pointer` property satisfies this — e.g. a regression that routed `$..*` through a different typed path would pass here. The type *is* pinned in the new preparation case (`toBeInstanceOf(TransactionSelectorSyntaxError)`), so overall coverage exists; this specific revised case is weaker than specified.
+
+**Fix:** `.toThrow(TransactionSelectorSyntaxError)` on the existing call plus the existing pointer matcher (or a `try/catch` with both assertions, as the new case does). Zero added calls, owners, or registrations.
+
+**Nit (no action needed):** the repair hoists `const store = f.store`, capturing the store object once, whereas `transaction-submission.test.ts:93` re-reads the getter per call. Equivalent here because this case never calls `f.reopen()`; it would silently target a stale store if a reopen were ever added.
+
+---
+
+## Verified sound (static review)
+
+- **Ordering.** Grammar 400 + pointer is returned at the preparation catch in `transaction-submission.ts`, before key-shape validation, principal, and any owner call. Fresh capacity sits in `admitKey` after prior-key equality/conflict and after the operation-count cap, before `acceptsJson` negotiation and before receipt insertion — no receipt, claim, or key write on either refusal path. `assertTransactionInputDepth(root)` now runs after complete grammar analysis, so a malformed suffix cannot be masked by the private depth gap; the depth gap itself is unchanged for valid-Selector carriers (`transaction-http.test.ts:1630`, `:2596`, `transaction-submission.test.ts:702`, `:853` all correctly keep their 500).
+- **Cap equivalence.** Root depth/nodes is the global maximum (every parent is `child+1` / `max(children)+1` for depth and `sum+1` for nodes), so a selector admitted within 4096/32/256 cannot later trip `selectReadResources`'s incremental `enforceAstLimits` at execution. Admission and execution share `TRANSACTION_SELECTOR_LIMITS`.
+- **Budget guard.** `analyzeSelectorGrammar`'s `RangeError` is unreachable from the wire — decoded UTF-8 bytes ≤ raw JSON body bytes ≤ 65536 for every escape and surrogate form — so it stays a precondition error, never an alternative capacity response.
+- **WeakMap invariants.** Summary never touches `op.input` (pinned by the `Object.keys(...)` assertion), a missing summary is an internal `Error` (pinned), and no `PreparedTransactionSet` can reach `admitKey` unvalidated: `prepareMixedTransaction` validates every set before `prepareCarrier`, and sequence members come from `prepareReadUpdateSequence`, which is structurally set-free. The sequence owner calls pass no receiving controls, so the private exclusion is preserved rather than widened.
+- **Surface.** `analyzeSelectorGrammar` is module-exported but **not** package-exported — `packages/server/src/index.ts` re-exports only `ReadSelectorLimits` and `ReadSelectorError` by name, with no `export *`. `transaction-comparison.ts` needed no edit: it carries `Exclude<TransactionReceivingAdmission, {kind:"comparison-pending"}>` generically, with no exhaustive switch.
+- **Schema.** No change needed, as planned: `transactionalProblem` permits `pointer` (`jsonPointer`) and `limit` (`^[a-z]+\.[A-Za-z]+$`, which admits `selector.bytes|depth|nodes`), and neither the `readUpdateProblem` nor `readProblem` branch sets `additionalProperties:false`. `readProblem(code)` emits exactly `{type, code, retry, status}`, so the `toEqual` problem-body pins are exact.
+- **Deliberate changes confirmed.** Removing `!input.selector` from `prepareSetShape` moves `selector: ""` from a pointer-less shape 400 to a pointer-bearing grammar 400 — wire-visible, but covered by the new step-2 sentence and disclosed as root-directed; worth a one-line root confirmation, not a defect. Non-string selectors remain a carrier-shape failure.
+- **Selection ledger.** 67 + 6 + 13 + 4 = 90 expanded titles; the regexes correctly escape `||` in the one affected Read title and correctly omit a describe prefix for the four new top-level parser cases and the two new top-level HTTP cases.
+
+---
+
+## Inspection limitations
+
+- **Nothing was executed.** Every behavioral claim above is static reading. No test, build, service, or command was run in this review.
+- **I reviewed the original frozen bytes (binding `dca25dfc` / patch `349cc7e3`, hashes verified across all 12 paths) plus the three-hunk delta as supplied.** I did not re-inspect successor files on disk and **cannot confirm** successor binding `03a86185` / patch `48379596`, nor the reported successor typecheck/build/format/lint/boundaries/Read-seal passes — those are taken on report. My R1 judgement rests on the type-level reasoning, which is consistent with that report.
+- **Unproven but pattern-matched:** `vi.spyOn(setCore, "transactionSelectorCapacity")` relies on Vite's SSR-transform getter rewrite; the identical module-namespace pattern already exists at `authority-read.test.ts:1665/1726/2426/2438` under the same vitest 4.1.10, so it should hold, but it is unverified for this module. Likewise `keys.sort()` vs SQLite `ORDER BY key` in H1 (both byte-order over the ASCII keys used) and all installed-cohort wire expectations are reasoned, not observed.
+- **Controls are proposals only.** `controls.json` and the two `*-source-proposal.patch` files are uncompiled, source-shaped illustrations; I read them as a plan. The actual emitted before/after and module-resolution binding remain separately gated, as stated.
+- Runtime behavior of the 90 source cases, 94 HTTP requests, the two counterfactuals, and the installed 25-request cohort is entirely unobserved. No qualification or profile claim follows from this review.

@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/helper-successor-2/run/receiving-history-external.results.json",
+    "--testNamePattern",
+    "^rejects\\ malformed\\ read\\ minimum\\ tuples\\ before\\ observation\\ while\\ preserving\\ receipt\\ nondisclosure$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+  "head": "d9c3eb9e61b1982b9bd56aa77e4cdc114384e886",
+  "tree": "30753e31480a1bef4c17f2b7182c1cc818ba4caf",
+  "sourceIdentity": "2ce269a06d4e5146a309134492c7bfc6f0b3825f60889ede0e6ffaccc9e82bab",
+  "rootGateSha256": "4fa425799b80b37b5bd95459717d43b979755c815e01a9e731a768f89b980626",
+  "outerSeconds": 120,
+  "automaticRetries": 0,
+  "overrides": {
+    "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/helper-successor-2/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed-process.js",
+    "BDP_TRANSACTIONAL_SOURCE_COMMIT": "d9c3eb9e61b1982b9bd56aa77e4cdc114384e886"
+  },
+  "temporaryDirectory": "/private/tmp/vickie-current-observation-validation-receiving-history-external-coltw3ic",
+  "npmCache": "/private/tmp/vickie-current-observation-validation-receiving-history-external-coltw3ic/npm-cache"
+}

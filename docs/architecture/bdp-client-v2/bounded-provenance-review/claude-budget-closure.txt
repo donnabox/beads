@@ -1,0 +1,55 @@
+## Scope confirmed
+
+Frozen `85c6615` vs parent `4a6c020`, 5 files, `git diff --check` clean, worktree clean at the stated SHA. No conformance catalog, spec, matrix, evidence, or profile file in the delta.
+
+## No findings — no blocker
+
+### Medium 1 (first-diagnostic infeasibility) — CLOSED
+
+The private record at `packages/server/src/transaction-batch.ts:43-48` is validated at module init by the existing `snapshotReadUpdateRuntimeLimits`. Arithmetic checks out: `instanceBytes` 131072 → `pointerBytes` 262146 → `maximumFirstDiagnosticBytes` **283906**, against `diagnosticBytes` 524288 (`read-update-runtime-limits.ts:36-42`). `assertAliasDiagnosticLimits` also passes on `diagnosticCount: 16`.
+
+I measured the real worst case rather than trusting the formula. Reconstructing all 16 new cases and `admitJsonNumbers`' own accounting (`json-admission.ts:312,346-349` = `2 + entry + commas`, which equals `JSON.stringify([entry])`):
+
+| carrier | worst observed first-entry bytes |
+|---|---|
+| batch | 130,431 – 130,507 |
+| singleton | 130,857 – **131,009** |
+
+So 131,009 actual vs 283,906 declared floor vs 524,288 budget — ~4× headroom. The 2× amplification is genuinely the ceiling: only `/`→`~1` and `~`→`~0` expand (1 request byte → 2 output bytes). `"`, `\`, control chars, lone surrogates and multi-byte UTF-8 all cost ≥ as much in the request as in the re-serialized message, so no path beats 2× of a 65536-byte body. TX Types are schema-free (`transaction-store.ts:137-143`), so the formula's 4096+16384 `type`/`schemaLocation` allowance is pure slack.
+
+The RED claim is deterministically true: at 65536, every one of those 130–131 KiB first entries hits `json-admission.ts:351-354`, for creates (formatter-derived `instanceLocation`) and updates (request-location message) alike. 16/16.
+
+**Consistent consumption:** all five former `65536` literals are gone from the TX path (`transaction-batch.ts:93,119,147,457-458`, `transaction-store.ts:659-662`, `transaction-submission.ts:61`); grep finds no residual byte/count literal in any non-test `transaction-*.ts`. The store's `limits` and `evaluateTransaction`'s `numericBudget` now derive from the same frozen record, which is what `member-executor.ts:445-449` enforces on the RU path and what the TX path gets by construction instead. `admitReadUpdateOperationNumbers` has exactly one TX call site; sequence/dependencies/submission carry no second budget. `representationBytes: 262144` and `propertiesBytes` are untouched, and `representationBytes` bounds `bodyJson` (`resource-evaluator.ts:1055`), not diagnostics — no conflict with the raise.
+
+**Stored/retained bounds:** `assertRetainedOutcomeCompatible` (`member-executor.ts:277-285`) only rejects retained diagnostics *exceeding* the bound, so raising it cannot reinterpret older receipts; the TX store doesn't call it at reopen anyway. `assertReadUpdateRuntimeCompatibility` has exactly one caller (`development-authority.ts:107`) over its own store with `DEVELOPMENT_LIMITS` (already 512 KiB / count 32 before this commit), so there's no cross-authority rescan.
+
+### Low 2 (dead callback `instanceLocation`) — CLOSED
+
+Removed from both shipped callbacks. The shared helper still derives genuine create pointers — `member-numeric-diagnostics.ts:30` slices `occurrence.pointer`, reading only `message`/`type`/`schemaLocation` from the caller — and the 8 new create cases assert `instanceLocation: "/" + escapedKey`, which only the helper can produce. The 8 update cases assert no location at all. For the unwrapped operation kinds (`delete*`, `*Alias`) the callback output passes through verbatim, so the removal is exactly what closes the latent re-entry path.
+
+### Low 3 — deferred, unchanged
+
+`member-numeric-diagnostics.ts:45-50` still forwards `type`/`schemaLocation`. Not touched here, and neither shipped callback supplies them. Correctly left open; not resolved.
+
+## Boundaries, cycles, exports
+
+- No cycle: traversed the full import closure of `read-update-runtime-limits.ts` (9 modules) — `transaction-batch.ts` is unreachable, so the module-level assertion can't hit TDZ.
+- `node scripts/check-dependency-boundaries.mjs` → valid for 11 packages.
+- `TRANSACTION_RUNTIME_LIMITS` is module-exported only. `index.ts` and `development.ts` contain no `export *` and no `transaction` reference, so nothing reaches `@bdp/server` or `@bdp/server/development`. The TX slice advertises no profile (only header comments mention one), so the 512 KiB raise is not an advertised bound.
+
+## Tests and identity evidence
+
+Targeted only, no full suites:
+
+- `-t "maximum request numeric diagnostic feasibility"` → **16 passed, 107 skipped**, matching the report's filter count. Each asserts request `=== 65536`, first entry `> 65536` and `<= 512*1024`, `validation-failed` with `diagnosticsTruncated` undefined, `receiptSchema` valid, `inspect()` equal to the pre-state (batch prefix rolled back, tail suppressed), and byte-identical receipt on replay after reopen.
+- `-t "byte bound"` → 2 passed; `-t "seventeenth omitted"` → 1 passed.
+- Boundary math verified by hand: the `remainder` adjustment lands `(bound − overhead) % 16 === 0` because `suffixes[0]` occurs exactly once, giving 16 entries at exactly 524288; `parent + "x"` adds 16 bytes total, so the 16th entry is refused by bytes and 15 are retained — that is the real byte-truncation proof. Count truncation stays proven separately by the unchanged 17-entry test (count 16 is unchanged).
+- `tsc -p tsconfig.check.json` clean; `biome lint` on the 5 touched files clean.
+- `node scripts/read-cohort-evidence.mjs` → `evidence.verified`, constant `674982be2123b9b7aae630bf79c3f774122900cd`, runHead `e5f7d0c`, evidenceCommit `dbaf63a`, 47 definitions / 89 rows — exactly the report's values. No Read observation, label, or contract is touched by this delta.
+
+## Two non-blocking notes
+
+1. `development-authority.ts`'s numeric callback has no test anywhere in the repo (no `development-*.test.ts` exists; the `1e99999` case in `conformance/src/http-executor.test.ts:689` is raw-byte preservation, and the smoke scripts assert only CLI diagnostics). Its one-line edit is justified by code reading plus the 16 TX tests over the identical callback shape, not by direct coverage. Pre-existing gap, no behavior at risk.
+2. In the "exact" byte-boundary case, `diagnosticsTruncated` is set by the count limit (the 17th `extra` member is rejected at `json-admission.ts:327` before any byte check), so that one assertion doesn't by itself discriminate byte vs count. The `bytes === bound` assertion plus the "over" case carry the actual claim, so the test is sound as written.
+
+**Disposition:** medium 1 and low 2 are closed; low 3 remains deferred as stated. No changes required.

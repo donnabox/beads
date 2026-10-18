@@ -1,0 +1,30 @@
+{
+  "released": true,
+  "authorizationKind": "measured-source-execution",
+  "rootAcceptancePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-execution-preparation/root-static-preflight-acceptance.md",
+  "rootAcceptanceSha256": "3e8b2d708cdf512d6dab44bca90c6cc5dbf7d2998fac3ddb22630e97b9ea9211",
+  "preparationSha256": {
+    "commands.json": "8ede757da800ed1d83832c7ee7baf2331bd14620f520258ddcff37b28b1f00fb",
+    "gate.py": "246ad224d6e4e738cd92091f4527af01f3be10eb8f3e38c8654ba29eaf894dc6",
+    "supervise.py": "15866c2a550df0a8cc11174bae719965d6e5b474cb56a0588fb81e09f59b71e7"
+  },
+  "approvedCommandIds": [
+    "offline-setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "check-boundaries",
+    "evidence-verify"
+  ],
+  "sourceDiffSha256": "8f0123c9484a74a5c4995dea84833561056f603c8da64d5f9139107b85d44df8",
+  "sourceSha256": {
+    "apps/bdptest/src/installed-reference.test.ts": "447a8b5fb3ee03ec4f2a894b02a1bb0fdb74ccdea0ad35576da78942373e0cae",
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": "5349dab51055d29d30bb80f286cb30e69947882bd07ed1eaa831b26fd0567174",
+    "docs/design/transaction-implementation-progress.md": "afa385d9d3694186044b1048554798a3d595451f28c3a313fe796fa3fb735f58",
+    "docs/specs/bdp.md": "c2bee88f7a29349f7e420f711d10f3acff1fb0559d012b0d111fd7ac21bd175d",
+    "packages/server/src/transaction-http.test.ts": "b4ed09796b4dc28a51d9cc73c04a677059434a606f09dddffa46eefaa432ad8e",
+    "packages/server/src/transaction-http.ts": "1339f32e0818aee5a44fc01a2034366a73e72c40027d6cde7041f26525aba366",
+    "packages/server/src/transaction-service.test.ts": "5e8dc095dcbe9c8fdfb28a5dea4db024ddc65e7e4f51175edeae5a90ea7125be"
+  }
+}

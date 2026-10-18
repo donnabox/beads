@@ -1,0 +1,35 @@
+{
+  "status": "CLOSED_SUCCESSOR_LANDING_PREPARATION",
+  "candidate": "8833c9242b7788e843e9eb97a2c99b2277fe75ef",
+  "tree": "057f879132074166f2c0f643a8b45bbd9dd47c6f",
+  "candidateSoleParent": "9e5f040edab88be364f683098ead72f595f0ab55",
+  "featureFootprintBase": "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
+  "currentMainRequired": "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
+  "run": 38809393968,
+  "job": 116678483498,
+  "attempt": 1,
+  "files": {
+    "apps/bdptest/src/transactional-guarded-batch-installed.test.ts": "01e3ec2bf5f5af19dcd497fce5a37c8a9394723bca5760ceca53f8b8128626ab",
+    "docs/design/transaction-implementation-progress.md": "90c370e47d9f2dbff040f757c6b8bb89f6a6eda7b540961ea377f161d5a09152"
+  },
+  "featurePatchSha256": "231cf23f53ce4930a2897de5917fd9c477343b2f76c4b991468eb7c7747b09c1",
+  "workflowSha256": "fd0a08da61f74abe19c8db16d879bfff85d8090643bf4da326d3e597ae129be3",
+  "workflowUnchanged": true,
+  "jobTimeoutMinutes": 20,
+  "testTitle": "preserves one guarded batch winner and rolls back the losing marker through installed HTTP",
+  "ep2Audit": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/native-installed-audit.md",
+    "sha256": "bde5b08aa6ef5c7a4e10fe2857860aae3794802665fa2916930063102bf59d3d",
+    "rootReadAccepted": true,
+    "provenance": "scenario-author actual-data audit, separate from independent code council"
+  },
+  "pending": [
+    "actual Claude repair supplement and final native/root dispositions",
+    "exact-head terminal CI rawlog and synthetic tree identity",
+    "root final current-head/base/checks verification",
+    "ordinary merge readback"
+  ],
+  "ready": false,
+  "actualSynthetic": null,
+  "actualMerge": null
+}

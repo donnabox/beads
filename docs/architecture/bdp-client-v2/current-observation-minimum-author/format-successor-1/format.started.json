@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/node_modules/@biomejs/biome/bin/biome",
+    "format",
+    "--write",
+    "--config-path=/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/biome.json",
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+    "packages/server/src/transaction-consistency.test.ts",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "packages/server/src/transaction-events.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-read.test.ts",
+    "packages/server/src/transaction-receipt-pages.test.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-snapshot.test.ts"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+  "timeoutSeconds": 120,
+  "termAfterSeconds": 115,
+  "attempt": 1,
+  "sourceBindingSha256": "43a6e9f16f79d6625c4c59510ae35a08b4d07a3cb7298cb00f191fe9355eb6cb",
+  "toolBindingPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/run/workspace-tools.json",
+  "toolBindingSha256": "99bd7474cf190e4c4a88cf83428817b2748c2d6328d49edfe2ab7bbfd1e62c90",
+  "configurationSha256": "62beced4e0227b97fe9ade1a1a573bf53a2f8916af8da7ce70f94315fece39dc"
+}

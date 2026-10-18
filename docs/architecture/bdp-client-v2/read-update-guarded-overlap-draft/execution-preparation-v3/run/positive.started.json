@@ -1,0 +1,62 @@
+{
+  "name": "positive",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/read-update-guarded-overlap-installed.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/positive.json",
+    "-t",
+    "^preserves one guarded winner and both retained dispositions across overlapping ordinary Read\\+Update requests$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "started": "2026-10-15T14:21:09.438838+00:00",
+  "head": "be0cc70d8a3174760c4877e8969728dbdec4ead5",
+  "workspaceDirty": false,
+  "sourceSha256": {
+    "apps/bdptest/src/read-update-guarded-overlap-installed.test.ts": "767ed468ac29347100203dbb9ff5f435ca2dfaebcad98c61158e5ed59d63a1ed",
+    "docs/design/update-implementation-progress.md": "8c6caae7f8ba4ccb2a2492596cc09dee6fbbfd630a9595ac04f5446f4b150cde"
+  },
+  "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "rootAcceptanceSha256": "f79e1f0c8f7b666b41feab9ec602ae978d65460454b5334a465c1c47e4f1df1c",
+  "preparationSha256": "6a67e588e01e319467ddc82fd2e84a2ae99441948dff1997f50dcaed65c94c4c",
+  "bdpOverrides": {
+    "BDP_RU_GUARDED_OVERLAP_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/installed-reference-process.js",
+    "BDP_RU_GUARDED_OVERLAP_MODE": "fresh-consumer-positive",
+    "BDP_RU_GUARDED_OVERLAP_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/positive-observation.json"
+  },
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/read-update-guarded-overlap-installed.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/positive.json",
+    "-t",
+    "^preserves one guarded winner and both retained dispositions across overlapping ordinary Read\\+Update requests$"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {
+    "cases": 1,
+    "httpExpected": 10,
+    "httpMaximum": 10,
+    "children": 1,
+    "owners": 1,
+    "storeDirectories": 1,
+    "productListeners": 1,
+    "portReservationListeners": 1,
+    "maxPendingHttp": 2,
+    "exchangeMs": 5000,
+    "workMs": 30000,
+    "testMs": 45000
+  },
+  "derivativeBinding": null
+}

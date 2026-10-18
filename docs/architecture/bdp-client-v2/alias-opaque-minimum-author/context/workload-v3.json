@@ -1,0 +1,104 @@
+{
+  "kind": "prospective source-derived bounds; no new execution",
+  "originalSelectedSubgroup": {
+    "cases": 17,
+    "stores": 17,
+    "networkRequests": 28,
+    "readFileCases": 16,
+    "readFileEntries": 64,
+    "readFileWrites": 45,
+    "readFileWaits": 11,
+    "readFileClockCalls": 51
+  },
+  "addedUnchanged": [
+    {
+      "path": "packages/server/src/transaction-read.test.ts",
+      "title": "uses actual current policy for missing-first and unproved Resource attempts",
+      "cases": 1,
+      "stores": 1,
+      "entries": 21,
+      "writes": 2,
+      "waits": 7,
+      "clockCalls": 24,
+      "policyReplacements": 1,
+      "networkRequests": 0,
+      "apiReadInvocations": 15,
+      "invalidBeforeOwner": 1
+    },
+    {
+      "path": "packages/server/src/transaction-read.test.ts",
+      "title": "keeps compatible missing Types and absent/deleted incident anchors separate from collisions",
+      "cases": 1,
+      "stores": 1,
+      "entries": 14,
+      "writes": 4,
+      "waits": 0,
+      "clockCalls": 0,
+      "policyReplacements": 0,
+      "networkRequests": 0
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "title": "waits for current Resources and initial collections with unknown minima and preserves residual refusals",
+      "cases": 1,
+      "stores": 1,
+      "networkRequests": 18,
+      "writes": 1,
+      "waits": 8,
+      "policyReplacements": 1,
+      "statusCounts": {
+        "200": 1,
+        "503": 8,
+        "500": 2,
+        "400": 3,
+        "413": 1,
+        "404": 3
+      },
+      "ownerEntries": "not inferred from HTTP or newly instrumented"
+    }
+  ],
+  "sourceTotals": {
+    "cases": 20,
+    "stores": 20,
+    "networkRequests": 46,
+    "inProcessHandlerRequests": 3,
+    "readFileCases": 18,
+    "readFileEntries": 99,
+    "readFileWrites": 51,
+    "readFileWaits": 18,
+    "readFileClockCalls": 75,
+    "allFixtureWrites": 54,
+    "allWaits": 32,
+    "policyReplacements": 3,
+    "postCloseRawInspectProbes": 2,
+    "newObservationRecords": 10
+  },
+  "installed": {
+    "historical": {
+      "callbacks": 1,
+      "requests": 36,
+      "children": 2,
+      "stores": 1,
+      "workMs": 90000,
+      "callbackMs": 120000
+    },
+    "new": {
+      "callbacks": 1,
+      "requests": 6,
+      "children": 1,
+      "stores": 1,
+      "workMs": 45000,
+      "cleanupTotalMs": 10000,
+      "callbackMs": 60000,
+      "requestMs": 5000
+    }
+  },
+  "installedNewObservation": "private-installed-alias-opaque-minimum",
+  "unselectedExistingInstalledAliasRequests": 18,
+  "totalSelectedNetworkRequests": 88,
+  "totalSelectedStores": 22,
+  "totalInstalledChildren": 3,
+  "cleanupTotalMs": 10000,
+  "outerCleanupExpiry": "closure unknown; directory preserved; late launcher rejection and exit/SIGKILL observed, never relabeled success",
+  "newTimingAssertions": false
+}

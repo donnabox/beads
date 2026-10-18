@@ -1,0 +1,37 @@
+# Native full receipt-root CODE review
+
+No blocking defects found in the six-file frozen draft. Production behavior and concrete source/installed test code match corrected plana28facc5. This is read-only code review, not a claim of typecheck, formatter, runtime, installed or CI success; those remain unrun pending root release and actual Claude CODE disposition.
+
+## Exact basis and scope
+
+Source binding `c1c6bd6b77701c5528643066caabe2781c2b2affa7e6db02ff058bfcb4fef3ec`; full patch `8e95fe590a8a93dafb15771cf698fea360d94864e1113ac5bf5f98106b3cc224`; author index `c3ec3a9f668ee2ef1781bf5daac5a2c6c196e694bcdb08a1289fc3cf4a81e969`. Read the entire six-file diff and actual relevant source/fixture/helper/transport/lifecycle implementations. Independently verified all20 indexed author artifacts, all679 current source hashes, referenced pins, HEAD08812c6c752c06cd0edf1af2878b2367692e5b32 and exact six-file dirty status. Live git diff equals the frozen full patch. Six changed files match the allowlist;673 other tracked bytes match baseline. Before/after snapshots match their pinned versions. No other worktree, source or prior packet changed.
+
+The installed historical callback/module prefix is preserved except its single selected owned-root/page oracle block: replacing the new block with the predecessor block reconstructs the complete original file prefix exactly. The appended E is independent. Selection remains the accepted byte-identical2f816581 set, and old known retention titles remain false/true.
+
+## Production assessment
+
+HTTP550–589 moves strict minimum parsing inside the page branch and adds lexical parsing only after that returning branch. No-controls undefined and explicit unsupported fallback remain intact. Page service capture is still strict; lexical opaque root does not leak into page handling. Existing authentication/lexical malformed receiving runs before routing; minimum refusal reaches the existing error-to-Problem/private-gap projection before shared conditional/HEAD semantics.
+
+Service receiptAtMinimum changes only the capture helper. Synchronous run admission, async unauthenticated refusal, principal capture and explicit sentinel remain ahead of lexical capture; capture still precedes the finite waiter and retries. No signal contract or caller signature change. Owner changes only capture and checkCurrentReadMinimum(...,true); principal/id validation and capture precede atomic entry, disclosure and own explicit sentinel precede context, absence precedes minimum, and minimum precedes instant/expireRow/projection. Each retry enters afresh. Matching opaque produces Unproved without disposal; known comparison stays unchanged, foreign epoch/view opaque stays private unsupported, principal-hidden/missing stays contextual absence. Direct-owner Unproved remains synchronous, with service providing bounded retry. No S1/G2, schema/discovery/profile assertion or policy expansion.
+
+## Source test assessment
+
+A uses real delegated owner calls and rethrows actual Unproved, with no manufactured owner result. Caller mutation and an actual second submit during the first wait discriminate capture and ordering; unknown contexts progress pos1/pos2/pos2, near-misspos-01 remains unproved, and known/sentinel/other-principal/missing/anonymous/malformed controls are distinct. Actual assertions derive10 roots/4 waits/11 clock calls/2 submits and unchanged counts for unauthenticated/malformed calls. It closes before emitting successful observation; fixture cleanup also owns closure.
+
+B observes read rejection immediately, races early settlement against entered wait, registers closing with rejection handling, checks synchronous refusal of new work without owner/clock increment, releases before awaiting timeout/close, then directly probes f.owner. Finally always releases and drains pending outcomes. The two live attempts and separate closed probe remain distinct. No disconnect/AbortSignal claim is fabricated.
+
+R uses explicit readonly label-first tuples and the same semantic body, preserving known false/true titles plus two new opaque rows. Real maintain() occurs only in forget rows during the controlled wait. Existing HTTP no-disposal oracle still closes then reads SQLite without reopening, retains real1100ms maintenance isolation and now uses approved deterministic budget2 seam rather than four default1s waits. Its completed/failed retained-row equality stays intact.
+
+D issues exactly seed plus nine reads, including three matched timeout paths, two excluded private foreign-context paths and shared malformed/auth fences. Actual schemas, status/context, retry/cache/media and paired wire GET/HEAD length/body assertions are present. It closes runtime before successful report and again safely in finally. HTTP/source counts match the planned12 callbacks/36 requests; service28 live roots+4 pages/9 waits/33 clocks/9 submits plus one closed probe remain source-derived, not newly measured.
+
+Typing inspection found no concrete exactOptionalPropertyTypes or overload defect: countedReceipt retains both signatures and narrows the unsupported branch before delegating; OrdinaryRootResult removes the sentinel before context indexing. The new owner observations store required context or explicit null. Read-only TransactionMinimum interfaces remain structurally compatible, no optional-undefined configuration value is added, and the shared tuple rows explicitly bind label/forget/minimumPosition. This is static inspection only; compiler confirmation remains required.
+
+## Installed E assessment
+
+Real launch uses existing artifacts, two independent credentials, one real create seed and schema-validated receipt/context before granting its issued root. The callback-local raw executor fixes configured host/path/method/headers, enforces the five-dispatch bound before transport, bounds URL and response bytes, records safe fingerprints rather than credentials/bodies, and owns active requests and operation promises. Existing validator/binding/default-dist semantics are reused. GET/HEAD503 enforce exactRetry-After1, private no-store, actual context, no private-limit/validators and positive matching length with empty HEAD. Other principal/missing404 remain contextual. Ordered five statuses/methods are asserted; historical22 remains separate.
+
+Cleanup aborts owned transport, attaches close observers before destroying active requests, settles pending operations, awaits transport drain and memoized child.close under the shared10s bound. Launcher close itself verifies exit0/nullsignal; E additionally checks actual exit metadata and requires timely completion before closed=true. Late failure rejection is observed, timeout stays failure, and uncertain/pre-ready/unclean ownership retains the directory. Existing assertion failures also preserve evidence. Report measures actual PID/exit/signal/directory state and never equates retained directory with a known live child. Work45s/request5s/callback60s remain unchanged; installed elapsed and process/store outcomes must still be measured under the external validation supervisor.
+
+## Limits and disposition
+
+No repair requested from this native inspection. Exact formatter/typecheck and source/installed execution are intentionally not performed; layout and runtime results remain unknown. Root owns any correction, external CODE review and validation release. This report is outside the frozen author index and does not advance a gate or publish a support claim.

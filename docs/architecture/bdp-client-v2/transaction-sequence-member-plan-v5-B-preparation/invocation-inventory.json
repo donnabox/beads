@@ -1,0 +1,159 @@
+{
+  "classification": "static expanded observe invocations, not runtime totals or whole test-file case count",
+  "rows": [
+    {
+      "group": "ordinary full positive",
+      "expandedInvocations": 1,
+      "mutated": 0,
+      "unchanged": 1,
+      "sourceLines": "340"
+    },
+    {
+      "group": "ready attestation mismatches",
+      "expandedInvocations": 5,
+      "mutated": 0,
+      "unchanged": 5,
+      "sourceLines": "590-615"
+    },
+    {
+      "group": "receipt reference controls",
+      "expandedInvocations": 4,
+      "mutated": 4,
+      "unchanged": 0,
+      "sourceLines": "625-669"
+    },
+    {
+      "group": "ordinary resource capture",
+      "expandedInvocations": 1,
+      "mutated": 1,
+      "unchanged": 0,
+      "sourceLines": "825-837"
+    },
+    {
+      "group": "illegal receipt from resource",
+      "expandedInvocations": 1,
+      "mutated": 1,
+      "unchanged": 0,
+      "sourceLines": "839-873"
+    },
+    {
+      "group": "budget abort",
+      "expandedInvocations": 1,
+      "mutated": 0,
+      "unchanged": 1,
+      "sourceLines": "875-911"
+    },
+    {
+      "group": "preaborted",
+      "expandedInvocations": 1,
+      "mutated": 0,
+      "unchanged": 1,
+      "sourceLines": "913-919"
+    },
+    {
+      "group": "duplicate receipt binding",
+      "expandedInvocations": 1,
+      "mutated": 1,
+      "unchanged": 0,
+      "sourceLines": "950-965"
+    },
+    {
+      "group": "global receipt denial",
+      "expandedInvocations": 1,
+      "mutated": 0,
+      "unchanged": 1,
+      "sourceLines": "966-982"
+    },
+    {
+      "group": "abort plus cleanup failure",
+      "expandedInvocations": 1,
+      "mutated": 0,
+      "unchanged": 1,
+      "sourceLines": "984-1010"
+    },
+    {
+      "group": "set expectation controls",
+      "expandedInvocations": 4,
+      "mutated": 4,
+      "unchanged": 0,
+      "sourceLines": "1012-1049"
+    },
+    {
+      "group": "crosswired set receipt",
+      "expandedInvocations": 1,
+      "mutated": 1,
+      "unchanged": 0,
+      "sourceLines": "1051-1081"
+    },
+    {
+      "group": "omitted route",
+      "expandedInvocations": 2,
+      "mutated": 0,
+      "unchanged": 2,
+      "sourceLines": "1083-1106"
+    },
+    {
+      "group": "set receipt denial",
+      "expandedInvocations": 2,
+      "mutated": 0,
+      "unchanged": 2,
+      "sourceLines": "1108-1128"
+    },
+    {
+      "group": "set/zero expectation table",
+      "expandedInvocations": 7,
+      "mutated": 7,
+      "unchanged": 0,
+      "sourceLines": "1130-1201"
+    },
+    {
+      "group": "pagination table",
+      "expandedInvocations": 6,
+      "mutated": 6,
+      "unchanged": 0,
+      "sourceLines": "1204-1236"
+    },
+    {
+      "group": "conflict table",
+      "expandedInvocations": 5,
+      "mutated": 5,
+      "unchanged": 0,
+      "sourceLines": "1239-1304"
+    },
+    {
+      "group": "no-op controls",
+      "expandedInvocations": 3,
+      "mutated": 3,
+      "unchanged": 0,
+      "sourceLines": "1394-1475"
+    },
+    {
+      "group": "deletion controls",
+      "expandedInvocations": 3,
+      "mutated": 3,
+      "unchanged": 0,
+      "sourceLines": "1726-1812"
+    },
+    {
+      "group": "cross-carrier controls",
+      "expandedInvocations": 2,
+      "mutated": 2,
+      "unchanged": 0,
+      "sourceLines": "2137-2209"
+    },
+    {
+      "group": "selected minimum controls",
+      "expandedInvocations": 2,
+      "mutated": 2,
+      "unchanged": 0,
+      "sourceLines": "2722-2796"
+    }
+  ],
+  "total": 54,
+  "mutated": 40,
+  "unchanged": 14,
+  "newExpected": 55,
+  "newMutated": 41,
+  "newUnchanged": 14,
+  "excluded": "Non-observe permission/startup/IPC cases, static callbacks, other files and classifier exchange. Pre-aborted and rejected-before-preparation callbacks launch no child."
+}

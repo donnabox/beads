@@ -1,0 +1,243 @@
+{
+  "kind": "Authored expected report contracts, not observations; selected source emits10 records and each selected installed callback emits its own historical/new report.",
+  "source": [
+    {
+      "observation": "alias-minimum-capture",
+      "rows": [
+        "unknown",
+        "pos-01"
+      ],
+      "perRow": {
+        "apiCalls": 3,
+        "attempts": 5,
+        "contexts": 5,
+        "unproved": 4,
+        "waits": 2,
+        "clockCalls": 5,
+        "writes": 4
+      },
+      "targetSequence": [
+        "beads/a",
+        "beads/a",
+        "beads/b",
+        "beads/b",
+        "beads/b"
+      ],
+      "positionSequence": [
+        "pos-1",
+        "pos-1",
+        "pos-1",
+        "pos-2",
+        "pos-2"
+      ],
+      "directContext": "actual caught TransactionMinimumUnproved.context",
+      "timeoutContext": "actual caught TransactionMinimumFailure.context",
+      "positiveContext": "actual transactionReadContexts(result).current"
+    },
+    {
+      "observation": "alias-minimum-missing",
+      "rows": [
+        "absent",
+        "deleted",
+        "dangling",
+        "hidden"
+      ],
+      "perRow": {
+        "apiCalls": 3,
+        "probeCalls": 1,
+        "conditionedCalls": 2,
+        "entries": 3,
+        "mappings": 3,
+        "waits": 0,
+        "clockCalls": 2
+      },
+      "writesByRow": {
+        "absent": 2,
+        "deleted": 3,
+        "dangling": 3,
+        "hidden": 2
+      },
+      "policyReplacementsByRow": {
+        "absent": 0,
+        "deleted": 0,
+        "dangling": 0,
+        "hidden": 1
+      },
+      "context": "ordinary/conditioned contexts from real responses; no fabricated changed authorizationView"
+    },
+    {
+      "observation": "alias-minimum-transition",
+      "apiCalls": 1,
+      "attempts": 2,
+      "contexts": 2,
+      "unproved": 1,
+      "terminalStatus": 404,
+      "waits": 1,
+      "clockCalls": 2,
+      "writes": 3,
+      "targets": [
+        "beads/a",
+        null
+      ],
+      "absentMappingSerialization": "actual undefined target property is omitted by JSON.stringify, not synthesized as a stored target"
+    },
+    {
+      "observation": "alias-minimum-drain",
+      "apiCalls": 2,
+      "handlerRequests": 1,
+      "entries": 1,
+      "mappings": 1,
+      "waits": 1,
+      "clockCalls": 3,
+      "writes": 2,
+      "closed": true,
+      "postCloseProbes": 1
+    },
+    {
+      "observation": "alias-minimum-incident-fence",
+      "performCalls": 2,
+      "entries": 2,
+      "aliasLookups": 0,
+      "waits": 0,
+      "clockCalls": 2,
+      "writes": 2
+    },
+    {
+      "observation": "alias-minimum-http",
+      "attempted": 28,
+      "responses": 28,
+      "waits": 6,
+      "responseFields": [
+        "method",
+        "route",
+        "status",
+        "bodyOctets",
+        "context",
+        "headers"
+      ],
+      "safeHeaders": [
+        "location",
+        "etag",
+        "content-length",
+        "cache-control",
+        "retry-after",
+        "x-bdp-development-limit"
+      ],
+      "statusSequence": [
+        200,
+        200,
+        307,
+        307,
+        307,
+        307,
+        503,
+        503,
+        409,
+        409,
+        410,
+        410,
+        503,
+        503,
+        503,
+        503,
+        404,
+        404,
+        404,
+        400,
+        404,
+        404,
+        500,
+        500,
+        500,
+        500,
+        401,
+        405
+      ]
+    }
+  ],
+  "installedNew": {
+    "observation": "private-installed-alias-opaque-minimum",
+    "attempted": 6,
+    "exchanges": 6,
+    "statusSequence": [
+      200,
+      200,
+      307,
+      503,
+      503,
+      404
+    ],
+    "methodSequence": [
+      "POST",
+      "POST",
+      "GET",
+      "GET",
+      "HEAD",
+      "GET"
+    ],
+    "suffixSequence": [
+      "operations/batch",
+      "operations/put-alias",
+      "alias/work",
+      "alias/work",
+      "alias/work",
+      "alias/missing"
+    ],
+    "responseFields": [
+      "method",
+      "url",
+      "status",
+      "bodyOctets",
+      "bodySha256",
+      "wireSha256",
+      "headers"
+    ],
+    "lifecycleField": "lifecycleAtReport",
+    "successRequires": {
+      "returnedChild": true,
+      "exitCode": 0,
+      "signalCode": null,
+      "observedExit": {
+        "code": 0,
+        "signal": null
+      },
+      "observedClose": {
+        "code": 0,
+        "signal": null
+      },
+      "childStdioDrainObserved": true,
+      "closure": "clean",
+      "cleanClose": true,
+      "cleanupDeadlineExceeded": false,
+      "pendingExchanges": 0,
+      "pendingDrained": true,
+      "settledExchanges": 6,
+      "socketCloseCensusAvailable": false,
+      "lateCleanupRejectionObserved": false,
+      "directoryRemoved": true,
+      "directoryPresent": false
+    },
+    "claims": {
+      "claimEligible": false,
+      "profileQualification": false,
+      "latencyAssertion": false
+    },
+    "limits": {
+      "workMs": 45000,
+      "requestMs": 5000,
+      "cleanupTotalMs": 10000,
+      "callbackMs": 60000
+    },
+    "sourceAndPayload": "declaredSourceCommit,workspaceDirty,entry,entrySha256,artifactSha256,binding from actual ready message; fresh package/consumer provenance remains external validation responsibility"
+  },
+  "installedHistorical": {
+    "observation": "private-installed-sequence-alias",
+    "unchanged": true,
+    "exchanges": 36,
+    "children": 2,
+    "workMs": 90000,
+    "callbackMs": 120000
+  },
+  "noOwnerCountsFromHttp": true,
+  "allOutcomesPendingExecution": true
+}

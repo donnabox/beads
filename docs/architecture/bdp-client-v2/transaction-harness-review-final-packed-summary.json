@@ -1,0 +1,28 @@
+{
+  "sourceCommit": "9cf3528f3ba9bf44b33c0eb67fe5cdb4b121d23d",
+  "claimEligible": false,
+  "rowStates": {
+    "harness-error": 251,
+    "pass": 4
+  },
+  "httpExchanges": 35,
+  "dynamicExchanges": 10,
+  "physicalSessions": 5,
+  "runtimeConfigurationIdentity": "06d62959c26be8f4dd45b37b10d90d456458b942f74393cd7661f85a975bb625",
+  "binding": {
+    "scope": "https://reference.invalid/acme/",
+    "profile": "transactional",
+    "history": false,
+    "sourceCommit": "9cf3528f3ba9bf44b33c0eb67fe5cdb4b121d23d",
+    "installedPayloadDigest": "09768af5b56fe2db91ff53bb4254e08b4983734cc547b1e549de34385008f464",
+    "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+    "policyDigest": "56006ed1e5c99a3b4062788a71f9ecdddc0b6887ee3a942ca17316f235e34e5a",
+    "authenticationDigest": "c1667904a201c2a1752b572e770fea2948f97811d991190f21f32d98aa88ca00",
+    "fixtureDigest": "8a1252afaae04e57e07cd722b77f66d26c6c696c823733aa97be256938fa41c1",
+    "fixtureId": "reference-transactional-v1",
+    "capabilities": [
+      "installed-transactional-http",
+      "transactional-receipt-observation"
+    ]
+  }
+}

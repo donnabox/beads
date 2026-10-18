@@ -1,0 +1,151 @@
+Verified `transaction-installed-harness-plan.md` (SHA256 matches) against frozen `d907a1e` in `/Users/dbox/repos/wt/vickie/vickie-installed-profiles-replication` (tree clean). Read-only; nothing written, built, or executed.
+
+# Scope note: basis vs. integration base
+
+The plan's header pins `e2f1385` in `vickie-installed-profiles-events`; M1's intended base is this worktree's `d907a1e` (`e2f` is an ancestor). I re-verified every load-bearing claim at `d907a1e`. `transaction-runtime.ts` is byte-identical across `e2f1385..d907a1e`, and all H1a claims hold. But `transaction-http.ts`, `transaction-store.ts`, `transaction-service.ts` and `scripts/smoke-executables.mjs` all moved, and a new changefeed route now precedes receipt/Event classification. See F10.
+
+---
+
+# BLOCKER — H1b only (does not block H1a)
+
+## F1 · The exact executor refuses `profile:"transactional"`, and the plan forbids the only fix
+
+**Severity:** Blocker for H1b/gate D. **Not** an H1a blocker.
+**Location:** `packages/conformance/src/http-executor.ts:57` (type `profile: "read" | "read-update"`) and `:443` (`if (fields.profile !== "read" && fields.profile !== "read-update") return configuration()`). Consumers: `runner.ts:1333` (`snapshotExactExecution` → `snapshotExactHttpMode`), `:1399` (preflight requires `binding.configuration.profile === options.profile`), `:1391` (for any `options.profile !== "read"`, *every* http action is an exact request), `:2584`, `:2595`.
+**Plan refs:** dynamic-receipt item 4; file ownership line 104 ("no `http-executor.ts` public route-rule edit"); gate D.
+
+A transactional exact mode cannot be snapshotted at all — `configuration()` throws. This is not confined to the dynamic receipt route: it blocks the entire H1b exact-wire cohort, including the four predeclared observations. The plan's own file-ownership rule forbids touching the only file that can admit it.
+
+**Remedy:** Add `http-executor.ts` to the H1b reviewed-edit list, scoped to admitting `"transactional"` at `:57` and `:443` only, with controls proving `snapshotExactRoutes` (`:520-540`), `RESERVED_FIELDS` (`:342-354`), the `SECRET_FIELD`/handle rules (`:466-477`) and both Read/RU paths are unchanged. Note in the plan that `exactConfigurationDigest` already hashes `profile` (`runner.ts:1369`), so TX provenance separates from RU's by construction. If instead the private TX runner is to carry its own snapshot function, say so and justify duplicating the route firewall. Also amend the line-9 definition of `ready-unexecuted` to record that exact transport admission for `transactional` does not exist yet.
+
+## F2 · The dynamic observation cannot be recorded through the existing exact path — the recorder addition is required, not conditional
+
+**Severity:** High (H1b).
+**Location:** `runner.ts:1016` and `:1449` (`validateExactRunConfiguration` against the single base route list), `:1362-1380` (`exactConfigurationDigest` hashes that route list), `:1498-1502` (`snapshotExactObservation` binds observations to `options.exactExecution.configuration`), `:1060`.
+**Plan refs:** items 4-5; file ownership "Extend only the private runner recorder **if** the reviewed dynamic-observation ledger requires it."
+
+A second per-route exact configuration has no path into the recorder: route validation rejects any URL absent from the base snapshot, and observation capture is bound to the one base configuration. The conditional is already resolved against the code — it is required.
+
+**Remedy:** Commit the private recorder extension as in-scope now with its own bounded review. Specify that the dynamic action is not `family:"http"`, and that its per-route configuration/digest is recorded in a field distinct from `exactConfigurationDigest` so no consumer can read the dynamic URL as a base route.
+
+---
+
+# M1 — real runtime metadata, live-configuration equality, per-credential permissions
+
+The plan's M1 premise is confirmed at `d907a1e`: Host is gated at `transaction-runtime.ts:172` (`request.headers.host !== new URL(listenUrl).host` → `malformed-request`); `:121-122` forces explicit Scope whenever `artifacts` is supplied; `http-executor.ts:198` always derives Host from the canonical URL and `:343` reserves `host`. Port 0 is accepted (`:96`) and the actual port is read at `:271-274`. The runtime returns only `{scope, listenUrl, targets, close}` (`:338-365`) — no identity. `ServedProfileConfiguration` has no `configurationIdentity` field (`profile-contract-plan.ts:35-52`), `ownData` rejects extras (`:84-86`), and equality is whole-record canonical JSON (`:177`). RU compensates ad hoc at `read-update-matrix.test.ts:277,326,329`.
+
+## F3 · `canMutate` is absent from the RU identity preimage M1 will copy, so the mandated permission-swap control cannot discriminate
+
+**Severity:** High (M1).
+**Location:** `packages/server/src/installed-reference-configuration.ts:109-116` (captures only `["token","principal"]`) and `:170-172` (`authenticationIdentity = digest(credentials.map(c => ({principal, tokenDigest})))`) — versus `transaction-runtime.ts:44-48,101-111,194-201`, where `canMutate` is per credential.
+**Plan refs:** lines 47-48, F8 disposition, gate C ("same-principal permission swaps").
+
+If the TX configuration module reuses RU's preimage shape, swapping `canMutate` between two tokens of the same principal leaves both digests unchanged and the mandated control passes vacuously.
+
+**Remedy:** Require `canMutate` per credential in both the `authenticationIdentity` and `configurationIdentity` preimages, and state explicitly that `installed-reference-configuration.ts:170-172` must **not** be reused unchanged. Control: two tokens, one principal, swapped `canMutate` → both digests change. Note the companion divergence: RU's capture rejects `port < 1` (`:100-105`), so the TX capture must deliberately admit port 0 while keeping the port out of the identity preimage (RU's `:175-186` already excludes it — preserve that).
+
+## F4 · `configurationIdentity` collides with an existing, different store value; `policyIdentity` there is not a digest
+
+**Severity:** Medium-High (M1).
+**Location:** `transaction-store.ts:517-527` — `readConfiguration().scopeConfiguration.configurationIdentity` is the store **compatibility JSON string** built at `:232-240` (format, receiptMaximumItems, identityPolicy, contractIdentity, runtimeLimits, scope, types), and `policyIdentity` is the literal `"development-all-visible"` (`:514,523`). Neither is 64-hex. `bindServedProfileConfiguration` requires 64-hex (`profile-contract-plan.ts:136-142`).
+**Plan refs:** lines 49, 52.
+
+The plan reuses the exact identifier the store already uses for a different, weaker value. An implementer forwarding `scopeConfiguration.configurationIdentity` satisfies the plan's prose while attesting nothing about transport, credentials, pagination or retention; forwarding `policyIdentity` fails only as an opaque shape error.
+
+**Remedy:** Rename the live digest (e.g. `runtimeConfigurationIdentity`) or state the collision and forbid forwarding either store field. Require TX `policyDigest` to be a SHA-256 over {fixed view name, empty aggregate (`:525`), per-credential permissions}.
+
+## F5 · "Avoid a second parallel list of defaults" is unachievable without the extraction the plan marks optional
+
+**Severity:** Medium (M1).
+**Location:** `transaction-runtime.ts:294-316` — `selectorLimits`, `advertisedLimits` and the 11-field `pagination` tuple are inline literals inside `startTransactionRuntime`; `:99-100` derive `receiptMaximumItems`/`defaultItems`; `:237` `maxHeaderSize`; `:252-255` timeouts; store `:242` `maintenanceInterval` default.
+**Plan refs:** line 49; line 102 ("new `transaction-runtime-configuration.ts` **if** extraction … is the smallest safe seam").
+
+There is no exported frozen constant for what the service actually consumes (unlike `TRANSACTION_RUNTIME_LIMITS` or `DEVELOPMENT_OWNER_LIMITS`), so "hash what the runtime consumes" either extracts `:294-316` or duplicates it.
+
+**Remedy:** Make the extraction required rather than conditional; name `:294-316` as the tuple to lift into one frozen value consumed by both service construction and the digest; require a test that editing any field moves the digest.
+
+## F6 · `configurationIdentity` is not independently variable from the other identities — same correction F8 applied to policy/auth
+
+**Severity:** Low-Medium (M1, plan precision).
+**Location:** Real levers are only `TransactionRuntimeTestSeams` (`transaction-runtime.ts:50-60`), which H1b forbids (plan line 66), plus scope/contracts/credentials — each of which also moves `artifactIdentity` or `authenticationIdentity` (plan line 48 already concedes coupling).
+**Plan refs:** line 54 ("Changing only configurationIdentity must fail before the first request even when every shared served field matches"); gate D.
+
+**Remedy:** State that this counterfactual is an injected mismatch only (RU's pattern, `read-update-matrix.test.ts:284`, `"0".repeat(64)`), not a real capture — the same correction already accepted for policy/auth.
+
+---
+
+# H1a — v2/public gates, source-only manifest, budgets
+
+Confirmed at `d907a1e`: **250 = 133 TX + 74 RU + 43 Read after 13 retirements**, recomputed from the six catalogs with dedup, history excluded and `kind === "normative"` — exact match. All four cohort rows exist as normative/transactional. `catalog/` is a closed classified set (`profile-contract-selection.ts:9-11,47-55`). RU-only cumulative gate and hard-coded `read-update-v1` at `artifact-bundle.ts:111-114,150`; v2 requirement at `:187`; `ARTIFACT_MAX_BYTES` 1 MiB at `:17`, `CUMULATIVE_MANIFEST_MAX_BYTES` 4 MiB at `:19`, selected at `:134`. Planner grants 4 MiB only to RU baseline (`profile-contract-plan.ts:238-241`) and re-checks every other carrier at the ordinary bound (`:250-255`) — **so the planner already caps a TX manifest at 1 MiB with no edit; only the factory side needs work**. `carrierBlocker` allowlist at `:262-272`. Matrices guard at `transactional-catalog.test.ts:189-203`.
+
+**Source-only placement is clean:** `packages/conformance/package.json` `files` is `["dist","catalog","matrices","fixtures"]`, and `packages/conformance/tsconfig.json` has `include: ["src/**/*.ts"]` with `rootDir: src` — `test-support/` is neither packed nor compiled. `test-support/transactional/*.json` cannot reach `matrices/`, the companion/RU guards, the closed `catalog/` set, or any emitted inventory, and `test-support/testing.ts` is structurally unexportable. `src/transactional-cumulative.test.ts` is build-excluded.
+
+## F7 · The public-gate negative control is false as worded: a genuine v2 TX bundle is accepted when the run profile is declared `read-update`
+
+**Severity:** Medium (H1a-scoped — fixable inside H1a).
+**Location:** `runner.ts:2590-2600` (the non-Read gate is satisfied when `profile === "read-update"` with a matching RU exact config), `:2525-2530` (`validateRunOptions` checks only the shared `factoryCreatedBundles` WeakSet — `artifact-bundle.ts:87,217`, which TX bundles must join for the shared machinery to accept them), `:498` + `selection.ts:6-13` (TX rows then return `unsupported-profile`, a recorded state, not a refusal). No check anywhere binds `manifest.catalogId` to `options.profile`.
+**Plan refs:** line 30 ("Ordinary `runConformanceMatrix` continues to reject TX even for a genuine private TX bundle"); gate B.
+
+The v1-refusal reasoning in the plan is sound (`:2573-2580` fires only for `read-v1`; `:2581`/`:2590` only for v2 — so factory v1 refusal does close that hole). This is a different path: declaring the run profile one rank low.
+
+**Remedy:** Have `runConformanceMatrix` refuse any bundle in the private TX brand set (or `manifest.catalogId === "transactional-v1"`) regardless of declared profile, and write the control at **both** declared profiles — `transactional` (rejected at `:2590`) and `read-update` (currently accepted). Also add the boundary control that RU retains 4 MiB after the factory's `:134` condition becomes profile-aware; the plan currently asserts TX's 1 MiB without pinning RU's unchanged allowance.
+
+---
+
+# H1b — observations, packaging, budgets
+
+## F8 · Collection "final graph" GETs paginate at 2 items by default; the plan neither pins `limit` nor admits the cursor
+
+**Severity:** Medium (H1b).
+**Location:** `transaction-runtime.ts:100` (`defaultItems = Math.min(2, receiptMaximumItems)` → **2**), `:297,303-304` (`defaultPageItems: 2`, `maxPageItems: 32`), `:314` (opaque `randomBytes(24)` token), `transaction-http.ts:407` (`readRoute`), `read-request.ts:296-297` (`limit`/`cursor` are the only allowed collection params) and `:309-310` (unknown or repeated params refused).
+**Plan refs:** observation 1 ("literal final graph via credentialed GET"), observation 3 ("observe the same receipts/final graph again"), §Events ("Final graph comes from actual point/collection reads").
+
+A 2-Bead + 1-Link final graph read as a collection returns at most 2 items plus an opaque `cursor`. Following that cursor is the same unpredeclarable-URL problem the receipt adapter exists to solve, and the plan scopes the adapter to "this one route only" (line 81).
+
+**Remedy:** Predeclare `?limit=<n ≤ 32>` on every collection GET (an allowed parameter, within `maxPageItems`) and assert `next` is absent at that limit — or add the cursor follow-up to the adapter's reviewed scope. State which.
+
+Receipt pagination, separately, **is** correctly unreachable: `createPagePlan` emits ranges only when `entries.length > receiptMaximumItems` (`transaction-store.ts:568`), `receiptPrefix` slices at `plan.maximum` (`:635-636`), and `receiptMaximumItems` defaults to `TRANSACTION_MAXIMUM_OPERATIONS = 32` (`:175`, `transaction-batch.ts:60-71`). With ≤8 operations the plan's claim holds and matches the row title's `page.maximumItems`.
+
+## F9 · Deep-import denial: the auto-filter exercises only the `dist/*.js` spelling, and `installed-payload` matches no prefix
+
+**Severity:** Low-Medium (H1b).
+**Location:** `scripts/smoke-executables.mjs:439-442` — filter is `startsWith("installed-schema-") || startsWith("transaction-")` plus `.js`, resolved only as `@bdp/server/dist/<name>`; the explicit both-spelling list is at `:452+`; the emitted inventory at `:219+`.
+**Plan ref:** line 68.
+
+`transaction-installed-*.js` is covered for the dist spelling only; `installed-payload.js` matches neither prefix in either spelling.
+
+**Remedy:** Add all four modules (`transaction-installed`, `transaction-installed-configuration`, `transaction-installed-process`, `installed-payload`) to the explicit list in **both** bare and dist spellings, and add their four emitted artifacts each (`.d.ts`, `.d.ts.map`, `.js`, `.js.map`) to the `:219+` inventory. The plan's sentence currently reads as if only the helper needs both spellings.
+
+## F10 · Base moved under M1/H1b: new changefeed route and reordered receipt classification
+
+**Severity:** Low-Medium (plan hygiene + observation grammar).
+**Location:** `transaction-http.ts:322-332` (new changefeed route, ahead of everything), `:335-336` (`classifyAliasPath` now refuses alias-shaped queries **before** receipt handling), `:337-340` (`receiptRoute` now suppresses Event classification), `:432-437` (`TransactionChangefeedParameterError` → `invalid-parameter`); new `transaction-changefeed.ts`; `scripts/smoke-executables.mjs:235-238,455-456`.
+
+**Remedy:** Record `d907a1e` as M1's base (replacing the `e2f1385` header basis, which the plan already instructs to re-pin). Extend observation 3's negative grammar controls to the new ordering — a receipt URL bearing `?view=events` or any alias-shaped query is now refused by `classifyAliasPath` before receipt handling, which is a *different* refusal than the plan's "no alias/operation/Resource substitution" assumes. Add the changefeed route to the explicit not-advertised/not-observed gap list so it is not mistaken for the finite-Event witness.
+
+## F11 · Exact-mode byte caps are unpinned yet feed the provenance digest
+
+**Severity:** Low (H1b budgets).
+**Location:** `exactConfigurationDigest` hashes `maximumRequestHeaderBytes`/`maximumRequestBodyBytes` (`runner.ts:1371-1372`); RU declares `131072`/`16384` (`read-update-matrix.test.ts:209-210`); TX server bounds are `requestBodyBytes` 65,536 (`transaction-batch.ts:66`) and `maxHeaderSize` 16 KiB (`transaction-runtime.ts:237`); evidence cap is `RAW_WIRE_EVIDENCE_MAX_BYTES = 2_097_152` (`runner.ts:51`).
+**Plan ref:** §Budgets ("existing 65,536 request and 2 MiB exact-wire caps" — both correct, but incomplete).
+
+**Remedy:** Pin the TX exact-mode header/body caps in the budget list; copying RU's 131,072 would declare a body the TX server refuses at 65,536, which is a fine negative control but a poor default.
+
+---
+
+# Confirmed as stated (no action)
+
+`artifactIdentity` → `contracts.identity` unchanged, decoded by `installedContractsDigest` (regex `^development-schema5-[a-f0-9]{64}$`), exactly as RU already does (`installed-reference-configuration.ts:201`) — F10 disposition is right. `"transactional"` is a valid `ProtocolProfile` and ranks correctly (`protocol/src/index.ts:52-60`, `selection.ts:85-89`). HEAD is served (`transaction-http.ts:208`) and the raw executor correctly expects no HEAD body (`http-executor.ts:1082,1182`) — F9 is safely executable. All non-operation routes require authentication (`transaction-http.ts:321`), so the 401 anonymous-read control is right (F16). Discovery and retention remain a development gap (`:152,181,406`); `expiresAt` is `instant() + day` (`transaction-store.ts:1080`) with no advertised bound — F13 right. Terminal receipts survive reopen; pending ones are retracted (`:502`) — F14 right. Per-credential `canMutate` exists (F8 premise). `catalogDigest` remains the hash of the canonical exact-file digest map (`artifact-bundle.ts:211-213`) — the F11 rejection is consistent with the code; I found no cross-profile acceptance hole. Node 24.16.0 / pnpm 11.20.0 and the 64 KiB child-output bound check out.
+
+---
+
+# Can H1a proceed independently?
+
+**Yes.** H1a's four edited files plus the new test and three source-only JSONs have no dependency on M1, on the Host gate, or on exact-transport admission. I verified the two things that could have made it unsafe and both are clean: the source-only manifest cannot leak into `matrices/`, the closed `catalog/` set, the published `files` list, or any emitted inventory; and the planner already enforces TX's 1 MiB without a budget edit.
+
+Two conditions, both inside H1a's own scope: fold in **F7** (the public-gate control must cover the `read-update`-declared path, and add the RU-4 MiB-retained boundary control), and amend the line-9 wording per **F1**'s remedy so `ready-unexecuted` cannot be read as implying an executable TX transport exists.
+
+**What blocks later M1/H1b specifically — not the whole profile:**
+
+- **M1 authoring:** F3 (per-credential `canMutate` in the preimage), F4 (name collision + non-digest store values), F5 (make the runtime-tuple extraction required), F6 (injected-mismatch-only framing). Plus re-pin the base to `d907a1e` and recheck the `transaction-http.ts`/`transaction-store.ts` seams per F10.
+- **H1b execution:** F1 is the hard gate — until `http-executor.ts:57,443` admits `"transactional"` under a reviewed edit, no H1b observation can run, predeclared or dynamic. F2 must be committed, not left conditional. F8 must pick an option before observation 1 and 3 are authored. F9 and F11 are packaging/budget cleanups that can land with H1b.

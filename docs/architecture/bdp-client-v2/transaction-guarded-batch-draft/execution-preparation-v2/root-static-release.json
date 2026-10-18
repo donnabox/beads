@@ -1,0 +1,23 @@
+{
+  "released": true,
+  "phase": "eight static/build/inventory stages only",
+  "source": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/review-repair/source-binding.json",
+    "sha256": "77c27b159f545a82738c8acf50a3e0a741f41d0168d8da435c95900443b9217b"
+  },
+  "head": "9e5f040edab88be364f683098ead72f595f0ab55",
+  "diffSha256": "7944c83af64279e89b692fe1368c751aa536b3bce7e8bd36045b07bdbc3840b7",
+  "nativeRepair": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/review-repair/native-repair-review.md",
+    "sha256": "a8414bb7a523d946872a8e9dd61f0ec6bcc6ceb2bbedc9023b8c0e5d1e8ae6d5"
+  },
+  "rootDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/review-repair/root-findings-disposition.json",
+    "sha256": "44bc81ddf11ead77bca62d2f106c0dce45b0269b7ee465de3df0285bf3e3e845"
+  },
+  "syntheticAccounting": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/review-repair/dedupe-check.exit.json",
+    "sha256": "3be7dae3ee487b2a47359394ded957c075358c259b44c646c8201d0d8b93faa4"
+  },
+  "note": "Changed test warrants successor validation; original actual eight/static and installed runs preserved. Root reviewed exact preparation diff; commands and limits unchanged, gate ordinary successor parent corrected to9e5."
+}

@@ -1,0 +1,10 @@
+--- a/packages/server/src/transaction-submission.ts
++++ b/packages/server/src/transaction-submission.ts
+@@ -181,6 +181,7 @@
+         status: 503,
+         code: "temporarily-unavailable",
+         retry: "after-delay",
++        context: undefined,
+       };
+     case "existing":
+       if (observed && !result.context)

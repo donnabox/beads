@@ -1,0 +1,66 @@
+{
+  "released": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "approvedCommandIds": [
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install"
+  ],
+  "finalHead": "3968081f8231566908e69045424b067c3c36dc40",
+  "finalTree": "a597518b819941e3f579dd7838e247b010a072a1",
+  "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+  "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+  "buildOutputInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/build-output-inventory.json",
+    "sha256": "c536aa8b06aa57e814225d4dc33cf938b23e126a2cdc33f30c1d1cba83c61820"
+  },
+  "preparationSha256": {
+    "gate.py": "578f3d531791a083de41d9f121df4c96b9bcecbd95a11dbc0dc1926a7300c239",
+    "supervise.py": "b7df1bdad36c9469ffe8e621113b35b853fcce577a2578eb77baff4d838cb964",
+    "packages.py": "238f6f35aaab3e2e740d345d9893c2e26237b10b0d73088f2b795ebff4af1f35",
+    "review-installed.py": "e09f44371d75adaa528e2adb5d4c3c17da307bcc210b8b6bed52651caa724afd",
+    "commands.json": "a302416a95191a4849ee784a8a50bd347e63a11296d1437b737eef43014a4245",
+    "build-output-inventory.json": "c536aa8b06aa57e814225d4dc33cf938b23e126a2cdc33f30c1d1cba83c61820",
+    "build-reuse.json": "30d693c182a71518eb70e497d0126c7498678e56fcc774ad6a3c737b7047b8fd"
+  },
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "consumerLockSha256": "PENDING_ACTUAL_FRESH_CONSUMER_ROOT_ACCEPTANCE",
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/root-installed-release.json",
+    "sha256": "ca0737038b5813c83db8f02acb6b0cdbb39a1721c628ab067ec6a0cacca1bb42"
+  },
+  "councilAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/root-council-acceptance.json",
+    "sha256": "4fccd7a71bc9fe5c04c9be74ae0c81840dc5e5a6145f45e1528c8c213136e5e0"
+  },
+  "controlAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/root-control-acceptance.json",
+    "sha256": "5dc8cb5b7ae9bb9841fcf030b8bcfb21963e653ee14fc1acc919467218fb9edb"
+  },
+  "finalSource": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/final-source.json",
+    "sha256": "f0d3ebf85e994ce4f41f9dd52ab41be6e7feb6c9a4041b83f3eefff6b18ed982"
+  },
+  "installedProvenance": {
+    "path": "PENDING_ROOT_installedProvenance",
+    "sha256": "PENDING"
+  },
+  "buildReuse": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/build-reuse.json",
+    "sha256": "30d693c182a71518eb70e497d0126c7498678e56fcc774ad6a3c737b7047b8fd"
+  }
+}

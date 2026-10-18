@@ -1,0 +1,7 @@
+# CLOSED conditional portability successor Claude supplement
+
+RootLaunchReleased: false. Preparation only, no review launched. Review the accepted four-file portability correction against actual HEAD2dfd and actual successor bytes; keep original complete review and194/2836 evidence immutable. Focus is the three portability/attribution dispositions, counts/measurements and preservation, plus unchanged timing limits. No whole-repo audit or new requirements.
+
+Reuse successful conditional review-monitored run.py, parse-stream.py and arguments.json byte-for-byte. Default model, Read/Glob/Grep, stream-json/verbose/partial records; no-session-persistence. Keep3600-second child budget with TERM3595, metadata progress/process samples, one attempt/no retry, source/context/artifact before/after checks and fail-closed result classification. Partial records never constitute a complete review. Exit0/nonempty success result/unchanged inputs/no cleanup intervention or survivors are required; approval is never inferred. Root owns release and findings disposition.
+
+Bind actual four current files, current normative/parser/runner/helper contexts, successor fullpatch/correction/measurements and all42derivatives plus41historical inputs, accepted plan and original completed review outputs. Snapshot current files/contexts inside this new directory. Source mutation, tests/builds/imports/services/commits and launch are prohibited during preparation. Fresh separately bound diagnostic and installed validation remain later gates; old successful evidence is not relabeled.

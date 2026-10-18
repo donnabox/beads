@@ -1,0 +1,37 @@
+{
+  "status": "planning only; no product mutation or execution",
+  "files": {
+    "plan.md": "84bc96cb8d87692e61e51f5b1ba3c854dbea40906bc268f3f58c925591b14996",
+    "ledger.json": "2cb75de21509029ac9dd06006461fdfc524a04b4356dc9e1ffb78269c1633451",
+    "source-binding.json": "f4be4a20691f9a23e0ba61f0ddc77369cde86cc7e412a5b2ec2f6388ec68caeb"
+  },
+  "measured": {
+    "positiveHttp": 6,
+    "negativeExpectedHttp": 2,
+    "negativeMaximumHttp": 6,
+    "combinedExpectedHttp": 8,
+    "combinedMaximumHttp": 12,
+    "children": 2,
+    "owners": 2,
+    "listeners": 2,
+    "storeDirectories": 2,
+    "expectedTcpConnections": 8,
+    "maximumTcpConnections": 12,
+    "maximumConcurrentRequests": 2,
+    "positivePostBodyBytes": 408,
+    "negativeExpectedPostBodyBytes": 258,
+    "combinedExpectedPostBodyBytes": 666,
+    "combinedMaximumScheduledPostBodyBytes": 816,
+    "largestBodyBytes": 150,
+    "sourceRuntimeTests": 0,
+    "bootstrapHttp": 0
+  },
+  "preparationCorrections": [
+    "First guarded artifact-generation command failed Python syntax parsing before any write. Second wrote ledger then stopped on a nonexistent guessed server read-update-carrier path. Binding corrected to actual protocol read-update-preflight/read-update-values source files; no product import or execution occurred."
+  ],
+  "limitations": [
+    "No demonstrated server-pending window; both terminal receipts remain a valid overlap/replay observation.",
+    "No new serving defect proved; this is an installed evidence proposal.",
+    "Future actual principal-main and candidate/build pins remain unset."
+  ]
+}

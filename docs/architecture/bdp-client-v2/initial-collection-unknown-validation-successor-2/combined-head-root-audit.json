@@ -1,0 +1,29 @@
+{
+  "head": "d4f3f4be88c7837b71d6646518ca3589d464ba3d",
+  "tree": "d71a5753aef97444db36d044a74d3f99c168dc29",
+  "parents": [
+    "1aeed4dec5dc7563c59b136d4461a6091da052ee",
+    "e34a06d9033b26488be4a03ff124b4c8665f2c68"
+  ],
+  "base": "2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96",
+  "candidateFiles": [
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-read.test.ts",
+    "packages/server/src/transaction-read.ts"
+  ],
+  "targetFiles": [
+    "apps/bdptest/src/read-update-matrix.test.ts",
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+    "apps/bdptest/src/transactional-matrix.test.ts",
+    "packages/conformance/src/transactional-cumulative.test.ts",
+    "packages/conformance/test-support/transactional/coverage-v1.json",
+    "packages/conformance/test-support/transactional/manifest-v1.json"
+  ],
+  "exactDisjointUnion": true,
+  "reviewedBlobsPreserved": true,
+  "clean": true,
+  "exactHeadCI": "not yet run",
+  "independentScopeReview": "pending",
+  "noMainMerge": true
+}

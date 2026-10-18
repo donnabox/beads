@@ -1,0 +1,470 @@
+{
+  "completedAt": "2026-10-17T14:51:42.043031+00:00",
+  "kind": "actual Claude CODE completion audit",
+  "head": "5ceb213b632e17f28714684efc5e35a62b282bf6",
+  "fullPatchSha256": "b28eb22df8a6224e31c34a3a4cce396ff4c0793ebaa16bfc3d33165efb576513",
+  "sourceFilesVerified": 679,
+  "contextsVerified": 17,
+  "artifactsVerified": 8,
+  "exactDirtyScopeVerified": [
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "beforeAfterExact": true,
+  "exit": {
+    "classification": "review_complete",
+    "reviewComplete": true,
+    "approvalInferred": false,
+    "exitCode": 0,
+    "timeout": false,
+    "elapsedSeconds": 1369.318016291596,
+    "sourceInputsUnchanged": true,
+    "packetUnchanged": true,
+    "sampledPids": [
+      19404
+    ],
+    "remainingProcesses": [],
+    "cleanupRequired": false,
+    "wrapperErrorType": null,
+    "streamRecords": 5505,
+    "streamBytes": 2940766,
+    "parseErrors": 0,
+    "terminalResultCount": 1,
+    "lastEventElapsed": 1368.7287823748775,
+    "streamSha256": "f7d9dde5025ab9f565adc337c9c73d7ed92ee256d09ff6234a8cdc6b463498c4",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "finalReviewSha256": "0f3d186093b17ecd02f28a09fd03c9cc5496cee4e2145ba2dea7d6962c0cb2da",
+  "bindingSha256": "650d3faa0b7f0a348e8a9dfeaf3a180367297fc5d0cf1cf4407cf58a3f1b0ec2",
+  "exitSha256": "ee996ff1eb87a19c49155de0e9fbf838401aa1e57a2623c3da90e0fb35e80532",
+  "summary": {
+    "verdict": "Claude reports no functional/correctness/regression/lifecycle/typing blockers. F1\u20133 predicted cosmetic format gate failures; F4 low-confidence format risk; F5\u201311 optional.",
+    "attributionCorrections": [
+      "Formatter was not run: predicted mechanical failures are static findings awaiting actual gate evidence.",
+      "F11 incorrectly calls this changefeed wait explicitly required by the narrower current-Resource MUST; its own spec section correctly limits that MUST. Preserve the accepted general remaining-read implementation choice.",
+      "Approximate retry cost is source-derived and not a measured count.",
+      "17source cases are the bounded selection, not a full-file or profile census."
+    ],
+    "rootDispositionPending": true
+  },
+  "toolCounts": {
+    "Read": 47,
+    "Grep": 29,
+    "Glob": 3
+  },
+  "toolErrors": [],
+  "readAccessEvidence": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-service.ts",
+      "offset": null,
+      "limit": null,
+      "toolUseRecord": 27,
+      "successfulResult": true,
+      "resultRecord": 44
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-consistency.ts",
+      "offset": null,
+      "limit": null,
+      "toolUseRecord": 39,
+      "successfulResult": true,
+      "resultRecord": 43
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-store.ts",
+      "offset": 1740,
+      "limit": 180,
+      "toolUseRecord": 153,
+      "successfulResult": true,
+      "resultRecord": 157
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-store.ts",
+      "offset": 560,
+      "limit": 230,
+      "toolUseRecord": 191,
+      "successfulResult": true,
+      "resultRecord": 195
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-changefeed.ts",
+      "offset": null,
+      "limit": null,
+      "toolUseRecord": 204,
+      "successfulResult": true,
+      "resultRecord": 208
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-http.ts",
+      "offset": null,
+      "limit": null,
+      "toolUseRecord": 241,
+      "successfulResult": true,
+      "resultRecord": 246
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/read-http.ts",
+      "offset": null,
+      "limit": null,
+      "toolUseRecord": 316,
+      "successfulResult": true,
+      "resultRecord": 318
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-changefeed.test.ts",
+      "offset": 1,
+      "limit": 200,
+      "toolUseRecord": 435,
+      "successfulResult": true,
+      "resultRecord": 437
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-store.ts",
+      "offset": 360,
+      "limit": 70,
+      "toolUseRecord": 562,
+      "successfulResult": true,
+      "resultRecord": 571
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-store.ts",
+      "offset": 1540,
+      "limit": 60,
+      "toolUseRecord": 577,
+      "successfulResult": true,
+      "resultRecord": 581
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-store.ts",
+      "offset": 2340,
+      "limit": 30,
+      "toolUseRecord": 592,
+      "successfulResult": true,
+      "resultRecord": 596
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+      "offset": 1,
+      "limit": 200,
+      "toolUseRecord": 771,
+      "successfulResult": true,
+      "resultRecord": 775
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+      "offset": 200,
+      "limit": 245,
+      "toolUseRecord": 820,
+      "successfulResult": true,
+      "resultRecord": 824
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/scripts/transaction-installed-observation.mjs",
+      "offset": null,
+      "limit": null,
+      "toolUseRecord": 855,
+      "successfulResult": true,
+      "resultRecord": 857
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-installed-process.ts",
+      "offset": null,
+      "limit": null,
+      "toolUseRecord": 891,
+      "successfulResult": true,
+      "resultRecord": 895
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-runtime-configuration.ts",
+      "offset": 180,
+      "limit": 230,
+      "toolUseRecord": 979,
+      "successfulResult": true,
+      "resultRecord": 981
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-runtime-configuration.ts",
+      "offset": 120,
+      "limit": 62,
+      "toolUseRecord": 1019,
+      "successfulResult": true,
+      "resultRecord": 1021
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-changefeed.test.ts",
+      "offset": 549,
+      "limit": 490,
+      "toolUseRecord": 1060,
+      "successfulResult": true,
+      "resultRecord": 1062
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/docs/specs/bdp.md",
+      "offset": 5810,
+      "limit": 60,
+      "toolUseRecord": 1155,
+      "successfulResult": true,
+      "resultRecord": 1162
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/docs/specs/bdp.md",
+      "offset": 6030,
+      "limit": 30,
+      "toolUseRecord": 1170,
+      "successfulResult": true,
+      "resultRecord": 1174
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/docs/specs/bdp.md",
+      "offset": 6120,
+      "limit": 90,
+      "toolUseRecord": 1210,
+      "successfulResult": true,
+      "resultRecord": 1214
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/docs/specs/bdp.md",
+      "offset": 6980,
+      "limit": 25,
+      "toolUseRecord": 1225,
+      "successfulResult": true,
+      "resultRecord": 1229
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-changefeed.test.ts",
+      "offset": 1032,
+      "limit": 250,
+      "toolUseRecord": 1277,
+      "successfulResult": true,
+      "resultRecord": 1281
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/package.json",
+      "offset": null,
+      "limit": null,
+      "toolUseRecord": 1355,
+      "successfulResult": true,
+      "resultRecord": 1359
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/biome.json",
+      "offset": null,
+      "limit": null,
+      "toolUseRecord": 1389,
+      "successfulResult": true,
+      "resultRecord": 1391
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-changefeed.test.ts",
+      "offset": 1380,
+      "limit": 220,
+      "toolUseRecord": 1421,
+      "successfulResult": true,
+      "resultRecord": 1425
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/apps/bdptest/src/read-update-matrix.test.ts",
+      "offset": 2592,
+      "limit": 22,
+      "toolUseRecord": 1567,
+      "successfulResult": true,
+      "resultRecord": 1571
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-changefeed.test.ts",
+      "offset": 1296,
+      "limit": 90,
+      "toolUseRecord": 1672,
+      "successfulResult": true,
+      "resultRecord": 1676
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-changefeed.test.ts",
+      "offset": 1596,
+      "limit": 30,
+      "toolUseRecord": 1689,
+      "successfulResult": true,
+      "resultRecord": 1693
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/conformance/test-support/bd-workspace.test.ts",
+      "offset": 252,
+      "limit": 18,
+      "toolUseRecord": 1859,
+      "successfulResult": true,
+      "resultRecord": 1863
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+      "offset": 441,
+      "limit": 230,
+      "toolUseRecord": 1902,
+      "successfulResult": true,
+      "resultRecord": 1906
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+      "offset": 670,
+      "limit": 185,
+      "toolUseRecord": 1986,
+      "successfulResult": true,
+      "resultRecord": 1990
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-changefeed.test.ts",
+      "offset": 1626,
+      "limit": 300,
+      "toolUseRecord": 2116,
+      "successfulResult": true,
+      "resultRecord": 2120
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-runtime.ts",
+      "offset": 150,
+      "limit": 120,
+      "toolUseRecord": 2309,
+      "successfulResult": true,
+      "resultRecord": 2313
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/conformance/src/http-executor.ts",
+      "offset": 330,
+      "limit": 45,
+      "toolUseRecord": 2405,
+      "successfulResult": true,
+      "resultRecord": 2409
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/apps/bdptest/test-support/transactional-execution-binding.ts",
+      "offset": null,
+      "limit": null,
+      "toolUseRecord": 2466,
+      "successfulResult": true,
+      "resultRecord": 2468
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-installed.ts",
+      "offset": null,
+      "limit": null,
+      "toolUseRecord": 2507,
+      "successfulResult": true,
+      "resultRecord": 2509
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/docs/design/transaction-implementation-progress.md",
+      "offset": 2030,
+      "limit": 32,
+      "toolUseRecord": 2536,
+      "successfulResult": true,
+      "resultRecord": 2540
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/tsconfig.base.json",
+      "offset": null,
+      "limit": null,
+      "toolUseRecord": 2596,
+      "successfulResult": true,
+      "resultRecord": 2600
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/tsconfig.check.json",
+      "offset": null,
+      "limit": null,
+      "toolUseRecord": 2609,
+      "successfulResult": true,
+      "resultRecord": 2613
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/vitest.config.ts",
+      "offset": null,
+      "limit": null,
+      "toolUseRecord": 2800,
+      "successfulResult": true,
+      "resultRecord": 2804
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-sse.test.ts",
+      "offset": 270,
+      "limit": 150,
+      "toolUseRecord": 2943,
+      "successfulResult": true,
+      "resultRecord": 2947
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-sse.test.ts",
+      "offset": 876,
+      "limit": 40,
+      "toolUseRecord": 2992,
+      "successfulResult": true,
+      "resultRecord": 2996
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-http.test.ts",
+      "offset": 4600,
+      "limit": 90,
+      "toolUseRecord": 3068,
+      "successfulResult": true,
+      "resultRecord": 3070
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-http.test.ts",
+      "offset": 5500,
+      "limit": 70,
+      "toolUseRecord": 3167,
+      "successfulResult": true,
+      "resultRecord": 3171
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-http.test.ts",
+      "offset": 5643,
+      "limit": 150,
+      "toolUseRecord": 3182,
+      "successfulResult": true,
+      "resultRecord": 3186
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/packages/server/src/transaction-changefeed.test.ts",
+      "offset": 341,
+      "limit": 20,
+      "toolUseRecord": 3342,
+      "successfulResult": true,
+      "resultRecord": 3346
+    }
+  ],
+  "ownedFilesHaveSuccessfulRead": {
+    "packages/server/src/transaction-http.ts": true,
+    "packages/server/src/transaction-service.ts": true,
+    "packages/server/src/transaction-store.ts": true,
+    "packages/server/src/transaction-changefeed.test.ts": true,
+    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": true,
+    "docs/design/transaction-implementation-progress.md": true
+  },
+  "copiedContextPathsWithSuccessfulReads": [],
+  "copiedContextPathsWithoutSuccessfulReads": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-code-review/context/author-index.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-code-review/context/author-report.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-code-review/context/bdp.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-code-review/context/design.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-code-review/context/draft.patch",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-code-review/context/plan-binding.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-code-review/context/plan-claude-findings.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-code-review/context/plan-completion-audit.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-code-review/context/plan-native-closure.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-code-review/context/plan-precision-report.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-code-review/context/plan-root-dispositions.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-code-review/context/plan.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-code-review/context/preservation.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-code-review/context/root-author-release.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-code-review/context/selection.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-code-review/context/source-binding.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-code-review/context/workload.json"
+  ],
+  "inspectionLimits": "Successful Read path/range evidence only; Grep/Glob not promoted to full-file reads. Full patch/selection/workload also inline. Claude did not hash files or execute product/static checks. Independent hash checks here are not attributed to Claude.",
+  "remainingProcessesNow": [],
+  "noRetry": true,
+  "noProductExecution": true
+}

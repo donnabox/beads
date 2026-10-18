@@ -1,0 +1,257 @@
+# Review — packet 02-write-owner (frozen head 72bdaad0, base a9bcf9ed)
+
+## Baseline caveat (read first)
+
+No base-revision content was supplied for any file in this packet, and no diff. I therefore **cannot distinguish baseline behavior from new regressions** for any finding below. Everything is stated as "defect present at the frozen head." Where a construct looks newly introduced (e.g. `identityPolicy = "transaction-context-and-alias-witnesses-2"`, store `format = "...-witnesses-3"`), that is an inference from naming, not evidence.
+
+---
+
+## A. Proven defects (provable from supplied lines)
+
+### A1 — High — No finite in-process bound on pending Transactional reservations; a dropped claim is unretractable
+**File/section:** `packages/server/src/transaction-store.ts:625-651` (`admit`), `:746-759` (`retract`), `:259-273` (`sweep`), `:282-303` (startup retraction), `:134-137` (`claims` WeakMap)
+
+**Issue.** `admit()` durably inserts a row with `owner NOT NULL` and hands back a `TransactionClaim`. Every in-process release path requires that exact object: `execute(claim)` → `claims.get(claim)`; `retract(claim)` → `if (!owned) return false`; `cancelSequence(attempt)` → the admission object. `sweep()` selects `WHERE owner IS NULL`, so maintenance never touches pending rows. `claims` is a `WeakMap`, so once the caller drops its reference the mapping is collectible and the row becomes unreachable through the API.
+
+**Reachable trigger.** `const a = store.admit(p, "K1", batch); /* drop `a` */` — no `execute`, no `retract`. The row persists with `owner NOT NULL` indefinitely.
+
+**Impact.** Key `K1` stays bound to a `pending` receipt forever. Every later identical presentation receives that stale pending receipt (an exactly-once promise that will never be fulfilled); a different identity gets `conflict`. Only a process restart (`DELETE FROM receipts WHERE owner IS NOT NULL`, `:298-300`) clears it. Spec `bdp.md:3914-3920` names exactly this state a conformance failure: retraction must occur "within `transaction.duration` when that limit is advertised and within a finite bound of the authority's choosing otherwise… a `pending` receipt older than the bound is a conformance failure."
+
+This is **not** a declared exclusion. `transaction-store.ts:87-90` documents only the crash path ("Startup retracts abandoned pending receipts"). Contrast the RU side, which states the obligation (`recovery-store.ts:179-183`, "S5 must retain every live Admission and call this in finally on attempt termination") *and* supplies the owner that discharges it (`sequence-executor.ts:320-334`, `abandonAttempt` in every `finish` path, with a `releasedClaims !== 0` audit). The direct Transactional `admit`/`execute` route has no such owner in this packet.
+
+**Fix/next step.** Record an admission instant on the pending row and add an age-based retraction to `sweep()` for `owner IS NOT NULL AND admitted_at <= now - bound`, with `executeClaim` re-checking ownership at commit (it already does, `:394` and `:551-556`, so a retracted-then-resumed execution cannot commit). Alternatively supply an owner wrapper for the direct route equivalent to `sequence-executor.finish`, and document the obligation as `recovery-store.ts:179-183` does.
+
+---
+
+### A2 — Medium — `atomic()` has no `isTransaction` guard and no sticky fence; it masks the original error and leaves the handle in an undefined transaction state
+**File/section:** `packages/server/src/transaction-store.ts:160-170`
+
+```
+} catch (error) {
+  db.exec("ROLLBACK");
+  throw error;
+}
+```
+
+**Issue.** The ROLLBACK is unconditional. SQLite implicitly ends the transaction on several error classes (`SQLITE_FULL`, `SQLITE_IOERR`, `SQLITE_NOMEM`, and `SQLITE_BUSY` on commit in some paths); in those cases `ROLLBACK` itself throws ("cannot rollback – no transaction is active") and **replaces** the original cause. There is also no `fenced` flag: after a failed rollback the connection may still be inside a transaction, so every subsequent `atomic()` fails at `BEGIN IMMEDIATE` with no sticky, reportable state and no `db.close()`.
+
+Compare `recovery-store.ts:334-371`, which guards on `db.isTransaction`, verifies `cleanRollback = !db.isTransaction`, and sets `fenced = true` on commit-phase or unclean-rollback failure, surfacing `RecoveryStoreError("fenced")`.
+
+**Reachable trigger (error-masking is reachable without I/O faults).** `executeClaim`'s compensating retraction at `:563-569` is itself an unguarded `atomic(...)` **outside** any try/catch:
+
+```
+} catch (error) {
+  atomic(() => { db.prepare("DELETE FROM receipts ... owner=?").run(...) });   // :563
+  throw error;                                                                 // :570
+}
+```
+
+If the inner `atomic` throws (left-open transaction from the first failure, or any store error), its exception propagates and `throw error` at `:570` never runs — the original execution failure is lost. The same pattern recurs at `:638-644` and `:675-685`.
+
+**Impact.** Diagnostic loss on the exact paths that implement write-ownership retraction, plus a wedged handle with no fence. I found no path where this corrupts committed state: the `WHERE … AND owner=?` guards on all retraction and terminal statements (`:553`, `:564`, `:639`, `:679`, `:754`) mean a compensating delete cannot remove a row whose ownership has already been released, and the terminal UPDATE's `changes !== 1` check (`:556`) blocks a commit by a non-owner.
+
+**Fix/next step.** Mirror `recovery-store.transaction`: guard `ROLLBACK` with `db.isTransaction`, set a sticky `fenced` flag on commit-phase or unclean-rollback failure, surface it from `enter()`, and wrap every compensating `atomic(...)` so the original cause survives (`AggregateError`, as `nextSequence:729-738` already does).
+
+---
+
+### A3 — Medium — The store's configured retention floor is neither exposed nor cross-checked against the executor's; a mismatch fails only after keys are durably claimed
+**File/section:** `packages/server/src/member-executor.ts:81-84` and `:436-439`; `packages/server/src/recovery-store.ts:122` and `:289-292`, `:860-864`; `packages/server/src/sequence-executor.ts:220-249`
+
+**Issue.** Two independent retention floors exist. `openRecoveryStore` keeps `retention = options.minimumRetentionMs ?? dayMs` privately (`:289`) and enforces it per member at `:860-864`. `MemberExecutorOptions.minimumRetentionMs` is a *separate* value, validated only against the hard-coded 24 h constant (`member-executor.ts:438`). `RecoveryStore` exposes no retention property — not on the interface (`:141-186`) and not in `runtime` (`:145-154`). `createSequenceLifecycle` checks only `store.scope !== member.scope` (`sequence-executor.ts:240`).
+
+**Reachable trigger.** Open the store with `minimumRetentionMs: 7 * 86_400_000`; construct the executor with `minimumRetentionMs: 86_400_000, retentionMs: 86_400_000`. Both constructors succeed.
+
+**Impact.** Every `submit()` passes `store.admit` (durably claiming all unknown keys, `recovery-store.ts:711-731`), then the first member's `executeMember` throws `RecoveryStoreError("retention-too-short")` at `:860-864`. That is not a SQLite error, so `transaction()` rolls back cleanly and rethrows without fencing; `scheduleMember`'s catch (`sequence-executor.ts:492-498`) rejects the attempt and `finish` releases the claims. Net result: a silent total write outage with per-request durable claim churn, detectable only at request time, from a configuration error that is structurally detectable at construction.
+
+**Fix/next step.** Add the configured minimum to `RecoveryStore.runtime` (alongside `journalMode`/`synchronous`) and assert `member.minimumRetentionMs >= store.runtime.minimumRetentionMs` in `createSequenceLifecycle`'s initialize block, where `store.scope !== member.scope` is already checked.
+
+---
+
+### A4 — Medium — `evaluateTransaction` hard-codes the numeric diagnostic budget, ignoring `options.limits`
+**File/section:** `packages/server/src/transaction-batch.ts:392-396`
+
+```
+const admitted = admitReadUpdateOperationNumbers(op, {
+  diagnostics: 16,
+  diagnosticBytes: 65536,
+  diagnostic: ({ pointer }) => ({ message: "unsupported number", instanceLocation: pointer }),
+});
+```
+
+**Issue.** The function receives `options.limits` (including `diagnosticCount` and `diagnosticBytes`, used for the rest of the evaluation at `:466`) and ignores both for numeric admission. The two agree at the frozen head only because `transaction-store.ts:488-493` happens to pass the same literals.
+
+This is precisely the mismatch the RU side treats as a construction error: `member-executor.ts:445-449` refuses configuration when `budget.diagnostics !== bounds.diagnosticCount || budget.diagnosticBytes !== bounds.diagnosticBytes`.
+
+**Reachable trigger.** Any owner invoking `evaluateTransaction` with `limits.diagnosticCount: 4`. A document with 5+ inadmissible numbers yields a `validation-failed` problem carrying up to 16 diagnostics and up to 64 KiB.
+
+**Impact.** A durable `failed` receipt whose problem exceeds the configured diagnostic bound. The Transactional store has no analogue of `assertRetainedOutcomeCompatible`, so nothing detects it; the over-budget problem is served from the retained receipt for the whole retention interval.
+
+**Fix/next step.** Derive the numeric budget from `options.limits`, or assert equality as `snapshotOptions` does.
+
+---
+
+### A5 — Low — The two write owners disagree on the retention boundary by one instant, and RU discards at exactly the advertised limit
+**File/section:** `packages/server/src/recovery-store.ts:910-922` vs. `packages/server/src/transaction-store.ts:200-202`
+
+RU: `… WHERE state='retained' AND … retain_until<=?` — the disposition is gone at `now === retainUntil`.
+Transactional: `if (now <= expires) return { row: stored };` with the comment "expiresAt promises availability through its instant; disposal happens after."
+
+**Issue.** `retainUntil = completedAt + retentionMs` (`member-executor.ts:662`). Expiring at `<=` makes the disposition available only on the half-open interval `[completedAt, completedAt + retentionMs)`. Spec `bdp.md:3303-3306` says the authority retains "for **at least** `retention.idempotency` after the member's terminal outcome," and `:3306-3307` tells the client it "MUST retry within it." A retry arriving at exactly the advertised limit is within it and is nevertheless answered `idempotency-expired`.
+
+**Reachable trigger.** A retry whose turn falls in the same millisecond as `completedAt + retentionMs`, with a maintenance pass at that instant.
+
+**Impact.** One-millisecond conformance edge on an advertised limit, plus an internal inconsistency: the two owners in this packet read the same "at least D" promise in opposite directions.
+
+**Fix/next step.** Use `retain_until < ?` in both `recovery-store.expire` statements, or state the exclusive reading in both owners.
+
+---
+
+### A6 — Low — Empty-`changeContext` normalization also collapses `[]`
+**File/section:** `packages/server/src/transaction-batch.ts:273-276`
+
+```
+const context = input.changeContext;
+if (context !== null && typeof context === "object" && Object.keys(context).length === 0)
+  delete input.changeContext;
+```
+
+**Issue.** `typeof [] === "object"` and `Object.keys([]).length === 0`, so `changeContext: []` is deleted and compares equal to an absent `changeContext`. The comment ("Empty context supplies no explicit states; null members remain distinct") and the `identityPolicy` name both describe an *object* rule.
+
+**Reachable trigger.** Two presentations under one key, one with `changeContext: {}` and one with `changeContext: []`, otherwise identical → treated as the same semantic request.
+
+**Impact.** Two distinct JSON values collapse to one identity, contrary to the RFC 6902 §4.6 value-equality basis in `bdp.md:3180-3182`. Whether `changeContext: []` survives `prepareReadUpdateSequence` is not establishable here (see Q6), so impact may be nil in practice — but the predicate is wrong as written.
+
+**Fix/next step.** Add `!Array.isArray(context)` to the guard.
+
+---
+
+### A7 — Low — Development depth bounds differ across the three carriers the spec requires to be one semantic request
+**File/section:** `packages/server/src/transaction-batch.ts:57-66` (`losslessText`, `depth > 32`), `:86`, `:99`, `:121`, `:137-149`
+
+**Issue.** Operation content is depth-checked from different origins: `prepareTransaction` at the batch root (`:86`, operation objects at depth 2); `prepareTransactionSingleton` explicitly at depth 2 (`:99`, "the same operation-content depth bound as the batch wrapper"); `prepareTransactionSequence` at the sequence root (`:121`), which is one level deeper again, and then re-serializes each member and re-checks it at depth 2 (`:137-149`).
+
+**Impact.** Near the 32-level bound, the same operation can be accepted as a singleton and rejected as a sequence member (or vice versa), against `bdp.md:3878-3881` ("A one-operation batch, the equivalent singleton request, and the equivalent sequence member therefore present one semantic request"). Low because 32 is a development bound well above realistic content.
+
+**Fix/next step.** Compute the per-operation depth budget from one shared origin for all three entry points.
+
+---
+
+### A8 — Low — `admitSequence` does not reject duplicate member keys
+**File/section:** `packages/server/src/transaction-store.ts:652-699`; contrast `packages/server/src/recovery-store.ts:708-709`
+
+**Issue.** RU's `admit` rejects a carrier with repeated keys (`new Set(carrierKeys).size !== carrierKeys.length` → `invalid-input`). `admitSequence` only runs `checkPrincipalKey` per member and has no uniqueness check; `prepareTransactionSequence` has none either.
+
+**Reachable trigger.** A sequence whose members 0 and 1 carry the same `idempotencyKey`. Member 0 is admitted as owned; member 1 observes its own carrier's pending row and, via `pendingWins` (`:352-353`), is not owned. At turn time member 1 re-enters `admitKey` and is answered from member 0's now-terminal receipt — replayed if identities match, `conflict` otherwise.
+
+**Impact.** A member is answered from a sibling member's receipt within one carrier, rather than being refused at the carrier level. The outcome is internally coherent, which is why this is Low, but it diverges from the RU owner on the same construct. Whether `prepareReadUpdateSequence` already enforces uniqueness is not establishable here (Q6).
+
+**Fix/next step.** Reject duplicate member keys in `prepareTransactionSequence` or `admitSequence`, matching `recovery-store.admit`.
+
+---
+
+## B. Questions needing omitted context (not asserted as defects)
+
+### Q1 — Medium — First execution uses the admission-time alias capture, not a resolution in its own commit
+`transaction-batch.ts:456-462` (`alias()` override, "A captured miss must not become a live target after admission"), `:285-294` (capture), `transaction-store.ts:351-361` (capture at `admitKey`), `:387-559` (execution in a later transaction).
+
+Admission and execution are separate `enter()`/`atomic()` steps, and unrelated admissions/executions can interleave between them (that interleaving is the explicit purpose of `transaction-sequence.ts:74-75`, "Source-private stepping gives unrelated owner calls a turn between commits"). A first execution therefore commits against an alias target observed at admission.
+
+Trigger: `admit(p, K1, [{updateBead, bead: "<scope>alias/latest"}])` captures `alias/latest → beads/A`; before `execute(claim)`, an unrelated singleton `putAlias(alias/latest → beads/B)` admits and commits; `execute(claim)` then updates `beads/A`. (Sequences are excluded from this by `transaction-batch.ts:129-133`, which rejects alias locators in Resource reference slots; batches and singletons are not.)
+
+The RU owner resolves inside the executing transaction instead (`member-executor.ts:593-606`: `normalizePreparedMemberIdentity` with `resolveAlias` reading `tx.alias`, reconciled by `capturedMemberAlias` at `:627-630` within the same `executeMember`).
+
+The supplied spec text covers **retry** witnesses (`bdp.md:3200-3212`: retry-time witnesses are "transient comparison input") and requires serializable outcomes (`:3827-3831`), but says nothing I can find about first-execution alias-resolution timing on a Transactional Scope, and `§Alias targets` is not in the packet. Pinning admission-time resolution is a defensible identity-execution-agreement choice; I am flagging it because the excerpt does not authorize it and the outcome is not serializable with the interleaving repoint. **Needs:** `§Alias targets`, and the baseline for `transaction-batch.ts:285-294`/`:456-462`.
+
+### Q2 — Medium — RU replay `forbidden` retains the creator binding; whether a dependent can leak the withheld identity is not determinable here
+`member-executor.ts:772-780` returns `turn(problem("forbidden"), "replayed", operation, metadata.creation)` — the bound creation identity is still handed to later members' `@name` resolution even though the retained record was withheld from the present view.
+
+For the Transactional profile this is explicitly correct: `bdp.md:4077-4086` ("hides response data, not the retained creation binding… An unauthorized dependent returns the ordinary `forbidden` projection and discloses no hidden identity through its result or problem extensions"). The RU excerpt (`:3279-3290`) states the creator's refusal but not the dependent's obligation.
+
+The open question: if a dependent `createLink { source: @x }` succeeds under a policy that permits creation without read on the endpoint, its success result's `resource.source` discloses the identity the creator's `forbidden` withheld. Resolving this requires `resource-evaluator.ts` (endpoint authorization) and `retained-disclosure.ts` (`mayDiscloseRetainedResource` semantics) — neither supplied. **Needs:** both modules, plus RU-side spec text on dependent disclosure.
+
+### Q3 — Medium — `@name` reference to a non-creating member throws a `TypeError` rather than yielding a member problem
+`sequence-executor.ts:483-489`:
+
+```
+const fact = attempt.creators[index];
+if (!fact) throw new TypeError("completed prefix lacks creator fact");
+```
+
+`attempt.creators` holds `turn.creator`, which `member-executor.ts:535-536` sets to `undefined` for every non-creation operation. So an `@name` reference naming, say, an `updateBead` member reaches this throw → `failure("member", …)` → the whole attempt rejects with a `SequenceLifecycleError`, rather than a carrier-level `malformed-request` or a member problem.
+
+Whether `prepareReadUpdateSequence`/`assertPreparedReadUpdateCarrier` already rejects `@name` references to non-creating members is not establishable — `@bdp/protocol` is not supplied. If they do, this is correct defense-in-depth; if they do not, it is a reachable crash path from a malformed carrier. The same uncertainty applies to `transaction-batch.ts:296` (`throw new TypeError("unknown batch binding")` for a forward `@label`). **Needs:** `@bdp/protocol` carrier preparation.
+
+### Q4 — Low/Medium — Transactional sequences re-admit a member mid-sequence after another owner's retraction
+`transaction-store.ts:700-726`: when a member was not owned at `admitSequence` (its key was pending elsewhere or terminal), `nextSequence` re-enters `admitKey(..., pendingWins = true)` in the member's turn and, if the key is now unknown, **newly admits and executes** it.
+
+For RU this is unambiguously correct — `bdp.md:3237-3240` decides "in its turn, as of that turn," and outcome 4 (`:3272`) executes an unknown key; `recovery-store.executeMember:736-743` implements exactly that.
+
+For Transactional, `bdp.md:4010-4012` locates sequence admission at the carrier's admission step ("the sequence's admission admits every member whose key is unknown, in declaration order"), `:4027-4029` distinguishes "a member newly admitted by this carrier" from projections, and `:4074-4075` says "Sequences do not acquire the direct carrier's comparison wait **or retry after retraction**." Trigger: a direct attempt owns K1 pending; sequence S's member 0 presents K1 and is not owned; the direct attempt's execution fails and retracts (`:560-570`); S's turn 0 admits and executes K1.
+
+I could not resolve from the excerpt whether "newly admitted by this carrier" is time-scoped to the admission step. Note the one durability invariant that *is* clearly satisfied: all reservations at `admitSequence` are taken in one `atomic` step (`:662-670`), so `bdp.md:3243-3248`/`:3926-3935` (claims as one linearizable step) holds for competing admissions. **Needs:** an explicit ruling on in-turn Transactional sequence admission.
+
+### Q5 — Low — Retained-diagnostics startup gate must match the producer's measurement
+`member-executor.ts:277-285` rejects startup when a surviving retained problem's diagnostics exceed `limits.diagnosticCount` or `Buffer.byteLength(stringifyJsonValue(disposition.diagnostics)) > limits.diagnosticBytes`. Whether the producer (`admitJsonNumbers` / `prepareMemberExecution`, both in unsupplied modules) measures the same bytes over the same subtree is not establishable. If it measures differently — e.g. including the enclosing Problem, or per-diagnostic — a legitimately produced retained row can fail the gate and **refuse startup** on a correct store. **Needs:** `@bdp/protocol` diagnostic budgeting.
+
+### Q6 — Low — Batch / singleton / sequence-member identity equivalence rests on `op.input` excluding `idempotencyKey`
+`bdp.md:3878-3881` requires the three carriers to present one semantic request. The implementation injects *different* synthetic keys per path (`transaction-batch.ts:84` `internal-${index}`, `:100` `"internal-singleton"`), so equivalence holds only if `PreparedReadUpdateCarrier.operations[i].input` excludes `idempotencyKey`.
+
+I can argue it does: `prepareTransactionSequence` re-serializes `op.input` through `prepareTransaction` (`:138-149`), whose `:83` check (`Object.hasOwn(op, "idempotencyKey")` → throw) would reject every sequence member if `input` carried the key. That is inference from internal consistency, not verification. **Needs:** `@bdp/protocol` carrier shape. The same reasoning covers `name` exclusion (`:145`, re-added at `transaction-sequence.ts:66-72`).
+
+---
+
+## C. Checks performed that found no defect (stated so the gaps above are legible)
+
+- **RU atomic durability unit** (`bdp.md:3340-3347`): effects, `semanticIdentityJson`, `resolutionsJson`, `outcomeJson`, `completedAt`, `retainUntil` all commit in the single `transaction()` of `recovery-store.executeMember:735-882`; `changes !== 1` on the ownership-guarded UPDATE (`:866-880`) aborts the whole unit. Failure effects roll back to `SAVEPOINT member_effects` while the claim row (inserted before the savepoint, `:737-743`) survives for retention. Correct.
+- **RU turn-time key decision** (`bdp.md:3237-3240`, `:3255-3272`): a `retained(failure)` row deleted by `expire()` between `submit`'s admission and the member's turn is correctly re-executed as "unknown in its turn" (`executeMember:736-743`). Maintenance and member turns cannot interleave inside `enter` (`sequence-executor.ts:354-368`), so the `sameState` re-read guard (`member-executor.ts:700-703`) is belt-and-braces, not a race.
+- **Transient claim release** (`bdp.md:3226-3229`, `:4056-4062`): `member-executor.ts:586-589` releases before consulting any key state; `releaseOwnedClaim`'s `WHERE … owner=? AND state='claimed'` (`recovery-store.ts:884-897`) cannot retract another owner's row. Transient creator → dependent propagation via `turn()`'s creator fact (`:535-543`) is consistent.
+- **Claim accounting on success**: I traced every member outcome (retained / released / transient-release / existing-not-owned) and found none that leaves this attempt owning a claim, so `finish`'s `count !== 0` audit (`sequence-executor.ts:324-327`) should not false-positive.
+- **Retain-refusal of projection/transient outcomes**: `parseEnvelope:253-259` refuses retaining `retry: "after-delay"`, `idempotency-conflict`, `idempotency-expired`. The replay-path `forbidden` (`:778`) never reaches a retention path (`compareExistingMember` is read-only, reached only from the `existing` branch and `inspectExistingMember`). Matches `bdp.md:3285-3288`.
+- **Expired tombstone contents** (`bdp.md:3311-3318`): `expire()`'s UPDATE preserves `fingerprint` + `resolutions` (witnesses + creation fact) while nulling `identity`/`outcome`; `compareExistingMember:739-743` asserts a creation's expired tombstone retains its creation fact, and `:770` supplies it as the creator binding so a later `@name` still resolves. Tombstones are retained only for committed effects (`effect='success'`), failures deleted — matches `:3325-3328` and `:4000-4001`.
+- **Alias suffix arithmetic**: `scope.length + 6` (`"alias/"`) is consistent across `member-executor.ts:159`/`:601`/`:758`, `transaction-store.ts:357`, `transaction-batch.ts:459`.
+- **Transactional expired sequence projection** (`bdp.md:4017-4024`): `transaction-sequence.ts:43-54` emits `allocated` only for `createBead`/`createLink` and omits it for an alias put whose result says `created`; `transaction-store.ts:216-221` correspondingly yields an empty compact allocation list for alias creations.
+- **`admitSequence` atomicity** (`bdp.md:3926-3935`): all reservations in one `atomic` (`:662-670`); the failure path (`:672-688`) checks each exact owner and never retracts a competing reservation.
+- **Committed no-op** (`bdp.md:3311-3312`): an effect-free transaction still commits a `completed` receipt whose key stays bound (`transaction-store.ts:533-549`).
+
+---
+
+## D. Files and line ranges actually read
+
+| Path | Ranges supplied and read |
+|---|---|
+| `docs/specs/bdp.md` | 3141–3375; 3793–4099 |
+| `packages/server/src/member-executor.ts` | 1–817 (complete as supplied) |
+| `packages/server/src/sequence-executor.ts` | 1–676 (complete as supplied) |
+| `packages/server/src/recovery-store.ts` | 1–934 (complete as supplied) |
+| `packages/server/src/transaction-batch.ts` | 1–538 (complete as supplied) |
+| `packages/server/src/transaction-store.ts` | 1–808 (complete as supplied) |
+| `packages/server/src/transaction-sequence.ts` | 1–136 (complete as supplied) |
+
+No tools, commands, file reads, or delegation were used. This is **not** entire-branch coverage — it is the six modules and two spec ranges above.
+
+## E. Truncated / unread material this review depends on
+
+- `docs/specs/bdp.md` outside 3141–3375 and 3793–4099. Specifically absent and load-bearing: **§Alias targets** (Q1), **§Scopes and identity** (restore/logical-Scope rule referenced at `:3328-3329`), **§Batch operation target** (the transient-abort rule invoked at `:3915`), **§Mutation Receipt responses** (`:4053`), **§Sequence response envelope** (`:4036`), **§Transactional conformance rows** (`:4097-4098`), **§Carried attribution** (`:3159`), and the `retention.*` / `transaction.duration` advertisement definitions.
+- `packages/server/src/member-identity.ts` — `normalizePreparedMemberIdentity`, `prepareMemberDependencies`, `prepareMemberExecution`, `serializeMemberMetadata`/`parseMemberMetadata`, `capturedMemberAlias`, `CreationBinding`/`MemberCreatorBinding`. The entire RU normalization and witness contract.
+- `packages/server/src/semantic-identity.ts` — `encodeSemanticValue`, `SEMANTIC_VALUE_FORMAT`, `UNBOUND_SEMANTIC_REFERENCE`, and the member-ordering rule that `identityObject` (`member-executor.ts:350-372`) validates against.
+- `packages/server/src/resource-evaluator.ts` — `evaluateResourceMutation`, `readStoredResource`, `ResourceRecord` (full-URL vs. relative `id`), endpoint authorization.
+- `packages/server/src/alias-evaluator.ts` — `evaluateAliasMutation`, `assertAliasDiagnosticLimits`, whether a put target may itself be an alias locator.
+- `packages/server/src/retained-disclosure.ts` — `mayDiscloseRetainedResource` (Q2).
+- `packages/server/src/authority-read.ts` — `OwnerReadEntryResult`.
+- `@bdp/protocol` in full — `prepareReadUpdateSequence`/`Singleton`, `assertPreparedReadUpdateCarrier`, `PreparedReadUpdateCarrier` shape, all `parse*`, `admitJsonNumbers`/`admitReadUpdateOperationNumbers`, `stringifyJsonValue`, `decodeJsonDocument`, `parseCanonicalScope`, `resolveCanonicalLocalResourceId`.
+- The **base revision `a9bcf9ed`** in its entirety, hence the caveat at the top.
+- All tests, fixtures, and the authority/startup owner that constructs `createSequenceLifecycle` and discharges the obligations documented at `recovery-store.ts:136-140` and `member-executor.ts:262-264`.
+
+## F. Known bounded exclusions relevant to this packet (confirmed declared, not counted as findings)
+
+1. **No transport or profile admission** on the Transactional slice — `transaction-batch.ts:1`, `transaction-sequence.ts:1`. Client-level malformed-request conditions surface as thrown `TypeError`/`Error` rather than problem documents.
+2. **No unresolved-dependency admission form, comparison wait, budget, or `503` retry-after-retraction** (`bdp.md:3926-3985`). `prepareTransactionSequence:128` rejects `@name` dependencies outright, so no unresolved reservation can exist. Declared at `:112-113`.
+3. **No turn-time alias resolution in sequences** — `transaction-batch.ts:132-133`, `:112-113`.
+4. **Fixed all-visible authorization** — `transaction-store.ts:90`, `:310`, `:483-484`. Therefore no `allocated: { withheld: true }` form, no per-retry re-authorization, and no `forbidden`/`resource-erased` sequence projections (`bdp.md:4036-4041`, `:4077-4086`).
+5. **Schema-free, unowned Types only** — `transaction-store.ts:98-104`; owned-Link transitions throw (`transaction-batch.ts:477`).
+6. **Alias effects get a durable receipt but no Resource Event and no Scope position** — `transaction-batch.ts:412-414`; `effective === false` advances no position (`transaction-store.ts:533-539`).
+7. **No population/workload qualification** for Transactional maintenance (`transaction-store.ts:261-262`) or RU expiry (`sequence-executor.ts:446-449`: "two unindexed predicates examine all key-state rows, including permanent tombstones"); `receipt()` is an O(n)-per-principal scan (`transaction-store.ts:760-774`).
+8. **No logical import/export, and no certification of a partial restore** — `recovery-store.ts:263-274`.
+9. **Startup retained-outcome visitor cannot qualify expired rows or the formatter** — `member-executor.ts:262-264`, `recovery-store.ts:129`, `:163`. Consequence worth noting: an unqualified `state='expired'` row's `resolutions` is first parsed at replay time (`member-executor.ts:731`), so it surfaces as a per-attempt `MemberIntegrityError` rather than a startup refusal. The owner that "expires only permitted rows first" is outside the packet.
+10. **Write-profile conformance claims remain disabled**; the private Transactional implementation is intentionally bounded and is not a complete public Transactional service. Nothing above asserts a missing full-profile feature as a regression.
+11. **No aggregate memory or concurrency bound** across live RU attempts — `sequence-executor.ts:218-219`. Related and *not* separately reported: `close()` resolves only once every live attempt finishes, so a scheduler that drops a callback leaves `closed` pending indefinitely (`:342-353`).

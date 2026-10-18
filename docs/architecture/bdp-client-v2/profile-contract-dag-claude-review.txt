@@ -1,0 +1,62 @@
+No files were written; this is a static read-only review.
+
+# Review — `28b5da2` → `1f2d75f` (two files, +77/−9)
+
+**Scope reviewed:** exactly the two files in the delta — `packages/conformance/test-support/profile-contract-plan.ts:388-410` (recursion → catalog-order DP) and `packages/conformance/src/profile-contract-plan.test.ts:399-456` (+ the `vi` import at `:4`). Nothing else in the tree changed, so I treated the rest of the module as fixed context and only re-derived the invariants the new code newly depends on.
+
+## N3 verdict: **CLOSED**
+
+The repair takes the second option the native review offered (`native-review.md:13`, "a catalog-order pass using the existing earlier-than constraint") rather than the three-colour DFS the Claude review proposed (`claude-review.txt:120`). That substitution is sound, and it is actually the stronger of the two choices here because it removes the cycle bookkeeping instead of reimplementing it.
+
+**Why the `ancestors` set was safe to delete.** In the old code the recursive descent was guarded by `earlier(id, dependency) && dependencyReady(dependency, next)` — `&&` short-circuits, so recursion only ever entered a node at a *strictly smaller* catalog position (`earlier` at `:367-368` is a strict `<` on `positions`). Position is a finite integer, so no id could recur on a descent path and `ancestors.has(id)` was unreachable dead code. Cycles were, and still are, rejected by `earlier` alone. Memoizing a well-founded recursion whose only cycle guard was unreachable is exact, not approximate.
+
+**Why one pass suffices.** The loop iterates `selection.catalog.scenarios` in ascending index, and the only map read is `dependencyReady.get(dependency)` behind the same short-circuited `earlier` — so a value is read only when `pos[dep] < pos[id]`, i.e. written in an earlier iteration. No read-before-write; catalog order *is* the topological order. Verified the two invariants this now rests on:
+
+- `required ⊆ catalog.scenarios`, same relative order — `selectApplicableScenariosForProfile` is a `catalog.scenarios.filter(...)` (`selection.ts:54-63`), filtered again by `kind` (`:66-73`). So every required id gets a DP entry.
+- ids are unique — `catalog.scenarios = [...byId.values()]` (`profile-contract-plan.ts:109`), so `positions` and the DP map are 1:1 and the loop writes each id once.
+
+## Outcome equivalence — all five preserved
+
+| Case | Old | New | Same |
+|---|---|---|---|
+| **missing** (required+in-catalog, no manifest row) | `!row` → false | `!!row` → stores `false` | ✓ |
+| **missing** (not selected) | `!required.has` → false | `continue` → `undefined !== true` | ✓ |
+| **retired** | not in `required` → false | not in `required` → no entry → `!== true` | ✓ |
+| **late / self** | `!earlier` short-circuits | `!earlier` first disjunct at `:409`, untouched | ✓ |
+| **cycle** | `earlier` fails on the back edge (`ancestors` dead) | identical | ✓ |
+| **unready** (`missingApplicability` / `missingSetup` / `carrierBlocker`) | early `return false` | same four conjuncts, same order | ✓ |
+
+The `undefined` sentinel cannot diverge from the old `false`: for a dep to reach the second disjunct at `:409`, `earlier` must hold, which requires a finite `positions.get(dependency)` — so the dep is in the catalog, and if it is also in `required` the DP wrote it. A dep absent from the catalog has position `Infinity` and is blocked by the first disjunct either way.
+
+Checked against the three cases already pinned at `:350-398`: missing `a` → `prerequisite-blocked` / `[a.id]`; `a` with `requires:["missing-setup"]` → stores `false` → `b` blocked; the 2-cycle → `a` blocked via `!earlier(a,b)`, `b` blocked via `dependencyReady[a]===false`, both `prerequisite-blocked`. And the RU case at `:332-349`: `read.discovery.document` is retired at RU so it has no DP entry, `earlier` holds, all 9 dependents still list it — count unchanged.
+
+## Complexity: linear, confirmed
+
+O(V + E + Σ|requires|), V = merged catalog rows, E = distinct prerequisite edges. One pass over the catalog; per row, one `executable.get`, two bounded `requires` filters, and one `every` over `deg(id)`. `base(id)` is now evaluated exactly twice per required row (DP pass + requirements pass) — a constant factor, where the old code evaluated it once per path. The O(V+E) claim holds in graph terms; the `Σ|requires|` term is linear in manifest size.
+
+## Regression test: no timing dependence
+
+It counts `Map.prototype.get` calls keyed by a required scenario id (`:435-446`) instead of elapsed time, which is the right instrument — the counted keys (`executable`, `positions`, `dependencies`, `dependencyReady`) are exactly the maps the exponential traversal re-hit. Deterministic: no timers, no concurrency, no randomness; the count is a pure function of catalog size, edge count and parser code.
+
+- `originalGet` is captured *before* `spyOn` (`:435` then `:438`) — no self-recursion. The membership test uses `Set.prototype.has`, not `Map.get`, so the guard can't feed itself.
+- It **throws** on overrun rather than waiting, and `profile-contract-plan.ts` has no `try`/`catch` anywhere, so the error propagates intact to the test — a regression fails fast instead of hanging CI.
+- `mockRestore` in `finally` (`:455`), spy installed as the last statement before the `try`. Prototype-spy technique has precedent in the package (`http-executor.test.ts:367,1150`).
+- Budget `44 × 100 = 4400` against an actual cost I compute at ≈740 (44 validation lookups + 2 passes × (2 + 3·deg), 87 edges). ~6× headroom — enough to absorb parser internals, tight enough that even a *quadratic* regression (≈3n² ≈ 5800) trips it, and the old Fibonacci traversal trips it within the first ~18 rows. Budget scales with `required.length`, so it won't go stale as the catalog grows.
+
+The test's preconditions hold statically, so the `ready-unexecuted` expectations are reachable: template is `read.discovery.scope-service-desc` with `applicability.requires: []` and `setup: {fixture:"reference-read-v1", requires:["public-http"]}`; `fixtures/read-reference-v1.json` has `id: reference-read-v1` and declares `public-http`; `cleanup` is `{resetFixture:true}` with no action/capture references; `requests: undefined` is erased by `source()`'s `JSON.stringify` (`:21`); prerequisite actions precede `owned`; and edges point into `selected.required[index-1|index-2]`, which is catalog order, so every edge satisfies `earlier`. `read-v1` on `read` leaves `carrierBlocker` undefined. 816 + 1 `it` block = the claimed 817.
+
+## Findings
+
+No defects. Two notes, neither blocking:
+
+1. **`:453`** — the counter stays armed through the four `expect` calls that precede it, so assertion-machinery `Map.get` calls would be attributed to the planner. Theoretical only: vitest never keys maps by scenario ids. Reading `lookups` into a const immediately after the plan call would close it.
+2. **`:437`** — `×100` per row is coarse relative to the ~17 actually used. Deliberate per the comment, and still tight enough to catch quadratic at n=44, so I'd leave it.
+
+## Explicitly **not** closed by this delta
+
+- **N1** (carrier-dependency contamination) — `!carrierBlocker` is retained verbatim as the fourth conjunct at `:401`, so under an unsupported carrier every `dependencyReady` is still `false` and `blockedPrerequisites` still lists prerequisites that are not actually blocked. Behaviour is byte-for-byte preserved, and the test at `:332-349` depends on it. Remains the open low follow-up for the next explicit RU executor slice.
+- **N2** (stale carrier reason / claim-4 wording) — the carrier comment and message (`:344-349`) are untouched by this diff. Unaddressed, same assignment.
+
+## Verification limits
+
+Static review only, as specified. I did not execute vitest, the planner, or any TS, so the 817/817 pass claim and my ≈740 lookup estimate are analytic, not measured. No files written or modified, no network, no served/credentialed/RU/TX execution, no evidence generated or bound. I did not re-audit the 11 previously closed findings, the 81-row table, or the retirement set — this delta does not touch those inputs. The forward-looking merged-catalog-order vs bound-bundle-order divergence noted at `claude-review.txt:139` is unchanged and, if anything, now load-bearing: the DP's single-pass correctness depends on the merged order being topological for prerequisite edges, so it is worth pinning when a real cumulative catalog artifact lands.

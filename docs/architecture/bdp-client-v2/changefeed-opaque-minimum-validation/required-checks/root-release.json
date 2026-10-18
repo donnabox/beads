@@ -1,0 +1,15 @@
+{
+  "accepted": true,
+  "preparationIndexSha256": "e1786771290e351d1f6b84c5c0d54fde4a944e23fb71af00d04598b9e74a6ed2",
+  "freshBuild": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/run/build-artifacts.json",
+    "sha256": "a7019ca46d484f5ec3b5df34db0d0d15aec356e0c844feb442c8750d6b09cf5c"
+  },
+  "scope": [
+    "boundaries",
+    "preflight",
+    "package-smoke",
+    "historical-read-evidence"
+  ],
+  "rationale": "Root reviewed commands/gate/runner delta, exact references and actual accepted fresh build. Same four required checks; no source changes or profile claim."
+}

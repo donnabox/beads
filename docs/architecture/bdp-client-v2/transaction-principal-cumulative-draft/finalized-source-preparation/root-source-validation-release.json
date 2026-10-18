@@ -1,0 +1,18 @@
+{
+  "status": "source-validation-released",
+  "sourceBindingSha256": "52324cb9b78de3fda3cea613a1de1290274c4eca032579d427f6bb49102b0df1",
+  "nativeReviewSha256": "4db283334f23aaf8828df97d2889ed21e84e820064ec361387258472522269a7",
+  "scope": [
+    "offline-setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "static-cases",
+    "build-inventory"
+  ],
+  "at": "2026-10-15T22:20:10.620262+00:00",
+  "rootReview": "Read full supervisor, inventory and command specifications; checked actual source and measured guards. Exact9CPU callbacks only, no installed cohorts. Stop first unexpected failure; no retry. Claude code council/publication remain pending."
+}

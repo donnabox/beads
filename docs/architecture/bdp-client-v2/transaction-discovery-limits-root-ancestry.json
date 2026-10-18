@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-14T10:14:47.837377+00:00",
+  "base": "bec9daea377eba57d55106e007402ee9f65d69c3",
+  "head": "26d6cd1b947db8c00e24015771506d26098a293e",
+  "tree": "375c1910e99ada9f5a43e332203c8778ab8122dc",
+  "files": [
+    "docs/design/transaction-implementation-progress.md",
+    "packages/server/src/transaction-discovery.test.ts",
+    "packages/server/src/transaction-discovery.ts",
+    "packages/server/src/transaction-runtime-configuration.test.ts",
+    "packages/server/src/transaction-service.test.ts"
+  ],
+  "ordinaryMergeTreeEqualsCandidate": true,
+  "explanation": "Main bec9 is ordinary merge of reviewed a53 and prior aebf. Candidate includes a53 via9b95. Merge-tree is exactly candidate without source conflict; no rewrite/rebase or repeated validation justified. Final exact-head CI/remote-state gate remains."
+}

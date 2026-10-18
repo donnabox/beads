@@ -1,0 +1,78 @@
+{
+  "at": "2026-10-15T21:20:46.260726+00:00",
+  "records": {
+    "run": {
+      "argv": [
+        "gh",
+        "api",
+        "repos/gastownhall/bdp/actions/runs/38807257217"
+      ],
+      "exit": 0,
+      "sha256": "7c6275ad6b4be3d1cd17fc736458329aa75ae67a3f4dca909e27e09631592b54"
+    },
+    "job": {
+      "argv": [
+        "gh",
+        "api",
+        "repos/gastownhall/bdp/actions/jobs/116671188007"
+      ],
+      "exit": 0,
+      "sha256": "04025073390014c0f45b0e3ce10906b52c7cb47af966fa265b620e6da09d3c7b"
+    },
+    "checks": {
+      "argv": [
+        "gh",
+        "api",
+        "repos/gastownhall/bdp/commits/9e5f040edab88be364f683098ead72f595f0ab55/check-runs"
+      ],
+      "exit": 0,
+      "sha256": "278d46262fbe416b07bd1f9542767e7b42d8426ffd579db4b202337f2c944d14"
+    },
+    "pr": {
+      "argv": [
+        "gh",
+        "api",
+        "repos/gastownhall/bdp/pulls/135"
+      ],
+      "exit": 0,
+      "sha256": "8cc7b6acf0e9404b693d6ade68675545f47517e3a758480761c61969be0c9bf2"
+    },
+    "candidate": {
+      "argv": [
+        "gh",
+        "api",
+        "repos/gastownhall/bdp/git/commits/9e5f040edab88be364f683098ead72f595f0ab55"
+      ],
+      "exit": 0,
+      "sha256": "42fd3221ea67ea1c374f0eee5bd7fbd566fbb92ef912574abfa5ce85e04b804d"
+    },
+    "full": {
+      "argv": [
+        "gh",
+        "api",
+        "repos/gastownhall/bdp/actions/jobs/116671188007/logs"
+      ],
+      "exit": 0,
+      "bytes": 3419719,
+      "sha256": "2ec602219519bd816b1b98720c9ae059c61c9cb971e8e98390030df25348fa22"
+    },
+    "synthetic": {
+      "argv": [
+        "gh",
+        "api",
+        "repos/gastownhall/bdp/git/commits/2d6ba4dd5e65e7f049acbbe22aef30b430f122d4"
+      ],
+      "exit": 0,
+      "sha256": "73bba18b8563076457a9fc8e05ced3ca4e5a1ef0567e62b338bc7f18a1564fb7"
+    },
+    "base": {
+      "argv": [
+        "gh",
+        "api",
+        "repos/gastownhall/bdp/git/commits/9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1"
+      ],
+      "exit": 0,
+      "sha256": "089edfd538fa631e82f424b914859d42c101bd15e368c43736cf1e72eff0f4a2"
+    }
+  }
+}

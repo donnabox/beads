@@ -1,0 +1,55 @@
+{
+  "status": "frozen uncommitted draft; no execution or commit authorized",
+  "timestamp": "2026-10-14T21:40:13.304735+00:00",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+  "branch": "codex/vickie-command-minimum",
+  "parent": "122800511ee6306e4105e1f73bf3658f35c90a14",
+  "parentTree": "088290751951c353797b984f690b7d9fd96deb80",
+  "files": [
+    {
+      "path": "apps/bdptest/src/installed-reference.test.ts",
+      "bytes": 26319,
+      "sha256": "447a8b5fb3ee03ec4f2a894b02a1bb0fdb74ccdea0ad35576da78942373e0cae",
+      "parentSha256": "bc46335efb066a032f0deeaae944b4f241ab9cb625bd38b5916b972ed820d44d"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "bytes": 54406,
+      "sha256": "5349dab51055d29d30bb80f286cb30e69947882bd07ed1eaa831b26fd0567174",
+      "parentSha256": "69fc8bd2efdbf7a30d9dbdb88a7772ced92ae8bd724a4ba159a88980e2c2df47"
+    },
+    {
+      "path": "docs/design/transaction-implementation-progress.md",
+      "bytes": 123306,
+      "sha256": "afa385d9d3694186044b1048554798a3d595451f28c3a313fe796fa3fb735f58",
+      "parentSha256": "260de9772305007267139a4908cdbef3a7bcdcc68be045522a4f9ef6294d105f"
+    },
+    {
+      "path": "docs/specs/bdp.md",
+      "bytes": 392735,
+      "sha256": "c2bee88f7a29349f7e420f711d10f3acff1fb0559d012b0d111fd7ac21bd175d",
+      "parentSha256": "8a02d57e929b4cdef2495690864a21c5f107f8b1509308ee89e9d40714caa058"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "bytes": 139178,
+      "sha256": "b4ed09796b4dc28a51d9cc73c04a677059434a606f09dddffa46eefaa432ad8e",
+      "parentSha256": "289f188eb6dd94c32a75858d8d18084f760a2c0f592684a939fa44c52b82b46c"
+    },
+    {
+      "path": "packages/server/src/transaction-http.ts",
+      "bytes": 26832,
+      "sha256": "1339f32e0818aee5a44fc01a2034366a73e72c40027d6cde7041f26525aba366",
+      "parentSha256": "f262e3cc623e3557758cfed39e929404e3d96d77f4cc80f394b5c3fcbbcf440b"
+    },
+    {
+      "path": "packages/server/src/transaction-service.test.ts",
+      "bytes": 85418,
+      "sha256": "5e8dc095dcbe9c8fdfb28a5dea4db024ddc65e7e4f51175edeae5a90ea7125be",
+      "parentSha256": "b79b71b13e9e293cfccfa9147e092d4d3825ab7a241244decf00e15615c6d0a6"
+    }
+  ],
+  "execution": false,
+  "diffSha256": "8f0123c9484a74a5c4995dea84833561056f603c8da64d5f9139107b85d44df8",
+  "diffStat": " apps/bdptest/src/installed-reference.test.ts       | 124 +++++-\n ...nsactional-collection-minimum-installed.test.ts | 252 +++++++++++\n docs/design/transaction-implementation-progress.md |  14 +-\n docs/specs/bdp.md                                  |  16 +-\n packages/server/src/transaction-http.test.ts       | 478 ++++++++++++++++++++-\n packages/server/src/transaction-http.ts            |   9 -\n packages/server/src/transaction-service.test.ts    |   1 -\n 7 files changed, 858 insertions(+), 36 deletions(-)\n"
+}

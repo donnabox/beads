@@ -1,0 +1,125 @@
+{
+  "pr": 132,
+  "run": 38778497973,
+  "job": 116572249950,
+  "base": "18104a03b850553641f24fe83e7318493fa102ca",
+  "head": "82f60a25da8799334381f6ebd810f32a3574cd2d",
+  "tree": "3cd1da66ba3a6cbd0bbdaa2442d10002939d826b",
+  "synthetic": "6bb108b532ebda037ba63725f35b3a925048f2c6",
+  "rootAccepted": true,
+  "ordinaryChain": [
+    "18104a03b850553641f24fe83e7318493fa102ca",
+    "82f60a25da8799334381f6ebd810f32a3574cd2d"
+  ],
+  "files": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "a11a79f6d0f9ffa5933a680a3e4fed87987789c3deca50a38cda8563132d242e",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "346e1edaa22af789f89017fdc2fef6bb01b7564ed72a65344e9fe5635887c74f",
+    "packages/conformance/src/transactional-cumulative.test.ts": "313e6a947b33a3893565ea5db2d9d4a962b46c2e926900598e9285e657a31bf2",
+    "apps/bdptest/src/transactional-matrix.test.ts": "dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de"
+  },
+  "evidence": {
+    "finalSourceBinding": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/final-source.json",
+      "sha256": "522627a955933cad325e08b7557ad45b7eacc399d926b1e2af9a07190867957f"
+    },
+    "native": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/native-code-review.md",
+      "sha256": "6a36c3cb150517fdc0fe2c3f215f06052ddbdcc94a85036aa5473a1b167bdb25"
+    },
+    "rootCouncil": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/root-final-council.json",
+      "sha256": "01d4f4281ba7dd60d4b0ab608f042ec998b4d1be1ae15090a3d36453a5346043"
+    },
+    "installedAcceptance": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/root-installed-acceptance.json",
+      "sha256": "9a7a53dd92fa153dfacf5c5e0629215cd96a2810494851d4d8b052552ad245b6"
+    },
+    "installedPositive": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/positive-fifteen.review-candidate.json",
+      "sha256": "ee76d6b00e17f35f47431aea7a9ceba307cb0fb0d3529c5c6a24550a5a8011eb"
+    },
+    "installedSequenceControl": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/selected-sequence-delete-control.review-candidate.json",
+      "sha256": "b3ccaf7b28428d6c2269cd5a37d8f2941eb882824539613a79d0a7888d66089e"
+    },
+    "installedCrossBatch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/cross-batch-control.review-candidate.json",
+      "sha256": "cce4abba58f8ff5e59c8449cc66f5333f23414dd6d18ae731d298a498bcd11d9"
+    },
+    "installedCrossSequence": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/cross-sequence-control.review-candidate.json",
+      "sha256": "27d8b0d55121d562a7d6beb0b07b6c16b9738d353deef321312c00b4ccd71b66"
+    },
+    "sourceAcceptance": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/root-source-acceptance.json",
+      "sha256": "15e91b6ab40beda200189a569d9475eaedc6ffc09cb7d0154c4ca9bececbdf39"
+    },
+    "ciOutcome": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/landing-preparation/ci-outcome.json",
+      "sha256": "6195d09f0d19c8953a32855031a7e2d918ee022e4eeac85627bb48c171f244d2"
+    },
+    "rootLandingAcceptance": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/landing-preparation/split-review-successor/root-landing-acceptance.json",
+      "sha256": "202707d5a5dc684d66c38f7db492bd4a918ee42c4decf68d4f1d5b482ac5c568"
+    },
+    "claudeWireExit": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-split-review/wire/exit.json",
+      "sha256": "ee5d5eb1fb3389a01325aac8ecfab306aeeaf7ebf6dd5f51be9eaa4c1db29238"
+    },
+    "claudeWireStdout": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-split-review/wire/stdout.txt",
+      "sha256": "72996311f2cf4112c7fa3105c4e4b034e6010c180307e88a9e127e7d9885b7d4"
+    },
+    "claudeWireCleanup": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-split-review/wire/cleanup.json",
+      "sha256": "faafe4d7a57d946fa3925a10b6192f2c1e3155d57487330a67e3511aa00f20f1"
+    },
+    "claudeManifestExit": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-split-review/manifest/exit.json",
+      "sha256": "78278575d77e52e369368291572702d44121e694733253fb43f25625af0fc680"
+    },
+    "claudeManifestStdout": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-split-review/manifest/stdout.txt",
+      "sha256": "797e7cb90f042e68b7610951db1c1cb12ecfcc29765d0bcae0f6d1df682e6c98"
+    },
+    "claudeManifestCleanup": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-split-review/manifest/cleanup.json",
+      "sha256": "a42bbba5ee1ff4967a6c560f444d411109c9cc67f125e097fbc553cfbbd06065"
+    }
+  },
+  "ciLogSha256": "ad90468d26c6bb079f1a7600996df3ac6296e10720082334023c8721a328869f",
+  "expectedJobSteps": [
+    "Set up job",
+    "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+    "Run pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1",
+    "Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+    "Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16",
+    "Run test \"$(node --version)\" = \"v24.16.0\"",
+    "Run test \"$(pnpm --version)\" = \"11.20.0\"",
+    "Run sudo apt-get update",
+    "Run sudo apt-get install --yes libicu-dev",
+    "Run mkdir -p \"$RUNNER_TEMP/bdp-tools\"",
+    "Run go install github.com/steveyegge/beads/cmd/bd@v1.0.5",
+    "Verify the Go-installed source-build bd identity",
+    "Run pnpm install --frozen-lockfile",
+    "Run pnpm format:check",
+    "Run pnpm lint",
+    "Run pnpm check:boundaries",
+    "Run pnpm typecheck",
+    "Run pnpm build",
+    "Run pnpm test",
+    "Run pnpm e2e:ready:preflight",
+    "Run pnpm smoke",
+    "Read-cohort evidence gate",
+    "Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16",
+    "Post Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+    "Post Run pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1",
+    "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+    "Complete job"
+  ],
+  "workflowSha256": "fd0a08da61f74abe19c8db16d879bfff85d8090643bf4da326d3e597ae129be3",
+  "draftSourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-binding.json",
+    "sha256": "a6eb425d2616279fed28132c2b59258b7503b186224ba538179704b6364c9e2a"
+  }
+}

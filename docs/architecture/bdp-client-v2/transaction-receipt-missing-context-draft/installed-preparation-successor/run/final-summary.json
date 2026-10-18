@@ -1,0 +1,97 @@
+{
+  "head": "3968081f8231566908e69045424b067c3c36dc40",
+  "tree": "a597518b819941e3f579dd7838e247b010a072a1",
+  "sourceBindingSha256": "e96f012c8502285454eb3867f8b7b35c82c483ae3ceb3f7fc21eaa31127d0cf3",
+  "stages": {
+    "node-version": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.5400467498693615,
+      "exitSha256": "11f7ffca1f1b88698b81ce6c9256ab4a15391bbc8ad1421f63addf4e17a12189"
+    },
+    "package-directory": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.7343060839921236,
+      "exitSha256": "c654e57928208798d8116cbf8549d943d58ed564a77c080f3e2cca3a7b468768"
+    },
+    "pack-protocol": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.826886166119948,
+      "exitSha256": "2c32bad5f7f4425e39efb7e9eba8f9a1e6aa15d91ffe2adfdd3b91d3affde584"
+    },
+    "pack-server": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.8142712921835482,
+      "exitSha256": "8cd30ca97ba9657ada1147689ed1ccd1368de11cd7c2421a8de22519fb13ee34"
+    },
+    "verify-tar": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.7089170420076698,
+      "exitSha256": "22893a674cbcc2526e248a2e58bd486d1fa9a9b77d45a8aa297f53ccf3783858"
+    },
+    "prepare-consumer": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.6212032919283956,
+      "exitSha256": "b6d29bb45b23f5af608570de98d988eaa5f0f218d6304e6090a33d030eec9ab9"
+    },
+    "consumer-install": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.9359568329527974,
+      "exitSha256": "5b43950e2859bb9e17f7267a2232b7050370f9ef0b8b3eef628275aa428b5712"
+    },
+    "verify-installed": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.8193867499940097,
+      "exitSha256": "0eca14ef6a908b6dad32781541b67a2edd783e0541f1c92d2d5faa5ae5a2ce0d"
+    },
+    "installed-positive": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.708920291159302,
+      "exitSha256": "0c05eadc9adf3a747f4c0bc8efd21cac8b88bf7893adb41dc558930dbfce6254"
+    },
+    "installed-review": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.7252551671117544,
+      "exitSha256": "3692d7142168a93ab3704efd75c15b72ecf1959991139a0b2c7138c69a5d9c87"
+    }
+  },
+  "actualCases": 1,
+  "actualHttp": 14,
+  "actualProductChildren": 1,
+  "childPid": 19239,
+  "statuses": [
+    200,
+    200,
+    200,
+    404,
+    404,
+    404,
+    404,
+    404,
+    404,
+    200,
+    404,
+    404,
+    401,
+    401
+  ],
+  "provenanceSha256": "ef2aa520508b73400e03886b58c5a0fb2188d5b0062c38eb971f277a26aebeb5",
+  "observationSha256": "fe69586fe1aea356593b44dd1a2935f86eebd8be9d306e88185e011b949e547f",
+  "reviewSha256": "dedb8a35e9c9180627be844f96f834b098f59fd11d4b1b4e6b9ecd576d7cc696",
+  "cleanupSha256": "ad8eb3cf4c3e37c0966baacda5f469820b2928ffdccee51473a1307e317b343d",
+  "consumerLockSha256": "3ce3073d51c2a053ae467867f0ec1840d89c2d6f5c56fec5d581c69a03b8b5e4",
+  "sourceUnchanged": true,
+  "workingTreeClean": true,
+  "claimEligible": false,
+  "historicalBuildAttribution": "Original dirty-source edc5 build preserved; only test assertion changed. All312package outputs/440package emitted files verified unchanged, no rebuild.",
+  "retention": "Actual response fingerprints and selected safe headers retained. Full schemas/body/receipt root-page equality asserted in memory; fingerprints do not independently reproduce those assertions. Source attribution externally verified, not child-attested."
+}

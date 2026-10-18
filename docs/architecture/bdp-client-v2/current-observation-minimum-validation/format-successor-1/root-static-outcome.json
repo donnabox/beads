@@ -1,0 +1,62 @@
+{
+  "at": "2026-10-17T21:07:59.413845+00:00",
+  "records": {
+    "typecheck": {
+      "exit": 0,
+      "accepted": true,
+      "sourceIdentity": "6edbb35f0de805cbd2c03f413eb51e7a27df6cec094569c942a5a8aea179bc62",
+      "sourceUnchanged": true,
+      "elapsedSeconds": 4.710189999546856,
+      "forcedCleanup": false,
+      "errors": [],
+      "sampledPids": [
+        57946,
+        57970
+      ],
+      "remainingProcesses": [],
+      "runtimeDirectoriesStillPresent": [],
+      "temporaryDirectory": "/private/tmp/vickie-current-observation-validation-typecheck-338nd4j5",
+      "logSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a"
+    },
+    "format-check": {
+      "exit": 0,
+      "accepted": true,
+      "sourceIdentity": "6edbb35f0de805cbd2c03f413eb51e7a27df6cec094569c942a5a8aea179bc62",
+      "sourceUnchanged": true,
+      "elapsedSeconds": 3.9452561661601067,
+      "forcedCleanup": false,
+      "errors": [],
+      "sampledPids": [
+        59403
+      ],
+      "remainingProcesses": [],
+      "runtimeDirectoriesStillPresent": [],
+      "temporaryDirectory": "/private/tmp/vickie-current-observation-validation-format-check-fmvyqcn1",
+      "logSha256": "446839963e7a8f172961c14f30168a9efb4849be064a16ec8a2961f85071e668"
+    },
+    "lint": {
+      "exit": 1,
+      "accepted": false,
+      "sourceIdentity": "6edbb35f0de805cbd2c03f413eb51e7a27df6cec094569c942a5a8aea179bc62",
+      "sourceUnchanged": true,
+      "elapsedSeconds": 3.8490351252257824,
+      "forcedCleanup": false,
+      "errors": [],
+      "sampledPids": [
+        60798,
+        60800
+      ],
+      "remainingProcesses": [],
+      "runtimeDirectoriesStillPresent": [],
+      "temporaryDirectory": "/private/tmp/vickie-current-observation-validation-lint-4rd4sa9t",
+      "logSha256": "6a3d744f38b7bf428e21c3a77be32aa44da3097ee73fcc5a412ba8f267757452"
+    }
+  },
+  "gateClosed": true,
+  "errorCount": 1,
+  "warnings": 165,
+  "infos": 9,
+  "hiddenDiagnostics": 155,
+  "blockingErrorVisible": false,
+  "laterStagesAttempted": false
+}

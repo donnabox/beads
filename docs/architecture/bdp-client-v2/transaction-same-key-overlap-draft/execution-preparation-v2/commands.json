@@ -1,0 +1,618 @@
+{
+  "status": "CLOSED_FROZEN_REPORT_OVERFLOW_SUCCESSOR",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+  "ownedPaths": [
+    "apps/bdptest/src/transactional-same-key-overlap-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "executionOrder": [
+    "setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "build-inventory",
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed",
+    "installed-positive",
+    "review-positive",
+    "installed-second-key-distinct",
+    "review-second-key-distinct"
+  ],
+  "staticCommandCount": 7,
+  "commands": {
+    "setup": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile",
+        "--ignore-scripts"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [],
+      "workload": {
+        "productChildren": 0,
+        "http": 0,
+        "sourceCases": 0
+      }
+    },
+    "typecheck": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "setup",
+          "exit": 0
+        }
+      ],
+      "workload": {
+        "productChildren": 0,
+        "http": 0,
+        "sourceCases": 0
+      }
+    },
+    "build": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "build"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "typecheck",
+          "exit": 0
+        }
+      ],
+      "workload": {
+        "productChildren": 0,
+        "http": 0,
+        "sourceCases": 0
+      }
+    },
+    "format-check": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "format:check"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "build",
+          "exit": 0
+        }
+      ],
+      "workload": {
+        "productChildren": 0,
+        "http": 0,
+        "sourceCases": 0
+      }
+    },
+    "lint": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "lint"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "format-check",
+          "exit": 0
+        }
+      ],
+      "workload": {
+        "productChildren": 0,
+        "http": 0,
+        "sourceCases": 0
+      }
+    },
+    "boundaries": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "check:boundaries"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "lint",
+          "exit": 0
+        }
+      ],
+      "workload": {
+        "productChildren": 0,
+        "http": 0,
+        "sourceCases": 0
+      }
+    },
+    "read-seal": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "evidence:verify"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "boundaries",
+          "exit": 0
+        }
+      ],
+      "workload": {
+        "productChildren": 0,
+        "http": 0,
+        "sourceCases": 0
+      }
+    },
+    "build-inventory": {
+      "phase": "inventory",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/inventory.py"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "read-seal",
+          "exit": 0
+        }
+      ]
+    },
+    "node-version": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "build-inventory",
+          "exit": 0
+        }
+      ]
+    },
+    "package-directory": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/packages.py",
+        "directory"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "node-version",
+          "exit": 0
+        }
+      ]
+    },
+    "pack-protocol": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/run/packages"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "package-directory",
+          "exit": 0
+        }
+      ]
+    },
+    "pack-server": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/run/packages"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "pack-protocol",
+          "exit": 0
+        }
+      ]
+    },
+    "verify-tar": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/packages.py",
+        "tar"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "pack-server",
+          "exit": 0
+        }
+      ]
+    },
+    "prepare-consumer": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/packages.py",
+        "consumer"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "verify-tar",
+          "exit": 0
+        }
+      ]
+    },
+    "consumer-install": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/run/consumer",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "prepare-consumer",
+          "exit": 0
+        }
+      ]
+    },
+    "verify-installed": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/packages.py",
+        "installed"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "consumer-install",
+          "exit": 0
+        }
+      ]
+    },
+    "installed-positive": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [
+        "bdp-same-key-overlap-installed-"
+      ],
+      "requires": [
+        {
+          "id": "verify-installed",
+          "exit": 0
+        }
+      ],
+      "selectedFullNames": [
+        "preserves one allocated effect and receipt across same-key singleton and batch requests dispatched without awaiting"
+      ],
+      "mode": "positive",
+      "workload": {
+        "plannedOnly": true,
+        "expectedExit": 0,
+        "expectedHttp": 6,
+        "maximumHttp": 6,
+        "maximumProductChildren": 1,
+        "expectedOwners": 1,
+        "expectedListeners": 1,
+        "expectedDirectories": 1,
+        "maximumConcurrentRequests": 2,
+        "expectedTcpConnections": 6,
+        "maximumTcpConnections": 6,
+        "limits": {
+          "workMs": 45000,
+          "readyMs": 10000,
+          "requestMs": 5000,
+          "cleanupMs": 10000,
+          "requestDrainMs": 5000,
+          "testMs": 60000,
+          "supervisorMs": 120000,
+          "requestHeaderBytes": 16384,
+          "responseHeaderBytes": 16384,
+          "retainedResponseBodyBytes": 32768,
+          "targetUtf8Bytes": 8192,
+          "targetStringLength": 8192,
+          "pairMilestones": 32,
+          "reportBytes": 65536,
+          "launcherStdoutStderrCombinedBytes": 65536,
+          "retainedResponseBodiesMaximumBytes": 393216,
+          "clientRequestBodyBytes": 65536
+        }
+      },
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-same-key-overlap-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/run/installed-positive.results.json",
+        "-t",
+        "^preserves one allocated effect and receipt across same-key singleton and batch requests dispatched without awaiting$"
+      ],
+      "argvStatus": "Exact frozen selection; Vitest file identity requires root post-setup installedTestTool binding",
+      "outcomeAcceptance": "Successful six-response positive only; inconclusive/early stops never accepted"
+    },
+    "review-positive": {
+      "phase": "review",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/review-cohort.py",
+        "positive"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "installed-positive",
+          "exit": 0
+        }
+      ]
+    },
+    "installed-second-key-distinct": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+      "supervisorSeconds": 120,
+      "expectedExit": 1,
+      "ownedTempPrefixes": [
+        "bdp-same-key-overlap-installed-"
+      ],
+      "requires": [
+        {
+          "id": "review-positive",
+          "exit": 0
+        }
+      ],
+      "selectedFullNames": [
+        "preserves one allocated effect and receipt across same-key singleton and batch requests dispatched without awaiting"
+      ],
+      "mode": "second-key-distinct",
+      "workload": {
+        "plannedOnly": true,
+        "expectedExit": 1,
+        "expectedHttp": 2,
+        "maximumHttp": 6,
+        "maximumProductChildren": 1,
+        "expectedOwners": 1,
+        "expectedListeners": 1,
+        "expectedDirectories": 1,
+        "maximumConcurrentRequests": 2,
+        "expectedTcpConnections": 2,
+        "maximumTcpConnections": 6,
+        "limits": {
+          "workMs": 45000,
+          "readyMs": 10000,
+          "requestMs": 5000,
+          "cleanupMs": 10000,
+          "requestDrainMs": 5000,
+          "testMs": 60000,
+          "supervisorMs": 120000,
+          "requestHeaderBytes": 16384,
+          "responseHeaderBytes": 16384,
+          "retainedResponseBodyBytes": 32768,
+          "targetUtf8Bytes": 8192,
+          "targetStringLength": 8192,
+          "pairMilestones": 32,
+          "reportBytes": 65536,
+          "launcherStdoutStderrCombinedBytes": 65536,
+          "retainedResponseBodiesMaximumBytes": 393216,
+          "clientRequestBodyBytes": 65536
+        },
+        "expectedFailure": "same-key-overlap:shared-receipt-id"
+      },
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-same-key-overlap-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/run/installed-second-key-distinct.results.json",
+        "-t",
+        "^preserves one allocated effect and receipt across same-key singleton and batch requests dispatched without awaiting$"
+      ],
+      "argvStatus": "Exact frozen selection; Vitest file identity requires root post-setup installedTestTool binding",
+      "outcomeAcceptance": "Exactly two schema-valid completed successes then sole named shared-receipt-id failure; generic exit1 rejected by separate adapter"
+    },
+    "review-second-key-distinct": {
+      "phase": "review",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/review-cohort.py",
+        "second-key-distinct"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "installed-second-key-distinct",
+          "exit": 1
+        }
+      ]
+    }
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/source-binding.json",
+    "sha256": "1b768f1e13191e972b8c818991ac1af2bf28c9ead2f579322de2ce109122cb27"
+  },
+  "finalParent": "18f5428686dd84fb139c9dbbcbe39d5958012323",
+  "finalCommit": null,
+  "limits": {
+    "expectedHttp": 8,
+    "maximumHttp": 12,
+    "scheduledLaunchAttempts": 2,
+    "maximumChildren": 2,
+    "expectedOwners": 2,
+    "expectedListeners": 2,
+    "expectedDirectories": 2,
+    "maximumConcurrentRequests": 2,
+    "reopens": 0,
+    "bootstrapHttp": 0,
+    "sourceRuntimeTests": 0,
+    "readonlyDatabaseHandles": 0
+  },
+  "runtimeLimits": {
+    "workMs": 45000,
+    "readyMs": 10000,
+    "requestMs": 5000,
+    "cleanupMs": 10000,
+    "requestDrainMs": 5000,
+    "testMs": 60000,
+    "supervisorMs": 120000,
+    "requestHeaderBytes": 16384,
+    "responseHeaderBytes": 16384,
+    "retainedResponseBodyBytes": 32768,
+    "targetUtf8Bytes": 8192,
+    "targetStringLength": 8192,
+    "pairMilestones": 32,
+    "reportBytes": 65536,
+    "launcherStdoutStderrCombinedBytes": 65536,
+    "retainedResponseBodiesMaximumBytes": 393216,
+    "clientRequestBodyBytes": 65536
+  },
+  "ledger": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-plan/proposed-successor/ledger.json",
+    "sha256": "fb6ba0315c982ee174d7e25ab2f2a4c6cad4bfae2a202410daa319d54577ae8f"
+  },
+  "plannedOnly": true,
+  "frozenDraftReady": true,
+  "callbackSourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/selection.json",
+    "sha256": "b52fc165435a86152ec1aa5a48793037c9c4f448c8d13c3c43c687f3f925845a"
+  },
+  "reportContract": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/report-contract.json",
+    "sha256": "80ea222189de3899116e13e0ec4a7277f29e7f1c828b9a0974679ca71fcf14eb"
+  },
+  "plan": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-plan/proposed-successor/plan.md",
+    "sha256": "47c2903955fe1dcc6d2b364d8a3ac89760d69439d8c89d91668ada8d40ee69fa"
+  },
+  "authoringRelease": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-plan/proposed-successor/root-authoring-release.json",
+    "sha256": "eb83e054cb295b6f8d3b5aadbada9874d8766f7856b90c01dd584fa3bf55fc7c",
+    "executionAuthorization": false
+  },
+  "plannedRegistration": {
+    "title": "preserves one allocated effect and receipt across same-key singleton and batch requests dispatched without awaiting",
+    "count": 1,
+    "selectedExecutions": 2,
+    "regex": "^preserves one allocated effect and receipt across same-key singleton and batch requests dispatched without awaiting$"
+  },
+  "missingBindings": [
+    "root execution acceptance and prefix release",
+    "fresh successor build/inventory",
+    "ordinary clean repair candidate and final source record",
+    "actual review/council/integration acceptance",
+    "fresh archive/consumer graph and lock",
+    "actual entry/payload provenance"
+  ],
+  "toolFiles": {
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node": "1ee75375e33b94fc34b3b19aede049e11dae90efb63b374dc96d6bdace70c4b8",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs": "67b035e322203961795e8e34ca63a08c37a4386eda94107fb3d28f3246d882ad"
+  },
+  "footprintBase": "98c600767e8e91a79e109cb741beb91e23b9bebe"
+}

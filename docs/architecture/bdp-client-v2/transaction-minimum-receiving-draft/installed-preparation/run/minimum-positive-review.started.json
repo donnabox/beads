@@ -1,0 +1,40 @@
+{
+  "name": "minimum-positive-review",
+  "argv": [
+    "python3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/installed-preparation/review-installed.py",
+    "minimum-positive"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+  "started": "2026-10-15T23:18:22.103160+00:00",
+  "head": "c18c71202c90fa2558f34107ad342befabf750fe",
+  "workspaceDirty": false,
+  "sourceSha256": {
+    "docs/specs/bdp.md": "63e93be562334c84c1e967da2fce212e8ef515aa3c9448924c5f9a272ea7b80b",
+    "packages/server/src/transaction-consistency.ts": "00a420c3e9f5dcb1b8814a6476d5ce52edfb7adbbd1c64ab082833f17322a336",
+    "packages/server/src/transaction-http.ts": "ebb3550110bd6fda638572966e5faa05c15f062f37a10947f6e442fc7d4570f4",
+    "packages/server/src/transaction-consistency.test.ts": "4d45ba52c028c3081188a6f76498889d7170cceaaad114004458b86331191bc9",
+    "packages/server/src/transaction-http.test.ts": "ca2e4e7663a93060ba2a0788c5ef349a3de4991e3108f81507f37a723d964781",
+    "packages/server/src/transaction-snapshot-http.test.ts": "61023b5f24396fe484c7820c706b560cb87abd7a3e16670f5a0944fbefd44d8a",
+    "packages/server/src/transaction-schema-http.test.ts": "eee33a0948c9a0981a2a963cec5a8f16102ae5bab32128f83c39956abe0a952b",
+    "packages/server/src/transaction-changefeed.test.ts": "97c3f8604ccbb7f3141a22e5c3d338f51929b308b80614309a7e837801b12043",
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts": "58f4ad828861ea332de7bf4413f48eb4646f32237b76d3a4db310e081b99ffe9",
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts": "cefde296b07d6be86a83d13892a603588c9054bdd54196048a855e74f9e9b7f9",
+    "docs/design/transaction-implementation-progress.md": "9aa001e2da6e37f0e12aa15fd124a489bc951519064370afbb76c9aee9aad185"
+  },
+  "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "rootAcceptanceSha256": "f976fc9f771f6795702624b67673a854abc2927ef56bc6f5a8c38399ecc9f359",
+  "preparationSha256": "1764ff4ec582f9ffc8d71b084745383feba2e965006d64ab20fb3c988a180c4a",
+  "bdpOverrides": {},
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "python3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/installed-preparation/review-installed.py",
+    "minimum-positive"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {},
+  "derivativeBinding": null
+}

@@ -1,0 +1,18 @@
+--- before.progress.md
++++ after.progress.md
+@@ -2010,8 +2010,13 @@
+ before ready with zero HTTP requests: its compiled Type fixture used identities
+ outside the configured Scope. That failure and its unknown-stop/retained-directory
+ report remain preserved. The test-only Scope-local Type correction leaves all
+-production bytes and the verified archives unchanged; successor installed and
+-counterfactual results remain pending. Unknown positions combined with foreign
++production bytes and the verified archives unchanged. Targeted typecheck and
++format checks passed. The corrected installed positive passed all 32 exchanges;
++two separate emitted controls each produced only their intended named failure
++after two exchanges. All three children exited cleanly and stores were absent.
++The external fingerprint adapter's initial JSON key-order mismatch is preserved;
++its source-grounded correction re-adjudicated the same positive without repeating
++HTTP. Exact-head CI remains pending. Unknown positions combined with foreign
+ epoch/view remain a private unsupported development gap, outside the current
+ operator ruling. Source and installed evidence retain their exact commit/build
+ provenance; no qualification is claimed.

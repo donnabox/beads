@@ -1,0 +1,97 @@
+{
+  "state": "Exact source binding and actual report schema reconciliation complete; execution closed",
+  "baseHead": "0f215c05678f507dd8a39ee08e288f0901710135",
+  "tree": "03371e5c2e1ea756e1501e0e26cccb7aa2f5d04e",
+  "sourceIdentity": "70caea36ed38911ce11f7376de8c45d005e3b638074163eca54bc14b1819b78b",
+  "sourceBindingSha256": "ad2b24e1daaa2eef818eecddee1f82a4bc6b18166a2a1a88844d11d890181c99",
+  "authorBindingSha256": "d3c609860e833ed5e7e19263001a6a19a3c1e05890dbea25384218c2c7ffaf71",
+  "authorIndexSha256": "2853f07b983fd9dc44cf1a3b8af367fb1b86864ab91451f158db773eda06f575",
+  "fullPatchSha256": "32395d9dd40e2e7d3e762a4d4b18216f92df4c0642f44b2c2e8fa750b51e1421",
+  "trackedFiles": 679,
+  "ownedFiles": 7,
+  "untouchedTrackedFiles": 672,
+  "dependencies": 17,
+  "baseExecutables": 3,
+  "selectionEquivalentToAcceptedPlanExceptAuthorshipMetadata": true,
+  "sourceNames": [
+    "checks each fresh Snapshot minimum before any handle, record, page or expiry work",
+    "does not expire retained Snapshot details on an ineligible fresh attempt",
+    "fresh Snapshot minimum service freezes create controls and retries after a real independent commit",
+    "fresh Snapshot minimum service keeps create timeout and pre-abort distinct from owner work",
+    "fresh Snapshot minimum service freezes preflight controls and retries after a real independent commit",
+    "fresh Snapshot minimum service keeps preflight timeout and pre-abort distinct from owner work",
+    "fresh Snapshot minimum service uses one service call for each fresh HTTP branch, with terminal preflight",
+    "drains admitted finite Snapshot observation and refuses new work while closing",
+    "serves complete fresh Snapshot minima with exact timeout, foreign and conditional context",
+    "gates fresh Snapshot opaque minima before allocation and expiry",
+    "captures fresh Snapshot create opaque controls across independent commits",
+    "cancels and drains fresh Snapshot create opaque waits",
+    "captures fresh Snapshot preflight opaque controls across independent commits",
+    "cancels and drains fresh Snapshot preflight opaque waits",
+    "serves fresh Snapshot opaque minima with terminal preflight and retained fences",
+    "preserves fresh Snapshot capture and refusal order: malformed-aborted",
+    "preserves fresh Snapshot capture and refusal order: malformed-invalid-kind",
+    "preserves fresh Snapshot capture and refusal order: retained-unknown",
+    "preserves fresh Snapshot capture and refusal order: retained-known",
+    "preserves fresh Snapshot capture and refusal order: closed-malformed",
+    "preserves fresh Snapshot capture and refusal order: closed-unknown-fresh",
+    "preserves fresh Snapshot capture and refusal order: unknown-preaborted"
+  ],
+  "sourceCallbacks": 22,
+  "installedCallbacks": 2,
+  "newSourceObservationRecords": 13,
+  "A": {
+    "calls": 14,
+    "offlineInspections": 2,
+    "ownerOpens": 3,
+    "baseline": {
+      "snapshots": 1,
+      "records": 1,
+      "pages": 2
+    },
+    "comparisonLimit": "exact unchanged disposition expired false during offline check; no post-comparison reopen maintenance claim"
+  },
+  "D": {
+    "requests": 27,
+    "routeForm": "/acme/snapshot + actual query handle",
+    "waits": 8,
+    "ownerAttemptCountClaimed": false,
+    "allocationInference": false
+  },
+  "E": {
+    "reportedOkBoolean": true,
+    "ownershipSuccess": "returned",
+    "retainedResponseFields": [
+      "method",
+      "url",
+      "status",
+      "responseBytes",
+      "wireSha256",
+      "elapsedSeconds"
+    ],
+    "headersOrBodyDigestReported": false,
+    "bodyReceiptMetadataAndExactRequestEvidence": "pinned callback assertions; not invented report fields",
+    "boundsSeconds": {
+      "request": 5,
+      "owned": 45,
+      "callback": 60,
+      "outer": 120
+    }
+  },
+  "historical": {
+    "exchanges": 31,
+    "children": 2,
+    "stores": 1,
+    "newExchange19Status": 503,
+    "reportSchemaUnchanged": true
+  },
+  "newInstalled": {
+    "exchanges": 3,
+    "children": 1,
+    "stores": 1
+  },
+  "freshBootstrap": true,
+  "allRuntimeEvidencePending": true,
+  "noExecutionByPreparation": true,
+  "dataOnlyCheckNote": "First formatting comparison rejected optional trailing commas; actual delta inspected and only formatting trailing-comma normalization admitted. No source/runtime attempt involved."
+}

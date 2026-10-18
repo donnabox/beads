@@ -1,0 +1,545 @@
+{
+  "reviewKind": "closed narrow actual Claude supplement; not launched",
+  "planningHead": "18104a03b850553641f24fe83e7318493fa102ca",
+  "planningTree": "10810a8016a451e241ea974487681dcddd63c2e4",
+  "reviewHead": "f5511718371a6935614eae6756e796cef71570c2",
+  "reviewTree": "3cd1da66ba3a6cbd0bbdaa2442d10002939d826b",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+  "sourceHashes": {
+    "apps/bdptest/src/transactional-principal-key-installed.test.ts": "0f941001445e001f96f8c432a7099a5eb29dc4b68bc4458d6d1dfae472a3ce20",
+    "docs/design/transaction-implementation-progress.md": "fd69135a88ee2802eb9ce55d2c2f3771d4a16228c0e306202c9a8778f0bdcb3f",
+    "docs/specs/bdp.md": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+    "scripts/transaction-installed-observation.mjs": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+    "packages/server/src/transaction-installed-configuration.ts": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+    "packages/server/src/transaction-runtime-configuration.ts": "e594e930f845255cafc7e2f5b5b28149b7e95fe8a09052b187a492c96328f7ca",
+    "packages/server/src/transaction-runtime.ts": "77954f0a85029d76443feac54cd53cda4339ffc126660ace5a9f5af92466c573",
+    "packages/server/src/transaction-http.ts": "b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf",
+    "packages/server/src/read-http-routing.ts": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42",
+    "packages/server/src/transaction-store.ts": "fcd6882b29e538db45867c894c06dfbaa6ca588db0c2e403ef1b7abb14f6c706",
+    "packages/server/src/transaction-batch.ts": "70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014",
+    "packages/server/src/transaction-events.ts": "c6052433662fcb2d0a202ad4e408a24d4c43f980313fa89659501b4475790db5",
+    "packages/server/src/resource-evaluator.ts": "89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
+    "packages/server/src/authority-read.ts": "fd6554c4ee0d08b997fb3622c2f21697f02d58b838f4ae0de10aca4707f67734",
+    "packages/server/src/read-request.ts": "57675afc647df3e8ad1f26a40aef72584aa388ade6af4a465e3ffef16670f6a2",
+    "packages/protocol/src/read-update-problems.ts": "1a6315705b72fad1f1a287053c17858130c91317ed08c95f6d68a1ecc620a211",
+    "packages/protocol/src/read-update-values.ts": "d1fdbc660d5e2c009275c152bdcebda46031700920aa03bfea89f39564c89de2",
+    "apps/bdptest/test-support/transactional-execution-binding.ts": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+    "packages/conformance/src/http-executor.ts": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+    "vitest.config.ts": "a84575ea9ef0b6e75b6484024a627fa89422aea2fdbeb26127e09714dba0641f",
+    "schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+    "packages/server/src/transaction-submission.ts": "4336e45d7b4f90eec685b70c7ba059219954bb20271aa2c942ee9e140f0743af",
+    "packages/server/src/transaction-service.ts": "53f655faf494209996aac2e0f93a4c2c785e471f66aac6af9ea41f92c9cfbe00",
+    "packages/server/src/transaction-installed-process.ts": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7",
+    "packages/server/src/transaction-store.test.ts": "7cd155ddd959ec31a207adbe6f8eb0a26f0af968a144abb58915720436bf0774",
+    "packages/server/src/transaction-http.test.ts": "1c9cd7c7c85a5f6a58253f4178e40453a2443a218408eeba9abfddde4bf7948d",
+    "apps/bdptest/src/transactional-depth-key-order-installed.test.ts": "48c6a84c84e470c7ce79f4d978bb09e2099daa5df4b4a6ef8629e1b7bf1b1700",
+    "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts": "eaf1289ed0a8318ce949704ba4cd983755c6f5fd20ffe9d61712869894cb5064",
+    "packages/conformance/test-support/transactional/fixture-v1.json": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+    "package.json": "f081baa3202b4815663d360d3ad1608206efe1b023086a4c8feff4d7fb97d8d0",
+    "pnpm-lock.yaml": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+    "packages/conformance/src/raw-http-scenario-target.ts": "d1afc4d70a066a674db40caa5c26e846d7b6f78c98743b8a504eb4b38d73a581",
+    "packages/server/src/installed-payload.ts": "d1095a8fa641c77ddef32b1d432273572f46b14499c526dbb0a85cfde82113f9",
+    "packages/server/src/index.ts": "34f9d9de8b48852c64919e69ce93f149e9cdae5142c15c75e4c35f08f15efc44",
+    "packages/server/src/transaction-read.ts": "c3b486baf6b9e48d4a716d36b4162c2ba1f0c7672a6f48988192e2591eda7910",
+    "packages/server/test-support/read-conformance-mock.ts": "dbfb86ac2325c684567ffce40f17105c6b12a63edfa54cc08f0601df8dc613f8",
+    "tsconfig.base.json": "6c70be275f9f7d5de533cbd3f2454ae7cb84bc765ab84f4f199889580e18e152",
+    "apps/bdptest/tsconfig.json": "ce515dc1d2617ecdbafb2cf67cb04e5322ef577cb3e6c1d05817510dfbd4b2bb",
+    "biome.json": "62beced4e0227b97fe9ade1a1a573bf53a2f8916af8da7ce70f94315fece39dc",
+    "tsconfig.check.json": "f12922fb94d74d73945063f684b40c585c276fad38d19526ed606ac2d148853f"
+  },
+  "plans": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/source-binding.json": "3c227b20d066ea97684ebdd0f2876734a537d61d53f1c9b3b2c4cdf263f46110",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/integration-source.json": "65081d918c480eb22b1a636bf3ffc8e738087bf96d3fc611962e3ef0712fc671",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/draft.patch": "73432d0cc2cb5e41e8616d19645d1b43c308be712fdd4925d0946ffcd6964256",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/report-contract.json": "600d21b4b1d8cfff91a16ebca1053db9d55c2d7c9ec1e91df031bb9572b3d7c0",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/selection.json": "96ea454acb431384cce17d32b92f0b1dc272d3f5f2627698399febec9d8e076e",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-plan/proposed-successor/plan.md": "783f439e36218efba63820f6b6baf96cb00bcf022fba6665a44a2d64e81148c9",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-plan/proposed-successor/ledger.json": "aa556158f879892795b62ba984ffd1226f4b09344d1a28d2b9bd486cb9532d79",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-plan/proposed-successor/source-dispositions.md": "90a0cc0b6d51e2a1b59a1c12a79fd22b9a7d99624971792fee0b7992e89813ec",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-plan/proposed-successor/native-closure.md": "330b6d97be5561455362e8c0b0e4eb8d0c9a596871534358f3ab41284376c92f",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-plan/proposed-successor/source-proof.json": "2c0a275b81dde791214285d6d5a46629cafa6decb4e8b99dc3a0337b728744c5",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/review-repair/source-binding.json": "fce5c0dfb33221f9cc29fd6420eab607722d88d0d9b6076b64a57f763f5f9406",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/review-repair/correction.patch": "445425a4893a2411578f98d9cefa765a7262761a14e859c61f1d3f2e68598ac9",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/review-repair/report.md": "bc5a0fbae7a2d4aa0430765fa8c3503f1ca31842c7f583fe3f9b573e0fdc423b",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/review-repair/draft.patch": "fcfada50487e478b26ef86b85d2a51522a5ef2c431a28ffdedf8128f2f10a5a0",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/claude-code-review/stdout.txt": "f1b60d8ccaeb0b0089ed44acbb13b2a1f6b06ab11bd085d5e8fa5e8485801858",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/review-repair/root-findings-disposition.json": "2e84a5f0125c886b17d2f4e154907667b4849e4237775a7e9fe9b9c3793ba7b4",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/claude-code-review/native-findings-audit.md": "8dac2db34c7d094b8b9db670bcd4906298e40db06aabe874e88213a8134672c4"
+  },
+  "promptSha256": "6d9e2aae1a884d4d50ab887e7c0b4c63d718387a66f39423251ca744b70e0b09",
+  "promptBytes": 110413,
+  "sourceInventory": [
+    {
+      "path": "docs/specs/bdp.md",
+      "sha256": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+      "ranges": [
+        {
+          "start": 3905,
+          "end": 3946,
+          "excerptSha256": "6acc1f3aaa92ee84d5f8481c98a8c888800a90bf06c7a0aaf67cb88b772dd1b9"
+        },
+        {
+          "start": 5115,
+          "end": 5133,
+          "excerptSha256": "b9c1d3b7280c6c7108be1fa6356dfa3ab3433289303ba2c12b7c80ce0c840297"
+        }
+      ]
+    },
+    {
+      "path": "scripts/transaction-installed-observation.mjs",
+      "sha256": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+      "ranges": [
+        {
+          "start": 1,
+          "end": 97,
+          "excerptSha256": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b"
+        }
+      ]
+    },
+    {
+      "path": "packages/server/src/transaction-installed-configuration.ts",
+      "sha256": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+      "ranges": [
+        {
+          "start": 17,
+          "end": 67,
+          "excerptSha256": "ed013e7b4941e82824370d3566c05f7608bcb84bf4996b10cbcfe92956012d68"
+        }
+      ]
+    },
+    {
+      "path": "packages/server/src/transaction-runtime-configuration.ts",
+      "sha256": "e594e930f845255cafc7e2f5b5b28149b7e95fe8a09052b187a492c96328f7ca",
+      "ranges": [
+        {
+          "start": 95,
+          "end": 96,
+          "excerptSha256": "08b7fcbd1da54791b62a87f32ec88e2f67bae5736da49f914bad6387662d0acf"
+        },
+        {
+          "start": 110,
+          "end": 110,
+          "excerptSha256": "f402ab8f8bd81848be5fab448941d0b507b39c09f524082e6a3cbfcd6cb642fc"
+        },
+        {
+          "start": 227,
+          "end": 248,
+          "excerptSha256": "5a8d55b2c81529727c8715c767829c35f84f5e14ab459a6ae705969582335a62"
+        },
+        {
+          "start": 321,
+          "end": 348,
+          "excerptSha256": "249af9fa36a1d3dc58f9a52ce6657a682f480f61807ce47630a883eee5a5988d"
+        },
+        {
+          "start": 361,
+          "end": 393,
+          "excerptSha256": "a5375a5058f79ffaacd8cd34c68d0aa6e05d748f31c614be54abd0c88e8ed2f9"
+        }
+      ]
+    },
+    {
+      "path": "packages/server/src/transaction-runtime.ts",
+      "sha256": "77954f0a85029d76443feac54cd53cda4339ffc126660ace5a9f5af92466c573",
+      "ranges": [
+        {
+          "start": 86,
+          "end": 96,
+          "excerptSha256": "a39119c14c883512b5145f105655480d2228c77006a0d5df30a0c226d3220aab"
+        },
+        {
+          "start": 141,
+          "end": 153,
+          "excerptSha256": "bee538f89f3528a6b6fab9b31b692d56b9309d39c9968f8800cefb91d2a1e419"
+        }
+      ]
+    },
+    {
+      "path": "packages/server/src/transaction-http.ts",
+      "sha256": "b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf",
+      "ranges": [
+        {
+          "start": 89,
+          "end": 118,
+          "excerptSha256": "2f3be9e18563c8236c61f83bc8bd3e295333c66c54783fb3d5046e2fb9da1c63"
+        },
+        {
+          "start": 176,
+          "end": 190,
+          "excerptSha256": "c9d034cc8231fd72d403e3c1e25c0a1ead71cbc2a2c74540b423b1f1d0f2e9d0"
+        },
+        {
+          "start": 218,
+          "end": 223,
+          "excerptSha256": "2007a961d5e925703e19da39fac98679f30895156a7c41c09d9dc7864a110993"
+        },
+        {
+          "start": 329,
+          "end": 343,
+          "excerptSha256": "44497bf27b537492b075b5c8eff7bdf6419dc5e33cc23b9c9d2fb86bd4664b6a"
+        },
+        {
+          "start": 358,
+          "end": 371,
+          "excerptSha256": "f30fbb29398dd0fba5dce43b78819467ff8dc19bdacea9fa09afcc5447519158"
+        },
+        {
+          "start": 389,
+          "end": 394,
+          "excerptSha256": "df58b2b098823557ced2a7b3ad287a9fe1a9d79f75462a38cd9049c77d54aee7"
+        },
+        {
+          "start": 491,
+          "end": 514,
+          "excerptSha256": "1c69a2731f11aec44432c4330c95791056a1aaa4f07d8f5e432447441b712139"
+        },
+        {
+          "start": 613,
+          "end": 634,
+          "excerptSha256": "c07d3130972aa6aac1d13124325a7ec9347bfbcfe90da92874360b0d2a1c55c6"
+        }
+      ]
+    },
+    {
+      "path": "packages/server/src/read-http-routing.ts",
+      "sha256": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42",
+      "ranges": [
+        {
+          "start": 44,
+          "end": 53,
+          "excerptSha256": "ea4eb0211ce672d929b8e8f74d315716b4cbc0f146a60f7f9b0b433139628aa0"
+        }
+      ]
+    },
+    {
+      "path": "packages/server/src/transaction-store.ts",
+      "sha256": "fcd6882b29e538db45867c894c06dfbaa6ca588db0c2e403ef1b7abb14f6c706",
+      "ranges": [
+        {
+          "start": 207,
+          "end": 218,
+          "excerptSha256": "53ca9703da0f78a1bc4964fd368a2d892c85237ac0f7bddb0d168924cd6a9535"
+        },
+        {
+          "start": 226,
+          "end": 230,
+          "excerptSha256": "5e76779a9cf87b02ed5991672ebeda8bf3e408db738a27caa8042d00b5b6460c"
+        },
+        {
+          "start": 245,
+          "end": 252,
+          "excerptSha256": "6a9590717c008176b5f32b0eebeab09e09b546b4c5571060d739981da447af5c"
+        },
+        {
+          "start": 421,
+          "end": 450,
+          "excerptSha256": "c0873423dd956254c3f128a91c552e40798946584b45012c66785b877f3f94af"
+        },
+        {
+          "start": 592,
+          "end": 600,
+          "excerptSha256": "19a9054cae4251ccd064082e0f9df7d9a753df38c70f943915a132accd0f72dc"
+        },
+        {
+          "start": 1051,
+          "end": 1078,
+          "excerptSha256": "9d68d48ac1967c3b38341fbfe8aab579e33955458d714ce34065199c8ee3aa34"
+        },
+        {
+          "start": 1114,
+          "end": 1132,
+          "excerptSha256": "de1d2a0c8119868416b464b2b742ac38d0d5dda9aca98cb159c360f521bbe2a2"
+        },
+        {
+          "start": 1234,
+          "end": 1257,
+          "excerptSha256": "156864218d1d2db4dc1094f220f25189621959e694d382c07f2be285a44eeaa7"
+        },
+        {
+          "start": 1263,
+          "end": 1267,
+          "excerptSha256": "1ce3bf5491d3fa185c61f123bcebe3e500b1623e15af9df620209a1a40ac985d"
+        },
+        {
+          "start": 1280,
+          "end": 1313,
+          "excerptSha256": "063c06ed35319b595a87dfa4afcaa373e2e19a6aef658227ec558d01eb29e6ed"
+        },
+        {
+          "start": 1610,
+          "end": 1635,
+          "excerptSha256": "aa53dd3c7e4def0a9e34e0c3fa79e80aa3ce761c169cd27f62118b1969701c3e"
+        }
+      ]
+    },
+    {
+      "path": "packages/server/src/transaction-batch.ts",
+      "sha256": "70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014",
+      "ranges": [
+        {
+          "start": 64,
+          "end": 64,
+          "excerptSha256": "74334925c2429e7a8678f50a2680d83f4034e973b92e512bc3b081bcbdd1c050"
+        },
+        {
+          "start": 692,
+          "end": 708,
+          "excerptSha256": "331cf2e4089fd6732f50835378f49a1d825459cb1a8d588a792a94086a3da98b"
+        },
+        {
+          "start": 780,
+          "end": 801,
+          "excerptSha256": "1520674aa84fd2bc64d03cf87d4315c86fc3d76fb7fbb0426c720cd8fd0d8b1b"
+        }
+      ]
+    },
+    {
+      "path": "packages/server/src/transaction-events.ts",
+      "sha256": "c6052433662fcb2d0a202ad4e408a24d4c43f980313fa89659501b4475790db5",
+      "ranges": [
+        {
+          "start": 75,
+          "end": 101,
+          "excerptSha256": "cadde02f4b481e1df9dc34245eb4f604fe79f7988318adb525ad78bccb22348f"
+        },
+        {
+          "start": 237,
+          "end": 250,
+          "excerptSha256": "0c2898e2bacf26983004c6fe28b499cbbf085b72da48d0e8729bfffa4c0152c7"
+        }
+      ]
+    },
+    {
+      "path": "packages/server/src/resource-evaluator.ts",
+      "sha256": "89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
+      "ranges": [
+        {
+          "start": 897,
+          "end": 906,
+          "excerptSha256": "2cf00fb4800fac0522fc489924c47518f22aa02e3b002525b9ab60d1591597e4"
+        },
+        {
+          "start": 1135,
+          "end": 1166,
+          "excerptSha256": "0bbccc0f11118c1ad275d4cde48f987b98c7a237ac1eda453921449204c1c8e4"
+        }
+      ]
+    },
+    {
+      "path": "packages/server/src/authority-read.ts",
+      "sha256": "fd6554c4ee0d08b997fb3622c2f21697f02d58b838f4ae0de10aca4707f67734",
+      "ranges": [
+        {
+          "start": 580,
+          "end": 603,
+          "excerptSha256": "404f77619c6e253591d356c7f5eb44cb4c38a0faabee7aa004e45b0f7e0016ce"
+        },
+        {
+          "start": 823,
+          "end": 838,
+          "excerptSha256": "d2eb7bd11407d5f4087649b9b6ca8f0928ea086fb39a4a5805527fb1a6ebb7eb"
+        }
+      ]
+    },
+    {
+      "path": "packages/server/src/read-request.ts",
+      "sha256": "57675afc647df3e8ad1f26a40aef72584aa388ade6af4a465e3ffef16670f6a2",
+      "ranges": [
+        {
+          "start": 154,
+          "end": 174,
+          "excerptSha256": "43c799ae6d441ae0f03a7ec4196a203a1e6599aaf794ff19d9bde9f675e497a3"
+        },
+        {
+          "start": 258,
+          "end": 262,
+          "excerptSha256": "ba646d3995a186d96c7fe0f03c20dcb5281d84d9c1e22d5ca41e60a4ea479498"
+        },
+        {
+          "start": 296,
+          "end": 298,
+          "excerptSha256": "275f2e49d09f2bf9698af7e308d0a1078ebecf5856839f194da48071d8c6be39"
+        }
+      ]
+    },
+    {
+      "path": "packages/protocol/src/read-update-problems.ts",
+      "sha256": "1a6315705b72fad1f1a287053c17858130c91317ed08c95f6d68a1ecc620a211",
+      "ranges": [
+        {
+          "start": 39,
+          "end": 41,
+          "excerptSha256": "7cecc8e1bb79b439998ed0d33bd28c5be13e5fed4aa70732ae82578a8b35b760"
+        }
+      ]
+    },
+    {
+      "path": "packages/protocol/src/read-update-values.ts",
+      "sha256": "d1fdbc660d5e2c009275c152bdcebda46031700920aa03bfea89f39564c89de2",
+      "ranges": [
+        {
+          "start": 160,
+          "end": 165,
+          "excerptSha256": "376fa7824a4fef31ec013287f55c82c190a565e52f9582b3877b3a1f2bd09431"
+        },
+        {
+          "start": 178,
+          "end": 182,
+          "excerptSha256": "e7533663e5e20526761a9f67536f7c7630c46572b0a5a49b77369d4ac0b36aa9"
+        }
+      ]
+    },
+    {
+      "path": "apps/bdptest/test-support/transactional-execution-binding.ts",
+      "sha256": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+      "ranges": [
+        {
+          "start": 26,
+          "end": 107,
+          "excerptSha256": "5cbf51f04bf3d5d81d68cd6ba8fa68c3cf6e6b996ea1778648d781f0d02f5911"
+        }
+      ]
+    },
+    {
+      "path": "packages/conformance/src/http-executor.ts",
+      "sha256": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+      "ranges": [
+        {
+          "start": 20,
+          "end": 108,
+          "excerptSha256": "d7cac95572ab7c43f067744ed6beada78c896967750739ad740220e38d43fd5c"
+        },
+        {
+          "start": 164,
+          "end": 195,
+          "excerptSha256": "972d668e748e9fe7fa15ab6c7a81e1f6c5bafbb760fc5b2eb8e37ac5e882e9b0"
+        },
+        {
+          "start": 489,
+          "end": 507,
+          "excerptSha256": "3f3db4ae4d7ab6194af14296f872299226bc3a0c13a7b26a8fa4c8f2818e6c11"
+        },
+        {
+          "start": 680,
+          "end": 715,
+          "excerptSha256": "839d69ff8527785f142f9d23e04faf5a77364713f128584563f1c056970ecc9e"
+        },
+        {
+          "start": 746,
+          "end": 779,
+          "excerptSha256": "c1abd9507d2108e62f1c8d090554ab5743696d8ddac52639b16cd04fe806986b"
+        },
+        {
+          "start": 886,
+          "end": 908,
+          "excerptSha256": "3a0a123ddc3ff2d4d8ee5ac85937225bab5c43cd24e6f4b2ee551ce881c6edfa"
+        },
+        {
+          "start": 980,
+          "end": 1010,
+          "excerptSha256": "937d8b0db661bb36a6db39295d6bd52064d3e0ff2789da9db01e71a09d717bec"
+        },
+        {
+          "start": 1190,
+          "end": 1234,
+          "excerptSha256": "b610df4efd59c2a515101d121a2f8b43c2b81b680f22828eb1f5bf046c1c1848"
+        },
+        {
+          "start": 1253,
+          "end": 1268,
+          "excerptSha256": "27b92b8df9122b511edfb26e435effcdcab68a4beb70b3d18fc8f98959bd61c3"
+        }
+      ]
+    },
+    {
+      "path": "vitest.config.ts",
+      "sha256": "a84575ea9ef0b6e75b6484024a627fa89422aea2fdbeb26127e09714dba0641f",
+      "ranges": [
+        {
+          "start": 60,
+          "end": 72,
+          "excerptSha256": "ffffaae60fcfd238be38325deed0754cc11fb2e0732d87d0b95acb26f217fa3d"
+        }
+      ]
+    },
+    {
+      "path": "schemas/bdp-v0.schema.json",
+      "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+      "selection": [
+        "mutationReceipt",
+        "receiptCore",
+        "receiptResult",
+        "receiptStatus",
+        "receiptDetail",
+        "receiptEntryOutcome",
+        "transactionalProblem",
+        "beadRecord",
+        "currentBeadRecord",
+        "currentBeadCollection",
+        "eventPage",
+        "event",
+        "eventType",
+        "createdData",
+        "updatedData",
+        "deletedData",
+        "linkDeltaData",
+        "wireToken",
+        "revision",
+        "properties",
+        "metadata",
+        "absoluteHttpUrl",
+        "dateTime",
+        "reference",
+        "revisionProvenance",
+        "revisionActor",
+        "resourceIdentity",
+        "resourceKind",
+        "idempotencyKey",
+        "retryDisposition"
+      ],
+      "compactSelectionSha256": "8bb3f723fe87d41515cc0e5695968f0dff5bbf7deca112cda5f050e1956480e5",
+      "fullTransitiveClosure": false,
+      "omittedClosureDefinitions": [
+        "absoluteUri",
+        "aliasResultMembers",
+        "allocatedIdentity",
+        "beadCollection",
+        "contextMessage",
+        "contextString",
+        "contextTime",
+        "currentLinkCollection",
+        "currentLinkRecord",
+        "deletedIdentity",
+        "directProblemCode",
+        "historyMissing",
+        "historyMissingItem",
+        "jsonPointer",
+        "linkCollection",
+        "linkRecord",
+        "localName",
+        "mutationOutcome",
+        "ownedLinkChange",
+        "ownedLinkDelta",
+        "pinnedReference",
+        "propertyChange",
+        "readProblem",
+        "readProblemCode",
+        "readUpdateProblem",
+        "readUpdateProblemCode",
+        "receiptProblem",
+        "receiptProblemCode",
+        "typedLinkReference",
+        "validationDiagnostic",
+        "validationDiagnostics"
+      ]
+    }
+  ],
+  "expectedTrackedDirty": [
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "expectedUntracked": [
+    "apps/bdptest/src/transactional-principal-key-installed.test.ts"
+  ],
+  "diffSha256": "fcfada50487e478b26ef86b85d2a51522a5ef2c431a28ffdedf8128f2f10a5a0",
+  "sourceSemantics": "Actual integrated dirtyf551; original dirty18104 binding retained; both owned bytes unchanged; no dist/runtime execution"
+}

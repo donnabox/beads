@@ -1,0 +1,139 @@
+No edits, no tests, no outward writes. Plan hash verified `4f50837f37a064442419d76ea1718b50412cffa74ead3decb66e3cc90cb7bbfe`. Bases read: `31aab4d` (this checkout), M1 `b2d6eef`, S1a `b9afb27` (see F5 — S1a has moved since the plan was written).
+
+# Findings
+
+## B1 — Snapshot limits have no injection seam; three done-predicates are unexecutable
+**Severity:** Blocker
+**Location:** plan lines 70, 79, 83, 85 (predicates 2, 6, 8) vs `transaction-snapshot.ts:21-32` (S1a), `transaction-snapshot.ts:145-151`
+`TRANSACTION_SNAPSHOT_LIMITS` is a frozen module constant and `transactionSnapshotStorage(db, scope, types)` takes no limits argument — unlike `receiptMaximumItems`, which has a real seam (`transactionReceiptMaximum(seams.receiptMaximumItems)`, `transaction-store.ts:120-137`, `transaction-runtime.ts:99`). Plan line 70 simultaneously forbids "new administrative overrides or public configuration fields".
+
+Consequences:
+- Predicate 2's "repeated calls near capacity so allocation leakage is observable" is reachable only for `liveHandles: 8` (→503). `issuedHandles: 65536` requires 65 536 captures — not testable.
+- Predicate 6's 413 needs `>4096` resources (≈129 batch requests at `maximumOperations: 32`, `transaction-batch.ts:61`) or `>32 MiB` of bodies (≈550 single-op POSTs at the 64 KiB `requestBodyBytes` cap). Each capture then re-runs `checkGraph` per record with an N+1 link query and full re-validation (`transaction-snapshot.ts:315-376`, `596-620`) — this is minutes of wall clock per capture at 4096 records, under `PRAGMA synchronous=FULL` (`transaction-store.ts:469`).
+- Predicate 8's "changed tuple fails old-store compatibility" cannot be driven at all: the constant is frozen at module scope, so the only routes are module mocking or hand-doctoring the `metadata.configuration` row.
+
+**Fix:** Decide in the plan, before authoring, which of these the slice actually owns. Either (a) ask root to have S1a accept an owner-constructed limits tuple (same shape, defaulting to the exported constant) so capacity/identity predicates are drivable without administrative wire surface, or (b) narrow predicates 2/6/8 explicitly: 503-only capacity evidence from `liveHandles`, 413 declared out of scope with the reason, and the changed-tuple refusal tested at the store layer by doctoring the stored `configuration` string rather than the constant. Do not leave them as unqualified done predicates.
+
+## B2 — Paired failure context is not an S1b change; `enter()` forbids the stated construction
+**Severity:** Blocker
+**Location:** plan item 3 (line 30), item 4 (line 31), line 76 vs `transaction-store.ts:294-305`, S1a `transaction-store.ts` `captureSnapshot`/`readSnapshot`/`readSnapshotPage`
+`enter()` throws `"transaction store closed or reentrant"` when `busy`, so there is no nesting. S1a's three committed methods read `context` first and then let `TransactionSnapshotFailure` escape `enter()` bare (`atomic()` classifies it as a clean non-SQLite rollback and rethrows the original, `transaction-store.ts:335-346`). The service/HTTP layer therefore has **no** way to obtain the paired observation — the only mechanism available is a second owner entry, which plan item 3 itself forbids ("Do not attach context using a later independent owner read").
+
+So item 3 and item 4's "typed body/problem/unsupported outcomes" are entirely an S1a source change, while plan line 76 files it as "small transaction-store.ts/transaction-snapshot.ts additions… coordinated only after S1a freeze". Every Problem-with-context response in the slice is gated on work S1b does not own, with no stated fallback. Note also that the sibling convention is asymmetric today: the receipt-page route pairs 410 with context (`transaction-http.ts:368-373`) but returns 404 **without** it (`transaction-http.ts:366, 378`).
+
+**Fix:** Promote this from "small addition" to a named hard prerequisite with an owner and a declared fallback. State explicitly what S1b ships if S1a freezes without it — most defensibly: unpaired 404/410 matching `transaction-http.ts:366`, and 413/503 mapped from the thrown failure in the service with no context header — and say that paired context is deferred, rather than writing predicates that assume it.
+
+## B3 — Predicate 2 is falsifiable: expiry reclamation on HEAD/304/412/406 deletes captured and page rows
+**Severity:** Blocker (internal contradiction)
+**Location:** plan line 28 vs predicate 2 (line 79); S1a `transaction-snapshot.ts:237-266`, `transaction-store.ts` snapshot methods
+All three S1a owner methods open with `atomic(() => snapshots.expire(now, context))`, and `expire()` runs `DELETE FROM snapshot_records` and `DELETE FROM snapshot_pages` for every newly-expired handle (`transaction-snapshot.ts:263-264`). Any nonallocating preflight that shares S1a's eligibility/capacity validation must run after that expiry pass to decide correctly (`capture()`'s `all.length >= issuedHandles` and `live` filter both depend on it, `transaction-snapshot.ts:572-593`).
+
+Predicate 2 asserts creation HEAD 200 / 304 / 412 / 406 "changes neither issued count nor captured/page rows". The issued count is in fact stable (the `snapshots` row is retained for the epoch). Captured and page rows are **not** — a HEAD taken after a handle lapses legitimately reclaims them. Plan line 28 explicitly permits this ("Expiry reclamation is permitted maintenance, distinct from allocating a capture"), so the plan contradicts itself and the predicate will fail on a clock-advanced fixture.
+
+**Fix:** Restate predicate 2 against the invariant you actually mean: issued-handle count unchanged, **and** no new rows for any new identity, **and** no row change for any still-unexpired handle — with the clock held fixed across the conditional probes so no reclamation is in flight.
+
+## B4 — Predicate 8 conflates two different identities, and neither is checkable the way line 70 requires
+**Severity:** Blocker
+**Location:** plan lines 68-70, predicate 8 (line 85) vs `transaction-runtime-configuration.ts:258-263, 307-342` (M1 `b2d6eef`), `transaction-store.ts:241-250, 480-486, 517-527`
+Three separate problems:
+
+1. **Two artifacts, one predicate.** "Runtime settings hash" is M1's `runtimeConfigurationIdentity`, which hashes `settings` (`transaction-runtime-configuration.ts:332-342`). "Changed tuple fails old-store compatibility" is the store's `configuration` string refusal (`transaction-store.ts:485-486`). These are unrelated digests. Predicate 8 reads as one test and cannot be one.
+2. **M1's identity is suppressed under exactly the seams the Snapshot tests need.** `metadata()` returns `undefined` whenever `seamCapture.supplied || configuredScope === undefined || contracts === undefined` (line 323-324). Predicate 4 requires `seams.clock` for expiry control, and B3/H3 argue for `seams.maintenanceIntervalMs` — so the identity half must be a separate seamless, artifact-compiled, canonical-scope configuration. The plan does not say so.
+3. **"Match the observed owner configuration" has no seam to match against.** `readConfiguration()` exposes only `scopeEpoch`, `authorizationView`, `receiptMaximumItems`, `installedTypes` and `scopeConfiguration{policyIdentity, configurationIdentity, maximumEndpointMultiplicity}`. The Snapshot tuple is buried inside the opaque `configurationIdentity` JSON string. M1's existing cross-checks (lines 313-322) have nothing to compare a Snapshot member to, so importing the constant satisfies "same constant" but *not* "observed owner configuration", which is the thing line 70 says it must satisfy.
+
+Worth recording: the second half of line 70 is **already done** at S1a `b9afb27` — `TRANSACTION_SNAPSHOT_LIMITS` and `TRANSACTION_SNAPSHOT_TOKEN_POLICY` are in the store `configuration` and `format` is bumped to `bdp-private-transaction-snapshot-9`. Only the M1 `settings` member remains.
+
+**Fix:** Split predicate 8 into (8a) an M1 digest test on a seamless artifact-compiled configuration asserting the Snapshot member is present and the digest changes with it, and (8b) a store open/reopen test for the `configuration` refusal. For line 70's "observed owner" rule, name the mechanism: assert `JSON.parse(actual.scopeConfiguration.configurationIdentity).snapshotLimits` deep-equals the imported constant inside M1's `metadata()`, or ask root to surface the tuple on `readConfiguration()`. Also note in the plan that the store-format/refusal half already landed in S1a.
+
+## H1 — `request.signal` is synthetic; the abort claims have no source
+**Severity:** High
+**Location:** plan item 5 (line 32), predicate 7 (line 84) vs `transaction-runtime.ts:202`
+`new Request(url, { method, headers })` creates a fresh `AbortSignal` with nothing wired to the Node socket. It can never fire. The existing `changes`/`events` routes pass it (`transaction-http.ts:329, 349`) but it is inert. The only real cancellation signals in this fixture are `closing` and a single `response.destroyed` check taken *before* `handler.handle` (`transaction-runtime.ts:204-207`).
+
+Item 5's "Aborted requests must not start fresh work after cancellation" therefore describes behavior with no trigger, and predicate 7's "Actual service drain, **abort** and shutdown" cannot be exercised over HTTP. Predicate 7's own instruction to "report bounded drain versus immediate HTTP cancellation honestly" is the right instinct but is undercut by the two claims above it.
+
+**Fix:** Drop "abort" from the HTTP predicate and say plainly that this runtime has no client-disconnect cancellation: the Fetch signal is synthetic and drain is bounded by `service.close()`'s `Promise.allSettled([...active])` (`transaction-service.ts:398`). If abort behavior must be shown, exercise it directly against the service with a caller-supplied signal and label it an in-process witness, not an HTTP one.
+
+## H2 — There is no epoch/view fence for Snapshots; the plan cites one as satisfied law
+**Severity:** High
+**Location:** plan line 50 ("Existing view/epoch/erasure integrity fences precede successful response/conditionals") vs `transaction-snapshot.ts:185-188`, `transaction-store.ts:477, 513-514`; spec `docs/specs/bdp.md:5903, 5916`
+S1a implements epoch/view divergence as `integrity(d.epoch === context.scopeEpoch && d.view === context.authorizationView, "persisted context mismatch")` — a plain `Error`, which `handle()`'s catch-all turns into bodyless 500 (`transaction-http.ts:444`). The spec requires an explicit epoch/view failure for the retained row (5916: "ordinary epoch/view, minimum-position, and service failures"; 5903: "Existing epoch/view validity and erasure fences apply"), i.e. `foreign-view` 409 or `cursor-expired` 410 — not a service failure.
+
+In this fixture the assertion is unreachable dead code: `epoch` is written once at create (`transaction-store.ts:477`) and never updated, and `view` is the literal `"development-all-visible"` (line 514), both sourced from the same store as the context being compared. So there is no fence to cite and none that could be exercised.
+
+**Fix:** Replace line 50's claim with the honest statement: no Snapshot epoch/view fence is implemented or exercisable; the current code would report divergence as a bodyless 500, which does not meet 5916, and epoch rotation / mutable view remain explicit blockers. Add it to the closing blocker list at line 87 alongside mutable view/erasure administration.
+
+## H3 — Background maintenance turns Snapshot disposition corruption into a sticky owner fence, not a route 500
+**Severity:** High
+**Location:** predicate 4 (line 81), predicate 6 (line 83) vs `transaction-store.ts:448-465, 1183-1202` plus S1a's `snapshots.expire()` hook in `sweep()`
+S1a wires `snapshots.expire(now, …)` into `sweep()`, and `sweep()` runs on `setInterval(maintain, maintenanceIntervalMs)` — default 1000 ms. Any `integrity()` failure inside `expire()` / `disposition()` / `ledgerBounds()` on that timer sets `maintenanceFailure`, clears the interval and **calls `db.close()`** with `closed = true` (lines 1186-1200), permanently fencing the owner for every route.
+
+Predicate 4 wants "lost/corrupt promised data" to produce a distinct per-request **500**, and predicate 6 wants "Active handles stay usable". Those hold if the injected corruption is in `snapshot_records` / `snapshot_pages` — `expire()` reads neither, only `snapshots` dispositions. They do **not** hold if the corruption is in a disposition row (e.g. exercising `"disposition commitment"`, `transaction-snapshot.ts:171-175`): the 1000 ms timer races the request, and the observable result is a dead owner and a closed database, nondeterministically.
+
+**Fix:** In predicate 4, pin `seams.maintenanceIntervalMs` high for the corruption cases and restrict injected corruption to the record/page tables; state separately and explicitly that disposition-level corruption is an owner-fencing failure, not a per-request 500 — and that this is a consequence of S1a's placement of `expire()` inside `sweep()`, to be raised with S1a rather than papered over at the route.
+
+## F5 — The plan's S1a factual basis is stale, and the smoke inventory is already broken
+**Severity:** Medium
+**Location:** plan lines 3, 24, 72, 76 vs `vickie-transaction-snapshot-core` at `b9afb27`, `scripts/smoke-executables.mjs:134-355`
+The plan records S1a as "HEAD 31aab with uncommitted transaction-store.ts, transaction-snapshot.ts and transaction-snapshot.test.ts" and the compact recognition as "in progress". S1a is now at `b9afb27` "Add bounded private durable Snapshot owner core", clean tree, with recognition landed: `resolve()` matches `sp_<ordinal>_<43-char base64url>` and verifies via `timingSafeEqual` against `pageToken(d.seed, id, kind, ordinal)` with a `pageCounts` bound, **before** the expiry check (`transaction-snapshot.ts:510-539`). That ordering does give the plan's line 50 split (unissued continuation under an expired parent → 404; recognized issued continuation → 410), and it survives page-detail purge because the seed and `pageCounts` live in the retained disposition.
+
+Two live consequences:
+- Line 24's "do not copy the inspected provisional random-token grammar" now describes a superseded state, and there is **no separate recognition entry point** to "consume" — recognition is interior to `manifest(id, now, context)` / `page(id, kind, token, now, context)`, both of which throw. That is the same collision as B2.
+- `scripts/smoke-executables.mjs` holds an exact `Set`-equality packed-output inventory (size + membership, order-independent, lines 344-355). `b9afb27` added `transaction-snapshot.ts` without the four corresponding entries (`.d.ts`, `.d.ts.map`, `.js`, `.js.map`), so the packed smoke fails *today* in the S1a checkout with `unexpected=[transaction-snapshot.*]`. Plan line 72 correctly names the requirement but files it as S1b work via root-owned overlap; it is already a break in the dependency.
+
+**Fix:** Refresh the §"Existing law and seams" paragraph against `b9afb27` (noting it is a commit, not the freeze/review the line 9 gate requires, so signatures stay provisional). Flag the smoke-inventory break as pre-existing in S1a and ask root to assign it there, rather than carrying it as S1b scope.
+
+## F6 — `applyReadHttpSemantics` reuse: "bounded metadata without a body" is the one ambiguity that breaks HEAD
+**Severity:** Medium
+**Location:** plan lines 43-44 vs `read-http.ts:10-48`
+`applyReadHttpSemantics` enters the negotiation/conditional branch only when `status === 200 && content-type === "application/json"` (line 13), and then at line 42 sets `content-length` from `Buffer.byteLength(stringifyJsonValue(selected.body))` for any HEAD whose response still carries a body.
+
+So the preflight response must be a `200` with `content-type: application/json` and `body === undefined`. If it instead carries the bounded metadata *as a body* (the natural reading of line 43, and what `jsonResponse` produces), the creation HEAD gets a `content-length` describing the metadata object rather than the manifest a GET would return — a lying HEAD length, and a direct violation of plan step 5's "omit content-length when no corresponding body was materialized".
+
+**Fix:** Say it in one sentence in step 4: the preflight response carries context, `cache-control` and `content-type: application/json` with **no** `body` property, so the shared helper's HEAD length branch cannot fire and `deliver()`'s `bytes !== undefined` guard (`transaction-runtime.ts:86`) leaves `content-length` absent.
+
+## F7 — Q1 gap marker labels an epoch/view-only fence as `minimum-position`
+**Severity:** Medium (naming only — no Q1 ruling implied or inferred)
+**Location:** plan lines 60, 82 (predicate 5) vs `transaction-http.ts:102-106`, spec `docs/specs/bdp.md:5776-5781`
+The spec defines a minimum request as epoch + view **plus** `BDP-Minimum-Scope-Position` (5776-5781); epoch and view supplied alone are *fences*, not a minimum request. `hasMinimumControls` conflates all three, and the plan reuses it, so an epoch-only or view-only request is refused with `x-bdp-development-limit: minimum-position`. Predicate 5 ("Each supplied consistency field alone") then freezes that mislabel into the evidence record, where it reads as a minimum-position gap for a request that contains no minimum.
+
+Reusing the existing predicate is the right call for consistency with every current route — the issue is purely that line 62's "Pin this exact gap ordering" presents the marker as if it were accurate.
+
+**Fix:** Add one sentence to §Q1 recording that the marker name is inherited from the existing shared control check and deliberately over-covers epoch-only and view-only fences, which this fixture could otherwise evaluate against its fixed epoch and constant view. This is independent of Q1's comparison-target question, which stays open.
+
+## F8 — S1a's carried Problem emits `title`; no other Problem in the service does
+**Severity:** Low-Medium
+**Location:** `transaction-snapshot.ts:92-99` vs `packages/protocol/src/index.ts:534-546`
+`TransactionSnapshotFailure.problem` sets `title: code`. `readProblem()` never emits `title`. Both validate — `transactionalProblem`/`readProblem` allow `title`, allow `retryAfter` under `retry: "after-delay"`, and make `limit` optional and `limit-exceeded`-only — so predicate 6's "bodies validate" and line 54's no-`limit` 413 both hold. But passing the carried Problem through would make Snapshot the only route emitting `title`, and `title: "resource-not-found"` duplicates `code` without adding anything.
+
+Line 54's "Map recognized Snapshot failures to canonical Problems" is the correct instruction; line 24's "carrying a Problem" invites pass-through.
+
+**Fix:** State in line 54 that the route constructs the Problem from `readProblem(code)` and takes only the `retryAfter` value from the carried failure — the carried `problem` object is not the wire body.
+
+## F9 — `checkpoint: "genesis"` is not epoch-qualified
+**Severity:** Low
+**Location:** predicate 1 (line 78) vs `transaction-changefeed.ts:70-72, 79-80`; spec `docs/specs/bdp.md:5932, 5750-5753`
+`transactionCheckpoint` returns the bare string `"genesis"` at position 0, and `checkpointPosition` returns 0 for it without validating epoch or view. Spec 5932 calls `checkpoint` "the opaque, **epoch-qualified** value", and 5750-5753 requires a cursor from another epoch or view to fail explicitly. A Snapshot captured on an empty Scope therefore publishes a cross-epoch-replayable checkpoint.
+
+**Fix:** Have predicate 1 capture after at least one committed mutation so `checkpoint` is a real `cg_…` token, and note the genesis case as an existing changefeed gap rather than Snapshot evidence.
+
+## F10 — Two cosmetic predicate imprecisions
+**Severity:** Low
+- Predicate 3's "304 length is omitted unless lawful corresponding length known" is vacuous: `read-http.ts:33-36` unconditionally deletes `content-length` on 304 and never restores it. Say "omitted".
+- Reusing the shared helper for the preflight emits `vary: Accept` **and** the three context fields on 406, whereas every existing 406 goes through `empty(406)` with neither (`transaction-http.ts:283, 304`). Lawful, and arguably better, but it is a new asymmetry — pin it deliberately in predicate 3 rather than discovering it.
+
+# What checks out
+
+The core allocation-ordering design in §"Routing and creation ordering" is sound against the actual code, and worth stating since it is the plan's load-bearing claim:
+
+- **406 before conditionals, both before capture.** `read-http.ts:26-29` evaluates `acceptsJson` first, then `conditionalReadStatus`. With no ETag ever set on a Snapshot response, `tagListMatches` (lines 62-83) gives exactly the spec's no-validator behavior at `docs/specs/bdp.md:1993-1996`: `If-None-Match: *` → 304, specific `If-Match` → 412, `If-Match: *` → pass, specific `If-None-Match` → pass. Predicate 2's four cases are satisfiable with no new conditional code.
+- **The second `applyReadHttpSemantics` pass in `handle()` (`transaction-http.ts:448-450`) is idempotent here.** The etag is null on both passes and `acceptsJson` is deterministic, so step 5's "allocation is not followed by a newly discovered unchanged-request conditional failure" holds — the plan's concern at line 46 is real and its remedy is correct.
+- **Bodyless 304/412/HEAD-on-error all come free.** 304 keeps `cache-control` and the context headers and drops `content-length` entirely; 412 gets `content-length: 0`; HEAD on a Problem response drops the body while keeping the GET's computed length (`read-http.ts:42-46`), then `deliver()`'s `bytes !== undefined` guard leaves it intact. Predicate 3 needs no new code.
+- **View-bound, not principal-bound.** S1a's `snapshots` table has no principal column and `readSnapshot(id)` takes no principal, so item 4's "another authenticated principal in the same fixed all-visible view may read them" matches the owner as built; the 401 arrives before any Snapshot handling at `transaction-http.ts:321`.
+- **Routing insertion point is clean.** `transactionChangefeedRequest` matches only `${scope}changes/` (`transaction-changefeed.ts:92`), and `methodResponse` already yields `405 Allow: GET, HEAD` for a query-bearing non-operation path under the Scope (`transaction-http.ts:208`), including methods Fetch cannot construct, via the raw pre-Fetch call at `transaction-runtime.ts:178`. Line 56 needs no new code.
+- **Atomic allocation and post-commit survival are as the plan describes.** S1a builds and fully re-verifies the manifest *inside* the same `atomic()` as the inserts, so a readback failure rolls the whole capture back; `after-snapshot-commit` fires post-COMMIT, so a delivery failure leaves the durable promise intact. Predicate 6's precommit/aftercommit split is satisfiable.
+- **Group retention is satisfied trivially.** There is no `DELETE FROM groups` anywhere in the store, so spec 5933-5934's "retains every group after `scopePosition` through `expiresAt`" cannot be violated by maintenance.
+- **Schema fit.** S1a's manifest matches `$defs.snapshotManifest` member-for-member under `additionalProperties: false`; `{items, next}` matches `beadCollection`/`linkCollection`; `scopeEpoch` (UUID), `scopePosition` (`pos-N`) and `checkpoint` (`cg_<43>_<43>_<n>` or `genesis`) all satisfy `wireToken`; `absoluteHttpUrl` permits the query-shaped `id` and `next` URLs. Page size bounds also close: `pageBytes` 4 MiB × 2 streams ≤ `manifestBytes` 10 MiB, and `representationBytes` 256 KiB ≪ 4 MiB makes the "one record cannot fit page" integrity unreachable — so the preflight/GET divergence that bound would otherwise create does not exist.
+- **Spec citations are accurate.** 5783-5786, 5899-5908, 5913-5936, 5916, 1978-2006 and 5742-5755 all say what the plan says they say. Line 15's reading is right and materially favorable: 5834-5836 states "internal allocation is an implementation detail", so the plan's stronger nonallocation goal is correctly flagged at line 46 as its own choice, not inherited law.
+
+Q1 remains untouched: I did not evaluate retained-anchor versus current-prefix, and F7 concerns only the marker's name, not the comparison target.

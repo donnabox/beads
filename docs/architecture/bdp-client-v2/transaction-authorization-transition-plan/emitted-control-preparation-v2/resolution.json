@@ -1,0 +1,1289 @@
+{
+  "runner": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/emitted-control-preparation-v2/mirror/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+  "test": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/emitted-control-preparation-v2/mirror/packages/server/src/transaction-runtime.test.ts",
+  "dynamicRuntime": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/emitted-control-preparation-v2/mirror/packages/server/dist/transaction-runtime.js",
+  "runtimeStore": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/emitted-control-preparation-v2/mirror/packages/server/dist/transaction-store.js",
+  "relativeEmittedEdges": [
+    {
+      "from": "apps/bdpbd/dist/main.js",
+      "specifier": "./server-composition.js",
+      "to": "apps/bdpbd/dist/server-composition.js"
+    },
+    {
+      "from": "apps/bdptest/dist/main.js",
+      "specifier": "./server-composition.js",
+      "to": "apps/bdptest/dist/server-composition.js"
+    },
+    {
+      "from": "packages/bd-domain/dist/index.js",
+      "specifier": "./ready-output.js",
+      "to": "packages/bd-domain/dist/ready-output.js"
+    },
+    {
+      "from": "packages/client/dist/history-session.js",
+      "specifier": "./continuations.js",
+      "to": "packages/client/dist/continuations.js"
+    },
+    {
+      "from": "packages/client/dist/history-session.js",
+      "specifier": "./read-record-validation.js",
+      "to": "packages/client/dist/read-record-validation.js"
+    },
+    {
+      "from": "packages/client/dist/index.js",
+      "specifier": "./history-session.js",
+      "to": "packages/client/dist/history-session.js"
+    },
+    {
+      "from": "packages/client/dist/index.js",
+      "specifier": "./continuations.js",
+      "to": "packages/client/dist/continuations.js"
+    },
+    {
+      "from": "packages/client/dist/index.js",
+      "specifier": "./read-session.js",
+      "to": "packages/client/dist/read-session.js"
+    },
+    {
+      "from": "packages/client/dist/index.js",
+      "specifier": "./read-update.js",
+      "to": "packages/client/dist/read-update.js"
+    },
+    {
+      "from": "packages/client/dist/index.js",
+      "specifier": "./read-update-transport.js",
+      "to": "packages/client/dist/read-update-transport.js"
+    },
+    {
+      "from": "packages/client/dist/read-record-validation.js",
+      "specifier": "./continuations.js",
+      "to": "packages/client/dist/continuations.js"
+    },
+    {
+      "from": "packages/client/dist/read-session.js",
+      "specifier": "./continuations.js",
+      "to": "packages/client/dist/continuations.js"
+    },
+    {
+      "from": "packages/client/dist/read-session.js",
+      "specifier": "./continuations.js",
+      "to": "packages/client/dist/continuations.js"
+    },
+    {
+      "from": "packages/client/dist/read-session.js",
+      "specifier": "./read-record-validation.js",
+      "to": "packages/client/dist/read-record-validation.js"
+    },
+    {
+      "from": "packages/client/dist/read-session.js",
+      "specifier": "./read-record-validation.js",
+      "to": "packages/client/dist/read-record-validation.js"
+    },
+    {
+      "from": "packages/client/dist/read-update.js",
+      "specifier": "./read-session.js",
+      "to": "packages/client/dist/read-session.js"
+    },
+    {
+      "from": "packages/client/dist/read-update.js",
+      "specifier": "./read-update-transport.js",
+      "to": "packages/client/dist/read-update-transport.js"
+    },
+    {
+      "from": "packages/conformance/dist/artifact-bundle.js",
+      "specifier": "./canonical-json.js",
+      "to": "packages/conformance/dist/canonical-json.js"
+    },
+    {
+      "from": "packages/conformance/dist/artifact-bundle.js",
+      "specifier": "./profile-contract-selection.js",
+      "to": "packages/conformance/dist/profile-contract-selection.js"
+    },
+    {
+      "from": "packages/conformance/dist/artifact-bundle.js",
+      "specifier": "./catalog.js",
+      "to": "packages/conformance/dist/catalog.js"
+    },
+    {
+      "from": "packages/conformance/dist/artifact-bundle.js",
+      "specifier": "./executable-manifest.js",
+      "to": "packages/conformance/dist/executable-manifest.js"
+    },
+    {
+      "from": "packages/conformance/dist/catalog.js",
+      "specifier": "./markdown.js",
+      "to": "packages/conformance/dist/markdown.js"
+    },
+    {
+      "from": "packages/conformance/dist/cohort-artifact.js",
+      "specifier": "./canonical-json.js",
+      "to": "packages/conformance/dist/canonical-json.js"
+    },
+    {
+      "from": "packages/conformance/dist/cohort-artifact.js",
+      "specifier": "./report.js",
+      "to": "packages/conformance/dist/report.js"
+    },
+    {
+      "from": "packages/conformance/dist/cohort-verification.js",
+      "specifier": "./cohort-artifact.js",
+      "to": "packages/conformance/dist/cohort-artifact.js"
+    },
+    {
+      "from": "packages/conformance/dist/executable-manifest.js",
+      "specifier": "./conditional-header.js",
+      "to": "packages/conformance/dist/conditional-header.js"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./catalog.js",
+      "to": "packages/conformance/dist/catalog.js"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./artifact-bundle.js",
+      "to": "packages/conformance/dist/artifact-bundle.js"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./cohort-artifact.js",
+      "to": "packages/conformance/dist/cohort-artifact.js"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./cohort-verification.js",
+      "to": "packages/conformance/dist/cohort-verification.js"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./canonical-json.js",
+      "to": "packages/conformance/dist/canonical-json.js"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./schema-read-projection.js",
+      "to": "packages/conformance/dist/schema-read-projection.js"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./result-state.js",
+      "to": "packages/conformance/dist/result-state.js"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./selection.js",
+      "to": "packages/conformance/dist/selection.js"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./symbolic-url.js",
+      "to": "packages/conformance/dist/symbolic-url.js"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./executable-manifest.js",
+      "to": "packages/conformance/dist/executable-manifest.js"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./http-executor.js",
+      "to": "packages/conformance/dist/http-executor.js"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./raw-http-scenario-target.js",
+      "to": "packages/conformance/dist/raw-http-scenario-target.js"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./runner.js",
+      "to": "packages/conformance/dist/runner.js"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./schema-validator.js",
+      "to": "packages/conformance/dist/schema-validator.js"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./report.js",
+      "to": "packages/conformance/dist/report.js"
+    },
+    {
+      "from": "packages/conformance/dist/profile-contract-selection.js",
+      "specifier": "./canonical-json.js",
+      "to": "packages/conformance/dist/canonical-json.js"
+    },
+    {
+      "from": "packages/conformance/dist/profile-contract-selection.js",
+      "specifier": "./catalog.js",
+      "to": "packages/conformance/dist/catalog.js"
+    },
+    {
+      "from": "packages/conformance/dist/profile-contract-selection.js",
+      "specifier": "./selection.js",
+      "to": "packages/conformance/dist/selection.js"
+    },
+    {
+      "from": "packages/conformance/dist/raw-http-scenario-target.js",
+      "specifier": "./http-executor.js",
+      "to": "packages/conformance/dist/http-executor.js"
+    },
+    {
+      "from": "packages/conformance/dist/report.js",
+      "specifier": "./transactional-observation.js",
+      "to": "packages/conformance/dist/transactional-observation.js"
+    },
+    {
+      "from": "packages/conformance/dist/runner.js",
+      "specifier": "./transactional-observation.js",
+      "to": "packages/conformance/dist/transactional-observation.js"
+    },
+    {
+      "from": "packages/conformance/dist/runner.js",
+      "specifier": "./conditional-header.js",
+      "to": "packages/conformance/dist/conditional-header.js"
+    },
+    {
+      "from": "packages/conformance/dist/runner.js",
+      "specifier": "./artifact-bundle.js",
+      "to": "packages/conformance/dist/artifact-bundle.js"
+    },
+    {
+      "from": "packages/conformance/dist/runner.js",
+      "specifier": "./executable-manifest.js",
+      "to": "packages/conformance/dist/executable-manifest.js"
+    },
+    {
+      "from": "packages/conformance/dist/runner.js",
+      "specifier": "./http-executor.js",
+      "to": "packages/conformance/dist/http-executor.js"
+    },
+    {
+      "from": "packages/conformance/dist/runner.js",
+      "specifier": "./selection.js",
+      "to": "packages/conformance/dist/selection.js"
+    },
+    {
+      "from": "packages/conformance/dist/schema-read-projection.js",
+      "specifier": "./canonical-json.js",
+      "to": "packages/conformance/dist/canonical-json.js"
+    },
+    {
+      "from": "packages/protocol/dist/history-values.js",
+      "specifier": "./protocol-errors.js",
+      "to": "packages/protocol/dist/protocol-errors.js"
+    },
+    {
+      "from": "packages/protocol/dist/history-values.js",
+      "specifier": "./read-values.js",
+      "to": "packages/protocol/dist/read-values.js"
+    },
+    {
+      "from": "packages/protocol/dist/history-values.js",
+      "specifier": "./schema-formats.js",
+      "to": "packages/protocol/dist/schema-formats.js"
+    },
+    {
+      "from": "packages/protocol/dist/index.js",
+      "specifier": "./json-values.js",
+      "to": "packages/protocol/dist/json-values.js"
+    },
+    {
+      "from": "packages/protocol/dist/index.js",
+      "specifier": "./history-values.js",
+      "to": "packages/protocol/dist/history-values.js"
+    },
+    {
+      "from": "packages/protocol/dist/index.js",
+      "specifier": "./history-values.js",
+      "to": "packages/protocol/dist/history-values.js"
+    },
+    {
+      "from": "packages/protocol/dist/index.js",
+      "specifier": "./reference-domain.js",
+      "to": "packages/protocol/dist/reference-domain.js"
+    },
+    {
+      "from": "packages/protocol/dist/index.js",
+      "specifier": "./type-conformance.js",
+      "to": "packages/protocol/dist/type-conformance.js"
+    },
+    {
+      "from": "packages/protocol/dist/index.js",
+      "specifier": "./link-header.js",
+      "to": "packages/protocol/dist/link-header.js"
+    },
+    {
+      "from": "packages/protocol/dist/index.js",
+      "specifier": "./read-values.js",
+      "to": "packages/protocol/dist/read-values.js"
+    },
+    {
+      "from": "packages/protocol/dist/index.js",
+      "specifier": "./schema-formats.js",
+      "to": "packages/protocol/dist/schema-formats.js"
+    },
+    {
+      "from": "packages/protocol/dist/index.js",
+      "specifier": "./json-admission.js",
+      "to": "packages/protocol/dist/json-admission.js"
+    },
+    {
+      "from": "packages/protocol/dist/index.js",
+      "specifier": "./read-update-values.js",
+      "to": "packages/protocol/dist/read-update-values.js"
+    },
+    {
+      "from": "packages/protocol/dist/index.js",
+      "specifier": "./read-update-problems.js",
+      "to": "packages/protocol/dist/read-update-problems.js"
+    },
+    {
+      "from": "packages/protocol/dist/index.js",
+      "specifier": "./read-update-preflight.js",
+      "to": "packages/protocol/dist/read-update-preflight.js"
+    },
+    {
+      "from": "packages/protocol/dist/index.js",
+      "specifier": "./transaction-discovery-values.js",
+      "to": "packages/protocol/dist/transaction-discovery-values.js"
+    },
+    {
+      "from": "packages/protocol/dist/json-values.js",
+      "specifier": "./json-admission.js",
+      "to": "packages/protocol/dist/json-admission.js"
+    },
+    {
+      "from": "packages/protocol/dist/json-values.js",
+      "specifier": "./protocol-errors.js",
+      "to": "packages/protocol/dist/protocol-errors.js"
+    },
+    {
+      "from": "packages/protocol/dist/read-update-preflight.js",
+      "specifier": "./read-values.js",
+      "to": "packages/protocol/dist/read-values.js"
+    },
+    {
+      "from": "packages/protocol/dist/read-update-preflight.js",
+      "specifier": "./read-update-values.js",
+      "to": "packages/protocol/dist/read-update-values.js"
+    },
+    {
+      "from": "packages/protocol/dist/read-update-problems.js",
+      "specifier": "./read-update-values.js",
+      "to": "packages/protocol/dist/read-update-values.js"
+    },
+    {
+      "from": "packages/protocol/dist/read-update-values.js",
+      "specifier": "./json-admission.js",
+      "to": "packages/protocol/dist/json-admission.js"
+    },
+    {
+      "from": "packages/protocol/dist/read-update-values.js",
+      "specifier": "./protocol-errors.js",
+      "to": "packages/protocol/dist/protocol-errors.js"
+    },
+    {
+      "from": "packages/protocol/dist/read-update-values.js",
+      "specifier": "./read-values.js",
+      "to": "packages/protocol/dist/read-values.js"
+    },
+    {
+      "from": "packages/protocol/dist/read-update-values.js",
+      "specifier": "./schema-formats.js",
+      "to": "packages/protocol/dist/schema-formats.js"
+    },
+    {
+      "from": "packages/protocol/dist/read-values.js",
+      "specifier": "./json-values.js",
+      "to": "packages/protocol/dist/json-values.js"
+    },
+    {
+      "from": "packages/protocol/dist/read-values.js",
+      "specifier": "./protocol-errors.js",
+      "to": "packages/protocol/dist/protocol-errors.js"
+    },
+    {
+      "from": "packages/protocol/dist/read-values.js",
+      "specifier": "./protocol-errors.js",
+      "to": "packages/protocol/dist/protocol-errors.js"
+    },
+    {
+      "from": "packages/protocol/dist/read-values.js",
+      "specifier": "./schema-formats.js",
+      "to": "packages/protocol/dist/schema-formats.js"
+    },
+    {
+      "from": "packages/protocol/dist/read-values.js",
+      "specifier": "./index.js",
+      "to": "packages/protocol/dist/index.js"
+    },
+    {
+      "from": "packages/protocol/dist/transaction-discovery-values.js",
+      "specifier": "./protocol-errors.js",
+      "to": "packages/protocol/dist/protocol-errors.js"
+    },
+    {
+      "from": "packages/protocol/dist/transaction-discovery-values.js",
+      "specifier": "./read-values.js",
+      "to": "packages/protocol/dist/read-values.js"
+    },
+    {
+      "from": "packages/protocol/dist/transaction-discovery-values.js",
+      "specifier": "./schema-formats.js",
+      "to": "packages/protocol/dist/schema-formats.js"
+    },
+    {
+      "from": "packages/protocol/dist/type-conformance.js",
+      "specifier": "./read-values.js",
+      "to": "packages/protocol/dist/read-values.js"
+    },
+    {
+      "from": "packages/server/dist/alias-evaluator.js",
+      "specifier": "./resource-evaluator.js",
+      "to": "packages/server/dist/resource-evaluator.js"
+    },
+    {
+      "from": "packages/server/dist/authority-read.js",
+      "specifier": "./resource-evaluator.js",
+      "to": "packages/server/dist/resource-evaluator.js"
+    },
+    {
+      "from": "packages/server/dist/authority-read.js",
+      "specifier": "./read-pagination.js",
+      "to": "packages/server/dist/read-pagination.js"
+    },
+    {
+      "from": "packages/server/dist/authority-read.js",
+      "specifier": "./read-selector.js",
+      "to": "packages/server/dist/read-selector.js"
+    },
+    {
+      "from": "packages/server/dist/authority-read.js",
+      "specifier": "./read-request.js",
+      "to": "packages/server/dist/read-request.js"
+    },
+    {
+      "from": "packages/server/dist/development-authority.js",
+      "specifier": "./installed-contract-artifact.js",
+      "to": "packages/server/dist/installed-contract-artifact.js"
+    },
+    {
+      "from": "packages/server/dist/development-authority.js",
+      "specifier": "./recovery-store.js",
+      "to": "packages/server/dist/recovery-store.js"
+    },
+    {
+      "from": "packages/server/dist/development-authority.js",
+      "specifier": "./sequence-executor.js",
+      "to": "packages/server/dist/sequence-executor.js"
+    },
+    {
+      "from": "packages/server/dist/development-authority.js",
+      "specifier": "./read-sequence-lifecycle.js",
+      "to": "packages/server/dist/read-sequence-lifecycle.js"
+    },
+    {
+      "from": "packages/server/dist/development-authority.js",
+      "specifier": "./read-update-runtime-limits.js",
+      "to": "packages/server/dist/read-update-runtime-limits.js"
+    },
+    {
+      "from": "packages/server/dist/development-authority.js",
+      "specifier": "./development-contracts.js",
+      "to": "packages/server/dist/development-contracts.js"
+    },
+    {
+      "from": "packages/server/dist/development-authority.js",
+      "specifier": "./resource-evaluator.js",
+      "to": "packages/server/dist/resource-evaluator.js"
+    },
+    {
+      "from": "packages/server/dist/development-authority.js",
+      "specifier": "./read-request.js",
+      "to": "packages/server/dist/read-request.js"
+    },
+    {
+      "from": "packages/server/dist/development-composition.js",
+      "specifier": "./read-http-routing.js",
+      "to": "packages/server/dist/read-http-routing.js"
+    },
+    {
+      "from": "packages/server/dist/development-contracts.js",
+      "specifier": "./installed-contract-artifact.js",
+      "to": "packages/server/dist/installed-contract-artifact.js"
+    },
+    {
+      "from": "packages/server/dist/development-contracts.js",
+      "specifier": "./installed-schema-evaluator.js",
+      "to": "packages/server/dist/installed-schema-evaluator.js"
+    },
+    {
+      "from": "packages/server/dist/development-contracts.js",
+      "specifier": "./installed-schema-shape.js",
+      "to": "packages/server/dist/installed-schema-shape.js"
+    },
+    {
+      "from": "packages/server/dist/development-runtime.js",
+      "specifier": "./read-http.js",
+      "to": "packages/server/dist/read-http.js"
+    },
+    {
+      "from": "packages/server/dist/development-runtime.js",
+      "specifier": "./node-http-target.js",
+      "to": "packages/server/dist/node-http-target.js"
+    },
+    {
+      "from": "packages/server/dist/development-runtime.js",
+      "specifier": "./development-contracts.js",
+      "to": "packages/server/dist/development-contracts.js"
+    },
+    {
+      "from": "packages/server/dist/development-runtime.js",
+      "specifier": "./development-authority.js",
+      "to": "packages/server/dist/development-authority.js"
+    },
+    {
+      "from": "packages/server/dist/development.js",
+      "specifier": "./development-runtime.js",
+      "to": "packages/server/dist/development-runtime.js"
+    },
+    {
+      "from": "packages/server/dist/development.js",
+      "specifier": "./development-authority.js",
+      "to": "packages/server/dist/development-authority.js"
+    },
+    {
+      "from": "packages/server/dist/index.js",
+      "specifier": "./read-request.js",
+      "to": "packages/server/dist/read-request.js"
+    },
+    {
+      "from": "packages/server/dist/index.js",
+      "specifier": "./read-request.js",
+      "to": "packages/server/dist/read-request.js"
+    },
+    {
+      "from": "packages/server/dist/index.js",
+      "specifier": "./node-http-disconnect.js",
+      "to": "packages/server/dist/node-http-disconnect.js"
+    },
+    {
+      "from": "packages/server/dist/index.js",
+      "specifier": "./read-conformance-capability.js",
+      "to": "packages/server/dist/read-conformance-capability.js"
+    },
+    {
+      "from": "packages/server/dist/index.js",
+      "specifier": "./read-pagination.js",
+      "to": "packages/server/dist/read-pagination.js"
+    },
+    {
+      "from": "packages/server/dist/index.js",
+      "specifier": "./read-http.js",
+      "to": "packages/server/dist/read-http.js"
+    },
+    {
+      "from": "packages/server/dist/index.js",
+      "specifier": "./read-http-routing.js",
+      "to": "packages/server/dist/read-http-routing.js"
+    },
+    {
+      "from": "packages/server/dist/index.js",
+      "specifier": "./node-http-target.js",
+      "to": "packages/server/dist/node-http-target.js"
+    },
+    {
+      "from": "packages/server/dist/index.js",
+      "specifier": "./read-selector.js",
+      "to": "packages/server/dist/read-selector.js"
+    },
+    {
+      "from": "packages/server/dist/index.js",
+      "specifier": "./read-pagination.js",
+      "to": "packages/server/dist/read-pagination.js"
+    },
+    {
+      "from": "packages/server/dist/index.js",
+      "specifier": "./read-selector.js",
+      "to": "packages/server/dist/read-selector.js"
+    },
+    {
+      "from": "packages/server/dist/installed-reference-configuration.js",
+      "specifier": "./installed-contract-artifact.js",
+      "to": "packages/server/dist/installed-contract-artifact.js"
+    },
+    {
+      "from": "packages/server/dist/installed-reference-configuration.js",
+      "specifier": "./development-contracts.js",
+      "to": "packages/server/dist/development-contracts.js"
+    },
+    {
+      "from": "packages/server/dist/installed-reference-configuration.js",
+      "specifier": "./development-authority.js",
+      "to": "packages/server/dist/development-authority.js"
+    },
+    {
+      "from": "packages/server/dist/installed-reference-process.js",
+      "specifier": "./development-contracts.js",
+      "to": "packages/server/dist/development-contracts.js"
+    },
+    {
+      "from": "packages/server/dist/installed-reference-process.js",
+      "specifier": "./installed-reference.js",
+      "to": "packages/server/dist/installed-reference.js"
+    },
+    {
+      "from": "packages/server/dist/installed-reference.js",
+      "specifier": "./installed-payload.js",
+      "to": "packages/server/dist/installed-payload.js"
+    },
+    {
+      "from": "packages/server/dist/installed-reference.js",
+      "specifier": "./development-runtime.js",
+      "to": "packages/server/dist/development-runtime.js"
+    },
+    {
+      "from": "packages/server/dist/installed-reference.js",
+      "specifier": "./development-composition.js",
+      "to": "packages/server/dist/development-composition.js"
+    },
+    {
+      "from": "packages/server/dist/installed-reference.js",
+      "specifier": "./installed-reference-configuration.js",
+      "to": "packages/server/dist/installed-reference-configuration.js"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-evaluator.js",
+      "specifier": "./installed-schema-pattern.js",
+      "to": "packages/server/dist/installed-schema-pattern.js"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-evaluator.js",
+      "specifier": "./installed-schema-recursion.js",
+      "to": "packages/server/dist/installed-schema-recursion.js"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-evaluator.js",
+      "specifier": "./installed-contract-artifact.js",
+      "to": "packages/server/dist/installed-contract-artifact.js"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-evaluator.js",
+      "specifier": "./installed-schema-builtins.js",
+      "to": "packages/server/dist/installed-schema-builtins.js"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-evaluator.js",
+      "specifier": "./installed-schema-graph.js",
+      "to": "packages/server/dist/installed-schema-graph.js"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-evaluator.js",
+      "specifier": "./installed-schema-shape.js",
+      "to": "packages/server/dist/installed-schema-shape.js"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-evaluator.js",
+      "specifier": "./installed-schema-decimal.js",
+      "to": "packages/server/dist/installed-schema-decimal.js"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-evaluator.js",
+      "specifier": "./installed-schema-value.js",
+      "to": "packages/server/dist/installed-schema-value.js"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-evaluator.js",
+      "specifier": "./installed-schema-value.js",
+      "to": "packages/server/dist/installed-schema-value.js"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-graph.js",
+      "specifier": "./installed-contract-artifact.js",
+      "to": "packages/server/dist/installed-contract-artifact.js"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-graph.js",
+      "specifier": "./installed-schema-builtins.js",
+      "to": "packages/server/dist/installed-schema-builtins.js"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-graph.js",
+      "specifier": "./installed-schema-shape.js",
+      "to": "packages/server/dist/installed-schema-shape.js"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-graph.js",
+      "specifier": "./installed-schema-uri.js",
+      "to": "packages/server/dist/installed-schema-uri.js"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-pattern.js",
+      "specifier": "./installed-schema-value.js",
+      "to": "packages/server/dist/installed-schema-value.js"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-recursion.js",
+      "specifier": "./installed-schema-value.js",
+      "to": "packages/server/dist/installed-schema-value.js"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-uri.js",
+      "specifier": "./installed-schema-shape.js",
+      "to": "packages/server/dist/installed-schema-shape.js"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-value.js",
+      "specifier": "./installed-schema-decimal.js",
+      "to": "packages/server/dist/installed-schema-decimal.js"
+    },
+    {
+      "from": "packages/server/dist/member-executor.js",
+      "specifier": "./alias-evaluator.js",
+      "to": "packages/server/dist/alias-evaluator.js"
+    },
+    {
+      "from": "packages/server/dist/member-executor.js",
+      "specifier": "./member-identity.js",
+      "to": "packages/server/dist/member-identity.js"
+    },
+    {
+      "from": "packages/server/dist/member-executor.js",
+      "specifier": "./recovery-store.js",
+      "to": "packages/server/dist/recovery-store.js"
+    },
+    {
+      "from": "packages/server/dist/member-executor.js",
+      "specifier": "./resource-evaluator.js",
+      "to": "packages/server/dist/resource-evaluator.js"
+    },
+    {
+      "from": "packages/server/dist/member-executor.js",
+      "specifier": "./semantic-identity.js",
+      "to": "packages/server/dist/semantic-identity.js"
+    },
+    {
+      "from": "packages/server/dist/member-executor.js",
+      "specifier": "./retained-disclosure.js",
+      "to": "packages/server/dist/retained-disclosure.js"
+    },
+    {
+      "from": "packages/server/dist/member-identity.js",
+      "specifier": "./member-numeric-diagnostics.js",
+      "to": "packages/server/dist/member-numeric-diagnostics.js"
+    },
+    {
+      "from": "packages/server/dist/member-identity.js",
+      "specifier": "./semantic-identity.js",
+      "to": "packages/server/dist/semantic-identity.js"
+    },
+    {
+      "from": "packages/server/dist/read-http-routing.js",
+      "specifier": "./read-request.js",
+      "to": "packages/server/dist/read-request.js"
+    },
+    {
+      "from": "packages/server/dist/read-http-routing.js",
+      "specifier": "./read-http.js",
+      "to": "packages/server/dist/read-http.js"
+    },
+    {
+      "from": "packages/server/dist/read-request.js",
+      "specifier": "./read-selector.js",
+      "to": "packages/server/dist/read-selector.js"
+    },
+    {
+      "from": "packages/server/dist/read-sequence-lifecycle.js",
+      "specifier": "./authority-read.js",
+      "to": "packages/server/dist/authority-read.js"
+    },
+    {
+      "from": "packages/server/dist/read-sequence-lifecycle.js",
+      "specifier": "./read-request.js",
+      "to": "packages/server/dist/read-request.js"
+    },
+    {
+      "from": "packages/server/dist/read-update-runtime-limits.js",
+      "specifier": "./alias-evaluator.js",
+      "to": "packages/server/dist/alias-evaluator.js"
+    },
+    {
+      "from": "packages/server/dist/read-update-runtime-limits.js",
+      "specifier": "./member-executor.js",
+      "to": "packages/server/dist/member-executor.js"
+    },
+    {
+      "from": "packages/server/dist/read-update-runtime-limits.js",
+      "specifier": "./resource-evaluator.js",
+      "to": "packages/server/dist/resource-evaluator.js"
+    },
+    {
+      "from": "packages/server/dist/retained-disclosure.js",
+      "specifier": "./resource-evaluator.js",
+      "to": "packages/server/dist/resource-evaluator.js"
+    },
+    {
+      "from": "packages/server/dist/sequence-executor.js",
+      "specifier": "./member-executor.js",
+      "to": "packages/server/dist/member-executor.js"
+    },
+    {
+      "from": "packages/server/dist/sequence-executor.js",
+      "specifier": "./recovery-store.js",
+      "to": "packages/server/dist/recovery-store.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-batch.js",
+      "specifier": "./transaction-set.js",
+      "to": "packages/server/dist/transaction-set.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-batch.js",
+      "specifier": "./read-selector.js",
+      "to": "packages/server/dist/read-selector.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-batch.js",
+      "specifier": "./read-update-runtime-limits.js",
+      "to": "packages/server/dist/read-update-runtime-limits.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-batch.js",
+      "specifier": "./member-numeric-diagnostics.js",
+      "to": "packages/server/dist/member-numeric-diagnostics.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-batch.js",
+      "specifier": "./semantic-identity.js",
+      "to": "packages/server/dist/semantic-identity.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-batch.js",
+      "specifier": "./alias-evaluator.js",
+      "to": "packages/server/dist/alias-evaluator.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-batch.js",
+      "specifier": "./resource-evaluator.js",
+      "to": "packages/server/dist/resource-evaluator.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-batch.js",
+      "specifier": "./transaction-set.js",
+      "to": "packages/server/dist/transaction-set.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-changefeed.js",
+      "specifier": "./transaction-batch.js",
+      "to": "packages/server/dist/transaction-batch.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-changefeed.js",
+      "specifier": "./transaction-events.js",
+      "to": "packages/server/dist/transaction-events.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-changefeed.js",
+      "specifier": "./transaction-consistency.js",
+      "to": "packages/server/dist/transaction-consistency.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-comparison.js",
+      "specifier": "./transaction-store.js",
+      "to": "packages/server/dist/transaction-store.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-consistency.js",
+      "specifier": "./read-request.js",
+      "to": "packages/server/dist/read-request.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-dependencies.js",
+      "specifier": "./transaction-batch.js",
+      "to": "packages/server/dist/transaction-batch.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-dependencies.js",
+      "specifier": "./semantic-identity.js",
+      "to": "packages/server/dist/semantic-identity.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-discovery.js",
+      "specifier": "./transaction-batch.js",
+      "to": "packages/server/dist/transaction-batch.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-discovery.js",
+      "specifier": "./transaction-set.js",
+      "to": "packages/server/dist/transaction-set.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-events.js",
+      "specifier": "./transaction-authorization.js",
+      "to": "packages/server/dist/transaction-authorization.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-events.js",
+      "specifier": "./transaction-consistency.js",
+      "to": "packages/server/dist/transaction-consistency.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-events.js",
+      "specifier": "./transaction-batch.js",
+      "to": "packages/server/dist/transaction-batch.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-http.js",
+      "specifier": "./transaction-authorization.js",
+      "to": "packages/server/dist/transaction-authorization.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-http.js",
+      "specifier": "./transaction-changefeed.js",
+      "to": "packages/server/dist/transaction-changefeed.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-http.js",
+      "specifier": "./transaction-events.js",
+      "to": "packages/server/dist/transaction-events.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-http.js",
+      "specifier": "./transaction-consistency.js",
+      "to": "packages/server/dist/transaction-consistency.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-http.js",
+      "specifier": "./read-http-routing.js",
+      "to": "packages/server/dist/read-http-routing.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-http.js",
+      "specifier": "./read-http.js",
+      "to": "packages/server/dist/read-http.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-http.js",
+      "specifier": "./transaction-batch.js",
+      "to": "packages/server/dist/transaction-batch.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-http.js",
+      "specifier": "./read-request.js",
+      "to": "packages/server/dist/read-request.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-http.js",
+      "specifier": "./transaction-read.js",
+      "to": "packages/server/dist/transaction-read.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-http.js",
+      "specifier": "./transaction-discovery.js",
+      "to": "packages/server/dist/transaction-discovery.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-installed-configuration.js",
+      "specifier": "./development-contracts.js",
+      "to": "packages/server/dist/development-contracts.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-installed-configuration.js",
+      "specifier": "./installed-contract-artifact.js",
+      "to": "packages/server/dist/installed-contract-artifact.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-installed-process.js",
+      "specifier": "./development-contracts.js",
+      "to": "packages/server/dist/development-contracts.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-installed-process.js",
+      "specifier": "./transaction-installed.js",
+      "to": "packages/server/dist/transaction-installed.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-installed.js",
+      "specifier": "./transaction-installed-configuration.js",
+      "to": "packages/server/dist/transaction-installed-configuration.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-installed.js",
+      "specifier": "./installed-payload.js",
+      "to": "packages/server/dist/installed-payload.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-installed.js",
+      "specifier": "./transaction-runtime.js",
+      "to": "packages/server/dist/transaction-runtime.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-read.js",
+      "specifier": "./transaction-consistency.js",
+      "to": "packages/server/dist/transaction-consistency.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-read.js",
+      "specifier": "./authority-read.js",
+      "to": "packages/server/dist/authority-read.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime-configuration.js",
+      "specifier": "./transaction-events.js",
+      "to": "packages/server/dist/transaction-events.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime-configuration.js",
+      "specifier": "./transaction-sse.js",
+      "to": "packages/server/dist/transaction-sse.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime-configuration.js",
+      "specifier": "./development-contracts.js",
+      "to": "packages/server/dist/development-contracts.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime-configuration.js",
+      "specifier": "./installed-contract-artifact.js",
+      "to": "packages/server/dist/installed-contract-artifact.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime-configuration.js",
+      "specifier": "./transaction-batch.js",
+      "to": "packages/server/dist/transaction-batch.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime-configuration.js",
+      "specifier": "./transaction-http.js",
+      "to": "packages/server/dist/transaction-http.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime-configuration.js",
+      "specifier": "./transaction-store.js",
+      "to": "packages/server/dist/transaction-store.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime-configuration.js",
+      "specifier": "./transaction-snapshot.js",
+      "to": "packages/server/dist/transaction-snapshot.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime.js",
+      "specifier": "./transaction-authorization.js",
+      "to": "packages/server/dist/transaction-authorization.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime.js",
+      "specifier": "./transaction-schema-http.js",
+      "to": "packages/server/dist/transaction-schema-http.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime.js",
+      "specifier": "./node-http-disconnect.js",
+      "to": "packages/server/dist/node-http-disconnect.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime.js",
+      "specifier": "./transaction-sse.js",
+      "to": "packages/server/dist/transaction-sse.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime.js",
+      "specifier": "./read-request.js",
+      "to": "packages/server/dist/read-request.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime.js",
+      "specifier": "./transaction-runtime-configuration.js",
+      "to": "packages/server/dist/transaction-runtime-configuration.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime.js",
+      "specifier": "./node-http-target.js",
+      "to": "packages/server/dist/node-http-target.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime.js",
+      "specifier": "./transaction-store.js",
+      "to": "packages/server/dist/transaction-store.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime.js",
+      "specifier": "./transaction-batch.js",
+      "to": "packages/server/dist/transaction-batch.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime.js",
+      "specifier": "./transaction-service.js",
+      "to": "packages/server/dist/transaction-service.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime.js",
+      "specifier": "./transaction-http.js",
+      "to": "packages/server/dist/transaction-http.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-schema-http.js",
+      "specifier": "./development-contracts.js",
+      "to": "packages/server/dist/development-contracts.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-schema-http.js",
+      "specifier": "./read-http.js",
+      "to": "packages/server/dist/read-http.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-schema-http.js",
+      "specifier": "./transaction-http.js",
+      "to": "packages/server/dist/transaction-http.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-service.js",
+      "specifier": "./transaction-authorization.js",
+      "to": "packages/server/dist/transaction-authorization.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-service.js",
+      "specifier": "./transaction-discovery.js",
+      "to": "packages/server/dist/transaction-discovery.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-service.js",
+      "specifier": "./transaction-consistency.js",
+      "to": "packages/server/dist/transaction-consistency.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-service.js",
+      "specifier": "./sequence-executor.js",
+      "to": "packages/server/dist/sequence-executor.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-service.js",
+      "specifier": "./transaction-sequence.js",
+      "to": "packages/server/dist/transaction-sequence.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-service.js",
+      "specifier": "./transaction-read.js",
+      "to": "packages/server/dist/transaction-read.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-service.js",
+      "specifier": "./transaction-submission.js",
+      "to": "packages/server/dist/transaction-submission.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-set.js",
+      "specifier": "./read-selector.js",
+      "to": "packages/server/dist/read-selector.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-snapshot.js",
+      "specifier": "./transaction-authorization.js",
+      "to": "packages/server/dist/transaction-authorization.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-snapshot.js",
+      "specifier": "./resource-evaluator.js",
+      "to": "packages/server/dist/resource-evaluator.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-snapshot.js",
+      "specifier": "./read-request.js",
+      "to": "packages/server/dist/read-request.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-snapshot.js",
+      "specifier": "./transaction-changefeed.js",
+      "to": "packages/server/dist/transaction-changefeed.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-snapshot.js",
+      "specifier": "./transaction-batch.js",
+      "to": "packages/server/dist/transaction-batch.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-sse.js",
+      "specifier": "./transaction-changefeed.js",
+      "to": "packages/server/dist/transaction-changefeed.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-sse.js",
+      "specifier": "./transaction-events.js",
+      "to": "packages/server/dist/transaction-events.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-store.js",
+      "specifier": "./transaction-authorization.js",
+      "to": "packages/server/dist/transaction-authorization.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-store.js",
+      "specifier": "./transaction-set.js",
+      "to": "packages/server/dist/transaction-set.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-store.js",
+      "specifier": "./transaction-snapshot.js",
+      "to": "packages/server/dist/transaction-snapshot.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-store.js",
+      "specifier": "./transaction-changefeed.js",
+      "to": "packages/server/dist/transaction-changefeed.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-store.js",
+      "specifier": "./transaction-events.js",
+      "to": "packages/server/dist/transaction-events.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-store.js",
+      "specifier": "./transaction-consistency.js",
+      "to": "packages/server/dist/transaction-consistency.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-store.js",
+      "specifier": "./development-contracts.js",
+      "to": "packages/server/dist/development-contracts.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-store.js",
+      "specifier": "./installed-contract-artifact.js",
+      "to": "packages/server/dist/installed-contract-artifact.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-store.js",
+      "specifier": "./transaction-batch.js",
+      "to": "packages/server/dist/transaction-batch.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-store.js",
+      "specifier": "./transaction-dependencies.js",
+      "to": "packages/server/dist/transaction-dependencies.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-submission.js",
+      "specifier": "./transaction-set.js",
+      "to": "packages/server/dist/transaction-set.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-submission.js",
+      "specifier": "./transaction-batch.js",
+      "to": "packages/server/dist/transaction-batch.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-submission.js",
+      "specifier": "./transaction-comparison.js",
+      "to": "packages/server/dist/transaction-comparison.js"
+    },
+    {
+      "from": "packages/server/dist/transaction-submission.js",
+      "specifier": "./transaction-store.js",
+      "to": "packages/server/dist/transaction-store.js"
+    }
+  ],
+  "limitation": "Static relative-import inventory; actual named negative response remains required. Every package/tool symlink resolves within mirror; all eight workspace source aliases copied."
+}

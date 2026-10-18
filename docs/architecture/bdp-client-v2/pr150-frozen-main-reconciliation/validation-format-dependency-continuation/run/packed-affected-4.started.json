@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "exec",
+    "vitest",
+    "run",
+    "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+    "--testNamePattern",
+    "^serves missing-first current Resources and bounds unproved minimum eligibility$",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-format-dependency-continuation/run/packed-affected-4.json"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-pr150-main-reconciliation",
+  "head": "d7197e97a29bff8f075028419afad05388e2e655",
+  "tree": "630a94d0ca1545f898cb8a8b614d4b7d2dd6d454",
+  "sourceIdentity": "b9fe0a23fdb4026641227ec273f05cb2144855271094b6429193b10a7412375a",
+  "rootGateSha256": "9a6d8b5053bdd585692066d519552d19893359f5e2e62202ed41f351a6fa4b2e",
+  "outerSeconds": 120,
+  "automaticRetries": 0,
+  "overrides": {
+    "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-format-dependency-continuation/run/consumer/node_modules/@bdp/server/dist/transaction-installed.js",
+    "BDP_TRANSACTIONAL_SOURCE_COMMIT": "d7197e97a29bff8f075028419afad05388e2e655"
+  },
+  "temporaryDirectory": "/private/tmp/vickie-pr150-validation-packed-affected-4-m2g7331n",
+  "npmCache": "/private/tmp/vickie-pr150-validation-packed-affected-4-m2g7331n/npm-cache"
+}

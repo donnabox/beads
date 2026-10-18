@@ -1,0 +1,11 @@
+--- a/packages/server/dist/transaction-submission.js
++++ b/packages/server/dist/transaction-submission.js
+@@ -23,7 +23,7 @@
+     }
+     catch (error) {
+         if (error instanceof TransactionSelectorSyntaxError)
+-            return { kind: "refused", status: 400, code: "malformed-request", pointer: error.pointer };
++            return { kind: "development-limit", message: error.message };
+         if (error instanceof TransactionDevelopmentLimitError)
+             developmentLimit = error;
+         else if (error instanceof JsonSyntaxError ||

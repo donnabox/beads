@@ -1,0 +1,199 @@
+## Findings
+
+### A. Proven defects (establishable from the supplied content alone)
+
+---
+
+**A1 — High — no finite in-process bound on a `pending` reservation; the owner token is unrecoverable once dropped**
+
+*Location:* `packages/server/src/transaction-store.ts:84` (receipts schema), `:366-385` (pending receipt construction), `:187-191` (`expireRow` early-returns on `owner !== null`), `:263-267` (sweep selects `owner IS NULL` only), `:298-300` (startup is the only bulk retraction), `:134-137` (`claims` is a `WeakMap`).
+
+*Issue:* A pending row carries no admission instant — not as a column (`:84`) and not as a receipt member (`:366-373`). The retention sweep deliberately excludes owned rows twice (`owner IS NULL` **and** `json_extract(receipt,'$.detail')='available'`, `:265`). The only retraction paths are startup (`:298-300`), live abort (`:560-570`), explicit `retract` (`:746`), and `cancelSequence` (`:576`) — all three of the latter require the in-memory `TransactionClaim`, whose owner UUID exists only in a `WeakMap`.
+
+*Reachable trigger:* `admit()` returns `{kind:"owned", claim}`; the embedder then throws, returns, or discards the claim without calling `execute` or `retract`. Same for `createTransactionSequenceStepper` (`transaction-sequence.ts:81`), which reserves every unknown member key at construction and strands all of them if `step()`/`abort()` is never called. Once the claim object is garbage-collected, the owner UUID is gone and nothing in-process can ever retract that row.
+
+*Impact:* The key stays bound to `pending` for the life of the process. Every later identical presentation gets the pending receipt forever on the direct path (`:352-353`, `:362-365`) and `idempotency-in-progress` forever in a sequence (`transaction-sequence.ts:39`); every non-identical presentation gets `conflict` forever. `bdp.md:3913-3920` requires retraction "within `transaction.duration` when that limit is advertised and within a finite bound of the authority's choosing otherwise" and states "a `pending` receipt older than the bound is a conformance failure." The same passage makes "the client's retry … the recovery path" — but that path never opens, because retraction never happens. Satisfying the bound only across a process restart is not the bound the spec asks for.
+
+*Fix/next step:* Persist an admission instant per receipt row; extend `sweep` to retract `owner IS NOT NULL` rows older than a configured bound; surface that bound in `TransactionStoreOptions`; and report a live stranded-pending count (see A10, `inspect()` exposes no receipt state at all).
+
+---
+
+**A2 — Medium — `nextSequence` admits and executes members the carrier's atomic admission did not admit**
+
+*Location:* `transaction-store.ts:713-720` (turn-time `admitKey` + immediate `executeClaim`), reached from `:700-726`.
+
+*Issue:* `admitSequence` (`:662-670`) records reservations for all unknown member keys in one transaction. Members that were *not* unknown are absent from `owned`. At their turn, `nextSequence` calls `admitKey(..., true)` again, and if the key is now unknown it admits a fresh pending receipt **in its own transaction** and executes.
+
+*Reachable trigger:* Between `admitSequence` and member K's turn there is at least one yield per turn (`transaction-sequence.ts:129`, which also precedes the first step). In that window the other owner can retract (`:746`, `:576`, `:560-570`), or the maintenance sweep can forget member K's retained `failed` receipt (`:203-208`). At K's turn the key is unknown → K executes.
+
+*Impact:* The set of executing members is not fixed by the carrier's atomic admission step, contrary to `bdp.md:4010-4014` ("the sequence's admission admits every member whose key is unknown, in declaration order, recording a pending receipt for each … and the members then execute in order") and the one-atomic-step requirement at `bdp.md:3926-3935`. A crash mid-sequence therefore leaves a partially reserved carrier. Behaviourally the sequence acquires a retry-after-retraction, which `bdp.md:4074-4075` denies sequences.
+
+*Caveat:* The supplied excerpt pins *admission* timing but does not explicitly state when member *projections* are evaluated; the deviation I can prove is against `4010-4014` and `3926-3935`, not against a projection-timing sentence.
+
+*Fix/next step:* Decide each non-owned member's projection at admission and freeze it in the sequence state; make `nextSequence` consult retained key state for projection only, never admit.
+
+---
+
+**A3 — Medium — one unexpected retained-result shape converts a routine retention sweep into permanent store unavailability**
+
+*Location:* `transaction-store.ts:200`, `:211`, `:219`, `:229` (throw sites in `expireRow`); `:259-272` (`sweep` iterates inside the caller's `atomic` and aborts on the first throwing row); `:600-618` (timer catch sets sticky `maintenanceFailure` *and* closes the connection); `:150-151` (`enter` then fences every subsequent call).
+
+*Issue:* `expireRow` asserts five distinct shape invariants over receipt bodies the owner itself wrote, and runs on every `detail:"available"` row from a background timer. Any violation propagates out of `sweep` → out of `maintain` → into the timer catch, which rolls back the whole sweep, closes the database, and makes every later `admit`/`execute`/`receipt`/`inspect` throw `"transaction maintenance failed; owner fenced"` until restart. There is no per-row quarantine and no preserved partial progress.
+
+*Reachable trigger:* Any completed receipt whose `results` contains a `created` outcome the asserts do not anticipate. Concretely, the alias-skip guard at `:217-221` requires *both* `result.alias` and `result.target` to be strings; an alias `created` result whose `target` is a reference object falls through to the Resource branch at `:222-229` and throws `"invalid retained creation result"`.
+
+*Impact:* Total loss of availability for the whole Scope from a single malformed row, triggered by a background timer rather than by the request that wrote it. The sweep's already-completed expiries in that pass are rolled back as well.
+
+*Caveat:* Reachability of that specific alias shape depends on `alias-evaluator.ts` (not supplied). The blast radius and the absence of per-row isolation are provable from the supplied code regardless.
+
+*Fix/next step:* Handle rows one transaction at a time; on an unexpected shape, leave the row unexpired, count it, and keep serving — reserve the fence for failures of the connection itself.
+
+---
+
+**A4 — Medium — alias-only transactions commit durable state with no change group and report a `requiredPosition` that predates their own effect**
+
+*Location:* `transaction-batch.ts:412-426` (alias branch pushes a result and `continue`s without emitting an event); `transaction-store.ts:533-545` (`effective = result.events.length > 0`; no group row, no `position` advance, `requiredPosition: pos-${previous}`, `effectPosition` omitted); the write itself at `:431-436`.
+
+*Issue:* `putAlias`/`deleteAlias` effects are committed inside the same SQLite transaction and are durable, but they generate no `TransactionEvent`, so `effective` is false and the transaction neither records a group nor consumes a position. The terminal receipt therefore reports `requiredPosition = pos-${previous}` — a minimum position that precedes the client's own committed write — and omits `effectPosition` entirely.
+
+*Reachable trigger:* `prepareTransactionSingleton(scope, "putAlias", …)` → `admit` → `execute`. The alias is immediately visible via `aliasTarget` (`:776`) and to subsequent evaluations (`:430`), yet appears at no position and in no group.
+
+*Impact:* A client that honours the returned `requiredPosition` is told a minimum that any reader already satisfies, including readers that have not observed the alias — read-your-writes is not expressible for locator effects. It also conflicts with `bdp.md:3907-3911`, which names "the Resource state, the change group, and the terminal receipt" as what a commit produces atomically.
+
+*Caveat:* Whether alias mutations are *required* to occupy a Scope position is governed by locator sections not supplied; the inconsistency between a durable commit and its reported `requiredPosition` is provable from the packet.
+
+*Fix/next step:* Either make alias mutations effective (own position + group, with whatever change record the locator sections define) or make the receipt say so — omit `requiredPosition` rather than report a pre-write position for a committed change.
+
+---
+
+**A5 — Medium — `allocated` on an expired sequence projection is gated on the presented member's operation kind, not on what the retained receipt allocated**
+
+*Location:* `transaction-sequence.ts:43-54`; the retained list it reads is built at `transaction-store.ts:210-236`.
+
+*Issue:* `bdp.md:4021-4024` defines the gate as a property of the retained fact — "Here a Resource creation is an operation that allocated a Resource identity" — and makes omission a MUST for every other operation. The code gates on `member.operation === "createBead" || "createLink"` (the *presented* kind) and then requires exactly one retained allocation, throwing otherwise. `expireRow` builds the compact list from `result.outcome === "created"` without distinguishing an authority-allocated identity from a client-supplied `id` (`bdp.md:3913` confirms supplied `id`s exist).
+
+*Reachable trigger / impact, two directions:*
+1. *Over-report (provable):* a `createBead` that supplies its own `id` allocates nothing, yet `expireRow:222-235` records an `allocated` entry and `project:53` emits `allocated: {id, type}` — the MUST-omit clause of `4022` on the strict reading of "allocated".
+2. *Throw (contingent):* any successful create whose outcome is not literally `"created"` yields an empty compact list, and `transaction-sequence.ts:45` throws `"expired singleton creation lost its allocation"`. `step()` then cancels the carrier (`:102-110`), retracting every remaining reservation, on a request that should have returned an `idempotency-expired` member problem. Reachability needs `resource-evaluator.ts` (not supplied).
+
+*Fix/next step:* Derive the projection from the retained compact list — present → emit, absent → omit — and record in `expireRow` whether the identity was authority-allocated. Keep the operation-kind test only as a consistency check that degrades to omission rather than throwing.
+
+---
+
+**A6 — Low — `assertPreparedTransaction(batch, batch.carrier.scope)` is self-referential**
+
+*Location:* `transaction-batch.ts:256`.
+
+*Issue:* The scope argument is read off the same object being validated, so `batch.carrier.scope !== scope` can never fail. `normalizeTransaction` therefore verifies only `prepared` WeakSet membership, not that the batch belongs to the calling store's Scope. The real checks live at `transaction-store.ts:627` and `transaction-batch.ts:368`.
+
+*Impact:* No current defect — `admit` and `admitSequence` check the store's scope first, and `nextSequence`'s turn-time path (A2) only ever sees members from an already-asserted sequence. The assertion reads as a guarantee it does not provide.
+
+*Fix/next step:* Thread the store's scope into `normalizeTransaction`, or drop the argument.
+
+---
+
+**A7 — Low — diagnostic limits duplicated instead of read from `options.limits`**
+
+*Location:* `transaction-batch.ts:393-394` hardcodes `{diagnostics: 16, diagnosticBytes: 65536}`; `transaction-store.ts:488-492` passes the identical values as `options.limits.diagnosticCount`/`diagnosticBytes`.
+
+*Impact:* Changing the store's advertised limits silently leaves numeric admission on the old values. Also note numeric admission runs at *evaluation* time, so an unrepresentable number binds the key to a retained 422 `failed` receipt — which `bdp.md:3990-3999` permits, but it makes the comment at `transaction-batch.ts:67` ("Whole-carrier syntax/Scope checks happen before consulting any durable key") broader than the behaviour.
+
+*Fix/next step:* Read both from `options.limits`; narrow the comment to exclude numeric admission.
+
+---
+
+**A8 — Low — two clock reads for one commit**
+
+*Location:* `transaction-store.ts:404` (`now` captured before evaluation), used for every event `time` at `transaction-batch.ts:387`; `transaction-store.ts:486` hands the evaluator `observeCommitTime: instant`, an unfrozen live clock.
+
+*Impact:* Any state the evaluator timestamps via `observeCommitTime` is strictly later than the events describing that state, inside a single atomic commit.
+
+*Fix/next step:* Pass one frozen instant as both `now` and `observeCommitTime`.
+
+---
+
+**A9 — Low — cleanup failures mask the original abort reason**
+
+*Location:* `transaction-store.ts:560-570`.
+
+*Issue:* The catch runs a fresh `atomic` delete and then rethrows `error`; if that `atomic` throws (connection gone, or the failure that aborted the execution also broke the connection), the original cause is replaced. `nextSequence:729-739` already does this correctly with `AggregateError`.
+
+*Fix/next step:* Mirror the `AggregateError` pattern. Separately, `enter`'s message at `:152` conflates "closed" with "reentrant"; split it.
+
+---
+
+**A10 — Low — `inspect()` is the one unlabelled diagnostic and returns protocol-shaped artifacts**
+
+*Location:* `transaction-store.ts:782-798`, contrast `:775` and `:53-54`.
+
+*Issue:* Every other diagnostic in the packet carries an explicit disclaimer; `inspect()` carries none, yet returns `resources` (raw stored bodies) and `groups` (change-group bodies) in shapes a reader could mistake for Read-profile responses or a replication stream. It also exposes no receipt state, so the stranded pending reservations of A1 are unobservable.
+
+*Fix/next step:* Add the same "private diagnostic, not a profile projection" disclaimer, and expose pending-receipt counts/ages.
+
+---
+
+**A11 — Low — an empty *array* `changeContext` is silently equated with omission**
+
+*Location:* `transaction-batch.ts:274-276`.
+
+*Issue:* The guard excludes `null` but not arrays, so `changeContext: []` satisfies `typeof === "object"` and `Object.keys(...).length === 0` and is deleted from the identity record. Two different requests then share one semantic identity. Contingent on whether RU preparation admits an array there; the code path is unconditional.
+
+*Fix/next step:* Require a plain object (`!Array.isArray` and not a `JsonNumberLiteral`) before deleting.
+
+---
+
+### B. Questions requiring omitted context (not asserted as defects)
+
+**B1 — `encodeSemanticValue` / `semantic-identity.ts` not supplied.** The two identity properties the spec states most explicitly cannot be checked:
+- *Member order.* `bdp.md:3837`/`3869` require object member order to be ignored. `transaction-batch.ts:267-272` builds `input` by spreading `op.input` then appending `properties`/`metadata` defaults, so `{type, metadata:{}, properties:{}}` and `{type}` produce different member orders for the same semantic request. Order-sensitive encoding ⇒ `409 idempotency-conflict` on a conformant retry.
+- *Numeric equality.* `op.input` values reach the encoder as lossless `JsonNumberLiteral`s. `bdp.md:3871` requires records compared under RFC 6902 §4.6; `3` and `3.0` are equal there. If the encoder keeps `.literal`, a retry that reserialized a number conflicts.
+
+**B2 — `resource-evaluator.ts` not supplied.** Three open questions: (a) can a successful create report an outcome other than `"created"`? (feeds A5); (b) are `ResourceRecord` endpoint references canonicalized to absolute scope URLs? `transaction-batch.ts:519-523` `continue`s on any non-absolute endpoint, silently skipping both the `"missing staged endpoint"` check **and** the `linked`/`unlinked` events — reachable if `@label`-bound endpoints (`:434-436` writes the bare `beads/<uuid>` id) are stored unexpanded; (c) can `updateLink` change endpoints? `:519` emits no `linked`/`unlinked` for `"updated"`.
+
+**B3 — `alias-evaluator.ts` not supplied.** The `putAlias`/`deleteAlias` result shape that `expireRow:217-221` asserts on is unverifiable (feeds A3), as is whether an alias-to-alias `target` is rejected — `transaction-batch.ts:123-134` screens `target` for `@` but applies the alias-chain rejection only to `aliasFields(op.operation)`, which is empty for `putAlias`.
+
+**B4 — `@bdp/protocol` RU preparation not supplied.** Unverifiable: whether duplicate member keys inside one sequence are rejected (if not, `transaction-store.ts:663-669` projects the second occurrence as `idempotency-in-progress`, which `bdp.md:4028-4029` reserves for executions the carrier did *not* admit); whether `name` can attach to a non-creating operation (if so, a later `@label` consumer throws `TypeError("unknown batch binding")` at `transaction-batch.ts:296` from inside the admission transaction instead of yielding a problem); whether `id: "@x"` is rejected (`:279` treats `id` as a label consumer while `:123` does not screen `id` for `@`).
+
+**B5 — problem registry and schema bundle not supplied.** `transaction-sequence.ts:11-15` cannot be checked against `bdp.md:4016-4020`'s `transactionalSequenceResponse` / `transactionalSequenceMemberProblem` / `sequenceAllocatedIdentity`. Note that `idempotency-conflict` and `idempotency-in-progress` share one `type` URI, and the `allocated` extension is attached at `:53` *after* `parseReadUpdateProblem`, so it is never schema-validated. Per the brief, write-profile conformance claims are intentionally disabled, so I record the absence of envelope validation as an accepted exclusion rather than a finding.
+
+**B6 — package barrel not supplied.** The claim at `transaction-store.ts:55` that `fault` is "not exported from the package surface" is unverifiable; `TransactionStoreOptions`, which declares it, is exported from this module (`:46`).
+
+**B7 — discovery/limits surface not supplied.** Whether the fixed one-day `expiresAt` (`:506`) is consistent with any advertised `retention.receipt` or `transaction.duration` cannot be checked; `bdp.md:3917-3920` and `3990-3993` make those bounds conditional on advertisement.
+
+**B8 — baseline vs. regression cannot be distinguished.** The packet contains head-side content only: no diff, no base-side excerpt from `a9bcf9ed1d869aaba2cb49fe9cca10e3b8d52a94`, no history. Every item in sections A and B is stated against the supplied head text and `bdp.md:3793-4099` alone. I cannot say whether any of them is new at `72bdaad0` or pre-existing baseline behaviour. Establishing that requires the base-side versions of these three files.
+
+---
+
+### C. Bounded exclusions observed in this packet (not regressions)
+
+- Fixed `view = "development-all-visible"` with all-true policies (`transaction-store.ts:310`, `:483-484`): no `forbidden` member projection (`bdp.md:4037-4041`), no per-retry disclosure re-authorization (`bdp.md:4084-4087`). `transaction-sequence.ts:project` correspondingly has no `forbidden` branch — consistent.
+- No erasure support (`erasures: []`, `:529`): no `resource-erased` projection (`bdp.md:4025-4026`, `4039-4041`).
+- No `@name` dependents (`transaction-batch.ts:127-128` rejects them at preparation). The entire unresolved-reservation apparatus of `bdp.md:3926-3968`, the direct comparison-budget `503` path (`3963-3968`), the retry-after-retraction permission (`3970-3985`), and `binding-unavailable` (`4054-4064`) are absent by construction and correctly absent — there is no unresolved reservation state in this implementation.
+- Single immutable epoch (`:287`, `:309`): `bdp.md:3895-3899` (new epoch = new namespace; waiting attempts aborted on epoch change) is unexercised. No rotation path exists.
+- No aggregate/multiplicity constraints (`maximumEndpointMultiplicity: []`, `:485`) and schema-free unowned Types only (`:98-104`): the Scope-aggregate serializability of `bdp.md:3827-3831` is not demonstrated.
+- Single process, single connection, `locking_mode=EXCLUSIVE`, `busy_timeout=0` (`:280`): `bdp.md:3921-3924`'s "every mutation route consults one authoritative key state" holds trivially and is untested across routes or replicas.
+- Alias locators resolved only in `createLink.source/target` and `updateBead/deleteBead.bead` (`transaction-batch.ts:179-183`); `updateLink`/`deleteLink`'s `link` and `createBead`'s `id` are not alias-resolvable.
+- `recordChangeContext: false` (`:490`): `changeContext` participates in identity but is not recorded in state.
+
+Separately, two spec-conformant behaviours I verified rather than flagged, since they are easy to mis-read as defects: `admitKey`'s `pendingWins` path (`:352-353`) returns the pending receipt *without* identity comparison, which is what `bdp.md:4066-4068` requires ("these sequence projections take precedence over static semantic comparison … even if an immutable field could establish a mismatch"); and the blanket startup retraction `DELETE FROM receipts WHERE owner IS NOT NULL` (`:299`) is sound because group, position, state and terminal receipt all commit in the one transaction at `:392-559`, so an owned row can never coexist with a committed group.
+
+---
+
+### D. Coverage: what I actually read
+
+Read in full, exactly as supplied in the packet:
+
+| Path | Lines |
+|---|---|
+| `docs/specs/bdp.md` | 3793–4099 (307 lines, "Mutation Transactions") |
+| `packages/server/src/transaction-store.ts` | 1–808 |
+| `packages/server/src/transaction-sequence.ts` | 1–136 |
+| `packages/server/src/transaction-batch.ts` | 1–538 |
+
+All three source files end on a closing construct (`:808`, `:136`, `:538` close `openTransactionStore`, `runTransactionSequence`, and `transactionStorageText` respectively), so I observe no truncation within the supplied excerpts. I did not receive the earlier packet02 content this supplement replaces; anything in packet02 outside these three files is unread by me.
+
+Unresolvable cross-references inside the spec excerpt (targets not supplied): `#idempotency-keys`, `#batch-operation-target`, `#readupdate-sequence-target`, `#sequence-response-envelope`, `#duplicate-keys-and-retained-dispositions`, `#mutation-receipt-responses`, `#outcome-retention`, `#transactional-conformance-rows`.
+
+Not supplied, therefore unread: `semantic-identity.ts`, `resource-evaluator.ts`, `alias-evaluator.ts`, the `@bdp/protocol` package (`parseCanonicalScope`, `parseTypeDescriptor`, `prepareReadUpdateSequence`, `prepareReadUpdateSingleton`, `admitReadUpdateOperationNumbers`, `parseReadUpdateProblem`, `referenceUri`, `decodeJsonDocument`, `stringifyJsonValue`, `JsonNumberLiteral`, `parseCanonicalHttpUrl`, `assertCanonicalPathSegments`), the package barrel, any tests, any conformance manifest or JSON Schema bundle, any discovery/limits surface, and all base-side (`a9bcf9ed`) content.
+
+I invoked no tools, read nothing from disk, delegated to no subagents, and wrote or modified no files. This is not entire-branch coverage: it is a review of the four excerpts above only.

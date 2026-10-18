@@ -1,0 +1,30 @@
+{
+  "executed": false,
+  "copyCreated": false,
+  "path": "packages/server/dist/transaction-http.js",
+  "before": "transactionHttpProblem(\"invalid-parameter\", error.context)",
+  "after": "transactionHttpProblem(\"invalid-parameter\", error instanceof TransactionEventParameterError ? error.context : undefined)",
+  "exactOccurrenceCountRequired": 1,
+  "expectedFailures": [
+    "changefeed-context:3",
+    "changefeed-context:4",
+    "changefeed-context:5",
+    "changefeed-context:6",
+    "changefeed-context:7",
+    "changefeed-context:8",
+    "changefeed-context:12"
+  ],
+  "expectedCompleteResponses": 12,
+  "expectedHardFailureCount": 0,
+  "softFailureCount": 7,
+  "expectedContextPositions": {
+    "3": "pos-1",
+    "4": "pos-1",
+    "5": "pos-1",
+    "6": "pos-1",
+    "7": "pos-1",
+    "8": "pos-1",
+    "12": "pos-2"
+  },
+  "proof": "Mirror-relative dynamic runtime import plus copied Vitest/tool graph and every product import edge resolve inside derivative. Hash before/after entire copied graph, only emitted HTTP bytes differ. Exact generated spelling and patch pins await positive build; source illustration is not compiled."
+}

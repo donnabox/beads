@@ -1,0 +1,35 @@
+{
+  "kind": "external preparation-only fixed canonical RU Scope correction",
+  "sourceUnchanged": true,
+  "sourceBindingSha256": "cf5d2cd13a57d4a01220f931bdd308a71c8709f5d185592b2f6a08347631c24e",
+  "draftSha256": "8f0123c9484a74a5c4995dea84833561056f603c8da64d5f9139107b85d44df8",
+  "helperPath": "scripts/installed-reference-observation.mjs",
+  "helperSha256": "ca897f4a7659969df123037b5847d5765b357d9b8e1652f367bb204450db6278",
+  "canonicalScope": "https://reference.invalid/acme/",
+  "literalBodyBytes": [
+    124,
+    124,
+    199,
+    199
+  ],
+  "total": 646,
+  "largest": 199,
+  "previousTemplateTotal": 582,
+  "previousIncorrectUpper": 634,
+  "previousMessageTypo": 626,
+  "previousLargestIncorrectUpper": 196,
+  "unchangedAllNonRuRequestRows": true,
+  "unchangedSelectionsControlsAndWorkload": true,
+  "originalPacketAllHashesPreserved": true,
+  "executedProductCode": false,
+  "old": {
+    "measure.py": "630a794a413a2cc692a05dc18257b5e39faa9c373a9400b30c4952234ff90ca6",
+    "requests.json": "a313e590d9a5bcbb08985645cb852d7ef65f25450e675093477d47fa2613947f",
+    "report.md": "ff12641c293f128094625bb659b5f334f05b54d6c3f74e6e1c1399f268160f9c"
+  },
+  "new": {
+    "measure.py": "932dad1a4775556edeeaf702847632f733ee443ebb61ff4be66f3355085a73d7",
+    "requests.json": "a011b03624883e4652d661caece85f162d71fa0161065e0ad1d86e10f1b71ef5",
+    "report.md": "29fbfee0172657d1eb05fd4b10f8e267460b1f16c286e109a9b035384c6829ef"
+  }
+}

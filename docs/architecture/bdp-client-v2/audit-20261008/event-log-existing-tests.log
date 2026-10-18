@@ -1,0 +1,167 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/bdp-client-audit-20261008/bdp
+
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional problem rows > adds exactly the three drafted rows after the Read and Read+Update rows 1ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional problem rows > mirrors the rows in the bundle's Transactional problem branches 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional problem rows > closes the direct and receipt contexts to their codes 1ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > cover discovery, batch, receipts, the set targets, direct problems, sequence, Events, the changefeed, and snapshots 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > keeps every available receipt and page within its own Scope's advertised bound 1ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-aliases > is a version-1 fixture whose exchanges validate against the bundle 45ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-aliases > pairs every response with its status, media type, cache policy, and response fields 1ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-aliases > keeps every Mutation Receipt aligned with the request that produced it 1ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-aliases > repeats a retained receipt byte for byte when an identical retry is answered 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-aliases > keeps change groups, Event pages, and snapshots to their stated invariants 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-batch > is a version-1 fixture whose exchanges validate against the bundle 6ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-batch > pairs every response with its status, media type, cache policy, and response fields 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-batch > keeps every Mutation Receipt aligned with the request that produced it 1ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-batch > repeats a retained receipt byte for byte when an identical retry is answered 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-batch > keeps change groups, Event pages, and snapshots to their stated invariants 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-changefeed > is a version-1 fixture whose exchanges validate against the bundle 10ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-changefeed > pairs every response with its status, media type, cache policy, and response fields 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-changefeed > keeps every Mutation Receipt aligned with the request that produced it 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-changefeed > repeats a retained receipt byte for byte when an identical retry is answered 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-changefeed > keeps change groups, Event pages, and snapshots to their stated invariants 3ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-direct-problems > is a version-1 fixture whose exchanges validate against the bundle 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-direct-problems > pairs every response with its status, media type, cache policy, and response fields 1ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-direct-problems > keeps every Mutation Receipt aligned with the request that produced it 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-direct-problems > repeats a retained receipt byte for byte when an identical retry is answered 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-direct-problems > keeps change groups, Event pages, and snapshots to their stated invariants 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-discovery > is a version-1 fixture whose exchanges validate against the bundle 4ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-discovery > pairs every response with its status, media type, cache policy, and response fields 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-discovery > keeps every Mutation Receipt aligned with the request that produced it 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-discovery > repeats a retained receipt byte for byte when an identical retry is answered 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-discovery > keeps change groups, Event pages, and snapshots to their stated invariants 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-events > is a version-1 fixture whose exchanges validate against the bundle 1ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-events > pairs every response with its status, media type, cache policy, and response fields 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-events > keeps every Mutation Receipt aligned with the request that produced it 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-events > repeats a retained receipt byte for byte when an identical retry is answered 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-events > keeps change groups, Event pages, and snapshots to their stated invariants 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-receipt-pagination > is a version-1 fixture whose exchanges validate against the bundle 1ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-receipt-pagination > pairs every response with its status, media type, cache policy, and response fields 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-receipt-pagination > keeps every Mutation Receipt aligned with the request that produced it 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-receipt-pagination > repeats a retained receipt byte for byte when an identical retry is answered 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-receipt-pagination > keeps change groups, Event pages, and snapshots to their stated invariants 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-receipts > is a version-1 fixture whose exchanges validate against the bundle 1ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-receipts > pairs every response with its status, media type, cache policy, and response fields 1ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-receipts > keeps every Mutation Receipt aligned with the request that produced it 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-receipts > repeats a retained receipt byte for byte when an identical retry is answered 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-receipts > keeps change groups, Event pages, and snapshots to their stated invariants 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-sequence > is a version-1 fixture whose exchanges validate against the bundle 1ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-sequence > pairs every response with its status, media type, cache policy, and response fields 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-sequence > keeps every Mutation Receipt aligned with the request that produced it 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-sequence > repeats a retained receipt byte for byte when an identical retry is answered 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-sequence > keeps change groups, Event pages, and snapshots to their stated invariants 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-set-singletons > is a version-1 fixture whose exchanges validate against the bundle 1ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-set-singletons > pairs every response with its status, media type, cache policy, and response fields 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-set-singletons > keeps every Mutation Receipt aligned with the request that produced it 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-set-singletons > repeats a retained receipt byte for byte when an identical retry is answered 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-set-singletons > keeps change groups, Event pages, and snapshots to their stated invariants 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-snapshots > is a version-1 fixture whose exchanges validate against the bundle 2ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-snapshots > pairs every response with its status, media type, cache policy, and response fields 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-snapshots > keeps every Mutation Receipt aligned with the request that produced it 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-snapshots > repeats a retained receipt byte for byte when an identical retry is answered 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional wire fixtures > transactional-snapshots > keeps change groups, Event pages, and snapshots to their stated invariants 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > operator-ruled alias and live-erasure illustrations > keeps successful alias targets in the narrated surviving Bead set 1ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > operator-ruled alias and live-erasure illustrations > rotates the serving view after a grant change while preserving the receipt's execution view 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > operator-ruled alias and live-erasure illustrations > keeps alias results closed and excludes alias batch members 3ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > operator-ruled alias and live-erasure illustrations > resolves successful alias requests directly against the Scope for local and absolute spellings 1ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > operator-ruled alias and live-erasure illustrations > rejects successful alias results for well-formed references outside the Scope's alias root 1ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > operator-ruled alias and live-erasure illustrations > binds alias receipt expiry to its narrated terminal instant and advertised retention 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > operator-ruled alias and live-erasure illustrations > projects an expired alias sequence member without a Resource allocation 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > operator-ruled alias and live-erasure illustrations > ties the narrated live publication to one complete committed group and both disconnect outcomes 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional sequence problem extensions > rejects malformed allocated identity 42 1ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional sequence problem extensions > rejects malformed allocated identity {} 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional sequence problem extensions > rejects malformed allocated identity {"id":"not-a-url","type":7} 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional sequence problem extensions > rejects malformed allocated identity {"withheld":false} 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional sequence problem extensions > rejects malformed allocated identity {"withheld":true,"id":"https://beads.example/acme/beads/task-42","type":"https://work.example/types/task"} 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional sequence problem extensions > permits the disclosed expired-creation identity and keeps it out of other codes 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional sequence problem extensions > accepts only the closed withheld allocation on an expired projection 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional sequence problem extensions > illustrates re-authorization without changing retained keys or disclosing an unauthorized dependent 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional sequence problem extensions > rejects an erasure pointer in the sequence path 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > erasure digest vectors > record the served records the fixtures carry, with their serialization and digest 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > erasure digest vectors > reproduces the task-42-r7 digest from its recorded RFC 8785 serialization 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > erasure digest vectors > reproduces the task-42-r8 digest from its recorded RFC 8785 serialization 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > erasure digest vectors > reproduces the 9c1e-r1 digest from its recorded RFC 8785 serialization 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > erasure digest vectors > reproduces the 2d4f-r1 digest from its recorded RFC 8785 serialization 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > erasure digest vectors > reproduces the dec-9-r2 digest from its recorded RFC 8785 serialization 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > erasure digest vectors > reproduces the vec-1-r1 digest from its recorded RFC 8785 serialization 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > erasure digest vectors > reproduces the vec-2-r1 digest from its recorded RFC 8785 serialization 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > erasure digest vectors > reproduces the rel-5-r1 digest from its recorded RFC 8785 serialization 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > erasure digest vectors > agree with the records and erasure digests the fixtures serve 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional discovery and limits > requires the alias root and pins the profile 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional discovery and limits > restates the shared groups, carries validation and transaction, and closes retention without idempotency 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional discovery and limits > pins all twelve Operation Directory targets 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional discovery and limits > composes the eight operation records from the Read+Update member mixins 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects an updated delta carrying both a Property Change and an owned-Link change 1ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects an updated owned-Link transition carrying the Link's record instead of its delta 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects an Event whose time is not a calendar instant 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects an Event whose time names a day that does not exist 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a body-level idempotencyKey 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a per-operation idempotencyKey 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a supplied id spelled with a leading @ 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects an empty operation list 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a set-operation singleton body carrying the batch discriminator 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a completed receipt with available detail but no results 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects an expired completed receipt without allocated 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a failed receipt with expired detail (T47: failed receipts are forgotten, never expired) 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a failed receipt with withheld detail 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a failed receipt carrying an effectPosition 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a pending receipt carrying detail 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a receipt problem without the failure's would-be status 2ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a receipt problem carrying a direct-only code 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a direct problem carrying a receipt-only code 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a validation-failed receipt problem without diagnostics 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects an operation-level receipt problem without operationIndex 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a limit on a problem that is not limit-exceeded 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a resource-erased problem carrying a pointer 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects retryAfter on a problem that is not after-delay 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a deleted entry carrying sourceRevision without source 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a deleted Bead entry carrying the owned-source pair 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a deleted identity spelled as the bare lineage marker 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a matched entry carrying an operationName 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a withheld entry carrying a record 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a Bead postimage carrying the owned-source pair 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects an allocated identity both withheld and identified 1ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a projection advance that names a transaction 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a visible group that carries nothing 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a visible group without a transaction 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a Transactional discovery document advertising retention.idempotency 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a Transactional discovery document without aliases 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a Transactional discovery document without its history members 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a digest whose hexadecimal is not lowercase 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects an unregistered digest scheme 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a manifest without its ledger 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > rejects a directory without the alias targets 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > shapes the bundle now rejects > still admits the lowercase RFC 3339 forms a client accepts, pinned labels, and the five receipt representations 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional correction regression probes > accepts a same-source Event page whose ordinals restart in the next transaction 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional correction regression probes > rejects validation diagnostics on cardinality-violated 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional correction regression probes > rejects validation diagnostics on event-history-expired 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional correction regression probes > rejects validation diagnostics on catch-up-timeout 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional correction regression probes > rejects a no-op response that mints a revision or replaces prior attribution 1ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional correction regression probes > rejects omitted attribution in either successor Event and its nested Link delta 1ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional correction regression probes > rejects unnecessary pagination and over-bound inline or page results 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional correction regression probes > compares attribution only for the Event's exact version, including nested Link versions 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional correction regression probes > rejects missing or duplicate singleton outcomes across the complete receipt page chain 1ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional correction regression probes > rejects a missing or duplicate set matched entry and duplicate Resource outcomes 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional correction regression probes > uses the original request to check erased identity ownership context 1ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional correction regression probes > records a forgotten-key execution's own current fence instead of the original failed receipt's 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional correction regression probes > rejects an incomplete or cyclic receipt page chain 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional correction regression probes > keeps the two raw I-JSON examples well-formed JSON with their intended string/object faults 1ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional correction regression probes > rejects an empty terminal available receipt while preserving the unspecified continued-prefix length 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional correction regression probes > rejects an owned snapshot record absent from or unequal to its first-class Link 0ms
+ ✓ packages/protocol/src/transactional-wire.test.ts > Transactional correction regression probes > isolates the owned-erasure group's identities and digest vectors from acme 0ms
+ ✓ packages/conformance/src/transactional-catalog.test.ts > draft Transactional catalog > strictly parses and binds every citation to the current specification text 254ms
+ ✓ packages/conformance/src/transactional-catalog.test.ts > draft Transactional catalog > keeps the ruled T62/T65 and HTTP-gap catalog objects in lockstep with the maintained packet rows 2ms
+ ✓ packages/conformance/src/transactional-catalog.test.ts > draft Transactional catalog > rejects the delta catalog alone for a Transactional run; the bundle must contain inherited rows 0ms
+ ✓ packages/conformance/src/transactional-catalog.test.ts > draft Transactional catalog > scopes every row to the Transactional profile with the profile's id prefix and area 2ms
+ ✓ packages/conformance/src/transactional-catalog.test.ts > draft Transactional catalog > does not collide with the sealed Read catalog or the drafted Read+Update catalog 1ms
+ ✓ packages/conformance/src/transactional-catalog.test.ts > draft Transactional catalog > retires exactly the twelve Read+Update rows the profile contradicts, each a lower-profile row 0ms
+ ✓ packages/conformance/src/transactional-catalog.test.ts > draft Transactional catalog > excludes the retired rows from a Transactional claim over the concatenated catalogs and keeps them below 3ms
+ ✓ packages/conformance/src/transactional-catalog.test.ts > draft Transactional catalog > is bound by no executable manifest, so no runner report can carry its rows 4ms
+ ✓ packages/conformance/src/transactional-catalog.test.ts > draft Transactional catalog > mirrors the specification's Transactional conformance rows exactly and in order 1ms
+
+ Test Files  2 passed (2)
+      Tests  158 passed (158)
+   Start at  14:16:49
+   Duration  578ms (transform 264ms, setup 42ms, import 331ms, tests 374ms, environment 0ms)
+

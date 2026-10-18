@@ -1,0 +1,29 @@
+{
+  "status": "released",
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "authorizedStages": [
+    "offline-setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "source-positive"
+  ],
+  "sourceBindingSha256": "d9b68985603f168061e341ad4445b0881ac225449e9b93475b1541a4310dae79",
+  "supervisorSha256": "0ff993f294fc87e2bd474fd3200babe8b28a73b8a29b1168a1c5801eb92ee73b",
+  "commandsSha256": "931723b766fe85a3dbbb7d4af22c261df6b0056a36c48d8240e6606a35433267",
+  "expectedHead": "18104a03b850553641f24fe83e7318493fa102ca",
+  "expectedTree": "10810a8016a451e241ea974487681dcddd63c2e4",
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/root-source-release.json",
+    "sha256": "aab0705d231a46e80e836d0bde5e1b1250016aabf4edbf9ad2a8b63618ad15de"
+  },
+  "measuredFenceAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/root-fence-acceptance.json",
+    "sha256": "56dca36023cd59cc4eb231678bdaa0794e9c4a445972a4f1c61ea432c27f4fdf"
+  },
+  "controlGate": "closed",
+  "installedGate": "closed"
+}

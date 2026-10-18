@@ -1,0 +1,23 @@
+--- a/packages/server/src/transaction-service.test.ts
++++ b/packages/server/src/transaction-service.test.ts
+@@ -3830,7 +3830,7 @@
+     if (surface === "discovery") return service.discoveryObserved(minimum);
+     const request = requestFromUrl(new URL(target ?? (surface === "type" ? "types/task" : surface === "types" ? "types/" : "beads/a?view=links"), scope), scope);
+     if (isReadProblem(request)) throw new Error("invalid current observation fixture route");
+-    return service.readAtMinimum({ kind: "authenticated", principal }, minimum).perform(request);
++    return service.readAtMinimum({ kind: "authenticated", principal: { id: principal } }, minimum).perform(request);
+   };
+   return {
+     owner, service, invoke, submit, localCreate, entries,
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -6153,8 +6153,8 @@
+       if (label === "type") expect(value).toMatchObject({ id: beadType, describes: "bead" });
+       else if (label === "types") {
+         expect(value.items).toEqual([
++          { id: beadType, name: "Task", describes: "bead" },
+           { id: linkType, name: "Relation", describes: "link" },
+-          { id: beadType, name: "Task", describes: "bead" },
+         ]);
+         expect(value.next).toBeNull();
+       } else if (label === "incident") {

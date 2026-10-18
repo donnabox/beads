@@ -1,0 +1,162 @@
+I have what I need. Here is the review.
+
+## Scope and method
+
+Diff reviewed: `182f1fcf` → `b5a5b415` (78 files, +3662/−983), full diff plus supporting source. No files written; everything below is read-only inspection plus independent recomputation of digests and schema behavior (ajv compiled against the repo's own `Ajv2020({strict:true})` config). Commits in range: `cd2c8bf`…`b5a5b41`, with the sealed predecessor at `5b4eb46` and the illustrative property-editing examples added in `b5a5b41`.
+
+## What I verified clean (stated so findings are read in context)
+
+**Verification artifact integrity — passes every check I could reproduce independently:**
+- `READ_COHORT_EVIDENCE_CONSTANT = f7bc6321…` recomputed from the committed artifact bytes (88,743 bytes) → exact match.
+- `schema` binding `29d84b98…`: both `schemas/bdp-v0.schema.json` and `packages/protocol/schemas/bdp-v0.schema.json` are byte-identical (132,901 bytes) and match.
+- `schemaReadProjection` binding `26db67b2…`: I independently re-implemented RFC 8785 over the 47 `[name, definition]` pairs in sealed order → exact match.
+- `catalog`/`manifest`/`fixture` bindings all match the committed `read-v1.json` catalog, matrix, and both target fixtures.
+- Gate shape is satisfied: `runHead` `053875f` → `evidenceCommit` `5b4eb46`, delta confined to exactly the two `ALLOWED_EVIDENCE_DELTA_PATHS`. `b5a5b41` touches no evidence or verification-input path, so the seal is not stale.
+
+**Content-derived revisions:** I recomputed 3 of the 9 `bdpbd` link tokens under both the old and new preimage — old values match base, new values match head. The `bdpbd-projected-resource-v1 → v2` bump plus the explicit "existing tokens are historical and must not be relabeled" note is correct discipline.
+
+**Catalog coherence:** all citations in `read-update-v1`, `transactional-v1`, `numeric-model-v1` resolve verbatim in their anchored sections under the validator's own whitespace normalization (0 issues). The spec's Read+Update row table mirrors the catalog ids exactly — 81 rows, same order. The RU catalog is explicitly asserted non-executable, so the three new rows do not overclaim.
+
+**Schema semantics:** 20 accept/reject cases verified — `updateBead*`/`updateLink*` `anyOf`, rejection of the legacy `change` member and of an empty change array (`minItems:1`), `updatedData` `oneOf` exclusivity in all four combinations, `ownedLinkDelta`, and `current*` metadata requirements propagating correctly through `ownedLinks`, `links`, and collections while legacy defs stay lenient. No schema defects found.
+
+**Evaluator:** the two-document patch is genuinely atomic (both patches computed, properties validated, all CAS/limit/policy checks, then `fault.check()` before any `tx.putResource`). No-op correctly retains the subject revision, the source revision, attribution, and change context. Patch-operation limits correctly count the combined arrays. `b5a5b41`'s new `resource-evaluator.test.ts` case is real executable coverage over both Resource kinds for merge / root-replace / clear / no-op / atomic rejection — current evidence for `b5a5b41`, not relabeled older evidence. No new dated amendment labels were added.
+
+---
+
+# Blockers
+
+**1. HIGH — Metadata-plane validation diagnostics are indistinguishable from properties diagnostics; the spec's `validation-failed` clause was not amended.**
+
+`packages/server/src/resource-evaluator.ts:506` · `:456,469,474,488,494` · `packages/server/src/member-identity.ts:451` · `docs/specs/bdp.md:2553,2568,2570`
+
+Defect: three separate paths emit metadata faults in properties clothing.
+- `:506` emits the literal message `"resulting properties must be an object"` when it is the **metadata** patch that yielded a non-object, with `instanceLocation: ""`.
+- `:456`–`:494` emit `instanceLocation = change.path` — the raw metadata-relative pointer — with no plane marker, identical to a properties failure at the same path.
+- `member-identity.ts:451` slices the plane prefix off create-time numeric diagnostics (`occurrence.pointer.slice(object.length + 1)`), so `/metadata/nested/bad` is reported as `/nested/bad`. `member-identity.test.ts` codifies this: the wire `diagnostics` entry is `{instanceLocation: "/nested/bad"}` and the only discriminator (`/metadata/nested/bad`) lives in the internal `offending.pointer`.
+- Meanwhile `docs/specs/bdp.md:2568,2570` still normatively define `instanceLocation` as "a JSON Pointer within `properties`", and `:2553` still enumerates the causes as "the resulting **`properties`** … is not a JSON object" — no mention of a non-object metadata result at all.
+
+Impact: a client implementing the spec correctly will read a metadata fault's pointer as a properties pointer. For an atomic two-document update with the same path invalid in both planes, the authority emits two diagnostics with identical `instanceLocation` and no way to tell them apart. The PR's own new conformance row `read-update.singleton.document-patch-validation` asserts behavior the problem-details clause does not define.
+
+Fix: pick one discriminator and apply it in all three paths — either root `instanceLocation` at the record (`/properties/…`, `/metadata/…`) or add a `document` member to the diagnostic entry — then amend `docs/specs/bdp.md` §`validation-failed` to add the non-object-metadata cause and define the pointer base. Change `:506`'s message to name the failing document.
+
+**2. HIGH — The new metadata-requiring Read schema cohort is unenforceable: no code path in the repo can reject a read that omits `metadata`.**
+
+`packages/conformance/matrices/read-v1.json` · `packages/protocol/src/read-values.ts:42-45,122,138,170,216,239,262`
+
+Defect: two independent reasons.
+- The executable Read manifest's JSON-Schema assertions still name the **legacy** definitions: `#/$defs/beadRecord` (1), `#/$defs/linkRecord` (1), `#/$defs/beadCollection` (6), `#/$defs/linkCollection` (17) — all metadata-**optional**. The packaged conformance run therefore cannot fail on a missing member.
+- The only consumers of the new `current*` definitions are the five parse functions in `read-values.ts`, and every one of them calls `projectLegacyBeadMetadata`/`projectLegacyLinkMetadata` **before** `validateFromSchema`. The injected `metadata: {}` guarantees presence, so `currentBeadRecord`'s `required: ["metadata"]` is unreachable by construction. `read-values.test.ts` asserts exactly this leniency (`parseBeadRecord(beadWithoutMetadata)` succeeds); there is no negative case.
+
+Impact: the PR pays a full re-seal — 42→47 sealed definitions, a new projection digest, a new evidence constant, a new `runHead` — for a constraint that no input can violate. `docs/specs/bdp.md:2965` ("Successful reads always expose `metadata`") is normatively asserted but neither proved nor provable by the kit, which is precisely the overclaim risk the seal exists to prevent.
+
+Fix: bind the manifest's record and collection assertions to the `current*` refs (the projection roots already include them), or add a strict non-projecting validate entry point that the conformance kit uses while client parsing stays lenient. Add at least one negative case asserting a missing `metadata` is rejected by whatever surface is meant to enforce it.
+
+**3. MEDIUM — Advertised-limits prose contradicts the new combined-count rule and the implementation.**
+
+`docs/specs/bdp.md:2351` vs `docs/specs/bdp.md:975` vs `packages/server/src/resource-evaluator.ts:1009-1015`
+
+Defect: `:2351` still reads "`patch.operations`, `patch.pathBytes`, and `patch.pathDepth` bound **one property patch**". The amended Property Changes section at `:975` says limits "bound the **combined** patch operation count", and the implementation concatenates both arrays and tests `changes.length > limits.patchOperations`.
+
+Impact: a client that reads `:2351` and budgets `patch.operations` per array gets `limit-exceeded` on a request it had every reason to believe was in bounds. Two readings of one normative document, with the implementation following only one.
+
+Fix: amend `:2351` to say the operation count bounds the combined operations of one Resource update, and state that `pathBytes`/`pathDepth` remain per-operation.
+
+**4. MEDIUM — Selector addressability for `metadata` is asserted as decided but landed nowhere, and fails silently.**
+
+`docs/specs/bdp.md:797,803` · `packages/server/src/read-selector.ts:150-156,817-818` · `docs/design/preview2-common-metadata-amendment.md`
+
+Defect: the amendment's decided-contract item 3 says "Resource selectors may test singular paths under `metadata`", and its own exact-fanout table lists `selectors` among the families that must "migrate together". Neither moved: the Selection section's candidate shapes are still `{id, type, properties}` and `{id, type, source, target, properties}`, and `ROOT_SELECTOR_MEMBERS` is unchanged. `resolvePath` returns `MISSING` for any unlisted root member rather than refusing.
+
+Impact: `$[?@.metadata.owner == "team"]` silently selects **nothing** — no error, no refusal — against a Resource member that reads now always expose. Silent wrong answers in a realized (sealed) profile. Note: selector addressability is *not* among the four product choices Donna ACKed, so this is an unlanded packet item rather than a violated approval — but the amendment doc still reads as decided.
+
+Fix: either add `metadata` to both the spec candidate shape and `ROOT_SELECTOR_MEMBERS` (plus a selector case), or record the deferral explicitly in the amendment doc and in the spec's Selection section. The silent-`MISSING` behavior for unknown root members is inherited (see Inherited #1), but this PR is what makes it reachable in a plausible way.
+
+**5. MEDIUM — Two Transactional catalog citations were weakened to fragments that no longer support their row titles.**
+
+`packages/conformance/catalog/transactional-v1.json:957,970`
+
+Defect: `transactional.event.owned-link-delta` is titled "Owned-Link mutations emit source updated Events carrying **exactly one** ownedLink delta". Its exclusivity citation — previously the sentence "Exactly one of the two members is present in any `updated` delta." — is now the fragment `"at least one of \`change\` and \`metadataChange\`"`, which states the **non-ownedLink** branch and asserts the opposite of exclusivity. `transactional.event.owned-link-update-delta` ("carries the Link's delta, not its record") is now bound to the 4-token fragment `"\`change\` and/or \`metadataChange\`"`, dropping the whole member enumeration the title depends on.
+
+Impact: the citation *is* the row's value. Both rows now bind text that under-determines or contradicts what they claim. The validator only checks substring presence, so nothing catches it. These are drafted, non-executable rows, so no runtime claim breaks.
+
+Fix: cite the actual exclusivity sentence for the first row ("its delta carries `ownedLink` in place of `change` and `metadataChange`" / "An updated owned-Link delta follows the same rule") and restore the member enumeration for the second.
+
+**6. MEDIUM — Two write surfaces were missed by the amendment: `updateWhere` has no metadata plane, and `stateChange` upserts still admit a record without metadata.**
+
+`docs/specs/bdp.md:1605-1613` · `$defs.updateWhereMembers` · `$defs.stateChange` · `docs/specs/bdp.md:6116-6119`
+
+Defect: `UpdateWhere(collection, selector, change, …)` keeps a single required `change` with no `metadataChange`; I confirmed `updateWhereOperation` **rejects** `metadataChange`. The generic rule at `:975` now defines a change relative to "its selected object", and `updateWhere`'s bare `change` never selects one. Separately, `stateChange` upsert carries "the complete canonical Bead or Link record at its final projected revision" (`:6117-6118`) but refs the lenient `beadRecord`/`linkRecord`; I confirmed a change-feed upsert validates with `metadata` absent. Unlike retained Events — for which the spec added an explicit compatibility paragraph — a change-feed upsert is definitionally *current* state, so there is no retained-bytes rationale for the leniency.
+
+Impact: set-based updates cannot touch metadata at all, and the one plane that can only ever carry current state is the one left schema-unconstrained. Both are Transactional-profile prose/schema (unrealized), so this is a spec-coherence defect rather than a runtime one.
+
+Fix: add `metadataChange` to `updateWhere` (or state in the Set mutation section that it targets `properties` only), and give `stateChange` upsert a metadata-requiring record the way reads now have — or state why it stays lenient.
+
+**7. MEDIUM — The new pre-metadata erasure-digest clause is self-defeating: no served or SDK-returned representation can reproduce the digest, and nothing marks which form to use.**
+
+`docs/specs/bdp.md:5829-5838` · `packages/protocol/src/history-values.ts:180,188` · `scripts/demo-history.mjs:256,267,297-303`
+
+Defect: the new text requires that "verification of that historical digest uses the retained original record, never the later compatibility projection." But History exact reads go through `parseBeadRecord`/`parseLinkRecord`, which unconditionally inject `metadata: {}`; the SDK exposes no un-projected form. The PR's own demo changes make this explicit — `demo-history.mjs` now asserts that `observations[].value` equals the served body **plus** `metadata: {}` for the two exact reads. No marker distinguishes a pre-metadata version, so a verifier cannot know whether to include the member.
+
+Impact: a holder of an erased version's content who obtained it after this amendment cannot recompute its committed digest, and cannot determine that it should strip the projection. Practical impact today is nil — no implementation is deployed, so no pre-metadata versions exist — and the plan already lists this as an open question (`design.md:326`: "does not decide whether to keep the pre-metadata record/Event/digest compatibility clauses"). The finding is that the clause as drafted is unverifiable by construction and should be resolved in that decision rather than shipped as normative text.
+
+Fix: in that decision, either drop the pre-metadata digest clause on the grounds that no such versions exist, or add a retained-form discriminator plus an un-projected accessor.
+
+---
+
+# Lower-severity findings
+
+**8. LOW — The new fixture narrates a diagnostic the implementation does not emit.** `fixtures/read-update/property-metadata-changes.json` (both 422 exchanges) shows `message: "resulting document must be an object"`; the implementation emits `"resulting properties must be an object"` (`resource-evaluator.ts:506`). The fixture's spelling is the better one. The `detail` member is also never emitted by the server. Fixtures here are illustrative wire examples, not implementation captures — `aliases.json`'s messages diverge from `alias-evaluator.ts` the same way — so the `detail` divergence is inherited convention. The message divergence is worth closing because the fixture already shows the right wording for Blocker #1.
+
+**9. LOW — `storedRecord`'s projection block is dead code.** `packages/server/src/resource-evaluator.ts:345-368` hand-rolls bead/ownedLink metadata projection, then calls `parseBeadRecord`/`parseLinkRecord`, which perform the identical projection (and additionally cover the `links` aggregate). `parseBeadRecord(value)` alone yields the same validated record. 20 lines that must be kept in sync with `read-values.ts` for no behavioral gain.
+
+**10. LOW — `BeadRecord.metadata?`/`LinkRecord.metadata?` are optional in TypeScript while reads always expose them** (`packages/protocol/src/index.ts:294,315`). Optionality is needed for retained/historical shapes, but it forces `?? {}` defensiveness at every call site, and the two fallbacks inside `parseBeadRecord`/`parseLinkRecord` (`record.metadata ?? Object.freeze({})`) are unreachable after projection. Consider a separate retained type, or at least drop the unreachable fallbacks.
+
+**11. LOW — Amendment-packet and README gating prose is now stale.** `docs/design/preview2-common-metadata-amendment.md` still says "It does not change the current v0 wire contract", "No schema or wire claim is made by this packet", and "Do not publish a schema accepting metadata records until the operation, no-op and retained-read semantics are reflected in the implementation and conformance artifacts" — all of which this PR supersedes. `docs/design/README.md` says the proposed names are "not normative until the spec, both schema copies, fixtures and conformance catalog agree"; they now agree. Add a one-line landed-at note rather than leaving the packet reading as pending.
+
+**12. LOW — `fixtures/owned-wildcard/owned-wildcard.json` mixes a large cosmetic reformat with 8 semantic metadata additions.** Canonicalized comparison confirms the change is real (6630→6742 canonical bytes, 0→8 `"metadata"` members), but most of the 116-line diff is inline-object expansion. Not a pinned binding, so harmless — it just makes the semantic change hard to see.
+
+**13. LOW — No byte bound for metadata.** `resource.propertiesBytes` covers `properties` only (`resource-evaluator.ts:1031-1033`); common `metadata` is bounded solely by `resource.representationBytes`. Since metadata has no Type schema, an authority advertising a tight `propertiesBytes` and a loose `representationBytes` now admits large, unvalidated, client-authored state it previously had no path to accept. Consider a `resource.metadataBytes` limit, or state in the Advertised limits section that metadata rides on the representation bound.
+
+---
+
+# Inherited / out-of-scope observations
+
+1. **Unknown selector root members resolve to `MISSING` rather than refusing** (`read-selector.ts:817-818`). Pre-existing for `attribution`, `changeContext`, etc.; `read-selector.ts` is unchanged in this PR. It is the mechanism behind Blocker #4's silent failure mode, not a defect introduced here.
+2. **Patch application precedes limit enforcement.** `patch()` runs at `:775-789`; the operation-count check is at `:1009-1015`. An over-limit patch is fully applied in memory before rejection. Pre-existing ordering (the old single-`change` code did the same); no state escapes because writes happen only after `fault.check()`. The combined count now roughly doubles the worst-case pre-check work, still bounded by `request.bodyBytes`.
+3. **README↔fixture declaration agreement is unenforced.** `packages/adapter-bd/README.md` and `oracles.numeric-model.declaration` must agree ("the successor observation tests require agreement with this document"), and `declaration.source` names the README — but nothing checks it. I verified PR64 kept them byte-identical; nothing would have caught it otherwise. Relevant to PR65 (see P8).
+4. **Event and change-feed records remain metadata-lenient by design.** `createdData`, `ownedLinkChange.created`, `historicalBeadRecord`/`historicalLinkRecord` all permit a missing member. For Events this is explicitly reasoned in the spec; for `stateChange` it is not (Blocker #6).
+5. **`cohort-artifact.ts` contains a literal NUL byte** as a composite-key separator (`${scenarioId}\x00${variant}`). Intentional, inherited, and makes `grep` treat the file as binary — worth knowing when searching, not a defect.
+
+---
+
+# Delivery-plan review (`bdp-client-design/.../bdp-client-v2/design.md`)
+
+The plan's PR64-readiness lane (§311) and landing policy (§336-342) are consistent with what I found. Flagged below are missing migration/evidence steps, not objections to the direction.
+
+### `revisionProvenance` adoption (PR65 lane, §307, §312)
+
+**P1. HIGH — PR65 mandatorily forces a full Read re-seal, in a specific two-commit shape the plan does not record.** `attribution` (sealed index 26), `changeContext` (28), `contextTime`, `contextString`, and `contextMessage` are all in `READ_SCHEMA_SEALED_DEFINITIONS`. `projectReadSchemaBundle` **throws** on a missing sealed name ("a sealed definition cannot be removed or renamed without a re-seal"), so the rename cannot land without: (a) editing the sealed list, (b) bumping `COMMITTED_READ_SCHEMA_PROJECTION` in `schema-read-projection.test.ts`, (c) a fresh cohort run, (d) a new artifact plus `READ_COHORT_EVIDENCE_CONSTANT`. Further, because `ALLOWED_EVIDENCE_DELTA_PATHS` is exactly two files, the re-seal must be a **separate commit touching only** `docs/design/evidence/read-cohort/read-v1.json` and `packages/server/src/read-conformance-capability.ts`, with the run performed at its parent. PR64 satisfied this (`053875f` → `5b4eb46`); the plan's "fresh actual Read qualification" names none of the four pinned values nor the commit shape. Add them as explicit done-when items.
+
+**P2. HIGH — No retained-record projection decision for the rename.** PR64 needed three things for one new member: a read projection rule, a `current*`/legacy schema split, and a compatibility paragraph. Renaming `attribution` → `revisionProvenance.actor` raises the identical question for retained versions, retained Events, and erasure digests — `attribution` is inside the JCS digest preimage ("`attribution` and `ownedLinks` included") and inside the erased-content enumeration, so every erasure digest moves. §307's "Keep existing field availability … no-op … encodings" asserts an outcome without a rule; §326 defers the *metadata* compatibility clauses but is silent on PR65 creating a second set. Decide the retained-form rule before the inventory, or the inventory will be rebuilt.
+
+**P4. MEDIUM — The presence/absence mapping onto one envelope is unspecified.** Today `attribution` is wholly optional with required `{principal, status}`; `changeContext` is wholly optional with **all three** of `{committedAt, agent, message}` required, each its own tri-state — and `contextTime` has no `absent` state while `contextString`/`contextMessage` do. Four current presence combinations must collapse onto one object without conflating "no context recorded" (the no-op `{kind:"preserved", value: undefined}` path in `resource-evaluator.ts:852-863`) with `{state:"undetermined"}`. Require an explicit truth table plus negative tests; "keep existing encodings" does not determine the answer.
+
+**P5. MEDIUM — The input/output asymmetry is not addressed.** `changeContextInput` is `{agent?, message?}` with bare nullable strings and **no** `committedAt`; `changeContext` is the tri-state output *with* `committedAt`. One `revisionProvenance` name must forbid `actor` and `committedAt` on input while keeping the bare nullable input spelling — `fixtures/history/wire.json` depends on this ("Singleton update input supplies agent/message only; native commit time is authority-owned"). Note also that `updateWhereMembers` uses `changeContextInput` while singletons use `changeContext`; both forms must migrate.
+
+**P6. MEDIUM — The semantic-identity fingerprint fence is not scheduled.** Renaming input members changes `normalizePreparedMemberIdentity`'s canonical bytes. `member-identity.ts` already warns that such a change "changes old explicit-empty identity bytes and fingerprints", and the plan's own PR75/PR77/PR79 entries record a private identity-policy fingerprint that must refuse earlier durable stores before recovery/maintenance. PR65 needs that bump plus the byte-identical-refusal regression.
+
+**P7. MEDIUM — `schema-graph-policy.json` source pins and a recorded justification are not scheduled.** PR65 touches `packages/protocol/src/index.ts` and the schema bundle, both pinned in `packages/server/test-support/schema-graph-policy.json`, whose own `versionRule` demands conscious review and "an explicit reviewed justification" for a behavior-preserving edit. PR64 did exactly this via its `metadataReview` key. Add it.
+
+**P8. MEDIUM — The numeric-model declaration crosswalk is not scheduled.** `packages/adapter-bd/README.md` and `oracles.numeric-model.declaration` both name "attribution" in the digest preimage and must change in lockstep — with **no test enforcing it** (Inherited #3). Bead tokens will move (the bd adapter sets attribution on beads), warranting `bdpbd-projected-resource-v3` by the v2 note's own reasoning, even though the nine pinned tokens are link-only and will not move. Editing that fixture also moves the `fixture`/`workspace` bindings, compounding P1.
+
+### Four-part editorial boundaries (§313, §324)
+
+**P3. HIGH — The citation gate can pass while pointing at the wrong section, and five catalog tests depend on literal heading strings.** `markdownSection` disambiguates duplicate heading slugs by occurrence ordinal (`slug`, `slug-1`, `slug-2`), and `validateCatalogCitations` only checks that `selectedText` appears *somewhere* in the resolved section. A reorganization that reorders or duplicates headings can silently renumber an ordinal so a row resolves to a **different** section and still passes. Separately, five tests pin exact strings: `read-update-catalog.test.ts:77`, `transactional-catalog.test.ts:205`, `numeric-model-catalog.test.ts:86`, `owned-wildcard-catalog.test.ts:89` all do `indexOf("\n#### <X> conformance rows\n")`, and `history-catalog.test.ts:22-23` splits on `"#### History conformance rows\n"` then `"#### Read+Update conformance rows"` — depending on those two tables appearing **in that order in one file**. Re-leveling the row tables under new top-level Parts breaks the first four; reordering the Parts silently yields an empty History slice. The plan's "valid citations/profile ownership" is the right requirement but needs a mechanical before/after row → (anchor, *resolved section heading*) diff, not just a pass/fail on the validator. §108's earlier boundary repair closed three related bypasses — this is the next one in that family.
+
+**P9. LOW — §324's PR64 characterization is accurate but incomplete.** PR64 does still carry pre-existing `(amended 2026-09-08)` labels, but it **adds none** — its new prose states the contract directly. Worth recording so the editorial lane's removal set is known to be unchanged by PR64.
+
+---
+
+## Bottom line
+
+The schema, evaluator, no-op, atomicity, ownership-source-revision, patch/numeric-limit, and evidence-seal work is sound — I could not break any of it, and every digest and binding reproduces independently. The blockers are coherence gaps at the edges the amendment's own fanout table named: **diagnostics** (#1) and **enforcement of the read obligation the re-seal was taken for** (#2) are the two I would want resolved or explicitly dispositioned before merge; #3–#7 are spec/catalog coherence items that could reasonably land as recorded follow-ups given the bounded scope. For the plan, P1/P2/P3 are the steps most likely to cause rework if discovered mid-flight.

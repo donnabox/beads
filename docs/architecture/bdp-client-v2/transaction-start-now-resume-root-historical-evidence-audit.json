@@ -1,0 +1,34 @@
+{
+  "source": "d53450a4f337bcd01aa5963980b6e85eb50a987e",
+  "historicalOnly": true,
+  "files": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-implementation/packed-positive/packs/protocol.tgz": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-implementation/packed-positive/packs/server.tgz": "e0dd60d3101768be2d1ddeb5b45fd49939aefb01769cba7c0b7ad48d33f04d97",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-implementation/packed-counterfactual/packs/protocol.tgz": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-start-now-resume-implementation/packed-counterfactual/packs/server.tgz": "64aaa227c9338cefebeffb758840538316699a598d40a31132536bbecaffbe85",
+    "report.md": "06ed500fa243ec39afb1b9ad475e9256d55d73bf7129841fe2a8fb1712787d5a",
+    "summary.json": "e9b7d9367431774226e86b0e6603211c53d2ac53311783112b0138c80ab15f4e",
+    "packed-positive/observations.json": "665e442cdeceda832aec59d7bce9b9470eb86c4788a1b201fc718c2d095ce6cd",
+    "packed-counterfactual/observation.json": "015db6560920504e4709c56d8fb8de48e00dce507a8ee6b3c13af69fecf6a3f4"
+  },
+  "claims": false,
+  "positive": {
+    "idleMilliseconds": 15201.740125,
+    "newAuthoredAttempts": 8,
+    "finiteParityBodies": 3,
+    "streamGroupFrames": [
+      1,
+      2
+    ]
+  },
+  "control": {
+    "phase": "offline-G2-before-live-G3",
+    "failures": [
+      "offline-G2-before-live-G3: saved-checkpoint replay did not deliver the offline group"
+    ],
+    "authoredAttempts": 5,
+    "reconnectGroupFrames": 0,
+    "heartbeatFrames": 4
+  },
+  "limitations": "Finite exact request projections not retained; request counts are authored attempts. Old directoryRemoved literal is not independently observed. Source is historical d534, not the review successor."
+}

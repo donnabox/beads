@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-16T03:19:37.158747+00:00",
+  "status": "accepted for ordinary merge",
+  "head": "27b4f963c88067419a95f677fa8d7bea1e368d5a",
+  "base": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+  "tree": "25e9d4aa926ea728f5e356365cb1ffadba269221",
+  "testedSynthetic": "515f8fcf00284cf1f3e7dc088b760480bdb7c42f",
+  "ci": {
+    "run": 38843452920,
+    "job": 116788531347,
+    "captureSha256": "ef9d2334dbd15332e0c7b54dcf274459561e64c8f0a3ae1f12259e54033d261c",
+    "logSha256": "de3d3bf35e8cfb40cf9210f0c6c6cbca3fea771c2e7f2f2c3a235249547b846a",
+    "all27StepsSuccess": true,
+    "testsPassed": 9334,
+    "testsSkipped": 1,
+    "testFiles": 183,
+    "preflightPassed": 7,
+    "readHistoricalSealRows": 89
+  },
+  "council": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/smoke-inventory-repair/root-integration-council.json",
+    "sha256": "8300f8347dad59d6b9ad3be15f251941739027f7698fcc7c33eee66df2669626"
+  },
+  "scope": "Exact18paths independently rehashed. Original product review plus two follow-up repair councils accepted. Fresh API head/base/green checks and ordinary ancestry verified.",
+  "limitations": "No public write qualification or release. Earlier failedCI and1647installed attribution retained. Actual merged-tree verification still required."
+}

@@ -1,0 +1,487 @@
+{
+  "provenance": "Test-only successor literal measurements; original failed fixture retained. No new HTTP execution.",
+  "acceptedLedgerSha256": "95611b471a1b93fc52cd1acb10f0010cabe1682b86b7e52742677ad456ca5e82",
+  "seed": {
+    "bodyUtf8": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://event-sse.invalid/acme/types/bead\",\"properties\":{\"title\":\"a\"},\"idempotencyKey\":\"minimum-current-a\"},{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://event-sse.invalid/acme/types/bead\",\"properties\":{\"title\":\"b\"},\"idempotencyKey\":\"minimum-current-b\"},{\"operation\":\"createLink\",\"id\":\"links/self\",\"type\":\"https://event-sse.invalid/acme/types/link\",\"source\":\"beads/a\",\"target\":\"beads/a\",\"idempotencyKey\":\"minimum-current-link\"},{\"operation\":\"putAlias\",\"alias\":\"alias/work\",\"target\":\"beads/a\",\"idempotencyKey\":\"minimum-current-alias\"}]}",
+    "bodyBytes": 610,
+    "bodySha256": "7339d6a0c00a9846fd67677a87aa49d43a9f626096ea57397afe469a6daacf87",
+    "headers": [
+      {
+        "name": "Content-Type",
+        "value": "application/json"
+      },
+      {
+        "name": "Accept",
+        "value": "application/json"
+      }
+    ],
+    "authorization": "private generated valid credential; never persisted",
+    "target": "actual runtime.targets.sequence, asserted canonical operations/sequence",
+    "configuredScope": "https://event-sse.invalid/acme/",
+    "canonicalHost": "event-sse.invalid",
+    "connectAuthority": "actual loopback listenUrl; no redirect",
+    "descriptors": [
+      {
+        "id": "https://event-sse.invalid/acme/types/bead",
+        "name": "Bead",
+        "describes": "bead",
+        "conformsTo": []
+      },
+      {
+        "id": "https://event-sse.invalid/acme/types/link",
+        "name": "Link",
+        "describes": "link",
+        "conformsTo": [],
+        "source": {
+          "conformsTo": [
+            "https://event-sse.invalid/acme/types/bead"
+          ],
+          "external": "opaque"
+        },
+        "target": {
+          "conformsTo": [
+            "https://event-sse.invalid/acme/types/bead"
+          ],
+          "external": "opaque"
+        }
+      }
+    ],
+    "schemas": [],
+    "provenance": "Committed1647 HTTP sequence branch309\u2013345; protocol read-update-preflight58\u201372; actual HTTP test525\u2013552 alias sequence; batch1024\u20131030 alias has no Resource Event/Scope position. Data-only literal construction, not executed.",
+    "sequenceOracle": "HTTP200; complete transactionalSequenceResponse schema; exactly four entries with operationIndex0/1/2/3 and outcome created, no failure/problem. Full actual a/b/self Resources with exact identities/properties/Link endpoints and genuine revisions; entry3 exact created alias/work->beads/a. Actual response context must report pos-3; retain its epoch/view/position for later tuples. No per-member HTTP status or receipt ID inferred.",
+    "atomicSeedClaim": false,
+    "outerIdempotencyKeyAbsent": true
+  },
+  "rows": [
+    {
+      "method": "POST",
+      "target": "operations/sequence",
+      "status": 200,
+      "minimum": null,
+      "oracle": "HTTP200; complete transactionalSequenceResponse schema; exactly four entries with operationIndex0/1/2/3 and outcome created, no failure/problem. Full actual a/b/self Resources with exact identities/properties/Link endpoints and genuine revisions; entry3 exact created alias/work->beads/a. Actual response context must report pos-3; retain its epoch/view/position for later tuples. No per-member HTTP status or receipt ID inferred.",
+      "predecessorIndex": 1,
+      "index": 1,
+      "bodyPresent": true,
+      "accept": "application/json",
+      "contextSource": "actual successful sequence response context; assert pos-3 before deriving pos-4"
+    },
+    {
+      "method": "GET",
+      "target": "beads/missing",
+      "status": 404,
+      "minimum": "ahead",
+      "oracle": "uniform resource-not-found/current context, no Location or conditional success",
+      "predecessorIndex": 2,
+      "index": 2,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "actual seed tuple with declared foreign/ahead modification"
+    },
+    {
+      "method": "HEAD",
+      "target": "beads/missing",
+      "status": 404,
+      "minimum": "foreign-epoch",
+      "oracle": "uniform resource-not-found/current context, no Location or conditional success",
+      "predecessorIndex": 3,
+      "index": 3,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "actual seed tuple with declared foreign/ahead modification"
+    },
+    {
+      "method": "GET",
+      "target": "links/missing",
+      "status": 404,
+      "minimum": "foreign-view",
+      "oracle": "uniform resource-not-found/current context, no Location or conditional success",
+      "predecessorIndex": 4,
+      "index": 4,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "actual seed tuple with declared foreign/ahead modification"
+    },
+    {
+      "method": "HEAD",
+      "target": "links/missing",
+      "status": 404,
+      "minimum": "ahead",
+      "oracle": "uniform resource-not-found/current context, no Location or conditional success",
+      "predecessorIndex": 5,
+      "index": 5,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "actual seed tuple with declared foreign/ahead modification"
+    },
+    {
+      "method": "GET",
+      "target": "alias/missing",
+      "status": 404,
+      "minimum": "foreign-epoch",
+      "oracle": "uniform resource-not-found/current context, no Location or conditional success",
+      "predecessorIndex": 6,
+      "index": 6,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "actual seed tuple with declared foreign/ahead modification"
+    },
+    {
+      "method": "HEAD",
+      "target": "alias/missing",
+      "status": 404,
+      "minimum": "foreign-view",
+      "oracle": "uniform resource-not-found/current context, no Location or conditional success",
+      "predecessorIndex": 7,
+      "index": 7,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "actual seed tuple with declared foreign/ahead modification"
+    },
+    {
+      "method": "GET",
+      "target": "beads/missing",
+      "status": 404,
+      "minimum": "unknown-current-context",
+      "oracle": "lexically valid opaque token;404 with actual context",
+      "predecessorIndex": 8,
+      "index": 8,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "actual seed tuple with declared foreign/ahead modification"
+    },
+    {
+      "method": "GET",
+      "target": "links/missing",
+      "status": 404,
+      "minimum": "unknown-current-context",
+      "oracle": "lexically valid opaque token;404 with actual context",
+      "predecessorIndex": 9,
+      "index": 9,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "actual seed tuple with declared foreign/ahead modification"
+    },
+    {
+      "method": "GET",
+      "target": "alias/missing",
+      "status": 404,
+      "minimum": "unknown-current-context",
+      "oracle": "lexically valid opaque token;404 with actual context",
+      "predecessorIndex": 10,
+      "index": 10,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "actual seed tuple with declared foreign/ahead modification"
+    },
+    {
+      "method": "GET",
+      "target": "beads/a",
+      "status": 503,
+      "minimum": "unknown-current-context",
+      "oracle": "actual bounded catch-up-timeout/after-delay; no stale Resource",
+      "predecessorIndex": 11,
+      "index": 11,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "problemLiteral": {
+        "type": "https://github.com/gastownhall/bdp/problems/unavailable",
+        "code": "catch-up-timeout",
+        "retry": "after-delay",
+        "status": 503
+      },
+      "retryAfter": "1",
+      "contextSource": "actual seed tuple with declared foreign/ahead modification"
+    },
+    {
+      "method": "HEAD",
+      "target": "beads/a",
+      "status": 503,
+      "minimum": "unknown-current-context",
+      "oracle": "actual bounded catch-up-timeout/after-delay; no stale Resource",
+      "predecessorIndex": 12,
+      "index": 12,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "problemLiteral": {
+        "type": "https://github.com/gastownhall/bdp/problems/unavailable",
+        "code": "catch-up-timeout",
+        "retry": "after-delay",
+        "status": 503
+      },
+      "retryAfter": "1",
+      "contextSource": "actual seed tuple with declared foreign/ahead modification"
+    },
+    {
+      "method": "GET",
+      "target": "links/self",
+      "status": 503,
+      "minimum": "unknown-current-context",
+      "oracle": "actual bounded catch-up-timeout/after-delay; no stale Resource",
+      "predecessorIndex": 13,
+      "index": 13,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "problemLiteral": {
+        "type": "https://github.com/gastownhall/bdp/problems/unavailable",
+        "code": "catch-up-timeout",
+        "retry": "after-delay",
+        "status": 503
+      },
+      "retryAfter": "1",
+      "contextSource": "actual seed tuple with declared foreign/ahead modification"
+    },
+    {
+      "method": "GET",
+      "target": "beads/a",
+      "status": 200,
+      "minimum": "compatible",
+      "oracle": "full actual seeded Resource equality",
+      "predecessorIndex": 14,
+      "index": 14,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "actual seed tuple with declared foreign/ahead modification"
+    },
+    {
+      "method": "GET",
+      "target": "beads/missing?view=properties",
+      "status": 404,
+      "minimum": "ahead",
+      "oracle": "complete uniform404/current context; no representation/conditional success",
+      "index": 15,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "actual seed tuple with declared foreign/ahead modification"
+    },
+    {
+      "method": "GET",
+      "target": "beads/a?view=properties",
+      "status": 503,
+      "minimum": "unknown-current-context",
+      "oracle": "complete actual catch-up-timeout/after-delay with unavailable family; no stale properties",
+      "index": 16,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "problemLiteral": {
+        "type": "https://github.com/gastownhall/bdp/problems/unavailable",
+        "code": "catch-up-timeout",
+        "retry": "after-delay",
+        "status": 503
+      },
+      "retryAfter": "1",
+      "contextSource": "actual seed tuple with declared foreign/ahead modification"
+    },
+    {
+      "method": "GET",
+      "target": "beads/missing?view=links",
+      "status": 404,
+      "minimum": "foreign-view",
+      "oracle": "initial missing anchor404/current context; does not broaden incident-list success waiting",
+      "index": 17,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "actual seed tuple with declared foreign/ahead modification"
+    },
+    {
+      "method": "GET",
+      "target": "beads/a",
+      "status": 404,
+      "minimum": "ahead",
+      "oracle": "after actual publication: uniform hidden404/current policy context",
+      "predecessorIndex": 15,
+      "index": 18,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "seed epoch/position plus actual returned generation1 policy view; response must confirm all three; response becomes subsequent current-tuple source"
+    },
+    {
+      "method": "HEAD",
+      "target": "beads/a",
+      "status": 404,
+      "minimum": "foreign-epoch",
+      "oracle": "after actual publication: uniform hidden404/current policy context",
+      "predecessorIndex": 16,
+      "index": 19,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "actual response18 epoch/view/position with the declared foreign/ahead modification"
+    },
+    {
+      "method": "GET",
+      "target": "links/self",
+      "status": 404,
+      "minimum": "foreign-view",
+      "oracle": "after actual publication: uniform hidden404/current policy context",
+      "predecessorIndex": 17,
+      "index": 20,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "actual response18 epoch/view/position with the declared foreign/ahead modification"
+    },
+    {
+      "method": "HEAD",
+      "target": "links/self",
+      "status": 404,
+      "minimum": "ahead",
+      "oracle": "after actual publication: uniform hidden404/current policy context",
+      "predecessorIndex": 18,
+      "index": 21,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "actual response18 epoch/view/position with the declared foreign/ahead modification"
+    },
+    {
+      "method": "GET",
+      "target": "alias/work",
+      "status": 404,
+      "minimum": "foreign-epoch",
+      "oracle": "after actual publication: uniform hidden404/current policy context",
+      "predecessorIndex": 19,
+      "index": 22,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "actual response18 epoch/view/position with the declared foreign/ahead modification"
+    },
+    {
+      "method": "HEAD",
+      "target": "alias/work",
+      "status": 404,
+      "minimum": "foreign-view",
+      "oracle": "after actual publication: uniform hidden404/current policy context",
+      "predecessorIndex": 20,
+      "index": 23,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "actual response18 epoch/view/position with the declared foreign/ahead modification"
+    },
+    {
+      "method": "GET",
+      "target": "beads/a",
+      "status": 404,
+      "minimum": "unknown-post-publication-context",
+      "oracle": "hidden404 with actual context and no disclosure",
+      "predecessorIndex": 21,
+      "index": 24,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "actual response18 tuple, checked different view from seed and equal actual returned published policy view"
+    },
+    {
+      "method": "GET",
+      "target": "links/self",
+      "status": 404,
+      "minimum": "unknown-post-publication-context",
+      "oracle": "hidden404 with actual context and no disclosure",
+      "predecessorIndex": 22,
+      "index": 25,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "actual response18 tuple, checked different view from seed and equal actual returned published policy view"
+    },
+    {
+      "method": "GET",
+      "target": "alias/work",
+      "status": 404,
+      "minimum": "unknown-post-publication-context",
+      "oracle": "hidden404 with actual context and no disclosure",
+      "predecessorIndex": 23,
+      "index": 26,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "actual response18 tuple, checked different view from seed and equal actual returned published policy view"
+    },
+    {
+      "method": "GET",
+      "target": "beads/a?view=properties",
+      "status": 404,
+      "minimum": "unknown-post-publication-context",
+      "oracle": "genuinely hidden properties404 with published context; complete Problem",
+      "index": 27,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "actual response18 tuple, checked different view from seed and equal actual returned published policy view"
+    },
+    {
+      "method": "GET",
+      "target": "beads/a?view=links",
+      "status": 404,
+      "minimum": "unknown-post-publication-context",
+      "oracle": "genuinely hidden initial incident anchor404 with published context; no success wait or G2 claim",
+      "index": 28,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "actual response18 tuple, checked different view from seed and equal actual returned published policy view"
+    },
+    {
+      "method": "GET",
+      "target": "beads/missing",
+      "status": 404,
+      "minimum": "same-as-first-hidden-ahead",
+      "oracle": "full status/Problem/protocol metadata/current-context equality with request18 hiddenBead; same authorization state; exclude Date only",
+      "index": 29,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "exact same authored ahead tuple and authorization as request18; compare current response tuple to actual response18"
+    },
+    {
+      "method": "GET",
+      "target": "beads/a",
+      "status": 401,
+      "minimum": "unknown-post-publication-context",
+      "oracle": "no credentials; no projected context",
+      "predecessorIndex": 24,
+      "index": 30,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "actual response18 tuple, checked different view from seed and equal actual returned published policy view"
+    },
+    {
+      "method": "PUT",
+      "target": "beads/a",
+      "status": 405,
+      "minimum": "unknown-post-publication-context",
+      "oracle": "method refusal; no owner",
+      "predecessorIndex": 25,
+      "index": 31,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "actual response18 tuple, checked different view from seed and equal actual returned published policy view"
+    },
+    {
+      "method": "GET",
+      "target": "beads/a",
+      "status": 400,
+      "minimum": "incomplete-or-duplicate",
+      "oracle": "malformed tuple afterauth beforeowner; no projected context",
+      "predecessorIndex": 26,
+      "index": 32,
+      "bodyPresent": false,
+      "accept": "application/json",
+      "contextSource": "actual seed tuple with declared foreign/ahead modification"
+    }
+  ],
+  "literalRowsMatchAccepted": true,
+  "headers": {
+    "base": [
+      "Host:event-sse.invalid",
+      "Connection:close",
+      "Accept:application/json",
+      "Authorization:private writer token, omitted only row30"
+    ],
+    "body": [
+      "Content-Type:application/json",
+      "Content-Length:562"
+    ],
+    "outerIdempotencyKey": false,
+    "tupleOrder": [
+      "bdp-scope-epoch",
+      "bdp-authorization-view",
+      "bdp-minimum-scope-position"
+    ],
+    "row32Only": [
+      "bdp-minimum-scope-position",
+      "pos-3"
+    ],
+    "row29": "exact saved row18 authored fields, same actual published tuple"
+  }
+}

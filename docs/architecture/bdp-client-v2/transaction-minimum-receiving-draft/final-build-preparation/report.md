@@ -1,0 +1,11 @@
+# Closed final clean-candidate build
+
+Exactly one command: pinned Node24.16.0 plus pinned pnpm11.20.0 `run build`, in the minimum-receiving checkout. No setup, tests, package/install or runtime execution was performed in preparation. No live gate or candidate identity has been invented.
+
+Root supplies the actual clean final head/tree/ordered parents, actual integrated feature base, accepted eleven-file source manifest (including any separately accepted documentation update), and hashed root acceptance. The supervisor checks clean Git state, exact eleven-file feature footprint, source hashes and ancestry. It reuses the frozen v3 supervisor's guarded process dispatch,115-second TERM/120-second KILL, exclusive attempt files, raw log, elapsed/process/temp evidence, and source before/after checks. No automatic retry is available. Only this build stage can run; control and installed gates remain closed.
+
+Immediately before dispatch, `run/build-inventory-before.json` retains all tracked input hashes, protocol/server package payload candidates and all package emitted files. Immediately afterward, `run/build-output-inventory.json` retains the same inventories plus hashed actual build start/exit/log records and source/Git chronology. Tracked input changes fail acceptance. Output differences are retained because this is a real fresh build, not assumed byte reuse.
+
+The output schema matches installed `gate.verify_build`: `inputFiles`, `packageFiles`, `emittedFiles`, `sourceSha256`, `buildHead`, `buildWorkspaceDirty`, and `buildStart`/`buildExit`/`buildLog` path+hash records. Package inventory includes root LICENSE, protocol/server manifests, their dist outputs and protocol schemas. Emitted inventory covers every packages/*/dist file, matching that gate's exact definition; app dist is outside that particular emitted inventory. Failed outputs are retained but cannot satisfy the installed gate's exit/source/cleanup requirements. Root must separately accept the actual final build inventory before package release.
+
+This is a narrow orchestration adapter; the original v3 supervisor and all earlier source evidence remain unchanged. Script syntax was parsed only. Candidate commit and final build remain pending.

@@ -1,0 +1,195 @@
+# Readiness review — packet 03-http-and-evidence
+
+Frozen head `72bdaad0`, base `a9bcf9ed`. Reviewed only the supplied excerpt. **No diff, no base-revision excerpts and no repository access were supplied, so for every file below I cannot distinguish baseline behavior at `a9bcf9ed` from changes introduced at `72bdaad0`.** All findings are stated as current-state defects, not as regressions. No Critical or High *proven* defects found; the highest-impact item (evidence freshness, Q-A) is a context gap I cannot close from the packet.
+
+---
+
+## A. Proven defects (decidable from the supplied source)
+
+### 1. Medium — `targetProcess` binding for `bdpbd` is a per-run nonce, not a recipe digest
+**File/section:** `scripts/generate-read-cohort.mts:519-524` (bdpbd `baseEnv`) and `:590-607` (`targetProcess: canonicalJsonDigest({... environment: plan.baseEnv ...})`); consumed by `packages/conformance/src/cohort-verification.ts:327-334`.
+
+**Issue:** `bdpbd`'s `baseEnv` spreads `bdEnvironment` (`:450-458`), which carries `HOME: path.join(temporaryRoot, "home")` and `GIT_CONFIG_GLOBAL` under a `mkdtemp` root, plus the inherited `PATH`/`TMPDIR`, plus `BDP_BD_EXECUTABLE: bdExecutable` (an absolute resolved path, `:393`). The digest therefore changes on every run and every machine, independently of any source or recipe change.
+
+**Reachable trigger:** run `generate-read-cohort` twice from the same clean tree — bdpbd's `targetProcess` differs both times (the artifact summary's `2562c874…` is not reproducible). Conversely, materially change the launch recipe and the digest moves no more distinguishably than normal churn.
+
+**Impact:** the binding the verifier demands as the packaged launch recipe conveys no recoverable information for bdpbd: it cannot detect recipe drift and cannot be re-derived by a reviewer, contrary to the stated convention at `:320-329` ("so a reviewer can re-derive every value from the run head").
+
+**Fix/next step:** normalize before digesting — substitute stable placeholders for per-run temp paths, exclude inherited `PATH`/`TMPDIR`, and reference bd by the content digest already recorded as `bdExecutable` instead of its filesystem path.
+
+### 2. Medium — the verifier's documented anti-relabel guarantee does not hold
+**File/section:** `packages/conformance/src/cohort-verification.ts:323-340`; comment at `:325-326` reads "Relabeling an in-process segment as packaged therefore fails here: the bindings it could not honestly carry are exactly the ones now demanded." Related claim: `packages/server/src/read-conformance-capability.ts:5-10`.
+
+**Issue:** the three `PACKAGED_ONLY_BINDING_KEYS` are only checked against `SHA256_HEX` (`:330`). None is recomputed: `installedPayload` digests `apps/*/dist/main.js` (build output, not committed, so the gate cannot re-derive it), and `targetProcess`/`workspace` are generator-internal canonical-JSON digests with no committed byte source.
+
+**Reachable trigger (walked end to end against every check in `verifyReadCohortEvidence`):** take the committed artifact's bdptest in-process segment, set `admission: "packaged"` on the segment and its 11 rows, add three arbitrary 64-hex strings for the packaged-only bindings, update `packagedRows` 36→47 and `selfCertifiedRows` 11→0 (`:539-551` stays consistent, `scores.pass` stays 47), keep canonical formatting, recompute the constant, and commit the artifact plus `read-conformance-capability.ts`. Every remaining check passes: the `in-process ⇒ selfCertifiable` rule (`:474-478`) no longer applies, and there is **no** `packaged ⇒ ¬selfCertifiable` rule.
+
+**Impact:** the honest packaged/in-process split rests entirely on the generator, not the gate. The forged artifact would present 11 rows as black-box packaged conformance while its own derived `selfCertified` list (`:214-219`) still names them — an internally contradictory artifact that verifies green, directly against `selfCertifiedNote` ("must not be presented as black-box conformance"). Severity is Medium under the "detect drift/sloppiness" reading of the gate; High if the evidence model is intended to resist a committer, which the comment's wording asserts.
+
+**Fix/next step:** (a) refuse `admission === "packaged"` for any id in `input.derivedSelfCertifiable` — consistent with the existing derivation semantics, not a new product decision; and (b) soften the `:323-326` comment to what is actually proved (shape only), or bind `installedPayload` to a committed build-provenance digest the gate can re-derive.
+
+### 3. Low — the non-attesting marker is missing on 405/406/500 and alias 307 responses
+**File/section:** `packages/server/src/development-runtime.ts:76-84` (`empty`) and `:200-205` (307); the marker is set only in `json` (`:57`) and `readJson` (`:95`).
+
+**Reachable trigger:** `OPTIONS /development/create-bead` → 405 (`:168`); `Accept: text/plain` on a mutation POST → bodyless 406 (`:239`); `GET /alias/x` → 307 (`:201`); any non-`ReceivingError` throw → 500 (`:249`).
+
+**Impact:** the one invariant this server advertises (`:1`, "Explicitly non-attesting") is not uniformly present on captured responses; a 405/406/500/307 from this server is header-indistinguishable from a production server's.
+
+**Fix/next step:** set `x-bdp-development: non-attesting` in `empty()` and on the 307 path.
+
+### 4. Low — unknown `/development/*` mutation targets answer 405 `Allow: GET, HEAD`; the `resource-not-found` branch is dead
+**File/section:** `packages/server/src/development-runtime.ts:164-166, 209-213`. Line `:213` (`if (!operation && name !== "sequence") throw new ReceivingError("resource-not-found")`) is unreachable: anything that reaches it already satisfies `method === "POST" && mutationTarget`.
+
+**Reachable trigger:** `POST /development/does-not-exist` → 405 with `Allow: GET, HEAD`. Also `POST /development/create-bead?x=1`: `:164` slices the **raw** target, so `name` becomes `create-bead?x=1`, `mutationTarget` is false, and a valid operation URL with a query string gets the same 405.
+
+**Impact:** misleading refusal (advertises GET/HEAD on a nonexistent target) and a dead admission branch; a diagnostic probing "unknown operation" records 405, not `resource-not-found`.
+
+**Fix/next step:** route on the parsed `url.pathname`, and refuse unknown `/development/*` names with `resource-not-found` before the method checks.
+
+### 5. Low — limit incoherence makes three configured refusal boundaries unreachable over HTTP
+**File/section:** `packages/server/src/development-authority.ts:28-34` and `:112-126`, against `development-runtime.ts:110-121`.
+
+**Issue:** `propertiesBytes: 64 KiB` equals `requestBodyBytes: 64 KiB`, and `diagnosticBytes: 512 KiB` / `representationBytes: 256 KiB` both exceed the HTTP body cap, so `request-too-large` always trips first. Separately, `:120` draws `diagnostics` from the raw `DEVELOPMENT_LIMITS` while `:121` draws `diagnosticBytes` from the snapshotted `bounds` — sibling budget fields with different provenance, so any normalization inside `snapshotReadUpdateRuntimeLimits` applies to one and not the other.
+
+**Reachable trigger:** submit a 64 KiB `properties` document → `request-too-large`, never the properties-bytes refusal.
+
+**Impact:** the configured values are dead over the HTTP lane; any diagnostic row claiming to observe the properties/representation/diagnostic-byte boundary would in fact be observing the body cap. (I cannot check whether such a row exists — the dev manifest is not supplied.)
+
+**Fix/next step:** set `propertiesBytes`/`representationBytes` strictly below `requestBodyBytes` or document them as in-process-only bounds; source both numeric-budget fields from `bounds`.
+
+### 6. Low — `normalizationSafeRawRequestPath` returns a path for authority-form targets
+**File/section:** `packages/server/src/node-http-target.ts:11-25` (and `:38-51`).
+
+**Issue:** for `"//evil.example/x"`, `authorityStart = 2`, `pathname = "/x"`, and the final WHATWG equality check at `:30-32` compares against `/x` (protocol-relative resolution) — so the function returns `"/x"`, silently discarding the authority. The returned value is not a substring of the supplied target.
+
+**Reachable trigger:** any caller that does not independently reject `//`. `development-runtime.ts:158` does reject it, so the dev server is unaffected; **other call sites are not in the packet.**
+
+**Impact:** the helper's name and contract ("normalization-safe raw request path") invite use as a single admission check, where it would silently collapse an authority-form target to a local path.
+
+**Fix/next step:** return `undefined` for authority-form input, or return the authority so callers must handle it explicitly.
+
+### 7. Low — a legal empty query is refused as malformed
+**File/section:** `packages/server/src/node-http-target.ts:6-8, 29-32`.
+
+**Issue:** for target `/x?`, `search = "?"` while `parsed.search === ""`, so the equality check fails and the function returns `undefined`. In the dev server that becomes `malformed-request` (`:159-161`).
+
+**Impact:** a syntactically valid request target is rejected. Possibly deliberate fail-closed strictness; flagged because `read.http.raw-request-targets` is a required cohort row and the production call sites are not in the packet.
+
+**Fix/next step:** compare normalized query presence (`queryIndex !== -1 && search === "?"`) as an allowed case, or state the exclusion where the helper's contract is documented.
+
+### 8. Low — `scenario.actions ?? scenario.requests` skips oracle validation for an empty `actions`
+**File/section:** `packages/conformance/src/artifact-bundle.ts:186`.
+
+**Issue:** `[] ?? x` evaluates to `[]`, so a scenario declaring `actions: []` suppresses validation of its `requests` assertions entirely; a scenario carrying both validates only `actions`.
+
+**Reachable trigger:** depends on whether `parseExecutableScenarioManifest` permits either shape (not supplied).
+
+**Impact:** unresolved fixture oracle pointers in `requests` would reach run time rather than being refused at the artifact boundary — the exact failure this function exists to prevent.
+
+**Fix/next step:** `(scenario.actions?.length ? scenario.actions : scenario.requests) ?? []`, or validate both lists.
+
+### 9. Low — `jsonPointer` accepts non-conforming pointers
+**File/section:** `packages/conformance/src/artifact-bundle.ts:271-286`.
+
+**Issue:** no check that a non-empty pointer begins with `/`. Pointer `"foo"` → `slice(1).split("/")` → lookup of key `"oo"`. (The `~1`→`/` then `~0`→`~` order at `:276` is correct.)
+
+**Impact:** a malformed oracle pointer resolves to the wrong member (or silently "does not resolve"), so a mis-typed pointer can bind an unintended expected value instead of being rejected.
+
+**Fix/next step:** reject non-empty pointers not starting with `/`.
+
+### 10. Low — runtime admission is gated on hex shape, while the gate's prose claims the opposite
+**File/section:** `packages/server/src/read-conformance-capability.ts:44-46` vs `scripts/read-cohort-evidence.mjs:78-82` ("the whole point of this gate is that a bare well-formed hex string must never admit the server unchallenged").
+
+**Issue:** `hasReadConformanceEvidence` validates only `/^[0-9a-f]{40}$/`. The challenge exists exclusively in a separately invoked script.
+
+**Reachable trigger:** a build whose constant was edited without `pnpm evidence:verify` running admits the server.
+
+**Impact:** the fail-closed story depends on CI wiring that is not in this packet; the two comments read as stronger than the mechanism.
+
+**Fix/next step:** state the CI dependency in the capability comment, or compare against an artifact digest embedded at build time.
+
+### 11. Low — unhandled rejection path in the dev server's request bookkeeping
+**File/section:** `packages/server/src/development-runtime.ts:252-256` (`void task.finally(...)`).
+
+**Issue:** `handle`'s catch-all (`:245-249`) covers the normal paths, but a throw *inside* that catch (e.g. a `writeHead` on an already-sent response, or an invalid header value while reporting an error) rejects `task`; the `.finally(...)` chain's rejection is `void`ed, so it surfaces as an unhandled rejection and terminates the process under Node's default.
+
+**Trigger not proven:** I could not identify a concrete reachable double-response path in the supplied excerpt; reporting it because the process owns admitted work and the lifecycle observations (`development/README.md:76-93`) turn on exactly how this process dies.
+
+**Fix/next step:** `void task.catch(() => {}).finally(...)`.
+
+### 12. Low — per-process random Scope epoch doubles as the Authorization View
+**File/section:** `packages/server/src/development-authority.ts:142`, `:152`, `:171-181`.
+
+**Issue:** one `randomBytes(24)` value is used for both `scopeEpoch` and `authorizationView`, regenerated on every process start while the store is durable.
+
+**Impact:** across the restart/SIGKILL observations the dev composition cannot exhibit any distinction between an Authorization-View change and a Scope-epoch change, and all outstanding cursors are invalidated by restart (consistent with in-memory retained state at `:155-170`). Any dev diagnostic touching epoch/view identity is therefore vacuous rather than negative. Whether the Read profile requires the two to be independent is not in the supplied spec excerpt.
+
+**Fix/next step:** derive the epoch from durable store lineage/state and use distinct values for the two roles, or record the conflation as an explicit limit on the affected inventory rows.
+
+---
+
+## B. Questions needing omitted context (not defects)
+
+**Q-A — Freshness of the Read evidence at `72bdaad0` cannot be established.** The artifact records `runHead 4f0ed579…`; the head under review is `72bdaad0`. By design (`scripts/read-cohort-evidence.mjs:120-171`, comment `:126-128`), the gate confines only run-head → evidence-commit and re-derives only catalog, manifest, the two fixtures and the schema bundle (`:54-60`). **No Read-serving source file is re-derived or confined after the evidence commit.** I was given no commit list or diff for `a9bcf9ed..72bdaad0`, so I cannot say whether Read-serving sources changed since `4f0ed579`. Compounding this, `packages/server/src/read-conformance-capability.ts:18-22` discloses that the sealed artifact was migrated **twice without a re-run**, so every segment's `schemaReadProjection` was back-filled rather than observed, and the artifact itself does not record that — only this prose does. *Needed:* the commit range restricted to Read-serving paths, and confirmation whether a re-run is expected before this head ships.
+
+**Q-B — 406-before-admission ordering (spec `3552-3556`).** `development-runtime.ts:234-236` computes `acceptsJson` and passes it into `lifecycle.submit`; whether `submit` claims keys or performs durable admission before the acceptability check lives in `sequence-executor.ts` / `read-sequence-lifecycle.ts`, neither supplied. Separately, `:215-223` returns 415 / `malformed-request` before any Accept evaluation, and carrier-parse failures (`development-authority.ts:188, 197` → catch at `development-runtime.ts:247`) return 400 rather than 406. The supplied excerpt does not fix the relative order of 406 against `malformed-request`/415. *Needed:* the omitted ordering text and the `submit` implementation.
+
+**Q-C — Problem/disposition discrimination.** `development-runtime.ts:243-244` decides problem-vs-success by `"code" in result` and status by `result.status ?? 500`. The disposition and sequence-envelope types from `@bdp/protocol` are not supplied, so I cannot confirm that no successful singleton disposition or sequence envelope carries a top-level `code` (which would be rendered as `application/problem+json`), nor that every problem carries `status` (a missing one silently becomes 500 under a body claiming otherwise). `development/README.md:65-66` asserts a test covers the envelope case.
+
+**Q-D — Dev-lane containment.** `artifact-bundle.ts:89-93` exports `createDevelopmentReadUpdateArtifactBundle` as an ordinary named export and registers it in the **same** `factoryCreatedBundles` WeakSet (`:167`), so `assertFactoryCreatedArtifactBundle` (`:296-304`) cannot distinguish lanes — while `development/README.md:24-25` calls it "source-only test support". Conversely, `createBoundArtifactBundle`'s production branch adds **no** check that rows are not `kind: "diagnostic"` / `requiredProfile: "read-update"`; a dev-shaped catalog with `catalogVersion: 1` and manifest `catalogId: "read-v1"` satisfies `:143`. *Needed:* `packages/conformance/src/index.ts` + package exports, `catalog.ts`, `executable-manifest.ts`, and the runner's profile gate. Until then the "write-profile claims remain disabled" containment claim is not established by this packet.
+
+**Q-E — `catalogId` and byte decoding in the verifier.** `cohort-verification.ts:170` format-checks `artifact.catalogId` and discards it — it is never compared to `read-v1` or to the bound catalog (benign given the byte bindings at `:386-402` plus the content digest, but confirm intent). `:166` decodes artifact bytes with a non-fatal `TextDecoder`, while `read-cohort-evidence.mjs:273` uses `{fatal: true}`. Whether UTF-8 validity and canonical form are actually enforced depends on `assertCanonicalReadCohortBytes` / `readCohortEvidenceConstant` in `cohort-artifact.ts`, not supplied.
+
+**Q-F — The generator is a vitest test with no explicit timeout.** `generate-read-cohort.mts:362-363` declares `it(...)` with no timeout while running `pnpm build`, two nested vitest suites, bd seeding and dozens of server launches. If the repo config leaves `testTimeout` at the 5 s default, the generator cannot complete; and a timeout does not cancel the body — the `finally` at `:723-726` would `rm -rf` the temp root while packaged servers and bd workspaces are live, and the artifact could still be written at `:702` after a reported failure. *Needed:* the vitest config applying to this file.
+
+**Q-G — Workspace binding coverage.** `:608-609` digests only `bdFixture.bd` for bdpbd, so the extra `dep add demo-f external:beads:mol-run-assignee` applied to the external-endpoint workspace (`:481-496`) appears in no binding I can see; `targetProcess` records only *which rows* used that workspace (`:598-605`), not the seeding recipe. For bdptest, `workspace` is literally `measured.fixtureDigest` (the summary confirms it equals `fixture`), so that packaged-only binding is satisfied tautologically. Whether the generator's own recipe is bound at all depends on `scripts/read-harness-bindings.ts` (not supplied), which produces the `harness` digests.
+
+**Q-H — Two capability fields.** `artifact-bundle.ts:180-185` gates oracle validation on `scenario.applicability?.requires`, while the generator gates runtime behavior on `scenario.setup.requires` (`:247, 526, 596`). `deriveReadCohortNotApplicableRows` is not supplied, so I cannot confirm the two are reconciled; a row gated only through `setup.requires` would be neither skipped at the artifact boundary nor recorded not-applicable.
+
+**Q-I — ETag coverage on dev reads.** `development-runtime.ts:189-199` derives a validator only when `result.request.kind === "resource" && result.request.resource !== "type"` **and** the body carries a string `revision`. The Read request type is not supplied, so I cannot tell which read targets (e.g. a properties view) silently lose their validator and therefore answer `If-None-Match`/`If-Match` as if no validator existed (`read-http.ts:50-56`).
+
+**Q-J — Store reopen compatibility.** `development-authority.ts:78-85` passes `minimumRetentionMs: day` on every open while `create: { types }` applies only to first provisioning. Whether `openRecoveryStore` validates a reopened store's recorded retention against the supplied minimum (and what `assertReadUpdateRuntimeCompatibility` at `:104` actually compares) is in `recovery-store.ts` / `read-update-runtime-limits.ts`, not supplied.
+
+---
+
+## C. Checks performed that produced no finding
+
+- Artifact summary arithmetic is internally consistent: 49 required ids, 11 self-certified; bdptest NA = 2 (neither self-certified) → 36 packaged / 11 in-process / 47 pass; bdpbd NA = 7 (3 of them self-certified) → 34 / 8 / 42. Matches every cross-check in `cohort-verification.ts:486-551`.
+- `artifactSHA256 6142cf73…d10c` truncates to the committed constant `6142cf73…2843` (`read-conformance-capability.ts:29`), and `assertDistMatchesCommittedConstants`'s regex (`read-cohort-evidence.mjs:100-104`) matches that declaration exactly once.
+- `read-http.ts`: entity-tag grammar (`:64`) correctly excludes `0x22`; empty list elements ignored and mixed `*` lists refused (`:62-83`); strong/weak comparison correct; the sticky regex is per-call. `acceptsJson` applies RFC 9110 §12.5.1 most-specific-range precedence, rejects parameterized ranges against a parameter-free representation, and implements the qvalue grammar correctly. `resourceRevisionEtag`'s three-way projection (`:158-184`) is injective, including the `bdp-b64_`/`bdp-u16_` self-escape, and `allocUnsafe` is fully written.
+- 406 → 304/412 precedence, bodyless 406/412, and `content-length` handling on 304 (`read-http.ts:26-46`) are RFC-consistent; date preconditions are correctly ignored absent a modification date.
+- Mutation POSTs never evaluate HTTP conditional fields, matching spec `3534-3544`; the sequence carrier rejects `Idempotency-Key` and singletons require it, matching spec `3733-3735`; sequences return 200 with inline per-member results, matching `3725-3729`.
+- `cohort-verification.ts` fails closed on every absent root/target/segment member (`closedRecord`/`record`/`array` throw on `undefined`), rejects `__proto__` as an unknown key, and requires `notApplicable` presence explicitly (`:492-496`).
+- `copySourceBytes` (`artifact-bundle.ts:306-329`) defends against spoofed typed arrays via intrinsic getters; `deepFreeze` is cycle-safe; `isCanonicalIsoTimestamp` rejects out-of-range dates (though it ignores fractional-second precision beyond 3 digits — definitional, not reported).
+- `close()` ordering in `development-runtime.ts:288-301` admits nothing after `closing` is set and awaits all pending work before closing the authority; the post-admission "delivery is only an observer" comment (`:226-227`) is consistent with `closeAllConnections()` plus the `response.destroyed` guards.
+
+---
+
+## D. Files and ranges actually read
+
+| File | Range | Completeness |
+|---|---|---|
+| `docs/specs/bdp.md` | 2486-2501, 2685-2740, 3524-3560 | excerpts only; surrounding normative sections **not supplied** |
+| `packages/server/src/development-runtime.ts` | 1-303 | whole file as supplied |
+| `packages/server/src/development-authority.ts` | 1-219 | whole file as supplied |
+| `packages/server/src/read-http.ts` | 1-198 | whole file as supplied |
+| `packages/server/src/node-http-target.ts` | 1-51 | whole file as supplied |
+| `packages/server/src/read-conformance-capability.ts` | 1-58 | whole file as supplied |
+| `packages/conformance/src/artifact-bundle.ts` | 1-504 | whole file as supplied |
+| `packages/conformance/src/cohort-verification.ts` | 1-641 | whole file as supplied |
+| `packages/conformance/development/README.md` | 1-126 | whole file as supplied |
+| `scripts/read-cohort-evidence.mjs` | 1-404 | whole file as supplied |
+| `scripts/generate-read-cohort.mts` | 1-728 | whole file as supplied |
+| Derived current artifact summary | — | **individual exchange rows omitted**; segment `scenarios` arrays reduced to counts/states |
+
+**Referenced but not supplied (no claim made about them):** `@bdp/protocol` (`readProblem`, `parseReadUpdateProblem`, `prepareReadUpdateSingleton`, `prepareReadUpdateSequence`, `stringifyJsonValue`, disposition/envelope types), `sequence-executor.ts`, `read-sequence-lifecycle.ts`, `recovery-store.ts`, `resource-evaluator.ts`, `read-request.ts`, `read-update-runtime-limits.ts`, `packages/conformance/src/{catalog,executable-manifest,cohort-artifact,runner,schema-validator,http-executor,raw-http-scenario-target,index}.ts`, `deriveReadCohort{RequiredScenarioIds,SelfCertifiableIds,NotApplicableRows}`, `createReadCohortArtifact`, `projectReadSchemaBundle`, `deriveReadSchemaProjectionRoots`, `READ_SCHEMA_SEALED_DEFINITIONS`, `scripts/read-harness-bindings.ts`, `scripts/bd-baseline.mjs`, the dev catalog/manifest/`read-update-coverage-v1.json`, the Read catalog/manifest/fixtures, `schemas/bdp-v0.schema.json`, the committed cohort artifact's exchange rows, vitest config, CI workflow, and `apps/{bdptest,bdpbd}` sources. **No entire-branch coverage is claimed.**
+
+---
+
+## E. Bounded exclusions relevant to this packet
+
+- **No Transactional-profile source appears in this packet.** The cumulative Read → Read+Update → Transactional boundary could only be examined at the Read/Read+Update seam, and only through the development composition (`development-authority.ts:105-184`, where one owner serves both lanes). I make no statement about the private bounded Transactional implementation.
+- Write-profile conformance claims remain disabled; the dev lane is explicitly non-attesting (`development/README.md:1-28`, `development-runtime.ts:1`, `development-authority.ts:1`). Findings 3-5 and 11-12 are about the honesty/coherence of that bounded lane, not about missing profile features.
+- Declared-uncovered cohort variants (artifact `uncovered`, generator `:651-686`): absent optional limits, CORS-enabled branch, CORS OPTIONS, on-wire number-model declaration, independent descriptor authority/installation for three `owned-wildcard` rows, target-authored external Type declarations. Not treated as findings.
+- Dev-lane exclusions taken as declared, not as gaps: `development/README.md:109-112` (power loss, crash inside a SQLite commit, replica failover, full atomic state/disposition durability) and `:114-126` (remaining raw target tests, alias/pin/allocated-ID/no-op variants, controlled scheduling/expiry/fault fixtures, installed schema/owned-Link contracts, discovery and Operation Directory claims).
+- CORS is disabled on the dev server (`development-runtime.ts:154` refuses any `Origin` with 403), so spec `3546-3550`'s `Idempotency-Key` CORS obligation is out of scope here. Noted only: that blanket refusal also rejects **same-origin** browser POSTs (which always carry `Origin`) and labels a transport-policy decision as `forbidden`.

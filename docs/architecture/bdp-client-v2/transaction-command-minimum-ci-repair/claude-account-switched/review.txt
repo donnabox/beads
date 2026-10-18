@@ -1,0 +1,36 @@
+## Findings
+
+**1. Shared rule's read-side carve-out weakened at its new location — Low**
+- Location: `docs/specs/bdp.md:3586`
+- The replaced TX text said "does not change **minimum controls** on reads, including subsequent Mutation Receipt GET or HEAD requests." The RU statement now says only "It does not change **conditions** on reads." Two paragraphs up, the same section uses "conditions" for HTTP conditional fields (`:3575`, "does not change conditions on canonical Resource GET or HEAD requests"), so at this location the sentence reads as a restatement of the conditional-field disclaimer, and the minimum-controls carve-out survives only in Part IV (`:5799`).
+- Impact: no normative loss — minimum controls exist only in Transactional, and `:5799-5801` restores the receipt-read rule verbatim. But the *shared* obligation, which is the one an RU-profile citation would anchor to, no longer disclaims read-side minimum controls.
+- Fix: `It does not change minimum controls or conditional request fields on reads.` Naming minimum controls here introduces no forward dependency, since the paragraph already names the three fields.
+
+**2. Closed profile enumeration replaced with an open, literally over-inclusive phrase — Low**
+- Location: `docs/specs/bdp.md:3585-3586`
+- "applies to Read+Update and Transactional mutation POSTs" became "applies to mutation POSTs under this profile and cumulative profiles." There are exactly three cumulative profiles (`:118`, Read included), so read literally this now reaches Read, which has no mutation POSTs. The spec's established phrasing is "later cumulative profiles" (`:1945`) / "A higher cumulative profile" (`:118`).
+- Also worth knowing: Part III already names Transactional in unlinked prose (`:2358`, `:2935`, `:3058`), so the original enumeration could have been kept verbatim without tripping either boundary check — the rewording was not forced by CI.
+- Fix: `under this profile and later cumulative profiles`, or restore `Read+Update and Transactional`.
+
+**3. RU inlines three Transactional field names with no orienting phrase — Low**
+- Location: `docs/specs/bdp.md:3580-3581`
+- These are now the spec's first mentions of `BDP-Minimum-Scope-Position`, `BDP-Scope-Epoch`, `BDP-Authorization-View`; they are defined at `:5780-5789`. The removed RU sentence carried "those **copied** fields," and the new TX sentence keeps "**copied** read minimum fields" (`:5798`) — the RU side dropped that framing, so a Part III reader gets three undefined tokens and no hint of where they originate.
+- Impact: editorial only. RU is normatively complete; the residual forward dependency is conceptual, not a link, and RU prose already discusses the same concepts (`:3563`, "no exposed Scope epoch, Authorization View token or Scope position").
+- Fix: reintroduce the copy framing without a link, e.g. "MUST ignore these copied read-consistency request fields: …".
+
+**4. Backward-reference phrasing inconsistent with the sibling citation — Nit**
+- Location: `docs/specs/bdp.md:5797-5798`
+- "the **shared** [mutation command preconditions]" is the only `shared [...]` cross-reference in Part IV; the pre-existing citation 34 lines later uses "The **inherited** [Mutation command preconditions]" (`:5832`), and spec convention elsewhere capitalizes link text to match the heading.
+- Fix: `the inherited [Mutation command preconditions](#mutation-command-preconditions)`.
+
+## Assessment
+
+**Semantic preservation** — the operator ruling survives intact: the three read minimum fields are ignored on mutation POSTs; syntax/transport/header/body bounds, authorization, idempotency, carrier validation and `expectedRevision` still apply (`:3583-3585`); receipt minima are preserved on the TX side (`:5799-5801`). The only drift is finding 1's term substitution. Every term the moved text relies on is grounded in RU — `operation command targets` (`:3567`), `Idempotency-Key` (`:3591`), `expectedRevision`, carrier validation (`:3533`) — except the three field names (finding 3).
+
+**Self-contained RU / inherited TX** — correct direction. The obligation genuinely binds RU, so RU-owned is the right home, and it's the placement the editorial map already planned (`docs/design/profile-editorial-map.md:116` lists "Mutation command preconditions" in the Update-addition column). A real tooling consequence: `assertProfileCitation` previously rejected any `read-update` scenario citing this rule as a "Later-profile anchor"; RU evidence for it is now citable, and Read still cannot cite it (profile 2 > rank 1).
+
+**Reference direction** — both boundary checks now pass. Static scan of all 1-level internal links: zero forward cross-part links and zero shared-anchor rank violations; the new link is Part IV → Part III, which `assertProfileLinks` doesn't constrain (source profile 3) and `assertPartLinks` allows (target part < source part). This matches the two failing tests you described (`profile-catalog-boundaries.test.ts:161` and `:177`).
+
+**Citation impacts** — none. No catalog, matrix, or source file cites `#mutation-command-preconditions`, and nothing cites the moved paragraph's text. The two citations into touched sections still resolve: `transactional.changefeed.consistency-fields` → `#transactional-http-consistency` selects "It never reports success with an older position." (`:5795`, untouched), and `read-update.numeric-model.same-value-no-op` → `#readupdate-consistency` selects "Read+Update has no durable Mutation Receipts and no BDP Events." (`:3559`) — unaffected, because the new paragraph sits under its own heading rather than extending that section's bounds. `transactional-v1.json:1179`'s anchor remains accurate for the `catch-up-timeout` text it selects.
+
+Verified against `docs/specs/bdp.md` at `287a0a64…`; no files written, no tests or builds run.

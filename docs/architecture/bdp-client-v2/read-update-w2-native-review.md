@@ -1,0 +1,34 @@
+# Native review: first installed Read+Update sequence observations
+
+Verdict: bounded pass; no blocking defect identified in frozen `0b34fe7dae75d9a60838bd5d733d1665dd5e7c83` against direct parent `c1a17442ff2f5936616e7644e827dfa28dcd5ab7`. Author checkout was read-only. Independent clone `/Users/dbox/repos/wt/vickie/bdp-read-update-w2-native` remains clean at that exact head. No outward actions, source edits, or qualification artifact regeneration.
+
+## Independent evidence
+
+Pinned Node24.16/pnpm11.20 frozen install and build passed. Then the four focused files `read-update-matrix.test.ts`, `read-update-exact-client.test.ts`, `cumulative-artifact.test.ts`, and `artifact-bundle.test.ts` passed **84 tests / 4 files in39.15 seconds**, maxWorkers2. Actual unfiltered HTTP matrix took9.962 seconds, within its30-second aggregate budget; inner exchanges retain5000ms deadlines. Logs: `read-update-w2-native-{install,build,tests}.log`, build/test `.exit`, tests `.json`; actual matrix record `read-update-w2-native-progress.json`, all in this directory. No process was left running.
+
+The independent record has40 pass and94 visible missing-harness outcomes;40 planned IDs,101 uncovered contracts, claimEligible:false. Binding matches the frozen source: catalog `e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0`, manifest `8c3ad930b22f1567f5a8ebefa98c1deb081ca43279b6c13f625e53edf5d8cf8a`, fixture `5790ed71c03bbe0fa8f3a639a1ae1c95352b39ad8dc4d48c3254c4eab63f4398`, exact configuration `3d36a5222635858592d92c2b79df03bae8b0c9ac1deeb9e5c176498c9f6b94e9`.
+
+I read the author's separately reported fresh packed79-test run, but did not independently repeat that package installation. The native run used emitted packages in the isolated workspace and actual installed-factory HTTP. Author870-test/full-check statements remain author evidence, not independently rerun here.
+
+## Contract and observation review
+
+The diff changes ten private harness/artifact/documentation files; no runtime, evaluator, normative schema, Types, public admission, or general runner implementation changes. Structural comparison preserves every preexisting scenario and adds four canonical same-ID scenarios. Each new row owns its assertions; no cross-row observations are substituted for a required execution.
+
+- **member-problem-shape:** sole new whole candidate is justified for its two cited clauses. Real200 sequence response has named and unnamed successes/failures; canonical response schema, exact ordered indices/cardinality, declared name presence/value, static409 identity-taken and404 resource-not-found status/type/code/retry, failure/success discrimination, and independent full-record GETs. Six targeted post-response controls fail the intended index/name/problem/result oracles. This is a claim about this bounded shape contract, not every possible member problem or sequence behavior.
+- **local-bindings:** allocated creator identity is captured and independently read after dependent update, with static expected state. Failed alias-path creator/dependent plus independent tail are observed; clearing the alias changes the real admission condition, while original-key retries retain both failures and unchanged tail. Changed valid input under the old dependent key conflicts; a fresh key changes state, and fresh creation proves the freed path usable. Counterfactuals distinguish wrong binding, invented dependent success, altered retained failure, and changed tail. wholeContract:false correctly preserves the commit-before-binding timing gap; separate creator-rekey identity behavior remains uncovered.
+- **carrier-rejection:** actual raw body lane, not synthetic diagnostics, sends33 distinct small members, verifies advertised32 and body below65536, verifies all33 absent, then corrects32 plus final singleton with the same valid keys and changed semantics. Twenty-four other literal variants inspect otherwise-valid IDs and reuse meaningful valid keys with corrected changed requests. Empty/malformed carriers without valid keys do not claim a nonexistent-key retention discriminator. Auth/media/body-limit and malformed Pointer controls are real HTTP. Row stays false because rate/unavailable branches remain absent.
+- **order-and-partial-commit:** real prefix/failures/tail and independent afterstate support persistence and continuation, but final order alone does not prove never-parallel execution or intermediate external visibility. Row correctly stays false.
+
+The real Directory is captured; `/body/sequence` is asserted as the relative target `sequence`, then resolved against observed operations. The exact route set includes only the installed sequence URL. Task Type literal agrees with an actual descriptor before use. No nested request-body binding or destination wildcard was added. Optional omission of the HTTP Idempotency-Key no longer fabricates a carrier key; empty supplied values still fail helper validation, and actual singleton omission is400 with later original-key success proving no effect/admission.
+
+Raw serialized request body octets are checked against each authored literal. The harness131072-byte allowance permits observing refusal beyond unchanged installed65536 policy; it is separately configuration-bound. All sensitivity controls run after real exchanges and require one application plus named assertion failures; they are not reported as additional authority behavior or qualification evidence.
+
+## Prior c1 review disposition
+
+The two Medium findings are closed within the reviewed successor: distinct over1MiB Read, History-enabled Read+Update and Transactional planner controls retain ordinary limits; row-local Link no-op revision and stale unowned-Link problem controls fail their actual oracles. The version1 carrier test and version2 admission condition close the companion version ambiguity. Public Read/development/fixture/catalog limits and structural JSON bounds are unchanged. Private baseline selection still performs a finite4MiB parse before identifying other carriers; that disclosed implementation behavior is not a new public admission claim.
+
+The whole-ID list increases only by member-problem-shape:129 required,40 authored,28 proposed whole,101 uncovered. Current-guard no-op and consecutive-revision evidence are described narrowly. Deferred broader startup cleanup, alias trimming and optional attribution work are not silently treated as repaired or covered.
+
+## Limits
+
+This review does not establish scheduler/interleaving, crash/disconnect, expiry/transient creator, fresh creator-key identity, schema-bearing mutation, rate/unavailable, or complete profile conformance. Source-private execution and emitted-package tests remain nonattesting. Existing public Read seal and historical evidence are unchanged. No new product ruling or runtime defect emerged from this bounded review.

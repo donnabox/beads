@@ -1,0 +1,20 @@
+--- before//Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/packages/server/node_modules/.bin/vitest
++++ after//Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/packages/server/node_modules/.bin/vitest
+@@ -25,9 +25,9 @@
+ esac
+ 
+ if [ -z "$NODE_PATH" ]; then
+-  export NODE_PATH="/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules"
++  export NODE_PATH="/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/node_modules/.pnpm/node_modules"
+ else
+-  export NODE_PATH="/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules:$NODE_PATH"
++  export NODE_PATH="/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/node_modules/.pnpm/node_modules:$NODE_PATH"
+ fi
+ if [ -n "$exe" ] && [ -x "$basedir/node.exe" ]; then
+   exec "$basedir/node.exe"  "$basedir_win/../vitest/vitest.mjs" "$@"
+@@ -40,4 +40,4 @@
+ else
+   exec node  "$basedir/../vitest/vitest.mjs" "$@"
+ fi
+-# cmd-shim-target=/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/packages/server/node_modules/vitest/vitest.mjs
++# cmd-shim-target=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/packages/server/node_modules/vitest/vitest.mjs

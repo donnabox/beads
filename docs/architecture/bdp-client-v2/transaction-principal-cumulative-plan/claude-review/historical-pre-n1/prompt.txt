@@ -1,0 +1,1187 @@
+Review this proposed principal-isolation integration plan for concrete correctness, safety, proof and workload defects. This is a PLAN review, not code approval or an execution release. Do not write or modify any files. Output findings only in stdout. Tools are disabled; evaluate the complete supplied plan/data and genuine committed source excerpts. No model choice or prior success claim is being imposed.
+
+Return numbered findings first (Critical/High/Medium/Low), each with exact plan/data/source location, concrete defect, impact and smallest correction. Distinguish source-proven defects from excerpt proof gaps; state what missing dependency would resolve a gap. Do not invent semantics, weaken full-body oracles, propose public admission bypass or require whole-obligation proof from an explicitly partial row. Review all plan responsibilities: new bound default roles vs selected control, namespace/rotation/current view, truthful actual wire/body equality and baseline order, configuration/digest/provenance, exact negative failure inventory/row stop, old observer composition and preservation, schema/content closure, all invocations/bytes/children/time cost and validation selection. Findings should be specific enough to disposition against source. If no actionable defect, say so with relevant proof limits.
+
+Reviewed source basis is immutable committed9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1/tree592c5e6e5c0c790b6e2690495b94ac48705b9069. Live checkout may contain unrelated guarded-batch work; it is NOT supplied as reviewed input. No future main or authoring parent is asserted. All plan artifacts are external and frozen; source drafting/guards/validation remain closed. Native/actual council and root acceptance are future requirements, not pending-state defects.
+
+The root deliberately chose a new DEFAULT bound credential configuration retaining operator/reader, with A/A-rotated/B. The row remains selected in full canonical runs. Do not recommend filtering it away merely to save old-run bookkeeping. No ordinary Update fixture changes. Existing configured private runner continues claimEligible:false; this advances a cumulative prerequisite, not cold serving functionality by itself. No standalone pass-report import occurs.
+
+## Complete frozen plan
+# Principal namespaces through the cumulative Transactional runner
+
+Status: proposed measured implementation/evidence plan, awaiting native/actual Claude council and root acceptance. No source authoring or execution is released. Basis is committed main9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1/tree592c5e6e5c0c790b6e2690495b94ac48705b9069, read through git show. The concurrent guarded-batch draft was not read as committed source. Before authoring, root must supply actual ordinary main/parent/tree and recheck all four owned source hashes, all30 raw objects and the direct dependency interfaces. Preserve this packet if a reanchor is needed.
+
+This delivers executable integration of the authenticated-principal subset of read-update.idempotency.principal-isolation under the same actual bound Transactional configuration as the existing matrix. It does not import PR133 success reports, qualify the entire obligation, implement cold discovery, or change ordinary Update. The sole design's T4/P activation predicates still require all applicable inherited obligations and actual serving/discovery admission; current transaction-http.ts195/227–228/570–577 refuses discovery and server/index.ts288–307 admits public Read only. This is one concrete prerequisite, not the next usable cold-client product by itself. A newly established serving defect takes priority over more evidence integration. Snapshot minimum and incident-Link metadata questions remain outside this slice.
+
+## Authority, files, and literal inputs
+
+Own exactly these four paths: packages/conformance/test-support/transactional/{manifest-v1.json,coverage-v1.json}, packages/conformance/src/transactional-cumulative.test.ts, apps/bdptest/src/transactional-matrix.test.ts. No fixture/catalog/spec/production/runner/schema/API/export change. The existing standalone principal test and ordinary RU fixture/manifests remain byte-identical. No generic importer or concurrency DSL.
+
+The new canonical row is the frozen manifest-row.json; its exact coverage object is coverage-row.json. They contain7 raw HTTP actions/139 assertions, no client actions and no captures. The inherited requiredProfile is read-update, setup requires only existing installed-transactional-http, and resetFixture is true. Catalog read-update-v1 places principal-isolation before command-minimum, so prepend it; do not filter it from default observation to avoid fresh validation. Coverage is wholeContract:false and claimEligible remains false. The coverage binding mirrors all139 actual manifest IDs; full app comparisons are explicitly not manifest bindings.
+
+requests.json freezes every raw literal, ordered authored header line, credential reference, status and body hash. POSTs carry Accept:application/json, Content-Type:application/json, and Idempotency-Key:principal-shared. Each150B body is the existing strict batch one-create operation: beads/a/title a, beads/b/title b, or beads/c/title c, type https://reference.invalid/acme/types/task and metadata{}. GETs carry authored Accept only and OMIT raw.body; do not encode null or an empty JSON body. request-authored-headers/body remain load-bearing and the real serializer supplies its required Host/default framing/authorization. No HTTP redirects, retries or extra probes are added by this plan.
+
+|Order|Action/ref|Actual request and expected result|
+|---|---|---|
+|1|pk-a-create / principal-a|POST batch A; completed available receipt, effect/required pos-1, current pos-1.|
+|2|pk-b-create / principal-b|Same key, POST batch B; independent completed receipt, effect/required pos-2, current pos-2.|
+|3|pk-a-rotated / principal-a-rotated|Exact A body/key under rotated same-principal credential; whole receipt equals1, original effect/required pos-1, current pos-2.|
+|4|pk-b-replay / principal-b|Exact B body/key; whole receipt equals2, original effect/required pos-2, current pos-2.|
+|5|pk-a-conflict / principal-a|Different C body under retained A key; exact409 idempotency-conflict/never Problem, current pos-2.|
+|6|pk-current / principal-a|GET beads/?limit=32; complete exact two-Resource page, next:null, current pos-2.|
+|7|pk-events / principal-a|GET events/; complete exact two-created-Event page, next:null, current pos-2.|
+
+No receipt GET or foreign-receipt test is implied. This proves terminal retained batch retry and credential rotation, not pending joins, internal concurrency, singleton/sequence namespaces, crash/expiry/reopen, anonymous namespace, carried actor independence or changed-view behavior. Full current state is a fixed serving-view Read, not principal-filtered visibility. Do not require A and B Authorization Views to differ or to equal.
+
+## One truthful default configuration
+
+Root selected a default bound configuration retaining operator→same/mutate and reader→same/read-only exactly, while adding principal-a and principal-a-rotated→principal-a/mutate and principal-b→principal-b/mutate. Generate five independent random32B tokens; expose exact handles operator,reader,anonymous,principal-a,principal-a-rotated,principal-b, with authorization as the only secret header and anonymous's header list empty. The closed resolver maps each exact ref to its token; unknown refs cannot silently fall through to reader. Preserve the existing invalidReceiptCredentials and deniedReceiptUrls behavior for old controls. Fold literal role-map/unknown-ref assertions into the existing app static callbacks; no new generic configuration seam.
+
+Every observe invocation bootstraps this same actual configuration, then spreads it to each fresh scenario directory (and explicit old reopens), exactly as current matrix149–158/169–175/248–261. installedTransactionBinding and transactional-execution-binding113–126 must retain actual runtime/authentication/policy/artifact/payload identities and equality to that invocation's genuine bootstrap. These identities necessarily change from historical operator/reader-only runs. Do not invent, replace or reuse old identity hashes. Keep random credential values out of output. Exact execution digest is separately credentials-free: only the existing five fields enter it. The new first-use route preimage is frozen in route-preimage.json,1228B/SHA9a9404e74dd41fcb39b9c3bb5fc86917ff972dfdbc95faa5f53d13b35bb60bec; all15 old method/URL authorities remain identical as a set. Update both literal route order and digest pins; retain previous digest as historical.
+
+The control uses the identical canonical row and handles/tokens but maps B's token to principal-a before its own bootstrap and all scenario launches. It changes genuine configuration identity, not a resolver token behind a falsely retained identity. Only the principal row is selected for this control. The selected positive also gets its own bootstrap. Existing scenarioSelection367–376 preserves canonical order and claimEligible:false; it does not become a public-admission bypass. All default invocations still select the complete canonical corpus.
+
+## Actual-wire authority and complete oracles
+
+Use existing HttpExchangeResponse/exact request metadata, createJsonSchemaValidator(schema) and onObserved callback, with no new exported API. Schema-validate the actual parsed body and independently assert literal/context/absence facts before storing any baseline. Source reference is standalone principal test551–674, not its historical report. Raw captures only authorize confined HTTP URLs; do not invent raw-body, revision, transaction or credential captures. ObservedAction output is not a postrun recovery path for raw JSON.
+
+Implement a local principal wire observer with an independently authored literal seven-request ledger. Match exact URL, writeState complete, authored ordered header prefix and raw body digest/bytes. Compare names-only prefix before values; do not expose generated Authorization values in failure diffs. Generated suffix must not supply protocol bdp-* fields; existing runner exact serialization remains the full framing/default oracle. Postrun bind all seven observed request IDs, methods, URLs and credentialRefs to the literal ledger: HttpExchangeResponse alone has no invented method/ref field. Request bodies are at most150B; use per-hook request<=2048B/response<=8192B checks, the existing cross-carrier margins, without altering executor caps.
+
+For initial A and B validate mutationReceipt, exact current headers, all known literal fields and complete result tuple, then strict full receipt equality against the expected structure with only actual validated id, transaction, expiresAt, scopeEpoch, authorizationView and revision as dynamic values. Validate receipt URLs are canonical, confined to scope receipts/, contain one legal nonempty token and no credentials/query/fragment. Validate nonempty transaction/revision/epoch/view. Strict Resource equality is exactly id,type,revision,properties,metadata; no invented links, provenance or extra fields. Require same epoch, distinct actual receipt IDs and transaction IDs between A and B. Do not assert cross-principal view equality.
+
+A sole independent replay ledger drives two successful whole-JSON comparisons: [pk-a-rotated,pk-a-create,whole-json] and [pk-b-replay,pk-b-create,whole-json]. Record performed comparisons only after actual success; finish requires their exact inventory. Static removal/redirection/mode-weakening controls must fail the ledger validator within the existing app static callbacks. Replay response context uses that principal's original epoch/view and current pos-2; receipt bodies retain their original positions. Action5 validates the entire exact transactional Problem plus A context/pos-2; never compare whole status-aware metadata equality between200 and409.
+
+Collection schema is currentBeadCollection, with strict body {items:[Aresource,Bresource],next:null}; no partial subset comparison. Event schema is eventPage; strict body {source:literalScopeEvents,events:[exactA,exactB],next:null}. Each Event has created/type, source, subject, subjectType, ordinal0, corresponding actual receipt.transaction, actual schema-valid time, and data exactly {revision,properties,metadata} from that receipt Resource. Derive the private projected id independently as ev_<tagged epoch SHA256 base64url>_<tagged GET7 view SHA256 base64url>_<tagged literal source SHA256 base64url>_pos-N_0, with JSON.stringify([tag,value]) and N1/2. GET7 supplies its own validated serving view; do not substitute an A/B receipt view. This is an exact private fixture projection, not a normative Event-ID spelling. No production renderer import.
+
+The positive performed inventory is exactly namespace-distinct, the two replay pairs, complete-current, complete-events. Both receipt baselines and all seven wire facts must exist; finish verifies counts, order and no unused comparison. Safe summaries include IDs/hashes/booleans/context/positions and performed inventory, never token-bearing requests or full secret headers. Full body comparisons occur in memory; report digests do not themselves prove equality. For the two selected callbacks, an optional absolute BDP_TRANSACTIONAL_PRINCIPAL_CUMULATIVE_OUTPUT path may save {sourceCommit,entry,...observed,principalSupplemental}; existing full/cross report paths append the same safe supplement. Validate optional path before startup, and retain full genuine report only when runner actually returned. Write genuine returned observation plus safe supplement in onObserved before cleanup, following current327; preserve thrown original errors and cleanup aggregation, never fabricate a runner result when it throws early.
+
+## Composition and the real negative
+
+The new principal row is first. The principal observer consumes its seven responses before old rows, then rejects any later principal-shared key reappearance while allowing ordinary old traffic; it must not reject all later batch/collection/Event URLs because those are shared routes. Existing cross/minimum/member observers receive the same unmodified exchanges in their existing order. Their sentinels are disjoint: carrier-create/carrier-update, minimum-* and the member body/keys. Preserve their exact body/route/handoff/extra-traffic assertions. Add principal.finish/full positive proof to full-positive and both existing cross controls. Other old controls still run the new manifest assertions but do not manufacture supplemental full-body credit.
+
+control.json freezes the exact expected two-response principal-collapse counterfactual and18 failing B assertion IDs in authored order. Its hook independently validates A terminal and actual B409 Problem/media/current A epoch/view/pos-1, then returns the genuine response; it must not throw the positive200 comparison before the runner records its complete failed assertion set. The manifest keeps all B positive expectations unchanged. Request assertions, three context-presence assertions and two absence assertions pass; status/schema/media/pos-2 and missing receipt/result facts fail. The row stops after action2; no later action or fabricated baseline. Control test requires exactly that failure set, actual write-complete, canonical manifest digest, genuine distinct control binding, claimEligible:false, one scenario plus bootstrap and cleanup. No raw response replacement, schema weakening, assertion deletion or hidden request change. The7HTTP ceiling is a conservative fail-closed envelope, not an allowance to continue after observed conflict or a promise that wrong outcomes will run7.
+
+## Preservation, affected static checks, and drafting fences
+
+parent-preservation.json freezes all15 manifest and15 coverage raw object hashes/bytes plus both full committed file hashes. Insert exactly one first object, preserving every old raw slice. New withoutPrincipalRow removes the one exact first prefix/object/comma and proves complete immediate-parent byte reconstruction. Then pass the reconstructed parent into the existing withoutSequenceMemberRow and withoutMinimumRow chains at cumulative1098/2975. Preserve every historical hash, tail guard, older reconstruction and all literal old body bytes. Old first-row mutations at2973/2987–2995 must find minimumId explicitly; do not accidentally mutate principal or weaken their failure oracles. Pagination index10→11 at1255 is an explicit expected order change. Add principal to the presence-before-equality filter. Existing canonical raw-body/schema resolving rules remain intact.
+
+Add one cumulative static callback, named in selection.json, for exact new row/hash/IDs, coverage mirror, literal credentials, full30-object preservation and new stripping helper. Preserve its independent expected action/request/assertion sets; do not validate only against a digest derived from the same candidate. Fold app route/role/replay-ledger checks into its two existing static callbacks. Select all8 previously affected CPU-only callbacks plus this new callback:9total. Their modules are imported but no installed callback is selected. Missing-ref safety uses the existing closed exact executor and explicit local role-map static check; retain the five real changed-identity before-action callbacks in full CI. No new installed probe solely for those safety checks.
+
+Measurements are source-only JSON data, not runtime evidence. The frozen row is30599B normal/17424B compact/952nodes. Insertion preserves old format and gives manifest825413disk/837765normal/409725compact/21908nodes,227actions/2642assertions; coverage124537B. Growth35404disk+normal/952nodes/6835coverage. Existing41 derivative specimens retain their original transformations and gain the unchanged new first row; maximum843883normal/22064nodes. Principal control changes configuration only, adding no manifest derivative. I independently compared current vs82f60a2:12 inline mutator bodies and all7 relevant transform/request functions unchanged, and canonical manifest semantics equal; historical source-only specimen hashes are retained in derivative-measurements.json. Recheck these against actual authored code, not just this plan.
+
+Simultaneous planning stops: canonical disk growth<=40000, normal growth<=40000, nodes growth<=1100, coverage growth<=8000, new assertions<=160; all41 derivative maxima<=848479normal/22212nodes, runtime1MiB/100000nodes unchanged. Existing smaller source-authoring fences WILL fail and remain unchanged during initial draft. Root alone may approve exact measured successor guard amendments with the existing4096B/64node/1024coverage margins after formatting/preservation/council. Do not minify, edit old objects, silently increase guards or mistake planning envelopes for approved allowances. Canonical and derivative fences are separate; retain historic bases488280/13019/70662 and old explanatory comments.
+
+## Finite validation and recurring cost
+
+Proposed order after source freeze/root gate: one pinned offline frozen setup; fresh build/typecheck/format/lint/dependency boundaries/unchanged Read seal; the exact9 CPU-static callbacks once. No product imports outside these authorized test/build commands. Stop unexpected failure before dependent stages; no automatic retry. Root may approve a precise correction and successor evidence with original failures retained.
+
+Then freeze a clean ordinary candidate and perform fresh protocol/server packs, external offline consumer with exact eight-package locked closure, archive/source/installed member comparison, recursive emitted payload fingerprint and actual entry realpath. Rebuild/inventory after any ordinary integration changes dependencies; never label a dirty parent's SHA as final installed source. Reuse existing package workflow and two approved entry/source environment overrides only. No workspace fallback, registry fallback, skip, release or Preview2 promotion. Each installed cohort is one exact named test/maxWorkers1, its own temp root, bootstrap and actual scenario sessions.
+
+selection.json freezes five installed cohorts: selected positive7HTTP/2children, selected collapse2expected/max7HTTP/2children, full positive220HTTP/24children, existing cross-batch211HTTP/24children, existing cross-sequence212HTTP/24children. Totals652expected/657maximum/76children. Actual raw UTF-8 request-body payload totals (excluding headers) are750 selected positive,300 expected/max750 collapse,18606 full,17550 cross-batch,17754 cross-sequence:54960 expected/55410 maximum bytes across the five cohorts. Private receipt GET/HEAD supplies no additional request bodies. These are source-derived payload sums, not whole-wire byte observations. Full positive proves16passed partial rows among256applicable,240missing executable,251required/235unplanned at planning; these are diagnostic categories, never completion percentages. The cross controls preserve their existing intended failure IDs and all other implemented rows passing.
+
+Keep120s external command/test supervision,90s cohort,63s full-positive elapsed assertion,5s per request,10s preparation/cleanup, and all existing smaller callback limits (including30s callbacks and after-first-wire cancellation's10s overall/100ms phase). No old guard increase is implicit. No idle busy polling. Observe actual selected titles/pass/failure sets, source/build/payload/config identity, exact HTTP/body counts, child starts/exits, report retention, store/temp removal and sampled PID/group absence. Preserve raw reports and cleanup failures. No claimed child attestation: ready payload identity and parent source/archive verification are distinct.
+
+invocation-inventory.json recounts all55 existing observe invocations:40 full traversals +1global receipt denial each add7HTTP/1child;5identity refusals add0HTTP/1child;3existing selected controls and6abort/preflight invocations add none. New selected positive/control add9expected/max14HTTP/4children. Thus old modeled8200expected/8235maximumHTTP and1006children become8496expected/8536maximumHTTP and1056children: +296expected/+301maximumHTTP/+50children.57 observe invocations=41manifest-mutated+16unchanged;64expanded app cases instead of62. These are source models excluding other startup/permission/other-file callbacks, not whole-job actual counts. Five local cohorts are a separate allowance, not the CI total.
+
+Actual PR134 successor log3f68208d shows full positive22188ms and identity refusals~9.8–11.2s; full job1013s/suite789.75s left187s under the unchanged1200s job cap. A rough start-dominated estimate50*(22.188/23)=48.2s suggests about1061s job, with plausible50–65s extra including more wire/JSON. This is a diagnostic estimate, not guaranteed headroom or an execution limit. Old30s callbacks gain seven requests and one child and must remain green. Actual new selected/full/cross durations plus exact full CI all steps, synthetic ordered parents/tree and eventual merged tree must establish capacity. If bounds fail, stop for a measured narrower correction; do not silently skip the row, rewrite working Update through TX or reduce oracles. Root owns ordinary ancestry/integration, exact-head green CI, council disposition and merge. No execution or public qualification is claimed by this plan.
+
+## Complete manifest-row.json (lossless compact JSON)
+```json
+{"id":"read-update.idempotency.principal-isolation","requiredProfile":"read-update","setup":{"fixture":"reference-transactional-v1","requires":["installed-transactional-http"]},"applicability":{"requires":[]},"cleanup":{"resetFixture":true},"actions":[{"id":"pk-a-create","family":"http","method":"POST","target":{"binding":"batch"},"credentialRef":"principal-a","raw":{"headerLines":[{"name":"accept","value":"application/json"},{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"principal-shared"}],"body":{"encoding":"utf8","value":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"},\"metadata\":{}}]}"}},"captures":[],"assertions":[{"id":"http-status","kind":"status","equals":200},{"id":"schema","kind":"json-schema","schema":"#/$defs/mutationReceipt"},{"id":"media","kind":"header","name":"content-type","equals":"application/json"},{"id":"present-bdp-scope-epoch","kind":"header","name":"bdp-scope-epoch","absent":false},{"id":"present-bdp-authorization-view","kind":"header","name":"bdp-authorization-view","absent":false},{"id":"present-bdp-scope-position","kind":"header","name":"bdp-scope-position","absent":false},{"id":"serving-position","kind":"header","name":"bdp-scope-position","equals":"pos-1"},{"id":"request-headers","kind":"request-authored-headers"},{"id":"request-body","kind":"request-authored-body"},{"id":"disposition","kind":"json-pointer","pointer":"/status","exists":true,"equals":"completed"},{"id":"detail","kind":"json-pointer","pointer":"/detail","exists":true,"equals":"available"},{"id":"key","kind":"json-pointer","pointer":"/idempotencyKey","exists":true,"equals":"principal-shared"},{"id":"receipt-id","kind":"json-pointer","pointer":"/id","exists":true},{"id":"transaction","kind":"json-pointer","pointer":"/transaction","exists":true},{"id":"required-position","kind":"json-pointer","pointer":"/requiredPosition","exists":true,"equals":"pos-1"},{"id":"effect-position","kind":"json-pointer","pointer":"/effectPosition","exists":true,"equals":"pos-1"},{"id":"no-next","kind":"json-pointer","pointer":"/next","exists":true,"equals":null},{"id":"result-indices","kind":"json-array-tuples","pointer":"/results","ordered":true,"projections":[{"pointer":"/operationIndex"},{"pointer":"/outcome"}],"equals":[[0,"created"]]},{"id":"resource-id","kind":"json-pointer","pointer":"/results/0/resource/id","exists":true,"equals":"https://reference.invalid/acme/beads/a"},{"id":"resource-type","kind":"json-pointer","pointer":"/results/0/resource/type","exists":true,"equals":"https://reference.invalid/acme/types/task"},{"id":"resource-revision","kind":"json-pointer","pointer":"/results/0/resource/revision","exists":true},{"id":"resource-properties","kind":"json-pointer","pointer":"/results/0/resource/properties","exists":true,"equals":{"title":"a"}},{"id":"resource-metadata","kind":"json-pointer","pointer":"/results/0/resource/metadata","exists":true,"equals":{}},{"id":"no-owned-links","kind":"json-pointer","pointer":"/results/0/resource/ownedLinks","exists":false},{"id":"no-provenance","kind":"json-pointer","pointer":"/results/0/resource/revisionProvenance","exists":false}]},{"id":"pk-b-create","family":"http","method":"POST","target":{"binding":"batch"},"credentialRef":"principal-b","raw":{"headerLines":[{"name":"accept","value":"application/json"},{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"principal-shared"}],"body":{"encoding":"utf8","value":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"b\"},\"metadata\":{}}]}"}},"captures":[],"assertions":[{"id":"http-status","kind":"status","equals":200},{"id":"schema","kind":"json-schema","schema":"#/$defs/mutationReceipt"},{"id":"media","kind":"header","name":"content-type","equals":"application/json"},{"id":"present-bdp-scope-epoch","kind":"header","name":"bdp-scope-epoch","absent":false},{"id":"present-bdp-authorization-view","kind":"header","name":"bdp-authorization-view","absent":false},{"id":"present-bdp-scope-position","kind":"header","name":"bdp-scope-position","absent":false},{"id":"serving-position","kind":"header","name":"bdp-scope-position","equals":"pos-2"},{"id":"request-headers","kind":"request-authored-headers"},{"id":"request-body","kind":"request-authored-body"},{"id":"disposition","kind":"json-pointer","pointer":"/status","exists":true,"equals":"completed"},{"id":"detail","kind":"json-pointer","pointer":"/detail","exists":true,"equals":"available"},{"id":"key","kind":"json-pointer","pointer":"/idempotencyKey","exists":true,"equals":"principal-shared"},{"id":"receipt-id","kind":"json-pointer","pointer":"/id","exists":true},{"id":"transaction","kind":"json-pointer","pointer":"/transaction","exists":true},{"id":"required-position","kind":"json-pointer","pointer":"/requiredPosition","exists":true,"equals":"pos-2"},{"id":"effect-position","kind":"json-pointer","pointer":"/effectPosition","exists":true,"equals":"pos-2"},{"id":"no-next","kind":"json-pointer","pointer":"/next","exists":true,"equals":null},{"id":"result-indices","kind":"json-array-tuples","pointer":"/results","ordered":true,"projections":[{"pointer":"/operationIndex"},{"pointer":"/outcome"}],"equals":[[0,"created"]]},{"id":"resource-id","kind":"json-pointer","pointer":"/results/0/resource/id","exists":true,"equals":"https://reference.invalid/acme/beads/b"},{"id":"resource-type","kind":"json-pointer","pointer":"/results/0/resource/type","exists":true,"equals":"https://reference.invalid/acme/types/task"},{"id":"resource-revision","kind":"json-pointer","pointer":"/results/0/resource/revision","exists":true},{"id":"resource-properties","kind":"json-pointer","pointer":"/results/0/resource/properties","exists":true,"equals":{"title":"b"}},{"id":"resource-metadata","kind":"json-pointer","pointer":"/results/0/resource/metadata","exists":true,"equals":{}},{"id":"no-owned-links","kind":"json-pointer","pointer":"/results/0/resource/ownedLinks","exists":false},{"id":"no-provenance","kind":"json-pointer","pointer":"/results/0/resource/revisionProvenance","exists":false}]},{"id":"pk-a-rotated","family":"http","method":"POST","target":{"binding":"batch"},"credentialRef":"principal-a-rotated","raw":{"headerLines":[{"name":"accept","value":"application/json"},{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"principal-shared"}],"body":{"encoding":"utf8","value":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"},\"metadata\":{}}]}"}},"captures":[],"assertions":[{"id":"http-status","kind":"status","equals":200},{"id":"schema","kind":"json-schema","schema":"#/$defs/mutationReceipt"},{"id":"media","kind":"header","name":"content-type","equals":"application/json"},{"id":"present-bdp-scope-epoch","kind":"header","name":"bdp-scope-epoch","absent":false},{"id":"present-bdp-authorization-view","kind":"header","name":"bdp-authorization-view","absent":false},{"id":"present-bdp-scope-position","kind":"header","name":"bdp-scope-position","absent":false},{"id":"serving-position","kind":"header","name":"bdp-scope-position","equals":"pos-2"},{"id":"request-headers","kind":"request-authored-headers"},{"id":"request-body","kind":"request-authored-body"},{"id":"disposition","kind":"json-pointer","pointer":"/status","exists":true,"equals":"completed"},{"id":"detail","kind":"json-pointer","pointer":"/detail","exists":true,"equals":"available"},{"id":"key","kind":"json-pointer","pointer":"/idempotencyKey","exists":true,"equals":"principal-shared"},{"id":"receipt-id","kind":"json-pointer","pointer":"/id","exists":true},{"id":"transaction","kind":"json-pointer","pointer":"/transaction","exists":true},{"id":"required-position","kind":"json-pointer","pointer":"/requiredPosition","exists":true,"equals":"pos-1"},{"id":"effect-position","kind":"json-pointer","pointer":"/effectPosition","exists":true,"equals":"pos-1"},{"id":"no-next","kind":"json-pointer","pointer":"/next","exists":true,"equals":null},{"id":"result-indices","kind":"json-array-tuples","pointer":"/results","ordered":true,"projections":[{"pointer":"/operationIndex"},{"pointer":"/outcome"}],"equals":[[0,"created"]]},{"id":"resource-id","kind":"json-pointer","pointer":"/results/0/resource/id","exists":true,"equals":"https://reference.invalid/acme/beads/a"},{"id":"resource-type","kind":"json-pointer","pointer":"/results/0/resource/type","exists":true,"equals":"https://reference.invalid/acme/types/task"},{"id":"resource-revision","kind":"json-pointer","pointer":"/results/0/resource/revision","exists":true},{"id":"resource-properties","kind":"json-pointer","pointer":"/results/0/resource/properties","exists":true,"equals":{"title":"a"}},{"id":"resource-metadata","kind":"json-pointer","pointer":"/results/0/resource/metadata","exists":true,"equals":{}},{"id":"no-owned-links","kind":"json-pointer","pointer":"/results/0/resource/ownedLinks","exists":false},{"id":"no-provenance","kind":"json-pointer","pointer":"/results/0/resource/revisionProvenance","exists":false}]},{"id":"pk-b-replay","family":"http","method":"POST","target":{"binding":"batch"},"credentialRef":"principal-b","raw":{"headerLines":[{"name":"accept","value":"application/json"},{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"principal-shared"}],"body":{"encoding":"utf8","value":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"b\"},\"metadata\":{}}]}"}},"captures":[],"assertions":[{"id":"http-status","kind":"status","equals":200},{"id":"schema","kind":"json-schema","schema":"#/$defs/mutationReceipt"},{"id":"media","kind":"header","name":"content-type","equals":"application/json"},{"id":"present-bdp-scope-epoch","kind":"header","name":"bdp-scope-epoch","absent":false},{"id":"present-bdp-authorization-view","kind":"header","name":"bdp-authorization-view","absent":false},{"id":"present-bdp-scope-position","kind":"header","name":"bdp-scope-position","absent":false},{"id":"serving-position","kind":"header","name":"bdp-scope-position","equals":"pos-2"},{"id":"request-headers","kind":"request-authored-headers"},{"id":"request-body","kind":"request-authored-body"},{"id":"disposition","kind":"json-pointer","pointer":"/status","exists":true,"equals":"completed"},{"id":"detail","kind":"json-pointer","pointer":"/detail","exists":true,"equals":"available"},{"id":"key","kind":"json-pointer","pointer":"/idempotencyKey","exists":true,"equals":"principal-shared"},{"id":"receipt-id","kind":"json-pointer","pointer":"/id","exists":true},{"id":"transaction","kind":"json-pointer","pointer":"/transaction","exists":true},{"id":"required-position","kind":"json-pointer","pointer":"/requiredPosition","exists":true,"equals":"pos-2"},{"id":"effect-position","kind":"json-pointer","pointer":"/effectPosition","exists":true,"equals":"pos-2"},{"id":"no-next","kind":"json-pointer","pointer":"/next","exists":true,"equals":null},{"id":"result-indices","kind":"json-array-tuples","pointer":"/results","ordered":true,"projections":[{"pointer":"/operationIndex"},{"pointer":"/outcome"}],"equals":[[0,"created"]]},{"id":"resource-id","kind":"json-pointer","pointer":"/results/0/resource/id","exists":true,"equals":"https://reference.invalid/acme/beads/b"},{"id":"resource-type","kind":"json-pointer","pointer":"/results/0/resource/type","exists":true,"equals":"https://reference.invalid/acme/types/task"},{"id":"resource-revision","kind":"json-pointer","pointer":"/results/0/resource/revision","exists":true},{"id":"resource-properties","kind":"json-pointer","pointer":"/results/0/resource/properties","exists":true,"equals":{"title":"b"}},{"id":"resource-metadata","kind":"json-pointer","pointer":"/results/0/resource/metadata","exists":true,"equals":{}},{"id":"no-owned-links","kind":"json-pointer","pointer":"/results/0/resource/ownedLinks","exists":false},{"id":"no-provenance","kind":"json-pointer","pointer":"/results/0/resource/revisionProvenance","exists":false}]},{"id":"pk-a-conflict","family":"http","method":"POST","target":{"binding":"batch"},"credentialRef":"principal-a","raw":{"headerLines":[{"name":"accept","value":"application/json"},{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"principal-shared"}],"body":{"encoding":"utf8","value":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/c\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"c\"},\"metadata\":{}}]}"}},"captures":[],"assertions":[{"id":"http-status","kind":"status","equals":409},{"id":"schema","kind":"json-schema","schema":"#/$defs/transactionalProblem"},{"id":"media","kind":"header","name":"content-type","equals":"application/problem+json"},{"id":"present-bdp-scope-epoch","kind":"header","name":"bdp-scope-epoch","absent":false},{"id":"present-bdp-authorization-view","kind":"header","name":"bdp-authorization-view","absent":false},{"id":"present-bdp-scope-position","kind":"header","name":"bdp-scope-position","absent":false},{"id":"serving-position","kind":"header","name":"bdp-scope-position","equals":"pos-2"},{"id":"request-headers","kind":"request-authored-headers"},{"id":"request-body","kind":"request-authored-body"},{"id":"exact-problem","kind":"json-pointer","pointer":"","exists":true,"equals":{"type":"https://github.com/gastownhall/bdp/problems/conflict","code":"idempotency-conflict","status":409,"retry":"never"}}]},{"id":"pk-current","family":"http","method":"GET","target":{"binding":"scope","path":"beads/","query":{"limit":"32"}},"credentialRef":"principal-a","raw":{"headerLines":[{"name":"accept","value":"application/json"}]},"captures":[],"assertions":[{"id":"http-status","kind":"status","equals":200},{"id":"schema","kind":"json-schema","schema":"#/$defs/currentBeadCollection"},{"id":"media","kind":"header","name":"content-type","equals":"application/json"},{"id":"present-bdp-scope-epoch","kind":"header","name":"bdp-scope-epoch","absent":false},{"id":"present-bdp-authorization-view","kind":"header","name":"bdp-authorization-view","absent":false},{"id":"present-bdp-scope-position","kind":"header","name":"bdp-scope-position","absent":false},{"id":"serving-position","kind":"header","name":"bdp-scope-position","equals":"pos-2"},{"id":"request-headers","kind":"request-authored-headers"},{"id":"request-body","kind":"request-authored-body"},{"id":"no-next","kind":"json-pointer","pointer":"/next","exists":true,"equals":null},{"id":"ordered-state","kind":"json-array-tuples","pointer":"/items","ordered":true,"projections":[{"pointer":"/id"},{"pointer":"/type"},{"pointer":"/properties"},{"pointer":"/metadata"}],"equals":[["https://reference.invalid/acme/beads/a","https://reference.invalid/acme/types/task",{"title":"a"},{}],["https://reference.invalid/acme/beads/b","https://reference.invalid/acme/types/task",{"title":"b"},{}]]}]},{"id":"pk-events","family":"http","method":"GET","target":{"binding":"scope","path":"events/"},"credentialRef":"principal-a","raw":{"headerLines":[{"name":"accept","value":"application/json"}]},"captures":[],"assertions":[{"id":"http-status","kind":"status","equals":200},{"id":"schema","kind":"json-schema","schema":"#/$defs/eventPage"},{"id":"media","kind":"header","name":"content-type","equals":"application/json"},{"id":"present-bdp-scope-epoch","kind":"header","name":"bdp-scope-epoch","absent":false},{"id":"present-bdp-authorization-view","kind":"header","name":"bdp-authorization-view","absent":false},{"id":"present-bdp-scope-position","kind":"header","name":"bdp-scope-position","absent":false},{"id":"serving-position","kind":"header","name":"bdp-scope-position","equals":"pos-2"},{"id":"request-headers","kind":"request-authored-headers"},{"id":"request-body","kind":"request-authored-body"},{"id":"no-next","kind":"json-pointer","pointer":"/next","exists":true,"equals":null},{"id":"ordered-facts","kind":"json-array-tuples","pointer":"/events","ordered":true,"projections":[{"pointer":"/source"},{"pointer":"/type"},{"pointer":"/subject"},{"pointer":"/subjectType"},{"pointer":"/ordinal"}],"equals":[["https://reference.invalid/acme/events/","created","https://reference.invalid/acme/beads/a","https://reference.invalid/acme/types/task",0],["https://reference.invalid/acme/events/","created","https://reference.invalid/acme/beads/b","https://reference.invalid/acme/types/task",0]]},{"id":"source","kind":"json-pointer","pointer":"/source","exists":true,"equals":"https://reference.invalid/acme/events/"},{"id":"a-properties","kind":"json-pointer","pointer":"/events/0/data/properties","exists":true,"equals":{"title":"a"}},{"id":"a-metadata","kind":"json-pointer","pointer":"/events/0/data/metadata","exists":true,"equals":{}},{"id":"a-no-provenance","kind":"json-pointer","pointer":"/events/0/data/revisionProvenance","exists":false},{"id":"b-properties","kind":"json-pointer","pointer":"/events/1/data/properties","exists":true,"equals":{"title":"b"}},{"id":"b-metadata","kind":"json-pointer","pointer":"/events/1/data/metadata","exists":true,"equals":{}},{"id":"b-no-provenance","kind":"json-pointer","pointer":"/events/1/data/revisionProvenance","exists":false}]}]}
+```
+
+## Complete coverage-row.json (lossless compact JSON)
+```json
+{"id":"read-update.idempotency.principal-isolation","wholeContract":false,"reason":"Bounded authenticated A/B key namespaces, same-principal credential rotation, terminal retained batch retries, conflict and complete two-Bead/Scope Event state under the actual bound Transactional configuration. Manifest literals/schema/context and app actual-wire supplements jointly validate independent initial receipts, full replay equality, Resources/revisions and exact private projected Event IDs. App comparisons are not manifest assertion bindings. Whole contract remains unqualified: anonymous namespace, carried attribution independence, changed views, foreign receipt access, other mutation families, pending/crash/expiry/restart and actual Read+Update execution are omitted; historical standalone evidence is not relabeled.","bindings":[{"scenario":"read-update.idempotency.principal-isolation","assertions":["pk-a-create:http-status","pk-a-create:schema","pk-a-create:media","pk-a-create:present-bdp-scope-epoch","pk-a-create:present-bdp-authorization-view","pk-a-create:present-bdp-scope-position","pk-a-create:serving-position","pk-a-create:request-headers","pk-a-create:request-body","pk-a-create:disposition","pk-a-create:detail","pk-a-create:key","pk-a-create:receipt-id","pk-a-create:transaction","pk-a-create:required-position","pk-a-create:effect-position","pk-a-create:no-next","pk-a-create:result-indices","pk-a-create:resource-id","pk-a-create:resource-type","pk-a-create:resource-revision","pk-a-create:resource-properties","pk-a-create:resource-metadata","pk-a-create:no-owned-links","pk-a-create:no-provenance","pk-b-create:http-status","pk-b-create:schema","pk-b-create:media","pk-b-create:present-bdp-scope-epoch","pk-b-create:present-bdp-authorization-view","pk-b-create:present-bdp-scope-position","pk-b-create:serving-position","pk-b-create:request-headers","pk-b-create:request-body","pk-b-create:disposition","pk-b-create:detail","pk-b-create:key","pk-b-create:receipt-id","pk-b-create:transaction","pk-b-create:required-position","pk-b-create:effect-position","pk-b-create:no-next","pk-b-create:result-indices","pk-b-create:resource-id","pk-b-create:resource-type","pk-b-create:resource-revision","pk-b-create:resource-properties","pk-b-create:resource-metadata","pk-b-create:no-owned-links","pk-b-create:no-provenance","pk-a-rotated:http-status","pk-a-rotated:schema","pk-a-rotated:media","pk-a-rotated:present-bdp-scope-epoch","pk-a-rotated:present-bdp-authorization-view","pk-a-rotated:present-bdp-scope-position","pk-a-rotated:serving-position","pk-a-rotated:request-headers","pk-a-rotated:request-body","pk-a-rotated:disposition","pk-a-rotated:detail","pk-a-rotated:key","pk-a-rotated:receipt-id","pk-a-rotated:transaction","pk-a-rotated:required-position","pk-a-rotated:effect-position","pk-a-rotated:no-next","pk-a-rotated:result-indices","pk-a-rotated:resource-id","pk-a-rotated:resource-type","pk-a-rotated:resource-revision","pk-a-rotated:resource-properties","pk-a-rotated:resource-metadata","pk-a-rotated:no-owned-links","pk-a-rotated:no-provenance","pk-b-replay:http-status","pk-b-replay:schema","pk-b-replay:media","pk-b-replay:present-bdp-scope-epoch","pk-b-replay:present-bdp-authorization-view","pk-b-replay:present-bdp-scope-position","pk-b-replay:serving-position","pk-b-replay:request-headers","pk-b-replay:request-body","pk-b-replay:disposition","pk-b-replay:detail","pk-b-replay:key","pk-b-replay:receipt-id","pk-b-replay:transaction","pk-b-replay:required-position","pk-b-replay:effect-position","pk-b-replay:no-next","pk-b-replay:result-indices","pk-b-replay:resource-id","pk-b-replay:resource-type","pk-b-replay:resource-revision","pk-b-replay:resource-properties","pk-b-replay:resource-metadata","pk-b-replay:no-owned-links","pk-b-replay:no-provenance","pk-a-conflict:http-status","pk-a-conflict:schema","pk-a-conflict:media","pk-a-conflict:present-bdp-scope-epoch","pk-a-conflict:present-bdp-authorization-view","pk-a-conflict:present-bdp-scope-position","pk-a-conflict:serving-position","pk-a-conflict:request-headers","pk-a-conflict:request-body","pk-a-conflict:exact-problem","pk-current:http-status","pk-current:schema","pk-current:media","pk-current:present-bdp-scope-epoch","pk-current:present-bdp-authorization-view","pk-current:present-bdp-scope-position","pk-current:serving-position","pk-current:request-headers","pk-current:request-body","pk-current:no-next","pk-current:ordered-state","pk-events:http-status","pk-events:schema","pk-events:media","pk-events:present-bdp-scope-epoch","pk-events:present-bdp-authorization-view","pk-events:present-bdp-scope-position","pk-events:serving-position","pk-events:request-headers","pk-events:request-body","pk-events:no-next","pk-events:ordered-facts","pk-events:source","pk-events:a-properties","pk-events:a-metadata","pk-events:a-no-provenance","pk-events:b-properties","pk-events:b-metadata","pk-events:b-no-provenance"]}]}
+```
+
+## Complete requests.json (lossless compact JSON)
+```json
+{"requests":[{"action":"pk-a-create","method":"POST","url":"https://reference.invalid/acme/operations/batch","credentialRef":"principal-a","headerLines":[{"name":"accept","value":"application/json"},{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"principal-shared"}],"body":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"},\"metadata\":{}}]}","bodyBytes":150,"bodySha256":"54f0fefb0965a8210bb22cf09601c18296ef450489eff1aef5a8bea8b99d83b8","status":200},{"action":"pk-b-create","method":"POST","url":"https://reference.invalid/acme/operations/batch","credentialRef":"principal-b","headerLines":[{"name":"accept","value":"application/json"},{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"principal-shared"}],"body":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"b\"},\"metadata\":{}}]}","bodyBytes":150,"bodySha256":"b26bbe9a43f5cc9b54d7fe7778786b33e5e8d613bf30248de3af65f5eac0cdc8","status":200},{"action":"pk-a-rotated","method":"POST","url":"https://reference.invalid/acme/operations/batch","credentialRef":"principal-a-rotated","headerLines":[{"name":"accept","value":"application/json"},{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"principal-shared"}],"body":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"},\"metadata\":{}}]}","bodyBytes":150,"bodySha256":"54f0fefb0965a8210bb22cf09601c18296ef450489eff1aef5a8bea8b99d83b8","status":200},{"action":"pk-b-replay","method":"POST","url":"https://reference.invalid/acme/operations/batch","credentialRef":"principal-b","headerLines":[{"name":"accept","value":"application/json"},{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"principal-shared"}],"body":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"b\"},\"metadata\":{}}]}","bodyBytes":150,"bodySha256":"b26bbe9a43f5cc9b54d7fe7778786b33e5e8d613bf30248de3af65f5eac0cdc8","status":200},{"action":"pk-a-conflict","method":"POST","url":"https://reference.invalid/acme/operations/batch","credentialRef":"principal-a","headerLines":[{"name":"accept","value":"application/json"},{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"principal-shared"}],"body":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/c\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"c\"},\"metadata\":{}}]}","bodyBytes":150,"bodySha256":"3de2f9bb5fb4b4b0537d252ba722b05a3385414129cf35fc6ab0355720f9ff62","status":409},{"action":"pk-current","method":"GET","url":"https://reference.invalid/acme/beads/?limit=32","credentialRef":"principal-a","headerLines":[{"name":"accept","value":"application/json"}],"body":null,"bodyBytes":0,"bodySha256":null,"status":200},{"action":"pk-events","method":"GET","url":"https://reference.invalid/acme/events/","credentialRef":"principal-a","headerLines":[{"name":"accept","value":"application/json"}],"body":null,"bodyBytes":0,"bodySha256":null,"status":200}],"totalBodyBytes":750,"maximumBodyBytes":150,"automaticRetries":0,"retainedReplayRequests":2}
+```
+
+## Complete control.json (lossless compact JSON)
+```json
+{"mode":"collapse-principal-b-to-a","change":"Only principal-b token principal string becomes principal-a before bootstrap and every scenario launch; token/ref stays distinct.","manifestUnchanged":true,"selected":["read-update.idempotency.principal-isolation"],"actualStatuses":[200,409],"expectedHttp":2,"conservativeMaxHttp":7,"children":2,"bodyBytes":300,"finalAction":"pk-b-create","failingAssertionIds":["http-status","schema","media","serving-position","disposition","detail","key","receipt-id","transaction","required-position","effect-position","no-next","result-indices","resource-id","resource-type","resource-revision","resource-properties","resource-metadata"],"passingAssertionIds":["present-bdp-scope-epoch","present-bdp-authorization-view","present-bdp-scope-position","request-headers","request-body","no-owned-links","no-provenance"],"actualProblem":{"type":"https://github.com/gastownhall/bdp/problems/conflict","code":"idempotency-conflict","status":409,"retry":"never"},"actualContext":{"epoch":"validated A epoch","view":"validated A view","position":"pos-1"},"laterActions":0,"claimEligible":false}
+```
+
+## Complete ledger.json (lossless compact JSON)
+```json
+{"status":"PROPOSED_PLAN_NO_EXECUTION","base":"9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1","scope":"https://reference.invalid/acme/","row":"read-update.idempotency.principal-isolation","ownedPaths":["packages/conformance/test-support/transactional/manifest-v1.json","packages/conformance/test-support/transactional/coverage-v1.json","packages/conformance/src/transactional-cumulative.test.ts","apps/bdptest/src/transactional-matrix.test.ts"],"configuration":{"defaultCredentialRef":"operator","credentials":[{"ref":"operator","principal":"same","canMutate":true},{"ref":"reader","principal":"same","canMutate":false},{"ref":"principal-a","principal":"principal-a","canMutate":true},{"ref":"principal-a-rotated","principal":"principal-a","canMutate":true},{"ref":"principal-b","principal":"principal-b","canMutate":true}],"anonymousHandle":{"ref":"anonymous","headerNames":[]},"tokenPolicy":"Fresh independent randomBytes(32).base64url tokens, no credential values persisted; same configuration object spread to bootstrap and scenario launches.","controlChange":"principal-b principal becomes principal-a; fresh own bootstrap, actual authentication/runtime identity; no swap after bootstrap.","fixtureFileUnchanged":true,"ordinaryUpdateFixtureUnchanged":true},"requestsFile":"requests.json","controlFile":"control.json","routesFile":"route-preimage.json","exactConfigurationDigest":"9a9404e74dd41fcb39b9c3bb5fc86917ff972dfdbc95faa5f53d13b35bb60bec","replayLedger":[["pk-a-rotated","pk-a-create","whole-json"],["pk-b-replay","pk-b-create","whole-json"]],"performedPositive":["namespace-distinct","pk-a-rotated:pk-a-create:whole-json","pk-b-replay:pk-b-create:whole-json","complete-current","complete-events"],"performedControl":["validated-a-terminal","validated-b-conflict"],"counts":{"oldRows":15,"newRows":16,"required":251,"applicable":256,"unplannedRequiredBefore":236,"unplannedRequiredAfter":235,"missingExecutableBefore":241,"missingExecutableAfter":240,"rowActions":7,"rowAssertions":139,"totalActions":227,"totalAssertions":2642},"cohorts":[{"id":"principal-positive","title":"observes authenticated principal isolation and rotation through selected cumulative HTTP","expectedHttp":7,"maxHttp":7,"children":2,"requestBodyBytes":750,"maximumRequestBodyBytes":750},{"id":"principal-collapse","title":"discriminates principal isolation against a separately bound collapsed namespace","expectedHttp":2,"maxHttp":7,"children":2,"requestBodyBytes":300,"maximumRequestBodyBytes":750},{"id":"full-positive","title":"observes sixteen partial Transactional contracts through packed-capable actual installed HTTP","expectedHttp":220,"maxHttp":220,"children":24,"requestBodyBytes":18606,"maximumRequestBodyBytes":18606},{"id":"cross-batch","title":"discriminates retained cross-carrier evidence against batch-semantic-conflict","expectedHttp":211,"maxHttp":211,"children":24,"requestBodyBytes":17550,"maximumRequestBodyBytes":17550},{"id":"cross-sequence","title":"discriminates retained cross-carrier evidence against sequence-fresh-key","expectedHttp":212,"maxHttp":212,"children":24,"requestBodyBytes":17754,"maximumRequestBodyBytes":17754}],"totals":{"expectedHttp":652,"maxHttp":657,"children":76,"requestBodyBytes":54960,"maximumRequestBodyBytes":55410},"limits":{"runtimeManifestBytes":1048576,"runtimeManifestNodes":100000,"exactRequestHeaderBytes":16384,"exactRequestBodyBytes":65536,"prepareMs":10000,"cleanupMs":10000,"requestMs":5000,"cohortMs":90000,"fullPositiveElapsedMs":63000,"externalCommandMs":120000,"ciJobSeconds":1200,"automaticTransportRetries":0},"claimEligible":false,"wholeContract":false,"actualAuthoringParent":null,"executionReleased":false}
+```
+
+## Complete selection.json (lossless compact JSON)
+```json
+{"static":[{"file":"packages/conformance/src/transactional-cumulative.test.ts","names":["binds the canonical cumulative TX selection and exact source digests without qualification","rejects noncanonical selections, History, wrong factories, retired and misprofiled rows","copies source bytes before binding and exposes all missing obligations without executing them","pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects","preserves every original TX scenario and coverage object while adding one bounded partial cross-carrier row","pins the one-page matched-plus-updated witness without advertised-limit or other-outcome credit","pins the partial principal namespace row, full parent and exact credential roles"]},{"file":"apps/bdptest/src/transactional-matrix.test.ts","names":["pins the matching no-op installed route digest and fifteen-action ledger","pins deletion-safety derivative carriers, complete positives, and measured source bounds"]}],"staticCases":9,"cohorts":[{"id":"principal-positive","title":"observes authenticated principal isolation and rotation through selected cumulative HTTP","expectedHttp":7,"maxHttp":7,"children":2,"requestBodyBytes":750,"maximumRequestBodyBytes":750},{"id":"principal-collapse","title":"discriminates principal isolation against a separately bound collapsed namespace","expectedHttp":2,"maxHttp":7,"children":2,"requestBodyBytes":300,"maximumRequestBodyBytes":750},{"id":"full-positive","title":"observes sixteen partial Transactional contracts through packed-capable actual installed HTTP","expectedHttp":220,"maxHttp":220,"children":24,"requestBodyBytes":18606,"maximumRequestBodyBytes":18606},{"id":"cross-batch","title":"discriminates retained cross-carrier evidence against batch-semantic-conflict","expectedHttp":211,"maxHttp":211,"children":24,"requestBodyBytes":17550,"maximumRequestBodyBytes":17550},{"id":"cross-sequence","title":"discriminates retained cross-carrier evidence against sequence-fresh-key","expectedHttp":212,"maxHttp":212,"children":24,"requestBodyBytes":17754,"maximumRequestBodyBytes":17754}],"totals":{"expectedHttp":652,"maxHttp":657,"children":76,"requestBodyBytes":54960,"maximumRequestBodyBytes":55410},"executed":false,"maximumWorkers":1,"externalCommandTimeoutMs":120000}
+```
+
+## Complete measurements.json (lossless compact JSON)
+```json
+{"status":"PLAN_DATA_ONLY_NOT_EXECUTED","row":{"normalBytes":30599,"compactBytes":17424,"nodes":952,"normalSha256":"76f4c0321f8a0cbf5b0b6e0063c16f3de66efa0426a7b37bcd255c1326fc8d94","compactSha256":"097a27abcff4db5d788f3c9a37889f1590cbcbc011a77e2b8a97d17a260973ff"},"rowActions":7,"rowAssertions":139,"coverageRow":{"normalBytes":6230,"compactBytes":4925,"nodes":147,"normalSha256":"f983e2f5d317bb38b051f5e12d72592d8ec5d93dff64eb85b3fe2f540d32382a","compactSha256":"0dd0c5680504a7a96af5a7e090bba8e6c009c043ad2626e802e3798712c7c407"},"canonical":{"diskBytes":825413,"normalBytes":837765,"compactBytes":409725,"nodes":21908,"normalSha256":"7a7db6b1654655db8c245da68cb9d98e3bc2ca0bb592922fdafd9a84f9043990","compactSha256":"5deb96a0f511d1b5a180eaa9ce7e9c1e85365ed5db8752f98a7e537093fef784","actions":227,"assertions":2642},"coverage":{"diskBytes":124537,"normalBytes":124537,"compactBytes":88534,"nodes":2776,"normalSha256":"0c991feb128a50625397e337464badcb17d22a0c31e1d57a6b66fa1032a92a51","compactSha256":"3cdc71e5272e118b5562fd3ad3b4a4b2a362aadeda934a9efa8a07f5a9feb4bb"},"growth":{"disk":35404,"normal":35404,"nodes":952,"coverage":6835},"derivativeMaximumNormalBytes":843883,"derivativeMaximumNodes":22064,"guardsNotChanged":true}
+```
+
+## Complete parent-preservation.json (lossless compact JSON)
+```json
+[{"path":"packages/conformance/test-support/transactional/manifest-v1.json","sha256":"a11a79f6d0f9ffa5933a680a3e4fed87987789c3deca50a38cda8563132d242e","bytes":790009,"rawObjects":[{"id":"read-update.http.command-minimum-fields","sha256":"f04c001617ccad14ef67a82586ea5f61ec918bc2545bb041fafc21dee07b5d7e","bytes":54412},{"id":"transactional.batch.atomic-commit","sha256":"0dfd3b9ed02d01f76ecac08c00b009b4bb9f03e57f7e15a2266eed82fc144747","bytes":14936},{"id":"transactional.batch.rollback","sha256":"be24067358af7b5acf7bc1beae2eb6534cbc0effa6f65406ab61b139310bfc37","bytes":16319},{"id":"transactional.batch.deletion-safety","sha256":"3e66e7c95aec963cc80e076249a5870b952765b2e98c1023ea148f8f628e6aeb","bytes":131808},{"id":"transactional.batch.no-op-entries","sha256":"9307b230eb053131e9127cbbb5e6285305b79d6794edd22f5432a07fc74d9faa","bytes":81047},{"id":"transactional.set.mutation","sha256":"6e7280a9ebbbc3faa1da989015cc802f82cd51b17a9cea11e7cc91392bef49d6","bytes":71739},{"id":"transactional.set.zero-match","sha256":"35aa23bd32539869ea3db41e1c9f3e81a3217e2eb983e764e860a6e00c9eb2c9","bytes":36055},{"id":"transactional.set.cardinality","sha256":"205af1c54d62efb09c9eadf20147a1730909e788c0d4763ce9718b8648f24ede","bytes":28546},{"id":"transactional.set.singleton-targets","sha256":"561b8ebc21106628918111332a9ab7b47be7350935925ed1e76a6cb5bed576b9","bytes":40018},{"id":"transactional.receipt.readable","sha256":"ddb97e450e233b941f7d905d49f48648d9965ed1b361dcdc5dee6f810038a1e0","bytes":12545},{"id":"transactional.receipt.pagination","sha256":"c531c260349347cdc3e54ba68282f1a266a5fa207d3775660615f836a4768782","bytes":138750},{"id":"transactional.idempotency.conflict","sha256":"ba93aea884ae462533d02695642f03a2ca854f5adabeb41867254216dabb2106","bytes":29772},{"id":"transactional.idempotency.cross-carrier","sha256":"4ad8c05fe5fbb4682809d4481c93e2684fe30fbbb8962b4da498590637f8f35b","bytes":64106},{"id":"transactional.idempotency.failed-retained","sha256":"a867694406dde07da71ac70197c60c478dd0fb3344cf2c8160795d1aa62d3378","bytes":18404},{"id":"transactional.sequence.member-transactions","sha256":"c46b34914118dd34ea1e5f12304124550b9d3c4bfcd9671b99995d6af44a2e1b","bytes":51379}],"fullParentReconstructedSha256":"a11a79f6d0f9ffa5933a680a3e4fed87987789c3deca50a38cda8563132d242e"},{"path":"packages/conformance/test-support/transactional/coverage-v1.json","sha256":"346e1edaa22af789f89017fdc2fef6bb01b7564ed72a65344e9fe5635887c74f","bytes":117702,"rawObjects":[{"id":"read-update.http.command-minimum-fields","sha256":"47914ed67c7b06e721e74134e0c633f3e1a7d461cb50ea200ff1874686885c2a","bytes":8888},{"id":"transactional.batch.atomic-commit","sha256":"ffd77a9d34ac41a6e1f960671bea6880eb5b2ab7b11b3af4ccf0177363d7f4d7","bytes":2383},{"id":"transactional.batch.rollback","sha256":"9e4f5cdb45f0133f1c6d23caa402701981db2e6f4198e23c667579622ace6769","bytes":2857},{"id":"transactional.batch.deletion-safety","sha256":"ac27a329a1cc013e6a0e24e0f5cad6b5b4af6c128ad65302d030422a3c7e3c0a","bytes":17375},{"id":"transactional.batch.no-op-entries","sha256":"383de4e0cb9b3bad310b9db7ff9009cb59fac55966f0309bc71c5d007bea6c1c","bytes":10587},{"id":"transactional.set.mutation","sha256":"058147f8194f091ee5a7ef3d4fd378f0324f6570049df777f993acb5f967d540","bytes":11676},{"id":"transactional.set.zero-match","sha256":"4e79e18a5e4c2735b5c686b9ad610dedc890386bfb06584f98268a421bbb832b","bytes":6520},{"id":"transactional.set.cardinality","sha256":"2a255ed4d364c435c9f985d7a770386bc7b20b2865887b9c8cc2d6cc5f0dd116","bytes":5800},{"id":"transactional.set.singleton-targets","sha256":"0c9008bac3e2c047d9aa8d47d343b7ed936c9c9352bb140c6422127c71b156b1","bytes":7314},{"id":"transactional.receipt.readable","sha256":"684eba200912ccb0932c0a8286e350a6e545262a205b3ea3df47a12fc6dd18ec","bytes":2142},{"id":"transactional.receipt.pagination","sha256":"0735edbca2fbf384f9f8147140a353dc084d9ad85facaddf2f5073f56a7256ee","bytes":13057},{"id":"transactional.idempotency.conflict","sha256":"de9b758f8ac4df7db5597b1eb2b402a116720becc30a41e7198f78f244358ec0","bytes":5188},{"id":"transactional.idempotency.cross-carrier","sha256":"c5e6076a2104c06f88fac88c77214522cab457faf925fe03881dff9778c35245","bytes":11196},{"id":"transactional.idempotency.failed-retained","sha256":"63918cbb495a504fd2043f52b60e7cd8ef1518b8022a96edb0d02660c7df1a8e","bytes":2917},{"id":"transactional.sequence.member-transactions","sha256":"aea606d1456549f6dd9dc1903e42568282154a61a9fbef50dab3526202eb4045","bytes":9557}],"fullParentReconstructedSha256":"346e1edaa22af789f89017fdc2fef6bb01b7564ed72a65344e9fe5635887c74f"}]
+```
+
+## Complete route-preimage.json (lossless compact JSON)
+```json
+{"value":{"maximumRequestBodyBytes":65536,"maximumRequestHeaderBytes":16384,"profile":"transactional","routes":[{"method":"POST","url":"https://reference.invalid/acme/operations/batch"},{"method":"GET","url":"https://reference.invalid/acme/beads/?limit=32"},{"method":"GET","url":"https://reference.invalid/acme/events/"},{"method":"POST","url":"https://reference.invalid/acme/operations/create-bead"},{"method":"POST","url":"https://reference.invalid/acme/operations/sequence"},{"method":"POST","url":"https://reference.invalid/acme/operations/update-bead"},{"method":"GET","url":"https://reference.invalid/acme/beads/a"},{"method":"GET","url":"https://reference.invalid/acme/links/l"},{"method":"GET","url":"https://reference.invalid/acme/beads/new"},{"method":"GET","url":"https://reference.invalid/acme/changes/?after=genesis"},{"method":"GET","url":"https://reference.invalid/acme/links/?limit=32"},{"method":"GET","url":"https://reference.invalid/acme/beads/b"},{"method":"GET","url":"https://reference.invalid/acme/beads/c"},{"method":"POST","url":"https://reference.invalid/acme/operations/update-where"},{"method":"POST","url":"https://reference.invalid/acme/operations/delete-where"}],"scope":"https://reference.invalid/acme/"},"utf8":"{\"maximumRequestBodyBytes\":65536,\"maximumRequestHeaderBytes\":16384,\"profile\":\"transactional\",\"routes\":[{\"method\":\"POST\",\"url\":\"https://reference.invalid/acme/operations/batch\"},{\"method\":\"GET\",\"url\":\"https://reference.invalid/acme/beads/?limit=32\"},{\"method\":\"GET\",\"url\":\"https://reference.invalid/acme/events/\"},{\"method\":\"POST\",\"url\":\"https://reference.invalid/acme/operations/create-bead\"},{\"method\":\"POST\",\"url\":\"https://reference.invalid/acme/operations/sequence\"},{\"method\":\"POST\",\"url\":\"https://reference.invalid/acme/operations/update-bead\"},{\"method\":\"GET\",\"url\":\"https://reference.invalid/acme/beads/a\"},{\"method\":\"GET\",\"url\":\"https://reference.invalid/acme/links/l\"},{\"method\":\"GET\",\"url\":\"https://reference.invalid/acme/beads/new\"},{\"method\":\"GET\",\"url\":\"https://reference.invalid/acme/changes/?after=genesis\"},{\"method\":\"GET\",\"url\":\"https://reference.invalid/acme/links/?limit=32\"},{\"method\":\"GET\",\"url\":\"https://reference.invalid/acme/beads/b\"},{\"method\":\"GET\",\"url\":\"https://reference.invalid/acme/beads/c\"},{\"method\":\"POST\",\"url\":\"https://reference.invalid/acme/operations/update-where\"},{\"method\":\"POST\",\"url\":\"https://reference.invalid/acme/operations/delete-where\"}],\"scope\":\"https://reference.invalid/acme/\"}","bytes":1228,"sha256":"9a9404e74dd41fcb39b9c3bb5fc86917ff972dfdbc95faa5f53d13b35bb60bec","oldRouteSetPreserved":true}
+```
+
+## Complete invocation-inventory.json (lossless compact JSON)
+```json
+{"source":"apps/bdptest/src/transactional-matrix.test.ts","sha256":"dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de","groups":[{"line":353,"group":"full-positive","expanded":1,"reach":"full","addedHttp":7,"addedChildren":1},{"line":603,"group":"ready identity refusal","expanded":5,"reach":"ready","addedHttp":0,"addedChildren":5},{"line":638,"group":"altered private receipt","expanded":4,"reach":"full","addedHttp":28,"addedChildren":4},{"line":838,"group":"ordinary Resource capture","expanded":1,"reach":"full","addedHttp":7,"addedChildren":1},{"line":852,"group":"ordinary id as receipt","expanded":1,"reach":"full","addedHttp":7,"addedChildren":1},{"line":888,"group":"after-first-wire deadline","expanded":1,"reach":"abort","addedHttp":0,"addedChildren":0},{"line":927,"group":"pre-aborted","expanded":1,"reach":"abort","addedHttp":0,"addedChildren":0},{"line":964,"group":"duplicate capture","expanded":1,"reach":"preflight","addedHttp":0,"addedChildren":0},{"line":980,"group":"global receipt denial","expanded":1,"reach":"global","addedHttp":7,"addedChildren":1},{"line":998,"group":"cleanup abort","expanded":1,"reach":"abort","addedHttp":0,"addedChildren":0},{"line":1026,"group":"wrong set","expanded":4,"reach":"full","addedHttp":28,"addedChildren":4},{"line":1065,"group":"cross-wired set","expanded":1,"reach":"full","addedHttp":7,"addedChildren":1},{"line":1097,"group":"omitted route","expanded":2,"reach":"preflight","addedHttp":0,"addedChildren":0},{"line":1122,"group":"set receipt denied","expanded":2,"reach":"full","addedHttp":14,"addedChildren":2},{"line":1144,"group":"set effects","expanded":7,"reach":"full","addedHttp":49,"addedChildren":7},{"line":1218,"group":"receipt pagination","expanded":6,"reach":"full","addedHttp":42,"addedChildren":6},{"line":1253,"group":"completed conflict","expanded":5,"reach":"full","addedHttp":35,"addedChildren":5},{"line":1436,"group":"matching no-op","expanded":3,"reach":"full","addedHttp":21,"addedChildren":3},{"line":1769,"group":"deletion","expanded":3,"reach":"full","addedHttp":21,"addedChildren":3},{"line":2180,"group":"cross-carrier","expanded":2,"reach":"full","addedHttp":14,"addedChildren":2},{"line":2771,"group":"selected minimum","expanded":2,"reach":"selected","addedHttp":0,"addedChildren":0},{"line":3274,"group":"selected member","expanded":1,"reach":"selected","addedHttp":0,"addedChildren":0}],"oldObserveInvocations":55,"newObserveInvocations":57,"oldExpandedAppCases":62,"newExpandedAppCases":64,"oldMutated":41,"newMutated":41,"oldUnchangedManifest":14,"newUnchangedManifest":16,"priorSourceModel":{"expectedHttp":8200,"maxHttp":8235,"children":1006},"oldInvocationDelta":{"expectedHttp":287,"children":46},"newSelectedDelta":{"expectedHttp":9,"maxHttp":14,"children":4},"proposedSourceModel":{"expectedHttp":8496,"maxHttp":8536,"children":1056},"modelExcludes":"All non-observe callbacks and other files; not a whole-job HTTP count. Modeled, not measured runtime."}
+```
+
+## All41 derivative metric inventory (full source-only record separately pinned)
+```json
+{"basis":"Source-only unchanged 41 historical manifest transformations; exact current implementation must be reverified after authoring.","historicalInventorySha256":"04d0c9577be30231dcbb62ee9eaac039a60a6153ee29b99a3be01940a2b67522","maximumNormalBytes":843883,"maximumNodes":22064,"newPrincipalControlChangesManifest":false,"derivatives":[{"name":"effects-zero-results.json","normalBytes":837765,"nodes":21908,"normalSha256":"cc09c29b33135c16abead1ec991b4d4a938efa12db9c8a10c118dfc74f733687"},{"name":"duplicate-receipt-binding.json","normalBytes":837960,"nodes":21913,"normalSha256":"0a24b5e21ddf74ec26488e42a2f091a37913f6024ebc967bd7c6990d915cf290"},{"name":"set-order.json","normalBytes":837765,"nodes":21908,"normalSha256":"da30bbadae2edf1aba7749db7848de59cd688ad13b3b47db21f67bc8e8eae3c4"},{"name":"conflict-event.json","normalBytes":837765,"nodes":21908,"normalSha256":"9a60b038aa8b2bce2a170bb3c98fbb053a6831ed815a4b74583b7ed9dbcea4a1"},{"name":"cross-wired-receipt.json","normalBytes":837043,"nodes":21887,"normalSha256":"f1b7484b4df5a40a6f4f665952bc1c223051fe1eae39309dc74040550826a2c6"},{"name":"ordinary-capture.json","normalBytes":837966,"nodes":21913,"normalSha256":"9a0f18e24d63578a9e7ba8e5c37c0295a7cb5c8bf0f078bfecdcb394948e34bc"},{"name":"cross-sequence-fresh-key.json","normalBytes":839119,"nodes":21944,"normalSha256":"1d503a8da250404ce498851d2c1d52a0647c7863d0e545becb2f1eb73da2fd23"},{"name":"pagination-page-parent.json","normalBytes":837797,"nodes":21908,"normalSha256":"27ba380da694b2b2c293059ca09f5c8b8e684a53202cfd21f70ee557dd3a63ec"},{"name":"pagination-root-next.json","normalBytes":837754,"nodes":21908,"normalSha256":"8e4d572f1af4f602329bfcd14b0a04418d16d66d818a7bb6b29ba47209d5f53a"},{"name":"pagination-historical-title.json","normalBytes":837763,"nodes":21908,"normalSha256":"74b7e71df46dce22f68a42641307e9bc78e393e0521201383cfe73bbd851be4a"},{"name":"receipt-body-assertion.json","normalBytes":837082,"nodes":21887,"normalSha256":"3aa2598eb1c2627556b1bdde40f2caf5f240c22a7e66cbe37c7646c27531b236"},{"name":"receipt-credential.json","normalBytes":837804,"nodes":21909,"normalSha256":"44f284b2329f315258be355fff3cc642ddd96684528e481e878c5dcbdb4d4043"},{"name":"deletion-incoming-order.json","normalBytes":843883,"nodes":22064,"normalSha256":"25725122b8f664a8e3947550ccd8c0827e81504f581bbf9c4ab56eabb86a7c5c"},{"name":"effects-event-order.json","normalBytes":837765,"nodes":21908,"normalSha256":"2eb06f653d246694e9b2ddafa7754e5bd62d807f37f6dcbb691cdd26f359a04e"},{"name":"conflict-reopened-status.json","normalBytes":837765,"nodes":21908,"normalSha256":"567b56aa5c32d74d1ea5cce2e77b2196501e9694847d500b85985316b786f26e"},{"name":"effects-rollback-metadata.json","normalBytes":837778,"nodes":21908,"normalSha256":"16217291c7172b36647dd086d380c5f54ffa3568935246625a826a6ddfcb4913"},{"name":"set-index.json","normalBytes":837765,"nodes":21908,"normalSha256":"5a67037432b4adfae005d4bf7ea9d1ed4298fdc5bec5ebe5345d88ffeccb5865"},{"name":"noop-bead-property.json","normalBytes":837773,"nodes":21908,"normalSha256":"eb8189e361f575dade470e05af39d9989e7b93b5ef2c302864378425da6d3a3f"},{"name":"conflict-code.json","normalBytes":837762,"nodes":21908,"normalSha256":"e604792fb99301217921af6213599f2ee6bf627ba726ae6759c93eb310467a56"},{"name":"set-poststate.json","normalBytes":837772,"nodes":21908,"normalSha256":"568da932a04adab90dd07fdb1b338eeb4a09448d8709ab1f314a96ffac7bab46"},{"name":"conflict-current-record.json","normalBytes":837765,"nodes":21908,"normalSha256":"dd1066412e3950df70f9567c2b58bbf15cbb44d081b350ea5733c4f1d145823b"},{"name":"effects-no-effect.json","normalBytes":837764,"nodes":21908,"normalSha256":"b788be26cc026925be9ed8676c68bff51f8b9882eaa51ec349ebd410957aa35f"},{"name":"deletion-outgoing-order.json","normalBytes":843883,"nodes":22064,"normalSha256":"92fc9d5b2c01789fc546c12ed2f3a9eeb9cb86b78143f6b321aee0a4d40b1b56"},{"name":"forbidden-receipt-use.json","normalBytes":838475,"nodes":21928,"normalSha256":"d027d4393e14fcf2341c2ac8d51bcee234996c39b9b862811cda9a3e32977fc1"},{"name":"pagination-terminal-next.json","normalBytes":837819,"nodes":21908,"normalSha256":"f145e8f8f3ff25ebcda91adf98801f07d218c92795c8a2a940fd5fdaecad2a5c"},{"name":"deletion-committed-prefix-state.json","normalBytes":840869,"nodes":21985,"normalSha256":"0f33c0244113d8a384b347a095f4e6597c51c99919e33c29f6318d6fe4031538"},{"name":"cross-batch-semantic-conflict.json","normalBytes":839106,"nodes":21945,"normalSha256":"160fee8489631aa20b90ea376a6a6b758e6b28c8086c465d38c954a8ad20c6ab"},{"name":"pagination-page-member.json","normalBytes":837765,"nodes":21908,"normalSha256":"a1a0d7487185fd823a42aba81a4f5c9886d8f1ec513a6b9112dec8854eec0ee5"},{"name":"receipt-binding.json","normalBytes":837758,"nodes":21908,"normalSha256":"3a85d784b9d858cc5a4434c927a91c61fe4b5033b9828e66c008b033f4face9c"},{"name":"minimum-batch-body-conflict.json","normalBytes":837772,"nodes":21908,"normalSha256":"2a6a6dc6641aa0fa4023f6b09e0169293ba50d53dd42899715caa1bce16c0f6e"},{"name":"effects-changed-poststate.json","normalBytes":837772,"nodes":21908,"normalSha256":"c09b461f405b080bdc1e324a935aa168355562b7cead773ebac91a21fe383b09"},{"name":"set-matched.json","normalBytes":837765,"nodes":21908,"normalSha256":"23809caa2e590f2c7ca05fb2b265a4f4a4a37ea4f1e6ee172d850d4c91582226"},{"name":"noop-link-metadata.json","normalBytes":837786,"nodes":21908,"normalSha256":"0bcf309dd7adc35ac74feee69ccc1ebb790516561ad8eaab87c35409466ddd89"},{"name":"effects-zero-events.json","normalBytes":837911,"nodes":21912,"normalSha256":"2de54fe76f21817df3c874ebbcc216ed2c83e08ce0335e8aa810b411c263cd4f"},{"name":"conflict-retained-body.json","normalBytes":837752,"nodes":21908,"normalSha256":"7984ff8dd6952d11de6dfc93084a4a5b7d7d6f141e07edf257096bc8714403de"},{"name":"minimum-readonly-credential.json","normalBytes":837763,"nodes":21908,"normalSha256":"055596aa93abcb8186c0fbeac8230017b44ef480f2826e47f072243737a8529b"},{"name":"effects-receipt-order.json","normalBytes":837765,"nodes":21908,"normalSha256":"bff6d493c2f5472c3447d3ac796a5dccd692c8ac7a285b34f85fdb673f192b43"},{"name":"noop-group-inventory-and-head.json","normalBytes":837828,"nodes":21910,"normalSha256":"210e85e9a05026f0e328a25c7e797c5687676a24a80f16c28b58bbf242d61cba"},{"name":"pagination-inline-boundary.json","normalBytes":837765,"nodes":21908,"normalSha256":"4f67d52e23020d79831862fc16d7ff8389acdb67f0ca0a8e53bddd4ddf2a291f"},{"name":"receipt-method.json","normalBytes":837766,"nodes":21908,"normalSha256":"dec0cbb99ff51f22c0bf821fdf27e85f5406cbefcecf16201b1bd37a2c02a202"},{"name":"sequence-member-successful-delete.json","normalBytes":837759,"nodes":21908,"normalSha256":"9ddd6b3bc305546ac4cd1d6dda4aeabf28f0c6c177d14c0495b92228aac7d690"}]}
+```
+
+## Committed source binding and mutation-source equivalence
+```json
+{"commit":"9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1","tree":"592c5e6e5c0c790b6e2690495b94ac48705b9069","sourceRead":"git show committed blobs only; concurrent guarded-batch dirty source excluded","paths":[{"path":"packages/conformance/test-support/transactional/manifest-v1.json","bytes":790009,"sha256":"a11a79f6d0f9ffa5933a680a3e4fed87987789c3deca50a38cda8563132d242e"},{"path":"packages/conformance/test-support/transactional/coverage-v1.json","bytes":117702,"sha256":"346e1edaa22af789f89017fdc2fef6bb01b7564ed72a65344e9fe5635887c74f"},{"path":"packages/conformance/src/transactional-cumulative.test.ts","bytes":109530,"sha256":"313e6a947b33a3893565ea5db2d9d4a962b46c2e926900598e9285e657a31bf2"},{"path":"apps/bdptest/src/transactional-matrix.test.ts","bytes":131746,"sha256":"dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de"},{"path":"packages/conformance/test-support/transactional/fixture-v1.json","bytes":716,"sha256":"3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"},{"path":"apps/bdptest/src/transactional-principal-key-installed.test.ts","bytes":30958,"sha256":"0f941001445e001f96f8c432a7099a5eb29dc4b68bc4458d6d1dfae472a3ce20"},{"path":"apps/bdptest/test-support/transactional-execution-binding.ts","bytes":7378,"sha256":"cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89"},{"path":"packages/conformance/src/profile-contract-selection.ts","bytes":5113,"sha256":"5b1caf61688bfa6a5465b5f8dc817b84f02be76bfc5bdd886a19e749b6441543"},{"path":"packages/conformance/src/artifact-bundle.ts","bytes":21853,"sha256":"bbf54915eb792433ae492fd73a5334717e74e0942c485a72daa5105928546dd6"},{"path":"packages/conformance/src/runner.ts","bytes":133683,"sha256":"ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1"},{"path":"packages/conformance/src/executable-manifest.ts","bytes":96906,"sha256":"65af0451cd046d57c10b0666e54efbaaecc2225551d3accc5cc1d032322913fa"},{"path":"packages/conformance/src/http-executor.ts","bytes":50611,"sha256":"770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d"},{"path":"packages/conformance/test-support/profile-contract-plan.ts","bytes":15083,"sha256":"18c953443e6695cfa48f89677231fecffc349df02bd080f107a5c739db10b728"},{"path":"packages/conformance/catalog/read-update-v1.json","bytes":85899,"sha256":"73d215813df034a2be0cd15d0caff7cf2c8823a067f271b9140c9cbb90e859c3"},{"path":"packages/conformance/catalog/transactional-v1.json","bytes":94826,"sha256":"c9125f914129c71f01cefc5c54b32db80637d37b57e321571c96e81936c31eb4"},{"path":"packages/protocol/schemas/bdp-v0.schema.json","bytes":133208,"sha256":"0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227"},{"path":"packages/server/src/transaction-installed-process.ts","bytes":2630,"sha256":"6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7"},{"path":"packages/server/src/transaction-runtime.ts","bytes":16173,"sha256":"77954f0a85029d76443feac54cd53cda4339ffc126660ace5a9f5af92466c573"},{"path":"packages/server/src/transaction-runtime-configuration.ts","bytes":16165,"sha256":"e594e930f845255cafc7e2f5b5b28149b7e95fe8a09052b187a492c96328f7ca"},{"path":"packages/server/src/transaction-http.ts","bytes":27155,"sha256":"b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf"},{"path":"packages/server/src/transaction-store.ts","bytes":87238,"sha256":"fcd6882b29e538db45867c894c06dfbaa6ca588db0c2e403ef1b7abb14f6c706"},{"path":"packages/server/src/transaction-service.ts","bytes":25130,"sha256":"53f655faf494209996aac2e0f93a4c2c785e471f66aac6af9ea41f92c9cfbe00"},{"path":"packages/server/src/index.ts","bytes":55615,"sha256":"34f9d9de8b48852c64919e69ce93f149e9cdae5142c15c75e4c35f08f15efc44"},{"path":"docs/specs/bdp.md","bytes":394427,"sha256":"f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e"}],"ownedPaths":["packages/conformance/test-support/transactional/manifest-v1.json","packages/conformance/test-support/transactional/coverage-v1.json","packages/conformance/src/transactional-cumulative.test.ts","apps/bdptest/src/transactional-matrix.test.ts"],"actualAuthoringParent":null,"authoringReleased":false}
+```
+```json
+{"currentCommit":"9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1","historicalCommit":"82f60a25da8799334381f6ebd810f32a3574cd2d","inlineMutators":[{"index":0,"sha256":"b2249b84044151649b1056e28f3a079d15ab5585a5460391e7e8b8e0facf30a9"},{"index":1,"sha256":"fe2d229f37cf0c4c35cebc1517b18f8e613f301af06aafdf642cdf59e940f1e1"},{"index":2,"sha256":"566e85cb79884156959ff598d157b6e50e2f66b9d409644aa279390dca1c3343"},{"index":3,"sha256":"26ccb9652e95553b13ff8736801fd404809852cb58eddbf52889dfa9432f13d6"},{"index":4,"sha256":"979326a366944cf36b463c2cfa96e197bcb8f148fd6e11b6222ea9a786aae53c"},{"index":5,"sha256":"80675c74fb9a82cbcd5c380cbf67bc0685dfb2a2659f37f16649ed8d59e1eeb7"},{"index":6,"sha256":"9761be78ec2763cd6abaf8db2ef79053c089e1bf848c2a52d83a2efbffceb85b"},{"index":7,"sha256":"dc80636c4a345329ea846aad68d73d1301e637cffc956414708581660ad405d6"},{"index":8,"sha256":"c4ce9a70f5b28f35279196fc853cc571cf1a14fbb0e8c43f7aca90fd68ad5880"},{"index":9,"sha256":"268cda7a4875d9e98805c395c142611059737e21ed98f64e1c011fa2ee2cd160"},{"index":10,"sha256":"98b95eeb2d10bfb887a37fc46cf025fbd6038f52617eda9172ebeb148a5d2272"},{"index":11,"sha256":"8ba5eb987476c594968f720c969b17f6025e816793ef1d7e154ffcfd9ce781d7"}],"functions":[{"name":"applyDeletionControl","sha256":"b6f008b64e3df838b8f3d462289823273578a4b3e35c4d4582bb6396de2673b5"},{"name":"applyCrossCarrierControl","sha256":"e320cb1d6ef755e38940669bd5fdc40c09a53185550384416644d9f1eb83b7ca"},{"name":"applyCommandMinimumControl","sha256":"7e538bce0ab307a91112db2d2d2ffaebfa7f1736cf0043da1ffcaf78c2db4f92"},{"name":"applyMemberControl","sha256":"0e54b54a82d6e153e33a14d8666f8bdf9e290bd4ce383be68973e60c39893bd4"},{"name":"crossCarrierRequests","sha256":"5a96fe3e9f84256943cdd3a0a5052f43b2f7ddf70d5298b6ac8dc211a5da3bda"},{"name":"minimumRequests","sha256":"7a62cd985b2879efef0f98b5b984f386dd43a3b7472a0ffac8c31102fd7e0397"},{"name":"memberRequests","sha256":"e7dcde0b13c9050a54d455a7457c0c43b72f452226e192099d3d4e3c801ec278"}],"allEqual":true}
+```
+
+## Genuine source context
+
+### apps/bdptest/src/transactional-matrix.test.ts:93-352 — complete existing observation type/helper; configuration, exact route preflight, lifecycle, retention, cleanup
+```ts
+type InstalledObservation = {
+  result: Awaited<ReturnType<typeof runCumulativeTransactionalMatrix>>;
+  sessions: Record<string, unknown>[];
+  baseline: ReturnType<typeof installedTransactionBinding>;
+};
+async function observe(control?: {
+  readonly budgetMs?: number;
+  /** Negative-test deadline begins after the first real exchange, with startup still bounded. */
+  readonly afterFirstExchangeBudgetMs?: number;
+  readonly scenarioSelection?: readonly string[];
+  /** Retain genuine returned evidence before cleanup can fail; never replace it. */
+  readonly onObserved?: (observed: InstalledObservation) => void;
+  readonly invalidReceiptCredentials?: boolean | "set-update" | "set-delete";
+  /** Negative-only removal of one already declared canonical set route. */
+  readonly omitRoute?: {
+    readonly method: "POST";
+    readonly url: `${typeof scope}operations/${"update-where" | "delete-where"}`;
+  };
+  readonly signal?: AbortSignal;
+  readonly children?: ChildProcess[];
+  /** Negative-test gate after actual ordinary wire, never a response replacement. */
+  readonly afterExchange?: (response: HttpExchangeResponse, signal: AbortSignal) => Promise<void>;
+  readonly ready?: (ready: Record<string, unknown>) => Record<string, unknown>;
+  readonly manifest?: (value: {
+    scenarios: { id: string; actions: Record<string, unknown>[] }[];
+  }) => void;
+}) {
+  const budgetMs = control?.budgetMs ?? 90000;
+  if (!Number.isSafeInteger(budgetMs) || budgetMs < 1 || budgetMs > 90000)
+    throw new Error("invalid cohort budget");
+  const afterFirstExchangeBudgetMs = control?.afterFirstExchangeBudgetMs;
+  if (
+    afterFirstExchangeBudgetMs !== undefined &&
+    (!Number.isSafeInteger(afterFirstExchangeBudgetMs) ||
+      afterFirstExchangeBudgetMs < 1 ||
+      afterFirstExchangeBudgetMs > budgetMs)
+  )
+    throw new Error("invalid after-first-exchange cohort budget");
+  const controller = new AbortController();
+  const signal = control?.signal
+    ? AbortSignal.any([control.signal, controller.signal])
+    : controller.signal;
+  signal.throwIfAborted();
+  const changed = JSON.parse(manifestSource.bytes.toString()) as {
+    scenarios: { id: string; actions: Record<string, unknown>[] }[];
+  };
+  control?.manifest?.(changed);
+  const runBundle = control?.manifest
+    ? createCumulativeTransactionalArtifactBundle(loadProfileContractSelection("transactional"), {
+        fixture: fixtureSource,
+        manifest: { bytes: Buffer.from(JSON.stringify(changed)) },
+      })
+    : bundle;
+  const directory = mkdtempSync(path.join(tmpdir(), "bdp-tx-installed-"));
+  const operator = randomBytes(32).toString("base64url"),
+    reader = randomBytes(32).toString("base64url");
+  const configuration = {
+    scope,
+    directory: path.join(directory, "bootstrap"),
+    create: true,
+    credentials: [
+      { token: operator, principal: "same", canMutate: true },
+      { token: reader, principal: "same", canMutate: false },
+    ],
+    artifacts: artifacts(),
+  };
+  let target: ReturnType<typeof createTransactionalExecutionBinding> | undefined;
+  const sessions: Record<string, unknown>[] = [];
+  const deniedReceiptUrls = new Set<string>();
+  const expireCohort = () => controller.abort(new Error("installed cohort deadline"));
+  const timer = setTimeout(expireCohort, budgetMs);
+  let firstExchangeTimer: ReturnType<typeof setTimeout> | undefined;
+  let observed: InstalledObservation | undefined;
+  let failure: unknown;
+  const cleanupFailures: unknown[] = [];
+  try {
+    const bootstrap = await launchInstalledTransaction(entry, configuration, signal);
+    control?.children?.push(bootstrap.child);
+    let baseline: ReturnType<typeof installedTransactionBinding>;
+    try {
+      baseline = installedTransactionBinding(bootstrap.ready, sourceCommit, fixtureSource);
+    } finally {
+      await bootstrap.close();
+    }
+    const routes = bundle.manifest.scenarios
+      .flatMap((s) => s.actions ?? [])
+      .flatMap((a) => {
+        if (a.family !== "http") return [];
+        const base =
+          a.target.binding === "scope" ? scope : bundle.fixture.bindings?.[a.target.binding];
+        if (!base) throw new Error("predeclared target unavailable");
+        const url = new URL(a.target.path ?? "", base);
+        for (const [key, value] of Object.entries(a.target.query ?? {})) {
+          if (typeof value !== "string") throw new Error("literal query required");
+          url.searchParams.set(key, value);
+        }
+        return [{ method: a.method, url: url.href }];
+      });
+    const uniqueRoutes = routes.filter(
+      (r, i) => routes.findIndex((o) => o.url === r.url && o.method === r.method) === i,
+    );
+    // Independently authored route inventory, not a second derivation from the manifest.
+    expect(uniqueRoutes).toEqual([
+      { method: "POST", url: `${scope}operations/create-bead` },
+      { method: "POST", url: `${scope}operations/batch` },
+      { method: "POST", url: `${scope}operations/sequence` },
+      { method: "POST", url: `${scope}operations/update-bead` },
+      { method: "GET", url: `${scope}beads/?limit=32` },
+      { method: "GET", url: `${scope}events/` },
+      { method: "GET", url: `${scope}beads/a` },
+      { method: "GET", url: `${scope}links/l` },
+      { method: "GET", url: `${scope}beads/new` },
+      { method: "GET", url: `${scope}changes/?after=genesis` },
+      { method: "GET", url: `${scope}links/?limit=32` },
+      { method: "GET", url: `${scope}beads/b` },
+      { method: "GET", url: `${scope}beads/c` },
+      { method: "POST", url: `${scope}operations/update-where` },
+      { method: "POST", url: `${scope}operations/delete-where` },
+    ]);
+    const omitted = control?.omitRoute;
+    if (omitted) {
+      expect([`${scope}operations/update-where`, `${scope}operations/delete-where`]).toContain(
+        omitted.url,
+      );
+      expect(omitted.method).toBe("POST");
+      expect(
+        uniqueRoutes.filter((r) => r.url === omitted.url && r.method === omitted.method),
+      ).toHaveLength(1);
+    }
+    const exactMode: ExactHttpModeOptions = {
+      scope,
+      profile: "transactional",
+      routes: uniqueRoutes.filter(
+        (r) => !omitted || r.url !== omitted.url || r.method !== omitted.method,
+      ),
+      maximumRequestHeaderBytes: 16384,
+      maximumRequestBodyBytes: 65536,
+      defaultCredentialRef: "operator",
+      credentialHandles: [
+        { id: "operator", headerNames: ["authorization"] },
+        { id: "reader", headerNames: ["authorization"] },
+        { id: "anonymous", headerNames: [] },
+      ],
+      resolveCredentials: ({ credentialRef, url }) =>
+        credentialRef === "anonymous"
+          ? {}
+          : {
+              authorization: `Bearer ${(control?.invalidReceiptCredentials === true && url.startsWith(`${scope}receipts/`)) || deniedReceiptUrls.has(url) ? "deliberately-unknown" : credentialRef === "operator" ? operator : reader}`,
+            },
+    };
+    target = createTransactionalExecutionBinding({
+      baseline,
+      sourceCommit,
+      fixtureSource,
+      exactMode,
+      launch: async (scenario, reopen, signal) => {
+        if (signal.aborted) throw new Error("launch aborted");
+        const child = await launchInstalledTransaction(
+          entry,
+          {
+            ...configuration,
+            directory: path.join(directory, scenario),
+            create: !reopen,
+          },
+          signal,
+        );
+        control?.children?.push(child.child);
+        sessions.push({ ...child.ready, scenario, reopen });
+        return control?.ready ? { ...child, ready: control.ready(child.ready) } : child;
+      },
+    });
+    const result = await runCumulativeTransactionalMatrix(
+      {
+        scope,
+        signal,
+        profile: "transactional",
+        seed: 0,
+        artifactBundle: runBundle,
+        ...(control?.scenarioSelection === undefined
+          ? {}
+          : { scenarioSelection: control.scenarioSelection }),
+        execute: async () => {
+          throw new Error("generic HTTP executor forbidden");
+        },
+        exactExecution: {
+          execute: async (request) => {
+            const response = await target!.target.execute(request);
+            if (afterFirstExchangeBudgetMs !== undefined && firstExchangeTimer === undefined) {
+              firstExchangeTimer = setTimeout(expireCohort, afterFirstExchangeBudgetMs);
+            }
+            if (
+              typeof control?.invalidReceiptCredentials === "string" &&
+              response.status === 200 &&
+              [
+                baseline.operationTargets.updateWhere,
+                baseline.operationTargets.deleteWhere,
+              ].includes(response.url)
+            ) {
+              const receipt = JSON.parse(response.bodyText) as {
+                id?: unknown;
+                idempotencyKey?: unknown;
+              };
+              if (
+                receipt.idempotencyKey === control.invalidReceiptCredentials &&
+                typeof receipt.id === "string"
+              )
+                deniedReceiptUrls.add(receipt.id);
+            }
+            await control?.afterExchange?.(response, signal);
+            signal.throwIfAborted();
+            return response;
+          },
+          configuration: target.target.exactConfiguration!,
+        },
+        harness: {
+          ...target.target.harness,
+          cleanup: async (...args) => {
+            try {
+              await target!.target.harness.cleanup(...args);
+            } catch (error) {
+              cleanupFailures.push(error);
+              throw error;
+            }
+          },
+        },
+        schemaValidator: createJsonSchemaValidator(schema),
+        declaredTargetLabel: "private-installed-transactional-partial",
+        prepareTimeoutMs: 10000,
+        cleanupTimeoutMs: 10000,
+        requestTimeoutMs: 5000,
+      },
+      target.context,
+    );
+    observed = { result, sessions, baseline };
+    control?.onObserved?.(observed);
+  } catch (error) {
+    failure = error;
+  } finally {
+    // The runner can report abort as row state; retain the cohort's original
+    // reason before a subsequent child/session cleanup failure is aggregated.
+    if (failure === undefined && signal.aborted) failure = signal.reason;
+    try {
+      await target?.target.close();
+    } catch (cleanup) {
+      cleanupFailures.push(cleanup);
+    } finally {
+      clearTimeout(timer);
+      clearTimeout(firstExchangeTimer);
+      rmSync(directory, { recursive: true, force: true });
+    }
+  }
+  if (cleanupFailures.length) {
+    const causes = [...new Set([...(failure === undefined ? [] : [failure]), ...cleanupFailures])];
+    throw new AggregateError(causes, "installed cohort cleanup failed");
+  }
+  if (failure !== undefined) throw failure;
+  signal.throwIfAborted();
+  if (!observed) throw new Error("missing installed observation");
+  return observed;
+}
+```
+
+### apps/bdptest/src/transactional-principal-key-installed.test.ts:551-674 — existing independently validated context, complete initial receipt/Resource and seven-response postconditions
+```ts
+    function context(response: Wire, epoch: unknown, view: unknown, position: string) {
+      expect(contextNames.map((name) => response.headers[name])).toStrictEqual([
+        epoch,
+        view,
+        position,
+      ]);
+    }
+    function completed(response: Wire, name: "a" | "b", position: string) {
+      status(
+        response,
+        200,
+        `principal-key:${name === "a" ? "a-create" : "b-independent-create"}:completed`,
+      );
+      expect(response.headers["content-type"]).toBe("application/json");
+      const receipt = checked(response.bodyText, "mutationReceipt");
+      expect(typeof receipt.scopeEpoch).toBe("string");
+      expect(receipt.scopeEpoch).not.toBe("");
+      expect(typeof receipt.authorizationView).toBe("string");
+      expect(receipt.authorizationView).not.toBe("");
+      context(response, receipt.scopeEpoch, receipt.authorizationView, position);
+      const results = records(receipt.results);
+      expect(results).toHaveLength(1);
+      const resource = record(results[0]!.resource);
+      expect(validators.beadRecord!(resource), "principal-key:resource-schema").toBe(true);
+      expect(typeof resource.revision).toBe("string");
+      expect(resource.revision).not.toBe("");
+      expect(resource).toStrictEqual({
+        id: `${scope}beads/${name}`,
+        type: beadType,
+        revision: resource.revision,
+        properties: { title: name },
+        metadata: {},
+      });
+      expect(results).toStrictEqual([{ operationIndex: 0, outcome: "created", resource }]);
+      expect(receipt).toStrictEqual({
+        id: receipt.id,
+        status: "completed",
+        detail: "available",
+        idempotencyKey: "principal-shared",
+        scopeEpoch: receipt.scopeEpoch,
+        authorizationView: receipt.authorizationView,
+        transaction: receipt.transaction,
+        requiredPosition: position,
+        effectPosition: position,
+        results,
+        next: null,
+        expiresAt: receipt.expiresAt,
+      });
+      expect(typeof receipt.id).toBe("string");
+      const id = receipt.id as string,
+        parsed = new URL(id),
+        prefix = `${scope}receipts/`;
+      expect(Buffer.byteLength(id)).toBeLessThanOrEqual(8192);
+      expect(parsed.href).toBe(id);
+      expect(parsed.username).toBe("");
+      expect(parsed.password).toBe("");
+      expect(parsed.search).toBe("");
+      expect(parsed.hash).toBe("");
+      expect(id.startsWith(prefix)).toBe(true);
+      expect(/^[A-Za-z0-9_-]+$/.test(id.slice(prefix.length))).toBe(true);
+      expect(typeof receipt.transaction).toBe("string");
+      expect(receipt.transaction).not.toBe("");
+      return { receipt, resource };
+    }
+    const a = completed(await exchange(1), "a", "pos-1");
+    const b = completed(await exchange(2), "b", "pos-2");
+    expect(b.receipt.scopeEpoch).toBe(a.receipt.scopeEpoch);
+    expect(b.receipt.id).not.toBe(a.receipt.id);
+    expect(b.receipt.transaction).not.toBe(a.receipt.transaction);
+    // No assumption that A and B views must differ or coincide.
+    const replayA = await exchange(3);
+    status(replayA, 200, "principal-key:a-rotated-replay:completed");
+    expect(replayA.headers["content-type"]).toBe("application/json");
+    context(replayA, a.receipt.scopeEpoch, a.receipt.authorizationView, "pos-2");
+    expect(checked(replayA.bodyText, "mutationReceipt")).toStrictEqual(a.receipt);
+    const replayB = await exchange(4);
+    status(replayB, 200, "principal-key:b-replay:completed");
+    expect(replayB.headers["content-type"]).toBe("application/json");
+    context(replayB, b.receipt.scopeEpoch, b.receipt.authorizationView, "pos-2");
+    expect(checked(replayB.bodyText, "mutationReceipt")).toStrictEqual(b.receipt);
+    const conflict = await exchange(5);
+    status(conflict, 409, "principal-key:a-conflict:refused");
+    context(conflict, a.receipt.scopeEpoch, a.receipt.authorizationView, "pos-2");
+    expect(checked(conflict.bodyText, "transactionalProblem")).toStrictEqual(conflictProblem);
+    const collectionWire = await exchange(6);
+    status(collectionWire, 200, "principal-key:current-complete");
+    expect(collectionWire.headers["content-type"]).toBe("application/json");
+    expect(collectionWire.headers["bdp-scope-epoch"]).toBe(a.receipt.scopeEpoch);
+    expect(collectionWire.headers["bdp-scope-position"]).toBe("pos-2");
+    // A-credentialed Read uses the fixed serving view, not principal-scoped filtering.
+    expect(checked(collectionWire.bodyText, "currentBeadCollection")).toStrictEqual({
+      items: [a.resource, b.resource],
+      next: null,
+    });
+    const eventsWire = await exchange(7);
+    status(eventsWire, 200, "principal-key:events-complete");
+    expect(eventsWire.headers["content-type"]).toBe("application/json");
+    expect(eventsWire.headers["bdp-scope-epoch"]).toBe(a.receipt.scopeEpoch);
+    expect(eventsWire.headers["bdp-scope-position"]).toBe("pos-2");
+    const page = checked(eventsWire.bodyText, "eventPage"),
+      events = records(page.events);
+    expect(events).toHaveLength(2);
+    const hash = (tag: string, value: string) =>
+      createHash("sha256")
+        .update(JSON.stringify([tag, value]))
+        .digest("base64url");
+    const eventSource = `${scope}events/`;
+    // Deliberately independent exact private projection, not a normative Event-ID format.
+    const expectedEvents = [a, b].map((saved, index) => ({
+      id: `ev_${hash("epoch", eventsWire.headers["bdp-scope-epoch"]!)}_${hash("view", eventsWire.headers["bdp-authorization-view"]!)}_${hash("source", eventSource)}_pos-${index + 1}_0`,
+      ordinal: 0,
+      type: "created",
+      source: eventSource,
+      subject: saved.resource.id,
+      subjectType: beadType,
+      transaction: saved.receipt.transaction,
+      time: events[index]!.time,
+      data: {
+        revision: saved.resource.revision,
+        properties: saved.resource.properties,
+        metadata: saved.resource.metadata,
+      },
+    }));
+    expect(page).toStrictEqual({ source: eventSource, events: expectedEvents, next: null });
+```
+
+### packages/server/src/transaction-runtime-configuration.ts:226-254 — closed credential entries and actual authentication identity
+```ts
+  const credentials = administrativeArray(own.credentials, 32).map((value) => {
+    const entry = administrativeData(value, ["token", "principal", "canMutate"]);
+    const token = boundedString(entry.token, 256),
+      principal = boundedString(entry.principal, 16384);
+    if (!/^[A-Za-z0-9_-]{32,256}$/.test(token) || typeof entry.canMutate !== "boolean")
+      throw new TypeError("invalid private transaction credential");
+    return { token, principal, canMutate: entry.canMutate };
+  });
+  if (!credentials.length || new Set(credentials.map((c) => c.token)).size !== credentials.length)
+    throw new TypeError("unique private transaction credentials required");
+  const secrets = credentials.map(({ token, ...rest }) => ({
+    ...rest,
+    credential: Buffer.from(`Bearer ${token}`),
+  }));
+  const associations = freeze(
+    credentials
+      .map(({ token, ...rest }) => ({
+        // Domain separation binds this credential use; it does not prevent
+        // guessing low-entropy tokens. Metadata digests are not secrecy guarantees.
+        tokenDigest: transactionRuntimeDigest({ revision: "transaction-credential-1", token }),
+        ...rest,
+      }))
+      .sort((a, b) => (a.tokenDigest < b.tokenDigest ? -1 : a.tokenDigest > b.tokenDigest ? 1 : 0)),
+  );
+  const authenticationIdentity = transactionRuntimeDigest({
+    revision: "transaction-authentication-1",
+    scheme: "bearer",
+    associations,
+  });
+```
+
+### packages/server/src/transaction-runtime-configuration.ts:321-332 — actual credential-to-principal lookup
+```ts
+    authenticate(supplied: Buffer): TransactionHttpAuthorization {
+      const credential = secrets.find(
+        (c) => c.credential.length === supplied.length && timingSafeEqual(c.credential, supplied),
+      );
+      return credential
+        ? {
+            kind: "authenticated",
+            principal: credential.principal,
+            canMutate: credential.canMutate,
+          }
+        : { kind: "unauthenticated" };
+    },
+```
+
+### packages/server/src/transaction-runtime-configuration.ts:373-402 — actual served policy/runtime binding
+```ts
+      const policyIdentity = transactionRuntimeDigest({
+        revision: "transaction-policy-1",
+        view: actual.authorizationView,
+        read: "all-visible",
+        aggregate: actual.scopeConfiguration.maximumEndpointMultiplicity,
+        associations,
+      });
+      const runtimeConfigurationIdentity = transactionRuntimeDigest({
+        revision: "transaction-runtime-1",
+        scope,
+        artifactIdentity: contracts.identity,
+        settings,
+        authorityMode,
+        policyIdentity,
+        authenticationIdentity,
+        profile: "transactional",
+        history: false,
+      });
+      return Object.freeze({
+        authorityMode,
+        runtimeConfigurationIdentity,
+        artifactIdentity: contracts.identity,
+        policyIdentity,
+        authenticationIdentity,
+        scope,
+        profile: "transactional" as const,
+        history: false as const,
+        claimEligible: false as const,
+      });
+    },
+```
+
+### packages/server/src/transaction-store.ts:1050-1129 — actual retained key lookup, equality/conflict and fresh principal-owned receipt allocation
+```ts
+  function admitKey(
+    principal: string,
+    key: string,
+    batch: PreparedTransaction,
+    pendingWins = false,
+    references?: ReferenceBindings,
+    template?: DependencyTemplate,
+    controls?: TransactionReceivingControls,
+  ): TransactionReceivingAdmission {
+    const stored = row(principal, key);
+    const prior = stored ? expireRow(stored, instant()).row : undefined;
+    if (pendingWins && prior?.owner !== null && prior !== undefined)
+      return { kind: "existing", receipt: parseReceipt(prior.receipt) };
+    if (prior?.dependency) {
+      const template = parseDependencyTemplate(prior.dependency, scope);
+      const comparison = compareDependencyTemplate(template, batch, resolveAlias, (index) => {
+        const stored = db
+          .prepare("SELECT fact FROM creator_facts WHERE attempt=? AND member=?")
+          .get(template.attempt, index);
+        if (!stored) throw new Error("unresolved receipt lost creator fact");
+        return typeof stored.fact === "string"
+          ? (JSON.parse(stored.fact) as CreatorFact)
+          : undefined;
+      });
+      return comparison === "conflict"
+        ? { kind: "conflict" }
+        : comparison === "equal"
+          ? { kind: "existing", receipt: parseReceipt(prior.receipt) }
+          : { kind: "comparison-pending" };
+    }
+    const depthRefusal = transactionDepthRefusal(batch);
+    if (!prior && depthRefusal !== undefined) {
+      if (controls === undefined) throw new TransactionDevelopmentLimitError(depthRefusal);
+      return { kind: "development-limit", message: depthRefusal };
+    }
+    const normalized = template
+      ? undefined
+      : normalizeTransaction(batch, resolveAlias, prior?.witnesses, references);
+    if (prior) {
+      if (!normalized) throw new Error("existing key cannot acquire a new unresolved template");
+      return prior.identity !== normalized.identity
+        ? { kind: "conflict" }
+        : { kind: "existing", receipt: parseReceipt(prior.receipt) };
+    }
+    // Prior-key equality/conflict wins above. Only an unknown key pays fresh
+    // admission controls, and no refusal ever inserts a receipt or owner.
+    if (controls && batch.carrier.operations.length > controls.maximumOperations)
+      return { kind: "operation-limit" };
+    if (controls) {
+      for (const [index, op] of batch.carrier.operations.entries()) {
+        if (op.operation !== "updateWhere" && op.operation !== "deleteWhere") continue;
+        const limit = transactionSelectorCapacity(op);
+        if (limit)
+          return {
+            kind: "selector-limit",
+            limit,
+            pointer:
+              batch.carrier.kind === "singleton" ? "/selector" : `/operations/${index}/selector`,
+          };
+      }
+    }
+    if (controls && !controls.acceptsJson) return { kind: "not-acceptable" };
+    const receipt: TransactionReceipt = {
+      id: `${scope}receipts/${randomUUID()}`,
+      status: "pending",
+      idempotencyKey: key,
+      scopeEpoch: epoch,
+      authorizationView: view,
+      transaction: randomUUID(),
+    };
+    const owner = randomUUID(),
+      claim = Object.freeze({ receipt });
+    db.prepare("INSERT INTO receipts VALUES(?,?,?,?,?,?,?)").run(
+      principal,
+      key,
+      normalized?.identity ?? "",
+      normalized?.witnessesJson ?? "",
+      owner,
+      json(receipt),
+      template ? json(template) : null,
+```
+
+### packages/server/src/transaction-http.ts:329-372 — actual mutation principal dispatch and conflict response/context
+```ts
+      const decision: TransactionSubmission["authorization"] =
+        authorization.kind === "unauthenticated"
+          ? authorization
+          : authorization.canMutate
+            ? { kind: "authorized", principal: authorization.principal }
+            : { kind: "forbidden" };
+      const result = await service.submit({
+        carrier:
+          operation === "batch"
+            ? { kind: "batch" }
+            : { kind: "singleton", operation: operation as TransactionSingletonOperation },
+        body: received.text,
+        key: request.headers.get("idempotency-key") ?? "",
+        authorization: decision,
+        receiving: { acceptsJson: acceptsJson(request.headers.get("accept")), maximumOperations },
+      });
+      if (result.kind === "receipt") return receiptResponse(result, true);
+      if (result.kind === "comparison-refusal") {
+        const response = problem(readProblem(result.code));
+        if (result.reason === "owner-stopped") return response;
+        if (!result.context) throw new Error("comparison deadline lost same-entry context");
+        return context(response, result.context);
+      }
+      if (result.kind === "not-acceptable") {
+        if (!result.context) throw new Error("negotiation refusal lost same-entry context");
+        return context(empty(406), result.context);
+      }
+      if (result.kind === "development-limit")
+        return developmentGap("unsupported-transaction-composition");
+      if (result.code === "idempotency-conflict") {
+        if (!result.context) throw new Error("conflict refusal lost same-entry context");
+        return context(
+          problem(
+            parseReadUpdateProblem({
+              type: "https://github.com/gastownhall/bdp/problems/conflict",
+              code: result.code,
+              status: 409,
+              retry: "never",
+            }),
+          ),
+          result.context,
+        );
+      }
+      if (result.code === "limit-exceeded" && result.limit !== undefined) {
+```
+
+### packages/conformance/src/runner.ts:354-395 — canonical metadata and explicit scenario selection
+```ts
+  const { catalog, manifest } = runOptions.artifactBundle;
+  const metadata = selectApplicableScenariosForProfile(catalog, runOptions.profile);
+  const allCatalogIds = new Set(catalog.scenarios.map(({ id }) => id));
+  const unknownPlan = manifest.scenarios.find(({ id }) => !allCatalogIds.has(id));
+  if (unknownPlan !== undefined)
+    throw new ConformanceRunnerError(`executable plan '${unknownPlan.id}' has no catalog metadata`);
+  const byId = new Map(manifest.scenarios.map((scenario) => [scenario.id, scenario]));
+  let selected =
+    runOptions.scenarioFilter === undefined
+      ? metadata
+      : metadata.filter(({ id }) => id.includes(runOptions.scenarioFilter as string));
+  if (runOptions.scenarioFilter !== undefined && selected.length === 0)
+    throw new ConformanceRunnerError("scenarioFilter matched no applicable scenarios");
+  if (runOptions.scenarioSelection !== undefined) {
+    const applicable = new Set(metadata.map(({ id }) => id));
+    const missing = runOptions.scenarioSelection.filter((id) => !applicable.has(id));
+    if (missing.length > 0)
+      throw new ConformanceRunnerError(
+        `scenarioSelection names scenarios that are unknown or inapplicable: ${missing.join(", ")}`,
+      );
+    const requested = new Set(runOptions.scenarioSelection);
+    // Catalog order is preserved: the selection names membership, not sequence.
+    selected = metadata.filter(({ id }) => requested.has(id));
+  }
+  preflightExactPlans(
+    selected.flatMap(({ id }) => byId.get(id) ?? []),
+    runOptions,
+  );
+  const results: ScenarioRunResult[] = [];
+  const resultsById = new Map<string, ScenarioRunResult>();
+  for (const [index, scenario] of selected.entries()) {
+    if (runOptions.signal?.aborted === true) {
+      for (const remaining of selected.slice(index)) results.push(stoppedScenarioResult(remaining));
+      break;
+    }
+    const plan = byId.get(scenario.id);
+    const scenarioResult =
+      plan === undefined
+        ? missingPlanResult(scenario)
+        : (prerequisiteResultBeforeRun(scenario, plan, resultsById, catalog) ??
+          (await runScenario(scenario, plan, runOptions, context)));
+    results.push(scenarioResult);
+```
+
+### packages/conformance/src/runner.ts:1440-1471 — all assertion outcomes recorded before row failure and captures
+```ts
+  const outcomes = request.assertions.map(
+    (assertion) =>
+      (assertion.kind.startsWith("request-")
+        ? evaluateExactAssertion(assertion, request, url, body, exactObservation, options)
+        : undefined) ??
+      wireOutcomes.get(assertion.id) ??
+      evaluateAssertion(
+        assertion,
+        assertionResponse,
+        bodyObservation,
+        schemaValidator,
+        fixture,
+        scope,
+        runProfile,
+        priorResponses,
+        headers,
+        exactWitness,
+        bindings,
+      ),
+  );
+  exchanges[exchanges.length - 1] = { ...next, assertions: outcomes };
+  if (exactFailure) throw new ExactHarnessError("exact-observation");
+  if (corsWitnessFailure !== undefined)
+    throw new ScenarioWireObservationUnavailableError(corsWitnessFailure);
+  if (outcomes.some(({ passed }) => !passed))
+    throw new ScenarioAssertionFailure(
+      outcomes
+        .filter(({ passed }) => !passed)
+        .map(({ message }) => message ?? "assertion failed")
+        .join("; "),
+    );
+  for (const capture of request.captures) {
+```
+
+### packages/conformance/src/runner.ts:1660-1678 — exact ref membership and authored body materialization boundary
+```ts
+    if (
+      config === undefined ||
+      request.raw === undefined ||
+      config.scope !== options.scope ||
+      config.profile !== options.profile
+    )
+      throw new Error();
+    if (url !== undefined) validateExactRunConfiguration(config, url, request.method);
+    const ref = request.credentialRef ?? config.defaultCredentialRef;
+    if (!config.credentialHandles.some(({ id }) => id === ref)) throw new Error();
+    let authoredBytes = 2;
+    for (const line of request.raw.headerLines) {
+      authoredBytes += line.name.length + line.value.length + 4;
+      if (authoredBytes > config.maximumRequestHeaderBytes) throw new Error();
+    }
+    if (request.raw.body === undefined) return undefined;
+    if (options.profile === "read") throw new Error();
+    return materializeScenarioBody(request.raw.body, config.maximumRequestBodyBytes);
+  } catch {
+```
+
+### packages/conformance/src/runner.ts:2468-2500 — raw capture value restriction and confinement
+```ts
+function captureValue(
+  capture: ScenarioCapture,
+  response: HttpExchangeResponse,
+  body: ObservedBody,
+  scope: string,
+): string {
+  let value: unknown;
+  if (capture.from.kind === "response-url") value = response.url;
+  else if (capture.from.kind === "header-link")
+    value = linkHeader(response.headers.link, capture.from.rel, response.url);
+  else {
+    if (body.kind !== "json") throw new ScenarioObservationFailure(observedBodyIssue(body));
+    value = jsonPointer(body.value, capture.from.pointer);
+  }
+  if (typeof value !== "string" || !isHttpUrl(value))
+    throw new ScenarioObservationFailure(
+      `capture '${capture.binding}' did not produce an absolute HTTP(S) URL`,
+    );
+  try {
+    assertConfinedToScope(value, scope, `capture '${capture.binding}'`);
+  } catch (error) {
+    if (capture.from.kind === "header-link")
+      throw new ScenarioOutOfScopeTargetError(
+        "discovered link target is outside the runner's safe fetch boundary",
+        { cause: error },
+      );
+    throw error;
+  }
+  return value;
+}
+
+function resolveTarget(
+  request: ScenarioRequest,
+```
+
+### apps/bdptest/test-support/transactional-execution-binding.ts:103-130 — scenario launch baseline identity comparison
+```ts
+  let active:
+    | (TransactionalSession & { controller: AbortController; pending: Set<Promise<unknown>> })
+    | undefined;
+  let generation = 0;
+  let presentation:
+    | { scenario: ExecutableScenario; scope: string; seed: number; fixture: ConformanceFixture }
+    | undefined;
+  let reopening = false;
+  const target = createRawHttpScenarioTarget(
+    async (scenario, scope, seed, fixture, signal) => {
+      const child = await options.launch(scenario.id, reopening, signal);
+      try {
+        if (signal.aborted) throw new Error("installed preparation aborted");
+        const actual = installedTransactionBinding(
+          child.ready,
+          options.sourceCommit,
+          options.fixtureSource,
+        );
+        assertSameServedProfileConfiguration(options.baseline.served, actual.served);
+        if (
+          actual.runtimeConfigurationIdentity !== options.baseline.runtimeConfigurationIdentity ||
+          actual.authorityMode !== options.baseline.authorityMode
+        )
+          throw new Error("installed runtime identity mismatch");
+        const listenUrl = child.ready.listenUrl as string,
+          address = new URL(listenUrl);
+        const controller = new AbortController(),
+          pending = new Set<Promise<unknown>>();
+```
+
+### apps/bdptest/src/transactional-matrix.test.ts:1940-1964 — cross-carrier activation and postcompletion rejection guards; remainder omitted
+```ts
+function crossCarrierWire(control?: CrossCarrierControl) {
+  const requests = crossCarrierRequests(control);
+  const maximum =
+    control === "batch-semantic-conflict" ? 2 : control === "sequence-fresh-key" ? 3 : 10;
+  const facts: { epoch: string; view: string; revision?: string }[] = [];
+  let active = false;
+  return {
+    async afterExchange(response: HttpExchangeResponse) {
+      const request = response.exactRequest;
+      const key = request?.headerLines.find(
+        (h) => h.name.toLowerCase() === "idempotency-key",
+      )?.value;
+      if (!active) {
+        if (response.url !== `${scope}operations/create-bead` || key !== "carrier-create") return;
+        active = true;
+      }
+      if (facts.length === maximum) {
+        expect(key === "carrier-create" || key === "carrier-update").toBe(false);
+        expect(
+          ["create-bead", "sequence", "update-bead"].map((route) => `${scope}operations/${route}`),
+        ).not.toContain(response.url);
+        return;
+      }
+      const index = facts.length;
+      const [route, body, expectedKey] = requests[index]!;
+```
+
+### apps/bdptest/src/transactional-matrix.test.ts:2383-2408 — minimum observer activation and postcompletion key/body guards; other oracle branches omitted
+```ts
+  return {
+    async afterExchange(response: HttpExchangeResponse) {
+      const request = response.exactRequest;
+      const key = request?.headerLines.find(
+        (h) => h.name.toLowerCase() === "idempotency-key",
+      )?.value;
+      if (!active) {
+        if (response.url !== `${scope}operations/create-bead` || key !== "minimum-a") return;
+        active = true;
+      }
+      if (observedIds.length === maximum) {
+        expect(key?.startsWith("minimum-") ?? false).toBe(false);
+        // Other rows may legitimately use these routes; a repeated minimum
+        // sequence is discriminated by its exact authored body, not its URL.
+        if (response.url === `${scope}operations/sequence`)
+          expect(request?.bodyDigest).not.toBe(
+            createHash("sha256").update(JSON.stringify(requests[4]!.body)).digest("hex"),
+          );
+        return;
+      }
+      const index = observedIds.length,
+        id = minimumRawIds[index]!,
+        expected = requests[index]!;
+      expect(response.url).toBe(expected.url);
+      expect(request).toBeDefined();
+      expect(request!.source).toBe("raw-http1-serializer");
+```
+
+### apps/bdptest/src/transactional-matrix.test.ts:3152-3176 — complete current observer composition
+```ts
+function composedMemberWire(
+  cross: ReturnType<typeof crossCarrierWire>,
+  minimum: ReturnType<typeof commandMinimumWire>,
+  member: ReturnType<typeof sequenceMemberWire>,
+) {
+  let handedOff = false;
+  return async (response: HttpExchangeResponse) => {
+    await minimum.afterExchange(response);
+    const request = response.exactRequest,
+      key = request?.headerLines.find((h) => h.name.toLowerCase() === "idempotency-key")?.value;
+    const exempt = memberHandoff(
+      member.count(),
+      response.url,
+      request?.bodyDigest,
+      key,
+      request?.writeState,
+    );
+    if (exempt && !handedOff) {
+      cross.finish();
+      handedOff = true;
+    }
+    if (!exempt) await cross.afterExchange(response);
+    if (handedOff) await member.afterExchange(response);
+  };
+}
+```
+
+### packages/conformance/src/transactional-cumulative.test.ts:983-1002 — complete historical sequence stripping/full-parent assertion
+```ts
+function withoutSequenceMemberRow(text: string, name: "manifest" | "coverage") {
+  const key = name === "manifest" ? "scenarios" : "rows";
+  const objects = objectSlices(text, key);
+  for (const [id, hash, bytes] of sequenceParentPins[name]) {
+    const raw = objects.get(id)!;
+    expect(Buffer.byteLength(raw), id).toBe(bytes);
+    expect(createHash("sha256").update(raw).digest("hex"), id).toBe(hash);
+  }
+  const raw = objects.get(sequenceMemberId)!;
+  expect(typeof raw).toBe("string");
+  const suffix = `,\n    ${raw}\n  ]\n}\n`;
+  expect(text.endsWith(suffix), "sequence-tail-position").toBe(true);
+  const parent = text.slice(0, -suffix.length) + "\n  ]\n}\n";
+  expect(createHash("sha256").update(parent).digest("hex"), "sequence-full-parent").toBe(
+    name === "manifest"
+      ? "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96"
+      : "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af",
+  );
+  return parent;
+}
+```
+
+### packages/conformance/src/transactional-cumulative.test.ts:2968-3002 — complete affected minimum callback and index-sensitive mutations
+```ts
+it("pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects", () => {
+  assertMinimumObservation(manifest);
+  expect(
+    selectApplicableScenariosForProfile(selected.catalog, "transactional").map((r) => r.id),
+  ).toContain(minimumId);
+  expect(bundle().manifest.scenarios[0]?.id).toBe(minimumId);
+  for (const name of ["manifest", "coverage"] as const) {
+    const original = withoutMinimumRow(withoutSequenceMemberRow(read(name).toString(), name), name);
+    expect(createHash("sha256").update(original).digest("hex")).toBe(
+      name === "manifest"
+        ? "726fc623bbb115a0f39e0bb3aaa586ea37254522b254e55e555ea95587f14cb9"
+        : "a3a15b5143c118b24965698ec10289821664c90e935820b51c8cf76c05bdb1df",
+    );
+    const before = objectSlices(original, name === "manifest" ? "scenarios" : "rows"),
+      after = objectSlices(read(name).toString(), name === "manifest" ? "scenarios" : "rows");
+    expect(before.size).toBe(13);
+    for (const [id, raw] of before) expect(after.get(id), id).toBe(raw);
+  }
+  const empty = structuredClone(manifest);
+  empty.scenarios[0].actions[0].raw.headerLines =
+    empty.scenarios[0].actions[0].raw.headerLines.filter(
+      (h: { name: string }) => h.name !== "bdp-scope-epoch",
+    );
+  expect(() => assertMinimumObservation(empty)).toThrow("minimum-empty-header-ledger");
+  for (const index of [9, 10]) {
+    const changed = structuredClone(manifest);
+    changed.scenarios[0].actions[index].raw.headerLines.push({
+      name: "bdp-minimum-scope-position",
+      value: "pos-99",
+    });
+    expect(() => assertMinimumObservation(changed)).toThrow("minimum-read-header-absence");
+  }
+  // Full replay-pair ledger weakening is checked in an existing app static
+  // callback; arbitrary JSON raw captures are intentionally not manufactured.
+});
+```
+
+### docs/specs/bdp.md:3184-3205 — normative principal/rotation namespace; anonymous/actor clauses remain excluded
+```ts
+A key identifies one semantic mutation within one **idempotency namespace**:
+the pair of the canonical Scope URL and the authenticated principal, an
+anonymous principal counting as one principal. The authenticated principal is
+the identity authentication established for the request, as the authority
+identifies it across restart, failover, and credential rotation; it is not
+the carried `revisionProvenance.actor.id`, which is data under [Carried
+attribution](#carried-attribution) and takes no part in the namespace. Keys
+presented by other principals, in other Scopes, or to other authorities are
+unrelated. Anonymous principals share one namespace, so an authority that
+admits anonymous mutation exposes every anonymous key to every anonymous
+client: such an authority SHOULD require authentication for mutation, and an
+anonymous client SHOULD mint unguessable keys. Authorization View changes do
+not create a new namespace: the principal-bound disposition remains retained
+and cannot execute again, though its disclosure is re-authorized on every
+replay under [Duplicate keys and retained
+dispositions](#duplicate-keys-and-retained-dispositions). The namespace is
+shared by every mutation carrier in the profile: a sequence member and a
+singleton request that present the same key in the same namespace present the
+same key.
+
+The **semantic identity** of a member is its operation kind — from
+`operation`, or from the singleton target — plus its normalized operation
+```
+
+### docs/specs/bdp.md:3888-3918 — Transactional admission/epoch extension
+```ts
+and the authenticated principal. Before comparing requests, the authority
+normalizes local references, expands protocol defaults, preserves operation
+and array order, ignores JSON object member order, and excludes delivery-only
+metadata. It may store that normalized request or an internal versioned
+fingerprint; BDP does not require a public request-hash algorithm.
+
+Concurrent requests with the same key and the same semantic request join one
+execution. A duplicate may wait for the terminal response or receive the same
+pending receipt. Either way, it never executes again. For direct carriers,
+handing a duplicate a receipt presupposes established semantic equality. A
+request that encounters an unresolved reservation follows the bounded
+comparison rules below. Reusing the key for a different semantic request is
+an idempotency conflict. Once a mutation is admitted, client disconnection
+does not decide the outcome. The authority commits or rolls back, and it
+records one terminal receipt. Retrying returns
+that same outcome, including authority-allocated IDs.
+
+An idempotency key is the token defined under
+[Idempotency keys](#idempotency-keys): the `Idempotency-Key` HTTP field of
+a batch or singleton request and the `idempotencyKey` member of a sequence
+member carry the same case-sensitive `[A-Za-z0-9_-]{1,256}` token, bare,
+compared byte-exactly; a request whose key is absent, repeated, or outside
+the grammar is malformed. On a Transactional Scope the key's namespace is
+the canonical Scope URL, the Scope epoch, and the authenticated principal —
+the Read+Update namespace with the epoch it lacks — and every mutation
+carrier feeds that one namespace: a singleton request, a `batch`, and each
+member of a `sequence` is a Mutation Transaction with its own durable
+Mutation Receipt, and the carrier is delivery metadata that the semantic
+comparison excludes.
+
+The semantic identity of a Mutation Transaction is the sequence, in
+```
+
+### docs/specs/bdp.md:3947-3975 — retained namespace/view and comparison law
+```ts
+otherwise. A new epoch is a new namespace: a key first used under a prior
+epoch is unbound, and a retry under the new epoch executes as a new
+mutation, which a client that observes a changed `scopeEpoch` MUST treat
+as a first execution rather than a replay. Authorization View changes do
+not create a new namespace.
+
+Admission is one durable step. The authority records the key, the
+normalized request identity or the durable unresolved dependency form below,
+the `pending` Mutation Receipt with its `transaction` identity, and its own
+exclusive ownership of the execution together or not at all, so that a crash
+leaves a key either unknown with
+nothing committed or bound to a receipt. Exactly one execution owns a
+pending receipt, and ownership is what a commit checks: the Resource state,
+the change group, and the terminal receipt commit atomically only while the
+committing execution still owns the receipt, so an execution that lost
+ownership — because the authority retracted the receipt, or because
+recovery reclaimed it — cannot commit and produces no group. Identities an
+execution allocates become durable only with its commit; a retry after a
+retraction allocates anew, or reuses a supplied `id`. On restart or
+failover, every `pending` receipt without a committed group is retracted
+under the transient-abort rule of
+[Batch operation target](#batch-operation-target) within
+`transaction.duration` when that limit is advertised and within a finite
+bound of the authority's choosing otherwise: the authority never resumes an
+execution on its own initiative, the client's retry is the recovery path,
+and a `pending` receipt older than the bound is a conformance failure.
+Every mutation route — each singleton target, the batch target, the
+sequence target, and every replica that accepts mutations — consults one
+authoritative key state for the namespace; two routes MUST NOT each treat
+```
+
+### Exact complete selected $defs objects (lossless compact JSON projection, source schema hash is pinned)
+```json
+{"receiptCore":{"type":"object","properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"status":{"$ref":"#/$defs/receiptStatus"},"detail":{"$ref":"#/$defs/receiptDetail"},"idempotencyKey":{"$ref":"#/$defs/idempotencyKey"},"scopeEpoch":{"$ref":"#/$defs/wireToken"},"authorizationView":{"$ref":"#/$defs/wireToken"},"transaction":{"$ref":"#/$defs/wireToken"},"requiredPosition":{"$ref":"#/$defs/wireToken"},"effectPosition":{"$ref":"#/$defs/wireToken"},"results":{"type":"array","items":{"$ref":"#/$defs/receiptResult"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]},"allocated":{"type":"array","items":{"$ref":"#/$defs/allocatedIdentity"}},"problem":{"$ref":"#/$defs/receiptProblem"},"expiresAt":{"$ref":"#/$defs/dateTime"}},"allOf":[{"if":{"properties":{"status":{"const":"failed"}},"required":["status"]},"then":{"properties":{"effectPosition":false,"detail":{"const":"available"}}}}],"additionalProperties":false},"mutationReceipt":{"title":"BDP Mutation Receipt","type":"object","allOf":[{"$ref":"#/$defs/receiptCore"}],"oneOf":[{"type":"object","required":["id","status","idempotencyKey","scopeEpoch","authorizationView","transaction"],"properties":{"id":true,"status":{"const":"pending"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"detail":false,"requiredPosition":false,"effectPosition":false,"results":false,"next":false,"allocated":false,"problem":false,"expiresAt":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","results","next","expiresAt"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"available"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"results":true,"next":true,"expiresAt":true,"allocated":false,"problem":false},"allOf":[{"if":{"properties":{"next":{"type":"null"}},"required":["next"]},"then":{"properties":{"results":{"type":"array","minItems":1}}}}]},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","problem","expiresAt"],"properties":{"id":true,"status":{"const":"failed"},"detail":{"const":"available"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"problem":true,"expiresAt":true,"effectPosition":false,"results":false,"next":false,"allocated":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","allocated"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"expired"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"allocated":true,"results":false,"next":false,"problem":false,"expiresAt":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"withheld"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"results":false,"next":false,"allocated":false,"problem":false,"expiresAt":false}}]},"beadRecord":{"type":"object","required":["id","type","revision","properties"],"properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"type":{"$ref":"#/$defs/absoluteHttpUrl"},"revision":{"type":"string","minLength":1},"properties":{"$ref":"#/$defs/properties"},"metadata":{"$ref":"#/$defs/metadata"},"links":{"$ref":"#/$defs/linkCollection"},"ownedLinks":{"type":"object","propertyNames":{"$ref":"#/$defs/absoluteHttpUrl"},"additionalProperties":{"type":"array","items":{"$ref":"#/$defs/linkRecord"}}},"revisionProvenance":{"$ref":"#/$defs/revisionProvenance"}},"additionalProperties":false},"currentBeadRecord":{"allOf":[{"$ref":"#/$defs/beadRecord"},{"type":"object","required":["metadata"],"properties":{"metadata":{"$ref":"#/$defs/metadata"},"links":{"$ref":"#/$defs/currentLinkCollection"},"ownedLinks":{"type":"object","additionalProperties":{"type":"array","items":{"$ref":"#/$defs/currentLinkRecord"}}}}}]},"beadCollection":{"type":"object","required":["items","next"],"properties":{"items":{"type":"array","items":{"$ref":"#/$defs/beadRecord"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]}},"additionalProperties":false},"currentBeadCollection":{"allOf":[{"$ref":"#/$defs/beadCollection"},{"type":"object","properties":{"items":{"type":"array","items":{"$ref":"#/$defs/currentBeadRecord"}}}}]},"eventPage":{"title":"BDP Event Source page","type":"object","required":["source","events","next"],"properties":{"source":{"$ref":"#/$defs/absoluteHttpUrl"},"events":{"type":"array","items":{"$ref":"#/$defs/event"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]}},"additionalProperties":false},"event":{"title":"BDP Event","type":"object","required":["id","ordinal","type","source","subject","subjectType","transaction","time","data"],"properties":{"id":{"$ref":"#/$defs/wireToken"},"ordinal":{"type":"integer","minimum":0},"type":{"$ref":"#/$defs/eventType"},"source":{"$ref":"#/$defs/absoluteHttpUrl"},"subject":{"$ref":"#/$defs/absoluteHttpUrl"},"subjectType":{"$ref":"#/$defs/absoluteHttpUrl"},"transaction":{"$ref":"#/$defs/wireToken"},"time":{"$ref":"#/$defs/dateTime"},"data":{"type":"object"}},"allOf":[{"if":{"properties":{"type":{"const":"created"}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/createdData"}}}},{"if":{"properties":{"type":{"const":"updated"}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/updatedData"}}}},{"if":{"properties":{"type":{"const":"deleted"}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/deletedData"}}}},{"if":{"properties":{"type":{"enum":["linked","unlinked"]}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/linkDeltaData"}}}}],"additionalProperties":false},"transactionalProblem":{"title":"BDP Transactional Problem Details","type":"object","required":["type","code","retry"],"properties":{"type":{"$ref":"#/$defs/absoluteHttpUrl"},"title":{"type":"string"},"status":{"type":"integer","enum":[400,401,403,404,409,410,413,415,422,429,503]},"detail":{"type":"string"},"instance":{"$ref":"#/$defs/absoluteUri"},"code":{"$ref":"#/$defs/directProblemCode"},"retry":{"$ref":"#/$defs/retryDisposition"},"retryAfter":{"type":"integer","minimum":0},"pointer":{"$ref":"#/$defs/jsonPointer"},"limit":{"type":"string","pattern":"^[a-z]+\\.[A-Za-z]+$"},"archivedAt":{"$ref":"#/$defs/reference"}},"allOf":[{"if":{"properties":{"code":{"$ref":"#/$defs/readUpdateProblemCode"}},"required":["code"]},"then":{"$ref":"#/$defs/readUpdateProblem"}},{"if":{"properties":{"code":{"const":"event-history-expired"}},"required":["code"]},"then":{"properties":{"diagnostics":false,"diagnosticsTruncated":false,"type":{"const":"https://github.com/gastownhall/bdp/problems/gone"},"status":{"const":410},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"catch-up-timeout"}},"required":["code"]},"then":{"properties":{"diagnostics":false,"diagnosticsTruncated":false,"type":{"const":"https://github.com/gastownhall/bdp/problems/unavailable"},"status":{"const":503},"retry":{"const":"after-delay"}}}},{"if":{"properties":{"code":{"const":"resource-erased"}},"required":["code"]},"then":{"properties":{"pointer":false}}},{"if":{"not":{"properties":{"code":{"const":"limit-exceeded"}},"required":["code"]}},"then":{"properties":{"limit":false}}},{"if":{"properties":{"retry":{"const":"after-delay"}},"required":["retry"]},"else":{"properties":{"retryAfter":false}}},{"if":{"not":{"properties":{"code":{"const":"revision-unretained"}},"required":["code"]}},"then":{"properties":{"missing":false}}}]}}
+```
+
+## Supplied and omitted context / accountability
+The complete plan, proposed seven-action row, coverage, requests, negative expected outcome, role/validation ledger, selections, canonical size measurements, all30 raw-parent identities, route preimage,55-site inventory and41 derivative metric summaries are supplied. Python data-only measurements are proposals, not executed schema/behavior evidence. The existing observe helper is complete; two observer excerpts are intentionally partial activation/completion gates, while complete current composition is supplied. Full old row objects (roughly790KB), full mutated manifests, remaining old observer body-oracle branches, generic runner execution/evaluator implementation beyond supplied boundaries, referenced scalar/result-entry schema definitions, full resource evaluator and full receipt/Event renderer are omitted for size. Their file hashes are pinned where part of source binding; omissions are not evidence they are absent. Schema objects supplied are complete objects, not selected fields, but their external $refs remain dependencies. The standalone principal oracle block supplies exact private Event projection and complete actual-response expectations as implementation precedent, not normative ID syntax or new execution evidence.
+
+Review this distinction: existing manifest assertions alone do not perform new dynamic full-receipt/revision equality; the planned in-memory app observer must validate initial facts before baselines, drive both whole-JSON comparisons from a literal ledger and prove completion. Ref-based auth is separately covered by the existing executor, and actual serving identity belongs to each newly bootstrapped credential configuration. No arbitrary capture/body report recovery is allowed. All old raw row hashes and immediate-parent reconstructions must remain exact. Costs are source models whose historical runtime estimate is not guaranteed remaining CI capacity. Do not assume the plan's conclusions merely because prior tests passed; identify any flaw in their use for this exact integration. Requests for a missing excerpt should name the relevant invariant rather than report an invented code defect.

@@ -1,0 +1,20 @@
+--- before-initial-view-repair/review-installed.py
++++ review-installed.py
+@@ -56,7 +56,7 @@
+ expected=ledger['cohorts'][name]['rows']
+ uuid=r'[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+ old=wire[0]['context'];require(len(old)==3 and all(isinstance(x,str)for x in old),'Initial context')
+-require(re.fullmatch(uuid,old[0]) and re.fullmatch(uuid,old[1]) and old[2]=='pos-1','Initial context values')
++require(re.fullmatch(uuid,old[0]) and old[1]=='development-all-visible' and old[2]=='pos-1','Initial context values')
+ def checktarget(actual,expected):
+  require(isinstance(actual,str) and actual.startswith('/acme/') and len(actual)<=4096 and not any(ord(x)<33 for x in actual),'Unsafe observed target')
+  if expected.startswith('<'):return
+@@ -67,7 +67,7 @@
+  index,method,target,status,_=row
+  require(observed['method']==method and observed['status']==status and observed['canonicalHost']=='event-sse.invalid','Wire method/status/Host differs')
+  checktarget(observed['target'],target)
+- context=observed['context'];require(isinstance(context,list)and len(context)==3 and context[0]==old[0] and re.fullmatch(uuid,context[1]),'Context scope/view invalid')
++ context=observed['context'];require(isinstance(context,list)and len(context)==3 and context[0]==old[0] and (context[1]=='development-all-visible' or re.fullmatch(uuid,context[1])),'Context scope/view invalid')
+  require(context[2]==('pos-1' if name=='active-event' or index==1 else 'pos-2'),'Position differs')
+  if observed.get('stream'):
+   keys(observed,['index','method','target','stream','canonicalHost','status','context','closed','clientAbortedBeforeClose','wireBytes','completeFrames','idFrames'])

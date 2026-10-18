@@ -1,0 +1,54 @@
+# Native independent command-minimum code review
+
+## Findings and execution disposition
+
+No actionable Critical, High, Medium or Low finding in the final frozen seven-file draft. The measured **source** execution can begin from this binding after root reconciles council and accepts the author's measured execution packet. This is a read-only code-review disposition, not an execution release or a claim of passing typecheck, tests, controls, installed evidence or CI. Fresh installed TX execution remains its separately gated cohort.
+
+## Exact reviewed basis
+
+- Workspace: `/Users/dbox/repos/wt/vickie/vickie-command-minimum`, branch `codex/vickie-command-minimum`.
+- Ordinary parent: `122800511ee6306e4105e1f73bf3658f35c90a14`; parent tree: `088290751951c353797b984f690b7d9fd96deb80`.
+- Source manifest: `transaction-command-minimum-draft/source-binding.json`, SHA256 `cf5d2cd13a57d4a01220f931bdd308a71c8709f5d185592b2f6a08347631c24e`.
+- Complete final diff: `transaction-command-minimum-draft/draft.patch`, SHA256 `8f0123c9484a74a5c4995dea84833561056f603c8da64d5f9139107b85d44df8`; 858 insertions / 36 deletions across exactly seven tracked paths, no untracked source. Actual `git diff --no-ext-diff` bytes equal the saved patch.
+- Accepted plan v2 SHA256 `f8824197e765e8228679044ab32fd7a54ebd26ec3a892614fdd9b5a15cf07c82`; direct operator rulings SHA256 `5f7c78447789da4df73c616c174a23832d4b72b4c00238a3c7c26240993d2611`.
+- Read the final files, including the completed installed receipt key/requiredPosition/effectPosition assertions. Rehashed all seven paths and the actual diff immediately before writing this report; no byte changed during review.
+
+| Final path | SHA256 |
+|---|---|
+| `apps/bdptest/src/installed-reference.test.ts` | `447a8b5fb3ee03ec4f2a894b02a1bb0fdb74ccdea0ad35576da78942373e0cae` |
+| `apps/bdptest/src/transactional-collection-minimum-installed.test.ts` | `5349dab51055d29d30bb80f286cb30e69947882bd07ed1eaa831b26fd0567174` |
+| `docs/design/transaction-implementation-progress.md` | `afa385d9d3694186044b1048554798a3d595451f28c3a313fe796fa3fb735f58` |
+| `docs/specs/bdp.md` | `c2bee88f7a29349f7e420f711d10f3acff1fb0559d012b0d111fd7ac21bd175d` |
+| `packages/server/src/transaction-http.test.ts` | `b4ed09796b4dc28a51d9cc73c04a677059434a606f09dddffa46eefaa432ad8e` |
+| `packages/server/src/transaction-http.ts` | `1339f32e0818aee5a44fc01a2034366a73e72c40027d6cde7041f26525aba366` |
+| `packages/server/src/transaction-service.test.ts` | `5e8dc095dcbe9c8fdfb28a5dea4db024ddc65e7e4f51175edeae5a90ea7125be` |
+
+## Code and oracle assessment
+
+1. **Admission/routing:** `packages/server/src/transaction-http.ts:294` deletes precisely the former nine-line operation-only minimum-control refusal. The canonical target/method decisions and request-body/media guards remain before command handling. Sequence carrier header-key/shape/auth/count/composition/negotiation flow remains intact; singleton/batch still use the normal `service.submit` body/key/principal/Accept boundary. No copied minimum field enters semantic request identity. Ordinary auth/key/revision checks are unchanged; restoring normal parse-before-auth behavior relative to requests without these copied fields is intended by the ruling.
+
+2. **Read isolation:** receipt-root dispatch at `transaction-http.ts:534` still calls `receiptAtMinimum` when controls are present, and receipt-page parsing/refusal plus all following Read minimum dispatch remain byte-unchanged. The source-private `hasMinimumControls` helper is not globally disabled. The spec amendment at `docs/specs/bdp.md:5780–5800` explicitly scopes the request barrier to reads and ignores the three fields on both write profiles, while preserving global receiving limits and expectedRevision. The exact selected sentence `It never reports success with an older position.` is retained. The two progress descriptions are qualified/superseded without claiming profile qualification.
+
+3. **Actual source fixtures:** `transaction-http.test.ts:1091–1559` uses independent Resource/receipt/sequence schema oracles and real emitted runtime fixtures. Singleton create/update bodies omit the operation discriminator; batch/sequence members retain it and sequence members retain their own key. The 12-target scenario checks the literal actual target map, uses valid existing set Selectors, patches properties through `change` for updateWhere, and checks canonical sorted selected results. Its unowned Link fixture avoids unresolved owned-Link Event semantics; delete summaries match the existing evaluator's pre-deletion identity/revision. Explicit collection limit32 fits the four surviving Beads. No new production seam, invented batch under RU, or disabled receiving guard was found.
+
+4. **Auth/replay/revision:** A changes copied fields between equal requests and compares full results/context. B exercises every canonical command target with complete future/foreign tuples, exact expected effects, final alias absence and no minimum wait. C checks invalid key, retained revision failure/replay, fresh correct revision, unacceptable Accept with subsequent key reuse, and prohibited sequence header-key followed by corrected execution. D retains six unauthenticated/reader cases, Resource absence, actual empty key inventory and subsequent authorized same-key admission; its corrected singleton shape ensures the assertions reach auth. E independently requires future receipt GET and HEAD503, foreign view409, foreign epoch410 and compatible full receipt200. The six remaining service-refusal rows and context/observation assertions are intact; only the obsolete command-minimum row is removed.
+
+5. **Installed fixtures:** `transactional-collection-minimum-installed.test.ts:1173–1423` uses the existing captured schema/owned-Link projection and valid title property changes. It validates completed/failed receipts including key and exact positions, distinguishes current response context from retained receipt content, and proves three Resources plus retained failed-update non-effect. It validates the actually returned receipt root before granting it and confines all18 requests to nine observed routes. The exact raw executor retains its resolver handling for authorization-view; no credential firewall is weakened. RU at `installed-reference.test.ts:552–669` uses the existing reference task Type (no ownedLinks requirement), actual emitted child, valid singleton/sequence bodies, protocol result parsers, full Resource/replay equality, and absence of Transactional fields/envelopes.
+
+6. **Cleanup:** source A–E use the unchanged registered fixture cleanup; D's six readonly inventory checks close the owner, close the readonly SQLite handle in finally, then reopen on the same port. S uses the existing service/owner/directory cleanup. New RU cleanup records primary and cleanup errors independently, closes the child, removes its directory and reports exit/absence. The installed TX case reuses `withInstalled`/`finishObservation`, which retains primary and cleanup failures. No broad historical lifecycle refactor is introduced. Actual PID, directory and port-probe absence still must be measured by the supervisor; static cleanup code is not evidence of successful cleanup.
+
+## Independent selective workload check
+
+The source loops/call sites expand to A27 (18POST/9GET), B16 (13POST/3GET), C13 (10POST/3GET), D18 (12POST/6GET), E6 (1POST/4GET/1HEAD): **80 wire exchanges across five cases**, five store directories, eleven owner/serving-listener openings and six readonly SQLite inventory handles. Counts include all D reopen instances. There is no table-expanded extra test in these five module-scope cases.
+
+S is one selected existing case with six direct `handler.handle` calls, one owner/service fixture and no wire listener. Q is one selected existing catalog citation case with no service. RU adds one case, six exchanges (4POST/2GET), one emitted child/owner/directory, one serving listener and one already-closed auxiliary availablePort probe.
+
+The saved command-restoration derivative (`a161069337888b3605f453ed67af8c1eb50abb6b6f3f9d3758c8787668d1bb58`) restores only the removed block; A's first actual command must fail its named200 oracle with500/development minimum-position. Expected1/max27 exchanges. The receipt-root derivative (`ef665809f6821f8af08b61d00f821dcd5d1f9de1f50cb5cd95213fb120d40b0a`) bypasses only root minimum dispatch; E's first future receipt GET must fail its named503 oracle with200 and the original body. Expected2/max6 exchanges. Neither derivative was applied or executed by this reviewer. An earlier failure, full pass or different failure does not satisfy sensitivity.
+
+Thus the proposed source/control total remains **10 case executions (eight positive plus two derivatives),89 expected/max119 wire exchanges, nine directories,15 owner opens,15 listener lifetimes including one auxiliary probe, one emitted RU child, six readonly handles**. Expected method counts60POST/28GET/1HEAD; full maximum77POST/40GET/2HEAD. S's six in-process body texts are additional handler calls, not wire traffic. Fresh TX remains separately **one case,18 exchanges (8POST/9GET/1HEAD),one child/owner/directory/listener**; no hidden discovery, receipt-member read, restart or pagination request. Combined107 expected/max137 wire exchanges is arithmetic only, never permission to transfer allowance between cohorts.
+
+Independently checked the prospective request inventory (`requests.json` SHA256 `a313e590d9a5bcbb08985645cb852d7ef65f25450e675093477d47fa2613947f`) against these source calls and recomputed its declared UTF-8 body lengths without importing product modules. It explicitly labels variable receipt/context values symbolic. Existing test/request/launch/supervisor and source/configuration bounds remain unchanged. Broad files/matrices or extra probe cohorts are not covered by this review disposition.
+
+## Limits of this review
+
+No tests, builds, typechecks, formatting, dependency setup, services, product imports, package operations, control application, source edits or network reads were performed; the only network action was the existing role-session guard immediately before this report write. Source inspection included supporting submission, set/resource/alias evaluation, runtime fixtures, installed launch/request/configuration helpers and receipt minimum dispatch. This finds the patch suitable for the root's bounded measured source gate, not proven correct by execution. Root must reconcile independent council, inspect actual results/cleanup and separately release fresh installed proof and CI. The installed helper's fingerprint report does not retain full wire bodies or attest source provenance; exact assertions and supervisor package/source binding must supply their stated evidence. No full-profile admission, release or Preview2 claim follows.

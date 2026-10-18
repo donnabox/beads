@@ -1,0 +1,209 @@
+--- normalized-original-row/packages/conformance/test-support/transactional/manifest-v1.json
++++ normalized-current-row/packages/conformance/test-support/transactional/manifest-v1.json
+@@ -333,8 +333,7 @@
+         ]
+       },
+       "target": {
+-        "binding": "scope",
+-        "path": "beads/a"
++        "binding": "subject"
+       }
+     },
+     {
+@@ -427,8 +426,7 @@
+         ]
+       },
+       "target": {
+-        "binding": "scope",
+-        "path": "beads/a"
++        "binding": "subject"
+       }
+     },
+     {
+@@ -477,7 +475,7 @@
+           "name": "bdp-scope-position"
+         },
+         {
+-          "absent": false,
++          "equalsResponse": "initial-get",
+           "id": "etag",
+           "kind": "header",
+           "name": "etag"
+@@ -505,8 +503,7 @@
+         ]
+       },
+       "target": {
+-        "binding": "scope",
+-        "path": "beads/a"
++        "binding": "subject"
+       }
+     },
+     {
+@@ -555,7 +552,7 @@
+           "name": "bdp-scope-position"
+         },
+         {
+-          "absent": false,
++          "equalsResponse": "initial-get",
+           "id": "etag",
+           "kind": "header",
+           "name": "etag"
+@@ -603,8 +600,7 @@
+         ]
+       },
+       "target": {
+-        "binding": "scope",
+-        "path": "beads/a"
++        "binding": "subject"
+       }
+     },
+     {
+@@ -653,20 +649,8 @@
+           "name": "bdp-scope-position"
+         },
+         {
+-          "absent": false,
+-          "id": "etag",
+-          "kind": "header",
+-          "name": "etag"
+-        },
+-        {
+           "id": "body-absent",
+           "kind": "body-absent"
+-        },
+-        {
+-          "absent": true,
+-          "id": "no-media",
+-          "kind": "header",
+-          "name": "content-type"
+         }
+       ],
+       "captures": [],
+@@ -687,8 +671,7 @@
+         ]
+       },
+       "target": {
+-        "binding": "scope",
+-        "path": "beads/a"
++        "binding": "subject"
+       }
+     },
+     {
+@@ -737,20 +720,8 @@
+           "name": "bdp-scope-position"
+         },
+         {
+-          "absent": false,
+-          "id": "etag",
+-          "kind": "header",
+-          "name": "etag"
+-        },
+-        {
+           "id": "body-absent",
+           "kind": "body-absent"
+-        },
+-        {
+-          "absent": true,
+-          "id": "no-media",
+-          "kind": "header",
+-          "name": "content-type"
+         },
+         {
+           "headers": [
+@@ -791,8 +762,7 @@
+         ]
+       },
+       "target": {
+-        "binding": "scope",
+-        "path": "beads/a"
++        "binding": "subject"
+       }
+     },
+     {
+@@ -880,8 +850,7 @@
+         ]
+       },
+       "target": {
+-        "binding": "scope",
+-        "path": "beads/a"
++        "binding": "subject"
+       }
+     },
+     {
+@@ -978,8 +947,7 @@
+         ]
+       },
+       "target": {
+-        "binding": "scope",
+-        "path": "beads/a"
++        "binding": "subject"
+       }
+     },
+     {
+@@ -1502,8 +1470,7 @@
+         ]
+       },
+       "target": {
+-        "binding": "scope",
+-        "path": "beads/a"
++        "binding": "subject"
+       }
+     },
+     {
+@@ -1596,8 +1563,7 @@
+         ]
+       },
+       "target": {
+-        "binding": "scope",
+-        "path": "beads/a"
++        "binding": "subject"
+       }
+     }
+   ],
+@@ -1607,8 +1573,8 @@
+   "cleanup": {
+     "resetFixture": true
+   },
+-  "id": "read.http.conditional-reads",
+-  "requiredProfile": "read",
++  "id": "transactional.http.conditional-reads",
++  "requiredProfile": "transactional",
+   "setup": {
+     "fixture": "reference-transactional-v1",
+     "requires": [
+--- normalized-original-row/packages/conformance/test-support/transactional/coverage-v1.json
++++ normalized-current-row/packages/conformance/test-support/transactional/coverage-v1.json
+@@ -86,9 +86,7 @@
+         "mismatch-get:present-bdp-authorization-view",
+         "mismatch-get:present-bdp-scope-position",
+         "mismatch-get:position",
+-        "mismatch-get:etag",
+         "mismatch-get:body-absent",
+-        "mismatch-get:no-media",
+         "mismatch-head:status",
+         "mismatch-head:request-headers",
+         "mismatch-head:request-body",
+@@ -97,9 +95,7 @@
+         "mismatch-head:present-bdp-authorization-view",
+         "mismatch-head:present-bdp-scope-position",
+         "mismatch-head:position",
+-        "mismatch-head:etag",
+         "mismatch-head:body-absent",
+-        "mismatch-head:no-media",
+         "mismatch-head:get-metadata",
+         "anonymous-get:status",
+         "anonymous-get:request-headers",
+@@ -201,10 +197,10 @@
+         "current-head:body-absent",
+         "current-head:get-metadata"
+       ],
+-      "scenario": "read.http.conditional-reads"
++      "scenario": "transactional.http.conditional-reads"
+     }
+   ],
+-  "id": "read.http.conditional-reads",
+-  "reason": "Bounded inherited Read conditional GET/HEAD and ordinary 401/404 precedence on the same actual mutable Transactional configuration; complete current Resources equal captured receipt postimages and independent wire oracles check validators, revision changes and HEAD metadata. HEAD parity is supporting prose, not a second coverage binding. Whole contract remains unqualified: cold discovery, date/validator combinations, other Read surfaces, policy transitions, S1/G2 and full-profile admission remain omitted. Full dynamic receipt/postimage equality is an independent app wire oracle, not a canonical manifest assertion. HTTP captures are URL-only; no body capture capability is claimed.",
++  "id": "transactional.http.conditional-reads",
++  "reason": "Partial Transactional conditional-read evidence: ordinary authentication and missing-Resource refusals precede conditional shortcuts; 304 and 412 are bodyless and carry current Scope context. Supporting GET/HEAD observations compare validators before and after mutation. The independent app wire oracle compares complete current Resources with observed receipt postimages; there are no portable object captures. Uses wildcard If-None-Match and an independently verified nonmatching literal tag. Whole contract remains unqualified: minimum-position refusal, epoch/view mismatch, erasure/expiry, durable checkpoint behavior, optional-no-validator behavior, observed matching specific request tags, If-Match:* success and date combinations are not covered. The separate Read conditional requirement remains unplanned; no cross-credit or public profile claim follows.",
+   "wholeContract": false
+ }

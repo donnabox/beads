@@ -1,0 +1,92 @@
+{
+  "decision": "accepted with explicit limitations; no blocking findings",
+  "head": "1f9cb46c42fa69a09ac847f57e47bc96390aea6f",
+  "tree": "80a6fe0605698e18f9504432407e7943e1f665b4",
+  "native": "Root fullsixpath review and independent source/control/installed acceptance",
+  "claude": {
+    "stdoutSha256": "fd8a88b32778bf269e0701e5f09467e19b236db995e6be1968e525a3955bf31d",
+    "exitSha256": "4ce71d124d14852c7a4be6539fce51806bfb914a370a11b50c471004fe57f5e3",
+    "completeNumberedFindings": 13,
+    "originalReview": "Incomplete output retained separately; not treated as approval"
+  },
+  "dispositions": [
+    {
+      "finding": 1,
+      "decision": "Rejected factual premise",
+      "basis": "Both types already imported at test16/28. Root read tsconfig.check including tests and tsconfig.base without erasableSyntaxOnly; source typecheck/build, fresh final build and exactCI typecheck/build passed. Event error44\u201351 has identical supported constructor pattern."
+    },
+    {
+      "finding": 2,
+      "decision": "Accepted upstream invariant",
+      "basis": "readContext590\u2013598 returns frozen tuple, sole production checkpointPosition caller store1715. Strict tuple equality precedes isFrozen and rules outundefined. No class snapshot needed; no claim about arbitrary external caller objects."
+    },
+    {
+      "finding": 3,
+      "decision": "Accepted distinct test inputs",
+      "basis": "Source uses empty credential, installed uses absent header. Both actual401/contextless, not claimed identical raw wire. Keep finite approved cohort."
+    },
+    {
+      "finding": 4,
+      "decision": "Deferred diagnostic-only improvement",
+      "basis": "Abort followed by cancel may duplicate bound error. Neither success nor acceptance hides it; actual bounded cases passed. No production behavior affected; cancellation/failure remains failclosed."
+    },
+    {
+      "finding": 5,
+      "decision": "Accepted projected-record limitation",
+      "basis": "Source records omit conditional/auth field details. Pinned executed source binds the authored requests; records are not complete wire transcripts. No credential values should be persisted."
+    },
+    {
+      "finding": 6,
+      "decision": "Historical attribution retained",
+      "basis": "Committed text explicitly says at this draft checkpoint, preserving unexecuted authoring state. Current execution is recorded in root acceptances and PR. Thirty-four new capped exchanges means12source+12control+10installed; seven historical source reads remain uncapped. Do not relabel historical checkpoint."
+    },
+    {
+      "finding": 7,
+      "decision": "Accepted bounded sensitivity",
+      "basis": "One emitted HTTP-forwarding omission control gives exactlyseven failures; producer paths separately covered by owner assertions. No claim of three independent mutation controls, no unnecessary additional executions."
+    },
+    {
+      "finding": 8,
+      "decision": "Unchanged ordering, limited claim",
+      "basis": "Future-token validation precedes minimum check as before. This repair only forwards observed context, not evidence a minimum was satisfied. Combined minimum case not claimed and no new semantic ruling."
+    },
+    {
+      "finding": 9,
+      "decision": "Existing build-first test convention",
+      "basis": "Sibling installed tests require build and repository context at collection. Actual workflow builds beforetest; isolatedconsumer is product target, not test-runner checkout. No new skip to hide missing artifacts."
+    },
+    {
+      "finding": 10,
+      "decision": "External provenance gate accepted",
+      "basis": "Test always claimEligiblefalse and non-attesting. Root independently binds clean final commit,668inputs/312outputs,313archiveinstalledmembers and8packageclosure. Override validated by binding; no claim dirtyworkspace self-attests source."
+    },
+    {
+      "finding": 11,
+      "decision": "Explicit coverage limits",
+      "basis": "Fresh installed witness holdspos1; source witness provespos1\u2192pos2 and retainedcontext. Fragment-specific source row not added; no universal parser branch coverage claimed."
+    },
+    {
+      "finding": 12,
+      "decision": "Retain deliberate literal pins",
+      "basis": "Exact125/153-byte fixture lengths are intentional reviewed input bindings alongside caps. A changed literal should require deliberate remeasurement, not silently broaden frozen workload."
+    },
+    {
+      "finding": 13,
+      "decision": "Closed by actual source inventory",
+      "basis": "Only production caller is transaction-store readChanges1715; definition plus directtests otherwise. Owner captures frozen currenttuple. Eventclass declarescontext; handler tail applies Read semantics. No structural context-in-error dispatch found; actual installed execution proves required header/binding parsing."
+    }
+  ],
+  "evidence": {
+    "root-native-code-review.md": "7184936efc82f646a1670121135a85294fe0661780975c003404d5d760b0bb62",
+    "root-source-acceptance.json": "45a03a0f71f1017694861b8e127d9ad664f22df156118522c33aeac35b76739b",
+    "root-control-acceptance.json": "cee750da9f6363ae0d44fbbc10b45e1a687a76ce8a97f56ce556dc079ae9e9e5",
+    "root-installed-acceptance.json": "79528c16e0c092ea342c7fdfbc7116375165ffaee5302db32b6eaf9cf21737db",
+    "final-source.json": "a23661de87ca60b57917371b7d7e6b08a16992c6da71766a313dc53d69d62995"
+  },
+  "scope": "No product edits required by dispositions; no profile qualification/public activation.",
+  "authorSourceDispositions": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/claude-code-supplement/source-dispositions.md",
+    "sha256": "a418418f6247f20c6ed240203b98abe1c13ce72a89d992903a5a782dfe68f02b"
+  },
+  "rootReadback": "Root read all13 source dispositions in full after independent dispositions; no disagreement."
+}

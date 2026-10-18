@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-parser-refusal/node_modules/vitest/vitest.mjs",
+    "run",
+    "packages/server/src/transaction-http.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-successor-1/run/focused-source.results.json",
+    "--testNamePattern",
+    "^(?:rejects\\ collection\\ parser\\ errors\\ before\\ unknown\\ minimum\\ support\\ checks|preserves\\ parser\\ refusal\\ parity\\ on\\ noncollection\\ and\\ excluded\\ query\\ routes|preserves\\ receiving\\ and\\ HTTP\\ error\\ precedence\\ for\\ parser\\ refusals|waits\\ for\\ current\\ Resources\\ and\\ initial\\ collections\\ with\\ unknown\\ minima\\ and\\ preserves\\ residual\\ refusals|preserves\\ concrete\\ query\\ syntax\\ failures\\ and\\ accepts\\ the\\ reserved\\ genesis\\ minimum|serves\\ canonical\\ current\\ Type\\ and\\ incident\\ minimums\\ with\\ truthful\\ context\\ and\\ parser\\ boundaries|rejects\\ malformed\\ minimum\\ tuples\\ across\\ read\\ routes\\ without\\ entering\\ the\\ actual\\ owner)$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-parser-refusal",
+  "head": "d4f3f4be88c7837b71d6646518ca3589d464ba3d",
+  "tree": "d71a5753aef97444db36d044a74d3f99c168dc29",
+  "sourceIdentity": "1a3caa86808b72da3488c1a9fe34f05ca7b7ce244b75d7d537137b37fe5594ae",
+  "rootGateSha256": "22476efa4e07a8af6728b7ef104dbcdd1a0a42db17e4b9d8cd23763bd2346d5f",
+  "outerSeconds": 120,
+  "automaticRetries": 0,
+  "overrides": {}
+}

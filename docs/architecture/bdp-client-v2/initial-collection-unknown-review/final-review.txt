@@ -1,0 +1,121 @@
+## Findings
+
+Scope note up front: this is a **static read only** — no tests, builds, imports or shell commands were run, and I did not verify the two pinned SHA‑256 digests (that requires command execution). I did confirm that the four files on disk at `HEAD 2dfd2c6` + working tree match the patch's post‑image at every cited range, so the "frozen four files" are what I reviewed.
+
+---
+
+## Blockers
+
+### BLOCKER‑1 — Formatter violation: new line exceeds `lineWidth: 100`
+**File/line:** `packages/server/src/transaction-read.test.ts:618`
+
+```ts
+      { operation: "createLink", id: "links/out", type: link, source: "beads/a", target: "beads/b" },
+```
+
+**Issue:** This line is **101 characters**, over `biome.json:14` (`"lineWidth": 100`). Biome/Prettier counts the trailing array separator in its fits check — confirmed empirically by `packages/server/src/transaction-dependencies.test.ts:404`, which sits at *exactly* 100 **including** its trailing comma and stays flat. The object is breakable, so the formatter will expand it. It is also the only breakable `>100` line in any of the four changed files (every other `>100` line in all four is an atomic `it("…")` title or template literal, which the formatter cannot break).
+
+**Impact:** `pnpm format:check` (`biome format .`, `package.json:19`) exits non‑zero, failing the planned static/build gate. No behavioral impact. The report's "Source diff whitespace check passed" does not cover print width, and the report explicitly states the formatter was not executed.
+
+**Smallest correction:** either accept the formatter's expansion
+
+```ts
+      {
+        operation: "createLink",
+        id: "links/out",
+        type: link,
+        source: "beads/a",
+        target: "beads/b",
+      },
+```
+
+or shorten the identifier to keep one line (`id: "links/b"` → 99 characters).
+
+### BLOCKER‑2 — Inline comment misattributes the mechanism for two of its four cases
+**File/line:** `packages/server/src/transaction-http.test.ts:4899` (comment) covering the loop at `4900–4911`
+
+```ts
+  // Parser failures still hit the early unknown-token gap; this is an excluded residual.
+  for (const suffix of ["types/", "beads/a?view=links", "beads/?limit=0", "beads/?limit=1&limit=2"]) {
+```
+
+**Issue:** Only two of the four suffixes are parser failures at the early gate:
+
+| suffix | actual mechanism |
+|---|---|
+| `beads/?limit=0`, `beads/?limit=1&limit=2` | `requestFromUrl` → `invalidParameter()` (`read-request.ts:260`, `read-request.ts:310`) → early gate `transaction-http.ts:583–587` → `developmentGap("minimum-position")` |
+| `types/` | **not** a parser failure — parses to `{kind:"collection",collection:"types"}`, classified `"strict"` by `currentReadMinimumKind`, so it hits the *same* early gate via the second disjunct |
+| `beads/a?view=links` | **not the early gate at all** — parses to `{kind:"bead-links",…}`, classified `"missing"`, passes `transaction-http.ts:583–591`, **enters the owner**, and fails *late* with `TransactionMinimumUnsupported` from `checkCurrentReadMinimum(…, waitable=false)`, rendered by the handler catch at `transaction-http.ts:647–648` |
+
+The assertions themselves are all correct (500 / `minimum-position` / no `bdp-scope-position` / empty body / no added wait — I traced each). It is the stated cause that is wrong, in a repo whose accepted plan and disposition both insist on naming residual mechanisms precisely ("add two **named** parser residual checks"; "Keep `minimum-position` and `minimum-position-route` distinct").
+
+**Impact:** Misleading record of which residual each case proves; an unchanged‑behavior claim ("still hit the early gap") that is false for `beads/a?view=links`, which actually reaches the owner and is refused after classification.
+
+**Smallest correction:** reword to cover both mechanisms, e.g.
+```ts
+  // Excluded residuals: strict/parser-rejected routes stop at the early unknown-token gap,
+  // and the incident-Link route is refused after classification. Both keep the private label.
+```
+
+---
+
+## Verified as correct (no action)
+
+Production change — `packages/server/src/transaction-read.ts`
+- New `"initial-collection"` branch (`101–106`) preserves descriptor discipline, and is only ever reached for data‑only requests: `minimumFor.perform` gates on `dataOnlyReadRequest` (`307`) and `isCurrentTransactionMinimumRead` (`311`) *before* classifying (`313`), so an accessor `continuation` can never be misread as `undefined`.
+- `types` correctly excluded → stays `"strict"`; `?cursor=` → `continuation` defined → `"strict"` (S1 residual preserved).
+- 404 shortcut rewritten literally as `kind === "resource" || kind === "missing"` (`216`); the initial‑collection fall‑through uses `waitable=false`, which is unreachable for beads/links (`authority-read.ts:814–838` has no `notFound()` for those collections) and defensively equivalent to strict — matching plan §"Source delta" and disposition item 2.
+- Waitable predicate (`234–238`) only affects the unrecognized‑position branch of `checkCurrentReadMinimum` (`transaction-consistency.ts:122–130`); recognized future positions still take the `behind` path unchanged.
+- `ReturnType<typeof currentReadMinimumKind>` derivation is sound; only two call sites exist repo‑wide (`transaction-read.ts:313`, `transaction-http.ts:585`), and the symbol is not re‑exported from `packages/server/src/index.ts`.
+- **No continuation allocation is structurally guaranteed**, not merely asserted: `checkSourceCondition` runs inside the owner entry (`authority-read.ts:983–993`) and `finish` — which calls `pagination.firstPageWithContext` (`885`) — runs only after the entry returns (`1017`).
+- HTTP admission (`transaction-http.ts:574–591`) is byte‑identical and automatically admits the new kind; `limit=33` → 413 and `selector=$[?` → 400 arrive via the pre‑existing materialized‑refusal early return (`transaction-read.ts:212`) with full context headers, exactly as the disposition describes.
+- Spec basis holds: 5841–5843 permits the bounded‑wait option; 5844–5849 is not generalized; 5851's incident‑Link carve‑out is respected (bead‑links stays non‑waitable).
+
+Direct callback — `transaction-read.test.ts:614–722`
+- `budgetMs: 7` with `now: () => tick` / `wait: tick += ms` yields exactly 3 attempts, waits `[5, 2]`, tick delta 7 (traced through `waitForTransactionMinimum`, `transaction-consistency.ts:155–177`); 6 combos → 18 entries / 12 waits.
+- One owner entry per attempt is guaranteed by `prepared.enter = entry.withRead.bind(entry)` (`authority-read.ts:409`) and the single‑call guard (`979–980`).
+- `{...f.store, withRead}` is safe (store methods are closures, not `this`‑dependent) and matches eight existing precedents in the same file (e.g. `2315–2321`).
+- `maximumItems/maxPageItems: 32` is required by `transaction-service.ts:111–115` (`receiptMaximumItems`), matching existing fixtures at `884–889` / `2326–2330`.
+- Raw owner probe returns `{kind:"read",value:"pos-1"}` — a *reentrant* hold would return `{kind:"entry-refused",…}` and fail `toEqual`, so this is a real availability oracle (precedent `502–505`).
+- Pre‑abort: 0 entries / 0 waits (`signal?.aborted` checked before the first attempt, `transaction-consistency.ts:161`); in‑flight abort: 1 entry / `[5]` / `ownerChecks` 13. `.rejects.toThrow("abort")` matches `ScopeServerOperationAbortedError`'s message ("the BDP server operation was aborted", `read-request.ts:137`).
+- The `{kind:"collection", collection}` union‑discriminant literal typechecks — same pattern already at `754–765`.
+
+HTTP callback — `transaction-http.test.ts:4819–4942`
+- 8 waits is exact under the unchanged `budgetMs: 2` seam (1 wait per timeout): 2 Resource + 4 collection GET/HEAD + 2 token forms. The 500 residuals, 413/400 refusals and three missing/hidden 404s add none (`resource-not-found` shortcut returns before the condition; materialized refusals early‑return).
+- `links/?limit=1` is empty yet still waits — correct, and consistent with the existing empty‑collection direct test.
+- HEAD metadata: 503 is `application/problem+json`, so `applyReadHttpSemantics` skips the conditional branch and takes `read-http.ts:42–46`, setting `content-length` from `stringifyJsonValue(body)`; `transaction-runtime.ts:93` does not overwrite it because the body was stripped. GET's own length comes from the same serializer. Precedent at `3097–3117`.
+- Exact `toEqual` problem body matches `problem()` + `readProblem("temporarily-unavailable")` and the pre‑existing `toEqual` at `4846–4851`.
+- The post‑`replaceAuthorizationPolicy` loop still expects `waits === 8` correctly: those three reads hit the `resource-not-found` shortcut (kinds `resource`/`missing`), unaffected by the rewrite.
+- No cross‑test regression found: I checked every repo test that sends a lexically valid non‑position token (`transaction-http.test.ts:1793`, `1933`, `2193`, `3130`, installed `895`, snapshot `474`) — all are Resource/alias/receipt/snapshot paths, none an initial beads/links collection.
+
+Installed callback — `transactional-collection-minimum-installed.test.ts:506–543`
+- Exchange arithmetic confirmed from source: existing callback is **38** (3 empty/genesis + 1 seed + 12×2 per collection + 2 filters + 2 refusals + 1 anonymous + 5 retained tail) → **42** with the 4 added; one child/store; under the `80` cap at `309`.
+- `elapsedMs >= 1000` is sound: the installed process passes no seams (`transaction-installed-process.ts` → `transaction-installed.ts:8` → `startTransactionRuntime(captured)`), so `minimumReadBudgetMs: 1000` (`transaction-runtime-configuration.ts:112`) and the real `performance.now()`/`delay` waiter apply, and the client‑measured interval strictly contains the server's 1000 ms budget.
+- `context(timeout, headers)` correctly expects `pos-1` (only one seed write precedes this block; `changed` is later at `602`).
+- `opaqueGetBody` is re‑initialized per collection (`506` is inside the `419–561` loop). `target` (`?limit=32&type=…`) is parser‑ and control‑valid, so it genuinely reaches the waiter.
+- Conditionals genuinely compete: `if-none-match: *` → 304 and `if-match: "wrong"` → 412 on a successful collection read (no ETag; `read-http.ts:52–63`), as the existing block at `472–481` proves — so the 503 precedence assertions are meaningful.
+
+---
+
+## Optional improvements
+
+**OPT‑1 — `expect(allocations).toBe(0)` is an unanchored oracle** (`transaction-read.test.ts:694`, `718`).
+Nothing in the new callback ever invokes `generateOpaqueToken`, so a mis‑wired pagination seam would make the assertion vacuously true. This matters specifically here because `createTransactionService` rebinds and freezes a *copy* of `pagination` (`transaction-service.ts:84–99`), i.e. the seam is not the object the test handed in. The 2‑beads/2‑links + `limit: 1` setup exists precisely so a successful page *would* allocate, but no successful page is ever read. Compare the existing `818–873` callback, which does anchor its count. Smallest correction — append after `expect(ownerChecks).toBe(13)` (adds 1 entry, 0 waits, after every count assertion):
+
+```ts
+      const served = await service
+        .readAtMinimum(principal, { ...minimum, minimumPosition: "pos-1" })
+        .perform(request);
+      expect(served).toMatchObject({ kind: "success" });
+      expect(allocations).toBeGreaterThan(0);
+```
+
+**OPT‑2 — uneven 503‑rendering oracle for the two alternate tokens** (`transaction-http.test.ts:4886–4897`). The four collection pairs assert `content-type` and `content-length`; the `pos-01` / `pos-9007199254740992` requests assert neither. The plan only required body/context for these, so this is discretionary; adding `expect(response.headers.get("content-type")).toBe("application/problem+json")` makes the eight timeout responses uniformly oracled at zero cost.
+
+**OPT‑3 — `toBeLessThan(5000)` is effectively dead** (installed test `:515`). `requestTimeoutMs: 5000` (`:257`) aborts the exchange before a 5000 ms response can be observed, so a slow server surfaces as a transport throw rather than this assertion. If you want a diagnosable upper bound, use a value inside the executor budget (e.g. `toBeLessThan(4000)`); otherwise it is harmless documentation of the existing ceiling.
+
+**OPT‑4 — installed evidence covers only the filtered target.** All four added exchanges reuse `target` from `:420` (`?limit=32&type=…`). The plan sanctioned this, and the direct/HTTP callbacks cover the unfiltered form, but swapping one of the four to `${scope}${collection}/` would give an unfiltered installed witness at no extra exchange.
+
+---
+
+No further actionable findings. All numeric claims in `report.md` and `callback-selection.json` that are statically checkable — 18 HTTP requests, 8 HTTP waits, 18 attempt entries / 12 waits / 13 raw owner checks / 0 allocations, 38→42 installed exchanges, 1000 ms real installed budget, unchanged 80/90 s/120 s/5 s bounds — reconcile with the source I read. Nothing here authorizes execution, integration, publication or profile qualification, and none of the above is an observation of a test run.

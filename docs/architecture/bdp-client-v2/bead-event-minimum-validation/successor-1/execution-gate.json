@@ -1,0 +1,59 @@
+{
+  "released": true,
+  "rootPlanAccepted": true,
+  "rootExactSourceAccepted": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "mode": "final",
+  "approvedStages": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "review-focused-source",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "event-bead-minimum-external",
+    "review-event-bead-minimum-external",
+    "event-minimum-external",
+    "review-event-minimum-external",
+    "event-missing-context-external",
+    "review-event-missing-context-external"
+  ],
+  "staticValidationAuthorized": true,
+  "nativeCodeReviewDisposed": true,
+  "actualClaudeReviewDisposed": true,
+  "implementationIndexSha256": "964064ced637bb3e2d92cd2bbf992b717f4184be3436917295754b236811a942",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/source-binding.json",
+    "sha256": "ab7eb73718d4f1d00e53c8eee3308f5b218bf89312c0c7cfe7d3fc9b38950d5b"
+  },
+  "baseTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/base-tools.json",
+    "sha256": "df9c2ad463d91b86b4f6d6de78a5fb6c64d27a9491c0cca1a6ced22792f8b7dc"
+  },
+  "workspaceTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/run/workspace-tools.json",
+    "sha256": "9f76539014b42745e98a3386b4b548c24330fb07a7d68b9a9a309a9c06982cad"
+  },
+  "rootDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/root-validation-disposition.json",
+    "sha256": "265eb0cb020ead50a404bb4b1fe60e97335da9c6ce0757410f77ab8695cf1dd8"
+  },
+  "consumerLockSha256": "ed327ba0705a91b40e34819726386a8a643bcbbb975208337dabf1994bfab926",
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/installed-provenance.json",
+    "sha256": "b3ffb52b766ca97af66daf6e01cb602b107683f9341bd3121c5abe7554203c3c"
+  },
+  "consumerInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/installed-consumer-inventory.json",
+    "sha256": "22168a6a4e0ca5b3b55d275c71f7c9ed5a7d901d108d15339294c7dcc0c21a86"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "basis": "67a2842e3f1918e70978f745587cf11eaf0df5a8",
+  "sourceBindingSha256": "6fbb249d21390520d77deaefaed9a8b3fbc8332bd05bacd9a7ba1d4206a81887",
+  "manifest": {
+    "sourcePath": "packages/conformance/matrices/read-update-v1.json",
+    "parentSha256": "c86b33535f25a1d117ce021a3bb70164f5635bdaee50758e3428c130ccc3227f",
+    "literalFile": "scenario.json",
+    "literalSha256": "88db362fa18ed2c448191206bef5b2c3fa3d2a5c850342f7306e2c95871b6d37",
+    "algorithm": "Find exact JSON raw_decode span start of scenarios object id read-update.singleton.create-bead. Insert json.dumps(parsed scenario.json, indent=2).replace(newline,newline+four spaces) plus comma,newline,four spaces immediately before that start. Preserve every other source byte.",
+    "resultSha256": "17ce6944eb41d85ecd4d2e337986449d1ba6f0ee2c50683252313c9e9bd61264",
+    "resultBytes": 3670718,
+    "verifiedExact": true
+  },
+  "coverage": {
+    "sourcePath": "packages/conformance/test-support/read-update-coverage-v1.json",
+    "parentSha256": "f8f0b001928f8488292403b57c973bd918cba224ef9e00fe0691482bf5cfac0c",
+    "literalFile": "coverage-row.json",
+    "literalSha256": "5939ddd5cef6b75fb8b9e8683fbeb24e980e5199af708693f8a5e7d30f13770f",
+    "algorithm": "Replace only exact JSON raw_decode span of rows object id read-update.discovery.operation-directory with json.dumps(parsed coverage-row.json,indent=2).replace(newline,newline+four spaces). Preserve every other byte.",
+    "resultSha256": "85b717f1817d8ea295d0a7c51f8914bdfb942d1786d414924d3d5f80be7cd10a",
+    "resultBytes": 718307,
+    "verifiedExact": true
+  },
+  "limitation": "Data-only reconstruction instructions, not execution or formatter output. Verify hashes after restore; committed Git object availability is required.",
+  "preservation": {
+    "baselineRawObjects": 49,
+    "continuationRawObjects": 5,
+    "otherCoverageRawObjects": 129,
+    "wholeParentManifestReconstructed": true,
+    "wholeParentCoverageReconstructed": true,
+    "requestBodiesAndInputsUnchanged": true
+  },
+  "originalReviewBasis": "73fc0daed2e5fa6843e581de9bf7a46e519562ab"
+}

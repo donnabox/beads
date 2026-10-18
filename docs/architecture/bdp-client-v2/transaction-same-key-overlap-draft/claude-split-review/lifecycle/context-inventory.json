@@ -1,0 +1,107 @@
+{
+  "candidate": "18f5428686dd84fb139c9dbbcbe39d5958012323",
+  "parent": "98c600767e8e91a79e109cb741beb91e23b9bebe",
+  "testRanges": [
+    [
+      1,
+      530
+    ],
+    [
+      638,
+      649
+    ],
+    [
+      650,
+      709
+    ],
+    [
+      715,
+      718
+    ],
+    [
+      727,
+      730
+    ],
+    [
+      768,
+      787
+    ],
+    [
+      788,
+      958
+    ]
+  ],
+  "context": {
+    "scripts/transaction-installed-observation.mjs": {
+      "sha256": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+      "ranges": [
+        [
+          1,
+          97
+        ]
+      ],
+      "bytes": 3264
+    },
+    "packages/server/src/transaction-installed-configuration.ts": {
+      "sha256": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+      "ranges": [
+        [
+          1,
+          67
+        ]
+      ],
+      "bytes": 2942
+    },
+    "packages/server/src/transaction-installed.ts": {
+      "sha256": "afddc6b0304fee4762c79e40ac6610a281ca8791928d8f779a900a7f6eac881a",
+      "ranges": [
+        [
+          1,
+          22
+        ]
+      ],
+      "bytes": 1112
+    },
+    "packages/server/src/transaction-installed-process.ts": {
+      "sha256": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7",
+      "ranges": [
+        [
+          1,
+          77
+        ]
+      ],
+      "bytes": 2630
+    },
+    "apps/bdptest/test-support/transactional-execution-binding.ts": {
+      "sha256": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+      "ranges": [
+        [
+          1,
+          91
+        ]
+      ],
+      "bytes": 7378
+    },
+    "packages/server/src/transaction-runtime.ts": {
+      "sha256": "77954f0a85029d76443feac54cd53cda4339ffc126660ace5a9f5af92466c573",
+      "ranges": [
+        [
+          104,
+          142
+        ]
+      ],
+      "bytes": 16173
+    }
+  },
+  "omitted": "Production modules outside supplied excerpts, full auxiliary schema-reference closure, unrelated tests/dependencies, package-install implementation, prior historical plans and runtime outcomes. Existing native full-source review is separate; no missing supplied context constitutes proof of a defect.",
+  "counterpart": {
+    "testRanges": [
+      [
+        531,
+        787
+      ]
+    ],
+    "documentation": "Complete appended 21 lines; parent document prefix byte-identical",
+    "responsibility": "Receipt/schema/current-context acceptance, dispatch assertions, two-key negative sensitivity and prerequisite ordering, pending outcomes, replay/full Resource/Event equality and honest claim boundary. Inspect shared transport/report contracts for oracle visibility."
+  }
+}

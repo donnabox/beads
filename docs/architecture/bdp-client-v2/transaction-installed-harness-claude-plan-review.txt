@@ -1,0 +1,87 @@
+I verified the plan's claims against the frozen tree at `e2f1385`. Nothing was written, built, or executed.
+
+## Verified as stated
+
+250 selected obligations = 133 TX + 74 RU + 43 Read after 13 retirements (`profile-contract-selection.ts` + catalogs, recomputed); all four cohort row IDs exist in `transactional-v1.json`; `artifact-bundle.ts:103–123` RU-only cumulative gate and `:150–154` hard-coded `read-update-v1`; `runner.ts:2590–2600` non-Read v2 gate; `installed-reference.ts:12–73` payload closure incl. symlink refusal; `installed-reference-configuration.ts:173` fixes RU; `installed-reference-process.ts` inert-on-import, close-only, ready-field names; `transaction-runtime.ts:90–152` / `:264–318` and its return (`scope`/`listenUrl`/`targets`/`close`, no identity); `transaction-store.ts:506–518` literal view name as policy identity; 65,536-byte request limit, 2 MiB wire cap, 1 MiB artifact / 4 MiB cumulative manifest, 64 KiB IPC output; Node 24.16.0 / pnpm 11.20.0; no committed literal payload digest to reseal; the Read seal pins exact file paths, not directory listings.
+
+## Findings
+
+**1 — BLOCKER · `packages/server/src/transaction-runtime.ts:172` (+ `:121`)**
+The TX listener refuses any request whose `Host` ≠ the bound loopback authority. `packages/conformance/src/http-executor.ts:198,715` always derives `Host` from the request URL, and `:342` lists `host` in `RESERVED_FIELDS` so it cannot be authored. RU escapes this with `scope = "https://reference.invalid/acme/"` plus a separate dial route (`read-update-matrix.test.ts:53,148`); TX cannot. `:121` additionally forces an explicit Scope whenever `artifacts` is supplied, so the omitted-Scope loopback default is unavailable to a compiled-contract target.
+*Consequence:* under the plan's "stable canonical Scope", every request — operation POST, afterstate GET, Event page, receipt GET — returns 400 `malformed-request`. The entire first cohort is unexecutable as specified.
+*Fix:* decide explicitly between (a) Scope = `http://127.0.0.1:<pinned port>/<path>/`, dropping the "stable canonical Scope" claim and recording that `configurationIdentity` varies per run with the port, or (b) a configured-authority gate in the TX runtime as a separately reviewed change — and name which, in the dependency section, before sequencing item A.
+
+**2 — BLOCKER · `packages/conformance/src/transactional-catalog.test.ts:190–202`**
+That test enumerates every `matrices/*.json` and asserts `catalogId !== "transactional-v1"` and that no manifest binds any of the 133 TX IDs ("That absence is asserted here so it cannot erode silently"). Latent for H2: `read-update-catalog.test.ts:72–95` forbids any manifest but `read-update-v1.json` from binding RU rows; `numeric-model-catalog.test.ts:65–82` and `owned-wildcard-catalog.test.ts:68–85` require Read companion rows be bound only by `read-v1.json`.
+*Consequence:* "new TX fixture/manifest/coverage files under existing conformance directories" breaks the suite on first commit if the manifest lands in `matrices/`; the inherited-row expansion breaks three further guards. None of these files appear in "Files and ownership".
+*Fix:* state the manifest location. Recommend outside `matrices/` (e.g. `packages/conformance/test-support/transactional-v1.json`, carried by the source-only seam). If `matrices/` is chosen, list `transactional-catalog.test.ts` now and the three companion/RU guards for H2 as reviewed edits with the intent change written down. Note separately that `catalog/` is a closed set — `profile-contract-selection.ts:47–55` throws on any extra `.json` there.
+
+**3 — BLOCKER · `packages/server/src/transaction-store.ts:900` + `packages/conformance/src/runner.ts:1449,1016`**
+Receipt identity is `${scope}receipts/${randomUUID()}`. Every exact request re-validates its resolved URL against the frozen `routes` allowlist (`http-executor.ts:544–563`), snapshotted at run start (`runner.ts:1329–1345`) and hashed into `exactConfigurationDigest` (`:1362–1380`). Pre-flight skips unknown capture bindings (`:1425`), but request time does not.
+*Consequence:* observation 3's independent receipt GET, the page GET, and any server-allocated identity GET cannot be authored as exact HTTP actions. "Admitted as exact routes" is unachievable without changing the frozen-route/evidence-digest machinery; routing them through a programmable action moves response synthesis into harness code — exactly what the plan forbids.
+*Fix:* (i) supply explicit `id` on every created Resource (`transaction-batch.ts:423–427` accepts `input.id`) so afterstate GETs stay predeclarable; (ii) take the `batch.atomic-commit` / `batch.rollback` receipt assertions from the POST response body, which is a predeclared route; (iii) for `receipt.readable`, say plainly that it needs either a reviewed per-scenario route-admission change in `runner.ts`/`http-executor.ts` (and its effect on `exactConfigurationDigest`) or a raw-executor adapter recording the observation verbatim — and budget that decision in item A instead of calling it "a tiny TX-specific adapter".
+
+**4 — HIGH · unsupported dependency: `transaction-changefeed-plan.md:89`**
+G1's plan of record says `transaction-runtime.ts` is touched "only if fixture navigation needs the real private changes URL; **no listener architecture or installed profile factory change**."
+*Consequence:* the "Required runtime metadata seam — coordinate with G1" prerequisite has no owner and is in nobody's done-when list; sequencing items A and C are blocked on unscheduled work.
+*Fix:* either name the seam an H1-owned, separately reviewed edit to `transaction-runtime.ts` (stating the serialization rule against G1, since the plan elsewhere promises not to edit that file), or have it added to G1's scope before approving A.
+
+**5 — MEDIUM · `packages/conformance/test-support/profile-contract-plan.ts:262–272` and `:238–241,250–255`**
+`carrierBlocker` is computed from a hard-coded allowlist of RU-v2/read-v1 carriers, and the cumulative 4 MiB manifest budget is granted only when `profile === "read-update" && !history`; everything else is re-checked against the ordinary 1 MiB bound.
+*Consequence:* reusing `planProfileExecution` unchanged marks all 250 TX rows `carrier-unsupported` — misreporting readiness once the TX runner exists — and the TX manifest gets a different budget than the TX bundle factory grants. This file is absent from "Files and ownership".
+*Fix:* add it to the shared-edit list with a TX carrier branch and a matching cumulative-budget condition, plus a test that TX readiness is `ready-unexecuted`, not `carrier-unsupported`.
+
+**6 — MEDIUM · receipt pagination is unreachable; observation 3's continuation step is dead text**
+`transactionReceiptMaximum()` defaults to `TRANSACTION_MAXIMUM_OPERATIONS` = 32 (`transaction-store.ts:167`, `transaction-batch.ts:60–71`); the handler caps direct operations at the same 32 (`transaction-http.ts:110–119`); results are one entry per operation (`transaction-batch.ts:651`); page ranges exist only when `entries.length > receiptMaximumItems` (`transaction-store.ts:~545`).
+*Consequence:* results ≤ 32 ≤ page maximum always, so no receipt can paginate without the `receiptMaximumItems` seam the plan forbids. "Use enough small entries to traverse a real continuation under the production receipt bound" cannot be satisfied and contradicts the 8-operation fixture budget.
+*Fix:* remove the continuation attempt; record the paginated branch of `receipt.readable` and `transactional.receipt.pagination` as unobservable at production bounds, with that arithmetic stated, and keep "never permit the page assertions to skip silently" as a missing-row entry rather than an attempted action.
+
+**7 — MEDIUM · `packages/conformance/src/runner.ts:2578–2600`**
+The v1 gate fires only for `catalogId === "read-v1"`; the non-Read gate fires only for v2.
+*Consequence:* a privately produced TX bundle with a **v1** `transactional-v1` manifest and `profile: "transactional"` passes both public gates, so the negative control "pass TX through the public runner" would pass for the wrong reason.
+*Fix:* make the TX factory reject `manifestVersion !== 2` (mirroring `artifact-bundle.ts:185–187`) and add a control proving a v1 TX manifest is refused at the factory, not only at the runner.
+
+**8 — MEDIUM · `policyIdentity` vs `authenticationIdentity` cannot vary independently**
+The TX owner has no policy registry (`transaction-store.ts:506–518` fixes `development-all-visible` and `maximumEndpointMultiplicity: []`), `openTransactionStore` takes no policy/aggregate input (`transaction-runtime.ts:276–287`), and the only live policy variable is per-credential `canMutate` (`:101–111,194–201`) — which also belongs in the authentication preimage.
+*Consequence:* "The distinction must be documented and negative-tested" has no achievable input that moves one digest without the other; a constant-only policy preimage attests nothing about binding.
+*Fix:* document that TX `policyIdentity` hashes constants plus the principal→`canMutate` map and that the two are not independently variable at this runtime; replace the behavioural test with an injected-mismatch control, as RU already does (`read-update-matrix.test.ts:269`, `"0".repeat(64)`).
+
+**9 — MEDIUM · `transactional.receipt.readable` requires GET *and* HEAD**
+The row title is "Receipts are independently readable with GET and HEAD"; HEAD is served (`transaction-http.ts:204,426–428`, `transaction-runtime.ts:88`). The plan authors only GET and never records HEAD as unobserved.
+*Consequence:* a clause of a row the plan claims to exercise is silently dropped, against "keep every unimplemented observation visible".
+*Fix:* add the HEAD observation (served and cheap) or name it explicitly as the unobserved half.
+
+**10 — MEDIUM · `artifactIdentity` representation**
+`compileDevelopmentContracts` returns `identity: "development-schema5-<64hex>"` (`development-contracts.ts:144`); `bindServedProfileConfiguration` requires 64-hex (`profile-contract-plan.ts:136–142`); the established convention decodes the prefix rather than rehashing (`apps/bdptest/test-support/installed-contract-identity.ts`, whose regex is `^development-schema5-[a-f0-9]{64}$`).
+*Consequence:* "Return a separate contracts digest … if needed" invites a second digest where the existing decoder already works, and any differently shaped value is rejected by that helper.
+*Fix:* require the seam to return `contracts.identity` unchanged and have the harness decode it with `installedContractsDigest`; no new digest, no rehash.
+
+**11 — LOW · `artifact-bundle.ts:209–212` with `profile-contract-selection.ts:61–66,101`**
+The cumulative `catalogDigest` hashes `canonicalJson(selection.catalogDigests)`, which is the same five-file map for TX and RU (history off).
+*Consequence:* a TX bundle's artifact digest triple is byte-identical to an RU cumulative bundle's; only the report's `profile` and `manifestDigest` discriminate, weakening "mismatch … Scope/profile/fixture binding" as evidence.
+*Fix:* bind `profile`, `history` and a selected-ID-set digest into the TX preimage and assert it differs from RU's.
+
+**12 — LOW · observation 1 does use local references**
+Backward `@label` binding is implemented for the batch carrier (`transaction-batch.ts:252,423–427,905–918`), so create→update→link in one batch works; `transactional.batch.local-references` is a separate row and alias operands are refused whole-carrier (`:234–235`).
+*Consequence:* "creates a named Bead … a Link using the staged identities" alongside "local-reference variants … remain missing" reads as if no such mechanism is exercised, understating the cohort and blurring the row boundary.
+*Fix:* say the cohort exercises backward `@name` binding, and that pins, forward references and alias operands are what remain unobserved.
+
+**13 — LOW · `failed-retained` retention clause**
+`expiresAt` is `instant() + day` (`transaction-store.ts:1051`), but `retention.receipt` is never advertised — discovery is a 500 development gap (`transaction-http.ts:148,382–387`).
+*Consequence:* "retained for at least `retention.receipt`" has no advertised bound to compare against; the plan names expiry but not the missing advertised value.
+*Fix:* add the absent advertised-retention bound to that row's recorded gaps.
+
+**14 — LOW · reopen semantics are an unstated premise**
+`transaction-store.ts:494` runs `DELETE FROM receipts WHERE owner IS NOT NULL` on every open; `owner` is cleared on terminal transition (`:1098–1101`).
+*Consequence:* the reopen witness is correct but reads as an assumption; a reader cannot tell whether a pending receipt would survive.
+*Fix:* record that terminal receipts survive reopen by construction and pending/fenced ones are deliberately dropped, scoping the witness to terminal receipts.
+
+**15 — LOW · `scripts/smoke-executables.mjs:435–439`**
+The automatic deep-import denial covers only `installed-schema-*` and `transaction-*` dist modules. `installed-transaction-*.js` matches neither and must be added to the explicit specifier list at `:447–464` as well as the literal inventory at `:255–300`.
+*Consequence:* updating only the inventory would ship a resolvable private module.
+*Fix:* name the files `transaction-installed-*.ts` so the existing filter covers them, or add all four spellings (bare + `dist/*.js`) explicitly with an asserting test.
+
+**16 — LOW · every GET needs the operator credential**
+`transaction-http.ts:317` returns `unauthenticated` for all non-operation routes, so afterstate GETs, Event pages and receipt GETs all require authentication — unlike RU's anonymous reads.
+*Consequence:* an RU-shaped fixture with anonymous read actions yields 401s, and the anonymous negative control means something different here than in RU.
+*Fix:* state that the default credential handle applies to reads too, and that the anonymous control for TX reads expects 401 on routes RU serves anonymously.

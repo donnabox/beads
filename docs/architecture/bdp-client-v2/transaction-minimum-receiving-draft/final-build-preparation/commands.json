@@ -1,0 +1,21 @@
+{
+  "commands": [
+    {
+      "id": "build",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "build"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": [],
+      "workload": {
+        "cases": 0,
+        "http": 0,
+        "productChildren": 0
+      }
+    }
+  ]
+}

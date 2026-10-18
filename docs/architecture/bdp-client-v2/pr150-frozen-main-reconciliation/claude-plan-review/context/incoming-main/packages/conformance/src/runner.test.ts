@@ -1,0 +1,6311 @@
+import { createServer as createHttpServer } from "node:http";
+import { createRawHttpScenarioTarget } from "./raw-http-scenario-target.js";
+import { createHash } from "node:crypto";
+import { HttpTransportError } from "./http-executor.js";
+import { describe, expect, it, vi } from "vitest";
+import schemaBundle from "../../../specs/profiles/core/bdp-v0.schema.json" with { type: "json" };
+import readManifest from "../matrices/read-v1.json" with { type: "json" };
+import {
+  type ConformanceArtifactBundle,
+  type ConformanceFixture,
+  createConformanceArtifactBundle,
+  createFetchHttpExchangeExecutor,
+  createJsonSchemaValidator,
+  type ExecutableScenario,
+  type ExecutableScenarioManifest,
+  type HttpExchangeResponse,
+  parseExecutableScenarioManifest,
+  parseScenarioCatalog,
+  runConformanceMatrix,
+  serializeConformanceReport,
+  type ScenarioCatalog,
+  type ScenarioHarness,
+} from "./index.js";
+
+type RequestScenario = Extract<ExecutableScenario, { readonly requests: readonly unknown[] }>;
+
+function requestScenario(scenario: ExecutableScenario | undefined): RequestScenario {
+  if (scenario?.requests === undefined) throw new Error("expected a request-based scenario");
+  return scenario;
+}
+
+const citation = {
+  source: "docs/specs/bdp.md",
+  anchor: "#scope-discovery-and-human-documentation",
+  selectedText: "service-desc",
+};
+
+const testFixture = {
+  fixtureVersion: 1,
+  id: "reference-read-v1",
+  seed: 0,
+  capabilities: ["public-http"],
+  bindings: {},
+} as const satisfies ConformanceFixture;
+
+const encodeJson = (value: unknown): Uint8Array =>
+  new TextEncoder().encode(`${JSON.stringify(value)}\n`);
+
+function bindArtifacts(
+  catalog: ScenarioCatalog,
+  manifest: ExecutableScenarioManifest,
+  fixture: ConformanceFixture = testFixture,
+): ConformanceArtifactBundle {
+  return createConformanceArtifactBundle({
+    catalog: { bytes: encodeJson(catalog), label: "test-catalog.json" },
+    manifest: { bytes: encodeJson(manifest), label: "test-manifest.json" },
+    fixture: { bytes: encodeJson(fixture), label: "test-fixture.json" },
+  });
+}
+
+function replaceArtifacts(
+  base: { readonly artifactBundle: ConformanceArtifactBundle },
+  replacements: {
+    readonly catalog?: ScenarioCatalog;
+    readonly manifest?: ExecutableScenarioManifest;
+    readonly fixture?: ConformanceFixture;
+  },
+): ConformanceArtifactBundle {
+  return bindArtifacts(
+    replacements.catalog ?? base.artifactBundle.catalog,
+    replacements.manifest ?? base.artifactBundle.manifest,
+    replacements.fixture ?? base.artifactBundle.fixture,
+  );
+}
+
+function fixtureWithBindings(
+  base: { readonly artifactBundle: ConformanceArtifactBundle },
+  bindings: Readonly<Record<string, string>>,
+): ConformanceArtifactBundle {
+  return replaceArtifacts(base, {
+    fixture: { ...base.artifactBundle.fixture, bindings },
+  });
+}
+
+function inputs(
+  assertions: readonly Record<string, unknown>[] = [
+    { id: "status", kind: "status", equals: 204 },
+    { id: "body", kind: "body-absent" },
+  ],
+  headers: Readonly<Record<string, string>> = {},
+  fixture: ConformanceFixture = testFixture,
+) {
+  const catalog = parseScenarioCatalog({
+    catalogVersion: 1,
+    scenarios: [
+      {
+        id: "read.discovery",
+        title: "Scope discovery",
+        kind: "normative",
+        requiredProfile: "read",
+        requirements: [citation],
+      },
+    ],
+  });
+  const manifest = parseExecutableScenarioManifest({
+    manifestVersion: 1,
+    catalogId: "read-v1",
+    scenarios: [
+      {
+        id: "read.discovery",
+        requiredProfile: "read",
+        setup: { fixture: "reference-read-v1", requires: ["public-http"] },
+        applicability: { requires: [] },
+        requests: [
+          {
+            id: "scope",
+            method: "GET",
+            target: { binding: "scope" },
+            headers,
+            captures: [],
+            assertions,
+          },
+        ],
+        cleanup: { resetFixture: true },
+      },
+    ],
+  });
+  return {
+    artifactBundle: bindArtifacts(catalog, manifest, fixture),
+    declaredTargetLabel: "unit-test-target",
+  };
+}
+
+function actionInputs(
+  actions: readonly Record<string, unknown>[],
+  fixture: ConformanceFixture = testFixture,
+) {
+  const catalog = parseScenarioCatalog({
+    catalogVersion: 1,
+    scenarios: [
+      {
+        id: "read.discovery",
+        title: "Scope discovery",
+        kind: "normative",
+        requiredProfile: "read",
+        requirements: [citation],
+      },
+    ],
+  });
+  const manifest = parseExecutableScenarioManifest({
+    manifestVersion: 1,
+    catalogId: "read-v1",
+    scenarios: [
+      {
+        id: "read.discovery",
+        requiredProfile: "read",
+        setup: { fixture: "reference-read-v1", requires: ["public-http"] },
+        applicability: { requires: [] },
+        actions,
+        cleanup: { resetFixture: true },
+      },
+    ],
+  });
+  return {
+    artifactBundle: bindArtifacts(catalog, manifest, fixture),
+    declaredTargetLabel: "unit-test-target",
+  };
+}
+
+function harness(capabilities: readonly string[] = ["public-http"]): ScenarioHarness {
+  return { prepare: vi.fn(async () => ({ capabilities })), cleanup: vi.fn(async () => undefined) };
+}
+
+describe("black-box conformance runner", () => {
+  it.each([
+    { extension: {}, expected: "pass" },
+    { extension: { pointer: "https://archive.example/erased" }, expected: "fail" },
+    { extension: { pointer: null }, expected: "fail" },
+    { extension: { archivedAt: "https://archive.example/erased" }, expected: "fail" },
+  ])(
+    "observes erasure pointer disclosure in the shipped assertions: $extension",
+    async ({ extension, expected }) => {
+      const scenario = requestScenario(
+        parseExecutableScenarioManifest(readManifest).scenarios.find(
+          ({ id }) => id === "read.disclosure.gone",
+        ),
+      );
+      const erased = scenario.requests.find(({ id }) => id === "erased");
+      if (!erased) throw new Error("missing shipped erased disclosure request");
+      const result = await runConformanceMatrix({
+        ...inputs(erased.assertions.map((assertion) => ({ ...assertion }))),
+        scope: "https://scope.example/",
+        profile: "read",
+        seed: 0,
+        execute: async () => ({
+          url: "https://scope.example/",
+          status: 410,
+          headers: { "content-type": "application/problem+json" },
+          bodyText: JSON.stringify({
+            type: "https://github.com/gastownhall/bdp/problems/gone",
+            code: "resource-erased",
+            retry: "never",
+            traceId: "request-7",
+            ...extension,
+          }),
+        }),
+        harness: harness(),
+      });
+      expect(result.scenarios[0]?.state).toBe(expected);
+    },
+  );
+
+  it("preserves mixed action ordering while the runner owns assertions and captures", async () => {
+    const calls: string[] = [];
+    const runInputs = actionInputs([
+      {
+        id: "scope",
+        family: "http",
+        method: "GET",
+        target: { binding: "scope" },
+        headers: {},
+        captures: [],
+        assertions: [{ id: "status", kind: "status", equals: 200 }],
+      },
+      {
+        id: "list",
+        family: "client",
+        operation: "list",
+        input: { selector: "open" },
+        captures: [{ binding: "next", from: { kind: "json-pointer", pointer: "/next" } }],
+        assertions: [
+          {
+            id: "count",
+            kind: "json-pointer",
+            pointer: "/count",
+            exists: true,
+            equals: 1,
+          },
+        ],
+      },
+      {
+        id: "next",
+        family: "http",
+        method: "GET",
+        target: { binding: "next" },
+        headers: {},
+        captures: [],
+        assertions: [{ id: "status", kind: "status", equals: 204 }],
+      },
+    ]);
+    const result = await runConformanceMatrix({
+      ...runInputs,
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async ({ url }) => {
+        calls.push(`http:${url}`);
+        return {
+          url,
+          status: url.endsWith("next") ? 204 : 200,
+          headers: {},
+          bodyText: "",
+        };
+      },
+      actionExecutor: async ({ family, operation, scope, bindings, input }) => {
+        calls.push(`${family}:${operation}`);
+        expect(scope).toBe("https://scope.example/");
+        expect(bindings).toEqual({ scope: "https://scope.example/" });
+        expect(input).toEqual({ selector: "open" });
+        return { count: 1, next: "https://scope.example/next" };
+      },
+      harness: harness(),
+    });
+    expect(calls).toEqual([
+      "http:https://scope.example/",
+      "client:list",
+      "http:https://scope.example/next",
+    ]);
+    expect(result.scenarios[0]).toMatchObject({
+      state: "pass",
+      exchanges: [
+        { request: { id: "scope" } },
+        { request: { id: "next", url: "https://scope.example/next" } },
+      ],
+      actions: [
+        {
+          action: { id: "list", family: "client", operation: "list" },
+          output: { kind: "json" },
+          assertions: [{ id: "count", passed: true }],
+        },
+      ],
+    });
+  });
+
+  it("materializes target-specific programmable input from the bound fixture oracle", async () => {
+    const fixture = {
+      ...testFixture,
+      oracles: { actionInput: { relationshipRoles: [{ type: "types/blocks", role: "blocks" }] } },
+    } as const satisfies ConformanceFixture;
+    const runInputs = actionInputs(
+      [
+        {
+          id: "projection",
+          family: "client",
+          operation: "projection",
+          inputFixturePointer: "/oracles/actionInput",
+          captures: [],
+          assertions: [
+            {
+              id: "success",
+              kind: "json-pointer",
+              pointer: "/success",
+              exists: true,
+              equals: true,
+            },
+          ],
+        },
+      ],
+      fixture,
+    );
+    const result = await runConformanceMatrix({
+      ...runInputs,
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => {
+        throw new Error("HTTP was not expected");
+      },
+      actionExecutor: async ({ input }) => {
+        expect(input).toEqual(fixture.oracles.actionInput);
+        expect(input).not.toBe(fixture.oracles.actionInput);
+        return { success: true };
+      },
+      harness: harness(),
+    });
+    expect(result.scenarios[0]).toMatchObject({ state: "pass" });
+    expect(JSON.stringify(result)).not.toContain("types/blocks");
+  });
+
+  it("fails closed when a programmable action has no executor", async () => {
+    const result = await runConformanceMatrix({
+      ...actionInputs([
+        {
+          id: "list",
+          family: "client",
+          operation: "list",
+          input: {},
+          captures: [],
+          assertions: [{ id: "shape", kind: "json-pointer", pointer: "", exists: true }],
+        },
+      ]),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => {
+        throw new Error("HTTP must not run");
+      },
+      harness: harness(),
+    });
+    expect(result.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      category: "not-implemented",
+      actions: [{ executionError: { category: "not-implemented" } }],
+    });
+  });
+
+  it("records runner-owned programmable assertion failures", async () => {
+    const result = await runConformanceMatrix({
+      ...actionInputs([
+        {
+          id: "list",
+          family: "lifecycle",
+          operation: "restart",
+          input: {},
+          captures: [],
+          assertions: [
+            { id: "ready", kind: "json-pointer", pointer: "/ready", exists: true, equals: true },
+          ],
+        },
+      ]),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => {
+        throw new Error("HTTP must not run");
+      },
+      actionExecutor: async () => ({ ready: false }),
+      harness: harness(),
+    });
+    expect(result.scenarios[0]).toMatchObject({
+      state: "fail",
+      actions: [{ assertions: [{ id: "ready", passed: false }] }],
+    });
+  });
+
+  it("snapshots programmable output without invoking getters, toJSON, or leaking proxy errors", async () => {
+    const runOutput = async (output: unknown) =>
+      await runConformanceMatrix({
+        ...actionInputs([
+          {
+            id: "inspect",
+            family: "client",
+            operation: "list",
+            input: {},
+            captures: [],
+            assertions: [{ id: "shape", kind: "json-pointer", pointer: "", exists: true }],
+          },
+        ]),
+        scope: "https://scope.example/",
+        profile: "read",
+        seed: 0,
+        execute: async () => {
+          throw new Error("HTTP must not run");
+        },
+        actionExecutor: async () => output,
+        harness: harness(),
+      });
+
+    let getterCalls = 0;
+    const getterSecret = "getter-secret-must-not-leak";
+    const getterOutput = Object.defineProperty({}, "value", {
+      enumerable: true,
+      get: () => {
+        getterCalls += 1;
+        return getterSecret;
+      },
+    });
+    const getterResult = await runOutput(getterOutput);
+    expect(getterCalls).toBe(0);
+    expect(getterResult.scenarios[0]).toMatchObject({ state: "fail" });
+    expect(JSON.stringify(getterResult)).not.toContain(getterSecret);
+
+    let toJsonCalls = 0;
+    const toJsonResult = await runOutput({
+      toJSON: () => {
+        toJsonCalls += 1;
+        return { leaked: true };
+      },
+    });
+    expect(toJsonCalls).toBe(0);
+    expect(toJsonResult.scenarios[0]).toMatchObject({ state: "fail" });
+
+    const proxySecret = "proxy-secret-must-not-leak";
+    const proxyResult = await runOutput(
+      new Proxy(
+        {},
+        {
+          getPrototypeOf: () => {
+            throw new Error(proxySecret);
+          },
+        },
+      ),
+    );
+    expect(proxyResult.scenarios[0]).toMatchObject({
+      state: "fail",
+      reason: "action output could not be safely inspected",
+    });
+    expect(JSON.stringify(proxyResult)).not.toContain(proxySecret);
+  });
+
+  it("skips cleanup when a timed-out programmable action never settles", async () => {
+    const scenarioHarness = harness();
+    const result = await runConformanceMatrix({
+      ...actionInputs([
+        {
+          id: "hang",
+          family: "client",
+          operation: "list",
+          input: {},
+          captures: [],
+          assertions: [{ id: "shape", kind: "json-pointer", pointer: "", exists: true }],
+        },
+      ]),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => {
+        throw new Error("HTTP must not run");
+      },
+      actionExecutor: async () => await new Promise(() => undefined),
+      harness: scenarioHarness,
+      requestTimeoutMs: 5,
+    });
+    expect(result.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      category: "deadline",
+      cleanupError: "cleanup skipped because an action execution did not settle",
+      actions: [{ executionError: { category: "timeout" } }],
+    });
+    expect(scenarioHarness.cleanup).not.toHaveBeenCalled();
+  });
+
+  it("decodes an authored raw request target only at the HTTP executor boundary", async () => {
+    let observedTarget: Uint8Array | undefined;
+    const result = await runConformanceMatrix({
+      ...actionInputs([
+        {
+          id: "raw",
+          family: "http",
+          method: "GET",
+          target: { binding: "scope" },
+          rawRequestTarget: { encoding: "base64", value: "Ly9hY21lLyUyZg==" },
+          headers: {},
+          captures: [],
+          assertions: [{ id: "status", kind: "status", equals: 200 }],
+        },
+      ]),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async ({ url, rawRequestTarget }) => {
+        observedTarget = rawRequestTarget;
+        return { url, status: 200, headers: {}, bodyText: "" };
+      },
+      harness: harness(),
+    });
+    expect(new TextDecoder().decode(observedTarget)).toBe("//acme/%2f");
+    expect(result.scenarios[0]).toMatchObject({ state: "pass" });
+    expect(result.scenarios[0]).not.toHaveProperty("actions");
+  });
+
+  it("materializes portable raw request-target templates from the resolved semantic URL", async () => {
+    const templates = [
+      {
+        id: "canonical",
+        rawRequestTarget: { template: "resolved-url", form: "origin" },
+      },
+      {
+        id: "scheme-relative",
+        rawRequestTarget: {
+          template: "resolved-url",
+          form: "scheme-relative",
+          authority: "evil.invalid",
+        },
+      },
+      {
+        id: "absolute",
+        rawRequestTarget: {
+          template: "resolved-url",
+          form: "absolute",
+          authority: "evil.invalid",
+        },
+      },
+      {
+        id: "insert",
+        rawRequestTarget: {
+          template: "resolved-url",
+          form: "origin",
+          insertBeforeFinalPathSegment: { encoding: "ascii", value: "/" },
+        },
+      },
+      {
+        id: "ascii-suffix",
+        rawRequestTarget: {
+          template: "resolved-url",
+          form: "origin",
+          suffix: { encoding: "ascii", value: "#fragment" },
+        },
+      },
+      {
+        id: "binary-suffix",
+        rawRequestTarget: {
+          template: "resolved-url",
+          form: "origin",
+          suffix: { encoding: "base64", value: "wyg=" },
+        },
+      },
+    ].map(({ id, rawRequestTarget }) => ({
+      id,
+      family: "http",
+      method: "GET",
+      target: { binding: "resource" },
+      rawRequestTarget,
+      headers: {},
+      captures: [],
+      assertions: [{ id: "status", kind: "status", equals: 200 }],
+    }));
+    const fixture = {
+      ...testFixture,
+      bindings: { resource: "objects/fixture-a?canonical=yes" },
+    };
+    const observedTargets: Uint8Array[] = [];
+
+    const result = await runConformanceMatrix({
+      ...actionInputs(templates, fixture),
+      scope: "https://scope.example/runtime-tenant/",
+      profile: "read",
+      seed: 0,
+      execute: async ({ url, rawRequestTarget }) => {
+        if (rawRequestTarget === undefined) throw new Error("raw target was not materialized");
+        observedTargets.push(rawRequestTarget);
+        return { url, status: 200, headers: {}, bodyText: "" };
+      },
+      harness: {
+        prepare: vi.fn(async () => ({
+          capabilities: ["public-http"],
+          bindings: { resource: "objects/fixture-a?canonical=yes" },
+        })),
+        cleanup: vi.fn(async () => undefined),
+      },
+    });
+
+    expect(observedTargets).toEqual(
+      [
+        Buffer.from("/runtime-tenant/objects/fixture-a?canonical=yes", "ascii"),
+        Buffer.from("//evil.invalid/runtime-tenant/objects/fixture-a?canonical=yes", "ascii"),
+        Buffer.from("https://evil.invalid/runtime-tenant/objects/fixture-a?canonical=yes", "ascii"),
+        Buffer.from("/runtime-tenant/objects//fixture-a?canonical=yes", "ascii"),
+        Buffer.from("/runtime-tenant/objects/fixture-a?canonical=yes#fragment", "ascii"),
+        Buffer.concat([
+          Buffer.from("/runtime-tenant/objects/fixture-a?canonical=yes", "ascii"),
+          Buffer.from([0xc3, 0x28]),
+        ]),
+      ].map((bytes) => Uint8Array.from(bytes)),
+    );
+    expect(result.scenarios[0]).toMatchObject({ state: "pass" });
+    expect(JSON.stringify(result)).not.toContain("evil.invalid");
+    expect(JSON.stringify(result)).not.toContain("fragment");
+  });
+
+  it("resolves an exact JSON oracle from the bound target realization", async () => {
+    const catalog = parseScenarioCatalog({
+      catalogVersion: 1,
+      scenarios: [
+        {
+          id: "read.resource",
+          title: "Target-specific Resource realization",
+          kind: "normative",
+          requiredProfile: "read",
+          requirements: [citation],
+        },
+      ],
+    });
+    const manifest = parseExecutableScenarioManifest({
+      manifestVersion: 1,
+      catalogId: "read-v1",
+      scenarios: [
+        {
+          id: "read.resource",
+          requiredProfile: "read",
+          setup: { fixture: "reference-read-v1", requires: ["public-http"] },
+          applicability: { requires: [] },
+          requests: [
+            {
+              id: "resource",
+              method: "GET",
+              target: { binding: "scope" },
+              headers: {},
+              captures: [],
+              assertions: [
+                {
+                  id: "target-realization",
+                  kind: "json-equals",
+                  fixturePointer: "/oracles/resource",
+                },
+              ],
+            },
+          ],
+          cleanup: { resetFixture: true },
+        },
+      ],
+    });
+    const run = async (target: "bdptest" | "bdpbd") => {
+      const fixture = {
+        ...testFixture,
+        oracles: { resource: { target } },
+      } as const satisfies ConformanceFixture;
+      return await runConformanceMatrix({
+        scope: "https://scope.example/",
+        profile: "read",
+        seed: 0,
+        artifactBundle: bindArtifacts(catalog, manifest, fixture),
+        execute: async () => ({
+          url: "https://scope.example/",
+          status: 200,
+          headers: { "content-type": "application/json" },
+          bodyText: JSON.stringify({ target }),
+        }),
+        harness: harness(),
+        declaredTargetLabel: `${target}-realization`,
+      });
+    };
+
+    await expect(run("bdptest")).resolves.toMatchObject({
+      scenarios: [{ state: "pass" }],
+    });
+    await expect(run("bdpbd")).resolves.toMatchObject({
+      scenarios: [{ state: "pass" }],
+    });
+  });
+
+  it("normalizes a JSON pointer before comparing it with a fixture oracle", async () => {
+    const fixture = {
+      ...testFixture,
+      oracles: { "resource-id": "beads/target-specific-id" },
+    } as const satisfies ConformanceFixture;
+    const runInputs = inputs(
+      [
+        {
+          id: "resource-id",
+          kind: "json-pointer",
+          pointer: "/id",
+          exists: true,
+          fixturePointer: "/oracles/resource-id",
+          normalize: "scope-relative-url",
+        },
+      ],
+      {},
+      fixture,
+    );
+
+    const result = await runConformanceMatrix({
+      ...runInputs,
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 200,
+        headers: { "content-type": "application/json" },
+        bodyText: JSON.stringify({ id: "https://scope.example/beads/target-specific-id" }),
+      }),
+      harness: harness(),
+    });
+
+    expect(result.scenarios[0]?.state).toBe("pass");
+  });
+
+  it("normalizes ISO timestamps only at explicitly declared target-specific pointers", async () => {
+    const fixture = {
+      ...testFixture,
+      oracles: {
+        properties: {
+          id: "demo-a",
+          created_at: "2026-08-08T23:33:31Z",
+          dependencies: [{ created_at: "2026-08-08T23:33:32Z" }],
+        },
+      },
+    } as const satisfies ConformanceFixture;
+    const runInputs = inputs(
+      [
+        {
+          id: "properties",
+          kind: "json-equals",
+          fixturePointer: "/oracles/properties",
+          normalize: "iso-timestamps",
+          timestampPointers: ["/created_at", "/dependencies/0/created_at"],
+        },
+      ],
+      {},
+      fixture,
+    );
+
+    const result = await runConformanceMatrix({
+      ...runInputs,
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 200,
+        headers: { "content-type": "application/json" },
+        bodyText: JSON.stringify({
+          id: "demo-a",
+          created_at: "2026-08-16T03:30:13Z",
+          dependencies: [{ created_at: "2026-08-15T20:30:14Z" }],
+        }),
+      }),
+      harness: harness(),
+    });
+
+    expect(result.scenarios[0]?.state).toBe("pass");
+  });
+
+  it("compares canonical timestamp strings exactly outside declared dynamic pointers", async () => {
+    const fixture = {
+      ...testFixture,
+      oracles: {
+        properties: {
+          created_at: "2026-08-08T23:33:31Z",
+          reviewed_at: "2026-08-08T23:33:32Z",
+        },
+      },
+    } as const satisfies ConformanceFixture;
+    const runInputs = inputs(
+      [
+        {
+          id: "properties",
+          kind: "json-equals",
+          fixturePointer: "/oracles/properties",
+          normalize: "iso-timestamps",
+          timestampPointers: ["/created_at"],
+        },
+      ],
+      {},
+      fixture,
+    );
+
+    const result = await runConformanceMatrix({
+      ...runInputs,
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 200,
+        headers: { "content-type": "application/json" },
+        bodyText: JSON.stringify({
+          created_at: "2026-08-16T03:30:13Z",
+          reviewed_at: "2026-08-15T20:30:14Z",
+        }),
+      }),
+      harness: harness(),
+    });
+
+    expect(result.scenarios[0]?.state).toBe("fail");
+  });
+
+  it("does not normalize calendar-invalid timestamp-like strings", async () => {
+    const fixture = {
+      ...testFixture,
+      oracles: { created_at: "2026-02-28T23:33:31Z" },
+    } as const satisfies ConformanceFixture;
+    const runInputs = inputs(
+      [
+        {
+          id: "created-at",
+          kind: "json-equals",
+          fixturePointer: "/oracles/created_at",
+          normalize: "iso-timestamps",
+          timestampPointers: [""],
+        },
+      ],
+      {},
+      fixture,
+    );
+
+    const result = await runConformanceMatrix({
+      ...runInputs,
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 200,
+        headers: { "content-type": "application/json" },
+        bodyText: JSON.stringify("2026-02-30T23:33:31Z"),
+      }),
+      harness: harness(),
+    });
+
+    expect(result.scenarios[0]?.state).toBe("fail");
+  });
+
+  it("compares an array projection with the bound realization's exact multiset", async () => {
+    const fixture = {
+      ...testFixture,
+      oracles: { "resource-ids": ["beads/target-a", "beads/target-b"] },
+    } as const satisfies ConformanceFixture;
+    const runInputs = inputs(
+      [
+        {
+          id: "resource-ids",
+          kind: "json-array-set",
+          pointer: "/items",
+          itemPointer: "/id",
+          fixturePointer: "/oracles/resource-ids",
+          normalize: "scope-relative-url",
+        },
+      ],
+      {},
+      fixture,
+    );
+
+    const result = await runConformanceMatrix({
+      ...runInputs,
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 200,
+        headers: { "content-type": "application/json" },
+        bodyText: JSON.stringify({
+          items: [
+            { id: "https://scope.example/beads/target-b" },
+            { id: "https://scope.example/beads/target-a" },
+          ],
+        }),
+      }),
+      harness: harness(),
+    });
+
+    expect(result.scenarios[0]?.state).toBe("pass");
+  });
+
+  it("keeps external and Scope-local URI members portable in an array oracle", async () => {
+    const fixture = {
+      ...testFixture,
+      oracles: {
+        "type-ids": ["https://work.example/types/task", "types/related"],
+      },
+    } as const satisfies ConformanceFixture;
+    const runInputs = inputs(
+      [
+        {
+          id: "type-ids",
+          kind: "json-array-set",
+          pointer: "/items",
+          itemPointer: "/id",
+          fixturePointer: "/oracles/type-ids",
+          normalize: "scope-relative-or-absolute-uri",
+        },
+      ],
+      {},
+      fixture,
+    );
+
+    const result = await runConformanceMatrix({
+      ...runInputs,
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 200,
+        headers: { "content-type": "application/json" },
+        bodyText: JSON.stringify({
+          items: [
+            { id: "https://scope.example/types/related" },
+            { id: "https://work.example/types/task" },
+          ],
+        }),
+      }),
+      harness: harness(),
+    });
+
+    expect(result.scenarios[0]?.state).toBe("pass");
+  });
+
+  it("compares relational tuples with the bound realization's exact multiset", async () => {
+    const fixture = {
+      ...testFixture,
+      oracles: {
+        "link-tuples": [
+          ["links/one", "beads/a", "https://external.example/issues/1"],
+          ["links/two", "beads/b", "beads/a"],
+        ],
+      },
+    } as const satisfies ConformanceFixture;
+    const runInputs = inputs(
+      [
+        {
+          id: "links",
+          kind: "json-array-tuples",
+          pointer: "/items",
+          projections: [
+            { pointer: "/id", normalize: "scope-relative-url" },
+            { pointer: "/source/id", normalize: "scope-relative-or-absolute-uri" },
+            { pointer: "/target/id", normalize: "scope-relative-or-absolute-uri" },
+          ],
+          fixturePointer: "/oracles/link-tuples",
+        },
+      ],
+      {},
+      fixture,
+    );
+
+    const result = await runConformanceMatrix({
+      ...runInputs,
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 200,
+        headers: { "content-type": "application/json" },
+        bodyText: JSON.stringify({
+          items: [
+            {
+              id: "https://scope.example/links/two",
+              source: { id: "https://scope.example/beads/b" },
+              target: { id: "https://scope.example/beads/a" },
+            },
+            {
+              id: "https://scope.example/links/one",
+              source: { id: "https://scope.example/beads/a" },
+              target: { id: "https://external.example/issues/1" },
+            },
+          ],
+        }),
+      }),
+      harness: harness(),
+    });
+
+    expect(result.scenarios[0]?.state).toBe("pass");
+  });
+
+  it("does not copy fixture oracle values into failure reports", async () => {
+    const oracleValue = "fixture-oracle-value-must-not-leak";
+    const fixture = {
+      ...testFixture,
+      oracles: { resource: { privateMarker: oracleValue } },
+    } as const satisfies ConformanceFixture;
+    const runInputs = inputs(
+      [
+        {
+          id: "resource",
+          kind: "json-equals",
+          fixturePointer: "/oracles/resource",
+        },
+      ],
+      {},
+      fixture,
+    );
+
+    const result = await runConformanceMatrix({
+      ...runInputs,
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 200,
+        headers: { "content-type": "application/json" },
+        bodyText: JSON.stringify({ privateMarker: "different" }),
+      }),
+      harness: harness(),
+    });
+
+    expect(result.scenarios[0]?.state).toBe("fail");
+    expect(serializeConformanceReport(result)).not.toContain(oracleValue);
+  });
+
+  it("records a deterministic pass from public HTTP observations without attesting evidence", async () => {
+    const execute = vi.fn(async () => ({
+      url: "https://scope.example/",
+      status: 204,
+      headers: { link: '<bdp.json>; rel="service-desc"' },
+      bodyText: "",
+      bodyOctets: 0,
+    }));
+    const fixture = harness();
+    const runInputs = inputs();
+    const result = await runConformanceMatrix({
+      ...runInputs,
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: fixture,
+    });
+    expect(result.scenarios[0]?.state).toBe("pass");
+    expect(result.claimEligible).toBe(false);
+    expect(result.reportVersion).toBe(3);
+    expect(result.artifacts).toEqual(runInputs.artifactBundle.digests);
+    expect(result.artifacts).not.toHaveProperty("targetLabel");
+    expect(result.declarations).toEqual({ targetLabel: "unit-test-target" });
+    expect(result).not.toHaveProperty("timestamp");
+    expect(execute).toHaveBeenCalledWith(
+      expect.objectContaining({ method: "GET", url: "https://scope.example/" }),
+    );
+    expect(fixture.prepare).toHaveBeenCalledWith(
+      expect.objectContaining({ id: "read.discovery" }),
+      "https://scope.example/",
+      0,
+      expect.objectContaining({ id: "reference-read-v1" }),
+      expect.any(AbortSignal),
+    );
+  });
+
+  it("compares relational array tuples with field-specific URI normalization", async () => {
+    const tupleAssertion = {
+      id: "links",
+      kind: "json-array-tuples",
+      pointer: "/items",
+      projections: [
+        { pointer: "/id", normalize: "scope-relative-url" },
+        { pointer: "/source/id", normalize: "scope-relative-or-absolute-uri" },
+        { pointer: "/target/id", normalize: "scope-relative-or-absolute-uri" },
+      ],
+      equals: [
+        ["links/one", "beads/a", "https://external.example/issues/1"],
+        ["links/two", "beads/b", "beads/a"],
+      ],
+    } as const;
+    const execute = async () => ({
+      url: "https://scope.example/",
+      status: 200,
+      headers: { "content-type": "application/json" },
+      bodyText: JSON.stringify({
+        items: [
+          {
+            id: "https://scope.example/links/two",
+            source: { id: "https://scope.example/beads/b" },
+            target: { id: "https://scope.example/beads/a" },
+          },
+          {
+            id: "https://scope.example/links/one",
+            source: { id: "https://scope.example/beads/a" },
+            target: { id: "https://external.example/issues/1" },
+          },
+        ],
+      }),
+    });
+    const result = await runConformanceMatrix({
+      ...inputs([tupleAssertion]),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: harness(),
+    });
+    expect(result.scenarios[0]?.state).toBe("pass");
+
+    const crossProduct = await runConformanceMatrix({
+      ...inputs([
+        {
+          ...tupleAssertion,
+          equals: [
+            ["links/one", "beads/b", "https://external.example/issues/1"],
+            ["links/two", "beads/a", "beads/a"],
+          ],
+        },
+      ]),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: harness(),
+    });
+    expect(crossProduct.scenarios[0]).toMatchObject({
+      state: "fail",
+      reason: "array tuples did not match the expected multiset",
+    });
+  });
+
+  it("compares ordered tuple sequences positionally while default mode stays a multiset", async () => {
+    const orderedAssertion = {
+      id: "sequence",
+      kind: "json-array-tuples",
+      pointer: "/items",
+      ordered: true,
+      projections: [{ pointer: "/id", normalize: "scope-relative-url" }],
+      equals: [["beads/a"], ["beads/b"]],
+    } as const;
+    const reversedItems = async () => ({
+      url: "https://scope.example/",
+      status: 200,
+      headers: { "content-type": "application/json" },
+      bodyText: JSON.stringify({
+        items: [{ id: "https://scope.example/beads/b" }, { id: "https://scope.example/beads/a" }],
+      }),
+    });
+    const orderedResult = await runConformanceMatrix({
+      ...inputs([orderedAssertion]),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: reversedItems,
+      harness: harness(),
+    });
+    expect(orderedResult.scenarios[0]).toMatchObject({
+      state: "fail",
+      reason: "array tuples did not match the expected sequence",
+    });
+
+    const { ordered: _dropped, ...multisetAssertion } = orderedAssertion;
+    const multisetResult = await runConformanceMatrix({
+      ...inputs([multisetAssertion]),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: reversedItems,
+      harness: harness(),
+    });
+    expect(multisetResult.scenarios[0]?.state).toBe("pass");
+  });
+
+  it("distinguishes observable mismatches, setup failures, applicability, and cleanup failures", async () => {
+    const failed = await runConformanceMatrix({
+      ...inputs(),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 200,
+        headers: {},
+        bodyText: "{}",
+        bodyOctets: 2,
+      }),
+      harness: harness(),
+    });
+    expect(failed.scenarios[0]?.state).toBe("fail");
+
+    const missingSetup = await runConformanceMatrix({
+      ...inputs(),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: vi.fn(),
+      harness: harness([]),
+    });
+    expect(missingSetup.scenarios[0]?.state).toBe("harness-error");
+
+    const applicableInputs = inputs();
+    const applicableScenario = applicableInputs.artifactBundle.manifest.scenarios[0];
+    if (applicableScenario === undefined) throw new Error("test manifest unexpectedly empty");
+    const notApplicable = await runConformanceMatrix({
+      ...applicableInputs,
+      artifactBundle: replaceArtifacts(applicableInputs, {
+        manifest: {
+          ...applicableInputs.artifactBundle.manifest,
+          scenarios: [{ ...applicableScenario, applicability: { requires: ["optional"] } }],
+        },
+      }),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: vi.fn(),
+      harness: harness(),
+    });
+    expect(notApplicable.scenarios[0]?.state).toBe("not-applicable");
+
+    const cleanupFailure = harness();
+    vi.mocked(cleanupFailure.cleanup).mockRejectedValueOnce(new Error("reset failed"));
+    const cleanupResult = await runConformanceMatrix({
+      ...inputs(),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 204,
+        headers: {},
+        bodyText: "",
+        bodyOctets: 0,
+      }),
+      harness: cleanupFailure,
+    });
+    expect(cleanupResult.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      category: "cleanup",
+      cleanupError: "cleanup failed",
+    });
+  });
+
+  it("binds the harness preparation to fixture capabilities, names, and values", async () => {
+    const execute = vi.fn();
+    const undeclaredCapability = harness(["public-http", "unbound-capability"]);
+    const capabilityResult = await runConformanceMatrix({
+      ...inputs(),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: undeclaredCapability,
+    });
+    expect(capabilityResult.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      reason: "fixture preparation capabilities must be a unique subset of the bound fixture",
+    });
+
+    const mismatchedBindings = harness();
+    vi.mocked(mismatchedBindings.prepare).mockResolvedValue({
+      capabilities: ["public-http"],
+      bindings: { "bearer-binding-secret": "beads/demo-a" },
+    });
+    const bindingResult = await runConformanceMatrix({
+      ...inputs(),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: mismatchedBindings,
+    });
+    expect(bindingResult.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      reason: "fixture preparation binding names must match the bound fixture",
+    });
+    expect(JSON.stringify(bindingResult)).not.toContain("bearer-binding-secret");
+    expect(execute).not.toHaveBeenCalled();
+
+    const swappedBinding = harness();
+    vi.mocked(swappedBinding.prepare).mockResolvedValue({
+      capabilities: ["public-http"],
+      bindings: { resource: "beads/demo-b" },
+    });
+    const swappedInputs = inputs();
+    const swappedResult = await runConformanceMatrix({
+      ...swappedInputs,
+      artifactBundle: fixtureWithBindings(swappedInputs, { resource: "beads/demo-a" }),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: swappedBinding,
+    });
+    expect(swappedResult.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      reason: "fixture preparation binding values must match the bound fixture",
+    });
+    expect(JSON.stringify(swappedResult)).not.toContain("demo-a");
+    expect(JSON.stringify(swappedResult)).not.toContain("demo-b");
+    expect(execute).not.toHaveBeenCalled();
+
+    const resolvedBinding = harness();
+    vi.mocked(resolvedBinding.prepare).mockResolvedValue({
+      capabilities: ["public-http"],
+      bindings: { resource: "https://scope.example/beads/demo-a" },
+    });
+    const resolvedInputs = inputs();
+    const resolvedResult = await runConformanceMatrix({
+      ...resolvedInputs,
+      artifactBundle: fixtureWithBindings(resolvedInputs, { resource: "beads/demo-a" }),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 204,
+        headers: {},
+        bodyText: "",
+        bodyOctets: 0,
+      }),
+      harness: resolvedBinding,
+    });
+    expect(resolvedResult.scenarios[0]?.state).toBe("pass");
+  });
+
+  it("fails closed when catalog metadata has no executable plan", async () => {
+    const base = inputs();
+    const result = await runConformanceMatrix({
+      ...base,
+      artifactBundle: replaceArtifacts(base, {
+        manifest: { ...base.artifactBundle.manifest, scenarios: [] },
+      }),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: vi.fn(),
+      harness: harness(),
+    });
+    expect(result.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      category: "not-implemented",
+      reason: "catalog scenario has no executable plan",
+    });
+  });
+
+  it("captures discovered navigation and validates the offline schema independently", async () => {
+    const base = inputs();
+    const manifest = parseExecutableScenarioManifest({
+      manifestVersion: 1,
+      catalogId: "read-v1",
+      scenarios: [
+        {
+          id: "read.discovery",
+          requiredProfile: "read",
+          setup: { fixture: "reference-read-v1", requires: ["public-http"] },
+          applicability: { requires: [] },
+          requests: [
+            {
+              id: "scope",
+              method: "GET",
+              target: { binding: "scope" },
+              headers: {},
+              captures: [
+                { binding: "service-desc", from: { kind: "header-link", rel: "service-desc" } },
+              ],
+              assertions: [{ id: "status", kind: "status", equals: 204 }],
+            },
+            {
+              id: "document",
+              method: "GET",
+              target: { binding: "service-desc" },
+              headers: { accept: "application/json" },
+              captures: [],
+              assertions: [{ id: "schema", kind: "json-schema", schema: "#/$defs/readDiscovery" }],
+            },
+          ],
+          cleanup: { resetFixture: true },
+        },
+      ],
+    });
+    const execute = vi
+      .fn()
+      .mockResolvedValueOnce({
+        url: "https://scope.example/",
+        status: 204,
+        headers: { Link: '<bdp.json>; type="application/json"; rel="SERVICE-DESC"' },
+        bodyText: "",
+      })
+      .mockResolvedValueOnce({
+        url: "https://scope.example/bdp.json",
+        status: 200,
+        headers: { "content-type": "application/json" },
+        bodyText: JSON.stringify({
+          bdpVersion: "0",
+          profile: "read",
+          scope: "https://scope.example/",
+          beads: "https://scope.example/beads/",
+          links: "https://scope.example/links/",
+          types: "https://scope.example/types/",
+        }),
+      });
+    const result = await runConformanceMatrix({
+      ...base,
+      artifactBundle: replaceArtifacts(base, { manifest }),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: harness(),
+      schemaValidator: createJsonSchemaValidator(schemaBundle),
+    });
+    expect(result.scenarios[0]?.state).toBe("pass");
+    expect(execute).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ url: "https://scope.example/bdp.json" }),
+    );
+  });
+
+  it("keeps request authorization decoration separate from response headers", async () => {
+    const fetchMock = vi.fn(async (_input: string | URL | Request, init?: RequestInit) => {
+      expect(new Headers(init?.headers).get("authorization")).toBe("Bearer secret");
+      return new Response(null, { status: 204 });
+    });
+    const execute = createFetchHttpExchangeExecutor(fetchMock as typeof fetch, () => ({
+      authorization: "Bearer secret",
+    }));
+    const response = await execute({
+      method: "GET",
+      url: "https://scope.example/",
+      headers: {},
+      signal: new AbortController().signal,
+    });
+    expect(response.status).toBe(204);
+    expect(response.headers).not.toHaveProperty("authorization");
+    expect(response.effectiveRequest?.headers).toHaveProperty("authorization", "Bearer secret");
+  });
+
+  it("fails fast when schema configuration is missing", async () => {
+    await expect(
+      runConformanceMatrix({
+        ...inputs([{ id: "schema", kind: "json-schema", schema: "#/$defs/readDiscovery" }]),
+        scope: "https://scope.example/",
+        profile: "read",
+        seed: 0,
+        execute: vi.fn(),
+        harness: harness(),
+      }),
+    ).rejects.toThrow("schema assertion requires an offline schema validator");
+  });
+
+  it("redacts secret response headers in report observations", async () => {
+    const result = await runConformanceMatrix({
+      ...inputs([{ id: "status", kind: "status", equals: 204 }]),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 204,
+        headers: {
+          "access-control-allow-credentials": "true",
+          "access-control-allow-headers": "authorization",
+          "access-control-allow-methods": "GET",
+          "access-control-allow-origin": "https://scope.example",
+          "access-control-expose-headers": "etag",
+          "access-control-max-age": "600",
+          "set-cookie": "session=secret",
+          zeta: "visible",
+        },
+        bodyText: "",
+      }),
+      harness: harness(),
+    });
+    expect(result.scenarios[0]?.exchanges[0]?.response?.headers).toEqual({
+      "access-control-allow-credentials": "<redacted>",
+      "access-control-allow-headers": "<redacted>",
+      "access-control-allow-methods": "<redacted>",
+      "access-control-allow-origin": "<redacted>",
+      "access-control-expose-headers": "<redacted>",
+      "access-control-max-age": "<redacted>",
+      "set-cookie": "<redacted>",
+    });
+  });
+
+  it("does not reflect credential-shaped response header values or names", async () => {
+    const result = await runConformanceMatrix({
+      ...inputs([{ id: "status", kind: "status", equals: 204 }]),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 204,
+        headers: {
+          allow: "GET, Bearer-secret-value",
+          "content-type": "application/Bearer-secret-value",
+          vary: "Bearer-secret-value",
+          "user-agent": "Bearer-secret-value",
+          "x-Bearer-secret-value": "visible",
+        },
+        bodyText: "",
+      }),
+      harness: harness(),
+    });
+    expect(JSON.stringify(result)).not.toContain("Bearer-secret-value");
+    expect(result.scenarios[0]?.exchanges[0]?.response?.headers).toEqual({
+      allow: "<redacted>",
+      "content-type": "<redacted>",
+      "user-agent": "<redacted>",
+      vary: "<redacted>",
+    });
+  });
+
+  it("blocks a dependent scenario when its actual prerequisite did not pass", async () => {
+    const base = inputs([{ id: "status", kind: "status", equals: 204 }]);
+    const metadata = base.artifactBundle.catalog.scenarios[0];
+    const scenario = requestScenario(base.artifactBundle.manifest.scenarios[0]);
+    const request = scenario?.requests[0];
+    if (metadata === undefined || scenario === undefined || request === undefined)
+      throw new Error("test inputs unexpectedly empty");
+    const dependentMetadata = {
+      ...metadata,
+      id: "read.collections.beads",
+      requirements: [{ ...citation, anchor: "#dependent" }],
+    };
+    const dependentScenario = {
+      ...scenario,
+      id: "read.collections.beads",
+      requests: [
+        { ...request, prerequisiteScenario: "read.discovery" },
+        { ...request, id: "owned", target: { binding: "scope" } },
+      ],
+    };
+    const execute = vi.fn(async () => ({
+      url: "https://scope.example/",
+      status: 500,
+      headers: {},
+      bodyText: "",
+    }));
+    const result = await runConformanceMatrix({
+      ...base,
+      artifactBundle: replaceArtifacts(base, {
+        catalog: { ...base.artifactBundle.catalog, scenarios: [metadata, dependentMetadata] },
+        manifest: { ...base.artifactBundle.manifest, scenarios: [scenario, dependentScenario] },
+      }),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: harness(),
+    });
+    expect(execute).toHaveBeenCalledTimes(1);
+    expect(result.scenarios[1]).toMatchObject({
+      id: "read.collections.beads",
+      state: "harness-error",
+      category: "not-run",
+      reason: "prerequisite 'read.discovery' did not pass; dependent scenario was not run",
+      requirements: ["docs/specs/bdp.md#dependent"],
+      prerequisiteFailure: {
+        id: "read.discovery",
+        requirements: ["docs/specs/bdp.md#scope-discovery-and-human-documentation"],
+        reason: "expected status 204, got 500",
+        phase: "initial",
+      },
+    });
+  });
+
+  it("reports a failed repeated prerequisite observation as a recheck", async () => {
+    const base = inputs([{ id: "status", kind: "status", equals: 204 }]);
+    const metadata = base.artifactBundle.catalog.scenarios[0];
+    const scenario = requestScenario(base.artifactBundle.manifest.scenarios[0]);
+    const request = scenario?.requests[0];
+    if (metadata === undefined || scenario === undefined || request === undefined)
+      throw new Error("test inputs unexpectedly empty");
+    const dependentMetadata = {
+      ...metadata,
+      id: "read.collections.beads",
+      requirements: [{ ...citation, anchor: "#dependent" }],
+    };
+    const dependentScenario = {
+      ...scenario,
+      id: "read.collections.beads",
+      requests: [
+        { ...request, prerequisiteScenario: "read.discovery" },
+        { ...request, id: "owned", target: { binding: "scope" } },
+      ],
+    };
+    let calls = 0;
+    const execute = vi.fn(async () => {
+      calls += 1;
+      return {
+        url: "https://scope.example/",
+        status: calls === 1 ? 204 : 500,
+        headers: {},
+        bodyText: "",
+      };
+    });
+    const result = await runConformanceMatrix({
+      ...base,
+      artifactBundle: replaceArtifacts(base, {
+        catalog: { ...base.artifactBundle.catalog, scenarios: [metadata, dependentMetadata] },
+        manifest: { ...base.artifactBundle.manifest, scenarios: [scenario, dependentScenario] },
+      }),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: harness(),
+    });
+    expect(execute).toHaveBeenCalledTimes(2);
+    expect(result.scenarios[1]).toMatchObject({
+      id: "read.collections.beads",
+      state: "harness-error",
+      category: "not-run",
+      reason: "prerequisite recheck 'read.discovery' failed; dependent scenario was not run",
+      prerequisiteFailure: {
+        id: "read.discovery",
+        phase: "recheck",
+        reason: "expected status 204, got 500",
+      },
+    });
+    expect(result.scenarios[1]?.exchanges).toHaveLength(1);
+  });
+
+  it("stops after an uncontained prerequisite recheck deadline", async () => {
+    const base = inputs([{ id: "status", kind: "status", equals: 204 }]);
+    const metadata = base.artifactBundle.catalog.scenarios[0];
+    const scenario = requestScenario(base.artifactBundle.manifest.scenarios[0]);
+    const request = scenario?.requests[0];
+    if (metadata === undefined || scenario === undefined || request === undefined)
+      throw new Error("test inputs unexpectedly empty");
+    const dependentMetadata = {
+      ...metadata,
+      id: "read.collections.beads",
+      requirements: [{ ...citation, anchor: "#dependent" }],
+    };
+    const laterMetadata = {
+      ...metadata,
+      id: "read.later",
+      requirements: [{ ...citation, anchor: "#later" }],
+    };
+    const dependentScenario = {
+      ...scenario,
+      id: "read.collections.beads",
+      requests: [
+        { ...request, prerequisiteScenario: "read.discovery" },
+        { ...request, id: "owned", target: { binding: "scope" } },
+      ],
+    };
+    const laterScenario = { ...scenario, id: "read.later" };
+    const execute = vi.fn(async () => {
+      if (execute.mock.calls.length === 1)
+        return { url: "https://scope.example/", status: 204, headers: {}, bodyText: "" };
+      return await new Promise<never>(() => undefined);
+    });
+    const result = await runConformanceMatrix({
+      ...base,
+      artifactBundle: replaceArtifacts(base, {
+        catalog: {
+          ...base.artifactBundle.catalog,
+          scenarios: [metadata, dependentMetadata, laterMetadata],
+        },
+        manifest: {
+          ...base.artifactBundle.manifest,
+          scenarios: [scenario, dependentScenario, laterScenario],
+        },
+      }),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: harness(),
+      requestTimeoutMs: 5,
+    });
+    expect(execute).toHaveBeenCalledTimes(2);
+    expect(result.scenarios).toMatchObject([
+      { id: "read.discovery", state: "pass" },
+      {
+        id: "read.collections.beads",
+        state: "harness-error",
+        category: "not-run",
+        reason:
+          "prerequisite recheck 'read.discovery' exceeded its deadline; dependent scenario was not run",
+        prerequisiteFailure: { phase: "recheck", category: "deadline" },
+      },
+      { id: "read.later", state: "harness-error", category: "not-run" },
+    ]);
+  });
+
+  it("stops after a prerequisite recheck exceeds a runner observation bound", async () => {
+    const base = inputs([{ id: "status", kind: "status", equals: 204 }]);
+    const metadata = base.artifactBundle.catalog.scenarios[0];
+    const scenario = requestScenario(base.artifactBundle.manifest.scenarios[0]);
+    const request = scenario?.requests[0];
+    if (metadata === undefined || scenario === undefined || request === undefined)
+      throw new Error("test inputs unexpectedly empty");
+    const dependentMetadata = { ...metadata, id: "read.collections.beads" };
+    const laterMetadata = { ...metadata, id: "read.later" };
+    const dependentScenario = {
+      ...scenario,
+      id: "read.collections.beads",
+      requests: [
+        { ...request, prerequisiteScenario: "read.discovery" },
+        { ...request, id: "owned" },
+      ],
+    };
+    const depth = 129;
+    const complexityExecute = vi.fn(async () =>
+      complexityExecute.mock.calls.length === 1
+        ? { url: "https://scope.example/", status: 204, headers: {}, bodyText: "" }
+        : {
+            url: "https://scope.example/",
+            status: 200,
+            headers: { "content-type": "application/json" },
+            bodyText: `${"[".repeat(depth)}0${"]".repeat(depth)}`,
+          },
+    );
+    const boundedFetch = vi
+      .fn()
+      .mockResolvedValueOnce(new Response(null, { status: 204 }))
+      .mockResolvedValueOnce(new Response("12345", { status: 200 }));
+
+    for (const limitCase of [
+      {
+        name: "JSON complexity",
+        execute: complexityExecute,
+        calls: () => complexityExecute.mock.calls.length,
+        reason: "response JSON exceeded the runner depth limit of 128",
+      },
+      {
+        name: "body bytes",
+        execute: createFetchHttpExchangeExecutor(boundedFetch as typeof fetch, undefined, 4),
+        calls: () => boundedFetch.mock.calls.length,
+        reason: "HTTP response exceeded the configured executor body limit",
+      },
+    ]) {
+      const result = await runConformanceMatrix({
+        ...base,
+        artifactBundle: replaceArtifacts(base, {
+          catalog: {
+            ...base.artifactBundle.catalog,
+            scenarios: [metadata, dependentMetadata, laterMetadata],
+          },
+          manifest: {
+            ...base.artifactBundle.manifest,
+            scenarios: [scenario, dependentScenario, { ...scenario, id: "read.later" }],
+          },
+        }),
+        scope: "https://scope.example/",
+        profile: "read",
+        seed: 0,
+        execute: limitCase.execute,
+        harness: harness(),
+      });
+
+      expect(limitCase.calls(), limitCase.name).toBe(2);
+      expect(result.scenarios, limitCase.name).toMatchObject([
+        { id: "read.discovery", state: "pass" },
+        {
+          id: "read.collections.beads",
+          state: "harness-error",
+          category: "not-run",
+          reason:
+            "prerequisite recheck 'read.discovery' exceeded a harness observation bound; dependent scenario was not run",
+          prerequisiteFailure: {
+            phase: "recheck",
+            category: "observation-limit",
+            reason: limitCase.reason,
+          },
+        },
+        { id: "read.later", state: "harness-error", category: "not-run" },
+      ]);
+    }
+  });
+
+  it("stops after a prerequisite recheck escapes the safe fetch boundary", async () => {
+    const base = inputs([{ id: "status", kind: "status", equals: 204 }]);
+    const metadata = base.artifactBundle.catalog.scenarios[0];
+    const scenario = requestScenario(base.artifactBundle.manifest.scenarios[0]);
+    const request = scenario?.requests[0];
+    if (metadata === undefined || scenario === undefined || request === undefined)
+      throw new Error("test inputs unexpectedly empty");
+    const dependentMetadata = { ...metadata, id: "read.collections.beads" };
+    const laterMetadata = { ...metadata, id: "read.later" };
+    const dependentScenario = {
+      ...scenario,
+      id: "read.collections.beads",
+      requests: [
+        {
+          ...request,
+          prerequisiteScenario: "read.discovery",
+          captures: [
+            {
+              binding: "service-desc",
+              from: { kind: "header-link" as const, rel: "service-desc" },
+            },
+          ],
+        },
+        { ...request, id: "owned" },
+      ],
+    };
+    const execute = vi.fn(async () => ({
+      url: "https://scope.example/",
+      status: 204,
+      headers:
+        execute.mock.calls.length === 1
+          ? {}
+          : { link: '<https://foreign.example/bdp.json>; rel="service-desc"' },
+      bodyText: "",
+    }));
+    const result = await runConformanceMatrix({
+      ...base,
+      artifactBundle: replaceArtifacts(base, {
+        catalog: {
+          ...base.artifactBundle.catalog,
+          scenarios: [metadata, dependentMetadata, laterMetadata],
+        },
+        manifest: {
+          ...base.artifactBundle.manifest,
+          scenarios: [scenario, dependentScenario, { ...scenario, id: "read.later" }],
+        },
+      }),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: harness(),
+    });
+
+    expect(execute).toHaveBeenCalledTimes(2);
+    expect(result.scenarios).toMatchObject([
+      { id: "read.discovery", state: "pass" },
+      {
+        id: "read.collections.beads",
+        state: "harness-error",
+        category: "not-run",
+        reason:
+          "prerequisite recheck 'read.discovery' was not safely contained; dependent scenario was not run",
+        prerequisiteFailure: { phase: "recheck", category: "containment" },
+      },
+      { id: "read.later", state: "harness-error", category: "not-run" },
+    ]);
+  });
+
+  it("refuses unsafe discovery fetches without misclassifying target conformance", async () => {
+    const captureInputs = inputs([{ id: "status", kind: "status", equals: 204 }]);
+    const captureMetadata = captureInputs.artifactBundle.catalog.scenarios[0];
+    const captureScenario = requestScenario(captureInputs.artifactBundle.manifest.scenarios[0]);
+    const captureRequest = captureScenario?.requests[0];
+    if (
+      captureMetadata === undefined ||
+      captureScenario === undefined ||
+      captureRequest === undefined
+    )
+      throw new Error("test manifest unexpectedly empty");
+    const captureExecute = vi.fn(async () => ({
+      url: "https://scope.example/",
+      status: 204,
+      headers: { link: '<https://foreign.example/bdp.json>; rel="service-desc"' },
+      bodyText: "",
+    }));
+    const capture = await runConformanceMatrix({
+      ...captureInputs,
+      artifactBundle: replaceArtifacts(captureInputs, {
+        catalog: {
+          ...captureInputs.artifactBundle.catalog,
+          scenarios: [captureMetadata, { ...captureMetadata, id: "read.later" }],
+        },
+        manifest: {
+          ...captureInputs.artifactBundle.manifest,
+          scenarios: [
+            {
+              ...captureScenario,
+              requests: [
+                {
+                  ...captureRequest,
+                  captures: [
+                    {
+                      binding: "service-desc",
+                      from: { kind: "header-link", rel: "service-desc" },
+                    },
+                  ],
+                },
+              ],
+            },
+            { ...captureScenario, id: "read.later" },
+          ],
+        },
+      }),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: captureExecute,
+      harness: harness(),
+    });
+    expect(captureExecute).toHaveBeenCalledTimes(1);
+    expect(capture.scenarios).toMatchObject([
+      { state: "harness-error", category: "out-of-scope-target" },
+      { id: "read.later", state: "harness-error", category: "not-run" },
+    ]);
+
+    const encodedEscape = await runConformanceMatrix({
+      ...captureInputs,
+      artifactBundle: replaceArtifacts(captureInputs, {
+        manifest: {
+          ...captureInputs.artifactBundle.manifest,
+          scenarios: [
+            {
+              ...captureScenario,
+              requests: [
+                {
+                  ...captureRequest,
+                  captures: [
+                    {
+                      binding: "service-desc",
+                      from: { kind: "header-link", rel: "service-desc" },
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      }),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 204,
+        headers: {
+          link: '<https://scope.example/root/%2f..%2fadmin>; rel="service-desc"',
+        },
+        bodyText: "",
+      }),
+      harness: harness(),
+    });
+    expect(encodedEscape.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      category: "out-of-scope-target",
+    });
+
+    const transport = await runConformanceMatrix({
+      ...inputs(),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => {
+        throw new Error("connection reset");
+      },
+      harness: harness(),
+    });
+    expect(transport.scenarios[0]?.state).toBe("fail");
+  });
+
+  it("stops after cleanup cannot safely restore an already failed scenario", async () => {
+    const base = inputs([{ id: "status", kind: "status", equals: 204 }]);
+    const metadata = base.artifactBundle.catalog.scenarios[0];
+    const scenario = requestScenario(base.artifactBundle.manifest.scenarios[0]);
+    const request = scenario?.requests[0];
+    if (metadata === undefined || scenario === undefined || request === undefined)
+      throw new Error("test inputs unexpectedly empty");
+    const unsafeScenario = {
+      ...scenario,
+      requests: [
+        {
+          ...request,
+          captures: [
+            {
+              binding: "service-desc",
+              from: { kind: "header-link" as const, rel: "service-desc" },
+            },
+          ],
+        },
+      ],
+    };
+
+    for (const cleanupCase of [
+      {
+        expected: "cleanup failed",
+        cleanup: async (): Promise<void> => {
+          throw new Error("reset failed");
+        },
+      },
+      {
+        expected: "cleanup timed out",
+        cleanup: async (): Promise<void> => await new Promise<never>(() => undefined),
+      },
+    ]) {
+      const execute = vi.fn(async () => ({
+        url: "https://scope.example/",
+        status: 204,
+        headers: { link: '<https://foreign.example/bdp.json>; rel="service-desc"' },
+        bodyText: "",
+      }));
+      const fixture = harness();
+      vi.mocked(fixture.cleanup).mockImplementation(cleanupCase.cleanup);
+      const result = await runConformanceMatrix({
+        ...base,
+        artifactBundle: replaceArtifacts(base, {
+          catalog: {
+            ...base.artifactBundle.catalog,
+            scenarios: [metadata, { ...metadata, id: "read.later" }],
+          },
+          manifest: {
+            ...base.artifactBundle.manifest,
+            scenarios: [unsafeScenario, { ...scenario, id: "read.later" }],
+          },
+        }),
+        scope: "https://scope.example/",
+        profile: "read",
+        seed: 0,
+        execute,
+        harness: fixture,
+        cleanupTimeoutMs: 5,
+      });
+
+      expect(execute).toHaveBeenCalledTimes(1);
+      expect(result.scenarios).toMatchObject([
+        {
+          id: "read.discovery",
+          state: "harness-error",
+          category: "out-of-scope-target",
+          cleanupError: cleanupCase.expected,
+        },
+        { id: "read.later", state: "harness-error", category: "not-run" },
+      ]);
+    }
+  });
+
+  it("retains invalid response evidence without embedding the raw body", async () => {
+    const base = inputs([{ id: "status", kind: "status", equals: 200 }]);
+    const scenario = requestScenario(base.artifactBundle.manifest.scenarios[0]);
+    const request = scenario?.requests[0];
+    if (scenario === undefined || request === undefined)
+      throw new Error("test manifest unexpectedly empty");
+    const result = await runConformanceMatrix({
+      ...base,
+      artifactBundle: replaceArtifacts(base, {
+        manifest: {
+          ...base.artifactBundle.manifest,
+          scenarios: [
+            {
+              ...scenario,
+              requests: [{ ...request, target: { ...request.target, query: { token: "secret" } } }],
+            },
+          ],
+        },
+      }),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/?token=secret",
+        status: 200,
+        headers: { "X-Result": "visible" },
+        bodyText: "not-json-secret",
+        effectiveRequest: {
+          url: "https://scope.example/?token=secret",
+          headers: { authorization: "Bearer secret", accept: "application/json" },
+        },
+      }),
+      harness: harness(),
+    });
+    expect(result.scenarios[0]?.state).toBe("pass");
+    expect(result.scenarios[0]?.exchanges[0]?.request.url).toBe(
+      "https://scope.example/?<redacted>",
+    );
+    expect(result.scenarios[0]?.exchanges[0]?.request.url).not.toContain("secret");
+    expect(result.scenarios[0]?.exchanges[0]?.request.url).not.toContain("token");
+    expect(result.scenarios[0]?.exchanges[0]?.response).toMatchObject({
+      bodyKind: "invalid-json",
+      decodedBodyBytes: 15,
+    });
+    expect(result.scenarios[0]?.exchanges[0]?.request.headers.authorization).toBe("<redacted>");
+    expect(result.scenarios[0]?.exchanges[0]?.response).not.toHaveProperty("bodyText");
+  });
+
+  it("materializes a repeated query key as repeated wire occurrences", async () => {
+    const base = inputs([{ id: "status", kind: "status", equals: 200 }]);
+    const scenario = requestScenario(base.artifactBundle.manifest.scenarios[0]);
+    const request = scenario?.requests[0];
+    if (scenario === undefined || request === undefined)
+      throw new Error("test manifest unexpectedly empty");
+    const execute = vi.fn(async (incoming: { url: string }) => ({
+      url: incoming.url,
+      status: 200,
+      headers: {},
+      bodyText: "",
+    }));
+    const result = await runConformanceMatrix({
+      ...base,
+      artifactBundle: replaceArtifacts(base, {
+        manifest: {
+          ...base.artifactBundle.manifest,
+          scenarios: [
+            {
+              ...scenario,
+              requests: [
+                { ...request, target: { ...request.target, query: { limit: ["1", "2"] } } },
+              ],
+            },
+          ],
+        },
+      }),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: harness(),
+    });
+    expect(result.scenarios[0]?.state).toBe("pass");
+    expect(execute.mock.calls[0]?.[0]?.url).toBe("https://scope.example/?limit=1&limit=2");
+  });
+
+  it("runs exactly the scenarios an exact-id selection names and records the request", async () => {
+    const base = inputs([{ id: "status", kind: "status", equals: 204 }]);
+    const metadata = base.artifactBundle.catalog.scenarios[0];
+    const scenario = requestScenario(base.artifactBundle.manifest.scenarios[0]);
+    if (metadata === undefined || scenario === undefined)
+      throw new Error("test inputs unexpectedly empty");
+    const otherMetadata = { ...metadata, id: "read.other" };
+    const otherScenario = { ...scenario, id: "read.other" };
+    const execute = vi.fn(async () => ({
+      url: "https://scope.example/",
+      status: 204,
+      headers: {},
+      bodyText: "",
+    }));
+
+    const result = await runConformanceMatrix({
+      ...base,
+      artifactBundle: replaceArtifacts(base, {
+        catalog: { ...base.artifactBundle.catalog, scenarios: [metadata, otherMetadata] },
+        manifest: { ...base.artifactBundle.manifest, scenarios: [scenario, otherScenario] },
+      }),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: harness(),
+      scenarioSelection: ["read.other"],
+    });
+
+    expect(result.selectedScenarioIds).toEqual(["read.other"]);
+    expect(result.scenarioSelection).toEqual(["read.other"]);
+    expect(result.scenarios).toMatchObject([{ id: "read.other", state: "pass" }]);
+    expect(execute).toHaveBeenCalledTimes(1);
+  });
+
+  it("fails closed when a selection names an unknown or inapplicable scenario", async () => {
+    const base = inputs();
+
+    await expect(
+      runConformanceMatrix({
+        ...base,
+        scope: "https://scope.example/",
+        profile: "read",
+        seed: 0,
+        execute: async () => {
+          throw new Error("must not execute");
+        },
+        harness: harness(),
+        scenarioSelection: ["read.discovery", "read.absent"],
+      }),
+    ).rejects.toThrow(
+      "scenarioSelection names scenarios that are unknown or inapplicable: read.absent",
+    );
+  });
+
+  it("refuses a selection combined with a substring filter", async () => {
+    const base = inputs();
+
+    await expect(
+      runConformanceMatrix({
+        ...base,
+        scope: "https://scope.example/",
+        profile: "read",
+        seed: 0,
+        execute: async () => {
+          throw new Error("must not execute");
+        },
+        harness: harness(),
+        scenarioFilter: "read",
+        scenarioSelection: ["read.discovery"],
+      }),
+    ).rejects.toThrow("scenarioSelection and scenarioFilter are mutually exclusive");
+  });
+
+  it("does not copy expected header contents into assertion diagnostics", async () => {
+    const secret = "Bearer assertion-secret";
+    const result = await runConformanceMatrix({
+      ...inputs([
+        {
+          id: "challenge",
+          kind: "header",
+          name: "www-authenticate",
+          contains: secret,
+        },
+      ]),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 204,
+        headers: { "www-authenticate": "Basic" },
+        bodyText: "",
+      }),
+      harness: harness(),
+    });
+
+    expect(result.scenarios[0]).toMatchObject({
+      state: "fail",
+      reason: "header 'www-authenticate' did not contain the expected value",
+    });
+    expect(JSON.stringify(result)).not.toContain(secret);
+  });
+
+  it("does not copy target-controlled schema paths into assertion diagnostics", async () => {
+    const secretPath = "/bearer-secret-field";
+    const result = await runConformanceMatrix({
+      ...inputs([{ id: "schema", kind: "json-schema", schema: "#/$defs/readDiscovery" }]),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 200,
+        headers: { "content-type": "application/json" },
+        bodyText: JSON.stringify({ "bearer-secret-field": false }),
+      }),
+      harness: harness(),
+      schemaValidator: {
+        resolve: () => undefined,
+        validate: () => [{ instancePath: secretPath, message: "must be a string" }],
+      },
+    });
+
+    expect(result.scenarios[0]).toMatchObject({
+      state: "fail",
+      reason: "response body must be a string",
+    });
+    expect(JSON.stringify(result)).not.toContain(secretPath);
+    expect(JSON.stringify(result)).not.toContain("bearer-secret-field");
+  });
+
+  it("records only the size and shape of potentially sensitive JSON bodies", async () => {
+    const result = await runConformanceMatrix({
+      ...inputs([{ id: "status", kind: "status", equals: 200 }]),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 200,
+        headers: { "content-type": "application/json" },
+        bodyText: JSON.stringify({
+          token: "opaque",
+          next: "https://scope.example/beads/?cursor=opaque",
+        }),
+      }),
+      harness: harness(),
+    });
+    expect(result.scenarios[0]?.exchanges[0]?.response).toMatchObject({
+      bodyKind: "json",
+      decodedBodyBytes: 70,
+    });
+    expect(result.scenarios[0]?.exchanges[0]?.response).not.toHaveProperty("body");
+  });
+
+  it("does not let an unrepresentable JSON value invalidate body-independent assertions", async () => {
+    const result = await runConformanceMatrix({
+      ...inputs([
+        { id: "status", kind: "status", equals: 200 },
+        { id: "mode", kind: "header", name: "x-mode", equals: "safe" },
+        {
+          id: "features",
+          kind: "header-tokens",
+          name: "x-features",
+          includes: ["alpha", "beta"],
+          allowsAdditional: false,
+        },
+        { id: "media", kind: "media-type", equals: "application/json" },
+      ]),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 200,
+        headers: {
+          "content-type": "application/json; charset=utf-8",
+          "x-mode": "safe",
+          "x-features": "alpha, beta",
+        },
+        bodyText: '{"value":1e999}',
+      }),
+      harness: harness(),
+    });
+
+    expect(result.scenarios[0]).toMatchObject({
+      state: "pass",
+      exchanges: [
+        {
+          response: { bodyKind: "unrepresentable-json" },
+          assertions: [
+            { id: "status", passed: true },
+            { id: "mode", passed: true },
+            { id: "features", passed: true },
+            { id: "media", passed: true },
+          ],
+        },
+      ],
+    });
+  });
+
+  it("keeps response and Link captures independent of unrepresentable JSON", async () => {
+    const base = inputs([{ id: "status", kind: "status", equals: 200 }]);
+    const scenario = requestScenario(base.artifactBundle.manifest.scenarios[0]);
+    const request = scenario?.requests[0];
+    if (scenario === undefined || request === undefined)
+      throw new Error("test manifest unexpectedly empty");
+    const execute = vi
+      .fn()
+      .mockResolvedValueOnce({
+        url: "https://scope.example/",
+        status: 200,
+        headers: {
+          link: '<bdp.json>; rel="service-desc"',
+          "content-type": "application/json",
+        },
+        bodyText: '{"value":1e999}',
+      })
+      .mockResolvedValueOnce({
+        url: "https://scope.example/",
+        status: 200,
+        headers: { "content-type": "application/json" },
+        bodyText: "{}",
+      })
+      .mockResolvedValueOnce({
+        url: "https://scope.example/bdp.json",
+        status: 200,
+        headers: { "content-type": "application/json" },
+        bodyText: "{}",
+      });
+    const result = await runConformanceMatrix({
+      ...base,
+      artifactBundle: replaceArtifacts(base, {
+        manifest: {
+          ...base.artifactBundle.manifest,
+          scenarios: [
+            {
+              ...scenario,
+              requests: [
+                {
+                  ...request,
+                  captures: [
+                    { binding: "response-target", from: { kind: "response-url" } },
+                    {
+                      binding: "linked-target",
+                      from: { kind: "header-link", rel: "service-desc" },
+                    },
+                  ],
+                },
+                {
+                  ...request,
+                  id: "response-target",
+                  target: { binding: "response-target" },
+                },
+                {
+                  ...request,
+                  id: "linked-target",
+                  target: { binding: "linked-target" },
+                },
+              ],
+            },
+          ],
+        },
+      }),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: harness(),
+    });
+
+    expect(result.scenarios[0]?.state).toBe("pass");
+    expect(execute.mock.calls.map(([request]) => request.url)).toEqual([
+      "https://scope.example/",
+      "https://scope.example/",
+      "https://scope.example/bdp.json",
+    ]);
+  });
+
+  it("keeps body-absence checks on the raw observed body", async () => {
+    const bodyText = '{"value":1e999}';
+    const result = await runConformanceMatrix({
+      ...inputs([{ id: "body", kind: "body-absent" }]),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 200,
+        headers: { "content-type": "application/json" },
+        bodyText,
+        bodyOctets: new TextEncoder().encode(bodyText).byteLength,
+      }),
+      harness: harness(),
+    });
+
+    expect(result.scenarios[0]).toMatchObject({
+      state: "fail",
+      reason: "expected no response body octets",
+      exchanges: [
+        {
+          response: { bodyKind: "unrepresentable-json" },
+          assertions: [{ id: "body", passed: false, message: "expected no response body octets" }],
+        },
+      ],
+    });
+  });
+
+  it("attributes BOM-only HEAD octets to body absence instead of the harness", async () => {
+    const result = await runConformanceMatrix({
+      ...inputs([{ id: "body", kind: "body-absent" }]),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 200,
+        headers: { "content-type": "application/json" },
+        bodyText: "\uFEFF",
+        bodyOctets: 3,
+      }),
+      harness: harness(),
+    });
+
+    expect(result.scenarios[0]).toMatchObject({
+      state: "fail",
+      reason: "expected no response body octets",
+      exchanges: [
+        {
+          response: { wireBodyOctets: 3 },
+          assertions: [{ id: "body", passed: false, message: "expected no response body octets" }],
+        },
+      ],
+    });
+  });
+
+  it("fails closed when a body-absence assertion lacks wire-octet observation", async () => {
+    const result = await runConformanceMatrix({
+      ...inputs([{ id: "body", kind: "body-absent" }]),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 204,
+        headers: {},
+        bodyText: "",
+      }),
+      harness: harness(),
+    });
+
+    expect(result.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      category: "wire-observation-unavailable",
+      reason: "body-absence assertion requires raw wire-body observation",
+    });
+  });
+
+  it.each([
+    [
+      "reason phrase",
+      (sentinel: string) => `HTTP/1.1 500 ${sentinel}\r\nContent-Length: 0\r\n\r\n`,
+      (_sentinel: string) => ({ headers: {}, bodyText: "", bodyOctets: 0 }),
+    ],
+    [
+      "header",
+      (sentinel: string) =>
+        `HTTP/1.1 500 Internal Server Error\r\nX-Private-Debug: ${sentinel}\r\nContent-Length: 0\r\n\r\n`,
+      (sentinel: string) => ({
+        headers: { "x-private-debug": sentinel },
+        bodyText: "",
+        bodyOctets: 0,
+      }),
+    ],
+    [
+      "body",
+      (sentinel: string) =>
+        `HTTP/1.1 500 Internal Server Error\r\nContent-Length: ${sentinel.length}\r\n\r\n${sentinel}`,
+      (sentinel: string) => ({
+        headers: { "content-length": String(sentinel.length) },
+        bodyText: sentinel,
+        bodyOctets: sentinel.length,
+      }),
+    ],
+  ])(
+    "rejects a private fixture sentinel in the raw response %s",
+    async (_location, rawResponse, parsed) => {
+      const sentinel = "private-internal-fault-sentinel-6d131c92";
+      const fixture = {
+        ...testFixture,
+        private: { internalFaultSentinel: sentinel },
+      } as const satisfies ConformanceFixture;
+      const result = await runConformanceMatrix({
+        ...inputs(
+          [
+            { id: "status", kind: "status", equals: 500 },
+            {
+              id: "redacted",
+              kind: "wire-not-contains",
+              fixturePointer: "/private/internalFaultSentinel",
+            },
+            { id: "body", kind: "body-absent" },
+          ],
+          {},
+          fixture,
+        ),
+        scope: "https://scope.example/",
+        profile: "read",
+        seed: 0,
+        execute: async () => ({
+          url: "https://scope.example/",
+          status: 500,
+          ...parsed(sentinel),
+          wireResponseBytes: new TextEncoder().encode(rawResponse(sentinel)),
+        }),
+        harness: harness(),
+      });
+
+      expect(result.scenarios[0]).toMatchObject({
+        state: "fail",
+        reason: "raw HTTP response contained a private fixture sentinel",
+        exchanges: [
+          {
+            assertions: [
+              {
+                id: "redacted",
+                passed: false,
+                message: "raw HTTP response contained a private fixture sentinel",
+              },
+            ],
+          },
+        ],
+      });
+      expect(serializeConformanceReport(result)).not.toContain(sentinel);
+    },
+  );
+
+  it("allows arbitrary safe response metadata when the private sentinel stays off-wire", async () => {
+    const fixture = {
+      ...testFixture,
+      private: { internalFaultSentinel: "private-internal-fault-sentinel-930efa1d" },
+    } as const satisfies ConformanceFixture;
+    const result = await runConformanceMatrix({
+      ...inputs(
+        [
+          {
+            id: "redacted",
+            kind: "wire-not-contains",
+            fixturePointer: "/private/internalFaultSentinel",
+          },
+        ],
+        {},
+        fixture,
+      ),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 500,
+        headers: { "x-safe-metadata": "implementation-defined" },
+        bodyText: "",
+        bodyOctets: 0,
+        wireResponseBytes: new TextEncoder().encode(
+          "HTTP/1.1 500 Internal Server Error\r\nX-Safe-Metadata: implementation-defined\r\nContent-Length: 0\r\n\r\n",
+        ),
+      }),
+      harness: harness(),
+    });
+
+    expect(result.scenarios[0]).toMatchObject({
+      state: "pass",
+      exchanges: [{ assertions: [{ id: "redacted", passed: true }] }],
+    });
+  });
+
+  it("fails closed on absent, invalid, or oversized raw-wire evidence", async () => {
+    const fixture = {
+      ...testFixture,
+      private: { internalFaultSentinel: "private-internal-fault-sentinel-f203d9ac" },
+    } as const satisfies ConformanceFixture;
+    const runInputs = inputs(
+      [
+        {
+          id: "redacted",
+          kind: "wire-not-contains",
+          fixturePointer: "/private/internalFaultSentinel",
+        },
+      ],
+      {},
+      fixture,
+    );
+    const run = async (wireResponseBytes: Uint8Array | undefined) =>
+      await runConformanceMatrix({
+        ...runInputs,
+        scope: "https://scope.example/",
+        profile: "read",
+        seed: 0,
+        execute: async () => ({
+          url: "https://scope.example/",
+          status: 500,
+          headers: {},
+          bodyText: "",
+          ...(wireResponseBytes === undefined ? {} : { wireResponseBytes }),
+        }),
+        harness: harness(),
+      });
+
+    await expect(run(undefined)).resolves.toMatchObject({
+      scenarios: [
+        {
+          state: "harness-error",
+          category: "wire-observation-unavailable",
+          reason: "raw-wire noncontainment assertion requires exact response bytes",
+        },
+      ],
+    });
+    await expect(run({} as Uint8Array)).resolves.toMatchObject({
+      scenarios: [
+        { state: "harness-error", reason: "HTTP executor returned invalid raw-wire evidence" },
+      ],
+    });
+    await expect(run(new Uint8Array(2_097_153))).resolves.toMatchObject({
+      scenarios: [
+        {
+          state: "harness-error",
+          reason: "HTTP executor raw-wire evidence exceeded its safety bound",
+        },
+      ],
+    });
+  });
+
+  it("fails closed when CORS-header absence lacks an Origin-bearing effective request", async () => {
+    const result = await runConformanceMatrix({
+      ...inputs([
+        {
+          id: "cors-disabled",
+          kind: "header",
+          name: "access-control-allow-origin",
+          absent: true,
+        },
+      ]),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 200,
+        headers: {},
+        bodyText: "",
+      }),
+      harness: harness(),
+    });
+
+    expect(result.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      category: "wire-observation-unavailable",
+      reason: "CORS-header absence assertion requires matching nonempty Origin evidence",
+    });
+  });
+
+  it("accepts and records redacted Origin evidence for a CORS-header absence", async () => {
+    const result = await runConformanceMatrix({
+      ...inputs(
+        [
+          {
+            id: "cors-disabled",
+            kind: "header",
+            name: "access-control-allow-origin",
+            absent: true,
+          },
+        ],
+        { origin: "https://cors-probe.invalid" },
+      ),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 200,
+        headers: {},
+        bodyText: "",
+        effectiveRequest: {
+          url: "https://scope.example/",
+          headers: { Origin: "https://cors-probe.invalid" },
+          headersTransmitted: true,
+        },
+      }),
+      harness: harness(),
+    });
+
+    expect(result.scenarios[0]).toMatchObject({
+      state: "pass",
+      exchanges: [
+        {
+          request: {
+            headers: { origin: "<redacted>" },
+            wireHeadersObserved: true,
+          },
+        },
+      ],
+    });
+  });
+
+  it("fails closed when CORS evidence reports planned rather than serialized headers", async () => {
+    const execute = createFetchHttpExchangeExecutor(
+      vi.fn(async () => new Response("{}", { status: 200 })) as typeof fetch,
+    );
+    const result = await runConformanceMatrix({
+      ...inputs(
+        [
+          {
+            id: "cors-disabled",
+            kind: "header",
+            name: "access-control-allow-origin",
+            absent: true,
+          },
+        ],
+        { origin: "https://cors-probe.invalid" },
+      ),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: harness(),
+    });
+
+    expect(result.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      category: "wire-observation-unavailable",
+      reason: "CORS-header absence assertion requires serialized wire-request evidence",
+    });
+  });
+
+  it("fails closed when effective CORS evidence substitutes the requested Origin", async () => {
+    const result = await runConformanceMatrix({
+      ...inputs(
+        [
+          {
+            id: "cors-disabled",
+            kind: "header",
+            name: "access-control-allow-origin",
+            absent: true,
+          },
+        ],
+        { origin: "https://cors-probe.invalid" },
+      ),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 200,
+        headers: {},
+        bodyText: "",
+        effectiveRequest: {
+          url: "https://scope.example/",
+          headers: { origin: "https://substituted.invalid" },
+          headersTransmitted: true,
+        },
+      }),
+      harness: harness(),
+    });
+
+    expect(result.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      category: "wire-observation-unavailable",
+      reason: "CORS-header absence assertion requires matching nonempty Origin evidence",
+    });
+  });
+
+  it("fails closed when preflight method evidence differs from the serialized request", async () => {
+    const result = await runConformanceMatrix({
+      ...inputs(
+        [
+          {
+            id: "cors-disabled",
+            kind: "header",
+            name: "access-control-allow-methods",
+            absent: true,
+          },
+        ],
+        {
+          origin: "https://cors-probe.invalid",
+          "access-control-request-method": "GET",
+        },
+      ),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 405,
+        headers: {},
+        bodyText: "",
+        effectiveRequest: {
+          url: "https://scope.example/",
+          headers: {
+            origin: "https://cors-probe.invalid",
+            "access-control-request-method": "POST",
+          },
+          headersTransmitted: true,
+        },
+      }),
+      harness: harness(),
+    });
+
+    expect(result.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      category: "wire-observation-unavailable",
+      reason:
+        "CORS-header absence assertion requires matching nonempty Access-Control-Request-Method evidence",
+    });
+  });
+
+  it.each(["content-length", "bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"])(
+    "compares HEAD stable metadata %s with earlier GET",
+    async (header) => {
+      const base = inputs([{ id: "status", kind: "status", equals: 200 }]);
+      const scenario = requestScenario(base.artifactBundle.manifest.scenarios[0]);
+      const request = scenario?.requests[0];
+      if (scenario === undefined || request === undefined)
+        throw new Error("test inputs unexpectedly empty");
+      const manifest = parseExecutableScenarioManifest({
+        ...base.artifactBundle.manifest,
+        scenarios: [
+          {
+            ...scenario,
+            requests: [
+              request,
+              {
+                ...request,
+                id: "head",
+                method: "HEAD",
+                assertions: [
+                  {
+                    id: "metadata",
+                    kind: "response-metadata-equals",
+                    request: request.id,
+                    headers: [header],
+                  },
+                  { id: "body", kind: "body-absent" },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+      const execute = vi.fn(
+        async ({ method }: { readonly method: string }): Promise<HttpExchangeResponse> => ({
+          url: "https://scope.example/",
+          status: 200,
+          headers: { [header]: "2" },
+          bodyText: method === "HEAD" ? "" : "{}",
+          bodyOctets: method === "HEAD" ? 0 : 2,
+        }),
+      );
+
+      const passing = await runConformanceMatrix({
+        ...base,
+        artifactBundle: replaceArtifacts(base, { manifest }),
+        scope: "https://scope.example/",
+        profile: "read",
+        seed: 0,
+        execute,
+        harness: harness(),
+      });
+      expect(passing.scenarios[0]).toMatchObject({ state: "pass" });
+
+      execute.mockResolvedValueOnce({
+        url: "https://scope.example/",
+        status: 200,
+        headers: {},
+        bodyText: "{}",
+        bodyOctets: 2,
+      });
+      execute.mockResolvedValueOnce({
+        url: "https://scope.example/",
+        status: 200,
+        headers: {},
+        bodyText: "",
+        bodyOctets: 0,
+      });
+      const mutuallyAbsent = await runConformanceMatrix({
+        ...base,
+        artifactBundle: replaceArtifacts(base, { manifest }),
+        scope: "https://scope.example/",
+        profile: "read",
+        seed: 0,
+        execute,
+        harness: harness(),
+      });
+      expect(mutuallyAbsent.scenarios[0]).toMatchObject({ state: "pass" });
+
+      execute.mockResolvedValueOnce({
+        url: "https://scope.example/",
+        status: 200,
+        headers: { [header]: "2" },
+        bodyText: "{}",
+        bodyOctets: 2,
+      });
+      execute.mockResolvedValueOnce({
+        url: "https://scope.example/",
+        status: 200,
+        headers: { [header]: "3" },
+        bodyText: "",
+        bodyOctets: 0,
+      });
+      const failing = await runConformanceMatrix({
+        ...base,
+        artifactBundle: replaceArtifacts(base, { manifest }),
+        scope: "https://scope.example/",
+        profile: "read",
+        seed: 0,
+        execute,
+        harness: harness(),
+      });
+      expect(failing.scenarios[0]).toMatchObject({
+        state: "fail",
+        reason: "response metadata did not match request 'scope'",
+      });
+    },
+  );
+
+  it.each([
+    {
+      bodyText: '{"next":1e999}',
+      bodyKind: "unrepresentable-json",
+      reason:
+        "response JSON contained a number that is not representable as a finite runtime value",
+    },
+    { bodyText: "", bodyKind: "empty", reason: "response body was not valid JSON" },
+    { bodyText: "{", bodyKind: "invalid-json", reason: "response body was not valid JSON" },
+  ])("attributes a $bodyKind JSON-pointer capture to the target and continues", async (sample) => {
+    const base = inputs([{ id: "status", kind: "status", equals: 200 }]);
+    const metadata = base.artifactBundle.catalog.scenarios[0];
+    const scenario = requestScenario(base.artifactBundle.manifest.scenarios[0]);
+    const request = scenario?.requests[0];
+    if (metadata === undefined || scenario === undefined || request === undefined)
+      throw new Error("test inputs unexpectedly empty");
+    const execute = vi
+      .fn()
+      .mockResolvedValueOnce({
+        url: "https://scope.example/",
+        status: 200,
+        headers: { "content-type": "application/json" },
+        bodyText: sample.bodyText,
+      })
+      .mockResolvedValueOnce({
+        url: "https://scope.example/",
+        status: 200,
+        headers: { "content-type": "application/json" },
+        bodyText: "{}",
+      });
+    const result = await runConformanceMatrix({
+      ...base,
+      artifactBundle: replaceArtifacts(base, {
+        catalog: {
+          ...base.artifactBundle.catalog,
+          scenarios: [metadata, { ...metadata, id: "read.later" }],
+        },
+        manifest: {
+          ...base.artifactBundle.manifest,
+          scenarios: [
+            {
+              ...scenario,
+              requests: [
+                {
+                  ...request,
+                  captures: [{ binding: "next", from: { kind: "json-pointer", pointer: "/next" } }],
+                },
+              ],
+            },
+            { ...scenario, id: "read.later" },
+          ],
+        },
+      }),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: harness(),
+    });
+
+    expect(execute).toHaveBeenCalledTimes(2);
+    expect(result.scenarios).toMatchObject([
+      {
+        id: "read.discovery",
+        state: "fail",
+        reason: sample.reason,
+        exchanges: [{ assertions: [{ id: "status", passed: true }] }],
+      },
+      { id: "read.later", state: "pass" },
+    ]);
+  });
+
+  it.each([
+    { bodyText: "", bodyKind: "empty" },
+    { bodyText: "{", bodyKind: "invalid-json" },
+  ])("reports an unparseable $bodyKind body before JSON value comparison", async (sample) => {
+    const result = await runConformanceMatrix({
+      ...inputs([{ id: "body", kind: "json-equals", value: {} }]),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 200,
+        headers: { "content-type": "application/json" },
+        bodyText: sample.bodyText,
+      }),
+      harness: harness(),
+    });
+
+    expect(result.scenarios[0]).toMatchObject({
+      state: "fail",
+      reason: "response body was not valid JSON",
+      exchanges: [
+        {
+          response: { bodyKind: sample.bodyKind },
+          assertions: [{ id: "body", passed: false, message: "response body was not valid JSON" }],
+        },
+      ],
+    });
+  });
+
+  it.each([
+    { bodyText: "", bodyKind: "empty" },
+    { bodyText: "{", bodyKind: "invalid-json" },
+  ])("rejects an unparseable $bodyKind body before schema validation", async (sample) => {
+    const validate = vi.fn(() => []);
+    const result = await runConformanceMatrix({
+      ...inputs([{ id: "body", kind: "json-schema", schema: "#/$defs/readDiscovery" }]),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 200,
+        headers: { "content-type": "application/json" },
+        bodyText: sample.bodyText,
+      }),
+      harness: harness(),
+      schemaValidator: { resolve: () => undefined, validate },
+    });
+
+    expect(result.scenarios[0]).toMatchObject({
+      state: "fail",
+      reason: "response body was not valid JSON",
+      exchanges: [
+        {
+          response: { bodyKind: sample.bodyKind },
+          assertions: [{ id: "body", passed: false, message: "response body was not valid JSON" }],
+        },
+      ],
+    });
+    expect(validate).not.toHaveBeenCalled();
+  });
+
+  it("attributes an unrepresentable JSON value to a body-consuming assertion and continues", async () => {
+    const base = inputs([{ id: "root", kind: "json-pointer", pointer: "", exists: true }]);
+    const metadata = base.artifactBundle.catalog.scenarios[0];
+    const scenario = requestScenario(base.artifactBundle.manifest.scenarios[0]);
+    if (metadata === undefined || scenario === undefined)
+      throw new Error("test inputs unexpectedly empty");
+    const execute = vi
+      .fn()
+      .mockResolvedValueOnce({
+        url: "https://scope.example/",
+        status: 200,
+        headers: { "content-type": "application/json" },
+        bodyText: '{"value":1e999}',
+      })
+      .mockResolvedValueOnce({
+        url: "https://scope.example/",
+        status: 200,
+        headers: { "content-type": "application/json" },
+        bodyText: "{}",
+      });
+    const result = await runConformanceMatrix({
+      ...base,
+      artifactBundle: replaceArtifacts(base, {
+        catalog: {
+          ...base.artifactBundle.catalog,
+          scenarios: [metadata, { ...metadata, id: "read.later" }],
+        },
+        manifest: {
+          ...base.artifactBundle.manifest,
+          scenarios: [scenario, { ...scenario, id: "read.later" }],
+        },
+      }),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: harness(),
+    });
+
+    expect(execute).toHaveBeenCalledTimes(2);
+    expect(result.scenarios).toMatchObject([
+      {
+        id: "read.discovery",
+        state: "fail",
+        reason:
+          "response JSON contained a number that is not representable as a finite runtime value",
+        exchanges: [
+          {
+            response: { bodyKind: "unrepresentable-json" },
+            assertions: [
+              {
+                id: "root",
+                passed: false,
+                message:
+                  "response JSON contained a number that is not representable as a finite runtime value",
+              },
+            ],
+          },
+        ],
+      },
+      { id: "read.later", state: "pass" },
+    ]);
+  });
+
+  it("reports valid over-limit target JSON locally and continues independent scenarios", async () => {
+    const depth = 129;
+    const base = inputs([{ id: "root", kind: "json-pointer", pointer: "", exists: true }]);
+    const metadata = base.artifactBundle.catalog.scenarios[0];
+    const scenario = requestScenario(base.artifactBundle.manifest.scenarios[0]);
+    if (metadata === undefined || scenario === undefined)
+      throw new Error("test inputs unexpectedly empty");
+    const execute = vi
+      .fn()
+      .mockResolvedValueOnce({
+        url: "https://scope.example/",
+        status: 200,
+        headers: { "content-type": "application/json" },
+        bodyText: `${"[".repeat(depth)}0${"]".repeat(depth)}`,
+      })
+      .mockResolvedValueOnce({
+        url: "https://scope.example/",
+        status: 200,
+        headers: { "content-type": "application/json" },
+        bodyText: "{}",
+      });
+    const result = await runConformanceMatrix({
+      ...base,
+      artifactBundle: replaceArtifacts(base, {
+        catalog: {
+          ...base.artifactBundle.catalog,
+          scenarios: [metadata, { ...metadata, id: "read.later" }],
+        },
+        manifest: {
+          ...base.artifactBundle.manifest,
+          scenarios: [scenario, { ...scenario, id: "read.later" }],
+        },
+      }),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: harness(),
+    });
+
+    expect(execute).toHaveBeenCalledTimes(2);
+    expect(result.scenarios).toMatchObject([
+      {
+        id: "read.discovery",
+        state: "harness-error",
+        category: "observation-limit",
+        reason: "response JSON exceeded the runner depth limit of 128",
+        exchanges: [{ response: { bodyKind: "unrepresentable-json" } }],
+      },
+      { id: "read.later", state: "pass" },
+    ]);
+  });
+
+  it.each([
+    {
+      name: "node",
+      bodyText: JSON.stringify(Array.from({ length: 101 }, () => Array(1_000).fill(0))),
+      reason: "response JSON exceeded the runner node limit of 100000",
+    },
+    {
+      name: "per-container entry",
+      bodyText: JSON.stringify(Array(10_001).fill(0)),
+      reason: "response JSON exceeded the runner per-container entry limit of 10000",
+    },
+  ])(
+    "reports a $name bound locally and continues independent scenarios",
+    async ({ bodyText, reason }) => {
+      const base = inputs([{ id: "root", kind: "json-pointer", pointer: "", exists: true }]);
+      const metadata = base.artifactBundle.catalog.scenarios[0];
+      const scenario = requestScenario(base.artifactBundle.manifest.scenarios[0]);
+      if (metadata === undefined || scenario === undefined)
+        throw new Error("test inputs unexpectedly empty");
+      const execute = vi
+        .fn()
+        .mockResolvedValueOnce({
+          url: "https://scope.example/",
+          status: 200,
+          headers: { "content-type": "application/json" },
+          bodyText,
+        })
+        .mockResolvedValueOnce({
+          url: "https://scope.example/",
+          status: 200,
+          headers: { "content-type": "application/json" },
+          bodyText: "{}",
+        });
+      const result = await runConformanceMatrix({
+        ...base,
+        artifactBundle: replaceArtifacts(base, {
+          catalog: {
+            ...base.artifactBundle.catalog,
+            scenarios: [metadata, { ...metadata, id: "read.later" }],
+          },
+          manifest: {
+            ...base.artifactBundle.manifest,
+            scenarios: [scenario, { ...scenario, id: "read.later" }],
+          },
+        }),
+        scope: "https://scope.example/",
+        profile: "read",
+        seed: 0,
+        execute,
+        harness: harness(),
+      });
+
+      expect(execute).toHaveBeenCalledTimes(2);
+      expect(result.scenarios).toMatchObject([
+        {
+          id: "read.discovery",
+          state: "harness-error",
+          category: "observation-limit",
+          reason,
+          exchanges: [{ response: { bodyKind: "unrepresentable-json" } }],
+        },
+        { id: "read.later", state: "pass" },
+      ]);
+    },
+  );
+
+  it("gives runner safety bounds precedence over target-value attribution", async () => {
+    const thousandNodes = `[${Array(1_000).fill("0").join(",")}]`;
+    const bodyText = `[${Array(100).fill(thousandNodes).join(",")},1e999]`;
+    const result = await runConformanceMatrix({
+      ...inputs([{ id: "root", kind: "json-pointer", pointer: "", exists: true }]),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 200,
+        headers: { "content-type": "application/json" },
+        bodyText,
+      }),
+      harness: harness(),
+    });
+
+    expect(result.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      category: "observation-limit",
+      reason: "response JSON exceeded the runner node limit of 100000",
+    });
+  });
+
+  it("uses own properties and canonical array indices for JSON Pointer", async () => {
+    const result = await runConformanceMatrix({
+      ...inputs([
+        { id: "prototype", kind: "json-pointer", pointer: "/constructor", exists: false },
+        { id: "index", kind: "json-pointer", pointer: "/items/01", exists: false },
+      ]),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 200,
+        headers: { "content-type": "application/json" },
+        bodyText: JSON.stringify({ items: [1, 2] }),
+      }),
+      harness: harness(),
+    });
+    expect(result.scenarios[0]?.state).toBe("pass");
+  });
+
+  it("parses media types exactly while allowing case and parameters", async () => {
+    const run = async (contentType: string) =>
+      await runConformanceMatrix({
+        ...inputs([{ id: "media", kind: "media-type", equals: "application/json" }]),
+        scope: "https://scope.example/",
+        profile: "read",
+        seed: 0,
+        execute: async () => ({
+          url: "https://scope.example/",
+          status: 200,
+          headers: { "Content-Type": contentType },
+          bodyText: "{}",
+        }),
+        harness: harness(),
+      });
+    await expect(run("Application/JSON; Charset=UTF-8")).resolves.toMatchObject({
+      scenarios: [{ state: "pass" }],
+    });
+    await expect(run("text/application/json-fake")).resolves.toMatchObject({
+      scenarios: [{ state: "fail" }],
+    });
+  });
+
+  it("compares Allow methods case-sensitively and rejects undeclared extras", async () => {
+    const run = async (allow: string) =>
+      await runConformanceMatrix({
+        ...inputs([
+          {
+            id: "allow",
+            kind: "header-tokens",
+            name: "allow",
+            includes: ["GET", "HEAD"],
+            optional: ["OPTIONS"],
+            allowsAdditional: false,
+          },
+        ]),
+        scope: "https://scope.example/",
+        profile: "read",
+        seed: 0,
+        execute: async () => ({
+          url: "https://scope.example/",
+          status: 405,
+          headers: { Allow: allow },
+          bodyText: "",
+        }),
+        harness: harness(),
+      });
+    await expect(run("HEAD, GET")).resolves.toMatchObject({ scenarios: [{ state: "pass" }] });
+    await expect(run("HEAD, GET, OPTIONS")).resolves.toMatchObject({
+      scenarios: [{ state: "pass" }],
+    });
+    await expect(run("get, head")).resolves.toMatchObject({ scenarios: [{ state: "fail" }] });
+    await expect(run("GET, HEAD, POST")).resolves.toMatchObject({
+      scenarios: [{ state: "fail" }],
+    });
+  });
+
+  it("compares Cache-Control directive names case-insensitively when declared", async () => {
+    const result = await runConformanceMatrix({
+      ...inputs([
+        {
+          id: "cache-control",
+          kind: "header-tokens",
+          name: "cache-control",
+          includes: ["private", "no-store"],
+          allowsAdditional: false,
+          caseInsensitive: true,
+        },
+      ]),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 200,
+        headers: { "cache-control": "Private, No-Store" },
+        bodyText: "{}",
+      }),
+      harness: harness(),
+    });
+
+    expect(result.scenarios[0]).toMatchObject({ state: "pass" });
+  });
+
+  it("rejects noncanonical Scope URLs before contacting a target", async () => {
+    await expect(
+      runConformanceMatrix({
+        ...inputs(),
+        scope: "https://scope.example/root?cursor=unsafe",
+        profile: "read",
+        seed: 0,
+        execute: vi.fn(),
+        harness: harness(),
+      }),
+    ).rejects.toThrow("scope must be an absolute credential-free HTTP(S) URL ending in '/'");
+    await expect(
+      runConformanceMatrix({
+        ...inputs(),
+        scope: "https://scope.example/%41/",
+        profile: "read",
+        seed: 0,
+        execute: vi.fn(),
+        harness: harness(),
+      }),
+    ).rejects.toThrow("scope must be an absolute credential-free HTTP(S) URL ending in '/'");
+  });
+
+  it("rejects noncanonical target URL percent encoding", async () => {
+    const run = async (url: string) =>
+      await runConformanceMatrix({
+        ...inputs([{ id: "status", kind: "status", equals: 204 }]),
+        scope: "https://scope.example/",
+        profile: "read",
+        seed: 0,
+        execute: async () => ({ url, status: 204, headers: {}, bodyText: "" }),
+        harness: harness(),
+      });
+    await expect(run("https://scope.example/%41")).resolves.toMatchObject({
+      scenarios: [{ state: "fail" }],
+    });
+    await expect(run("https://scope.example/%2a")).resolves.toMatchObject({
+      scenarios: [{ state: "fail" }],
+    });
+  });
+
+  it("uses standard relative URL resolution for resource bindings", async () => {
+    const base = inputs([{ id: "status", kind: "status", equals: 204 }]);
+    const scenario = requestScenario(base.artifactBundle.manifest.scenarios[0]);
+    const request = scenario?.requests[0];
+    if (scenario === undefined || request === undefined)
+      throw new Error("test manifest unexpectedly empty");
+    const execute = vi.fn(async () => ({
+      url: "https://scope.example/beads/child",
+      status: 204,
+      headers: {},
+      bodyText: "",
+    }));
+    await runConformanceMatrix({
+      ...base,
+      artifactBundle: replaceArtifacts(base, {
+        fixture: { ...base.artifactBundle.fixture, bindings: { resource: "beads/demo-a" } },
+        manifest: {
+          ...base.artifactBundle.manifest,
+          scenarios: [
+            {
+              ...scenario,
+              requests: [{ ...request, target: { binding: "resource", path: "child" } }],
+            },
+          ],
+        },
+      }),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: {
+        prepare: async () => ({
+          capabilities: ["public-http"],
+          bindings: { resource: "https://scope.example/beads/demo-a" },
+        }),
+        cleanup: async () => undefined,
+      },
+    });
+    expect(execute).toHaveBeenCalledWith(
+      expect.objectContaining({ url: "https://scope.example/beads/child" }),
+    );
+  });
+
+  it("materializes fixture query bindings in absolute and Scope-relative forms", async () => {
+    const base = inputs([{ id: "status", kind: "status", equals: 204 }]);
+    const scenario = requestScenario(base.artifactBundle.manifest.scenarios[0]);
+    const request = scenario?.requests[0];
+    if (scenario === undefined || request === undefined)
+      throw new Error("test manifest unexpectedly empty");
+    const execute = vi.fn(async ({ url }: { readonly url: string }) => ({
+      url,
+      status: 204,
+      headers: {},
+      bodyText: "",
+    }));
+    await runConformanceMatrix({
+      ...base,
+      artifactBundle: replaceArtifacts(base, {
+        fixture: {
+          ...base.artifactBundle.fixture,
+          bindings: { resource: "beads/demo-a" },
+        },
+        manifest: {
+          ...base.artifactBundle.manifest,
+          scenarios: [
+            {
+              ...scenario,
+              requests: [
+                {
+                  ...request,
+                  target: {
+                    binding: "scope",
+                    query: {
+                      source: { binding: "resource", representation: "scope-relative-url" },
+                      target: { binding: "resource", representation: "absolute-url" },
+                    },
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      }),
+      scope: "https://scope.example/local-test/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: {
+        prepare: async () => ({
+          capabilities: ["public-http"],
+          bindings: { resource: "https://scope.example/local-test/beads/demo-a" },
+        }),
+        cleanup: async () => undefined,
+      },
+    });
+    expect(execute).toHaveBeenCalledWith(
+      expect.objectContaining({
+        url: "https://scope.example/local-test/?source=beads%2Fdemo-a&target=https%3A%2F%2Fscope.example%2Flocal-test%2Fbeads%2Fdemo-a",
+      }),
+    );
+  });
+
+  it("bounds fixture preparation even when the harness ignores its signal", async () => {
+    const fixture = harness();
+    vi.mocked(fixture.prepare).mockImplementation(
+      async () => await new Promise<never>(() => undefined),
+    );
+    const result = await runConformanceMatrix({
+      ...inputs(),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: vi.fn(),
+      harness: fixture,
+      prepareTimeoutMs: 5,
+    });
+    expect(result.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      category: "deadline",
+      reason: "fixture preparation timed out",
+      cleanupError: "cleanup skipped because fixture preparation did not settle",
+    });
+    expect(fixture.cleanup).not.toHaveBeenCalled();
+  });
+
+  it("rejects fixture bindings that shadow Scope or a scenario capture", async () => {
+    const scopeShadow = harness();
+    vi.mocked(scopeShadow.prepare).mockResolvedValue({
+      capabilities: ["public-http"],
+      bindings: { scope: "https://foreign.example/" },
+    });
+    const execute = vi.fn();
+    const scopeInputs = inputs();
+    const scopeResult = await runConformanceMatrix({
+      ...scopeInputs,
+      artifactBundle: fixtureWithBindings(scopeInputs, { scope: "scope" }),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: scopeShadow,
+    });
+    expect(scopeResult.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      reason: "fixture bindings must not shadow Scope",
+    });
+    expect(execute).not.toHaveBeenCalled();
+
+    const escapedBinding = harness();
+    vi.mocked(escapedBinding.prepare).mockResolvedValue({
+      capabilities: ["public-http"],
+      bindings: { resource: "https://foreign.example/beads/demo-a" },
+    });
+    const escapedInputs = inputs();
+    const escapedResult = await runConformanceMatrix({
+      ...escapedInputs,
+      artifactBundle: fixtureWithBindings(escapedInputs, { resource: "beads/demo-a" }),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: escapedBinding,
+    });
+    expect(escapedResult.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      reason: "fixture binding must resolve within the canonical Scope",
+    });
+    expect(execute).not.toHaveBeenCalled();
+
+    const secretNamedBinding = harness();
+    vi.mocked(secretNamedBinding.prepare).mockResolvedValue({
+      capabilities: ["public-http"],
+      bindings: { "bearer-binding-secret": "https://foreign.example/beads/demo-a" },
+    });
+    const secretInputs = inputs();
+    const secretNamedResult = await runConformanceMatrix({
+      ...secretInputs,
+      artifactBundle: fixtureWithBindings(secretInputs, {
+        "bearer-binding-secret": "beads/demo-a",
+      }),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: secretNamedBinding,
+    });
+    expect(secretNamedResult.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      reason: "fixture binding must resolve within the canonical Scope",
+    });
+    expect(JSON.stringify(secretNamedResult)).not.toContain("bearer-binding-secret");
+    expect(execute).not.toHaveBeenCalled();
+
+    const captureInputs = inputs([{ id: "status", kind: "status", equals: 204 }]);
+    const scenario = requestScenario(captureInputs.artifactBundle.manifest.scenarios[0]);
+    const request = scenario?.requests[0];
+    if (scenario === undefined || request === undefined)
+      throw new Error("test manifest unexpectedly empty");
+    const captureShadow = harness();
+    vi.mocked(captureShadow.prepare).mockResolvedValue({
+      capabilities: ["public-http"],
+      bindings: { "service-desc": "bdp.json" },
+    });
+    const captureResult = await runConformanceMatrix({
+      ...captureInputs,
+      artifactBundle: replaceArtifacts(captureInputs, {
+        fixture: {
+          ...captureInputs.artifactBundle.fixture,
+          bindings: { "service-desc": "bdp.json" },
+        },
+        manifest: {
+          ...captureInputs.artifactBundle.manifest,
+          scenarios: [
+            {
+              ...scenario,
+              requests: [
+                {
+                  ...request,
+                  captures: [{ binding: "service-desc", from: { kind: "response-url" } }],
+                },
+              ],
+            },
+          ],
+        },
+      }),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: captureShadow,
+    });
+    expect(captureResult.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      reason: "capture 'service-desc' shadows an established binding",
+    });
+    expect(execute).not.toHaveBeenCalled();
+
+    const unsafeName = harness();
+    vi.mocked(unsafeName.prepare).mockResolvedValue({
+      capabilities: ["public-http"],
+      bindings: { "Bearer BINDING-SECRET": "beads/a" },
+    });
+    const unsafe = await runConformanceMatrix({
+      ...inputs(),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: unsafeName,
+    });
+    expect(unsafe.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      reason: "fixture preparation binding names must match the bound fixture",
+    });
+    expect(JSON.stringify(unsafe)).not.toContain("BINDING-SECRET");
+  });
+
+  it("treats invalid executor authorization setup as a harness error", async () => {
+    const fetchMock = vi.fn();
+    const execute = createFetchHttpExchangeExecutor(fetchMock as typeof fetch, () => ({
+      "bad header": "invalid",
+    }));
+    const result = await runConformanceMatrix({
+      ...inputs(),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: harness(),
+    });
+    expect(result.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      reason: "HTTP executor configuration failed",
+      exchanges: [{ transportError: { category: "configuration" } }],
+    });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("rejects and redacts an unsafe executor-supplied effective request", async () => {
+    const result = await runConformanceMatrix({
+      ...inputs([{ id: "status", kind: "status", equals: 204 }]),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 204,
+        headers: {},
+        bodyText: "",
+        bodyOctets: 0,
+        effectiveRequest: {
+          url: "https://scope.example/#secret-fragment",
+          headers: { authorization: "Bearer secret" },
+        },
+      }),
+      harness: harness(),
+    });
+    expect(result.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      reason: "HTTP executor returned an unsafe effective request",
+    });
+    expect(JSON.stringify(result)).not.toContain("secret-fragment");
+    expect(JSON.stringify(result)).not.toContain("Bearer secret");
+  });
+
+  it("rejects an executor-supplied effective request with a changed query", async () => {
+    const result = await runConformanceMatrix({
+      ...inputs([{ id: "status", kind: "status", equals: 204 }]),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 204,
+        headers: {},
+        bodyText: "",
+        effectiveRequest: {
+          url: "https://scope.example/?unexpected=true",
+          headers: {},
+        },
+      }),
+      harness: harness(),
+    });
+    expect(result.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      reason: "HTTP executor returned an unsafe effective request",
+    });
+  });
+
+  it("bounds a custom executor even when it ignores the request signal", async () => {
+    const fixture = harness();
+    const result = await runConformanceMatrix({
+      ...inputs(),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => await new Promise<never>(() => undefined),
+      harness: fixture,
+      requestTimeoutMs: 5,
+    });
+    expect(result.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      category: "deadline",
+      reason: "HTTP transport failed (timeout)",
+      cleanupError: "cleanup skipped because an HTTP exchange did not settle",
+      exchanges: [
+        { transportError: { category: "timeout", message: "HTTP transport failed (timeout)" } },
+      ],
+    });
+    expect(fixture.cleanup).not.toHaveBeenCalled();
+  });
+
+  it("does not start later scenarios after an uncontained deadline", async () => {
+    const base = inputs();
+    const metadata = base.artifactBundle.catalog.scenarios[0];
+    const scenario = requestScenario(base.artifactBundle.manifest.scenarios[0]);
+    if (metadata === undefined || scenario === undefined)
+      throw new Error("test inputs unexpectedly empty");
+    const fixture = harness();
+    vi.mocked(fixture.prepare).mockImplementation(
+      async () => await new Promise<never>(() => undefined),
+    );
+    const result = await runConformanceMatrix({
+      ...base,
+      artifactBundle: replaceArtifacts(base, {
+        catalog: {
+          ...base.artifactBundle.catalog,
+          scenarios: [metadata, { ...metadata, id: "read.second" }],
+        },
+        manifest: {
+          ...base.artifactBundle.manifest,
+          scenarios: [scenario, { ...scenario, id: "read.second" }],
+        },
+      }),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: vi.fn(),
+      harness: fixture,
+      prepareTimeoutMs: 5,
+    });
+    expect(fixture.prepare).toHaveBeenCalledTimes(1);
+    expect(result.scenarios).toMatchObject([
+      { id: "read.discovery", category: "deadline", state: "harness-error" },
+      { id: "read.second", category: "not-run", state: "harness-error" },
+    ]);
+  });
+
+  it("rejects timeout values that exceed the Node timer range", async () => {
+    await expect(
+      runConformanceMatrix({
+        ...inputs(),
+        scope: "https://scope.example/",
+        profile: "read",
+        seed: 0,
+        execute: vi.fn(),
+        harness: harness(),
+        requestTimeoutMs: Number.MAX_SAFE_INTEGER,
+      }),
+    ).rejects.toThrow("requestTimeoutMs must be an integer from 1 to 2147483647");
+    expect(() =>
+      createFetchHttpExchangeExecutor(fetch, undefined, 1024, Number.MAX_SAFE_INTEGER),
+    ).toThrow("requestTimeoutMs must be an integer from 1 to 2147483647");
+  });
+
+  it("validates safety-critical run identity, profile, and filter options before execution", async () => {
+    const base = inputs();
+    const execute = vi.fn();
+    const run = async (overrides: Partial<Parameters<typeof runConformanceMatrix>[0]>) =>
+      await runConformanceMatrix({
+        ...base,
+        scope: "https://scope.example/",
+        profile: "read",
+        seed: 0,
+        execute,
+        harness: harness(),
+        ...overrides,
+      });
+    await expect(run({ seed: -1 })).rejects.toThrow("seed must be a non-negative safe integer");
+    await expect(run({ seed: 1 })).rejects.toThrow("seed must equal the bound fixture seed");
+    for (const declaredTargetLabel of ["", "Bearer TARGET-SECRET", "a".repeat(129)])
+      await expect(run({ declaredTargetLabel })).rejects.toThrow(
+        "declaredTargetLabel must be 1..128 lowercase identifier characters",
+      );
+    await expect(run({ profile: "read-update" })).rejects.toThrow(
+      "read-v1 executable scaffold currently supports targets advertising the Read profile only",
+    );
+    await expect(run({ scenarioFilter: "" })).rejects.toThrow("scenarioFilter must not be empty");
+    await expect(run({ scenarioFilter: "missing" })).rejects.toThrow(
+      "scenarioFilter matched no applicable scenarios",
+    );
+    const scenario = requestScenario(base.artifactBundle.manifest.scenarios[0]);
+    if (scenario === undefined) throw new Error("test manifest unexpectedly empty");
+    await expect(
+      run({
+        artifactBundle: replaceArtifacts(base, {
+          manifest: {
+            ...base.artifactBundle.manifest,
+            scenarios: [{ ...scenario, id: "read.unknown" }],
+          },
+        }),
+      }),
+    ).rejects.toThrow("executable plan 'read.unknown' has no catalog metadata");
+    const request = scenario.requests[0];
+    if (request === undefined) throw new Error("test manifest unexpectedly empty");
+    if (request.raw !== undefined) throw new Error("expected ordinary legacy request");
+    await expect(
+      run({
+        artifactBundle: replaceArtifacts(base, {
+          manifest: {
+            ...base.artifactBundle.manifest,
+            scenarios: [
+              {
+                ...scenario,
+                id: "read.unknown",
+                requests: [
+                  { ...request, prerequisiteScenario: "read.discovery" },
+                  { ...request, id: "owned" },
+                ],
+              },
+            ],
+          },
+        }),
+      }),
+    ).rejects.toThrow("executable plan 'read.unknown' has no catalog metadata");
+    await expect(
+      run({
+        artifactBundle: replaceArtifacts(base, {
+          manifest: {
+            ...base.artifactBundle.manifest,
+            scenarios: [
+              {
+                ...scenario,
+                requests: [
+                  { ...request, prerequisiteScenario: "read.discovery.missing" },
+                  { ...request, id: "owned" },
+                ],
+              },
+            ],
+          },
+        }),
+      }),
+    ).rejects.toThrow("references unknown prerequisite scenario 'read.discovery.missing'");
+    await expect(
+      run({
+        artifactBundle: replaceArtifacts(base, {
+          manifest: {
+            ...base.artifactBundle.manifest,
+            scenarios: [
+              {
+                ...scenario,
+                requests: [
+                  { ...request, prerequisiteScenario: scenario.id },
+                  { ...request, id: "owned" },
+                ],
+              },
+            ],
+          },
+        }),
+      }),
+    ).rejects.toThrow("cannot use its own scenario as a prerequisite");
+    expect(() =>
+      replaceArtifacts(base, {
+        manifest: {
+          ...base.artifactBundle.manifest,
+          scenarios: [
+            {
+              ...scenario,
+              requests: [
+                {
+                  ...request,
+                  method: "DELETE",
+                  headers: { authorization: "Bearer HARNESS-SECRET" },
+                },
+              ],
+            },
+          ],
+        },
+      }),
+    ).toThrow("validation failed");
+    await expect(run({ artifactBundle: { ...base.artifactBundle } })).rejects.toThrow(
+      "artifact bundle failed runtime provenance validation",
+    );
+    expect(execute).not.toHaveBeenCalled();
+  });
+
+  it("snapshots the factory-created artifact bundle once before any await", async () => {
+    const base = inputs();
+    const forged = {
+      ...base.artifactBundle,
+      digests: {
+        catalogDigest: "a".repeat(64),
+        manifestDigest: "b".repeat(64),
+        fixtureDigest: "c".repeat(64),
+      },
+    } as ConformanceArtifactBundle;
+    const execute = vi.fn(async () => ({
+      url: "https://scope.example/",
+      status: 204,
+      headers: {},
+      bodyText: "",
+    }));
+    let reads = 0;
+    const alternatingOptions = {
+      scope: "https://scope.example/",
+      profile: "read" as const,
+      seed: 0,
+      execute,
+      harness: harness(),
+      declaredTargetLabel: base.declaredTargetLabel,
+    } as unknown as Omit<Parameters<typeof runConformanceMatrix>[0], "artifactBundle"> & {
+      readonly artifactBundle: ConformanceArtifactBundle;
+    };
+    Object.defineProperty(alternatingOptions, "artifactBundle", {
+      enumerable: true,
+      get: () => {
+        reads += 1;
+        return reads === 1 ? base.artifactBundle : forged;
+      },
+    });
+
+    const alternatingResult = await runConformanceMatrix(alternatingOptions);
+    expect(reads).toBe(1);
+    expect(alternatingResult.artifacts).toEqual(base.artifactBundle.digests);
+
+    const mutableOptions: Parameters<typeof runConformanceMatrix>[0] = {
+      ...alternatingOptions,
+      artifactBundle: base.artifactBundle,
+      harness: {
+        prepare: async () => {
+          (mutableOptions as { artifactBundle: ConformanceArtifactBundle }).artifactBundle = forged;
+          return { capabilities: ["public-http"] };
+        },
+        cleanup: async () => undefined,
+      },
+    };
+    const mutationResult = await runConformanceMatrix(mutableOptions);
+    expect(mutationResult.artifacts).toEqual(base.artifactBundle.digests);
+  });
+
+  it("rejects prerequisite filters and ordering errors before execution", async () => {
+    const base = inputs();
+    const metadata = base.artifactBundle.catalog.scenarios[0];
+    const scenario = requestScenario(base.artifactBundle.manifest.scenarios[0]);
+    const request = scenario?.requests[0];
+    if (metadata === undefined || scenario === undefined || request === undefined)
+      throw new Error("test inputs unexpectedly empty");
+    const dependentMetadata = { ...metadata, id: "read.collections.beads" };
+    const dependentScenario = {
+      ...scenario,
+      id: "read.collections.beads",
+      requests: [
+        { ...request, prerequisiteScenario: "read.discovery" },
+        { ...request, id: "owned" },
+      ],
+    };
+    const execute = vi.fn();
+    const common = {
+      ...base,
+      scope: "https://scope.example/",
+      profile: "read" as const,
+      seed: 0,
+      execute,
+      harness: harness(),
+    };
+
+    await expect(
+      runConformanceMatrix({
+        ...common,
+        artifactBundle: replaceArtifacts(base, {
+          catalog: { ...base.artifactBundle.catalog, scenarios: [metadata, dependentMetadata] },
+          manifest: {
+            ...base.artifactBundle.manifest,
+            scenarios: [scenario, dependentScenario],
+          },
+        }),
+        scenarioFilter: "collections",
+      }),
+    ).rejects.toThrow(
+      "scenarioFilter selects dependent scenario 'read.collections.beads' but excludes prerequisite 'read.discovery'",
+    );
+    await expect(
+      runConformanceMatrix({
+        ...common,
+        artifactBundle: replaceArtifacts(base, {
+          catalog: { ...base.artifactBundle.catalog, scenarios: [dependentMetadata, metadata] },
+          manifest: {
+            ...base.artifactBundle.manifest,
+            scenarios: [dependentScenario, scenario],
+          },
+        }),
+      }),
+    ).rejects.toThrow(
+      "scenario 'read.collections.beads' prerequisite 'read.discovery' must appear earlier in catalog order",
+    );
+    expect(execute).not.toHaveBeenCalled();
+  });
+
+  it("classifies caller cancellation as a harness-side abort", async () => {
+    const controller = new AbortController();
+    const fixture = harness();
+    const result = await runConformanceMatrix({
+      ...inputs(),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => {
+        controller.abort();
+        return await new Promise<never>(() => undefined);
+      },
+      harness: fixture,
+      signal: controller.signal,
+    });
+    expect(result.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      reason: "scenario run was aborted",
+      cleanupError: "cleanup skipped because an HTTP exchange did not settle",
+      exchanges: [{ transportError: { category: "abort" } }],
+    });
+    expect(fixture.cleanup).not.toHaveBeenCalled();
+  });
+
+  it("bounds cooperative fixture cleanup and prevents a passing scenario", async () => {
+    const bounded = harness();
+    vi.mocked(bounded.cleanup).mockImplementation(
+      async (_scenario, _scope, signal) =>
+        await new Promise<void>((_resolve, reject) => {
+          signal.addEventListener("abort", () => reject(new Error("cleanup timed out")), {
+            once: true,
+          });
+        }),
+    );
+    const result = await runConformanceMatrix({
+      ...inputs(),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 204,
+        headers: {},
+        bodyText: "",
+        bodyOctets: 0,
+      }),
+      harness: bounded,
+      cleanupTimeoutMs: 1,
+    });
+    expect(result.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      category: "deadline",
+      cleanupError: "cleanup timed out",
+    });
+  });
+
+  it("enforces the cleanup deadline when a harness ignores its signal", async () => {
+    const uncooperative = harness();
+    vi.mocked(uncooperative.cleanup).mockImplementation(
+      async () => await new Promise<void>(() => undefined),
+    );
+    const result = await runConformanceMatrix({
+      ...inputs(),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: "https://scope.example/",
+        status: 204,
+        headers: {},
+        bodyText: "",
+        bodyOctets: 0,
+      }),
+      harness: uncooperative,
+      cleanupTimeoutMs: 5,
+    });
+    expect(result.scenarios[0]).toMatchObject({
+      state: "harness-error",
+      category: "deadline",
+      cleanupError: "cleanup timed out",
+    });
+  });
+
+  it("bounds response bodies before returning an observation", async () => {
+    const execute = createFetchHttpExchangeExecutor(
+      vi.fn(async () => new Response("12345", { status: 200 })) as typeof fetch,
+      undefined,
+      4,
+    );
+    await expect(
+      execute({
+        method: "GET",
+        url: "https://scope.example/",
+        headers: {},
+        signal: new AbortController().signal,
+      }),
+    ).rejects.toMatchObject({ category: "body-limit" });
+  });
+
+  it("reports a response byte bound locally and continues independent scenarios", async () => {
+    const boundedFetch = vi
+      .fn()
+      .mockResolvedValueOnce(new Response("12345", { status: 200 }))
+      .mockResolvedValueOnce(new Response("{}", { status: 200 }));
+    const execute = createFetchHttpExchangeExecutor(boundedFetch as typeof fetch, undefined, 4);
+    const base = inputs([{ id: "status", kind: "status", equals: 200 }]);
+    const metadata = base.artifactBundle.catalog.scenarios[0];
+    const scenario = requestScenario(base.artifactBundle.manifest.scenarios[0]);
+    if (metadata === undefined || scenario === undefined)
+      throw new Error("test inputs unexpectedly empty");
+    const result = await runConformanceMatrix({
+      ...base,
+      artifactBundle: replaceArtifacts(base, {
+        catalog: {
+          ...base.artifactBundle.catalog,
+          scenarios: [metadata, { ...metadata, id: "read.later" }],
+        },
+        manifest: {
+          ...base.artifactBundle.manifest,
+          scenarios: [scenario, { ...scenario, id: "read.later" }],
+        },
+      }),
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      execute,
+      harness: harness(),
+    });
+
+    expect(boundedFetch).toHaveBeenCalledTimes(2);
+    expect(result.scenarios).toMatchObject([
+      {
+        state: "harness-error",
+        category: "observation-limit",
+        reason: "HTTP response exceeded the configured executor body limit",
+        exchanges: [
+          {
+            transportError: {
+              category: "body-limit",
+              message: "HTTP response exceeded the configured executor body limit",
+            },
+          },
+        ],
+      },
+      { id: "read.later", state: "pass" },
+    ]);
+  });
+
+  it("does not wait for an uncooperative body cancellation after the limit", async () => {
+    const execute = createFetchHttpExchangeExecutor(
+      vi.fn(
+        async () =>
+          ({
+            body: {
+              getReader: () => ({
+                read: async () => ({ done: false, value: Uint8Array.from([1, 2]) }),
+                cancel: async () => await new Promise<never>(() => undefined),
+                releaseLock: () => undefined,
+              }),
+            },
+            headers: new Headers(),
+            status: 200,
+            url: "https://scope.example/",
+          }) as unknown as Response,
+      ) as typeof fetch,
+      undefined,
+      1,
+    );
+    await expect(
+      execute({
+        method: "GET",
+        url: "https://scope.example/",
+        headers: {},
+        signal: new AbortController().signal,
+      }),
+    ).rejects.toMatchObject({ category: "body-limit" });
+  });
+
+  it("times out a response body that never produces another byte", async () => {
+    const execute = createFetchHttpExchangeExecutor(
+      vi.fn(
+        async () =>
+          ({
+            body: {
+              getReader: () => ({
+                read: () => new Promise<never>(() => undefined),
+                cancel: async () => undefined,
+                releaseLock: () => undefined,
+              }),
+            },
+            headers: new Headers(),
+            status: 200,
+            url: "https://scope.example/",
+          }) as unknown as Response,
+      ) as typeof fetch,
+      undefined,
+      1024,
+      5,
+    );
+    await expect(
+      execute({
+        method: "GET",
+        url: "https://scope.example/",
+        headers: {},
+        signal: new AbortController().signal,
+      }),
+    ).rejects.toMatchObject({ category: "timeout" });
+  });
+
+  it("rejects an HTTP response body that is not valid UTF-8", async () => {
+    const execute = createFetchHttpExchangeExecutor(
+      vi.fn(
+        async () => new Response(Uint8Array.from([0xc3, 0x28]), { status: 200 }),
+      ) as typeof fetch,
+    );
+    await expect(
+      execute({
+        method: "GET",
+        url: "https://scope.example/",
+        headers: {},
+        signal: new AbortController().signal,
+      }),
+    ).rejects.toMatchObject({ category: "invalid-body" });
+  });
+
+  it("cancels a response reader when UTF-8 decoding fails midstream", async () => {
+    const cancel = vi.fn(async () => undefined);
+    const execute = createFetchHttpExchangeExecutor(
+      vi.fn(
+        async () =>
+          ({
+            body: {
+              getReader: () => ({
+                read: async () => ({ done: false, value: Uint8Array.from([0xc3, 0x28]) }),
+                cancel,
+                releaseLock: () => undefined,
+              }),
+            },
+            headers: new Headers(),
+            status: 200,
+            url: "https://scope.example/",
+          }) as unknown as Response,
+      ) as typeof fetch,
+    );
+    await expect(
+      execute({
+        method: "GET",
+        url: "https://scope.example/",
+        headers: {},
+        signal: new AbortController().signal,
+      }),
+    ).rejects.toMatchObject({ category: "invalid-body" });
+    expect(cancel).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("runner observed ETag context", () => {
+  const secretTag = '"private\\n,opaque-validator"';
+  function etagInputs(actions: boolean, assertionOnly = false) {
+    const base = inputs([{ id: "status", kind: "status", equals: 200 }]);
+    const original = requestScenario(base.artifactBundle.manifest.scenarios[0]);
+    const first = original.requests[0];
+    if (first === undefined) throw new Error("missing test request");
+    const requests = [
+      { ...first, id: "control" },
+      {
+        ...first,
+        id: "conditional",
+        headers: assertionOnly
+          ? {}
+          : { "if-none-match": { etagFrom: "control", form: "weak-list" } },
+        assertions: [
+          { id: "status", kind: "status", equals: 304 },
+          { id: "etag", kind: "header", name: "etag", equalsResponse: "control" },
+          { id: "empty", kind: "body-absent" },
+        ],
+      },
+    ];
+    const { requests: _requests, ...scenario } = original;
+    const manifest = parseExecutableScenarioManifest({
+      manifestVersion: 1,
+      catalogId: "read-v1",
+      scenarios: [
+        {
+          ...scenario,
+          ...(actions
+            ? { actions: requests.map((request) => ({ ...request, family: "http" })) }
+            : { requests }),
+        },
+      ],
+    });
+    return { ...base, artifactBundle: replaceArtifacts(base, { manifest }) };
+  }
+  for (const actions of [false, true]) {
+    it(`uses actual opaque ETag bytes across statuses and redacts them (actions=${actions})`, async () => {
+      const transmitted: Readonly<Record<string, string>>[] = [];
+      const result = await runConformanceMatrix({
+        ...etagInputs(actions),
+        scope: "https://scope.example/",
+        profile: "read",
+        seed: 0,
+        harness: harness(),
+        execute: async (request) => {
+          transmitted.push(request.headers);
+          return {
+            url: request.url,
+            status: transmitted.length === 1 ? 200 : 304,
+            headers: { etag: secretTag },
+            bodyText: "",
+            bodyOctets: 0,
+          };
+        },
+      });
+      expect(result.scenarios[0]?.state).toBe("pass");
+      expect(transmitted[1]?.["if-none-match"]).toBe(
+        `"private\\n,opaque-validator!", W/${secretTag}`,
+      );
+      expect(serializeConformanceReport(result)).not.toContain("opaque-validator");
+      expect(serializeConformanceReport(result)).toContain("if-none-match");
+    });
+    it.each([undefined, '"two", "tags"', "1234", 'w/"x"'])(
+      `rejects missing/invalid source ETag before sending the dependent request (actions=${actions}): %s`,
+      async (tag) => {
+        let calls = 0;
+        const result = await runConformanceMatrix({
+          ...etagInputs(actions),
+          scope: "https://scope.example/",
+          profile: "read",
+          seed: 0,
+          harness: harness(),
+          execute: async (request) => {
+            calls += 1;
+            return {
+              url: request.url,
+              status: 200,
+              headers: tag === undefined ? {} : { etag: tag },
+              bodyText: "",
+            };
+          },
+        });
+        expect(calls).toBe(1);
+        expect(result.scenarios[0]?.state).toBe("fail");
+        expect(serializeConformanceReport(result)).toContain("exactly one valid ETag");
+      },
+    );
+    it.each([undefined, '"different"'])(
+      `fails an absent or changed cross-status ETag (actions=${actions}): %s`,
+      async (tag) => {
+        let calls = 0;
+        const result = await runConformanceMatrix({
+          ...etagInputs(actions),
+          scope: "https://scope.example/",
+          profile: "read",
+          seed: 0,
+          harness: harness(),
+          execute: async (request) => {
+            calls += 1;
+            return {
+              url: request.url,
+              status: calls === 1 ? 200 : 304,
+              headers: calls === 1 ? { etag: secretTag } : tag === undefined ? {} : { etag: tag },
+              bodyText: "",
+              bodyOctets: 0,
+            };
+          },
+        });
+        expect(result.scenarios[0]?.state).toBe("fail");
+      },
+    );
+    it.each([undefined, '"two", "tags"', "1234", 'w/"x"'])(
+      `rejects a comparison with missing or malformed source ETag (actions=${actions}): %s`,
+      async (tag) => {
+        let calls = 0;
+        const result = await runConformanceMatrix({
+          ...etagInputs(actions, true),
+          scope: "https://scope.example/",
+          profile: "read",
+          seed: 0,
+          harness: harness(),
+          execute: async (request) => {
+            calls += 1;
+            return {
+              url: request.url,
+              status: calls === 1 ? 200 : 304,
+              headers: tag === undefined ? {} : { etag: tag },
+              bodyText: "",
+              bodyOctets: 0,
+            };
+          },
+        });
+        expect(calls).toBe(2);
+        expect(result.scenarios[0]?.state).toBe("fail");
+        expect(serializeConformanceReport(result)).toContain("exactly one valid ETag");
+      },
+    );
+  }
+});
+
+describe("HEAD metadata omission allowance", () => {
+  it.each([
+    {
+      label: "omitted generated fields",
+      headers: { "cache-control": "private, no-store", etag: '"r1"' },
+      status: 200,
+      state: "pass",
+    },
+    {
+      label: "changed present length",
+      headers: { "cache-control": "private, no-store", etag: '"r1"', "content-length": "99" },
+      status: 200,
+      state: "fail",
+    },
+    { label: "missing mandatory cache", headers: { etag: '"r1"' }, status: 200, state: "fail" },
+    {
+      label: "missing validator",
+      headers: { "cache-control": "private, no-store" },
+      status: 200,
+      state: "fail",
+    },
+    {
+      label: "changed status",
+      headers: { "cache-control": "private, no-store", etag: '"r1"' },
+      status: 304,
+      state: "fail",
+    },
+  ])("$label", async ({ headers, status, state }) => {
+    const base = { family: "http", target: { binding: "scope" }, headers: {}, captures: [] };
+    const options = actionInputs([
+      {
+        ...base,
+        id: "get",
+        method: "GET",
+        assertions: [{ id: "status", kind: "status", equals: 200 }],
+      },
+      {
+        ...base,
+        id: "head",
+        method: "HEAD",
+        assertions: [
+          {
+            id: "parity",
+            kind: "response-metadata-equals",
+            request: "get",
+            headers: ["cache-control", "etag", "content-length", "content-type", "vary"],
+            optionalHeaders: ["content-length", "content-type", "vary"],
+          },
+          { id: "empty", kind: "body-absent" },
+        ],
+      },
+    ]);
+    const result = await runConformanceMatrix({
+      ...options,
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      harness: harness(),
+      execute: async (request) => ({
+        url: request.url,
+        status: request.method === "GET" ? 200 : status,
+        headers:
+          request.method === "GET"
+            ? {
+                "cache-control": "private, no-store",
+                etag: '"r1"',
+                "content-length": "2",
+                "content-type": "application/json",
+                vary: "Accept",
+              }
+            : headers,
+        bodyText: "",
+        bodyOctets: 0,
+      }),
+    });
+    expect(result.scenarios[0]?.state).toBe(state);
+  });
+});
+
+describe("conditional cache metadata presence", () => {
+  for (const name of ["date", "content-location", "vary", "expires"]) {
+    it.each([
+      { prior: "first", current: undefined, status: 304, state: "fail" },
+      { prior: "first", current: "later", status: 304, state: "pass" },
+      { prior: undefined, current: undefined, status: 304, state: "pass" },
+      { prior: undefined, current: "new", status: 304, state: "pass" },
+      { prior: "first", current: "first", status: 200, state: "fail" },
+    ])(
+      `checks conditional presence, not captured bytes, for ${name}: %j`,
+      async ({ prior, current, status, state }) => {
+        const base = {
+          family: "http",
+          method: "GET",
+          target: { binding: "scope" },
+          headers: {},
+          captures: [],
+        };
+        const options = actionInputs([
+          { ...base, id: "control", assertions: [{ id: "status", kind: "status", equals: 200 }] },
+          {
+            ...base,
+            id: "conditional",
+            assertions: [{ id: "metadata", kind: "header", name, presentIfResponse: "control" }],
+          },
+        ]);
+        let calls = 0;
+        const result = await runConformanceMatrix({
+          ...options,
+          scope: "https://scope.example/",
+          profile: "read",
+          seed: 0,
+          harness: harness(),
+          execute: async (request) => {
+            calls += 1;
+            const value = calls === 1 ? prior : current;
+            return {
+              url: request.url,
+              status: calls === 1 ? 200 : status,
+              headers: value === undefined ? {} : { [name]: value },
+              bodyText: "",
+              bodyOctets: 0,
+            };
+          },
+        });
+        expect(result.scenarios[0]?.state).toBe(state);
+      },
+    );
+  }
+});
+
+describe("checked-in HTTP observer corrections", () => {
+  const manifest = parseExecutableScenarioManifest(readManifest);
+  const conditional = requestScenario(
+    manifest.scenarios.find(({ id }) => id === "read.http.conditional-reads"),
+  );
+  const parity = requestScenario(
+    manifest.scenarios.find(({ id }) => id === "read.http.head-conditional-parity"),
+  );
+  for (const id of ["scope-not-modified-head", "scope-precondition-head"]) {
+    it.each([undefined, "changed", "unchanged"])(
+      `checks actual ${id} Last-Modified parity: %s`,
+      async (modified) => {
+        const authored = parity.requests.find((request) => request.id === id);
+        const comparison = authored?.assertions.find(
+          (assertion) => assertion.kind === "response-metadata-equals",
+        );
+        if (comparison?.kind !== "response-metadata-equals" || authored === undefined)
+          throw new Error("missing parity assertion");
+        const status = id === "scope-not-modified-head" ? 304 : 412;
+        const base = { family: "http", target: { binding: "scope" }, headers: {}, captures: [] };
+        const options = actionInputs([
+          {
+            ...base,
+            id: comparison.request,
+            method: "GET",
+            assertions: [{ id: "status", kind: "status", equals: status }],
+          },
+          { ...base, id, method: "HEAD", assertions: authored.assertions },
+        ]);
+        const result = await runConformanceMatrix({
+          ...options,
+          scope: "https://scope.example/",
+          profile: "read",
+          seed: 0,
+          harness: harness(),
+          execute: async (request) => ({
+            url: request.url,
+            status,
+            headers:
+              request.method === "GET"
+                ? { "last-modified": "unchanged" }
+                : modified === undefined
+                  ? {}
+                  : { "last-modified": modified },
+            bodyText: "",
+            bodyOctets: 0,
+          }),
+        });
+        expect(result.scenarios[0]?.state).toBe(modified === "unchanged" ? "pass" : "fail");
+      },
+    );
+  }
+  it.each(["weak-match-fails", "nonmatch-fails", "match-precedes-none"])(
+    "permits a bodyless 412 without ETag using actual %s assertions",
+    async (id) => {
+      const request = conditional.requests.find((request) => request.id === id);
+      if (request === undefined) throw new Error("missing conditional request");
+      const options = actionInputs([
+        {
+          family: "http",
+          id,
+          method: "GET",
+          target: { binding: "scope" },
+          headers: {},
+          captures: [],
+          assertions: request.assertions,
+        },
+      ]);
+      const result = await runConformanceMatrix({
+        ...options,
+        scope: "https://scope.example/",
+        profile: "read",
+        seed: 0,
+        harness: harness(),
+        execute: async (request) => ({
+          url: request.url,
+          status: 412,
+          headers: { "cache-control": "private, no-store" },
+          bodyText: "",
+          bodyOctets: 0,
+        }),
+      });
+      expect(result.scenarios[0]?.state).toBe("pass");
+    },
+  );
+});
+
+describe("version 2 exact HTTP receiving", () => {
+  const scope = "https://scope.example/";
+  const url = `${scope}operations/create-bead`;
+  const stateAssertions = [
+    { id: "status", kind: "status", equals: 401 },
+    { id: "authored-head", kind: "request-authored-headers" },
+    { id: "authored-body", kind: "request-authored-body" },
+    { id: "write", kind: "request-write-state", equals: "complete" },
+  ];
+  function source(input: Record<string, unknown> = {}, twice = false) {
+    const request = {
+      id: "post",
+      method: "POST",
+      target: { binding: "scope", path: "operations/create-bead" },
+      raw: {
+        headerLines: [
+          { name: "Idempotency-Key", value: "KEY-SENTINEL" },
+          { name: "iDeMpOtEnCy-KeY", value: "SECOND-KEY-SENTINEL" },
+          { name: "x-PRIVATE-NAME-SENTINEL", value: "VALUE-SENTINEL" },
+        ],
+        body: { encoding: "utf8", value: '{"x":1,"x":9007199254740993,"n":1e9999}' },
+      },
+      captures: [],
+      assertions: stateAssertions,
+      ...input,
+    };
+    return {
+      manifestVersion: 2,
+      catalogId: "read-v1",
+      scenarios: (twice ? ["raw.first", "raw.second"] : ["raw.first"]).map((id) => ({
+        id,
+        requiredProfile: "read-update",
+        setup: { fixture: testFixture.id, requires: [] },
+        applicability: { requires: [] },
+        requests: [request],
+        cleanup: { resetFixture: true },
+      })),
+    };
+  }
+  function setup(input: Record<string, unknown> = {}, twice = false) {
+    const manifest = parseExecutableScenarioManifest(source(input, twice));
+    const catalog = parseScenarioCatalog({
+      catalogVersion: 1,
+      scenarios: manifest.scenarios.map(({ id }) => ({
+        id,
+        title: "Synthetic receiving probe",
+        kind: "normative",
+        requiredProfile: "read-update",
+        requirements: [citation],
+      })),
+    });
+    const artifactBundle = bindArtifacts(catalog, manifest, testFixture);
+    const configuration: import("./raw-http-scenario-target.js").ExactHttpConfiguration = {
+      scope,
+      profile: "read-update",
+      routes: [{ method: "POST", url }],
+      maximumRequestHeaderBytes: 4096,
+      maximumRequestBodyBytes: 4096,
+      defaultCredentialRef: "anonymous",
+      credentialHandles: [{ id: "anonymous", headerNames: [] }],
+    };
+    const ordinary = vi.fn(async () => ({ url, status: 401, headers: {}, bodyText: "" }));
+    const execute = vi.fn<import("./http-executor.js").RawHttpExchangeExecutor>(async (request) => {
+      if (!("raw" in request) || request.raw === undefined) throw new Error("expected raw arm");
+      const bytes = request.raw.bodyBytes;
+      return {
+        url: request.url,
+        status: 401,
+        headers: { "Idempotency-Key": "ECHO-SENTINEL" },
+        bodyText: "",
+        exactRequest: {
+          source: "raw-http1-serializer",
+          writeState: "complete",
+          headerLines: [
+            ...request.raw.headerLines,
+            { name: "Accept", value: "*/*" },
+            { name: "Accept-Language", value: "*" },
+            { name: "Accept-Encoding", value: "identity" },
+            { name: "User-Agent", value: "bdp-conformance/0" },
+            { name: "Host", value: "scope.example" },
+            { name: "Connection", value: "close" },
+            ...(bytes === undefined
+              ? []
+              : [{ name: "Content-Length", value: String(bytes.byteLength) }]),
+          ],
+          bodyPresent: bytes !== undefined,
+          bodyOctets: bytes?.byteLength ?? 0,
+          ...(bytes === undefined
+            ? {}
+            : { bodyDigest: createHash("sha256").update(bytes).digest("hex") }),
+        },
+      };
+    });
+    const harness: ScenarioHarness = {
+      prepare: vi.fn(async () => ({ capabilities: ["public-http"] })),
+      cleanup: vi.fn(async () => undefined),
+    };
+    return {
+      scope,
+      profile: "read-update" as const,
+      seed: 0,
+      artifactBundle,
+      execute: ordinary,
+      exactExecution: { configuration, execute },
+      harness,
+      declaredTargetLabel: "synthetic",
+      requestTimeoutMs: 200,
+      cleanupTimeoutMs: 100,
+    };
+  }
+  it("compares independent owned bytes and projects repeated redacted names without an unapproved hash", async () => {
+    const options = setup();
+    const report = await runConformanceMatrix(options);
+    expect(report.reportVersion).toBe(4);
+    expect(report.scenarios[0]?.state).toBe("pass");
+    expect(report.claimEligible).toBe(false);
+    expect(options.execute).not.toHaveBeenCalled();
+    const exact = report.scenarios[0]?.exchanges[0]?.request.exact;
+    expect(exact).toMatchObject({
+      headerProjection: "allowlisted-relative-order",
+      elidedHeaderLines: 3,
+      writeState: "complete",
+      bodyPresent: true,
+    });
+    expect(exact?.bodyDigest).toBeUndefined();
+    expect(exact?.headerLines.slice(0, 2)).toEqual([
+      { name: "Idempotency-Key", value: "<redacted>" },
+      { name: "iDeMpOtEnCy-KeY", value: "<redacted>" },
+    ]);
+    const text = serializeConformanceReport(report);
+    for (const secret of [
+      "KEY-SENTINEL",
+      "SECOND-KEY",
+      "PRIVATE-NAME-SENTINEL",
+      "VALUE-SENTINEL",
+      "ECHO-SENTINEL",
+      "anonymous",
+      "9007199254740993",
+    ])
+      expect(text).not.toContain(secret);
+    expect(text).toContain("exactConfigurationDigest");
+    expect(report.scenarios[0]?.exchanges[0]?.request.wireHeadersObserved).toBeUndefined();
+  });
+  it("permits only exact source-bound approved synthetic fingerprints", async () => {
+    const options = setup();
+    const report = await runConformanceMatrix({
+      ...options,
+      exactExecution: {
+        ...options.exactExecution,
+        approvedSyntheticManifestDigest: options.artifactBundle.digests.manifestDigest,
+      },
+    });
+    expect(report.scenarios[0]?.exchanges[0]?.request.exact?.bodyDigest).toMatch(/^[0-9a-f]{64}$/);
+    await expect(
+      runConformanceMatrix({
+        ...options,
+        exactExecution: {
+          ...options.exactExecution,
+          approvedSyntheticManifestDigest: "0".repeat(64),
+        },
+      }),
+    ).rejects.toThrow("approval");
+  });
+  it.each([
+    { encoding: "utf8", value: "" },
+    { encoding: "utf8", value: '  {"a":1,"a":2}\\uD800\n' },
+    { encoding: "base64", value: "/wA=" },
+  ])("preserves body bytes for $encoding/$value", async (body) => {
+    const options = setup({ raw: { headerLines: [], body } });
+    const report = await runConformanceMatrix(options);
+    expect(report.scenarios[0]?.state).toBe("pass");
+    const request = options.exactExecution.execute.mock.calls[0]?.[0];
+    if (request === undefined || !("raw" in request) || request.raw === undefined)
+      throw new Error("missing exact call");
+    expect(Buffer.from(request.raw.bodyBytes ?? [])).toEqual(
+      Buffer.from(body.value, body.encoding === "utf8" ? "utf8" : "base64"),
+    );
+  });
+  it("distinguishes absent body from explicit empty", async () => {
+    const options = setup({ raw: { headerLines: [] } });
+    const report = await runConformanceMatrix(options);
+    expect(report.scenarios[0]?.state).toBe("pass");
+    expect(report.scenarios[0]?.exchanges[0]?.request.exact).toMatchObject({
+      bodyPresent: false,
+      bodyOctets: 0,
+    });
+    expect(options.exactExecution.execute.mock.calls[0]?.[0]).not.toHaveProperty("raw.bodyBytes");
+  });
+  it.each([
+    "prefix",
+    "digest",
+    "length",
+    "framing",
+    "extra",
+    "state",
+    "missing",
+    "accessor",
+    "effective-accessor",
+    "effective-url",
+    "effective-header-accessor",
+    "flag",
+  ])("rejects %s corruption while retaining safe response assertions", async (corruption) => {
+    const options = setup();
+    const good = options.exactExecution.execute.getMockImplementation();
+    options.exactExecution.execute.mockImplementation(async (request) => {
+      if (good === undefined) throw new Error();
+      const response = await good(request);
+      const exact = response.exactRequest;
+      if (exact === undefined) throw new Error();
+      if (corruption === "missing") {
+        const { exactRequest: _exact, ...rest } = response;
+        return rest;
+      }
+      if (corruption === "accessor")
+        return Object.defineProperty(response, "exactRequest", {
+          get() {
+            throw new Error("OBSERVATION-SENTINEL");
+          },
+        });
+      if (corruption === "effective-accessor")
+        return Object.defineProperty(response, "effectiveRequest", {
+          get() {
+            throw new Error("OBSERVATION-SENTINEL");
+          },
+        });
+      if (corruption === "effective-url")
+        return { ...response, effectiveRequest: { url: `${scope}wrong`, headers: {} } };
+      if (corruption === "effective-header-accessor")
+        return {
+          ...response,
+          effectiveRequest: {
+            url,
+            headers: Object.defineProperty({}, "origin", {
+              enumerable: true,
+              get() {
+                throw new Error("OBSERVATION-SENTINEL");
+              },
+            }),
+          },
+        };
+      if (corruption === "flag")
+        return { ...response, effectiveRequest: { url, headers: {}, headersTransmitted: true } };
+      return {
+        ...response,
+        exactRequest: {
+          ...exact,
+          ...(corruption === "digest" ? { bodyDigest: "a".repeat(64) } : {}),
+          ...(corruption === "length" ? { bodyOctets: 0 } : {}),
+          ...(corruption === "state"
+            ? { writeState: "started-completion-unestablished" as const }
+            : {}),
+          ...(corruption === "prefix" ? { headerLines: [...exact.headerLines].reverse() } : {}),
+          ...(corruption === "framing"
+            ? {
+                headerLines: exact.headerLines.map((line) =>
+                  line.name === "Host" ? { ...line, value: "other.example" } : line,
+                ),
+              }
+            : {}),
+          ...(corruption === "extra"
+            ? { headerLines: [...exact.headerLines, { name: "x-extra", value: "EXTRA-SENTINEL" }] }
+            : {}),
+        },
+      };
+    });
+    const report = await runConformanceMatrix(options);
+    const observed = report.scenarios[0]?.exchanges[0];
+    expect(report.scenarios[0]?.state).not.toBe("pass");
+    expect(observed?.response?.status).toBe(401);
+    expect(observed?.assertions.find(({ id }) => id === "status")?.passed).toBe(true);
+    expect(observed?.assertions.some(({ passed }) => !passed)).toBe(true);
+    expect(serializeConformanceReport(report)).not.toContain("SENTINEL");
+  });
+  it("keeps valid request fidelity separate from response conformance", async () => {
+    const options = setup({
+      assertions: [
+        ...stateAssertions.slice(1),
+        { id: "wrong-status", kind: "status", equals: 200 },
+      ],
+    });
+    const report = await runConformanceMatrix(options);
+    expect(report.scenarios[0]?.state).toBe("fail");
+    expect(
+      report.scenarios[0]?.exchanges[0]?.assertions
+        .filter(({ id }) => id !== "wrong-status")
+        .every(({ passed }) => passed),
+    ).toBe(true);
+  });
+  it.each(["missing", "scope", "profile", "route", "cap", "handle", "transactional"])(
+    "fails %s configuration before preparation",
+    async (failure) => {
+      const options = setup(failure === "handle" ? { credentialRef: "unregistered" } : {});
+      const { exactExecution, ...withoutExact } = options;
+      const config = exactExecution.configuration;
+      const attempt =
+        failure === "missing"
+          ? withoutExact
+          : {
+              ...options,
+              ...(failure === "transactional" ? { profile: "transactional" as const } : {}),
+              exactExecution: {
+                ...exactExecution,
+                configuration: {
+                  ...config,
+                  ...(failure === "scope" ? { scope: "https://scope.example/other/" } : {}),
+                  ...(failure === "profile" ? { profile: "read" as const } : {}),
+                  ...(failure === "route" ? { routes: [{ method: "GET" as const, url }] } : {}),
+                  ...(failure === "cap" ? { maximumRequestBodyBytes: 0 } : {}),
+                },
+              },
+            };
+      await expect(runConformanceMatrix(attempt)).rejects.toThrow();
+      expect(options.harness.prepare).not.toHaveBeenCalled();
+      expect(options.exactExecution.execute).not.toHaveBeenCalled();
+    },
+  );
+  it("refuses dispatch-time decorated configuration and stops the next scenario", async () => {
+    const options = setup({}, true);
+    options.exactExecution.execute.mockRejectedValue(
+      new HttpTransportError("configuration", "SECRET-CAUSE", {}, "not-started"),
+    );
+    const report = await runConformanceMatrix(options);
+    expect(report.scenarios.map(({ state, category }) => [state, category])).toEqual([
+      ["harness-error", "exact-configuration"],
+      ["harness-error", "not-run"],
+    ]);
+    expect(report.scenarios[0]?.exchanges[0]).toMatchObject({
+      harnessError: { category: "exact-configuration", writeState: "not-started" },
+    });
+    expect(report.scenarios[0]?.exchanges[0]?.transportError).toBeUndefined();
+    expect(serializeConformanceReport(report)).not.toContain("SECRET-CAUSE");
+  });
+  it.each(["not-started", "started-completion-unestablished", "complete"] as const)(
+    "retains cooperative cancellation state %s",
+    async (writeState) => {
+      const options = setup({}, true);
+      options.exactExecution.execute.mockImplementation(
+        (request) =>
+          new Promise((_resolve, reject) => {
+            request.signal.addEventListener(
+              "abort",
+              () =>
+                setTimeout(
+                  () => reject(new HttpTransportError("abort", "PRIVATE-ERROR", {}, writeState)),
+                  2,
+                ),
+              { once: true },
+            );
+          }),
+      );
+      const report = await runConformanceMatrix({ ...options, requestTimeoutMs: 5 });
+      expect(report.scenarios[0]?.category).toBe("deadline");
+      expect(report.scenarios[0]?.exchanges[0]?.transportError).toMatchObject({
+        category: "timeout",
+        writeState,
+      });
+      expect(options.harness.cleanup).toHaveBeenCalledTimes(1);
+      expect(options.exactExecution.execute).toHaveBeenCalledTimes(1);
+      expect(report.scenarios[1]?.category).toBe("not-run");
+    },
+  );
+  it("bounds a noncooperative cancellation and never infers not-started", async () => {
+    const options = setup({}, true);
+    options.exactExecution.execute.mockImplementation(() => new Promise(() => undefined));
+    const start = performance.now();
+    const report = await runConformanceMatrix({
+      ...options,
+      requestTimeoutMs: 5,
+      cleanupTimeoutMs: 10,
+    });
+    expect(performance.now() - start).toBeLessThan(200);
+    expect(report.scenarios[0]?.exchanges[0]?.transportError).toMatchObject({
+      category: "timeout",
+    });
+    expect(report.scenarios[0]?.exchanges[0]?.transportError?.writeState).toBeUndefined();
+    expect(report.scenarios[0]?.exchanges[0]?.harnessError?.category).toBe("exact-observation");
+    expect(report.scenarios[0]?.cleanupError).toContain("did not settle");
+    expect(options.harness.cleanup).not.toHaveBeenCalled();
+    expect(options.exactExecution.execute).toHaveBeenCalledTimes(1);
+  });
+  it("does not let executor mutation redefine the independent authored-body oracle", async () => {
+    const options = setup();
+    const good = options.exactExecution.execute.getMockImplementation();
+    options.exactExecution.execute.mockImplementation(async (request) => {
+      if ("raw" in request) request.raw?.bodyBytes?.fill(65);
+      if (good === undefined) throw new Error();
+      return good(request);
+    });
+    const report = await runConformanceMatrix(options);
+    expect(
+      report.scenarios[0]?.exchanges[0]?.assertions.find(({ id }) => id === "authored-body")
+        ?.passed,
+    ).toBe(false);
+  });
+  it("requires configured routes even for a v2 ordinary arm", async () => {
+    const options = setup();
+    const parsed = parseExecutableScenarioManifest(source());
+    const scenario = requestScenario(parsed.scenarios[0]);
+    const request = scenario.requests[0];
+    if (scenario === undefined || request === undefined) throw new Error();
+    const { raw: _raw, credentialRef: _ref, ...ordinary } = request;
+    const manifest = {
+      ...parsed,
+      scenarios: [
+        {
+          ...scenario,
+          requests: [
+            {
+              ...ordinary,
+              headers: {},
+              assertions: [{ id: "status", kind: "status" as const, equals: 401 }],
+            },
+          ],
+        },
+      ],
+    };
+    const artifactBundle = bindArtifacts(options.artifactBundle.catalog, manifest);
+    const report = await runConformanceMatrix({ ...options, artifactBundle });
+    expect(report.reportVersion).toBe(4);
+    expect(report.scenarios[0]?.state).toBe("pass");
+    expect(report.claimEligible).toBe(false);
+    expect(options.execute).toHaveBeenCalledTimes(1);
+    expect(options.exactExecution.execute).not.toHaveBeenCalled();
+    await expect(
+      runConformanceMatrix({
+        ...options,
+        artifactBundle,
+        exactExecution: {
+          ...options.exactExecution,
+          configuration: {
+            ...options.exactExecution.configuration,
+            routes: [{ method: "GET", url }],
+          },
+        },
+      }),
+    ).rejects.toThrow("configured execution boundary");
+    expect(options.execute).toHaveBeenCalledTimes(1);
+  });
+  it.each([false, true])("checks dynamic captured routes before raw=%s dispatch", async (raw) => {
+    const options = setup();
+    const base = source();
+    const row = base.scenarios[0];
+    const request = row?.requests[0];
+    if (row === undefined || request === undefined) throw new Error();
+    const { raw: _raw, ...ordinary } = request;
+    const manifest = parseExecutableScenarioManifest({
+      ...base,
+      scenarios: [
+        {
+          ...row,
+          requests: [
+            {
+              id: "discover",
+              method: "GET",
+              target: { binding: "scope" },
+              headers: {},
+              captures: [{ binding: "next", from: { kind: "header-link", rel: "next" } }],
+              assertions: [{ id: "status", kind: "status", equals: 200 }],
+            },
+            {
+              ...(raw ? request : { ...ordinary, headers: {} }),
+              target: { binding: "next" },
+              assertions: [{ id: "status", kind: "status", equals: 401 }],
+            },
+          ],
+        },
+      ],
+    });
+    const artifactBundle = bindArtifacts(options.artifactBundle.catalog, manifest);
+    options.execute.mockImplementation(async () => ({
+      url: scope,
+      status: 200,
+      headers: { link: `<${scope}undeclared>; rel="next"` },
+      bodyText: "",
+    }));
+    const report = await runConformanceMatrix({
+      ...options,
+      artifactBundle,
+      exactExecution: {
+        ...options.exactExecution,
+        configuration: {
+          ...options.exactExecution.configuration,
+          routes: [...options.exactExecution.configuration.routes, { method: "GET", url: scope }],
+        },
+      },
+    });
+    expect(report.scenarios[0]?.category).toBe("exact-configuration");
+    expect(options.execute).toHaveBeenCalledTimes(1);
+    expect(options.exactExecution.execute).not.toHaveBeenCalled();
+    expect(report.scenarios[0]?.exchanges[1]?.harnessError?.category).toBe("exact-configuration");
+  });
+  it("keeps v3 normalized and echoed new names absent while v4 allows redacted names", async () => {
+    const legacy = inputs([{ id: "status", kind: "status", equals: 204 }], {
+      "idempotency-key": "PRIVATE-KEY",
+    });
+    const run = (artifactBundle: ConformanceArtifactBundle) =>
+      runConformanceMatrix({
+        ...legacy,
+        artifactBundle,
+        scope,
+        profile: "read",
+        seed: 0,
+        execute: async () => ({
+          url: scope,
+          status: 204,
+          headers: { "Idempotency-Key": "PRIVATE-ECHO" },
+          bodyText: "",
+        }),
+        harness: harness(),
+      });
+    const v3 = await run(legacy.artifactBundle);
+    const v4 = await run(
+      replaceArtifacts(legacy, {
+        manifest: { ...legacy.artifactBundle.manifest, manifestVersion: 2 },
+      }),
+    );
+    expect(v3.reportVersion).toBe(3);
+    expect(v4.reportVersion).toBe(4);
+    expect(serializeConformanceReport(v3)).not.toContain("idempotency-key");
+    expect(v4.scenarios[0]?.exchanges[0]?.request.headers).toHaveProperty(
+      "idempotency-key",
+      "<redacted>",
+    );
+    expect(v4.scenarios[0]?.exchanges[0]?.response?.headers).toHaveProperty(
+      "idempotency-key",
+      "<redacted>",
+    );
+    expect(serializeConformanceReport(v4)).not.toContain("PRIVATE-");
+  });
+  it("late fulfillment after cancellation supplies only a settlement witness, not success or captures", async () => {
+    const options = setup(
+      { captures: [{ binding: "forbidden", from: { kind: "response-url" } }] },
+      true,
+    );
+    const good = options.exactExecution.execute.getMockImplementation();
+    options.exactExecution.execute.mockImplementation(
+      (request) =>
+        new Promise((resolve) => {
+          request.signal.addEventListener(
+            "abort",
+            () =>
+              setTimeout(() => {
+                if (good === undefined) throw new Error();
+                void good(request).then(resolve);
+              }, 2),
+            { once: true },
+          );
+        }),
+    );
+    const report = await runConformanceMatrix({ ...options, requestTimeoutMs: 5 });
+    expect(report.scenarios[0]?.category).toBe("deadline");
+    expect(report.scenarios[0]?.exchanges[0]?.transportError?.writeState).toBe("complete");
+    expect(report.scenarios[0]?.exchanges[0]?.request.exact).toBeUndefined();
+    expect(report.scenarios[0]?.exchanges[0]?.response).toBeUndefined();
+    expect(report.scenarios[0]?.exchanges[0]?.assertions).toEqual([]);
+    expect(options.exactExecution.execute).toHaveBeenCalledTimes(1);
+  });
+  it("shares the cleanup allowance with receipt collection", async () => {
+    const options = setup();
+    let now = 0;
+    const clock = vi.spyOn(performance, "now").mockImplementation(() => now);
+    options.exactExecution.execute.mockImplementation(
+      (request) =>
+        new Promise((_resolve, reject) => {
+          request.signal.addEventListener(
+            "abort",
+            () => {
+              setTimeout(() => {
+                now = 99;
+                reject(new HttpTransportError("abort", "cancelled", {}, "complete"));
+              }, 2);
+            },
+            { once: true },
+          );
+        }),
+    );
+    const cleanup = vi.fn(
+      (_scenario, _scope, signal: AbortSignal) =>
+        new Promise<void>((_resolve, reject) => {
+          const timeout = setTimeout(
+            () => reject(new Error("fresh budget incorrectly granted")),
+            50,
+          );
+          signal.addEventListener(
+            "abort",
+            () => {
+              clearTimeout(timeout);
+              reject(new Error("shared budget ended"));
+            },
+            { once: true },
+          );
+        }),
+    );
+    try {
+      const report = await runConformanceMatrix({
+        ...options,
+        requestTimeoutMs: 5,
+        cleanupTimeoutMs: 100,
+        harness: { ...options.harness, cleanup },
+      });
+      expect(report.scenarios[0]?.cleanupError).toBe("cleanup timed out");
+      expect(report.scenarios[0]?.exchanges[0]?.transportError?.writeState).toBe("complete");
+    } finally {
+      clock.mockRestore();
+    }
+  });
+  it("preserves actual native repeated header lines and unparsed bytes end to end", async () => {
+    const options = setup({
+      raw: {
+        headerLines: [
+          { name: "Idempotency-Key", value: "same" },
+          { name: "iDeMpOtEnCy-KeY", value: "different" },
+        ],
+        body: { encoding: "base64", value: "/wB7fQ==" },
+      },
+    });
+    let receivedHeaders: string[] = [];
+    let receivedBody = Buffer.alloc(0);
+    const target = createRawHttpScenarioTarget(
+      async () => {
+        const server = createHttpServer((request, response) => {
+          receivedHeaders = request.rawHeaders;
+          const chunks: Buffer[] = [];
+          request.on("data", (chunk: Buffer) => chunks.push(Buffer.from(chunk)));
+          request.on("end", () => {
+            receivedBody = Buffer.concat(chunks);
+            response.writeHead(401, { "Content-Length": "0" });
+            response.end();
+          });
+        });
+        await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
+        const address = server.address();
+        if (address === null || typeof address === "string") throw new Error();
+        return {
+          capabilities: ["public-http"],
+          dialRoute: { transport: "plain", host: "127.0.0.1", port: address.port },
+          close: async () => {
+            server.closeAllConnections();
+            await new Promise<void>((resolve) => server.close(() => resolve()));
+          },
+        };
+      },
+      { exactMode: { ...options.exactExecution.configuration, resolveCredentials: () => ({}) } },
+    );
+    if (target.exactConfiguration === undefined) throw new Error();
+    try {
+      const report = await runConformanceMatrix({
+        ...options,
+        execute: target.execute,
+        harness: target.harness,
+        exactExecution: { configuration: target.exactConfiguration, execute: target.execute },
+      });
+      expect(report.scenarios[0]?.state).toBe("pass");
+      expect(receivedHeaders.slice(0, 4)).toEqual([
+        "Idempotency-Key",
+        "same",
+        "iDeMpOtEnCy-KeY",
+        "different",
+      ]);
+      expect(receivedBody).toEqual(Buffer.from([255, 0, 123, 125]));
+    } finally {
+      await target.close();
+    }
+  });
+  it.each(["abort", "configuration"] as const)(
+    "caller cancellation stays primary over terminal %s",
+    async (category) => {
+      const options = setup({}, true);
+      const controller = new AbortController();
+      options.exactExecution.execute.mockImplementation(
+        (request) =>
+          new Promise((_resolve, reject) => {
+            request.signal.addEventListener(
+              "abort",
+              () =>
+                queueMicrotask(() =>
+                  reject(new HttpTransportError(category, "PRIVATE-FAILURE", {}, "not-started")),
+                ),
+              { once: true },
+            );
+            queueMicrotask(() => controller.abort());
+          }),
+      );
+      const report = await runConformanceMatrix({ ...options, signal: controller.signal });
+      expect(report.scenarios[0]?.category).toBe("aborted");
+      expect(report.scenarios[0]?.exchanges[0]?.transportError).toMatchObject({
+        category: "abort",
+        writeState: "not-started",
+      });
+      expect(report.scenarios[0]?.exchanges[0]?.harnessError).toBeUndefined();
+      expect(options.exactExecution.execute).toHaveBeenCalledTimes(1);
+    },
+  );
+  it("checks elapsed exact execution time before accepting synchronous fulfillment", async () => {
+    const options = setup({}, true);
+    let now = 0;
+    const clock = vi.spyOn(performance, "now").mockImplementation(() => now);
+    const good = options.exactExecution.execute.getMockImplementation();
+    options.exactExecution.execute.mockImplementation(async (request) => {
+      if (good === undefined) throw new Error();
+      const response = await good(request);
+      now = 500;
+      return response;
+    });
+    try {
+      const report = await runConformanceMatrix({ ...options, requestTimeoutMs: 10 });
+      expect(report.scenarios[0]?.category).toBe("deadline");
+      expect(report.scenarios[0]?.exchanges[0]?.transportError?.writeState).toBe("complete");
+      expect(report.scenarios[0]?.exchanges[0]?.response).toBeUndefined();
+      expect(options.exactExecution.execute).toHaveBeenCalledTimes(1);
+    } finally {
+      clock.mockRestore();
+    }
+  });
+  it("refuses wrong in-Scope response identity while retaining safe status", async () => {
+    const options = setup();
+    const good = options.exactExecution.execute.getMockImplementation();
+    options.exactExecution.execute.mockImplementation(async (request) => {
+      if (good === undefined) throw new Error();
+      return { ...(await good(request)), url: `${scope}different` };
+    });
+    const report = await runConformanceMatrix(options);
+    expect(report.scenarios[0]?.category).toBe("exact-observation");
+    expect(report.scenarios[0]?.exchanges[0]?.response?.status).toBe(401);
+    expect(report.scenarios[0]?.exchanges[0]?.request.exact).toBeUndefined();
+    expect(
+      report.scenarios[0]?.exchanges[0]?.assertions.map(({ id, passed }) => [id, passed]),
+    ).toEqual([
+      ["status", true],
+      ["authored-head", false],
+      ["authored-body", false],
+      ["write", false],
+    ]);
+  });
+  it("does not publish an unbound target digest even with synthetic source approval", async () => {
+    const options = setup();
+    const good = options.exactExecution.execute.getMockImplementation();
+    options.exactExecution.execute.mockImplementation(async (request) => {
+      if (good === undefined) throw new Error();
+      const response = await good(request);
+      if (response.exactRequest === undefined) throw new Error();
+      return {
+        ...response,
+        exactRequest: { ...response.exactRequest, bodyDigest: "a".repeat(64) },
+      };
+    });
+    const report = await runConformanceMatrix({
+      ...options,
+      exactExecution: {
+        ...options.exactExecution,
+        approvedSyntheticManifestDigest: options.artifactBundle.digests.manifestDigest,
+      },
+    });
+    expect(report.scenarios[0]?.state).toBe("fail");
+    expect(report.scenarios[0]?.exchanges[0]?.request.exact?.bodyDigest).toBeUndefined();
+  });
+  it("records unavailable state on a categorized transport failure without inventing an exact request", async () => {
+    const options = setup({}, true);
+    options.exactExecution.execute.mockRejectedValue(
+      new HttpTransportError("disconnect", "SECRET-TRANSPORT"),
+    );
+    const report = await runConformanceMatrix(options);
+    expect(report.scenarios[0]?.category).toBe("exact-observation");
+    expect(report.scenarios[0]?.exchanges[0]?.transportError).toMatchObject({
+      category: "disconnect",
+    });
+    expect(report.scenarios[0]?.exchanges[0]?.request.exact).toBeUndefined();
+    expect(report.scenarios[1]?.category).toBe("not-run");
+  });
+
+  it.each([
+    "valid",
+    "pending",
+    "not-started",
+    "wrong-origin",
+    "missing-origin",
+    "repeated-origin",
+    "empty-origin",
+    "wrong-method",
+    "repeated-method",
+    "empty-method",
+    "reordered",
+    "missing-duplicate",
+    "extra",
+    "changed-case",
+    "wrong-default",
+    "wrong-framing",
+    "missing-observation",
+  ])("uses complete ordered exact CORS evidence: %s", async (variant) => {
+    const headerLines = [
+      { name: "Origin", value: "https://cors-probe.invalid" },
+      { name: "Access-Control-Request-Method", value: "POST" },
+      { name: "X-Probe", value: "first" },
+      { name: "x-Probe", value: "second" },
+    ];
+    if (variant === "missing-origin") headerLines.shift();
+    if (variant === "repeated-origin")
+      headerLines.push({ name: "origin", value: "https://cors-probe.invalid" });
+    if (variant === "empty-origin") headerLines[0] = { name: "Origin", value: "" };
+    if (variant === "repeated-method")
+      headerLines.push({ name: "access-control-request-method", value: "POST" });
+    if (variant === "empty-method")
+      headerLines[1] = { name: "Access-Control-Request-Method", value: "" };
+    const options = setup({
+      raw: { headerLines },
+      assertions: [
+        { id: "cors", kind: "header", name: "access-control-allow-origin", absent: true },
+        { id: "status", kind: "status", equals: 401 },
+      ],
+    });
+    const good = options.exactExecution.execute.getMockImplementation();
+    options.exactExecution.execute.mockImplementation(async (request) => {
+      if (good === undefined) throw new Error();
+      const response = await good(request);
+      if (response.exactRequest === undefined) throw new Error();
+      if (variant === "missing-observation") {
+        const { exactRequest: _exact, ...rest } = response;
+        return rest;
+      }
+      const lines = response.exactRequest.headerLines.map((line) => ({ ...line }));
+      if (variant === "wrong-origin")
+        lines[0] = { name: "Origin", value: "https://different.invalid" };
+      if (variant === "wrong-method")
+        lines[1] = { name: "Access-Control-Request-Method", value: "GET" };
+      if (variant === "reordered") {
+        const first = lines[2],
+          second = lines[3];
+        if (first === undefined || second === undefined) throw new Error();
+        [lines[2], lines[3]] = [second, first];
+      }
+      if (variant === "missing-duplicate") lines.splice(3, 1);
+      if (variant === "extra") lines.push({ name: "X-UNKNOWN-SENTINEL", value: "secret" });
+      if (variant === "changed-case") lines[2] = { name: "x-probe", value: "first" };
+      if (variant === "wrong-default") lines[4] = { name: "Accept", value: "changed" };
+      if (variant === "wrong-framing")
+        lines[lines.length - 1] = { name: "Connection", value: "keep-alive" };
+      return {
+        ...response,
+        exactRequest: {
+          ...response.exactRequest,
+          headerLines: lines,
+          writeState:
+            variant === "pending"
+              ? "started-completion-unestablished"
+              : variant === "not-started"
+                ? "not-started"
+                : "complete",
+        },
+      };
+    });
+    const report = await runConformanceMatrix(options);
+    const exchange = report.scenarios[0]?.exchanges[0];
+    expect(report.scenarios[0]?.state).toBe(variant === "valid" ? "pass" : "harness-error");
+    expect(report.scenarios[0]?.category).toBe(
+      variant === "valid"
+        ? undefined
+        : variant === "missing-observation" || variant === "not-started"
+          ? "exact-observation"
+          : "wire-observation-unavailable",
+    );
+    expect(exchange?.assertions.find(({ id }) => id === "cors")?.passed).toBe(variant === "valid");
+    expect(exchange?.assertions.find(({ id }) => id === "status")?.passed).toBe(true);
+    expect(exchange?.request.wireHeadersObserved).toBeUndefined();
+    expect(serializeConformanceReport(report)).not.toContain("UNKNOWN-SENTINEL");
+  });
+  it.each(["not-started", "started-completion-unestablished"] as const)(
+    "keeps response outcomes when authored transmission is incomplete: %s",
+    async (writeState) => {
+      const options = setup();
+      const good = options.exactExecution.execute.getMockImplementation();
+      options.exactExecution.execute.mockImplementation(async (request) => {
+        if (good === undefined) throw new Error();
+        const response = await good(request);
+        if (response.exactRequest === undefined) throw new Error();
+        return { ...response, exactRequest: { ...response.exactRequest, writeState } };
+      });
+      const report = await runConformanceMatrix(options);
+      expect(
+        report.scenarios[0]?.exchanges[0]?.assertions.map(({ id, passed }) => [id, passed]),
+      ).toEqual([
+        ["status", true],
+        ["authored-head", false],
+        ["authored-body", false],
+        ["write", false],
+      ]);
+      expect(report.scenarios[0]?.exchanges[0]?.response?.status).toBe(401);
+    },
+  );
+  it("keeps admitted authorization-view values out of report projections", async () => {
+    const headerLines = [
+      { name: "bdp-authorization-view", value: "CONTEXT-SENTINEL" },
+      { name: "BDP-Authorization-View", value: "" },
+    ];
+    const options = setup({ raw: { headerLines } });
+    const configuration = {
+      ...options.exactExecution.configuration,
+      defaultCredentialRef: "writer",
+      credentialHandles: [{ id: "writer", headerNames: ["authorization"] }],
+    };
+    const good = options.exactExecution.execute.getMockImplementation();
+    options.exactExecution.execute.mockImplementation(async (request) => {
+      if (good === undefined) throw new Error();
+      const response = await good(request);
+      if (response.exactRequest === undefined) throw new Error();
+      const lines = [...response.exactRequest.headerLines];
+      lines.splice(headerLines.length, 0, { name: "Authorization", value: "CREDENTIAL-SENTINEL" });
+      return {
+        ...response,
+        headers: {
+          "bdp-authorization-view": "CONTEXT-SENTINEL",
+          authorization: "CREDENTIAL-SENTINEL",
+        },
+        effectiveRequest: {
+          url: response.url,
+          headers: {
+            "bdp-authorization-view": "CONTEXT-SENTINEL",
+            authorization: "CREDENTIAL-SENTINEL",
+          },
+        },
+        exactRequest: { ...response.exactRequest, headerLines: lines },
+      };
+    });
+    const report = await runConformanceMatrix({
+      ...options,
+      exactExecution: { ...options.exactExecution, configuration },
+    });
+    expect(report.scenarios[0]?.state).toBe("pass");
+    const exchange = report.scenarios[0]?.exchanges[0];
+    expect(exchange?.assertions.find(({ id }) => id === "authored-head")?.passed).toBe(true);
+    expect(exchange?.request.exact?.elidedHeaderLines).toBe(4);
+    expect(
+      exchange?.request.exact?.headerLines.some(
+        ({ name }) => name.toLowerCase() === "bdp-authorization-view",
+      ),
+    ).toBe(false);
+    // Exact evidence owns the request projection; the lossy compatibility map stays ignored.
+    expect(exchange?.request.headers).toEqual({});
+    expect(exchange?.request.exact?.headerLines).toContainEqual({
+      name: "Authorization",
+      value: "<redacted>",
+    });
+    expect(exchange?.response?.headers).toHaveProperty("authorization", "<redacted>");
+    expect(exchange?.response?.headers).not.toHaveProperty("bdp-authorization-view");
+    const text = serializeConformanceReport(report);
+    expect(text).not.toContain("CONTEXT-SENTINEL");
+    expect(text).not.toContain("CREDENTIAL-SENTINEL");
+    expect(options.execute).not.toHaveBeenCalled();
+    expect(options.exactExecution.execute).toHaveBeenCalledOnce();
+  });
+
+  it("accepts registered credential decoration and authored defaults without resolving credentials again", async () => {
+    const options = setup({
+      raw: { headerLines: [{ name: "aCcEpT", value: "application/json" }] },
+    });
+    const configuration = {
+      ...options.exactExecution.configuration,
+      defaultCredentialRef: "private",
+      credentialHandles: [{ id: "private", headerNames: ["authorization", "cookie"] }],
+    };
+    const good = options.exactExecution.execute.getMockImplementation();
+    options.exactExecution.execute.mockImplementation(async (request) => {
+      if (good === undefined) throw new Error();
+      const response = await good(request);
+      if (response.exactRequest === undefined) throw new Error();
+      const lines = response.exactRequest.headerLines.filter(({ name }) => name !== "Accept");
+      lines.splice(
+        1,
+        0,
+        { name: "Cookie", value: "COOKIE-SENTINEL" },
+        { name: "Authorization", value: "AUTH-SENTINEL" },
+      );
+      return { ...response, exactRequest: { ...response.exactRequest, headerLines: lines } };
+    });
+    const report = await runConformanceMatrix({
+      ...options,
+      exactExecution: { ...options.exactExecution, configuration },
+    });
+    expect(report.scenarios[0]?.state).toBe("pass");
+    expect(serializeConformanceReport(report)).not.toContain("SENTINEL");
+  });
+  it.each(["utf8", "base64"] as const)(
+    "enforces positive source body caps at N and N+1 for %s",
+    async (encoding) => {
+      for (const oversized of [false, true]) {
+        const bytes = Buffer.from(`é🙂${oversized ? "!" : ""}`);
+        const options = setup({
+          raw: {
+            headerLines: [],
+            body: {
+              encoding,
+              value: encoding === "utf8" ? bytes.toString("utf8") : bytes.toString("base64"),
+            },
+          },
+        });
+        const attempt = {
+          ...options,
+          exactExecution: {
+            ...options.exactExecution,
+            configuration: { ...options.exactExecution.configuration, maximumRequestBodyBytes: 6 },
+          },
+        };
+        if (oversized) {
+          await expect(runConformanceMatrix(attempt)).rejects.toThrow(
+            "configured execution boundary",
+          );
+          expect(options.harness.prepare).not.toHaveBeenCalled();
+          expect(options.exactExecution.execute).not.toHaveBeenCalled();
+        } else {
+          const report = await runConformanceMatrix(attempt);
+          expect(report.scenarios[0]?.state).toBe("pass");
+          expect(report.scenarios[0]?.exchanges[0]?.request.exact?.bodyOctets).toBe(6);
+        }
+      }
+    },
+  );
+  it("enforces the authored-header lower bound at N and N+1 before preparation", async () => {
+    for (const oversized of [false, true]) {
+      const options = setup({
+        raw: { headerLines: [{ name: "X", value: "a".repeat(57 + Number(oversized)) }] },
+      });
+      // 2 terminator + 1 name + 4 field syntax + 57 value = 64 authored bytes.
+      // Full framing remains an executor obligation; this control isolates preflight.
+      options.exactExecution.execute.mockRejectedValue(
+        new HttpTransportError(
+          "configuration",
+          "full framing exceeds source lower bound",
+          {},
+          "not-started",
+        ),
+      );
+      const attempt = {
+        ...options,
+        exactExecution: {
+          ...options.exactExecution,
+          configuration: { ...options.exactExecution.configuration, maximumRequestHeaderBytes: 64 },
+        },
+      };
+      if (oversized) {
+        await expect(runConformanceMatrix(attempt)).rejects.toThrow(
+          "configured execution boundary",
+        );
+        expect(options.harness.prepare).not.toHaveBeenCalled();
+        expect(options.exactExecution.execute).not.toHaveBeenCalled();
+      } else {
+        const report = await runConformanceMatrix(attempt);
+        expect(options.harness.prepare).toHaveBeenCalledTimes(1);
+        expect(options.exactExecution.execute).toHaveBeenCalledTimes(1);
+        expect(report.scenarios[0]?.category).toBe("exact-configuration");
+      }
+    }
+  });
+  it.each(["scope", "profile"] as const)(
+    "checks supplied v2 ordinary-only Read config %s before declaration or preparation",
+    async (mismatch) => {
+      const legacy = inputs([{ id: "status", kind: "status", equals: 204 }]);
+      const artifactBundle = replaceArtifacts(legacy, {
+        manifest: { ...legacy.artifactBundle.manifest, manifestVersion: 2 },
+      });
+      const options = setup();
+      const configuration = {
+        ...options.exactExecution.configuration,
+        scope: mismatch === "scope" ? "https://other.test/" : scope,
+        profile: mismatch === "profile" ? ("read-update" as const) : ("read" as const),
+        routes: [
+          { method: "GET" as const, url: mismatch === "scope" ? "https://other.test/" : scope },
+        ],
+      };
+      await expect(
+        runConformanceMatrix({
+          ...options,
+          artifactBundle,
+          profile: "read",
+          exactExecution: { ...options.exactExecution, configuration },
+        }),
+      ).rejects.toThrow("must match the run Scope and profile");
+      expect(options.harness.prepare).not.toHaveBeenCalled();
+      expect(options.execute).not.toHaveBeenCalled();
+      expect(options.exactExecution.execute).not.toHaveBeenCalled();
+    },
+  );
+  it.each(["route", "cap"])(
+    "gates only selected applicable %s checks, preserving catalog order",
+    async (failure) => {
+      const options = setup({}, true);
+      const rawSource = source({}, true);
+      const row = rawSource.scenarios[1];
+      const request = row?.requests[0];
+      if (!row || !request) throw new Error();
+      const manifest = parseExecutableScenarioManifest({
+        ...rawSource,
+        scenarios: [
+          rawSource.scenarios[0],
+          {
+            ...row,
+            requests: [
+              {
+                ...request,
+                target: {
+                  binding: "scope",
+                  path: failure === "route" ? "undeclared" : "operations/create-bead",
+                },
+                raw: {
+                  headerLines: [],
+                  body: { encoding: "utf8", value: "x".repeat(failure === "cap" ? 4097 : 1) },
+                },
+              },
+            ],
+          },
+        ],
+      });
+      const artifactBundle = bindArtifacts(options.artifactBundle.catalog, manifest);
+      const report = await runConformanceMatrix({
+        ...options,
+        artifactBundle,
+        scenarioSelection: ["raw.first"],
+      });
+      expect(report.selectedScenarioIds).toEqual(["raw.first"]);
+      expect(report.scenarios[0]?.state).toBe("pass");
+      vi.mocked(options.harness.prepare).mockClear();
+      options.exactExecution.execute.mockClear();
+      await expect(
+        runConformanceMatrix({ ...options, artifactBundle, scenarioSelection: ["raw.second"] }),
+      ).rejects.toThrow("configured execution boundary");
+      expect(options.harness.prepare).not.toHaveBeenCalled();
+      expect(options.exactExecution.execute).not.toHaveBeenCalled();
+      const ordered = await runConformanceMatrix({
+        ...options,
+        scenarioSelection: ["raw.second", "raw.first"],
+      });
+      expect(ordered.selectedScenarioIds).toEqual(["raw.first", "raw.second"]);
+    },
+  );
+  it("receives real socket cancellation after the native body receipt without executing another scenario", async () => {
+    const options = setup(
+      { raw: { headerLines: [], body: { encoding: "base64", value: "/wAB" } } },
+      true,
+    );
+    const controller = new AbortController();
+    let receipt = Buffer.alloc(0);
+    const closed = vi.fn();
+    const target = createRawHttpScenarioTarget(
+      async () => {
+        const server = createHttpServer((request) => {
+          const chunks: Buffer[] = [];
+          request.on("data", (chunk: Buffer) => chunks.push(Buffer.from(chunk)));
+          request.on("end", () => {
+            receipt = Buffer.concat(chunks);
+            controller.abort();
+          });
+        });
+        await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
+        const address = server.address();
+        if (address === null || typeof address === "string") throw new Error();
+        return {
+          capabilities: ["public-http"],
+          dialRoute: { transport: "plain", host: "127.0.0.1", port: address.port },
+          close: async () => {
+            closed();
+            server.closeAllConnections();
+            await new Promise<void>((resolve) => server.close(() => resolve()));
+          },
+        };
+      },
+      { exactMode: { ...options.exactExecution.configuration, resolveCredentials: () => ({}) } },
+    );
+    if (target.exactConfiguration === undefined) throw new Error();
+    try {
+      const report = await runConformanceMatrix({
+        ...options,
+        signal: controller.signal,
+        execute: target.execute,
+        harness: target.harness,
+        exactExecution: { configuration: target.exactConfiguration, execute: target.execute },
+      });
+      expect(receipt).toEqual(Buffer.from([255, 0, 1]));
+      expect(report.scenarios[0]?.category).toBe("aborted");
+      expect(report.scenarios[0]?.exchanges[0]?.transportError).toMatchObject({
+        category: "abort",
+        writeState: "complete",
+      });
+      expect(report.scenarios[0]?.exchanges[0]?.request.exact).toBeUndefined();
+      expect(report.scenarios[0]?.exchanges[0]?.assertions).toEqual([]);
+      expect(report.scenarios[1]?.category).toBe("not-run");
+      expect(closed).toHaveBeenCalledTimes(1);
+    } finally {
+      await target.close();
+    }
+  });
+  it("receives real credential-decorated overflow as a fail-stop harness refusal before dialing", async () => {
+    const options = setup({ raw: { headerLines: [] } }, true);
+    let connections = 0;
+    const resolveCredentials = vi.fn(() => ({ Authorization: "PRIVATE-CREDENTIAL".repeat(32) }));
+    const target = createRawHttpScenarioTarget(
+      async () => {
+        const server = createHttpServer();
+        server.on("connection", () => connections++);
+        await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
+        const address = server.address();
+        if (address === null || typeof address === "string") throw new Error();
+        return {
+          capabilities: ["public-http"],
+          dialRoute: { transport: "plain", host: "127.0.0.1", port: address.port },
+          close: async () => {
+            server.closeAllConnections();
+            await new Promise<void>((resolve) => server.close(() => resolve()));
+          },
+        };
+      },
+      {
+        exactMode: {
+          ...options.exactExecution.configuration,
+          maximumRequestHeaderBytes: 128,
+          defaultCredentialRef: "writer",
+          credentialHandles: [{ id: "writer", headerNames: ["authorization"] }],
+          resolveCredentials,
+        },
+      },
+    );
+    if (target.exactConfiguration === undefined) throw new Error();
+    try {
+      const report = await runConformanceMatrix({
+        ...options,
+        execute: target.execute,
+        harness: target.harness,
+        exactExecution: { configuration: target.exactConfiguration, execute: target.execute },
+      });
+      expect(report.scenarios[0]?.category).toBe("exact-configuration");
+      expect(report.scenarios[0]?.exchanges[0]?.harnessError).toMatchObject({
+        category: "exact-configuration",
+        writeState: "not-started",
+      });
+      expect(report.scenarios[0]?.exchanges[0]?.transportError).toBeUndefined();
+      expect(report.scenarios[1]?.category).toBe("not-run");
+      expect(resolveCredentials).toHaveBeenCalledTimes(1);
+      expect(connections).toBe(0);
+      expect(serializeConformanceReport(report)).not.toContain("PRIVATE-CREDENTIAL");
+    } finally {
+      await target.close();
+    }
+  });
+
+  it("preserves exact v3 bytes observed at the original e24 receiving base", async () => {
+    const options = inputs([{ id: "status", kind: "status", equals: 204 }], {
+      "idempotency-key": "PRIVATE-KEY",
+      accept: "application/json",
+    });
+    const report = await runConformanceMatrix({
+      ...options,
+      scope,
+      profile: "read",
+      seed: 0,
+      execute: async () => ({
+        url: scope,
+        status: 204,
+        headers: { "Idempotency-Key": "PRIVATE-ECHO", ETag: '"tag"' },
+        bodyText: "",
+        effectiveRequest: {
+          url: scope,
+          headers: { "Idempotency-Key": "PRIVATE-EFFECTIVE", accept: "application/json" },
+          headersTransmitted: true,
+        },
+      }),
+      harness: harness(),
+    });
+    // Captured by raw-receiving-v3-base-bytes-20260911.mjs against e24a9f7 dist.
+    expect(serializeConformanceReport(report)).toBe(
+      '{"artifacts":{"catalogDigest":"bef8e189332e94b7293a19e395b97127a691921762b5b3d5c432e5d8ba6099e8","fixtureDigest":"fd4d7b36e3ea8cb00cd720dc1ba36c80e547dc7ac476dc6be1cf4d1e137c7dc5","manifestDigest":"5ead2492f35fc5ad60ce0a995a72099d28cd0bf23b6775439765ef964f7e5dad"},"claimEligible":false,"declarations":{"targetLabel":"unit-test-target"},"profile":"read","reportVersion":3,"scenarios":[{"exchanges":[{"assertions":[{"id":"status","passed":true}],"request":{"headers":{"accept":"<redacted>"},"id":"scope","method":"GET","url":"https://scope.example/","wireHeadersObserved":true},"response":{"bodyKind":"empty","decodedBodyBytes":0,"headers":{"etag":"<redacted>"},"status":204,"url":"https://scope.example/"}}],"id":"read.discovery","requiredProfile":"read","requirements":["docs/specs/bdp.md#scope-discovery-and-human-documentation"],"state":"pass"}],"scope":"https://scope.example/","seed":0,"selectedScenarioIds":["read.discovery"]}\n',
+    );
+  });
+  it("checks even unused v2 exact declarations while preserving a v1 unused binding", async () => {
+    const options = setup();
+    const readConfiguration = { ...options.exactExecution.configuration, profile: "read" as const };
+    const empty = await runConformanceMatrix({
+      ...options,
+      profile: "read",
+      exactExecution: { ...options.exactExecution, configuration: readConfiguration },
+    });
+    expect(empty.selectedScenarioIds).toEqual([]);
+    expect(empty.reportVersion).toBe(4);
+    expect(empty.declarations).toHaveProperty("exactConfigurationDigest");
+    await expect(runConformanceMatrix({ ...options, profile: "read" })).rejects.toThrow(
+      "must match the run Scope and profile",
+    );
+    expect(options.harness.prepare).not.toHaveBeenCalled();
+    const legacy = inputs([{ id: "status", kind: "status", equals: 204 }]);
+    const report = await runConformanceMatrix({
+      ...options,
+      ...legacy,
+      profile: "read",
+      execute: async () => ({ url: scope, status: 204, headers: {}, bodyText: "" }),
+    });
+    expect(report.reportVersion).toBe(3);
+    expect(report.scenarios[0]?.state).toBe("pass");
+    expect(report.declarations).not.toHaveProperty("exactConfigurationDigest");
+  });
+});
+
+// Source-private gate: public root does not export this assertion helper.
+it.each([
+  "dynamicExactConfiguration",
+  "dynamicExactConfigurationDigest",
+  "sourceReceiptObservation",
+  "servedSession",
+])("refuses private %s fields in the runner legacy boundary", async (field) => {
+  const { assertLegacyScenario } = await import("./runner.js");
+  const scenario = {
+    id: "read.discovery",
+    requiredProfile: "read",
+    state: "pass",
+    requirements: [],
+    exchanges: [
+      {
+        request: { id: "get", method: "GET", url: "https://example.test/", headers: {} },
+        assertions: [],
+        [field]: {},
+      },
+    ],
+  } as unknown as import("./runner.js").ScenarioRunResult;
+  expect(() => assertLegacyScenario(scenario)).toThrow("legacy report");
+});
+
+it("excludes all private Transactional metadata from the legacy exchange type", () => {
+  type Legacy = import("./runner.js").LegacyObservedExchange;
+  type Fields = import("./transactional-observation.js").TransactionalExchangeFields;
+  const closed: [NonNullable<Legacy[keyof Fields]>] extends [never] ? true : false = true;
+  expect(closed).toBe(true);
+});
+
+it.each(["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"])(
+  "requires explicit %s presence even when metadata equality sees two absent values",
+  async (name) => {
+    const base = { family: "http", target: { binding: "scope" }, headers: {}, captures: [] };
+    const options = actionInputs([
+      {
+        ...base,
+        id: "prior",
+        method: "GET",
+        assertions: [{ id: "status", kind: "status", equals: 200 }],
+      },
+      {
+        ...base,
+        id: "events",
+        method: "GET",
+        assertions: [
+          { id: "same", kind: "response-metadata-equals", request: "prior", headers: [name] },
+          { id: "present", kind: "header", name, absent: false },
+        ],
+      },
+    ]);
+    const observed = await runConformanceMatrix({
+      ...options,
+      scope: "https://scope.example/",
+      profile: "read",
+      seed: 0,
+      harness: harness(),
+      execute: async (request) => ({
+        url: request.url,
+        status: 200,
+        headers: {},
+        bodyText: "",
+        bodyOctets: 0,
+      }),
+    });
+    const row = observed.scenarios[0]!;
+    expect(row.state).toBe("fail");
+    expect(row.exchanges[1]?.assertions.find((a) => a.id === "same")?.passed).toBe(true);
+    expect(row.exchanges[1]?.assertions.find((a) => a.id === "present")?.passed).toBe(false);
+  },
+);
+
+// Private receipt continuations remain actual one-target wire observations.
+it.each([
+  "id-first",
+  "page-first",
+  "wrong-parent",
+  "empty-page",
+  "changed-page",
+  "cancel-page",
+  "null-next",
+  "absent-next",
+] as const)("observes private first-page authority over actual HTTP: %s", async (kind) => {
+  const { readFileSync } = await import("node:fs");
+  const { createCumulativeTransactionalArtifactBundle } = await import("./artifact-bundle.js");
+  const { loadProfileContractSelection } = await import("./profile-contract-selection.js");
+  const { runCumulativeTransactionalMatrix } = await import("./runner.js");
+  const { createRawHttpExchangeExecutor } = await import("./http-executor.js");
+  const fixture = JSON.parse(
+    readFileSync(new URL("../test-support/transactional/fixture-v1.json", import.meta.url), "utf8"),
+  );
+  const manifest = JSON.parse(
+    readFileSync(
+      new URL("../test-support/transactional/manifest-v1.json", import.meta.url),
+      "utf8",
+    ),
+  );
+  const scope = fixture.scope as string,
+    id = `${scope}receipts/r1`,
+    page = `${id}/pages/p1`;
+  const root = {
+    id,
+    status: "completed",
+    detail: "available",
+    idempotencyKey: "key",
+    scopeEpoch: "epoch",
+    authorizationView: "view",
+    transaction: "tx",
+    requiredPosition: "pos-0",
+    results: [{ operationIndex: 0, outcome: "matched", count: 0 }],
+    ...(kind === "absent-next" ? {} : { next: kind === "null-next" ? null : page }),
+    expiresAt: "2030-01-01T00:00:00Z",
+  };
+  let pageGets = 0,
+    generation = 1;
+  const requests: string[] = [];
+  const sessionAbort = new AbortController();
+  const pending = new Set<Promise<unknown>>();
+  const server = createHttpServer((request, response) => {
+    request.resume();
+    requests.push(`${request.method} ${request.url}`);
+    const isPage = request.url === "/acme/receipts/r1/pages/p1";
+    if (isPage && request.method === "GET") pageGets++;
+    if (isPage && request.method === "GET" && kind === "cancel-page") {
+      sessionAbort.abort(new Error("private page cancellation"));
+      return;
+    }
+    const body = isPage
+      ? {
+          receipt: kind === "wrong-parent" ? `${scope}receipts/wrong` : id,
+          results:
+            kind === "empty-page"
+              ? []
+              : [
+                  {
+                    operationIndex: 0,
+                    outcome: "matched",
+                    count: kind === "changed-page" && pageGets > 1 ? 1 : 0,
+                  },
+                ],
+          next: null,
+        }
+      : root;
+    const text = JSON.stringify(body);
+    response.writeHead(200, {
+      "content-type": "application/json",
+      "content-length": Buffer.byteLength(text),
+      connection: "close",
+    });
+    response.end(request.method === "HEAD" ? undefined : text);
+  });
+  await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
+  const address = server.address();
+  if (!address || typeof address === "string") throw Error("missing address");
+  const dialRoute = { transport: "plain" as const, host: "127.0.0.1", port: address.port };
+  const mode = {
+    scope,
+    profile: "transactional" as const,
+    routes: [{ method: "POST" as const, url: fixture.bindings.batch as string }],
+    maximumRequestHeaderBytes: 16384,
+    maximumRequestBodyBytes: 65536,
+    defaultCredentialRef: "operator",
+    credentialHandles: [{ id: "operator", headerNames: [] as string[] }],
+    resolveCredentials: () => ({}),
+  };
+  const { resolveCredentials: _resolver, ...configuration } = mode;
+  const captures = [
+    { binding: "root", from: { kind: "json-pointer", pointer: "/id" } },
+    { binding: "page", from: { kind: "json-pointer", pointer: "/next" } },
+  ];
+  if (kind === "page-first") captures.reverse();
+  const read = (name: string, binding: string, method = "GET") => ({
+    id: name,
+    family: "client",
+    operation: "transactional.receipt-read",
+    input: { binding, method },
+    captures: [],
+    assertions: [
+      { id: "status", kind: "json-pointer", pointer: "/status", exists: true, equals: 200 },
+    ],
+  });
+  const row = {
+    ...manifest.scenarios[0],
+    actions: [
+      {
+        id: "source",
+        family: "http",
+        method: "POST",
+        target: { binding: "batch" },
+        raw: { headerLines: [], body: { encoding: "utf8", value: "{}" } },
+        captures,
+        assertions: [{ id: "status", kind: "status", equals: 200 }],
+      },
+      read("root-read", "root"),
+      read("page-head", "page", "HEAD"),
+      read("page-read", "page"),
+      {
+        id: "reopen",
+        family: "client",
+        operation: "transactional.reopen",
+        input: {},
+        captures: [],
+        assertions: [
+          {
+            id: "reopened",
+            kind: "json-pointer",
+            pointer: "/reopened",
+            exists: true,
+            equals: true,
+          },
+        ],
+      },
+      read("page-again", "page"),
+    ],
+  };
+  try {
+    const result = await runCumulativeTransactionalMatrix(
+      {
+        artifactBundle: createCumulativeTransactionalArtifactBundle(
+          loadProfileContractSelection("transactional"),
+          {
+            fixture: { bytes: Buffer.from(JSON.stringify(fixture)) },
+            manifest: { bytes: Buffer.from(JSON.stringify({ ...manifest, scenarios: [row] })) },
+          },
+        ),
+        profile: "transactional",
+        seed: 0,
+        declaredTargetLabel: "private-page-test",
+        scope,
+        harness: {
+          prepare: async () => ({
+            capabilities: fixture.capabilities,
+            bindings: fixture.bindings,
+          }),
+          cleanup: async () => {},
+        },
+        execute: async () => {
+          throw Error("must use raw transport");
+        },
+        schemaValidator: createJsonSchemaValidator(schemaBundle),
+        exactExecution: {
+          configuration,
+          execute: createRawHttpExchangeExecutor(dialRoute, {
+            exactMode: mode,
+            requestTimeoutMs: 5000,
+          }),
+        },
+      },
+      {
+        current: (scenario) => ({
+          binding: {
+            scenario,
+            generation,
+            listenUrl: `http://127.0.0.1:${address.port}/`,
+            runtimeConfigurationIdentity: "a".repeat(64),
+            configurationDigest: "b".repeat(64),
+            responseLimits: { headerBytes: 65536, bodyBytes: 1048576, wireBytes: 2097152 },
+          },
+          dialRoute,
+          signal: sessionAbort.signal,
+          resolveCredentials: () => ({}),
+          register: (p) => {
+            pending.add(p);
+            return p.finally(() => pending.delete(p));
+          },
+        }),
+        reopen: async () => {
+          generation++;
+        },
+      },
+    );
+    const actual = result.scenarios.find((s) => s.id === row.id)!;
+    if (kind === "id-first" || kind === "page-first") {
+      expect(actual, JSON.stringify(actual)).toMatchObject({ state: "pass" });
+      expect(pageGets).toBe(2);
+      const observed = actual.exchanges.find((e) => e.request.id === "page-again")!;
+      expect(observed.sourceReceiptObservation).toMatchObject({
+        pointer: "/next",
+        receipt: id,
+        page,
+        session: { generation: 1 },
+      });
+      expect(observed.servedSession?.generation).toBe(2);
+      expect(observed.dynamicExactConfiguration?.routes).toEqual([{ method: "GET", url: page }]);
+    } else if (kind === "null-next" || kind === "absent-next") {
+      expect(actual).toMatchObject({
+        state: "fail",
+        reason:
+          kind === "null-next"
+            ? "source receipt page unavailable"
+            : "source receipt schema invalid",
+      });
+      expect(actual.exchanges).toHaveLength(1);
+      expect(actual.exchanges[0]?.response?.status).toBe(200);
+      expect(pageGets).toBe(0);
+    } else if (kind === "cancel-page") {
+      expect(sessionAbort.signal.aborted).toBe(true);
+      expect(actual.state).not.toBe("pass");
+      expect(pageGets).toBe(1);
+      expect(actual.exchanges.some((e) => e.request.id === "page-again")).toBe(false);
+      expect(pending.size).toBe(0);
+    } else {
+      expect(actual).toMatchObject({
+        state: "fail",
+        reason:
+          kind === "changed-page"
+            ? "retained receipt page differs from original wire facts"
+            : "retained receipt page schema or identity mismatch",
+      });
+      expect(actual.exchanges.at(-1)?.sourceReceiptObservation?.pointer).toBe("/next");
+    }
+    expect(requests.slice(0, 3)).toEqual(
+      kind === "null-next" || kind === "absent-next"
+        ? ["POST /acme/operations/batch"]
+        : [
+            "POST /acme/operations/batch",
+            "GET /acme/receipts/r1",
+            "HEAD /acme/receipts/r1/pages/p1",
+          ],
+    );
+  } finally {
+    server.closeAllConnections();
+    await new Promise<void>((resolve, reject) =>
+      server.close((error) => (error ? reject(error) : resolve())),
+    );
+  }
+});

@@ -1,0 +1,83 @@
+{
+  "environment": "BDP_TRANSACTIONAL_CONDITIONAL_OUTPUT",
+  "path": "optional absolute path <=4096 characters, outside owned runtime store; supervisor must provide distinct exclusive path per cohort",
+  "written": "onObserved before observe cleanup can throw",
+  "fields": [
+    "sourceCommit",
+    "entry",
+    "result",
+    "sessions",
+    "baseline",
+    "conditionalSupplemental"
+  ],
+  "supplementFields": [
+    "mode",
+    "session(scenario,reopen,sessionOrdinal)",
+    "dispatches(method,url,credentialRef)",
+    "responses(action,status,bodyBytes,bodyDigest,headers,requestBodyBytes,requestBodyDigest,writeState)",
+    "expectedExchanges",
+    "provenance"
+  ],
+  "responseHeaderAllowlist": [
+    "bdp-scope-epoch",
+    "bdp-authorization-view",
+    "bdp-scope-position",
+    "cache-control",
+    "etag",
+    "content-type",
+    "content-length",
+    "vary",
+    "www-authenticate"
+  ],
+  "excluded": [
+    "tokens",
+    "credential-bearing runtime config",
+    "effectiveRequest",
+    "exactRequest.headerLines",
+    "arbitrary error text"
+  ],
+  "stdout": "safe conditional supplement, declared source, actual closed child count, claimEligible:false",
+  "cleanup": "Existing observe aggregates primary/cleanup failures and removes owned top directory. Abnormal close cannot qualify on directory absence alone; external supervisor independently checks child/group/store closure.",
+  "entry": "Existing development fallback preserved; installed attribution requires explicit fresh external consumer override, fresh archives and eight dependency closure.",
+  "sessionFieldsAdded": [
+    "sessionOrdinal"
+  ],
+  "scenarioRouting": "Local frozen context is captured after actual successful launch; ordinary dispatch snapshots it, real target executes, then context identity must still match. Conditional ID only routes to conditional wire; every other ordinary exchange retains old observer chain.",
+  "sessionChecks": {
+    "selected": {
+      "sessionOrdinal": 0,
+      "reopen": false,
+      "sessions": 1
+    },
+    "full": {
+      "parentFirstPresentations": [
+        "read-update.idempotency.principal-isolation",
+        "read-update.http.command-minimum-fields",
+        "transactional.batch.atomic-commit",
+        "transactional.batch.rollback",
+        "transactional.batch.deletion-safety",
+        "transactional.batch.no-op-entries",
+        "transactional.set.mutation",
+        "transactional.set.zero-match",
+        "transactional.set.cardinality",
+        "transactional.set.singleton-targets",
+        "transactional.receipt.readable",
+        "transactional.receipt.pagination",
+        "transactional.idempotency.conflict",
+        "transactional.idempotency.cross-carrier",
+        "transactional.idempotency.failed-retained",
+        "transactional.sequence.member-transactions"
+      ],
+      "tail": "transactional.http.conditional-reads",
+      "conditionalSessions": 1,
+      "reopen": false,
+      "ordinal": "observed.sessions.length-1",
+      "legitimateParentReopensRetained": true
+    },
+    "dispatchResponseCardinality": {
+      "positive": 14,
+      "control": 4
+    },
+    "finalJoin": "stable scenario ID, exact action order, actual session entry; no inferred URL/key/count identity"
+  }
+}

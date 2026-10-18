@@ -1,0 +1,102 @@
+{
+  "method": "Pure JSON/file arithmetic, no product runtime imports or test execution. Canonical ECMAScript bytes measured separately.",
+  "jsonFiles": [
+    {
+      "path": "packages/conformance/catalog/read-update-v1.json",
+      "beforeDiskBytes": 84833,
+      "afterDiskBytes": 85899,
+      "diskDelta": 1066,
+      "beforeNodes": 1303,
+      "afterNodes": 1313,
+      "nodeDelta": 10
+    },
+    {
+      "path": "packages/conformance/test-support/read-update-coverage-v1.json",
+      "beforeDiskBytes": 712792,
+      "afterDiskBytes": 713193,
+      "diskDelta": 401,
+      "beforeNodes": 14626,
+      "afterNodes": 14632,
+      "nodeDelta": 6
+    },
+    {
+      "path": "packages/conformance/development/read-update-coverage-v1.json",
+      "beforeDiskBytes": 48952,
+      "afterDiskBytes": 49322,
+      "diskDelta": 370,
+      "beforeNodes": 1140,
+      "afterNodes": 1146,
+      "nodeDelta": 6
+    }
+  ],
+  "fences": [
+    {
+      "name": "numeric admission",
+      "historicalBase": 648157,
+      "currentAllowance": 66560,
+      "currentCeiling": 714717,
+      "actualAfterDelta": 65036,
+      "excessBytes": 0,
+      "proposalMinimumAllowance": null,
+      "proposedCeiling": null,
+      "applied": false
+    },
+    {
+      "name": "metadata closure",
+      "historicalBase": 698614,
+      "currentAllowance": 14336,
+      "currentCeiling": 712950,
+      "actualAfterDelta": 14579,
+      "excessBytes": 243,
+      "proposalMinimumAllowance": 14579,
+      "proposedCeiling": 713193,
+      "applied": false
+    },
+    {
+      "name": "R closure",
+      "historicalBase": 703415,
+      "currentAllowance": 9728,
+      "currentCeiling": 713143,
+      "actualAfterDelta": 9778,
+      "excessBytes": 50,
+      "proposalMinimumAllowance": 9778,
+      "proposedCeiling": 713193,
+      "applied": false
+    },
+    {
+      "name": "R explicit residual",
+      "historicalBase": 703415,
+      "currentAllowance": 1708,
+      "currentCeiling": 714369,
+      "actualAfterDelta": 532,
+      "excessBytes": 0,
+      "proposalMinimumAllowance": null,
+      "proposedCeiling": null,
+      "applied": false,
+      "priorAmendmentOffsets": [
+        5546,
+        3700
+      ],
+      "effectiveSubtractionBase": 712661
+    }
+  ],
+  "counts": {
+    "read": {
+      "required": 44,
+      "newIdOccurrences": 0,
+      "catalogSelectedIncludingDiagnostics": 49
+    },
+    "read-update": {
+      "required": 130,
+      "newIdOccurrences": 1,
+      "catalogSelectedIncludingDiagnostics": 135
+    },
+    "transactional": {
+      "required": 251,
+      "newIdOccurrences": 1,
+      "catalogSelectedIncludingDiagnostics": 256
+    }
+  },
+  "existingFenceLiteralsUnchanged": true,
+  "coverageNodesAreMeasurementNotRuntimeGate": true
+}

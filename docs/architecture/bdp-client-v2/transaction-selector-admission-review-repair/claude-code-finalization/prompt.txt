@@ -1,0 +1,66 @@
+Continue the same Selector review from the inspection already performed. The supervisor's15-minute wall-clock bound interrupted the prior attempt while inspection was active; its exit143/empty stdout is preserved as inconclusive, not review approval. Do not restart broad inspection. Do not run more tools, tests, builds, services, or commands. Do not write or modify files. Output your final findings now based on the code you already inspected and the complete small delta supplied below. If an area is unverified, state that limitation instead of guessing.
+
+Original source/diff dca25dfc/349cc7e3 is unchanged in original worktree. The only successor differences are three test files in this patch; all production, spec, HTTP and installed bytes remain exactly what you reviewed. Root compiler confirmed original spy-cast TS2352. Independent native review found that and omitted planned padded multibyte/astral and normalized-identity assertions; all are corrected below. Actual successor typecheck/build/format/lint/boundaries/Read-seal passed; no runtime tests yet. Final candidate binding03a861851a195d5da505f311291bee6d3cd98f63866d4b6df756e2c3ae289afd/fullpatch4837959bceec2e16358c46c11a6a2676d113bbaad49ba8b3d184ebd34a366b24 at ordinaryparent757aedc. Semantic scope and90case/94HTTP/installed25 counts unchanged. Source-shaped control illustrations are NOT compiled; actual emitted patches separately gated. Packet arithmetic note nowcorrect: T6=254nodes/depth14, enclosing filter addszero, groupsaddg.
+
+Review original production plus this exact final test delta. Give concrete actionable findings with severity/location/impact/fix; explicitly acknowledge resolved defects and any inspection limitation. Do not propose unrelated redesign or public-profile promotion. No review conclusion was supplied by earlier timed-out attempt.
+
+Exact successor correction.patch follows:
+--- original/packages/server/src/read-selector.test.ts
++++ repair/packages/server/src/read-selector.test.ts
+@@ -489,6 +489,14 @@
+   expect(() => analyzeSelectorGrammar(`${source} true`, 65536)).toThrow(ReadSelectorError);
+ });
+ it("counts decoded Selector UTF-8 without URI decoding or identity rewriting", () => {
++  const scalars = '$[?@.missing == "é😀"]';
++  expect(Buffer.byteLength(scalars, "utf8")).toBe(25);
++  const boundary = `${scalars.slice(0, -1)}${" ".repeat(4096 - 25)}]`;
++  const beyond = `${boundary.slice(0, -1)} ]`;
++  expect(Buffer.byteLength(boundary, "utf8")).toBe(4096);
++  expect(Buffer.byteLength(beyond, "utf8")).toBe(4097);
++  expect(analyzeSelectorGrammar(boundary, 65536).bytes).toBe(4096);
++  expect(analyzeSelectorGrammar(beyond, 65536).bytes).toBe(4097);
+   const unicode = '$[?@.missing == "é"]';
+   const escaped = String.raw`$[?@.missing == "\u00e9"]`;
+   expect(analyzeSelectorGrammar(unicode, 65536).bytes).toBe(21);
+--- original/packages/server/src/transaction-set.test.ts
++++ repair/packages/server/src/transaction-set.test.ts
+@@ -1035,6 +1035,22 @@
+ });
+ 
+ it("preserves literal Selector identity and original mixed-carrier diagnostic pointers", () => {
++  const unicodeSelector = '$[?@.missing == "é😀"]';
++  const rawUnicode = JSON.stringify({ operations: [update(unicodeSelector)] });
++  const escapedUnicode = rawUnicode.replace("é", String.raw`\u00e9`);
++  expect(escapedUnicode).not.toBe(rawUnicode);
++  expect(JSON.parse(rawUnicode).operations[0].selector).toBe(unicodeSelector);
++  expect(JSON.parse(escapedUnicode).operations[0].selector).toBe(unicodeSelector);
++  const rawNormalized = batch.normalizeTransaction(
++    batch.prepareTransaction(scope, rawUnicode),
++    () => undefined,
++  );
++  const escapedNormalized = batch.normalizeTransaction(
++    batch.prepareTransaction(scope, escapedUnicode),
++    () => undefined,
++  );
++  expect(escapedNormalized.identity).toBe(rawNormalized.identity);
++  expect(escapedNormalized).toEqual(rawNormalized);
+   const literal = '$[?@.missing == "%41"]';
+   const original = JSON.stringify({ operations: [create("a"), update(literal)] });
+   const prepared = batch.prepareTransaction(scope, original);
+--- original/packages/server/src/transaction-submission.test.ts
++++ repair/packages/server/src/transaction-submission.test.ts
+@@ -1317,8 +1317,12 @@
+   const completed = await submitTransaction(f.store, submission([create()], "completed"));
+   const pending = own(f.store, submission([create("pending")], "pending"));
+   const before = f.store.inspect();
+-  const admit = vi.fn((...args: Parameters<typeof f.store.admit>) => f.store.admit(...args));
+-  const boundary = { ...f.store, admit: admit as typeof f.store.admit };
++  const store = f.store;
++  const admit = vi.fn((...args: Parameters<typeof store.admit>) => store.admit(...args));
++  const boundary = {
++    ...store,
++    admit: ((...args: Parameters<typeof store.admit>) => admit(...args)) as typeof store.admit,
++  };
+   for (const operation of ["updateWhere", "deleteWhere"] as const)
+     for (const carrier of ["singleton", "batch"] as const)
+       for (const key of ["fresh", "pending", "completed"]) {

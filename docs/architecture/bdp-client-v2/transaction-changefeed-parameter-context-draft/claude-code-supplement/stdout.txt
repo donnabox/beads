@@ -1,0 +1,91 @@
+# Code review — changefeed parameter context (6-path patch, candidate `1f9cb46`)
+
+**Verdict up front.** The three production edits are small, correctly placed for the accepted scope, and the two new witnesses have sound oracles. I found **no High-severity defects** and **one Medium** (a type-level break that the passing-test evidence cannot see). Everything else is Low: test fidelity, evidence strength, and one now-false sentence in the progress doc. The scope boundary itself (owner-observed refusals contextful; pre-owner URL grammar, repeated reconnect, and anonymous refusals contextless) is implemented exactly as described — `parseCheckpoint` is called without context from `transactionChangefeedRequest:108` and with context only from `checkpointPosition:86`, and `transaction-http.ts:464` (repeated `Last-Event-ID`) still throws contextless.
+
+---
+
+## Findings
+
+**1. Medium — `packages/server/src/transaction-changefeed.test.ts`: new type annotations with no added import; typecheck is outside the passing-test evidence.**
+*Issue:* The patch adds `let retained: TransactionReadContext | undefined;` and `JSON.parse(initial.text) as TransactionChangefeedPage`, but the only import change is `existsSync` from `node:fs`. `TransactionReadContext` is exported from a different module than the one under test (the file already imports `TransactionMinimumFailure`, which is the natural co-export site), and the pre-existing owner test builds its `context` with no annotation (`{ ...context, scopeEpoch: "old" }`), so there is no reason the type would already be imported.
+*Impact:* Vitest strips types without checking them, so the source cohort passes and the control runs while `tsc --noEmit` / the package build fail. The launch header confirms tests and the control ran; it does not claim a typecheck. A second type-level item rides on the same gate: the new `readonly context?` **parameter property** in `transaction-changefeed.ts` is a compile error under `erasableSyntaxOnly`. (The pattern is almost certainly already in force elsewhere — `TransactionMinimumFailure("cursor-expired", context)` with a readable `error.context` implies it — but neither item is covered by the executed evidence.)
+*Fix:* Add `type TransactionReadContext` (and confirm `TransactionChangefeedPage`) to the existing imports; run `tsc` on `packages/server` and `apps/bdptest` before treating the cohort as green.
+
+**2. Low — `transaction-changefeed.ts` + test: context immutability is claimed but neither enforced by the class nor soundly asserted.**
+*Issue:* The addendum says "retains the immutable current Scope context," but `readonly context?` protects only the reference; the class performs no freeze or snapshot. Immutability is entirely an upstream invariant of `readContext()` (`transaction-store.ts:594`), and `checkpointPosition` is a public export that accepts any object. Separately, the new oracle `expect(Object.isFrozen(error.context)).toBe(true)` is **vacuous when `context` is `undefined`** — `Object.isFrozen` returns `true` for non-objects.
+*Impact:* The freeze assertion gives false assurance in isolation; it only works because the preceding `toStrictEqual` independently rules out `undefined`. If that assertion is ever relaxed, the freeze check silently passes on a contextless error.
+*Fix:* Freeze (or snapshot) in the constructor, matching the documented claim; and in the test assert definedness before the freeze check, or probe mutation directly (`expect(() => { (error.context as Record<string, string>).scopePosition = "pos-9"; }).toThrow()`).
+
+**3. Low — `transaction-changefeed.test.ts`: the "anonymous" row sends an empty `Authorization` header rather than omitting it.**
+*Issue:* `exchange(future, "GET", "application/json", { authorization: "" })` builds `new Headers({ authorization: \`Bearer ${token}\`, accept, ...extra })`, so the spread overwrites the credential with `""` instead of removing the field. The installed witness, by contrast, uses a genuinely header-less handle (`{ id: "anonymous", headerNames: [] }`).
+*Impact:* The two cohorts label the same claim ("pre-owner anonymous refusals stay contextless") but exercise different inputs — empty credential vs. absent credential. The server reaches `unauthenticated` either way (`Buffer.from("")` matches no `timingSafeEqual` candidate), but whether an empty-valued header reaches the wire is fetch-implementation dependent, and the source test has no wire capture to confirm what was actually sent.
+*Fix:* Let `exchange` omit the field for that row (an `omitAuthorization` flag, or construct headers then `headers.delete("authorization")`), and keep the empty-value case as an extra row if it is wanted on its own merits.
+
+**4. Low — `transaction-changefeed.test.ts`: the body-bound cleanup path aborts before cancelling, so it deterministically double-wraps its own error.**
+*Issue:* On exceeding the 32768-byte bound, the handler calls `requestController.abort(error)` and *then* `await reader.cancel(error)`. The abort errors the response stream; per the Streams contract, `cancel()` on an errored stream rejects with the stored error. That rejection is caught as `cleanupError`, producing `AggregateError([error, error], "changefeed reader cleanup failed")`.
+*Impact:* Diagnostics only — the path is unreachable for the 118-byte problem bodies and the ~1 KB genesis page — but if it ever fires, the real cause (`"changefeed response body bound"`) is buried and the artifact's failure message is misleading.
+*Fix:* Cancel before aborting, or drop the explicit `abort` (the `finally { reader.releaseLock() }` plus request teardown suffices), or treat a rejecting `cancel` after an intentional abort as expected.
+
+**5. Low — `transaction-changefeed.test.ts`: retained `records` omit the per-request `extra` headers.**
+*Issue:* Each record captures `method`, `url`, `accept`, and `reconnect` (`last-event-id`) but nothing else from `extra`. Row 12 carried `if-none-match: *` and row 9 suppressed the credential; neither appears in the trace.
+*Impact:* The emitted `private-source-changefeed-parameter-context` artifact is the durable record for this witness, and it under-describes two of twelve requests. Rows 3 and 12 differ only by the unrecorded conditional header, and rows 3 and 9 are distinguishable only by status. A later reader cannot verify from the artifact that the conditional-ordering and anonymous cases were actually exercised as described.
+*Fix:* Record the authored `extra` field names (with values for non-credential fields) alongside `reconnect`.
+
+**6. Low — `docs/design/transaction-implementation-progress.md`: the committed addendum now states a false execution status, and its exchange count is unexplained.**
+*Issue:* The paragraph asserts "No tests, builds, controls or installed execution have run at this draft checkpoint." Per the launch header the source cohort has since passed and the control actually ran (exit 1, 12 responses, 0 hard failures, 7 named soft failures). The same paragraph describes "a twelve-request source witness and a ten-request private installed witness" and then "Thirty-four new witness exchanges enforce a response-body cap" — 34 is only reachable as 12 + 10 + the control's 12-exchange re-run, which the doc never says.
+*Impact:* The progress record understates the evidence that now exists and reads as arithmetically inconsistent to anyone using it as the ledger. (The 41-exchange total does reconcile: 19 source static = 12 new + 7 historical regression reads, plus 12 control plus 10 installed, with 41 − 7 = 34 capped.)
+*Fix:* Reword to "at authoring time" or record the actual outcomes; spell out the 12 + 10 + 12 decomposition.
+
+**7. Low — evidence: one control covers three independent forwarding sites.**
+*Issue:* The emitted control mutates only `transaction-http.ts:612` and kills all seven labels. The patch has three distinct forwarding edits. Reverting `transaction-changefeed.ts:68` alone would kill only labels 7–8 (malformed reconnect, grammar path); reverting `transaction-store.ts:1716` alone would kill only 3–6 and 12 (future-head path).
+*Impact:* The control demonstrates the HTTP forwarding line is load-bearing but does not demonstrate that both producer sites are. The in-process owner assertions do cover both paths (the five bad tokens hit `parseCheckpoint`; `token` itself exercises `start > head`), so this is an evidence-strength gap, not a coverage gap.
+*Fix:* Two further single-site controls, expecting 2 and 5 named failures respectively — or accept with the limitation stated in the ledger.
+
+**8. Low — coverage: no row combines a context-bearing 400 with minimum-position controls.**
+*Issue:* In `readChanges` the future-head refusal (`:1716`) is raised before `checkTransactionMinimum` (`:1721`). A request carrying both a tampered checkpoint and minimum headers therefore receives `invalid-parameter` / `retry: "never"` with a `BDP-Scope-Position` that may be *behind* the client's requested minimum, rather than a catch-up wait. Neither cohort exercises this.
+*Impact:* The ordering is pre-existing and, I believe, correct: the position suffix of `cg_<epochTag>_<viewTag>_<N>` is covered by neither tag, head is monotonic within an epoch, and an epoch change diverts to `cursor-expired`/`foreign-view` — so `start > head` with a valid tag pair implies a tampered suffix, and `retry: "never"` is right. But the new header makes the pairing client-visible for the first time, and a client could read a context-bearing 400 as acknowledgement that its minimum was considered.
+*Fix:* One added row (future checkpoint + minimum headers, asserting 400 and the current, possibly behind-minimum context), or an explicit sentence in the addendum.
+
+**9. Low — `apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts`: module-scope side effects turn a missing `dist` into a collection failure.**
+*Issue:* At module scope the file performs `realpathSync(entry)`, `readFileSync(resolvedEntry)`, two `execFileSync("git", …)` calls, two further `readFileSync`s, and a top-level dynamic `import()` of `scripts/transaction-installed-observation.mjs`.
+*Impact:* Collecting the file without a prior `packages/server` build fails with a bare `ENOENT` and no hint to build first — a collection error, not a gated skip. The `git` calls also throw outside a repository (packaged consumer checkout). This matters because the installed 10-HTTP cohort is "separately gated": gating which tests *run* does not prevent this file being *imported*.
+*Fix:* Move entry resolution, the digest, and the launcher import inside the `it` body, or guard with `existsSync` plus an actionable message / `it.skipIf`. If sibling installed tests already follow this module-scope convention, treat it as a pre-existing house pattern and note it rather than diverging.
+
+**10. Low — same file: `workspaceDirty` is emitted but never enforced, and the commit override is unvalidated at its guard.**
+*Issue:* `workspaceDirty` is computed and recorded but has no effect. The guard only checks that `BDP_TRANSACTIONAL_SOURCE_COMMIT` is *present* when the entry is overridden, not that it is well-formed; `bindServedProfileConfiguration` enforces `/^[0-9a-f]{40}$/` much later, inside the `try`.
+*Impact:* An artifact can pair `declaredSourceCommit: <HEAD>` with an `entrySha256` taken from a `dist` built from different, uncommitted sources. The inline comment does disclaim child attestation, so this is strength-of-evidence rather than a false claim; the late failure mode is just a worse error locus.
+*Fix:* Validate the override at the guard; either fail or set an explicit ineligibility marker in the emitted record when `workspaceDirty` is true.
+
+**11. Low — coverage gaps in the two new cohorts.**
+*Issue (a):* The installed witness pins `futureUrl` at position 2 with head at 1 and never seeds a second group, so every `contextual` call asserts the same `expected` tuple. The "context tracks the current head, and an already-thrown error is not retroactively updated" property is witnessed only in-process (source rows: `pos-1` → `pos-2`, plus the `retained` re-assertion). *(b):* The strengthened parser test now asserts `failure.context === undefined`, but the `it.each` list has no `#fragment` row, so the contextless claim is unwitnessed for the `url.hash` throw at `transaction-changefeed.ts:100`.
+*Impact:* If the installed path ever captured context differently (e.g. once per connection), the installed cohort would not notice; one of four parser refusal branches carries an unverified contextless claim.
+*Fix:* Seed a second installed group and re-issue one refusal expecting `pos-2` (use suffix 3 so it stays invalid); add a `"#x"` row to the `it.each` list.
+
+**12. Low — both new tests: brittle absolute request-body lengths.**
+*Issue:* `expect(Buffer.byteLength(body)).toBe(125)` (source) and `toBe(153)` (installed) hard-code the serialized operation sizes, while the bounded-input discipline they exist to enforce is already asserted by `expect(Buffer.byteLength(body ?? "")).toBeLessThanOrEqual(65536)` and `maximumRequestBodyBytes: 65536`.
+*Impact:* Any unrelated change to the `create()` helper or the installed operation shape fails two files with an opaque numeric mismatch that names neither cause nor remedy.
+*Fix:* Keep the `<=` bound assertions and drop the exact equalities, or derive the expected value from the literal.
+
+**13. Low — verification: enumerate `checkpointPosition` callers.**
+*Issue:* The forwarding is threaded through the shared exported `checkpointPosition`/`parseCheckpoint`, so every caller propagates whatever context it passes into the resulting 400 headers. Only `readChanges` is visible in the supplied sources, and it passes the current frozen `readContext()`.
+*Impact:* Lower than it first appears — `checkpointPosition` was already context-bearing and already emitted the same three values to the wire via `TransactionMinimumFailure("cursor-expired"|"foreign-view", context)` and `transaction-http.ts:594-607`. A caller passing a stale context would therefore already have been leaking it on two other error classes; the patch adds no new class of leak. It does extend the existing unverified invariant to a third error.
+*Fix:* Grep `checkpointPosition(` to confirm `readChanges` is the sole caller; if a second caller exists (snapshot pagination, comparison/deadline reconstruction), raise the contextful error at the owner call site instead and leave the shared parser context-free.
+
+---
+
+## Resolved from the supplied source — previously listed as gaps, not findings
+
+- **`last-event-id` admissibility in exact mode** (prior gap 2). `http-executor.ts:340-358` is now in evidence: `SECRET_FIELD` does not match `last-event-id`, and it is absent from `RESERVED_FIELDS`, so the authored header line is admitted at `:675`. The anonymous handle passes `seen.size === handle.headerNames.length` at `:715` with both sides zero and skips `safeCredentialTarget` at `:685`. `accept`, `content-type`, and `idempotency-key` are likewise admissible.
+- **`createRawHttpExchangeExecutor` / `HttpMethod` as root exports** (prior gap 2). Both are exported at `packages/conformance/src/index.ts:120-139`, and `ExactHttpModeOptions` at `:55-77` matches the option object the test supplies field-for-field.
+- **`stringifyJsonValue` vs `JSON.stringify` for `problemLength`** (prior gap 5). `json-values.ts:101-142` emits no whitespace, uses `JSON.stringify` for keys and primitives, and preserves `Object.keys` order, so for the pure-ASCII four-key problem the two agree byte-for-byte. `readProblem` (`protocol/src/index.ts:534-540`) returns exactly `{type, code, retry, status}` with `invalid-parameter` → 400 / `retry: "never"` (`:496`). The coupling is sound, not merely length-safe.
+- **`authorityMode` default** (prior gap 4). `transaction-runtime-configuration.ts:221` defaults to `"listener"`, so the source cohort's `fetch` against `listenUrl` satisfies the host check at `transaction-runtime.ts:131-132`; the installed path gets `"canonical"` from `transaction-installed-configuration.ts:63`, matching the test's `Host: reference.invalid` assertion.
+- **HEAD representation on a 400.** Both `applyReadHttpSemantics` (`read-http.ts:42-45`) and `deliver` (`transaction-runtime.ts:89-94`) independently produce "GET's `Content-Length`, no body" for HEAD, so the HEAD oracle holds regardless of whether the catch-path response is passed through the former.
+- **Conditional ordering on row 12.** `applyReadHttpSemantics` applies conditional logic only to 200-JSON or 204 (`read-http.ts:12-15`), so `If-None-Match: *` cannot turn the 400 into 304/412. No minimum/conditional ordering changed.
+- **Disclosure surface.** All contextful refusals are post-authentication (`transaction-http.ts:389` returns `unauthenticated` first), and the three values are already on every 200 page for the same principal, with `authorizationView` fixed at `development-all-visible` (`:362`). No escalation.
+- **Event-path behaviour is byte-identical.** In the simplified `else if`, `error` narrows to the two-class union; the removed ternary and `error.context` yield the same value for `TransactionEventParameterError`.
+
+## Remaining context gaps — not defects
+
+`transaction-events.ts`'s declaration of `TransactionEventParameterError.context` (needed to confirm the union property access typechecks, and to confirm the parameter-property precedent); whether `TransactionReadContext` and `TransactionChangefeedPage` are already in the test file's import list (finding 1); the full `checkpointPosition` caller set (finding 13); whether any handler dispatches on `.context` structurally (`"context" in error`, truthiness) rather than by `instanceof`, which is the one way this change could alter untested behaviour; `locateFinalResponseHead`'s header-name casing, assumed lower-case by the installed test's lookups; `installedTransactionBinding`'s required `ready` members beyond those listed at `transactional-execution-binding.ts:26-84`; and `transaction-http.ts` beyond line 625, i.e. whether the catch-path response is passed through `applyReadHttpSemantics` (immaterial per the note above).
+
+No files were written or modified; no tools were used.

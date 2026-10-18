@@ -1,0 +1,78 @@
+{
+  "accepted": true,
+  "head": "c18c71202c90fa2558f34107ad342befabf750fe",
+  "tree": "596abe870220fb61ce606f8382a9da52d554d063",
+  "sourceBindingSha256": "273b5d230ddbac111b106463a5af351db14d77082d77e9c090b4802d96c0d923",
+  "scope": "Exact eleven-path c18c receiving fix only. Root independently inspected full production/spec diff, actual changed arrays, direct SSE inventory and installed response vectors. No required repair remains. CI/landing still separate.",
+  "nativeCodeReview": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/native-final-code-review.md",
+    "sha256": "72ccffd63ba90a2def7ccef36d986b76678a0193f9019c8a87053a43dda99949"
+  },
+  "evidenceFindingsDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/claude-split-code/evidence/native-findings-audit.md",
+    "sha256": "8a103e5fa1aa046852cc3395a0ef4f86e21795886c178ae1b9c31237c639f468"
+  },
+  "rootInstalledOutcome": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/root-installed-outcome.json",
+    "sha256": "212dcb9c8469e3085c213386492f2b62844cc306cb8c32c28fefe62b433fd856"
+  },
+  "actualClaude": {
+    "wire": {
+      "output": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/claude-split-code/wire/stdout.txt",
+        "sha256": "c3fb346e4c8e85d6297690d63ac119b4aefc7bd00555c7584d207aa237d1e74a"
+      },
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/claude-split-code/wire/exit.json",
+        "sha256": "2229959700fa5339670e0ca99353f9ad9e7c5248d301c5cdf12168203ae1b913"
+      },
+      "cleanup": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/claude-split-code/wire/cleanup.json",
+        "sha256": "4292a670eaaf1d24db64cb1cbfa81a46ec607f6041b30661d7788d398f6372b2"
+      },
+      "elapsedSeconds": 413.358674417017
+    },
+    "evidence": {
+      "output": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/claude-split-code/evidence/stdout.txt",
+        "sha256": "a37bee3b7434c47c8cdf8bbb02d96a2b091e448a27a2ffad0cd43d62439bb9fa"
+      },
+      "exit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/claude-split-code/evidence/exit.json",
+        "sha256": "61f5b708c73a32dd18448c5fe11c6d08e83323e5d8771c32104dbf815546bd37"
+      },
+      "cleanup": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/claude-split-code/evidence/cleanup.json",
+        "sha256": "94196de48299acd944e5f969564f31a78c90fcaa841861309efd2a65941ed9d3"
+      },
+      "elapsedSeconds": 292.99980066600256
+    }
+  },
+  "originalFullReview": "INCONCLUSIVE empty timeout; not counted as approval",
+  "rootEvidenceDisposition": "Accept source-grounded native disposition for all13 findings. F1-3 retained original incomplete inputs now intentionally400; proposed genesis/pos99 fixes have incorrect500expectations. F4/5 finite literal tables classify actualcases correctly; mirroring production classifier unnecessary. F6 real1000msbudget below5000msclient. F7/8 existing source and actual installed evidence cover claimedscope; no fullinstalledpage-successclaim. F9 trusted frozenconsumer pathwindow optionalhardening; no observed mismatch. F10 failclosed retention on unknownstop intentional. F11 exactvectors validated externally, singlecomma correctlyone occurrence. F12 appendonly tracing detectsallentries, fixedProblem serializes identically and wirelength checked. F13 optionalfixturestrictness, current emittedcontextvalid; no demonstratedfalsepass.",
+  "wireFindings": [
+    {
+      "id": "W1",
+      "disposition": "No omission established. Snapshot table5967-5974 and Event table6608-6615 expressly summarize and do not exclude ordinary applicable failures; request/minimum failures included. Exhaustive operations/receipts table repaired. Shared receiving MUST applies to all reads."
+    },
+    {
+      "id": "W2",
+      "disposition": "Optional explanatory comment deferred; current Headers.append preserves repeats and actual raw duplicate tests enforce it. No transport/pre-deduping change introduced."
+    },
+    {
+      "id": "W3",
+      "disposition": "Covered by actual installed ordinal1 seed-post-ignores-malformed-minimum: successful POST batch200 with only one read field. Moving gate above commands would fail. Existing PR123 command-ignore tests retained."
+    },
+    {
+      "id": "W4",
+      "disposition": "Direct witness explicitly sets pure text/event-stream for all fifteen routes including changes/events; finite400 asserted on30GETHEADcalls before owner. Raw beads Accept is combinedJSON+SSE and is not claimed soleSSEwire. Production commongate reviewed. Additional wire duplication optional, not missing currentlaw coverage."
+    }
+  ],
+  "pendingPoliciesUnchanged": [
+    "Retained Snapshot/continuation minimum comparison",
+    "Incident-Link metadata Event membership",
+    "Missing/hidden point-read validminimum collision",
+    "Unknown valid opaque position policy"
+  ],
+  "mergeApproved": false
+}

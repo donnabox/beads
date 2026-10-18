@@ -1,0 +1,462 @@
+--- validation-final/gate.py
++++ validation-service-successor/gate.py
+@@ -3,7 +3,7 @@
+ import hashlib,json,subprocess,os
+ P=Path(__file__).resolve().parent;D=P;L=P.parent.parent
+ W=Path('/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving');E=P/'run';GUARD=L/'guarded-action.py';COMMANDS=P/'commands.json'
+-COMMANDS_SHA='8be0e4d671ed52acc7b3888f9c8aeca24464534005ad4b7a9d88d6eef95e2ad7'
++COMMANDS_SHA='43cdf3ec97c938d5615fa671671d2fee72f81d12fa6f33189d6978b8027b8673'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def require(ok,message):
+  if not ok:raise RuntimeError(message)
+@@ -24,8 +24,8 @@
+  git('merge-base','--is-ancestor',prepared_document['reviewBase'],b['diffBase'])
+  git('merge-base','--is-ancestor',b['diffBase'],b['head'])
+  prepared=prepared_document['files']
+- require(len(prepared)==18 and all(isinstance(v,str) and len(v)==64 for v in prepared.values()),'Final18 source hashes pending')
+- require(set(git('diff','--name-only',b['diffBase'],b['head']).decode().splitlines())==set(prepared)==set(b['files']),'Final18 scope differs')
++ require(len(prepared)==20 and all(isinstance(v,str) and len(v)==64 for v in prepared.values()),'Final20 source hashes pending')
++ require(set(git('diff','--name-only',b['diffBase'],b['head']).decode().splitlines())==set(prepared)==set(b['files']),'Final20 scope differs')
+  require({p:v['sha256'] for p,v in b['files'].items()}==prepared,'Final source differs from reviewed bytes')
+  actual={p:sha((W/p).read_bytes()) for p in b['files']}
+  require(actual=={p:v['sha256'] for p,v in b['files'].items()},'Fresh-depth source hashes changed')
+@@ -84,6 +84,10 @@
+  require(sha(COMMANDS.read_bytes())==COMMANDS_SHA and sha(GUARD.read_bytes())==g['guardSha256'],'Commands/guard changed')
+  for n,h in g['preparationSha256'].items():require(sha((P/n).read_bytes())==h,'Preparation changed '+n)
+  order=cfg['executionOrder'];approved=g['approvedCommandIds'];require(approved==order[:len(approved)] and name in approved,'Stage not released')
++ # Package verification is a separate root release after actual consumer installation.
++ if 'verify-installed' in approved:
++  lock=g.get('consumerLockSha256');actualLock=E/'consumer/pnpm-lock.yaml'
++  require(isinstance(lock,str) and len(lock)==64 and actualLock.is_file() and sha(actualLock.read_bytes())==lock,'Root must accept generated consumer lock before releasing verify-installed')
+  spec=dict(cfg['commands'][name]);require(g['phaseRelease'][spec['phase']] is True,'Phase closed')
+  if spec['phase']=='source':
+   require(a.get('sourceValidationAuthorized') is True and a.get('sourceCouncilAccepted') is True,'Diagnostic source authorization/council absent')
+--- validation-final/source-selection.json
++++ validation-service-successor/source-selection.json
+@@ -732,6 +732,21 @@
+         "directories": 1,
+         "listenerLifetimes": 0,
+         "offlineSQLiteHandles": 2,
++        "productChildren": 0
++      }
++    },
++    {
++      "path": "packages/server/src/transaction-service.test.ts",
++      "actualDeclarationLine": 693,
++      "actualFullName": "private same-owner Transactional service freezes complete deep sequence observations across fresh execution and retained replay",
++      "proposedFullName": "private same-owner Transactional service freezes complete deep sequence observations across fresh execution and retained replay",
++      "kind": "new-service-regression",
++      "prospectiveSuccessLifecycle": {
++        "http": 0,
++        "ownerOpens": 1,
++        "directories": 1,
++        "listenerLifetimes": 0,
++        "offlineSQLiteHandles": 0,
+         "productChildren": 0
+       }
+     }
+@@ -742,9 +757,10 @@
+     "packages/server/src/transaction-sequence.test.ts": 13,
+     "packages/server/src/transaction-set.test.ts": 3,
+     "packages/server/src/transaction-snapshot.test.ts": 12,
+-    "packages/server/src/transaction-submission.test.ts": 7
++    "packages/server/src/transaction-submission.test.ts": 7,
++    "packages/server/src/transaction-service.test.ts": 1
+   },
+-  "total": 42,
++  "total": 43,
+   "reconciliation": "Previous retained-sequence18 means2preparation+13sequence+3HTTP, not18sequence. Add4 omitted submission expansions,2HTTP and1export guard. Existing sequence subset13 remains deliberate. Proposed after titles must match actual authored registrations before release.",
+   "HTTP": {
+     "priorFourHTTPCallbacks": 34,
+@@ -755,19 +771,19 @@
+     "control": 0,
+     "total": 81
+   },
+-  "lifecycle": "Original lifecycle totals are withdrawn estimates; author must freeze actual fixture inventory before execution.",
+-  "status": "Corrected actual authored map; unexecuted",
++  "lifecycle": "Source-derived54opens/38directories/9listeners/15offline/0children; no new runtime claimed.",
++  "status": "Closed successor43 selection; earlier42 plus exact service regression",
+   "totals": {
+     "http": 47,
+-    "ownerOpens": 53,
+-    "directories": 37,
++    "ownerOpens": 54,
++    "directories": 38,
+     "listenerLifetimes": 9,
+     "offlineSQLiteHandles": 15,
+     "productChildren": 0
+   },
+-  "sourceBinding": "binding.json",
++  "sourceBinding": "prepared-source.json",
+   "predecessor": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/source-author/selection.json",
+-    "sha256": "21146a1af68e0015728c78966bc4f1c9a398140093ce4c7f7ed40b92e8db2fc4"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/source-selection.json",
++    "sha256": "557549bc671db1e2c8d6b33375ea2a0fdb34a59c934921ac7a9d2fcd4209a49e"
+   }
+ }
+--- validation-final/prepared-source.json
++++ validation-service-successor/prepared-source.json
+@@ -1,7 +1,7 @@
+ {
+   "workspace": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+-  "finalHead": "1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05",
+-  "finalTree": "773614c5ebc6c97d90c4c629c7c7a02ed51bc2ef",
++  "finalHead": null,
++  "finalTree": null,
+   "files": {
+     "apps/bdptest/src/transactional-depth-key-order-installed.test.ts": "f4e19ef9b7aba1a12f3376540257b9680e27dcd00936048b066eb7667ebe19fe",
+     "apps/bdptest/src/transactional-fresh-depth-installed.test.ts": "df4030346fc5ec402c0d77d5a5c9953542f341aa86e242d2a5e6cdcf9e09f991",
+@@ -20,13 +20,19 @@
+     "packages/server/src/transaction-snapshot.ts": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83",
+     "packages/server/src/transaction-store.ts": "f7fe71da918c135eb43cb4659f186df6cd442aed9c42c2835e95cde05c782a9e",
+     "packages/server/src/transaction-submission.test.ts": "026cf5ccc65026f0f6462deaba9e1e58cd7ab6c6ae341ef5ed3af0becbb0c182",
+-    "packages/server/src/transaction-submission.ts": "580a5f56075c3f7e2c041354eab75529dd304f86588337f725f4cb33429b33bf"
++    "packages/server/src/transaction-submission.ts": "580a5f56075c3f7e2c041354eab75529dd304f86588337f725f4cb33429b33bf",
++    "packages/server/src/transaction-service.ts": "4faf6b2187cacd2c50fe8437819e60b4c216f3e8485fff3251f5ed9058f7645d",
++    "packages/server/src/transaction-service.test.ts": "32010b6fb1107076534c544f2bbb93e62cc39c89cd0fbc3c482f0736cc28cfe2"
+   },
+-  "note": "Final test-oracle correction; original f864 failure and a17 source successes retain original identities.",
++  "note": "Closed20-path service successor. Prior18file hashes retained; only service source/test added. No original outcomes copied.",
+   "reviewBase": "77b4cf980ec91f66c52a554c3dd8c9de5aee859f",
+   "finalBase": "68b0f462a9af80fe10f42f08deb487608053732b",
+   "lastMeasuredSubmissionSha256": "2bf3a65b0c49488d38a392a422c18ba175b585869848befe144243996a6f9b6e",
+-  "pending": [],
++  "pending": [
++    "actual clean20-path candidate commit/tree/parents/diff",
++    "root final service council and stage release",
++    "fresh build inventory, consumer lock acceptance before verify-installed, installed provenance release"
++  ],
+   "assertionSuccessorCandidates": {
+     "apps/bdptest/src/transactional-depth-key-order-installed.test.ts": "f4e19ef9b7aba1a12f3376540257b9680e27dcd00936048b066eb7667ebe19fe",
+     "apps/bdptest/src/transactional-sequence-depth-installed.test.ts": "0a2a765cab6137f324cffb7ff7d96d1f3e81fef3a73c14f56adfd36309083aa7",
+@@ -35,11 +41,9 @@
+     "packages/server/src/transaction-snapshot.test.ts": "b6c31d8b66650ec0668c85d1fb803dda1072ef463989299ed377dd18dcbfee98",
+     "packages/server/src/resource-evaluator.test.ts": "2a35e3add8eabe18d27a69c173b709e1d958c16191c049a4877d92a7b27fa7f1"
+   },
+-  "parents": [
+-    "a17af9bc4742be33dfd64071f62ffb2936c82d86"
+-  ],
+-  "diffSha256": "7ecff9a52b4b3eaf9dcdb8072be2f9bbac00e77dc7cb199266bb4b0bc41a095a",
+-  "predecessorHead": "f864c4dde1b679d674cefe68f9047dd5cb3d1abc",
+-  "predecessorTree": "ab033c4c6061e6923fb0b90ac66d17b614578c52",
++  "parents": null,
++  "diffSha256": null,
++  "predecessorHead": "1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05",
++  "predecessorTree": "773614c5ebc6c97d90c4c629c7c7a02ed51bc2ef",
+   "predecessorSequenceSha256": "5526903a6e094602612bac8448fe1bee5e8f8c6e675458360abc43e43eda6d91"
+ }
+--- validation-final/commands.json
++++ validation-service-successor/commands.json
+@@ -1,5 +1,5 @@
+ {
+-  "status": "Final reviewed candidate 1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05; root phases explicitly gated",
++  "status": "CLOSED20-path service successor; final commit/source council and phase release pending",
+   "executionOrder": [
+     "typecheck",
+     "fresh-build",
+@@ -13,6 +13,7 @@
+     "transaction-http-positive",
+     "transaction-snapshot-positive",
+     "resource-evaluator-positive",
++    "transaction-service-positive",
+     "review-source-measurements",
+     "build-inventory",
+     "prepare-control",
+@@ -170,7 +171,7 @@
+         "^(?:serializes\\ byte\\-bounded\\ deep\\ syntax\\ iteratively\\ without\\ changing\\ number\\ lexemes\\ or\\ key\\ order|keeps\\ receiving\\ and\\ legacy\\ preparation\\ branded\\ while\\ accepting\\ byte\\-bounded\\ deep\\ input|prepares\\ deep\\ sequence\\ members\\ after\\ complete\\ carrier\\ syntax\\ with\\ strict\\ brands\\ and\\ frozen\\ wrappers)$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/transaction-set-positive.results.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/run/transaction-set-positive.results.json"
+       ],
+       "selectedFullNames": [
+         "serializes byte-bounded deep syntax iteratively without changing number lexemes or key order",
+@@ -202,7 +203,7 @@
+         "^(?:private\\ direct\\ Transactional\\ receiving\\ order\\ keeps\\ invalid\\ Selector\\ grammar\\ distinct\\ from\\ valid\\ deep\\ input|valid\\ private\\ set\\ admission\\ accepts\\ byte\\-bounded\\ singleton\\ and\\ wrapped\\ set\\ content\\ across\\ the\\ former\\ depth\\ boundary|finishes\\ batch\\ synthetic\\ syntax\\ before\\ admission,\\ including\\ deeply\\ nested\\ received\\ input|finishes\\ singleton\\ synthetic\\ syntax\\ before\\ admission,\\ including\\ deeply\\ nested\\ received\\ input|compares\\ retained\\ direct\\ keys\\ before\\ negotiation\\ and\\ admits\\ valid\\ fresh\\ deep\\ input|compares\\ deep\\ metadata\\ against\\ genuine\\ pending\\ and\\ dependent\\ keys\\ without\\ changing\\ saved\\ outcomes|executes\\ deep\\ values\\ through\\ set\\ and\\ dependent\\ sequence\\ with\\ durable\\ receipt\\ recovery)$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/transaction-submission-positive.results.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/run/transaction-submission-positive.results.json"
+       ],
+       "selectedFullNames": [
+         "private direct Transactional receiving order keeps invalid Selector grammar distinct from valid deep input",
+@@ -241,7 +242,7 @@
+         "^(?:private\\ Transactional\\ sequence\\ slice\\ runs\\ all\\ eight\\ explicit\\ operation\\ kinds\\ as\\ separate\\ commits\\ with\\ locator\\-only\\ aliases|private\\ Transactional\\ sequence\\ slice\\ reserves\\ all\\ unknown\\ keys\\ together,\\ commits\\ a\\ prefix,\\ continues\\ past\\ failure\\ and\\ permits\\ interleaving|private\\ Transactional\\ sequence\\ slice\\ joins\\ overlapping\\ presentations\\ without\\ running\\ a\\ completed\\ member\\ twice\\ and\\ projects\\ current\\ labels|private\\ Transactional\\ sequence\\ slice\\ projects\\ another\\ owner's\\ pending\\ receipt\\ before\\ immutable\\ mismatch\\ and\\ never\\ retracts\\ that\\ owner|private\\ Transactional\\ sequence\\ slice\\ shares\\ singleton\\ and\\ one\\-operation\\ batch\\ identity,\\ preserving\\ exact\\ numbers\\ and\\ creation\\ defaults|private\\ Transactional\\ sequence\\ slice\\ leaves\\ no\\ partial\\ bulk\\ admission\\ on\\ after\\-sequence\\-reservation\\ failure|private\\ Transactional\\ sequence\\ slice\\ leaves\\ no\\ partial\\ bulk\\ admission\\ on\\ after\\-sequence\\-admission\\ failure|private\\ Transactional\\ sequence\\ slice\\ classifies\\ foreign\\ key\\ state\\ at\\ its\\ turn\\ after\\ failed\\ detail\\ is\\ forgotten|private\\ Transactional\\ sequence\\ slice\\ compares\\ retained\\ deep\\ sequence\\ members\\ without\\ executing\\ them\\ or\\ replacing\\ their\\ receipts|private\\ Transactional\\ sequence\\ slice\\ admits\\ fresh\\ deep\\ sequence\\ members\\ without\\ changing\\ atomic\\ reservation\\ behavior|private\\ Transactional\\ sequence\\ slice\\ executes\\ fresh\\ deep\\ input\\ after\\ a\\ retained\\ failed\\ member\\ expires\\ between\\ sequence\\ turns|private\\ Transactional\\ sequence\\ slice\\ rejects\\ duplicate\\ keys\\ and\\ invalid\\ dependency\\ edges\\ before\\ any\\ key\\ effects|private\\ Transactional\\ sequence\\ slice\\ projects\\ mixed\\ retained,\\ conflicting,\\ failed\\ and\\ unknown\\ keys\\ in\\ declaration\\ order)$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/transaction-sequence-positive.results.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/run/transaction-sequence-positive.results.json"
+       ],
+       "selectedFullNames": [
+         "private Transactional sequence slice runs all eight explicit operation kinds as separate commits with locator-only aliases",
+@@ -285,7 +286,7 @@
+         "^(?:accepts\\ byte\\-bounded\\ deep\\ sequences\\ and\\ keeps\\ sequence\\ capacity\\ distinct\\ from\\ direct\\ transaction\\ capacity|compares\\ retained\\ sequence\\ members\\ and\\ accepts\\ deep\\ input\\ while\\ preserving\\ receiving\\ failures|source\\-private\\ actual\\ Transactional\\ HTTP\\ rejects\\ sequence\\ carrier\\ syntax/keys/negotiation\\ before\\ claiming\\ any\\ member|serves\\ retained\\ direct\\ key\\ conflicts\\ and\\ genuine\\ fresh\\ deep\\ effects|source\\-private\\ actual\\ Transactional\\ HTTP\\ rejects\\ invalid\\ set\\ Selector\\ grammar\\ and\\ admits\\ valid\\ deep\\ content\\ without\\ partial\\ effects|preserves\\ actual\\ singleton\\ bytes\\ and\\ wrapper\\-equivalent\\ deep\\ content\\ without\\ accepting\\ a\\ body\\ operation\\ override)$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/transaction-http-positive.results.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/run/transaction-http-positive.results.json"
+       ],
+       "selectedFullNames": [
+         "accepts byte-bounded deep sequences and keeps sequence capacity distinct from direct transaction capacity",
+@@ -322,7 +323,7 @@
+         "^(?:refuses\\ retained\\ corruption:\\ missing\\-record\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ changed\\-record\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ oversized\\-record\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ missing\\-range\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ wrong\\-kind\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ wrong\\-context\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ wrong\\-anchor\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ wrong\\-expiry\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ missing\\ owned\\ or\\ endpoint\\ data\\ before\\ issuing\\ a\\ capture|new\\ private\\ Snapshot\\ entry\\ points\\ do\\ not\\ escape\\ package\\ public\\ exports|captures\\ and\\ reopens\\ deep\\ owned\\ Links\\ without\\ losing\\ JSON\\ value\\ equality|rejects\\ deep\\ owned\\-Link\\ divergence\\ before\\ Snapshot\\ issuance)$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/transaction-snapshot-positive.results.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/run/transaction-snapshot-positive.results.json"
+       ],
+       "selectedFullNames": [
+         "refuses retained corruption: missing-record rather than rebuilding current graph",
+@@ -366,7 +367,7 @@
+         "^(?:pure\\ member\\ Resource\\ evaluation\\ normalizes\\ accepted\\ numeric\\ spellings\\ and\\ preserves\\ revisions\\ and\\ metadata\\ on\\ semantic\\ no\\-ops)$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/resource-evaluator-positive.results.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/run/resource-evaluator-positive.results.json"
+       ],
+       "selectedFullNames": [
+         "pure member Resource evaluation normalizes accepted numeric spellings and preserves revisions and metadata on semantic no-ops"
+@@ -388,7 +389,7 @@
+       "phase": "source",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/review-source.py"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/review-source.py"
+       ]
+     },
+     "build-inventory": {
+@@ -398,7 +399,7 @@
+       "automaticRetries": 0,
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/inventory.py"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/inventory.py"
+       ],
+       "phase": "source"
+     },
+@@ -410,7 +411,7 @@
+       "phase": "control",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/control.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/control.py",
+         "prepare"
+       ],
+       "rawExpectedExit": 0,
+@@ -418,13 +419,13 @@
+     },
+     "strict-control": {
+       "id": "strict-control",
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/mirror",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/mirror",
+       "supervisorSeconds": 120,
+       "automaticRetries": 0,
+       "phase": "control",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/control-execute.py"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/control-execute.py"
+       ],
+       "rawExpectedExit": 0,
+       "ownedTempPrefixes": [
+@@ -439,7 +440,7 @@
+       "cases": 1,
+       "directArgv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/mirror/node_modules/vitest/vitest.mjs",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/mirror/node_modules/vitest/vitest.mjs",
+         "run",
+         "packages/server/src/transaction-snapshot.test.ts",
+         "--maxWorkers=1",
+@@ -447,7 +448,7 @@
+         "^captures\\ and\\ reopens\\ deep\\ owned\\ Links\\ without\\ losing\\ JSON\\ value\\ equality$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/strict-control.results.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/run/strict-control.results.json"
+       ],
+       "directExpectedExit": 1,
+       "exitMeaning": "Guarded adapter exits0 only after recording direct Vitest exit1; JSON/named-cause adjudication is a separate required stage."
+@@ -460,7 +461,7 @@
+       "phase": "control",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/control.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/control.py",
+         "review"
+       ],
+       "rawExpectedExit": 0,
+@@ -484,7 +485,7 @@
+       "automaticRetries": 0,
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/packages.py",
+         "directory"
+       ],
+       "phase": "package"
+@@ -501,7 +502,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/run/packages"
+       ],
+       "phase": "package"
+     },
+@@ -517,7 +518,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/run/packages"
+       ],
+       "phase": "package"
+     },
+@@ -528,7 +529,7 @@
+       "automaticRetries": 0,
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/packages.py",
+         "tar"
+       ],
+       "phase": "package"
+@@ -540,14 +541,14 @@
+       "automaticRetries": 0,
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/packages.py",
+         "consumer"
+       ],
+       "phase": "package"
+     },
+     "consumer-install": {
+       "id": "consumer-install",
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/run/consumer",
+       "supervisorSeconds": 120,
+       "automaticRetries": 0,
+       "argv": [
+@@ -568,7 +569,7 @@
+       "automaticRetries": 0,
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/packages.py",
+         "installed"
+       ],
+       "phase": "package"
+@@ -589,7 +590,7 @@
+         "^observes\\ installed\\ retained\\ key\\ conflicts\\ and\\ fresh\\ deep\\ carrier\\ execution$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/direct-installed.results.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/run/direct-installed.results.json"
+       ],
+       "selectedFullNames": [
+         "observes installed retained key conflicts and fresh deep carrier execution"
+@@ -613,7 +614,7 @@
+       "phase": "adjudication",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/review-installed.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/review-installed.py",
+         "direct-installed"
+       ]
+     },
+@@ -633,7 +634,7 @@
+         "^observes\\ retained\\ sequence\\ member\\ conflict\\ and\\ fresh\\ deep\\ execution\\ over\\ packed\\ bytes$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/sequence-installed.results.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/run/sequence-installed.results.json"
+       ],
+       "selectedFullNames": [
+         "observes retained sequence member conflict and fresh deep execution over packed bytes"
+@@ -657,7 +658,7 @@
+       "phase": "adjudication",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/review-installed.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/review-installed.py",
+         "sequence-installed"
+       ]
+     },
+@@ -677,7 +678,7 @@
+         "^serves\\ byte\\-bounded\\ deep\\ mutations\\ receipts\\ Events\\ and\\ owned\\-Link\\ Snapshots\\ over\\ packed\\ bytes$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/fresh-installed.results.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/run/fresh-installed.results.json"
+       ],
+       "selectedFullNames": [
+         "serves byte-bounded deep mutations receipts Events and owned-Link Snapshots over packed bytes"
+@@ -701,16 +702,48 @@
+       "phase": "adjudication",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/review-installed.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/review-installed.py",
+         "fresh-installed"
++      ]
++    },
++    "transaction-service-positive": {
++      "id": "transaction-service-positive",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
++      "supervisorSeconds": 120,
++      "automaticRetries": 0,
++      "phase": "source",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/vitest/vitest.mjs",
++        "run",
++        "packages/server/src/transaction-service.test.ts",
++        "--maxWorkers=1",
++        "--testNamePattern",
++        "^(?:private\\ same\\-owner\\ Transactional\\ service\\ freezes\\ complete\\ deep\\ sequence\\ observations\\ across\\ fresh\\ execution\\ and\\ retained\\ replay)$",
++        "--reporter=verbose",
++        "--reporter=json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/run/transaction-service-positive.results.json"
++      ],
++      "selectedFullNames": [
++        "private same-owner Transactional service freezes complete deep sequence observations across fresh execution and retained replay"
++      ],
++      "cases": 1,
++      "http": 0,
++      "owners": 1,
++      "directories": 1,
++      "listeners": 0,
++      "offlineSQLiteHandles": 0,
++      "productChildren": 0,
++      "ownedTempPrefixes": [
++        "bdp-tx-service-"
+       ]
+     }
+   },
+   "workload": {
+-    "sourceCases": 42,
++    "sourceCases": 43,
+     "sourceHTTP": 47,
+-    "sourceOwnerOpens": 53,
+-    "sourceDirectories": 37,
++    "sourceOwnerOpens": 54,
++    "sourceDirectories": 38,
+     "sourceListenerLifetimes": 9,
+     "sourceOfflineSQLiteHandles": 15,
+     "sourceProductChildren": 0,
+@@ -721,10 +754,10 @@
+     "installedCases": 3,
+     "installedHTTP": 34,
+     "installedProductChildren": 3,
+-    "totalCases": 46,
++    "totalCases": 47,
+     "totalExpectedHTTP": 81,
+     "totalMaxHTTP": 81,
+     "automaticRetries": 0,
+-    "status": "Prospective code-derived inventory; runtime sizes/lifecycle remain unobserved"
++    "status": "Prospective successor counts; fresh execution required. Earlier source/service outcomes retain original source attribution."
+   }
+ }

@@ -1,0 +1,281 @@
+{
+  "status": "closed-source-only",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/root-fence-amendment/source-binding.json",
+    "sha256": "52324cb9b78de3fda3cea613a1de1290274c4eca032579d427f6bb49102b0df1"
+  },
+  "finalCommit": null,
+  "executionOrder": [
+    "offline-setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "static-cases",
+    "build-inventory"
+  ],
+  "ownedPaths": [
+    "packages/conformance/test-support/transactional/manifest-v1.json",
+    "packages/conformance/test-support/transactional/coverage-v1.json",
+    "packages/conformance/src/transactional-cumulative.test.ts",
+    "apps/bdptest/src/transactional-matrix.test.ts"
+  ],
+  "toolFiles": {
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node": "1ee75375e33b94fc34b3b19aede049e11dae90efb63b374dc96d6bdace70c4b8",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs": "67b035e322203961795e8e34ca63a08c37a4386eda94107fb3d28f3246d882ad",
+    "/Users/dbox/repos/wt/vickie/vickie-guarded-batch/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs": "39db22f579acf5639bbb17a261408debbde03f4692c0c439e77e7f13aeba74d6"
+  },
+  "commands": [
+    {
+      "phase": "source",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [],
+      "ownedTempPrefixes": [],
+      "id": "offline-setup"
+    },
+    {
+      "phase": "source",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "offline-setup",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "id": "typecheck"
+    },
+    {
+      "phase": "source",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "typecheck",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "id": "build"
+    },
+    {
+      "phase": "source",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "format:check"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "build",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "id": "format-check"
+    },
+    {
+      "phase": "source",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "format-check",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "id": "lint"
+    },
+    {
+      "phase": "source",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "lint",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "id": "boundaries"
+    },
+    {
+      "phase": "source",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "boundaries",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "id": "read-seal"
+    },
+    {
+      "phase": "source",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-guarded-batch/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/conformance/src/transactional-cumulative.test.ts",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-source-preparation/run/static-cases.results.json",
+        "-t",
+        "^(?:binds\\ the\\ canonical\\ cumulative\\ TX\\ selection\\ and\\ exact\\ source\\ digests\\ without\\ qualification|rejects\\ noncanonical\\ selections,\\ History,\\ wrong\\ factories,\\ retired\\ and\\ misprofiled\\ rows|copies\\ source\\ bytes\\ before\\ binding\\ and\\ exposes\\ all\\ missing\\ obligations\\ without\\ executing\\ them|pins\\ the\\ inherited\\ command\\-minimum\\ manifest\\ facts,\\ read\\-header\\ absence\\ and\\ all\\ thirteen\\ prior\\ objects|preserves\\ every\\ original\\ TX\\ scenario\\ and\\ coverage\\ object\\ while\\ adding\\ one\\ bounded\\ partial\\ cross\\-carrier\\ row|pins\\ the\\ one\\-page\\ matched\\-plus\\-updated\\ witness\\ without\\ advertised\\-limit\\ or\\ other\\-outcome\\ credit|pins\\ the\\ partial\\ principal\\ namespace\\ row,\\ full\\ parent\\ and\\ exact\\ credential\\ roles|pins\\ the\\ matching\\ no\\-op\\ installed\\ route\\ digest\\ and\\ fifteen\\-action\\ ledger|pins\\ deletion\\-safety\\ derivative\\ carriers,\\ complete\\ positives,\\ and\\ measured\\ source\\ bounds)$"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "read-seal",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "selectedFullNames": [
+        "binds the canonical cumulative TX selection and exact source digests without qualification",
+        "rejects noncanonical selections, History, wrong factories, retired and misprofiled rows",
+        "copies source bytes before binding and exposes all missing obligations without executing them",
+        "pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects",
+        "preserves every original TX scenario and coverage object while adding one bounded partial cross-carrier row",
+        "pins the one-page matched-plus-updated witness without advertised-limit or other-outcome credit",
+        "pins the partial principal namespace row, full parent and exact credential roles",
+        "pins the matching no-op installed route digest and fifteen-action ledger",
+        "pins deletion-safety derivative carriers, complete positives, and measured source bounds"
+      ],
+      "selectedPathNames": [
+        {
+          "file": "packages/conformance/src/transactional-cumulative.test.ts",
+          "fullName": "binds the canonical cumulative TX selection and exact source digests without qualification"
+        },
+        {
+          "file": "packages/conformance/src/transactional-cumulative.test.ts",
+          "fullName": "rejects noncanonical selections, History, wrong factories, retired and misprofiled rows"
+        },
+        {
+          "file": "packages/conformance/src/transactional-cumulative.test.ts",
+          "fullName": "copies source bytes before binding and exposes all missing obligations without executing them"
+        },
+        {
+          "file": "packages/conformance/src/transactional-cumulative.test.ts",
+          "fullName": "pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects"
+        },
+        {
+          "file": "packages/conformance/src/transactional-cumulative.test.ts",
+          "fullName": "preserves every original TX scenario and coverage object while adding one bounded partial cross-carrier row"
+        },
+        {
+          "file": "packages/conformance/src/transactional-cumulative.test.ts",
+          "fullName": "pins the one-page matched-plus-updated witness without advertised-limit or other-outcome credit"
+        },
+        {
+          "file": "packages/conformance/src/transactional-cumulative.test.ts",
+          "fullName": "pins the partial principal namespace row, full parent and exact credential roles"
+        },
+        {
+          "file": "apps/bdptest/src/transactional-matrix.test.ts",
+          "fullName": "pins the matching no-op installed route digest and fifteen-action ledger"
+        },
+        {
+          "file": "apps/bdptest/src/transactional-matrix.test.ts",
+          "fullName": "pins deletion-safety derivative carriers, complete positives, and measured source bounds"
+        }
+      ],
+      "expectedCases": 9,
+      "expectedExit": 0,
+      "workload": {
+        "http": 0,
+        "productChildren": 0,
+        "storeOwners": 0,
+        "listeners": 0
+      },
+      "sourceExistenceVerified": true,
+      "id": "static-cases",
+      "cases": 9,
+      "http": 0,
+      "owners": 0,
+      "directories": 0,
+      "listeners": 0,
+      "productChildren": 0
+    },
+    {
+      "phase": "inventory",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-source-preparation/inventory.py"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "static-cases",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "id": "build-inventory"
+    }
+  ],
+  "limits": {
+    "staticCases": 9,
+    "http": 0,
+    "productChildren": 0,
+    "owners": 0,
+    "listeners": 0,
+    "supervisorSeconds": 120,
+    "automaticRetries": 0
+  }
+}

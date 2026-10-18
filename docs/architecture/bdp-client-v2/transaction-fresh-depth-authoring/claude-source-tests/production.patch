@@ -1,0 +1,1089 @@
+diff --git a/packages/server/src/resource-evaluator.test.ts b/packages/server/src/resource-evaluator.test.ts
+index 366f4f1..82f91ff 100644
+--- a/packages/server/src/resource-evaluator.test.ts
++++ b/packages/server/src/resource-evaluator.test.ts
+@@ -1,3 +1,4 @@
++import { jsonValueEqual } from "./json-value-equality.js";
+ import { cpSync, mkdtempSync, rmSync } from "node:fs";
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+@@ -407,6 +408,9 @@ describe("pure member Resource evaluation", () => {
+     failure(f.createLink("edge"), "identity-taken");
+   });
+   it("normalizes accepted numeric spellings and preserves revisions and metadata on semantic no-ops", () => {
++    expect(jsonValueEqual({ a: -0, b: [1, 2] }, { b: [1, 2], a: 0 })).toBe(true);
++    expect(jsonValueEqual([1, 2], [2, 1])).toBe(false);
++    expect(jsonValueEqual({ a: null }, {})).toBe(false);
+     const f = fixture();
+     f.createBead(
+       "a",
+diff --git a/packages/server/src/transaction-http.test.ts b/packages/server/src/transaction-http.test.ts
+index 47fe1d8..8181894 100644
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -591,7 +591,7 @@ describe("source-private actual Transactional HTTP", () => {
+     expect(after.status).toBe(307);
+     expect(after.headers.get("location")).toBe(`${f.runtime.scope}beads/other`);
+   });
+-  it("rejects invalid set Selector grammar and preserves private depth refusal without key capture or partial effects", async () => {
++  it("rejects invalid set Selector grammar and admits valid deep content without partial effects", async () => {
+     const f = await fixture();
+     const set = await f.post(
+       batch([
+@@ -615,13 +615,14 @@ describe("source-private actual Transactional HTTP", () => {
+     let nested: unknown = "leaf";
+     for (let depth = 0; depth < 40; depth++) nested = { nested };
+     const depth = await f.post(batch([{ ...create("c"), properties: { nested } }]), "deep");
+-    expect(depth.status).toBe(500);
+-    expect(depth.headers.get("x-bdp-development-limit")).toBe(
+-      "unsupported-transaction-composition",
+-    );
+-    expect(await depth.text()).toBe("");
+-    expect((await f.get(`${f.runtime.scope}beads/c`)).status).toBe(404);
+-    expect((await f.post(batch([create("c")]), "deep")).status).toBe(200);
++    expect(depth.status).toBe(200);
++    expect(depth.headers.has("x-bdp-development-limit")).toBe(false);
++    expect(await body(depth)).toMatchObject({
++      status: "completed",
++      results: [{ outcome: "created", resource: { properties: { nested } } }],
++    });
++    expect((await f.get(`${f.runtime.scope}beads/c`)).status).toBe(200);
++    expect((await f.post(batch([create("c")]), "deep")).status).toBe(409);
+   });
+   it("preserves retained receipt identities across actual listener close/reopen and detail expiry", async () => {
+     const f = await fixture(),
+@@ -1622,7 +1623,7 @@ it("does not invent a Read method table for unrouted or noncanonical operation U
+   expect((await f.post(batch(), "unrouted")).status).toBe(200);
+ });
+ 
+-it("labels sequence depth gaps honestly and keeps sequence capacity distinct from direct transaction capacity", async () => {
++it("accepts byte-bounded deep sequences and keeps sequence capacity distinct from direct transaction capacity", async () => {
+   const f = await fixture({ maximumOperations: 1 });
+   let nested: unknown = "leaf";
+   for (let depth = 0; depth < 40; depth++) nested = { nested };
+@@ -1631,12 +1632,12 @@ it("labels sequence depth gaps honestly and keeps sequence capacity distinct fro
+     null,
+     "sequence",
+   );
+-  expect(refused.status).toBe(500);
+-  expect(refused.headers.get("x-bdp-development-limit")).toBe(
+-    "unsupported-transaction-composition",
+-  );
+-  expect(await refused.text()).toBe("");
+-  expect((await f.get(`${f.runtime.scope}beads/a`)).status).toBe(404);
++  expect(refused.status).toBe(200);
++  expect(refused.headers.has("x-bdp-development-limit")).toBe(false);
++  expect(await body(refused)).toMatchObject({
++    results: [{ outcome: "created", resource: { properties: { nested } } }],
++  });
++  expect((await f.get(`${f.runtime.scope}beads/a`)).status).toBe(200);
+   const sequence = await f.post(
+     batch([
+       { ...create("a"), idempotencyKey: "deep_sequence" },
+@@ -2580,7 +2581,7 @@ it.each(["updateWhere", "deleteWhere"] as const)(
+   },
+ );
+ 
+-it("preserves actual singleton bytes and wrapper-equivalent depth without accepting a body operation override", async () => {
++it("preserves actual singleton bytes and wrapper-equivalent deep content without accepting a body operation override", async () => {
+   const f = await fixture();
+   const invalid = await f.post(
+     JSON.stringify({ operation: "deleteWhere", collection: "beads", selector: "$[?@.id]" }),
+@@ -2591,7 +2592,7 @@ it("preserves actual singleton bytes and wrapper-equivalent depth without accept
+   expect(await f.receiptRows("override")).toEqual([]);
+   for (const [depth, status] of [
+     [27, 200],
+-    [28, 500],
++    [28, 200],
+   ] as const) {
+     let value: unknown = 0;
+     for (let i = 0; i < depth; i++) value = { nested: value };
+@@ -2610,17 +2611,11 @@ it("preserves actual singleton bytes and wrapper-equivalent depth without accept
+         target,
+       );
+       expect(response.status).toBe(status);
+-      if (status === 500) {
+-        expect(response.headers.get("x-bdp-development-limit")).toBe(
+-          "unsupported-transaction-composition",
+-        );
+-        expect(await response.text()).toBe("");
+-        expect(await f.receiptRows(key)).toEqual([]);
+-      } else
+-        expect(await body(response)).toMatchObject({
+-          status: "completed",
+-          results: [{ outcome: "matched", count: 0 }],
+-        });
++      expect(response.headers.has("x-bdp-development-limit")).toBe(false);
++      expect(await body(response)).toMatchObject({
++        status: "completed",
++        results: [{ outcome: "matched", count: 0 }],
++      });
+     }
+   }
+   const template = {
+@@ -4116,7 +4111,7 @@ it("serves current missing receipt root and page context without changing nondis
+     throw new AggregateError(failures, "receipt context observation and cleanup failed");
+ }, 60000);
+ 
+-it("serves retained direct key conflicts before private depth and preserves fresh refusal", async () => {
++it("serves retained direct key conflicts and genuine fresh deep effects", async () => {
+   const controller = new AbortController();
+   const deadline = setTimeout(() => controller.abort(new Error("depth-key work deadline")), 25000);
+   const cleanupStart = cleanup.length;
+@@ -4256,7 +4251,13 @@ it("serves retained direct key conflicts before private depth and preserves fres
+       }
+     }
+   }
+-  function completed(response: Observed, name: string, key: string, position: string) {
++  function completed(
++    response: Observed,
++    name: string,
++    key: string,
++    position: string,
++    metadata: unknown = {},
++  ) {
+     expect(response.status).toBe(200);
+     const value = record(JSON.parse(response.text));
+     expect(validateSelectorReceipt(value), JSON.stringify(validateSelectorReceipt.errors)).toBe(
+@@ -4283,7 +4284,7 @@ it("serves retained direct key conflicts before private depth and preserves fres
+       id: `${f?.runtime.scope}beads/${name}`,
+       type: bead,
+       properties: { title: name },
+-      metadata: {},
++      metadata,
+       revision: resource.revision,
+     });
+     if (!expectedContext) {
+@@ -4356,18 +4357,16 @@ it("serves retained direct key conflicts before private depth and preserves fres
+         fresh,
+         "text/plain",
+       );
+-      expect(refused.status).toBe(500);
++      expect(refused.status).toBe(406);
+       expect(refused.text).toBe("");
+-      expect(refused.headers.get("x-bdp-development-limit")).toBe(
+-        "unsupported-transaction-composition",
+-      );
+-      for (const name of ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"])
+-        expect(refused.headers.get(name)).toBeNull();
++      expect(refused.headers.get("x-bdp-development-limit")).toBeNull();
++      checkedContext(refused, `pos-${position}`);
+       completed(
+-        await exchange(`${kind}-fresh-reuse`, target, input(b), fresh),
++        await exchange(`${kind}-fresh-reuse`, target, input(b, true), fresh),
+         b,
+         fresh,
+         `pos-${position + 1}`,
++        { nested },
+       );
+       const point = await exchange(`${kind}-point-unchanged`, `${f.runtime.scope}beads/${a}`);
+       expect(point.status).toBe(200);
+@@ -4872,7 +4871,7 @@ it("waits only for existing current Resource unknown minima and keeps unsupporte
+   expect(waits).toBe(2);
+ });
+ 
+-it("compares retained sequence members before private depth refusal and preserves receiving failures", async () => {
++it("compares retained sequence members and accepts deep input while preserving receiving failures", async () => {
+   const boundary = cleanup.length;
+   const controller = new AbortController();
+   const failures: unknown[] = [];
+@@ -4903,7 +4902,7 @@ it("compares retained sequence members before private depth refusal and preserve
+       position,
+     ]);
+   }
+-  function resource(value: unknown, name: string) {
++  function resource(value: unknown, name: string, metadata: unknown = {}) {
+     const result = record(value);
+     expect(typeof result.revision).toBe("string");
+     expect(result.revision).not.toBe("");
+@@ -4912,7 +4911,7 @@ it("compares retained sequence members before private depth refusal and preserve
+       type: bead,
+       revision: result.revision,
+       properties: { title: name },
+-      metadata: {},
++      metadata,
+     });
+     return result;
+   }
+@@ -5112,28 +5111,36 @@ it("compares retained sequence members before private depth refusal and preserve
+       f.runtime.targets.sequence,
+       sequenceBody("sequence-b", "sequence-fresh", true),
+     );
+-    expect(fresh.status).toBe(500);
+-    expect(fresh.text).toBe("");
+-    expect(fresh.headers.get("x-bdp-development-limit")).toBe(
+-      "unsupported-transaction-composition",
+-    );
+-    expect(fresh.headers.get("content-length")).toBe("0");
+-    expect(contextNames.map((name) => fresh.headers.get(name))).toStrictEqual([null, null, null]);
++    expect(fresh.status).toBe(200);
++    expect(fresh.headers.get("x-bdp-development-limit")).toBeNull();
++    const created = parse(fresh, validateSequence),
++      createdEntry = record((created.results as unknown[])[0]);
++    expect(created).toStrictEqual({
++      results: [
++        {
++          operationIndex: 0,
++          operationName: "present",
++          outcome: "created",
++          resource: resource(createdEntry.resource, "sequence-b", { nested }),
++        },
++      ],
++    });
++    tuple(fresh, "pos-2");
+     const reuse = await exchange(
+       "fresh-key-reuse",
+       f.runtime.targets.sequence,
+       sequenceBody("sequence-b", "sequence-fresh"),
+     );
+     expect(reuse.status).toBe(200);
+-    const created = parse(reuse, validateSequence),
+-      createdEntry = record((created.results as unknown[])[0]);
+-    expect(created).toStrictEqual({
++    expect(parse(reuse, validateSequence)).toStrictEqual({
+       results: [
+         {
++          type: "https://github.com/gastownhall/bdp/problems/conflict",
++          code: "idempotency-conflict",
++          status: 409,
++          retry: "never",
+           operationIndex: 0,
+           operationName: "present",
+-          outcome: "created",
+-          resource: resource(createdEntry.resource, "sequence-b"),
+         },
+       ],
+     });
+diff --git a/packages/server/src/transaction-sequence.test.ts b/packages/server/src/transaction-sequence.test.ts
+index ca3c0ed..6fdc95c 100644
+--- a/packages/server/src/transaction-sequence.test.ts
++++ b/packages/server/src/transaction-sequence.test.ts
+@@ -10,7 +10,6 @@ import {
+   prepareTransaction,
+   prepareTransactionSequence,
+   prepareTransactionSequenceForReceiving,
+-  TransactionDevelopmentLimitError,
+   prepareTransactionSingleton,
+ } from "./transaction-batch.js";
+ import { openTransactionStore } from "./transaction-store.js";
+@@ -622,51 +621,33 @@ describe("private Transactional sequence slice", () => {
+       expect(f.store.inspect().groups).toHaveLength(2);
+     });
+   }, 15000);
+-  it("rolls back every new reservation when a fresh deep sequence member is refused", () => {
++  it("admits fresh deep sequence members without changing atomic reservation behavior", () => {
+     withDepthFixture({}, (f) => {
+       const foreignRequest = singleton("createBead", { id: "beads/foreign", type: bead });
+       const foreign = own(f.store, "foreign", foreignRequest);
+-      const before = f.store.inspect();
+-      const refuse = () =>
+-        createTransactionSequenceStepper(
+-          f.store,
+-          "p",
+-          receivingSequence([
+-            create("first", "first"),
+-            { ...create("deep", "deep"), metadata: depthMetadata() },
+-            create("tail", "tail"),
+-          ]),
+-        );
+-      let caught: unknown;
+-      try {
+-        refuse();
+-      } catch (error) {
+-        caught = error;
+-      }
+-      expect(caught).toBeInstanceOf(TransactionDevelopmentLimitError);
+-      expect(caught).toMatchObject({ message: "development batch depth limit" });
+-      expect(f.store.inspect()).toStrictEqual(before);
++      const request = receivingSequence([
++        create("first", "first"),
++        { ...create("deep", "deep"), metadata: depthMetadata() },
++        create("tail", "tail"),
++      ]);
++      const created = runSteps(createTransactionSequenceStepper(f.store, "p", request));
++      expect(created?.results.map((entry) => entry.outcome)).toStrictEqual([
++        "created",
++        "created",
++        "created",
++      ]);
+       expect(f.store.admit("p", "foreign", foreignRequest)).toStrictEqual({
+         kind: "existing",
+         receipt: foreign.receipt,
+       });
+-      const reused = runSteps(
+-        createTransactionSequenceStepper(
+-          f.store,
+-          "p",
+-          sequence([create("first", "first"), create("deep", "deep"), create("tail", "tail")]),
+-        ),
++      expect(runSteps(createTransactionSequenceStepper(f.store, "p", request))).toStrictEqual(
++        created,
+       );
+-      expect(reused?.results.map((entry) => entry.outcome)).toStrictEqual([
+-        "created",
+-        "created",
+-        "created",
+-      ]);
+       expect(f.store.execute(foreign).status).toBe("completed");
+       expect(f.store.inspect().groups).toHaveLength(4);
+     });
+   }, 15000);
+-  it("refuses fresh depth after a retained failed member expires between sequence turns", () => {
++  it("executes fresh deep input after a retained failed member expires between sequence turns", () => {
+     let now = 1000;
+     withDepthFixture({ clock: () => now }, (f) => {
+       commit(f.store, "seed", "createBead", { id: "beads/a", type: bead });
+@@ -677,36 +658,26 @@ describe("private Transactional sequence slice", () => {
+         "p",
+         receivingSequence([
+           create("prefix", "prefix"),
+-          { ...create("a", "failed"), metadata: depthMetadata() },
++          { ...create("deep", "failed"), metadata: depthMetadata() },
+           create("tail", "tail"),
+         ]),
+       );
+       expect(stepper.step().entry.outcome).toBe("created");
+       now = Date.parse(String(failed.expiresAt)) + 1;
+-      let caught: unknown;
+-      try {
+-        stepper.step();
+-      } catch (error) {
+-        caught = error;
+-      }
+-      expect(caught).toBeInstanceOf(TransactionDevelopmentLimitError);
+-      expect(caught).toMatchObject({ message: "development batch depth limit" });
+-      // The failed atomic turn rolled back expiry deletion. This normal read
+-      // performs retention; do not attribute a raw deletion to that failed turn.
++      expect(stepper.step().entry.outcome).toBe("created");
+       expect(f.store.receipt("p", failed.id)).toBeUndefined();
+-      expect(f.store.inspect().groups).toHaveLength(2);
+-      expect(f.store.inspect().resources).toStrictEqual([
+-        expect.objectContaining({ id: `${scope}beads/a` }),
+-        expect.objectContaining({ id: `${scope}beads/prefix` }),
++      expect(stepper.step().entry.outcome).toBe("created");
++      expect(f.store.inspect().resources.map((r) => (r as { id: string }).id)).toStrictEqual([
++        `${scope}beads/a`,
++        `${scope}beads/deep`,
++        `${scope}beads/prefix`,
++        `${scope}beads/tail`,
+       ]);
+-      expect(
+-        commit(f.store, "failed", "createBead", { id: "beads/reused", type: bead }).status,
+-      ).toBe("completed");
+-      expect(commit(f.store, "tail", "createBead", { id: "beads/tail", type: bead }).status).toBe(
+-        "completed",
+-      );
+       expect(f.store.inspect().groups).toHaveLength(4);
+-      expect(() => stepper.step()).toThrow("cancelled");
++      expect(
++        f.store.admit("p", "failed", singleton("createBead", { id: "beads/reused", type: bead }))
++          .kind,
++      ).toBe("conflict");
+     });
+   }, 15000);
+ });
+diff --git a/packages/server/src/transaction-set.test.ts b/packages/server/src/transaction-set.test.ts
+index fb49b21..e5ada68 100644
+--- a/packages/server/src/transaction-set.test.ts
++++ b/packages/server/src/transaction-set.test.ts
+@@ -14,7 +14,6 @@ import {
+ import * as batch from "./transaction-batch.js";
+ import {
+   transactionInputText,
+-  assertTransactionInputDepth,
+   TransactionSelectorSyntaxError,
+   transactionSelectorCapacity,
+ } from "./transaction-set.js";
+@@ -1032,7 +1031,7 @@ it("serializes byte-bounded deep syntax iteratively without changing number lexe
+   expect(Buffer.byteLength(text)).toBeLessThan(65536);
+   const value = decodeJsonDocument(text);
+   expect(transactionInputText(value)).toBe(text);
+-  expect(() => assertTransactionInputDepth(value)).toThrow("development batch depth limit");
++  expect(transactionInputText(decodeJsonDocument(transactionInputText(value)))).toBe(text);
+ });
+ 
+ it("preserves literal Selector identity and original mixed-carrier diagnostic pointers", () => {
+@@ -1120,7 +1119,7 @@ it("preserves literal Selector identity and original mixed-carrier diagnostic po
+   ).toThrow("prepared set lost Selector grammar analysis");
+ });
+ 
+-it("keeps receiving depth facts private while legacy preparation still throws", () => {
++it("keeps receiving and legacy preparation branded while accepting byte-bounded deep input", () => {
+   let nested: unknown = "leaf";
+   for (let i = 0; i < 40; i++) nested = { nested };
+   const input = { id: "beads/a", type, metadata: { nested } };
+@@ -1137,16 +1136,8 @@ it("keeps receiving depth facts private while legacy preparation still throws",
+           operations: [{ operation: "createBead", ...input, idempotencyKey: "deep" }],
+         }),
+       ),
+-  ]) {
+-    let caught: unknown;
+-    try {
+-      prepare();
+-    } catch (error) {
+-      caught = error;
+-    }
+-    expect(caught).toBeInstanceOf(batch.TransactionDevelopmentLimitError);
+-    expect(caught).toMatchObject({ message: "development batch depth limit" });
+-  }
++  ])
++    expect(prepare).not.toThrow();
+   const singleton = batch.prepareTransactionForReceiving(
+     scope,
+     { kind: "singleton", operation: "createBead" },
+@@ -1154,10 +1145,9 @@ it("keeps receiving depth facts private while legacy preparation still throws",
+   );
+   const wrapped = batch.prepareTransactionForReceiving(scope, { kind: "batch" }, mixed);
+   for (const prepared of [singleton, wrapped]) {
+-    expect(batch.transactionDepthRefusal(prepared)).toBe("development batch depth limit");
++    batch.assertPreparedTransaction(prepared, scope);
+     expect(Object.keys(prepared)).toEqual(["carrier"]);
+     expect(Object.isFrozen(prepared)).toBe(true);
+-    expect(() => batch.transactionDepthRefusal({ ...prepared })).toThrow(TypeError);
+     expect(() => batch.assertPreparedTransaction({ ...prepared }, scope)).toThrow(TypeError);
+   }
+   expect(batch.normalizeTransaction(singleton, () => undefined).identity).toBe(
+@@ -1176,7 +1166,7 @@ it("keeps receiving depth facts private while legacy preparation still throws",
+       JSON.stringify({ operations: [{ operation: "createBead", id: "beads/a", type }] }),
+     ),
+   ])
+-    expect(batch.transactionDepthRefusal(prepared)).toBeUndefined();
++    expect(() => batch.assertPreparedTransaction(prepared, scope)).not.toThrow();
+   for (const prepare of [
+     () =>
+       batch.prepareTransactionForReceiving(
+@@ -1202,25 +1192,19 @@ it("keeps receiving depth facts private while legacy preparation still throws",
+   }
+ });
+ 
+-it("annotates only deep sequence members after complete carrier syntax while strict preparation stays strict", () => {
++it("prepares deep sequence members after complete carrier syntax with strict brands and frozen wrappers", () => {
+   const input = (wraps: number) => {
+     let value: unknown = 0;
+     for (let i = 0; i < wraps; i++) value = { nested: value };
+     return { id: "beads/depth", type, metadata: { nested: value } };
+   };
+-  for (const [wraps, refused] of [
+-    [28, false],
+-    [29, true],
+-  ] as const) {
++  for (const wraps of [28, 29] as const) {
+     const operation = { operation: "createBead", ...input(wraps) };
+     const direct = JSON.stringify({ operations: [operation] });
+     const sequence = JSON.stringify({ operations: [{ ...operation, idempotencyKey: "deep" }] });
+     const received = batch.prepareTransactionSequenceForReceiving(scope, sequence);
+     const member = received.members[0]!;
+     const directReceived = batch.prepareTransactionForReceiving(scope, { kind: "batch" }, direct);
+-    const message = refused ? "development batch depth limit" : undefined;
+-    expect(batch.transactionDepthRefusal(member.request)).toBe(message);
+-    expect(batch.transactionDepthRefusal(directReceived)).toBe(message);
+     expect(batch.normalizeTransaction(member.request, () => undefined).identity).toBe(
+       batch.normalizeTransaction(directReceived, () => undefined).identity,
+     );
+@@ -1228,10 +1212,7 @@ it("annotates only deep sequence members after complete carrier syntax while str
+       () => batch.prepareTransaction(scope, direct),
+       () => batch.prepareTransactionSequence(scope, sequence),
+     ]) {
+-      if (refused) {
+-        expect(prepare).toThrow(batch.TransactionDevelopmentLimitError);
+-        expect(prepare).toThrow("development batch depth limit");
+-      } else expect(prepare).not.toThrow();
++      expect(prepare).not.toThrow();
+     }
+     expect(Object.isFrozen(received)).toBe(true);
+     expect(Object.isFrozen(member.request)).toBe(true);
+@@ -1243,7 +1224,6 @@ it("annotates only deep sequence members after complete carrier syntax while str
+     expect(Reflect.set(memberCarrier.operations, "0", memberCarrier.operations[0])).toBe(false);
+     expect(Reflect.set(memberCarrier.keys, "0", memberCarrier.keys[0])).toBe(false);
+     expect(Object.keys(member.request)).toStrictEqual(["carrier"]);
+-    expect(() => batch.transactionDepthRefusal({ ...member.request })).toThrow(TypeError);
+     expect(() => batch.assertPreparedTransaction({ ...member.request }, scope)).toThrow(TypeError);
+     expect(() => batch.assertPreparedTransactionSequence({ ...received }, scope)).toThrow(
+       TypeError,
+@@ -1255,10 +1235,7 @@ it("annotates only deep sequence members after complete carrier syntax while str
+     scope,
+     JSON.stringify({ operations: [shallow, deep] }),
+   );
+-  expect(batch.transactionDepthRefusal(mixed.members[0]!.request)).toBeUndefined();
+-  expect(batch.transactionDepthRefusal(mixed.members[1]!.request)).toBe(
+-    "development batch depth limit",
+-  );
++  for (const member of mixed.members) batch.assertPreparedTransaction(member.request, scope);
+   const invalid = [
+     [deep, { ...shallow, idempotencyKey: "deep" }],
+     [deep, { operation: "deleteLink", link: "@creator", idempotencyKey: "wrong-kind" }],
+diff --git a/packages/server/src/transaction-snapshot.test.ts b/packages/server/src/transaction-snapshot.test.ts
+index 93ccabc..9b8c2e3 100644
+--- a/packages/server/src/transaction-snapshot.test.ts
++++ b/packages/server/src/transaction-snapshot.test.ts
+@@ -675,9 +675,8 @@ it("new private Snapshot entry points do not escape package public exports", ()
+   const manifest = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
+   expect(Object.keys(manifest.exports).sort()).toEqual([".", "./development"]);
+   for (const file of ["index.ts", "development.ts"])
+-    expect(readFileSync(new URL(file, import.meta.url), "utf8")).not.toContain(
+-      "transaction-snapshot",
+-    );
++    for (const privateModule of ["transaction-snapshot", "json-value-equality"])
++      expect(readFileSync(new URL(file, import.meta.url), "utf8")).not.toContain(privateModule);
+ });
+ it("retains bounded recognition of issued page tokens after expiry/reopen, while unknown or borrowed continuations stay 404", () => {
+   const f = fixture();
+@@ -1283,3 +1282,143 @@ it("does not expire retained Snapshot details on an ineligible fresh attempt", (
+     ).toBe(false);
+   });
+ });
++
++// Compare the complete admitted JSON graph without recursive matcher diagnostics.
++function assertDeepSnapshotValue(actual: unknown, expected: unknown) {
++  const pending: [unknown, unknown][] = [[actual, expected]];
++  while (pending.length) {
++    const [a, b] = pending.pop()!;
++    if (a === b) continue;
++    if (a === null || b === null || typeof a !== "object" || typeof b !== "object")
++      throw new Error("deep Snapshot primitive mismatch");
++    expect(Array.isArray(a)).toBe(Array.isArray(b));
++    const ak = Object.keys(a),
++      bk = Object.keys(b);
++    expect(ak.sort()).toEqual(bk.sort());
++    for (const key of ak)
++      pending.push([(a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key]]);
++  }
++}
++async function deepSnapshotWitness(emitted: boolean, corrupt: boolean) {
++  const started = performance.now();
++  const directory = mkdtempSync(path.join(tmpdir(), "bdp-snapshot-deep-"));
++  const errors: unknown[] = [];
++  let owner: ReturnType<typeof openTransactionStore> | undefined;
++  try {
++    const open = emitted
++      ? (
++          (await import(
++            new URL("../dist/transaction-store.js", import.meta.url).href
++          )) as typeof import("./transaction-store.js")
++        ).openTransactionStore
++      : openTransactionStore;
++    const prepare = emitted
++      ? (
++          (await import(
++            new URL("../dist/transaction-batch.js", import.meta.url).href
++          )) as typeof import("./transaction-batch.js")
++        ).prepareTransactionSetCore
++      : prepareTransactionSetCore;
++    const options = {
++      file: path.join(directory, "store.sqlite"),
++      scope,
++      types,
++      create: true,
++      clock: () => 1000000,
++    };
++    owner = open(options);
++    const deep = "[".repeat(12000) + "1" + "]".repeat(12000);
++    const body = `{"operations":[${JSON.stringify(create("a"))},${JSON.stringify(create("b"))},{"operation":"createLink","id":"links/deep","type":"${linkType}","source":"beads/a","target":"beads/b","properties":{"deep":${deep}}}]}`;
++    expect(Buffer.byteLength(body)).toBeLessThanOrEqual(65536);
++    const admitted = owner.admit("p", "deep-snapshot", prepare(scope, body));
++    if (admitted.kind !== "owned") throw new Error("deep Snapshot admission");
++    const receipt = owner.execute(admitted.claim);
++    expect(receipt.status).toBe("completed");
++    const entries = receipt.results as { resource: Record<string, unknown> }[];
++    const link = entries[2]!.resource;
++    const expectedLink = JSON.parse(
++      `{"id":"${scope}links/deep","type":"${linkType}","revision":${JSON.stringify(link.revision)},"source":"${scope}beads/a","target":"${scope}beads/b","properties":{"deep":${deep}},"metadata":{}}`,
++    );
++    assertDeepSnapshotValue(link, expectedLink);
++    if (corrupt) {
++      owner.close();
++      owner = undefined;
++      const db = new DatabaseSync(options.file);
++      try {
++        const row = db.prepare("SELECT body FROM resources WHERE id=?").get("beads/a");
++        const value = JSON.parse(String(row?.body));
++        const inline = value.ownedLinks[linkType][0];
++        let cursor = inline.properties.deep;
++        for (let n = 1; n < 12000; n++) cursor = cursor[0];
++        cursor[0] = 2;
++        db.prepare("UPDATE resources SET body=? WHERE id=?").run(
++          stringifyJsonValue(value),
++          "beads/a",
++        );
++        expect(db.prepare("SELECT count(*) AS n FROM snapshots").get()?.n).toBe(0);
++      } finally {
++        db.close();
++      }
++      owner = open({ ...options, create: false });
++      expect(() => owner!.captureSnapshot()).toThrow("owned Link differs from first-class record");
++      assertDeepSnapshotValue(owner.receipt("p", receipt.id), receipt);
++      const storedLink = owner
++        .inspect()
++        .resources.find((r) => (r as { id: string }).id === `${scope}links/deep`);
++      assertDeepSnapshotValue(storedLink, expectedLink);
++      owner.close();
++      owner = undefined;
++      const inspect = new DatabaseSync(options.file);
++      try {
++        expect(inspect.prepare("SELECT count(*) AS n FROM snapshots").get()?.n).toBe(0);
++      } finally {
++        inspect.close();
++      }
++    } else {
++      let captured: ReturnType<typeof owner.captureSnapshot>;
++      try {
++        captured = owner.captureSnapshot();
++      } catch (cause) {
++        throw new Error("fresh-depth:snapshot-capture", { cause });
++      }
++      const manifest = captured.manifest;
++      expect(manifestSchema(manifest)).toBe(true);
++      expect(manifest.beads.items.length).toBe(2);
++      expect(manifest.links.items.length).toBe(1);
++      expect(manifest.beads.next).toBeNull();
++      expect(manifest.links.next).toBeNull();
++      assertDeepSnapshotValue(manifest.links.items[0], expectedLink);
++      const first = manifest.beads.items[0]!;
++      if (!("ownedLinks" in first)) throw new Error("deep Snapshot owned plane missing");
++      assertDeepSnapshotValue(first.ownedLinks?.[linkType], [expectedLink]);
++      owner.close();
++      owner = undefined;
++      owner = open({ ...options, create: false });
++      assertDeepSnapshotValue(owner.readSnapshot(handle(manifest)).manifest, manifest);
++      assertDeepSnapshotValue(owner.receipt("p", receipt.id), receipt);
++    }
++    expect(performance.now() - started).toBeLessThan(20000);
++  } catch (error) {
++    errors.push(error);
++  }
++  const cleaning = performance.now();
++  try {
++    owner?.close();
++  } catch (error) {
++    errors.push(error);
++  }
++  try {
++    rmSync(directory, { recursive: true, force: true });
++  } catch (error) {
++    errors.push(error);
++  }
++  if (performance.now() - cleaning >= 5000)
++    errors.push(new Error("deep Snapshot cleanup deadline"));
++  if (errors.length) throw new AggregateError(errors, "deep Snapshot witness failed");
++}
++it("captures and reopens deep owned Links without losing JSON value equality", async () => {
++  await deepSnapshotWitness(true, false);
++}, 30000);
++it("rejects deep owned-Link divergence before Snapshot issuance", async () => {
++  await deepSnapshotWitness(false, true);
++}, 30000);
+diff --git a/packages/server/src/transaction-submission.test.ts b/packages/server/src/transaction-submission.test.ts
+index a0308ba..a4da3ff 100644
+--- a/packages/server/src/transaction-submission.test.ts
++++ b/packages/server/src/transaction-submission.test.ts
+@@ -8,12 +8,17 @@ import { parseTypeDescriptor } from "@bdp/protocol";
+ import { openTransactionStore } from "./transaction-store.js";
+ import {
+   prepareTransaction,
++  prepareTransactionSingleton,
++  normalizeTransaction,
+   prepareTransactionSequence,
+   prepareTransactionForReceiving,
+-  TransactionDevelopmentLimitError,
+ } from "./transaction-batch.js";
+ import * as setCore from "./transaction-set.js";
+ import { submitTransaction, type TransactionSubmission } from "./transaction-submission.js";
++import { compileDevelopmentContracts } from "./development-contracts.js";
++import { CONTRACT_ARTIFACT_CEILINGS } from "./installed-contract-artifact.js";
++import { dependencyTemplate } from "./transaction-dependencies.js";
++import { createTransactionSequenceStepper } from "./transaction-sequence.js";
+ const scope = "https://example.test/submission/",
+   bead = "https://example.test/bead",
+   link = "https://example.test/link";
+@@ -143,7 +148,7 @@ describe("private direct Transactional receiving order", () => {
+     expect(claim.receipt.status).toBe("pending");
+     f.store.retract(claim);
+   });
+-  it("keeps invalid Selector grammar distinct from excessive private depth", async () => {
++  it("keeps invalid Selector grammar distinct from valid deep input", async () => {
+     const f = fixture();
+     expect(
+       await submitTransaction(
+@@ -160,9 +165,8 @@ describe("private direct Transactional receiving order", () => {
+     for (let i = 0; i < 40; i++) deep = { deep };
+     expect(
+       await submitTransaction(f.store, submission([{ ...create(), properties: { deep } }])),
+-    ).toMatchObject({ kind: "development-limit" });
+-    expect(f.store.inspect().resources).toEqual([]);
+-    f.store.retract(own(f.store));
++    ).toMatchObject({ kind: "receipt", receipt: { status: "completed" } });
++    expect(f.store.inspect().resources).toHaveLength(1);
+   });
+   it("compares conflict before negotiation and negotiates exact pending/terminal replay without changing it", async () => {
+     const f = fixture(),
+@@ -701,11 +705,11 @@ describe("valid private set admission", () => {
+     });
+     expect(f.store.inspect()).toMatchObject({ resources: [], groups: [] });
+   });
+-  it("uses the same depth boundary for singleton and wrapped set content", async () => {
++  it("accepts byte-bounded singleton and wrapped set content across the former depth boundary", async () => {
+     const f = fixture();
+     for (const [depth, kind] of [
+       [27, "receipt"],
+-      [28, "development-limit"],
++      [28, "receipt"],
+     ] as const) {
+       let value: unknown = 0;
+       for (let i = 0; i < depth; i++) value = { nested: value };
+@@ -842,7 +846,7 @@ it("charges actual singleton bytes rather than its synthetic batch wrapper", asy
+ });
+ 
+ it.each(["batch", "singleton"] as const)(
+-  "finishes %s synthetic syntax before depth, including deeply nested received input",
++  "finishes %s synthetic syntax before admission, including deeply nested received input",
+   async (kind) => {
+     const f = fixture();
+     const nested = `${"[".repeat(20000)}1e+30${"]".repeat(20000)}`;
+@@ -856,7 +860,10 @@ it.each(["batch", "singleton"] as const)(
+     };
+     const before = f.store.inspect();
+     expect(Buffer.byteLength(request.body)).toBeLessThan(65536);
+-    expect(await submitTransaction(f.store, request)).toMatchObject({ kind: "development-limit" });
++    expect(await submitTransaction(f.store, request)).toMatchObject({
++      kind: "receipt",
++      receipt: { status: "completed" },
++    });
+     expect(await submitTransaction(f.store, { ...request, key: "bad key" })).toMatchObject({
+       kind: "refused",
+       status: 400,
+@@ -872,9 +879,12 @@ it.each(["batch", "singleton"] as const)(
+       kind: "refused",
+       status: 400,
+     });
+-    expect(f.store.inspect()).toEqual(before);
++    expect(f.store.inspect().resources).toEqual(before.resources);
++    expect(f.store.inspect().groups).toEqual(before.groups);
+     expect(await submitTransaction(f.store, submission([create()], "deep_key"))).toMatchObject({
+-      kind: "receipt",
++      kind: "refused",
++      status: 409,
++      code: "idempotency-conflict",
+     });
+   },
+ );
+@@ -1544,7 +1554,7 @@ it("preserves genuine pending completed and failed receipts before Selector capa
+   expect(f.store.inspect()).toEqual(before);
+ });
+ 
+-it("compares retained direct keys before private carrier depth without admitting fresh deep input", async () => {
++it("compares retained direct keys before negotiation and admits valid fresh deep input", async () => {
+   const f = fixture();
+   let nested: unknown = "leaf";
+   for (let i = 0; i < 40; i++) nested = { nested };
+@@ -1606,7 +1616,7 @@ it("compares retained direct keys before private carrier depth without admitting
+         ...request(kind, freshId, freshKey, true),
+         receiving: { acceptsJson: false, maximumOperations: 32 },
+       }),
+-    ).toEqual({ kind: "development-limit", message: "development batch depth limit" });
++    ).toEqual({ kind: "not-acceptable", context: context() });
+     expect(f.store.inspect()).toEqual(before);
+     const reused = await submit(request(kind, freshId, freshKey));
+     expect(reused.kind).toBe("receipt");
+@@ -1615,18 +1625,13 @@ it("compares retained direct keys before private carrier depth without admitting
+     expect(reused.context).toEqual(context());
+     expect(f.store.inspect().resources).toHaveLength(kind === "batch" ? 2 : 4);
+   }
+-  const beforeLegacy = f.store.inspect();
+   const legacy = request("batch", "legacy", "legacy", true);
+   const prepared = prepareTransactionForReceiving(scope, legacy.carrier, legacy.body);
+-  let caught: unknown;
+-  try {
+-    f.store.admit("p", legacy.key, prepared);
+-  } catch (error) {
+-    caught = error;
+-  }
+-  expect(caught).toBeInstanceOf(TransactionDevelopmentLimitError);
+-  expect(caught).toMatchObject({ message: "development batch depth limit" });
+-  expect(f.store.inspect()).toEqual(beforeLegacy);
++  const legacyAdmission = f.store.admit("p", legacy.key, prepared);
++  expect(legacyAdmission.kind).toBe("owned");
++  if (legacyAdmission.kind !== "owned") throw new Error("deep legacy claim missing");
++  expect(f.store.execute(legacyAdmission.claim).status).toBe("completed");
++  const beforeLegacy = f.store.inspect();
+   const stressBody = `{"operations":[{"operation":"createBead","id":"beads/a","type":"https://example.test/bead","metadata":{"deep":${"[".repeat(20000)}1e+30${"]".repeat(20000)}}}]}`;
+   expect(Buffer.byteLength(stressBody)).toBe(40119);
+   expect(createHash("sha256").update(stressBody).digest("hex")).toBe(
+@@ -1736,3 +1741,278 @@ it("compares deep metadata against genuine pending and dependent keys without ch
+   if (failures.length)
+     throw new AggregateError(failures, "depth-key pending ownership or cleanup failed");
+ });
++
++function assertDeepSubmissionValue(actual: unknown, expected: unknown) {
++  const stack: [unknown, unknown][] = [[actual, expected]];
++  while (stack.length) {
++    const [a, b] = stack.pop()!;
++    if (a === b) continue;
++    if (a === null || b === null || typeof a !== "object" || typeof b !== "object")
++      throw new Error("deep submission primitive mismatch");
++    expect(Array.isArray(a)).toBe(Array.isArray(b));
++    const keys = Object.keys(a).sort();
++    expect(keys).toEqual(Object.keys(b).sort());
++    for (const key of keys)
++      stack.push([(a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key]]);
++  }
++}
++it("executes deep values through set and dependent sequence with durable receipt recovery", () => {
++  const started = performance.now(),
++    directory = mkdtempSync(path.join(tmpdir(), "bdp-tx-deep-"));
++  const errors: unknown[] = [];
++  let store: ReturnType<typeof openTransactionStore> | undefined;
++  let now = 1000000;
++  try {
++    const schemaUri = `${scope}deep-schema`;
++    const artifact = (retrievalUri: string, value: unknown) => ({
++      retrievalUri,
++      utf8Bytes: Buffer.from(JSON.stringify(value)),
++    });
++    const contracts = compileDevelopmentContracts({
++      limits: CONTRACT_ARTIFACT_CEILINGS,
++      descriptors: [
++        artifact(bead, {
++          id: bead,
++          name: "Deep",
++          describes: "bead",
++          conformsTo: [],
++          propertiesSchema: schemaUri,
++        }),
++        artifact(link, {
++          id: link,
++          name: "Link",
++          describes: "link",
++          conformsTo: [],
++          source: { conformsTo: [bead], external: "none" },
++          target: { conformsTo: [bead], external: "none" },
++        }),
++      ],
++      schemas: [
++        artifact(schemaUri, {
++          $id: schemaUri,
++          type: "object",
++          properties: { deep: { type: "array" } },
++        }),
++      ],
++    });
++    const options = {
++      file: path.join(directory, "store.sqlite"),
++      scope,
++      create: true,
++      types: contracts.descriptors,
++      contracts,
++      clock: () => now,
++      receiptMaximumItems: 2,
++    };
++    store = openTransactionStore(options);
++    const deep = "[".repeat(12000) + "1" + "]".repeat(12000);
++    const measured: { label: string; bodyBytes: number; identityBytes: number }[] = [];
++    const execute = (key: string, body: string, singleton = false) => {
++      expect(Buffer.byteLength(body)).toBeLessThanOrEqual(65536);
++      const prepared = singleton
++        ? prepareTransactionSingleton(scope, "createBead", body)
++        : prepareTransaction(scope, body);
++      measured.push({
++        label: key,
++        bodyBytes: Buffer.byteLength(body),
++        identityBytes: Buffer.byteLength(normalizeTransaction(prepared, () => undefined).identity),
++      });
++      const admitted = store!.admit("p", key, prepared);
++      if (admitted.kind === "existing") return admitted.receipt;
++      if (admitted.kind !== "owned") throw new Error("deep submission admission");
++      return store!.execute(admitted.claim);
++    };
++    const single = execute(
++      "single",
++      `{"id":"beads/s","type":"${bead}","properties":{"deep":${deep}}}`,
++      true,
++    );
++    expect(single.status).toBe("completed");
++    const seedBody = `{"operations":[{"operation":"createBead","id":"beads/a","type":"${bead}"},{"operation":"createBead","id":"beads/b","type":"${bead}"},{"operation":"createBead","id":"beads/c","type":"${bead}","properties":{"deep":${deep}},"metadata":{"n":0}}]}`;
++    const seed = execute("seed", seedBody);
++    expect(seed.status).toBe("completed");
++    const seedResults = seed.results as { resource: Record<string, unknown> }[];
++    const original = seedResults[2]!.resource;
++    assertDeepSubmissionValue(
++      original,
++      JSON.parse(
++        `{"id":"${scope}beads/c","type":"${bead}","revision":${JSON.stringify(original.revision)},"properties":{"deep":${deep}},"metadata":{"n":0}}`,
++      ),
++    );
++    expect(seed.id).toMatch(new RegExp(`^${scope}receipts/[0-9a-f-]{36}$`));
++    expect(seed.transaction).toMatch(/^[0-9a-f-]{36}$/);
++    expect(seed.expiresAt).toBe(new Date(now + 86400000).toISOString());
++    const expectedSeedResults = seedResults.map((r, operationIndex) => {
++      expect(typeof r.resource.revision).toBe("string");
++      const id = ["a", "b", "c"][operationIndex]!;
++      return {
++        operationIndex,
++        outcome: "created",
++        resource:
++          operationIndex === 2
++            ? JSON.parse(
++                `{"id":"${scope}beads/c","type":"${bead}","revision":${JSON.stringify(r.resource.revision)},"properties":{"deep":${deep}},"metadata":{"n":0}}`,
++              )
++            : {
++                id: `${scope}beads/${id}`,
++                type: bead,
++                revision: r.resource.revision,
++                properties: {},
++                metadata: {},
++              },
++      };
++    });
++    assertDeepSubmissionValue(seed, {
++      id: seed.id,
++      status: "completed",
++      detail: "available",
++      idempotencyKey: "seed",
++      scopeEpoch: store.scopeEpoch,
++      authorizationView: store.authorizationSnapshot().authorizationView,
++      transaction: seed.transaction,
++      requiredPosition: "pos-2",
++      effectPosition: "pos-2",
++      results: expectedSeedResults,
++      next: null,
++      expiresAt: new Date(now + 86400000).toISOString(),
++    });
++    const root = store.readReceipt("p", seed.id);
++    if (!root.receipt || typeof root.receipt.next !== "string")
++      throw new Error("issued deep receipt page required");
++    const pageUrl = root.receipt.next;
++    const page = store.readReceiptPage("p", pageUrl);
++    if (page.kind !== "page") throw new Error("deep receipt page missing");
++    assertDeepSubmissionValue(page.page.results, seedResults.slice(2));
++    const patched = execute(
++      "patch",
++      '{"operations":[{"operation":"updateBead","bead":"beads/c","propertiesChange":[{"op":"copy","from":"/deep","path":"/copy"},{"op":"add","path":"/deep/-","value":2}]}]}',
++    );
++    expect(patched.status).toBe("completed");
++    const patchedResource = (patched.results as { resource: Record<string, unknown> }[])[0]!
++      .resource;
++    const changedDeep = "[" + "[".repeat(11999) + "1" + "]".repeat(11999) + ",2]";
++    const expectedProperties = `{"deep":${changedDeep},"copy":${deep}}`;
++    assertDeepSubmissionValue(
++      patchedResource,
++      JSON.parse(
++        `{"id":"${scope}beads/c","type":"${bead}","revision":${JSON.stringify(patchedResource.revision)},"properties":${expectedProperties},"metadata":{"n":0}}`,
++      ),
++    );
++    const beforeNoop = store.inspect();
++    const noop = execute(
++      "noop",
++      `{"operations":[{"operation":"updateBead","bead":"beads/c","propertiesChange":[{"op":"replace","path":"","value":{"copy":${deep},"deep":${changedDeep}}}],"metadataChange":[{"op":"replace","path":"/n","value":-0.0}]}]}`,
++    );
++    expect(noop.status).toBe("completed");
++    assertDeepSubmissionValue(
++      (noop.results as { resource: unknown }[])[0]!.resource,
++      patchedResource,
++    );
++    expect(store.inspect().position).toBe(beforeNoop.position);
++    assertDeepSubmissionValue(store.inspect().groups, beforeNoop.groups);
++    const selected = execute(
++      "set",
++      '{"operations":[{"operation":"updateWhere","collection":"beads","selector":"$[?@.id]","change":[{"op":"add","path":"/selected","value":true}]}]}',
++    );
++    expect(selected.status).toBe("completed");
++    expect((selected.results as { count: number }[])[0]!.count).toBe(4);
++    const sequenceBody = `{"operations":[{"operation":"createBead","name":"made","idempotencyKey":"made","type":"${bead}","properties":{"deep":${deep}}},{"operation":"createLink","idempotencyKey":"linked","type":"${link}","source":"@made","target":"@made","properties":{"deep":${deep}}}]}`;
++    expect(Buffer.byteLength(sequenceBody)).toBeLessThanOrEqual(65536);
++    const preparedSequence = prepareTransactionSequence(scope, sequenceBody);
++    for (const member of preparedSequence.members)
++      measured.push({
++        label: member.key,
++        bodyBytes: Buffer.byteLength(sequenceBody),
++        identityBytes: Buffer.byteLength(
++          member.deferred
++            ? dependencyTemplate("measurement-only", member).identity
++            : normalizeTransaction(member.request, () => undefined).identity,
++        ),
++      });
++    const stepper = createTransactionSequenceStepper(store, "p", preparedSequence);
++    const first = stepper.step();
++    const createdId = String((first.entry.resource as { id: string }).id);
++    const deferredMember = preparedSequence.members[1]!;
++    measured.push({
++      label: "linked-resolved",
++      bodyBytes: Buffer.byteLength(sequenceBody),
++      identityBytes: Buffer.byteLength(
++        normalizeTransaction(
++          deferredMember.request,
++          () => undefined,
++          undefined,
++          new Map(deferredMember.dependencies.map((d) => [d.field, createdId])),
++        ).identity,
++      ),
++    });
++    const second = stepper.step();
++    expect(first.entry.outcome).toBe("created");
++    expect(second.entry.outcome).toBe("created");
++    expect(second.done).toBe(true);
++    const made = first.entry.resource as Record<string, unknown>,
++      linked = second.entry.resource as Record<string, unknown>;
++    expect(linked.source).toBe(made.id);
++    expect(linked.target).toBe(made.id);
++    assertDeepSubmissionValue(made.properties, JSON.parse(`{"deep":${deep}}`));
++    assertDeepSubmissionValue(linked.properties, JSON.parse(`{"deep":${deep}}`));
++    const beforeFailure = store.inspect();
++    const failedBody =
++      '{"operations":[{"operation":"updateBead","bead":"beads/c","propertiesChange":[{"op":"add","path":"/rollback","value":true}]},{"operation":"updateBead","bead":"beads/c","metadataChange":[{"op":"remove","path":"/absent"}]}]}';
++    const failed = execute("failed", failedBody);
++    expect(failed.status).toBe("failed");
++    expect((failed.problem as { status: number; operationIndex: number }).status).toBe(422);
++    expect((failed.problem as { operationIndex: number }).operationIndex).toBe(1);
++    assertDeepSubmissionValue(store.inspect().resources, beforeFailure.resources);
++    assertDeepSubmissionValue(store.inspect().groups, beforeFailure.groups);
++    expect(store.inspect().position).toBe(beforeFailure.position);
++    assertDeepSubmissionValue(execute("failed", failedBody), failed);
++    assertDeepSubmissionValue(execute("seed", seedBody), seed);
++    expect(store.maintain()).toEqual({ completedExpired: 0, failedForgotten: 0 });
++    assertDeepSubmissionValue(store.receipt("p", seed.id), seed);
++    const durable = store.inspect();
++    store.close();
++    store = undefined;
++    store = openTransactionStore({ ...options, create: false });
++    assertDeepSubmissionValue(store.inspect(), durable);
++    assertDeepSubmissionValue(store.receipt("p", seed.id), seed);
++    const reopenedPage = store.readReceiptPage("p", pageUrl);
++    if (reopenedPage.kind !== "page") throw new Error("reopened deep receipt page missing");
++    assertDeepSubmissionValue(reopenedPage.page, page.page);
++    now = Math.max(Date.parse(String(seed.expiresAt)), Date.parse(String(failed.expiresAt))) + 1;
++    const expired = store.maintain();
++    expect(expired.completedExpired).toBeGreaterThan(0);
++    expect(expired.failedForgotten).toBe(1);
++    const compact = store.receipt("p", seed.id);
++    expect(compact?.detail).toBe("expired");
++    expect(compact?.allocated).toEqual(
++      seedResults.map((r, operationIndex) => ({
++        operationIndex,
++        id: r.resource.id,
++        type: r.resource.type,
++      })),
++    );
++    expect(store.receipt("p", failed.id)).toBeUndefined();
++    expect(store.admit("p", "seed", prepareTransaction(scope, seedBody)).kind).toBe("existing");
++    expect(execute("failed", JSON.stringify({ operations: [create("after-expiry")] })).status).toBe(
++      "completed",
++    );
++    expect(measured.every((entry) => entry.identityBytes > 0)).toBe(true);
++    console.log(JSON.stringify({ witness: "fresh-depth-source-identities", measured }));
++    expect(performance.now() - started).toBeLessThan(20000);
++  } catch (error) {
++    errors.push(error);
++  }
++  const cleaning = performance.now();
++  try {
++    store?.close();
++  } catch (error) {
++    errors.push(error);
++  }
++  try {
++    rmSync(directory, { recursive: true, force: true });
++  } catch (error) {
++    errors.push(error);
++  }
++  if (performance.now() - cleaning >= 5000) errors.push(new Error("deep source cleanup deadline"));
++  if (errors.length) throw new AggregateError(errors, "deep source witness failed");
++}, 30000);

@@ -1,0 +1,77 @@
+{
+  "children": [
+    {
+      "cohort": "positive",
+      "pid": 60913,
+      "exit": 0,
+      "signal": null,
+      "pidAbsent": true,
+      "directoryAbsent": true
+    },
+    {
+      "cohort": "negative",
+      "pid": 61977,
+      "exit": 0,
+      "signal": null,
+      "pidAbsent": true,
+      "directoryAbsent": true
+    }
+  ],
+  "supervisors": [
+    {
+      "file": "positive/build",
+      "pid": 60853,
+      "absent": true
+    },
+    {
+      "file": "positive/pack-protocol",
+      "pid": 60893,
+      "absent": true
+    },
+    {
+      "file": "positive/pack-server",
+      "pid": 60894,
+      "absent": true
+    },
+    {
+      "file": "positive/install",
+      "pid": 60895,
+      "absent": true
+    },
+    {
+      "file": "positive/installed",
+      "pid": 60897,
+      "absent": true
+    },
+    {
+      "file": "negative/frozen-install",
+      "pid": 61899,
+      "absent": true
+    },
+    {
+      "file": "negative/build",
+      "pid": 61915,
+      "absent": true
+    },
+    {
+      "file": "negative/pack-protocol",
+      "pid": 61955,
+      "absent": true
+    },
+    {
+      "file": "negative/pack-server",
+      "pid": 61956,
+      "absent": true
+    },
+    {
+      "file": "negative/install",
+      "pid": 61957,
+      "absent": true
+    },
+    {
+      "file": "negative/installed",
+      "pid": 61960,
+      "absent": true
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "status": "released",
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "sourceBindingSha256": "4e2fc1f5e1c541a2469310196b506417ccd81185cfc4c389657db05afda1abfd",
+  "commandsSha256": "e217c24243ebd25618114e6f05c069a9e36cd25428dec096c172b8e3f558adca",
+  "supervisorSha256": "596245e8892112347f30c6c54df3201623c92bf3fad23c9dc0adb1693bd12f27",
+  "expectedHead": "3968081f8231566908e69045424b067c3c36dc40",
+  "expectedTree": "a597518b819941e3f579dd7838e247b010a072a1",
+  "authorizedStages": [
+    "typecheck",
+    "format-check",
+    "affected-cases"
+  ],
+  "controlGate": "closed",
+  "installedGate": "closed",
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/ci-budget-repair/root-message-authorization.json",
+    "sha256": "ed55294c31b4cc736a81823dbf80ac278f4d9f5c812ebafa3b82645d29b062c1"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "verdict": "accepted exact push CI with masked-log limits",
+  "run": 39072180684,
+  "job": 117511888589,
+  "head": "9f89271e2563a105410789ca8ca1e77dfb4d0b9f",
+  "tree": "30eaca668f17a191068444f8d6ca1232c80171b2",
+  "parent": "d9c3eb9e61b1982b9bd56aa77e4cdc114384e886",
+  "successfulSteps": 27,
+  "fullSuitePassed": 9451,
+  "fullSuiteSkipped": 1,
+  "fullSuiteFiles": 186,
+  "preflightPassed": 7,
+  "sourceFilesVerified": 679,
+  "intactNewSourceReports": 9,
+  "unparseableObservationLines": [
+    1709,
+    3221,
+    3612,
+    3628,
+    4634,
+    5740,
+    5785,
+    7074
+  ],
+  "ciInstalled22And37StructuredReportsReconstructed": false,
+  "remotePidAbsenceClaimed": false,
+  "publicProfileQualification": false,
+  "evidence": {
+    "run.json": "a38ff3a20a8a08124463a0b2a90029a73ac417a563388aad9c56f2ddf8a3c60a",
+    "job.json": "23d2d29c173a812b7fe20bf185cc4198c779852697cdf119d933024009a1e01f",
+    "pr.json": "4dcadb411ec3050a87cb710468d9ce96bc7584825b01bb390a1a64632d4235e3",
+    "remote-ref.json": "431313ed41a78c1f0f8eff4914643b43e58454c12081bec8b2f02f03c8465469",
+    "verify-job.raw.log": "a32499cbc356f83f6c9eb6c20efc61557b5816f608e11c026403fce70124cea2",
+    "index.json": "83a6f80be22c8e4c7816e5f32af686ce01f48df458c418c0ab3c24d6c219b0da"
+  }
+}

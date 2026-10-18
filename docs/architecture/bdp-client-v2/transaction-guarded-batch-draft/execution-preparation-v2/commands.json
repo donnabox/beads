@@ -1,0 +1,627 @@
+{
+  "status": "CLOSED_REPAIR_STATIC_PREFIX_PREPARATION",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+  "ownedPaths": [
+    "apps/bdptest/src/transactional-guarded-batch-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "executionOrder": [
+    "setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "build-inventory",
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed",
+    "installed-positive",
+    "review-positive",
+    "installed-unguarded-contenders",
+    "review-unguarded-contenders"
+  ],
+  "staticCommandCount": 7,
+  "commands": {
+    "setup": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile",
+        "--ignore-scripts"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [],
+      "workload": {
+        "productChildren": 0,
+        "http": 0,
+        "sourceCases": 0
+      }
+    },
+    "typecheck": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "setup",
+          "exit": 0
+        }
+      ],
+      "workload": {
+        "productChildren": 0,
+        "http": 0,
+        "sourceCases": 0
+      }
+    },
+    "build": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "build"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "typecheck",
+          "exit": 0
+        }
+      ],
+      "workload": {
+        "productChildren": 0,
+        "http": 0,
+        "sourceCases": 0
+      }
+    },
+    "format-check": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "format:check"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "build",
+          "exit": 0
+        }
+      ],
+      "workload": {
+        "productChildren": 0,
+        "http": 0,
+        "sourceCases": 0
+      }
+    },
+    "lint": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "lint"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "format-check",
+          "exit": 0
+        }
+      ],
+      "workload": {
+        "productChildren": 0,
+        "http": 0,
+        "sourceCases": 0
+      }
+    },
+    "boundaries": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "check:boundaries"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "lint",
+          "exit": 0
+        }
+      ],
+      "workload": {
+        "productChildren": 0,
+        "http": 0,
+        "sourceCases": 0
+      }
+    },
+    "read-seal": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "evidence:verify"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "boundaries",
+          "exit": 0
+        }
+      ],
+      "workload": {
+        "productChildren": 0,
+        "http": 0,
+        "sourceCases": 0
+      }
+    },
+    "build-inventory": {
+      "phase": "inventory",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/inventory.py"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "read-seal",
+          "exit": 0
+        }
+      ]
+    },
+    "node-version": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "build-inventory",
+          "exit": 0
+        }
+      ]
+    },
+    "package-directory": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/packages.py",
+        "directory"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "node-version",
+          "exit": 0
+        }
+      ]
+    },
+    "pack-protocol": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/run/packages"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "package-directory",
+          "exit": 0
+        }
+      ]
+    },
+    "pack-server": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/run/packages"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "pack-protocol",
+          "exit": 0
+        }
+      ]
+    },
+    "verify-tar": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/packages.py",
+        "tar"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "pack-server",
+          "exit": 0
+        }
+      ]
+    },
+    "prepare-consumer": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/packages.py",
+        "consumer"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "verify-tar",
+          "exit": 0
+        }
+      ]
+    },
+    "consumer-install": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/run/consumer",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "prepare-consumer",
+          "exit": 0
+        }
+      ]
+    },
+    "verify-installed": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/packages.py",
+        "installed"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "consumer-install",
+          "exit": 0
+        }
+      ]
+    },
+    "installed-positive": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [
+        "bdp-guarded-batch-installed-"
+      ],
+      "requires": [
+        {
+          "id": "verify-installed",
+          "exit": 0
+        }
+      ],
+      "selectedFullNames": [
+        "preserves one guarded batch winner and rolls back the losing marker through installed HTTP"
+      ],
+      "mode": "positive",
+      "workload": {
+        "plannedOnly": true,
+        "expectedExit": 0,
+        "expectedHttp": 7,
+        "maximumHttp": 7,
+        "maximumProductChildren": 1,
+        "expectedOwners": 1,
+        "expectedListeners": 1,
+        "expectedDirectories": 1,
+        "maximumConcurrentRequests": 2,
+        "expectedTcpConnections": 7,
+        "maximumTcpConnections": 7,
+        "limits": {
+          "workMs": 45000,
+          "readyMs": 10000,
+          "requestMs": 5000,
+          "cleanupMs": 10000,
+          "requestDrainMs": 5000,
+          "testMs": 60000,
+          "supervisorMs": 120000,
+          "requestHeaderBytes": 16384,
+          "responseHeaderBytes": 16384,
+          "retainedResponseBodyBytes": 32768,
+          "targetUtf8Bytes": 8192,
+          "targetStringLength": 8192,
+          "pairMilestones": 32,
+          "reportBytes": 65536,
+          "launcherStdoutStderrCombinedBytes": 65536,
+          "retainedResponseBodiesMaximumBytes": 229376,
+          "clientRequestBodyBytes": 65536
+        },
+        "requestBodyTotalMaximumBytes": 1585,
+        "requestBodyLargestMaximumBytes": 471
+      },
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-guarded-batch/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-guarded-batch-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/run/installed-positive.results.json",
+        "-t",
+        "^preserves one guarded batch winner and rolls back the losing marker through installed HTTP$"
+      ],
+      "argvStatus": "Plan-exact proposed selection; actual frozen source title/registration and post-setup Vitest identity pending",
+      "outcomeAcceptance": "All seven HTTP200 with complete plan oracles; no early/inconclusive success"
+    },
+    "review-positive": {
+      "phase": "review",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/review-cohort.py",
+        "positive"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "installed-positive",
+          "exit": 0
+        }
+      ]
+    },
+    "installed-unguarded-contenders": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "supervisorSeconds": 120,
+      "expectedExit": 1,
+      "ownedTempPrefixes": [
+        "bdp-guarded-batch-installed-"
+      ],
+      "requires": [
+        {
+          "id": "review-positive",
+          "exit": 0
+        }
+      ],
+      "selectedFullNames": [
+        "preserves one guarded batch winner and rolls back the losing marker through installed HTTP"
+      ],
+      "mode": "unguarded-contenders",
+      "workload": {
+        "plannedOnly": true,
+        "expectedExit": 1,
+        "expectedHttp": 3,
+        "maximumHttp": 3,
+        "maximumProductChildren": 1,
+        "expectedOwners": 1,
+        "expectedListeners": 1,
+        "expectedDirectories": 1,
+        "maximumConcurrentRequests": 2,
+        "expectedTcpConnections": 3,
+        "maximumTcpConnections": 3,
+        "limits": {
+          "workMs": 45000,
+          "readyMs": 10000,
+          "requestMs": 5000,
+          "cleanupMs": 10000,
+          "requestDrainMs": 5000,
+          "testMs": 60000,
+          "supervisorMs": 120000,
+          "requestHeaderBytes": 16384,
+          "responseHeaderBytes": 16384,
+          "retainedResponseBodyBytes": 32768,
+          "targetUtf8Bytes": 8192,
+          "targetStringLength": 8192,
+          "pairMilestones": 32,
+          "reportBytes": 65536,
+          "launcherStdoutStderrCombinedBytes": 65536,
+          "retainedResponseBodiesMaximumBytes": 98304,
+          "clientRequestBodyBytes": 65536
+        },
+        "expectedFailure": "guarded-batch:one-retained-revision-failure",
+        "requestBodyTotalMaximumBytes": 818,
+        "requestBodyLargestMaximumBytes": 323
+      },
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-guarded-batch/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-guarded-batch-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/run/installed-unguarded-contenders.results.json",
+        "-t",
+        "^preserves one guarded batch winner and rolls back the losing marker through installed HTTP$"
+      ],
+      "argvStatus": "Plan-exact proposed selection; actual frozen source title/registration and post-setup Vitest identity pending",
+      "outcomeAcceptance": "Exactly seed plus two successful guardless HTTP200 receipts with distinct effects2/3, then sole guarded-batch:one-retained-revision-failure; unrelated errors rejected"
+    },
+    "review-unguarded-contenders": {
+      "phase": "review",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/review-cohort.py",
+        "unguarded-contenders"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "installed-unguarded-contenders",
+          "exit": 1
+        }
+      ]
+    }
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/review-repair/source-binding.json",
+    "sha256": "77c27b159f545a82738c8acf50a3e0a741f41d0168d8da435c95900443b9217b"
+  },
+  "finalParent": "9e5f040edab88be364f683098ead72f595f0ab55",
+  "finalCommit": null,
+  "limits": {
+    "expectedHttp": 10,
+    "maximumHttp": 10,
+    "scheduledLaunchAttempts": 2,
+    "maximumChildren": 2,
+    "expectedOwners": 2,
+    "expectedListeners": 2,
+    "expectedDirectories": 2,
+    "maximumConcurrentRequests": 2,
+    "reopens": 0,
+    "bootstrapHttp": 0,
+    "sourceRuntimeTests": 0,
+    "readonlyDatabaseHandles": 0,
+    "automaticRetries": 0,
+    "retainedReplay": 1
+  },
+  "runtimeLimits": {
+    "workMs": 45000,
+    "readyMs": 10000,
+    "requestMs": 5000,
+    "cleanupMs": 10000,
+    "requestDrainMs": 5000,
+    "testMs": 60000,
+    "supervisorMs": 120000,
+    "requestHeaderBytes": 16384,
+    "responseHeaderBytes": 16384,
+    "retainedResponseBodyBytes": 32768,
+    "targetUtf8Bytes": 8192,
+    "targetStringLength": 8192,
+    "pairMilestones": 32,
+    "reportBytes": 65536,
+    "launcherStdoutStderrCombinedBytes": 65536,
+    "retainedResponseBodiesMaximumBytes": 327680,
+    "clientRequestBodyBytes": 65536
+  },
+  "ledger": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/proposed-successor-v2/ledger.json",
+    "sha256": "5aa8f75096d1f9eb3b1dc8ab3244dd012d64bf5e843f7738e820dc621f77a1e0"
+  },
+  "plannedOnly": true,
+  "frozenDraftReady": true,
+  "callbackSourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/selection.json",
+    "sha256": "6cfa676d0a7ce7c3da779e8e9de3403a0e3e34ed4d06dd6d3e2aa4f6d907be1a"
+  },
+  "reportContract": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/report-contract.json",
+    "sha256": "33a9a7183cb2d309eec3a57257e634cdb744829de14400d163f5ba8788d1482c"
+  },
+  "plan": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/proposed-successor-v2/plan.md",
+    "sha256": "c2c4642c4fb8d5f7266c00a3b3e2cb4af198e34c93c468165d3ccbdc865a0415"
+  },
+  "authoringRelease": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/proposed-successor-v2/root-authoring-release.json",
+    "sha256": "a577c7729748dffc31b6781d6b523e3c7aed5b55aa715f9f32c939f7b09f6b86",
+    "executionAuthorization": false
+  },
+  "plannedRegistration": {
+    "title": "preserves one guarded batch winner and rolls back the losing marker through installed HTTP",
+    "count": 1,
+    "selectedExecutions": 2,
+    "regex": "^preserves one guarded batch winner and rolls back the losing marker through installed HTTP$"
+  },
+  "missingBindings": [
+    "post-setup Vitest path/hash",
+    "actual build inventory and any dirty-build bridge",
+    "clean ordinary candidate/final integration and code-review validation acceptance",
+    "fresh archives/external consumer/lock/full production graph/payload/entry",
+    "actual cohort reports/results/lifecycle and independent adjudication"
+  ],
+  "toolFiles": {
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node": "1ee75375e33b94fc34b3b19aede049e11dae90efb63b374dc96d6bdace70c4b8",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs": "67b035e322203961795e8e34ca63a08c37a4386eda94107fb3d28f3246d882ad"
+  },
+  "footprintBase": "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
+  "actualParent": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/proposed-successor-v2/actual-parent-binding.json",
+    "sha256": "091c32051c61b314713cb0d1518c53f05309fe57bdc2e466a68ec58eb7dbe2f2"
+  }
+}

@@ -1,0 +1,3090 @@
+diff --git a/apps/bdptest/src/transactional-matrix.test.ts b/apps/bdptest/src/transactional-matrix.test.ts
+index fa83482..cdbdf40 100644
+--- a/apps/bdptest/src/transactional-matrix.test.ts
++++ b/apps/bdptest/src/transactional-matrix.test.ts
+@@ -100,6 +100,8 @@ async function observe(control?: {
+   /** Negative-test deadline begins after the first real exchange, with startup still bounded. */
+   readonly afterFirstExchangeBudgetMs?: number;
+   readonly scenarioSelection?: readonly string[];
++  readonly collapsePrincipalB?: boolean;
++  readonly onDispatch?: (request: PrincipalDispatchInput) => void;
+   /** Retain genuine returned evidence before cleanup can fail; never replace it. */
+   readonly onObserved?: (observed: InstalledObservation) => void;
+   readonly invalidReceiptCredentials?: boolean | "set-update" | "set-delete";
+@@ -144,16 +146,19 @@ async function observe(control?: {
+       })
+     : bundle;
+   const directory = mkdtempSync(path.join(tmpdir(), "bdp-tx-installed-"));
+-  const operator = randomBytes(32).toString("base64url"),
+-    reader = randomBytes(32).toString("base64url");
++  const tokens: PrincipalTokens = {
++    operator: randomBytes(32).toString("base64url"),
++    reader: randomBytes(32).toString("base64url"),
++    principalA: randomBytes(32).toString("base64url"),
++    principalARotated: randomBytes(32).toString("base64url"),
++    principalB: randomBytes(32).toString("base64url"),
++  };
++  const roles = principalCredentialRoles(tokens, control?.collapsePrincipalB ?? false);
+   const configuration = {
+     scope,
+     directory: path.join(directory, "bootstrap"),
+     create: true,
+-    credentials: [
+-      { token: operator, principal: "same", canMutate: true },
+-      { token: reader, principal: "same", canMutate: false },
+-    ],
++    credentials: roles.map(({ token, principal, canMutate }) => ({ token, principal, canMutate })),
+     artifacts: artifacts(),
+   };
+   let target: ReturnType<typeof createTransactionalExecutionBinding> | undefined;
+@@ -193,12 +198,12 @@ async function observe(control?: {
+     );
+     // Independently authored route inventory, not a second derivation from the manifest.
+     expect(uniqueRoutes).toEqual([
+-      { method: "POST", url: `${scope}operations/create-bead` },
+       { method: "POST", url: `${scope}operations/batch` },
+-      { method: "POST", url: `${scope}operations/sequence` },
+-      { method: "POST", url: `${scope}operations/update-bead` },
+       { method: "GET", url: `${scope}beads/?limit=32` },
+       { method: "GET", url: `${scope}events/` },
++      { method: "POST", url: `${scope}operations/create-bead` },
++      { method: "POST", url: `${scope}operations/sequence` },
++      { method: "POST", url: `${scope}operations/update-bead` },
+       { method: "GET", url: `${scope}beads/a` },
+       { method: "GET", url: `${scope}links/l` },
+       { method: "GET", url: `${scope}beads/new` },
+@@ -229,16 +234,16 @@ async function observe(control?: {
+       maximumRequestBodyBytes: 65536,
+       defaultCredentialRef: "operator",
+       credentialHandles: [
+-        { id: "operator", headerNames: ["authorization"] },
+-        { id: "reader", headerNames: ["authorization"] },
++        ...roles.map(({ ref }) => ({ id: ref, headerNames: ["authorization"] })),
+         { id: "anonymous", headerNames: [] },
+       ],
+       resolveCredentials: ({ credentialRef, url }) =>
+-        credentialRef === "anonymous"
+-          ? {}
+-          : {
+-              authorization: `Bearer ${(control?.invalidReceiptCredentials === true && url.startsWith(`${scope}receipts/`)) || deniedReceiptUrls.has(url) ? "deliberately-unknown" : credentialRef === "operator" ? operator : reader}`,
+-            },
++        principalHeaders(
++          roles,
++          credentialRef,
++          (control?.invalidReceiptCredentials === true && url.startsWith(`${scope}receipts/`)) ||
++            deniedReceiptUrls.has(url),
++        ),
+     };
+     target = createTransactionalExecutionBinding({
+       baseline,
+@@ -276,6 +281,13 @@ async function observe(control?: {
+         },
+         exactExecution: {
+           execute: async (request) => {
++            control?.onDispatch?.(
++              Object.freeze({
++                method: request.method,
++                url: request.url,
++                credentialRef: request.credentialRef,
++              }),
++            );
+             const response = await target!.target.execute(request);
+             if (afterFirstExchangeBudgetMs !== undefined && firstExchangeTimer === undefined) {
+               firstExchangeTimer = setTimeout(expireCohort, afterFirstExchangeBudgetMs);
+@@ -350,15 +362,20 @@ async function observe(control?: {
+   if (!observed) throw new Error("missing installed observation");
+   return observed;
+ }
+-it("observes fifteen partial Transactional contracts through packed-capable actual installed HTTP", async () => {
++it("observes sixteen partial Transactional contracts through packed-capable actual installed HTTP", async () => {
+   const started = performance.now(),
+     children: ChildProcess[] = [];
+   const crossWire = crossCarrierWire(),
+     minimumWire = commandMinimumWire(),
+-    memberWire = sequenceMemberWire();
++    memberWire = sequenceMemberWire(),
++    principalWire = principalNamespaceWire();
+   const observed = await observe({
+     children,
+-    afterExchange: composedMemberWire(crossWire, minimumWire, memberWire),
++    onDispatch: principalWire.onDispatch,
++    afterExchange: withPrincipalWire(
++      principalWire,
++      composedMemberWire(crossWire, minimumWire, memberWire),
++    ),
+     onObserved(observed) {
+       if (process.env.BDP_TRANSACTIONAL_OBSERVATION_OUTPUT)
+         writeFileSync(
+@@ -370,6 +387,7 @@ it("observes fifteen partial Transactional contracts through packed-capable actu
+               ...observed,
+               supplemental: minimumWire.summary(),
+               sequenceMemberSupplemental: memberWire.summary(),
++              principalSupplemental: principalWire.summary(observed),
+             },
+             null,
+             2,
+@@ -382,15 +400,15 @@ it("observes fifteen partial Transactional contracts through packed-capable actu
+   expect(observed.result.scenarios).toHaveLength(256); // Includes five optional catalog rows.
+   for (const row of observed.result.scenarios.filter((s) => implemented.has(s.id)))
+     expect(row, JSON.stringify(row, null, 2)).toMatchObject({ state: "pass" });
+-  expect(observed.result.scenarios.filter((s) => s.state === "pass")).toHaveLength(15);
++  expect(observed.result.scenarios.filter((s) => s.state === "pass")).toHaveLength(16);
+   expect(observed.result.claimEligible).toBe(false);
+-  expect(observed.sessions).toHaveLength(22);
+-  expect(children).toHaveLength(23); // Twenty-two scenario/reopen sessions plus separate bootstrap.
++  expect(observed.sessions).toHaveLength(23);
++  expect(children).toHaveLength(24); // Twenty-three scenario/reopen sessions plus separate bootstrap.
+   expect(children.every((child) => child.exitCode !== null || child.signalCode !== null)).toBe(
+     true,
+   );
+   expect(observed.result.declarations).toMatchObject({
+-    exactConfigurationDigest: "02dd7d9f35e7482c07ce1550a6572232cc48ba6858cd66f8dfc8f5384f3628be",
++    exactConfigurationDigest: "9a9404e74dd41fcb39b9c3bb5fc86917ff972dfdbc95faa5f53d13b35bb60bec",
+   });
+   const dynamic = observed.result.scenarios
+     .flatMap((s) => s.exchanges)
+@@ -581,12 +599,13 @@ it("observes fifteen partial Transactional contracts through packed-capable actu
+   crossWire.finish();
+   assertCommandMinimumPositive(observed, minimumWire);
+   assertMemberPositive(observed, memberWire);
+-  expect(observed.result.scenarios.reduce((n, row) => n + row.exchanges.length, 0)).toBe(213);
++  assertPrincipalPositive(observed, principalWire);
++  expect(observed.result.scenarios.reduce((n, row) => n + row.exchanges.length, 0)).toBe(220);
+   expect(performance.now() - started).toBeLessThanOrEqual(63000);
+   console.log(
+     JSON.stringify({
+       // Predecessor logs retain installed-tx-twelve/thirteen/fourteen-partial-summary.
+-      kind: "installed-tx-fifteen-partial-summary",
++      kind: "installed-tx-sixteen-partial-summary",
+       sourceCommit,
+       elapsedMs: performance.now() - started,
+       actions: bundle.manifest.scenarios.reduce((n, s) => n + (s.actions?.length ?? 0), 0),
+@@ -1319,6 +1338,7 @@ it.each([
+ );
+ 
+ it("pins the matching no-op installed route digest and fifteen-action ledger", () => {
++  assertPrincipalStatic();
+   assertMemberReplayLedger(memberReplayLedger);
+   expect(() => assertMemberReplayLedger([])).toThrow("sequence-member-replay-ledger");
+   expect(() => assertMemberReplayLedger([["s-replay", "s-first-receipt", "whole-json"]])).toThrow(
+@@ -1354,6 +1374,7 @@ it("pins the matching no-op installed route digest and fifteen-action ledger", (
+   const redirected = minimumReplayLedger.map((pair) => [...pair]);
+   redirected[0]![1] = "m-create-b";
+   expect(() => assertMinimumReplayLedger(redirected)).toThrow("minimum-replay-comparison-ledger");
++  // Previous command-minimum route order: 02dd7d9f35e7482c07ce1550a6572232cc48ba6858cd66f8dfc8f5384f3628be.
+   // Previous fifteen-route order: a9a17908b6fa87674d5f573b584f4a1ce1d41d7909fadf48b65e9b05397ddfd4.
+   // Previous twelve-route digest: 1ba7cbbffc4fb40df2c3f12640bc636e70076cfa25bdd6952b83ec1bb1fe0035.
+   // Canonical exact-mode preimage authored from the approved route inventory;
+@@ -1363,12 +1384,12 @@ it("pins the matching no-op installed route digest and fifteen-action ledger", (
+     maximumRequestHeaderBytes: 16384,
+     profile: "transactional",
+     routes: [
+-      { method: "POST", url: `${scope}operations/create-bead` },
+       { method: "POST", url: `${scope}operations/batch` },
+-      { method: "POST", url: `${scope}operations/sequence` },
+-      { method: "POST", url: `${scope}operations/update-bead` },
+       { method: "GET", url: `${scope}beads/?limit=32` },
+       { method: "GET", url: `${scope}events/` },
++      { method: "POST", url: `${scope}operations/create-bead` },
++      { method: "POST", url: `${scope}operations/sequence` },
++      { method: "POST", url: `${scope}operations/update-bead` },
+       { method: "GET", url: `${scope}beads/a` },
+       { method: "GET", url: `${scope}links/l` },
+       { method: "GET", url: `${scope}beads/new` },
+@@ -1382,7 +1403,7 @@ it("pins the matching no-op installed route digest and fifteen-action ledger", (
+     scope,
+   });
+   expect(createHash("sha256").update(preimage).digest("hex")).toBe(
+-    "02dd7d9f35e7482c07ce1550a6572232cc48ba6858cd66f8dfc8f5384f3628be",
++    "9a9404e74dd41fcb39b9c3bb5fc86917ff972dfdbc95faa5f53d13b35bb60bec",
+   );
+   expect(Buffer.byteLength(preimage)).toBe(1228);
+   // The reordered first use must not grant or remove any old route authority.
+@@ -1481,9 +1502,9 @@ it.each(["bead-property", "link-metadata", "group-inventory-and-head"] as const)
+       expect([...failed].sort()).toEqual([...intended].sort());
+     expect(row.exchanges.at(-1)!.request.id).toBe(actionId);
+     expect(children.every((c) => c.exitCode !== null || c.signalCode !== null)).toBe(true);
+-    expect(children.length).toBeLessThanOrEqual(23);
++    expect(children.length).toBeLessThanOrEqual(24);
+     const exchanges = observed.result.scenarios.reduce((n, r) => n + r.exchanges.length, 0);
+-    expect(exchanges).toBeLessThanOrEqual(control === "group-inventory-and-head" ? 207 : 202);
++    expect(exchanges).toBeLessThanOrEqual(control === "group-inventory-and-head" ? 214 : 209);
+     for (const later of observed.result.scenarios.filter(
+       (r) => bundle.manifest.scenarios.some((p) => p.id === r.id) && r.id !== row.id,
+     ))
+@@ -1633,6 +1654,7 @@ function applyDeletionControl(
+ }
+ 
+ it("pins deletion-safety derivative carriers, complete positives, and measured source bounds", () => {
++  assertPrincipalStatic();
+   assertMemberControl();
+   assertCrossCarrierControls();
+   assertCommandMinimumControls();
+@@ -1733,8 +1755,8 @@ it("pins deletion-safety derivative carriers, complete positives, and measured s
+     }
+     // Historical root-accepted maximum701716B/18263nodes plus4096B/64nodes.
+     // Command-minimum measured maximum756707B/19731nodes plus4096B/64nodes.
+-    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(812575);
+-    expect(nodes).toBeLessThanOrEqual(21176);
++    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(847979);
++    expect(nodes).toBeLessThanOrEqual(22128);
+     const loaded = createCumulativeTransactionalArtifactBundle(
+       loadProfileContractSelection("transactional"),
+       { fixture: fixtureSource, manifest: { bytes: Buffer.from(wire) } },
+@@ -1817,10 +1839,10 @@ it.each(deletionControlNames)(
+       );
+     }
+     expect(children.every((c) => c.exitCode !== null || c.signalCode !== null)).toBe(true);
+-    expect(children.length).toBeLessThanOrEqual(23);
++    expect(children.length).toBeLessThanOrEqual(24);
+     const exchanges = observed.result.scenarios.reduce((n, r) => n + r.exchanges.length, 0);
+     expect(exchanges).toBeLessThanOrEqual(
+-      control === "incoming-order" ? 197 : control === "outgoing-order" ? 202 : 198,
++      control === "incoming-order" ? 204 : control === "outgoing-order" ? 209 : 205,
+     );
+     for (const later of observed.result.scenarios.filter(
+       (r) => bundle.manifest.scenarios.some((p) => p.id === r.id) && r.id !== row.id,
+@@ -2144,8 +2166,8 @@ function assertCrossCarrierControls() {
+     // Historical measurement-only derivative guards were650386B/17275nodes.
+     // Historical root-accepted maximum701716B/18263nodes plus4096B/64nodes.
+     // Command-minimum measured maximum756707B/19731nodes plus4096B/64nodes.
+-    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(812575);
+-    expect(nodes).toBeLessThanOrEqual(21176);
++    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(847979);
++    expect(nodes).toBeLessThanOrEqual(22128);
+     const loaded = createCumulativeTransactionalArtifactBundle(
+       loadProfileContractSelection("transactional"),
+       { fixture: fixtureSource, manifest: { bytes: Buffer.from(JSON.stringify(changed)) } },
+@@ -2183,16 +2205,30 @@ it.each(crossCarrierControls)(
+     const children: ChildProcess[] = [],
+       wire = crossCarrierWire(control),
+       minimumWire = commandMinimumWire(),
+-      memberWire = sequenceMemberWire();
++      memberWire = sequenceMemberWire(),
++      principalWire = principalNamespaceWire();
+     let description: ReturnType<typeof applyCrossCarrierControl> | undefined;
+     const observed = await observe({
+       children,
+-      afterExchange: composedMemberWire(wire, minimumWire, memberWire),
++      onDispatch: principalWire.onDispatch,
++      afterExchange: withPrincipalWire(
++        principalWire,
++        composedMemberWire(wire, minimumWire, memberWire),
++      ),
+       onObserved(observed) {
+         if (process.env.BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT)
+           writeFileSync(
+             `${process.env.BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT}-${control}.json`,
+-            JSON.stringify({ sourceCommit, entry, ...observed }, null, 2) + "\n",
++            JSON.stringify(
++              {
++                sourceCommit,
++                entry,
++                ...observed,
++                principalSupplemental: principalWire.summary(observed),
++              },
++              null,
++              2,
++            ) + "\n",
+           );
+       },
+       manifest(value) {
+@@ -2233,10 +2269,11 @@ it.each(crossCarrierControls)(
+     wire.finish();
+     assertCommandMinimumPositive(observed, minimumWire);
+     assertMemberPositive(observed, memberWire);
+-    expect(children).toHaveLength(23);
++    assertPrincipalPositive(observed, principalWire);
++    expect(children).toHaveLength(24);
+     expect(children.every((c) => c.exitCode !== null || c.signalCode !== null)).toBe(true);
+     const exchanges = observed.result.scenarios.reduce((n, r) => n + r.exchanges.length, 0);
+-    expect(exchanges).toBe(control === "batch-semantic-conflict" ? 204 : 205);
++    expect(exchanges).toBe(control === "batch-semantic-conflict" ? 211 : 212);
+     console.log(
+       JSON.stringify({
+         kind: "installed-tx-cross-carrier-control",
+@@ -3339,3 +3376,760 @@ it("discriminates sequence member transactions against a successful middle delet
+     }),
+   );
+ }, 120000);
++
++const principalId = "read-update.idempotency.principal-isolation";
++const principalRequests = [
++  {
++    action: "pk-a-create",
++    method: "POST",
++    url: "https://reference.invalid/acme/operations/batch",
++    credentialRef: "principal-a",
++    headerLines: [
++      {
++        name: "accept",
++        value: "application/json",
++      },
++      {
++        name: "content-type",
++        value: "application/json",
++      },
++      {
++        name: "idempotency-key",
++        value: "principal-shared",
++      },
++    ],
++    body: '{"operations":[{"operation":"createBead","id":"beads/a","type":"https://reference.invalid/acme/types/task","properties":{"title":"a"},"metadata":{}}]}',
++    bodyBytes: 150,
++    bodySha256: "54f0fefb0965a8210bb22cf09601c18296ef450489eff1aef5a8bea8b99d83b8",
++    status: 200,
++    dispatchUrl: "https://reference.invalid/acme/operations/batch",
++    reportedUrl: "https://reference.invalid/acme/operations/batch",
++  },
++  {
++    action: "pk-b-create",
++    method: "POST",
++    url: "https://reference.invalid/acme/operations/batch",
++    credentialRef: "principal-b",
++    headerLines: [
++      {
++        name: "accept",
++        value: "application/json",
++      },
++      {
++        name: "content-type",
++        value: "application/json",
++      },
++      {
++        name: "idempotency-key",
++        value: "principal-shared",
++      },
++    ],
++    body: '{"operations":[{"operation":"createBead","id":"beads/b","type":"https://reference.invalid/acme/types/task","properties":{"title":"b"},"metadata":{}}]}',
++    bodyBytes: 150,
++    bodySha256: "b26bbe9a43f5cc9b54d7fe7778786b33e5e8d613bf30248de3af65f5eac0cdc8",
++    status: 200,
++    dispatchUrl: "https://reference.invalid/acme/operations/batch",
++    reportedUrl: "https://reference.invalid/acme/operations/batch",
++  },
++  {
++    action: "pk-a-rotated",
++    method: "POST",
++    url: "https://reference.invalid/acme/operations/batch",
++    credentialRef: "principal-a-rotated",
++    headerLines: [
++      {
++        name: "accept",
++        value: "application/json",
++      },
++      {
++        name: "content-type",
++        value: "application/json",
++      },
++      {
++        name: "idempotency-key",
++        value: "principal-shared",
++      },
++    ],
++    body: '{"operations":[{"operation":"createBead","id":"beads/a","type":"https://reference.invalid/acme/types/task","properties":{"title":"a"},"metadata":{}}]}',
++    bodyBytes: 150,
++    bodySha256: "54f0fefb0965a8210bb22cf09601c18296ef450489eff1aef5a8bea8b99d83b8",
++    status: 200,
++    dispatchUrl: "https://reference.invalid/acme/operations/batch",
++    reportedUrl: "https://reference.invalid/acme/operations/batch",
++  },
++  {
++    action: "pk-b-replay",
++    method: "POST",
++    url: "https://reference.invalid/acme/operations/batch",
++    credentialRef: "principal-b",
++    headerLines: [
++      {
++        name: "accept",
++        value: "application/json",
++      },
++      {
++        name: "content-type",
++        value: "application/json",
++      },
++      {
++        name: "idempotency-key",
++        value: "principal-shared",
++      },
++    ],
++    body: '{"operations":[{"operation":"createBead","id":"beads/b","type":"https://reference.invalid/acme/types/task","properties":{"title":"b"},"metadata":{}}]}',
++    bodyBytes: 150,
++    bodySha256: "b26bbe9a43f5cc9b54d7fe7778786b33e5e8d613bf30248de3af65f5eac0cdc8",
++    status: 200,
++    dispatchUrl: "https://reference.invalid/acme/operations/batch",
++    reportedUrl: "https://reference.invalid/acme/operations/batch",
++  },
++  {
++    action: "pk-a-conflict",
++    method: "POST",
++    url: "https://reference.invalid/acme/operations/batch",
++    credentialRef: "principal-a",
++    headerLines: [
++      {
++        name: "accept",
++        value: "application/json",
++      },
++      {
++        name: "content-type",
++        value: "application/json",
++      },
++      {
++        name: "idempotency-key",
++        value: "principal-shared",
++      },
++    ],
++    body: '{"operations":[{"operation":"createBead","id":"beads/c","type":"https://reference.invalid/acme/types/task","properties":{"title":"c"},"metadata":{}}]}',
++    bodyBytes: 150,
++    bodySha256: "3de2f9bb5fb4b4b0537d252ba722b05a3385414129cf35fc6ab0355720f9ff62",
++    status: 409,
++    dispatchUrl: "https://reference.invalid/acme/operations/batch",
++    reportedUrl: "https://reference.invalid/acme/operations/batch",
++  },
++  {
++    action: "pk-current",
++    method: "GET",
++    url: "https://reference.invalid/acme/beads/?limit=32",
++    credentialRef: "principal-a",
++    headerLines: [
++      {
++        name: "accept",
++        value: "application/json",
++      },
++    ],
++    body: null,
++    bodyBytes: 0,
++    bodySha256: null,
++    status: 200,
++    dispatchUrl: "https://reference.invalid/acme/beads/?limit=32",
++    reportedUrl: "https://reference.invalid/acme/beads/?<redacted>",
++  },
++  {
++    action: "pk-events",
++    method: "GET",
++    url: "https://reference.invalid/acme/events/",
++    credentialRef: "principal-a",
++    headerLines: [
++      {
++        name: "accept",
++        value: "application/json",
++      },
++    ],
++    body: null,
++    bodyBytes: 0,
++    bodySha256: null,
++    status: 200,
++    dispatchUrl: "https://reference.invalid/acme/events/",
++    reportedUrl: "https://reference.invalid/acme/events/",
++  },
++] as const;
++const principalFailureIds = [
++  "http-status",
++  "schema",
++  "media",
++  "serving-position",
++  "disposition",
++  "detail",
++  "key",
++  "receipt-id",
++  "transaction",
++  "required-position",
++  "effect-position",
++  "no-next",
++  "result-indices",
++  "resource-id",
++  "resource-type",
++  "resource-revision",
++  "resource-properties",
++  "resource-metadata",
++] as const;
++const principalPassingIds = [
++  "present-bdp-scope-epoch",
++  "present-bdp-authorization-view",
++  "present-bdp-scope-position",
++  "request-headers",
++  "request-body",
++  "no-owned-links",
++  "no-provenance",
++] as const;
++
++type PrincipalTokens = {
++  operator: string;
++  reader: string;
++  principalA: string;
++  principalARotated: string;
++  principalB: string;
++};
++type PrincipalDispatchInput = Readonly<{
++  method: string;
++  url: string;
++  credentialRef: string | undefined;
++}>;
++function principalCredentialRoles(tokens: PrincipalTokens, collapsePrincipalB = false) {
++  return [
++    { ref: "operator", token: tokens.operator, principal: "same", canMutate: true },
++    { ref: "reader", token: tokens.reader, principal: "same", canMutate: false },
++    { ref: "principal-a", token: tokens.principalA, principal: "principal-a", canMutate: true },
++    {
++      ref: "principal-a-rotated",
++      token: tokens.principalARotated,
++      principal: "principal-a",
++      canMutate: true,
++    },
++    {
++      ref: "principal-b",
++      token: tokens.principalB,
++      principal: collapsePrincipalB ? "principal-a" : "principal-b",
++      canMutate: true,
++    },
++  ];
++}
++function principalHeaders(
++  roles: ReturnType<typeof principalCredentialRoles>,
++  ref: string,
++  denyReceipt: boolean,
++): Record<string, string> {
++  if (ref === "anonymous") return {};
++  const role = roles.find((candidate) => candidate.ref === ref);
++  if (!role) throw new Error("unknown principal credential reference");
++  return { authorization: `Bearer ${denyReceipt ? "deliberately-unknown" : role.token}` };
++}
++const principalReplayLedger = [
++  ["pk-a-rotated", "pk-a-create", "whole-json"],
++  ["pk-b-replay", "pk-b-create", "whole-json"],
++] as const;
++function assertPrincipalReplayLedger(value: readonly (readonly string[])[]) {
++  if (
++    JSON.stringify(value) !==
++    JSON.stringify([
++      ["pk-a-rotated", "pk-a-create", "whole-json"],
++      ["pk-b-replay", "pk-b-create", "whole-json"],
++    ])
++  )
++    throw new Error("principal-replay-ledger");
++}
++function assertPrincipalStatic() {
++  const tokens = {
++    operator: "op",
++    reader: "read",
++    principalA: "a",
++    principalARotated: "rotated",
++    principalB: "b",
++  };
++  const expected = [
++    { ref: "operator", token: "op", principal: "same", canMutate: true },
++    { ref: "reader", token: "read", principal: "same", canMutate: false },
++    { ref: "principal-a", token: "a", principal: "principal-a", canMutate: true },
++    { ref: "principal-a-rotated", token: "rotated", principal: "principal-a", canMutate: true },
++    { ref: "principal-b", token: "b", principal: "principal-b", canMutate: true },
++  ];
++  const roles = principalCredentialRoles(tokens);
++  expect(roles).toEqual(expected);
++  expect(principalCredentialRoles(tokens, true)).toEqual([
++    ...expected.slice(0, 4),
++    { ref: "principal-b", token: "b", principal: "principal-a", canMutate: true },
++  ]);
++  for (const role of expected) {
++    expect(principalHeaders(roles, role.ref, false)).toEqual({
++      authorization: `Bearer ${role.token}`,
++    });
++    expect(principalHeaders(roles, role.ref, true)).toEqual({
++      authorization: "Bearer deliberately-unknown",
++    });
++  }
++  for (const denied of [false, true]) {
++    expect(principalHeaders(roles, "anonymous", denied)).toEqual({});
++    expect(() => principalHeaders(roles, "unknown", denied)).toThrow(
++      "unknown principal credential reference",
++    );
++  }
++  assertPrincipalReplayLedger(principalReplayLedger);
++  expect(() => assertPrincipalReplayLedger(principalReplayLedger.slice(1))).toThrow(
++    "principal-replay-ledger",
++  );
++  const redirected: string[][] = principalReplayLedger.map((pair) => [...pair]);
++  redirected[0]![1] = "pk-b-create";
++  expect(() => assertPrincipalReplayLedger(redirected)).toThrow("principal-replay-ledger");
++  const weakened: string[][] = principalReplayLedger.map((pair) => [...pair]);
++  weakened[0]![2] = "subset";
++  expect(() => assertPrincipalReplayLedger(weakened)).toThrow("principal-replay-ledger");
++  for (const literal of principalRequests) {
++    expect(literal.url).toBe(literal.dispatchUrl);
++    expect(literal.reportedUrl).toBe(
++      literal.action === "pk-current" ? `${scope}beads/?<redacted>` : literal.dispatchUrl,
++    );
++    const digest =
++      literal.body === null ? undefined : createHash("sha256").update(literal.body).digest("hex");
++    expect(digest).toBe(literal.bodySha256 ?? undefined);
++    expect(literal.body === null ? 0 : Buffer.byteLength(literal.body)).toBe(literal.bodyBytes);
++    for (const index of [0, 4])
++      expect(
++        memberHandoff(
++          index,
++          literal.dispatchUrl,
++          digest,
++          literal.method === "POST" ? "principal-shared" : undefined,
++          "complete",
++        ),
++      ).toBe(false);
++  }
++  expect(principalFailureIds).toHaveLength(18);
++  expect(principalPassingIds).toHaveLength(7);
++  const b = bundle.manifest.scenarios.find((r) => r.id === principalId)!.actions![1]!;
++  expect(
++    b.assertions.map((a) => a.id).filter((id) => !principalPassingIds.some((p) => p === id)),
++  ).toEqual(principalFailureIds);
++  expect(b.assertions.find((a) => a.id === "no-next")).toEqual({
++    id: "no-next",
++    kind: "json-pointer",
++    pointer: "/next",
++    exists: true,
++    equals: null,
++  });
++  for (const [id, field] of [
++    ["no-owned-links", "ownedLinks"],
++    ["no-provenance", "revisionProvenance"],
++  ])
++    expect(b.assertions.find((a) => a.id === id)).toEqual({
++      id,
++      kind: "json-pointer",
++      pointer: `/results/0/resource/${field}`,
++      exists: false,
++    });
++}
++/** Two safe boundaries: input carries the authored handle; response carries actual
++ * serialized wire/body. The report's action ID is joined only after the run. */
++function principalNamespaceWire(collapse = false) {
++  assertPrincipalReplayLedger(principalReplayLedger);
++  const maximum = collapse ? 2 : 7;
++  const dispatches: (PrincipalDispatchInput & { ordinal: number })[] = [];
++  const responses: {
++    ordinal: number;
++    url: string;
++    status: number;
++    bodyDigest: string;
++    writeState: "complete";
++    requestBodyBytes: number;
++    requestBodyDigest: string | undefined;
++    epoch: string;
++    view: string;
++    position: string;
++  }[] = [];
++  const performed: string[] = [];
++  const receipts = new Map<string, Record<string, unknown>>();
++  const resources: Record<string, unknown>[] = [];
++  const validator = createJsonSchemaValidator(schema);
++  function record(value: unknown): Record<string, unknown> {
++    expect(value).not.toBeNull();
++    expect(typeof value).toBe("object");
++    expect(Array.isArray(value)).toBe(false);
++    return value as Record<string, unknown>;
++  }
++  function nonempty(value: unknown): string {
++    expect(typeof value).toBe("string");
++    expect(value).not.toBe("");
++    return value as string;
++  }
++  const problem = {
++    type: "https://github.com/gastownhall/bdp/problems/conflict",
++    code: "idempotency-conflict",
++    status: 409,
++    retry: "never",
++  };
++  function joined(observed: InstalledObservation) {
++    return (observed.result.scenarios.find((r) => r.id === principalId)?.exchanges ?? []).map(
++      (exchange, i) => ({
++        id: exchange.request.id,
++        reportedUrl: exchange.request.url,
++        method: dispatches[i]?.method,
++        dispatchUrl: dispatches[i]?.url,
++        credentialRef: dispatches[i]?.credentialRef,
++        ordinal: dispatches[i]?.ordinal,
++      }),
++    );
++  }
++  return {
++    onDispatch(input: PrincipalDispatchInput) {
++      if (dispatches.length === maximum) {
++        expect(["principal-a", "principal-a-rotated", "principal-b"]).not.toContain(
++          input.credentialRef,
++        );
++        return;
++      }
++      expect(dispatches.length).toBe(responses.length);
++      const literal = principalRequests[dispatches.length]!;
++      expect(input).toEqual({
++        method: literal.method,
++        url: literal.dispatchUrl,
++        credentialRef: literal.credentialRef,
++      });
++      dispatches.push(
++        Object.freeze({
++          ordinal: dispatches.length,
++          method: input.method,
++          url: input.url,
++          credentialRef: input.credentialRef,
++        }),
++      );
++    },
++    async afterExchange(response: HttpExchangeResponse) {
++      const exact = response.exactRequest;
++      const key = exact?.headerLines.find((h) => h.name.toLowerCase() === "idempotency-key")?.value;
++      if (responses.length === maximum) {
++        expect(key).not.toBe("principal-shared");
++        return;
++      }
++      const index = responses.length,
++        literal = principalRequests[index]!;
++      expect(dispatches).toHaveLength(index + 1);
++      expect(response.url).toBe(literal.dispatchUrl);
++      expect(exact).toBeDefined();
++      expect(exact!.source).toBe("raw-http1-serializer");
++      expect(exact!.writeState).toBe("complete");
++      expect(exact!.headerLines.slice(0, literal.headerLines.length).map((h) => h.name)).toEqual(
++        literal.headerLines.map((h) => h.name),
++      );
++      expect(exact!.headerLines.slice(0, literal.headerLines.length)).toEqual(literal.headerLines);
++      expect(
++        exact!.headerLines
++          .slice(literal.headerLines.length)
++          .some((h) => h.name.toLowerCase().startsWith("bdp-")),
++      ).toBe(false);
++      expect(exact!.bodyPresent).toBe(literal.body !== null);
++      expect(exact!.bodyOctets).toBe(literal.bodyBytes);
++      expect(exact!.bodyDigest).toBe(literal.bodySha256 ?? undefined);
++      expect(exact!.bodyOctets).toBeLessThanOrEqual(2048);
++      expect(Buffer.byteLength(response.bodyText)).toBeLessThanOrEqual(8192);
++      const refused = index === 4 || (collapse && index === 1);
++      expect(response.status).toBe(refused ? 409 : 200);
++      expect(response.headers["content-type"]).toBe(
++        refused ? "application/problem+json" : "application/json",
++      );
++      const body = record(JSON.parse(response.bodyText));
++      expect(
++        validator.validate(
++          `#/$defs/${refused ? "transactionalProblem" : index < 4 ? "mutationReceipt" : index === 5 ? "currentBeadCollection" : "eventPage"}`,
++          body,
++        ),
++      ).toEqual([]);
++      const epoch = nonempty(response.headers["bdp-scope-epoch"]),
++        view = nonempty(response.headers["bdp-authorization-view"]);
++      const position = index === 0 || (collapse && index === 1) ? "pos-1" : "pos-2";
++      expect(response.headers["bdp-scope-position"]).toBe(position);
++      const a = receipts.get("pk-a-create");
++      if (a) expect(epoch).toBe(a.scopeEpoch);
++      if (refused) {
++        expect(body).toStrictEqual(problem);
++        expect(view).toBe(a!.authorizationView);
++        performed.push(collapse ? "validated-b-conflict" : "validated-a-conflict");
++      } else if (index < 2) {
++        const name = index === 0 ? "a" : "b";
++        expect(body.scopeEpoch).toBe(epoch);
++        expect(body.authorizationView).toBe(view);
++        expect(Array.isArray(body.results)).toBe(true);
++        const results = body.results as unknown[];
++        expect(results).toHaveLength(1);
++        const resource = record(record(results[0]).resource);
++        expect(validator.validate("#/$defs/beadRecord", resource)).toEqual([]);
++        nonempty(resource.revision);
++        expect(resource).toStrictEqual({
++          id: `${scope}beads/${name}`,
++          type: `${scope}types/task`,
++          revision: resource.revision,
++          properties: { title: name },
++          metadata: {},
++        });
++        expect(results).toStrictEqual([{ operationIndex: 0, outcome: "created", resource }]);
++        const id = nonempty(body.id),
++          parsed = new URL(id),
++          prefix = `${scope}receipts/`;
++        expect(id.length).toBeLessThanOrEqual(8192);
++        expect(Buffer.byteLength(id)).toBeLessThanOrEqual(8192);
++        expect(parsed.href).toBe(id);
++        expect([parsed.username, parsed.password, parsed.search, parsed.hash]).toEqual([
++          "",
++          "",
++          "",
++          "",
++        ]);
++        expect(id.startsWith(prefix)).toBe(true);
++        expect(/^[A-Za-z0-9_-]+$/.test(id.slice(prefix.length))).toBe(true);
++        nonempty(body.transaction);
++        expect(body).toStrictEqual({
++          id,
++          status: "completed",
++          detail: "available",
++          idempotencyKey: "principal-shared",
++          scopeEpoch: epoch,
++          authorizationView: view,
++          transaction: body.transaction,
++          requiredPosition: position,
++          effectPosition: position,
++          results,
++          next: null,
++          expiresAt: body.expiresAt,
++        });
++        receipts.set(literal.action, body);
++        resources.push(resource);
++        if (collapse) performed.push("validated-a-terminal");
++        else if (index === 1) {
++          expect(body.id).not.toBe(a!.id);
++          expect(body.transaction).not.toBe(a!.transaction);
++          performed.push("namespace-distinct");
++        }
++      } else if (index < 4) {
++        const pair = principalReplayLedger.find(([current]) => current === literal.action)!;
++        expect(pair).toBeDefined();
++        expect(pair[2]).toBe("whole-json");
++        const saved = receipts.get(pair[1])!;
++        expect(saved).toBeDefined();
++        expect(view).toBe(saved.authorizationView);
++        expect(body).toStrictEqual(saved);
++        performed.push(pair.join(":"));
++      } else if (index === 5) {
++        expect(body).toStrictEqual({ items: resources, next: null });
++        performed.push("complete-current");
++      } else {
++        expect(Array.isArray(body.events)).toBe(true);
++        const events = body.events as Record<string, unknown>[];
++        expect(events).toHaveLength(2);
++        const hash = (tag: string, value: string) =>
++          createHash("sha256")
++            .update(JSON.stringify([tag, value]))
++            .digest("base64url");
++        const source = `${scope}events/`;
++        const expected = resources.map((resource, i) => ({
++          id: `ev_${hash("epoch", epoch)}_${hash("view", view)}_${hash("source", source)}_pos-${i + 1}_0`,
++          ordinal: 0,
++          type: "created",
++          source,
++          subject: resource.id,
++          subjectType: `${scope}types/task`,
++          transaction: receipts.get(i === 0 ? "pk-a-create" : "pk-b-create")!.transaction,
++          time: events[i]!.time,
++          data: {
++            revision: resource.revision,
++            properties: resource.properties,
++            metadata: resource.metadata,
++          },
++        }));
++        expect(body).toStrictEqual({ source, events: expected, next: null });
++        performed.push("complete-events");
++      }
++      responses.push({
++        ordinal: index,
++        url: response.url,
++        status: response.status,
++        bodyDigest: createHash("sha256").update(response.bodyText).digest("hex"),
++        writeState: "complete",
++        requestBodyBytes: exact!.bodyOctets,
++        requestBodyDigest: exact!.bodyDigest,
++        epoch,
++        view,
++        position,
++      });
++    },
++    finish(observed: InstalledObservation) {
++      expect(dispatches).toHaveLength(maximum);
++      expect(responses).toHaveLength(maximum);
++      expect(performed).toEqual(
++        collapse
++          ? ["validated-a-terminal", "validated-b-conflict"]
++          : [
++              "namespace-distinct",
++              "pk-a-rotated:pk-a-create:whole-json",
++              "pk-b-replay:pk-b-create:whole-json",
++              "validated-a-conflict",
++              "complete-current",
++              "complete-events",
++            ],
++      );
++      const row = observed.result.scenarios.find((r) => r.id === principalId)!;
++      expect(row.exchanges).toHaveLength(maximum);
++      expect(joined(observed)).toEqual(
++        principalRequests.slice(0, maximum).map((literal, ordinal) => ({
++          id: literal.action,
++          method: literal.method,
++          dispatchUrl: literal.dispatchUrl,
++          reportedUrl: literal.reportedUrl,
++          credentialRef: literal.credentialRef,
++          ordinal,
++        })),
++      );
++      for (const [i, exchange] of row.exchanges.entries()) {
++        expect(exchange.request.method).toBe(principalRequests[i]!.method);
++        expect(exchange.transportError).toBeUndefined();
++        expect(exchange.harnessError).toBeUndefined();
++        expect(exchange.request.exact?.writeState).toBe("complete");
++        expect(exchange.response?.status).toBe(responses[i]!.status);
++      }
++    },
++    summary(observed: InstalledObservation) {
++      return {
++        mode: collapse ? "collapse-principal-b-to-a" : "positive",
++        dispatches,
++        responses,
++        performed,
++        joined: joined(observed),
++        provenance:
++          "input method/url/credentialRef; local zero-based ordinal; report id/reportedUrl; actual response metadata and completed request fingerprints; no wire credential attestation",
++      };
++    },
++  };
++}
++function withPrincipalWire(
++  principal: ReturnType<typeof principalNamespaceWire>,
++  old: (response: HttpExchangeResponse) => Promise<void>,
++) {
++  return async (response: HttpExchangeResponse) => {
++    await principal.afterExchange(response);
++    await old(response);
++  };
++}
++function assertPrincipalPositive(
++  observed: InstalledObservation,
++  wire: ReturnType<typeof principalNamespaceWire>,
++) {
++  const row = observed.result.scenarios.find((r) => r.id === principalId)!;
++  expect(row.state).toBe("pass");
++  expect(row.cleanupError).toBeUndefined();
++  expect(row.prerequisiteFailure).toBeUndefined();
++  expect(row.actions ?? []).toHaveLength(0);
++  expect(row.exchanges.map((e) => e.request.id)).toEqual(principalRequests.map((r) => r.action));
++  const declared = bundle.manifest.scenarios.find((r) => r.id === principalId)!;
++  for (const [i, exchange] of row.exchanges.entries()) {
++    expect(exchange.assertions.map((a) => a.id)).toEqual(
++      declared.actions![i]!.assertions.map((a) => a.id),
++    );
++    expect(exchange.assertions.every((a) => a.passed)).toBe(true);
++  }
++  wire.finish(observed);
++}
++function principalOutputPath() {
++  const output = process.env.BDP_TRANSACTIONAL_PRINCIPAL_CUMULATIVE_OUTPUT;
++  if (output !== undefined && (!path.isAbsolute(output) || output.length > 4096))
++    throw new Error("absolute principal observation output required");
++  return output;
++}
++it("observes authenticated principal isolation and rotation through selected cumulative HTTP", async () => {
++  const output = principalOutputPath(),
++    children: ChildProcess[] = [],
++    wire = principalNamespaceWire();
++  const observed = await observe({
++    children,
++    scenarioSelection: [principalId],
++    onDispatch: wire.onDispatch,
++    afterExchange: wire.afterExchange,
++    onObserved(observed) {
++      if (output)
++        writeFileSync(
++          output,
++          JSON.stringify(
++            { sourceCommit, entry, ...observed, principalSupplemental: wire.summary(observed) },
++            null,
++            2,
++          ) + "\n",
++        );
++    },
++  });
++  expect(observed.result.selectedScenarioIds).toEqual([principalId]);
++  expect(observed.result.scenarios).toHaveLength(1);
++  expect(observed.result.claimEligible).toBe(false);
++  assertPrincipalPositive(observed, wire);
++  expect(observed.sessions).toHaveLength(1);
++  expect(children).toHaveLength(2);
++  expect(children.every((c) => c.exitCode !== null || c.signalCode !== null)).toBe(true);
++  expect(observed.result.artifacts.manifestDigest).toBe(bundle.digests.manifestDigest);
++  console.log(
++    JSON.stringify({
++      kind: "installed-tx-principal-positive",
++      sourceCommit,
++      exchanges: 7,
++      childLaunches: children.length,
++      closedChildren: children.filter((c) => c.exitCode !== null || c.signalCode !== null).length,
++      principalSupplemental: wire.summary(observed),
++      claimEligible: false,
++    }),
++  );
++}, 120000);
++it("discriminates principal isolation against a separately bound collapsed namespace", async () => {
++  const output = principalOutputPath(),
++    children: ChildProcess[] = [],
++    wire = principalNamespaceWire(true);
++  const observed = await observe({
++    children,
++    scenarioSelection: [principalId],
++    collapsePrincipalB: true,
++    onDispatch: wire.onDispatch,
++    afterExchange: wire.afterExchange,
++    onObserved(observed) {
++      if (output)
++        writeFileSync(
++          output,
++          JSON.stringify(
++            { sourceCommit, entry, ...observed, principalSupplemental: wire.summary(observed) },
++            null,
++            2,
++          ) + "\n",
++        );
++    },
++  });
++  expect(observed.result.selectedScenarioIds).toEqual([principalId]);
++  expect(observed.result.scenarios).toHaveLength(1);
++  expect(observed.result.claimEligible).toBe(false);
++  const row = observed.result.scenarios[0]!;
++  expect(row.state).toBe("fail");
++  expect(row.cleanupError).toBeUndefined();
++  expect(row.prerequisiteFailure).toBeUndefined();
++  expect(row.actions ?? []).toHaveLength(0);
++  expect(row.exchanges.map((e) => e.request.id)).toEqual(["pk-a-create", "pk-b-create"]);
++  expect(row.exchanges[0]!.assertions.every((a) => a.passed)).toBe(true);
++  const last = row.exchanges[1]!;
++  expect(last.assertions.map((a) => a.id)).toEqual(
++    bundle.manifest.scenarios
++      .find((r) => r.id === principalId)!
++      .actions![1]!.assertions.map((a) => a.id),
++  );
++  expect(last.assertions.filter((a) => !a.passed).map((a) => a.id)).toEqual(principalFailureIds);
++  expect(last.assertions.filter((a) => a.passed).map((a) => a.id)).toEqual(principalPassingIds);
++  wire.finish(observed);
++  expect(observed.result.artifacts.manifestDigest).toBe(bundle.digests.manifestDigest);
++  expect(observed.sessions).toHaveLength(1);
++  expect(children).toHaveLength(2);
++  expect(children.every((c) => c.exitCode !== null || c.signalCode !== null)).toBe(true);
++  console.log(
++    JSON.stringify({
++      kind: "installed-tx-principal-collapse",
++      sourceCommit,
++      exchanges: 2,
++      childLaunches: children.length,
++      closedChildren: children.filter((c) => c.exitCode !== null || c.signalCode !== null).length,
++      failures: last.assertions.filter((a) => !a.passed).map((a) => a.id),
++      principalSupplemental: wire.summary(observed),
++      claimEligible: false,
++    }),
++  );
++}, 120000);
+diff --git a/packages/conformance/src/transactional-cumulative.test.ts b/packages/conformance/src/transactional-cumulative.test.ts
+index 4b6d35e..cb6231f 100644
+--- a/packages/conformance/src/transactional-cumulative.test.ts
++++ b/packages/conformance/src/transactional-cumulative.test.ts
+@@ -196,7 +196,7 @@ it("copies source bytes before binding and exposes all missing obligations witho
+   expect(
+     plan.requirements.filter((r) => r.readiness === "ready-unexecuted").map((r) => r.id),
+   ).toEqual(actual.manifest.scenarios.map((r) => r.id));
+-  expect(plan.requirements.filter((r) => r.readiness === "unplanned")).toHaveLength(236);
++  expect(plan.requirements.filter((r) => r.readiness === "unplanned")).toHaveLength(235);
+   expect(plan.unobservedIds).toEqual(selected.required.map((r) => r.id));
+   expect(plan.unobservedIds).toContain("read-update.http.command-minimum-fields");
+   expect(plan.manifestDigest).toBe(actual.digests.manifestDigest);
+@@ -1095,7 +1095,10 @@ it("preserves every original TX scenario and coverage object while adding one bo
+     expect(() => assertCrossCarrierObservation(weak)).toThrow(kind);
+   }
+   for (const name of ["manifest", "coverage"] as const) {
+-    const text = withoutMinimumRow(withoutSequenceMemberRow(read(name).toString(), name), name);
++    const text = withoutMinimumRow(
++      withoutSequenceMemberRow(withoutPrincipalRow(read(name).toString(), name), name),
++      name,
++    );
+     const raw = objectSlices(text, name === "manifest" ? "scenarios" : "rows").get(
+       "transactional.idempotency.cross-carrier",
+     )!;
+@@ -1114,6 +1117,7 @@ it("preserves every original TX scenario and coverage object while adding one bo
+     "transactional.batch.atomic-commit",
+   );
+   expect(manifest.scenarios.map((r: { id: string }) => r.id)).toEqual([
++    "read-update.idempotency.principal-isolation",
+     "read-update.http.command-minimum-fields",
+     "transactional.batch.atomic-commit",
+     "transactional.batch.rollback",
+@@ -1155,7 +1159,7 @@ it("preserves every original TX scenario and coverage object while adding one bo
+   expect(
+     counts.get("transactional.set.mutation")! + counts.get("transactional.set.zero-match")!,
+   ).toBe(47);
+-  expect(manifest.scenarios.flatMap((r: { actions: unknown[] }) => r.actions)).toHaveLength(220);
++  expect(manifest.scenarios.flatMap((r: { actions: unknown[] }) => r.actions)).toHaveLength(227);
+   // Historical root-accepted deletion-safety measurement: M620094/N16373/C88043/A333.
+   // Schema-name repair uses4B of the accepted margin:4092B/64nodes/1024B.
+   // Historical measurement-only draft retained the smaller guards pending root acceptance.
+@@ -1166,20 +1170,21 @@ it("preserves every original TX scenario and coverage object while adding one bo
+   // Root-accepted command-minimum: disk738783/normal750589/nodes19575/coverage108091.
+   // Preserve bases488280/13019/70662 and margins4096B/64nodes/1024B.
+   // Root-accepted sequence-member: disk790009/normal802361/nodes20956/coverage117702.
++  // Root-accepted principal: disk825049/normal837765/nodes21908/coverage124537.
+   // These measured source authoring fences do not change runtime/parser limits.
+-  expect(read("manifest").byteLength - 488280).toBeLessThanOrEqual(305825);
+-  expect(read("manifest").byteLength).toBeLessThanOrEqual(794105);
+-  expect(Buffer.byteLength(JSON.stringify(manifest, null, 2) + "\n")).toBeLessThanOrEqual(806457);
+-  expect(read("coverage").byteLength - 70662).toBeLessThanOrEqual(48064);
+-  expect(read("coverage").byteLength).toBeLessThanOrEqual(118726);
++  expect(read("manifest").byteLength - 488280).toBeLessThanOrEqual(340865);
++  expect(read("manifest").byteLength).toBeLessThanOrEqual(829145);
++  expect(Buffer.byteLength(JSON.stringify(manifest, null, 2) + "\n")).toBeLessThanOrEqual(841861);
++  expect(read("coverage").byteLength - 70662).toBeLessThanOrEqual(54899);
++  expect(read("coverage").byteLength).toBeLessThanOrEqual(125561);
+   expect(
+     Buffer.byteLength(JSON.stringify(JSON.parse(read("coverage").toString()), null, 2) + "\n"),
+-  ).toBeLessThanOrEqual(118726);
++  ).toBeLessThanOrEqual(125561);
+   expect(
+     manifest.scenarios.flatMap((r: { actions: { assertions: unknown[] }[] }) =>
+       r.actions.flatMap((a) => a.assertions),
+     ),
+-  ).toHaveLength(2503);
++  ).toHaveLength(2642);
+   expect(read("fixture").byteLength).toBe(716);
+   expect(createHash("sha256").update(read("fixture")).digest("hex")).toBe(
+     "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+@@ -1191,8 +1196,8 @@ it("preserves every original TX scenario and coverage object while adding one bo
+     nodes++;
+     if (value && typeof value === "object") pending.push(...Object.values(value));
+   }
+-  expect(nodes - 13019).toBeLessThanOrEqual(8001);
+-  expect(nodes).toBeLessThanOrEqual(21020);
++  expect(nodes - 13019).toBeLessThanOrEqual(8953);
++  expect(nodes).toBeLessThanOrEqual(21972);
+   // Clause ownership is independent from the exhaustive mechanical assertion mirror.
+   const clauseMap = {
+     "transactional.receipt.pagination": [
+@@ -1214,6 +1219,7 @@ it("pins required context presence before equality in set and cross-carrier rows
+   const headers = ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"];
+   for (const row of manifest.scenarios.filter((r: { id: string }) =>
+     [
++      "read-update.idempotency.principal-isolation",
+       "transactional.set.mutation",
+       "transactional.set.zero-match",
+       "transactional.idempotency.cross-carrier",
+@@ -1252,7 +1258,7 @@ it("pins the one-page matched-plus-updated witness without advertised-limit or o
+   const row = manifest.scenarios.find(
+     (r: { id: string }) => r.id === "transactional.receipt.pagination",
+   );
+-  expect(manifest.scenarios.indexOf(row)).toBe(10);
++  expect(manifest.scenarios.indexOf(row)).toBe(11);
+   expect(row.actions).toHaveLength(18);
+   const later = row.actions.find((a: { id: string }) => a.id === "p-later-state");
+   expect(later.captures).toEqual([]); // HTTP capture is URL-only; no unimplemented array capture.
+@@ -2970,9 +2976,12 @@ it("pins the inherited command-minimum manifest facts, read-header absence and a
+   expect(
+     selectApplicableScenariosForProfile(selected.catalog, "transactional").map((r) => r.id),
+   ).toContain(minimumId);
+-  expect(bundle().manifest.scenarios[0]?.id).toBe(minimumId);
++  expect(bundle().manifest.scenarios.find((row) => row.id === minimumId)?.id).toBe(minimumId);
+   for (const name of ["manifest", "coverage"] as const) {
+-    const original = withoutMinimumRow(withoutSequenceMemberRow(read(name).toString(), name), name);
++    const original = withoutMinimumRow(
++      withoutSequenceMemberRow(withoutPrincipalRow(read(name).toString(), name), name),
++      name,
++    );
+     expect(createHash("sha256").update(original).digest("hex")).toBe(
+       name === "manifest"
+         ? "726fc623bbb115a0f39e0bb3aaa586ea37254522b254e55e555ea95587f14cb9"
+@@ -2984,19 +2993,549 @@ it("pins the inherited command-minimum manifest facts, read-header absence and a
+     for (const [id, raw] of before) expect(after.get(id), id).toBe(raw);
+   }
+   const empty = structuredClone(manifest);
+-  empty.scenarios[0].actions[0].raw.headerLines =
+-    empty.scenarios[0].actions[0].raw.headerLines.filter(
+-      (h: { name: string }) => h.name !== "bdp-scope-epoch",
+-    );
++  empty.scenarios.find((r: { id: string }) => r.id === minimumId)!.actions[0].raw.headerLines =
++    empty.scenarios
++      .find((r: { id: string }) => r.id === minimumId)!
++      .actions[0].raw.headerLines.filter((h: { name: string }) => h.name !== "bdp-scope-epoch");
+   expect(() => assertMinimumObservation(empty)).toThrow("minimum-empty-header-ledger");
+   for (const index of [9, 10]) {
+     const changed = structuredClone(manifest);
+-    changed.scenarios[0].actions[index].raw.headerLines.push({
+-      name: "bdp-minimum-scope-position",
+-      value: "pos-99",
+-    });
++    changed.scenarios
++      .find((r: { id: string }) => r.id === minimumId)!
++      .actions[index].raw.headerLines.push({
++        name: "bdp-minimum-scope-position",
++        value: "pos-99",
++      });
+     expect(() => assertMinimumObservation(changed)).toThrow("minimum-read-header-absence");
+   }
+   // Full replay-pair ledger weakening is checked in an existing app static
+   // callback; arbitrary JSON raw captures are intentionally not manufactured.
+ });
++
++const principalId = "read-update.idempotency.principal-isolation";
++const principalParentPins = {
++  manifest: [
++    [
++      "read-update.http.command-minimum-fields",
++      "f04c001617ccad14ef67a82586ea5f61ec918bc2545bb041fafc21dee07b5d7e",
++      54412,
++    ],
++    [
++      "transactional.batch.atomic-commit",
++      "0dfd3b9ed02d01f76ecac08c00b009b4bb9f03e57f7e15a2266eed82fc144747",
++      14936,
++    ],
++    [
++      "transactional.batch.rollback",
++      "be24067358af7b5acf7bc1beae2eb6534cbc0effa6f65406ab61b139310bfc37",
++      16319,
++    ],
++    [
++      "transactional.batch.deletion-safety",
++      "3e66e7c95aec963cc80e076249a5870b952765b2e98c1023ea148f8f628e6aeb",
++      131808,
++    ],
++    [
++      "transactional.batch.no-op-entries",
++      "9307b230eb053131e9127cbbb5e6285305b79d6794edd22f5432a07fc74d9faa",
++      81047,
++    ],
++    [
++      "transactional.set.mutation",
++      "6e7280a9ebbbc3faa1da989015cc802f82cd51b17a9cea11e7cc91392bef49d6",
++      71739,
++    ],
++    [
++      "transactional.set.zero-match",
++      "35aa23bd32539869ea3db41e1c9f3e81a3217e2eb983e764e860a6e00c9eb2c9",
++      36055,
++    ],
++    [
++      "transactional.set.cardinality",
++      "205af1c54d62efb09c9eadf20147a1730909e788c0d4763ce9718b8648f24ede",
++      28546,
++    ],
++    [
++      "transactional.set.singleton-targets",
++      "561b8ebc21106628918111332a9ab7b47be7350935925ed1e76a6cb5bed576b9",
++      40018,
++    ],
++    [
++      "transactional.receipt.readable",
++      "ddb97e450e233b941f7d905d49f48648d9965ed1b361dcdc5dee6f810038a1e0",
++      12545,
++    ],
++    [
++      "transactional.receipt.pagination",
++      "c531c260349347cdc3e54ba68282f1a266a5fa207d3775660615f836a4768782",
++      138750,
++    ],
++    [
++      "transactional.idempotency.conflict",
++      "ba93aea884ae462533d02695642f03a2ca854f5adabeb41867254216dabb2106",
++      29772,
++    ],
++    [
++      "transactional.idempotency.cross-carrier",
++      "4ad8c05fe5fbb4682809d4481c93e2684fe30fbbb8962b4da498590637f8f35b",
++      64106,
++    ],
++    [
++      "transactional.idempotency.failed-retained",
++      "a867694406dde07da71ac70197c60c478dd0fb3344cf2c8160795d1aa62d3378",
++      18404,
++    ],
++    [
++      "transactional.sequence.member-transactions",
++      "c46b34914118dd34ea1e5f12304124550b9d3c4bfcd9671b99995d6af44a2e1b",
++      51379,
++    ],
++  ],
++  coverage: [
++    [
++      "read-update.http.command-minimum-fields",
++      "47914ed67c7b06e721e74134e0c633f3e1a7d461cb50ea200ff1874686885c2a",
++      8888,
++    ],
++    [
++      "transactional.batch.atomic-commit",
++      "ffd77a9d34ac41a6e1f960671bea6880eb5b2ab7b11b3af4ccf0177363d7f4d7",
++      2383,
++    ],
++    [
++      "transactional.batch.rollback",
++      "9e4f5cdb45f0133f1c6d23caa402701981db2e6f4198e23c667579622ace6769",
++      2857,
++    ],
++    [
++      "transactional.batch.deletion-safety",
++      "ac27a329a1cc013e6a0e24e0f5cad6b5b4af6c128ad65302d030422a3c7e3c0a",
++      17375,
++    ],
++    [
++      "transactional.batch.no-op-entries",
++      "383de4e0cb9b3bad310b9db7ff9009cb59fac55966f0309bc71c5d007bea6c1c",
++      10587,
++    ],
++    [
++      "transactional.set.mutation",
++      "058147f8194f091ee5a7ef3d4fd378f0324f6570049df777f993acb5f967d540",
++      11676,
++    ],
++    [
++      "transactional.set.zero-match",
++      "4e79e18a5e4c2735b5c686b9ad610dedc890386bfb06584f98268a421bbb832b",
++      6520,
++    ],
++    [
++      "transactional.set.cardinality",
++      "2a255ed4d364c435c9f985d7a770386bc7b20b2865887b9c8cc2d6cc5f0dd116",
++      5800,
++    ],
++    [
++      "transactional.set.singleton-targets",
++      "0c9008bac3e2c047d9aa8d47d343b7ed936c9c9352bb140c6422127c71b156b1",
++      7314,
++    ],
++    [
++      "transactional.receipt.readable",
++      "684eba200912ccb0932c0a8286e350a6e545262a205b3ea3df47a12fc6dd18ec",
++      2142,
++    ],
++    [
++      "transactional.receipt.pagination",
++      "0735edbca2fbf384f9f8147140a353dc084d9ad85facaddf2f5073f56a7256ee",
++      13057,
++    ],
++    [
++      "transactional.idempotency.conflict",
++      "de9b758f8ac4df7db5597b1eb2b402a116720becc30a41e7198f78f244358ec0",
++      5188,
++    ],
++    [
++      "transactional.idempotency.cross-carrier",
++      "c5e6076a2104c06f88fac88c77214522cab457faf925fe03881dff9778c35245",
++      11196,
++    ],
++    [
++      "transactional.idempotency.failed-retained",
++      "63918cbb495a504fd2043f52b60e7cd8ef1518b8022a96edb0d02660c7df1a8e",
++      2917,
++    ],
++    [
++      "transactional.sequence.member-transactions",
++      "aea606d1456549f6dd9dc1903e42568282154a61a9fbef50dab3526202eb4045",
++      9557,
++    ],
++  ],
++} as const;
++function withoutPrincipalRow(text: string, name: "manifest" | "coverage") {
++  const objects = objectSlices(text, name === "manifest" ? "scenarios" : "rows");
++  for (const [id, hash, bytes] of principalParentPins[name]) {
++    const raw = objects.get(id)!;
++    expect(Buffer.byteLength(raw), id).toBe(bytes);
++    expect(createHash("sha256").update(raw).digest("hex"), id).toBe(hash);
++  }
++  const raw = objects.get(principalId)!;
++  expect(typeof raw).toBe("string");
++  const key = name === "manifest" ? "scenarios" : "rows";
++  const prefix = `"${key}": [\n    ${raw},\n`;
++  expect(text.includes(prefix), "principal-first-object").toBe(true);
++  const parent = text.replace(prefix, `"${key}": [\n`);
++  expect(createHash("sha256").update(parent).digest("hex"), "principal-full-parent").toBe(
++    name === "manifest"
++      ? "a11a79f6d0f9ffa5933a680a3e4fed87987789c3deca50a38cda8563132d242e"
++      : "346e1edaa22af789f89017fdc2fef6bb01b7564ed72a65344e9fe5635887c74f",
++  );
++  return parent;
++}
++it("pins the partial principal namespace row, full parent and exact credential roles", () => {
++  const row = manifest.scenarios.find((r: { id: string }) => r.id === principalId)!;
++  expect(manifest.scenarios[0]).toBe(row);
++  expect(row.requiredProfile).toBe("read-update");
++  expect(row.actions.flatMap((a: { captures: unknown[] }) => a.captures)).toEqual([]);
++  expect(row.actions.map((a: { id: string }) => a.id)).toEqual([
++    "pk-a-create",
++    "pk-b-create",
++    "pk-a-rotated",
++    "pk-b-replay",
++    "pk-a-conflict",
++    "pk-current",
++    "pk-events",
++  ]);
++  const expected = [
++    {
++      action: "pk-a-create",
++      method: "POST",
++      credentialRef: "principal-a",
++      headerLines: [
++        {
++          name: "accept",
++          value: "application/json",
++        },
++        {
++          name: "content-type",
++          value: "application/json",
++        },
++        {
++          name: "idempotency-key",
++          value: "principal-shared",
++        },
++      ],
++      body: '{"operations":[{"operation":"createBead","id":"beads/a","type":"https://reference.invalid/acme/types/task","properties":{"title":"a"},"metadata":{}}]}',
++      bodyBytes: 150,
++      bodySha256: "54f0fefb0965a8210bb22cf09601c18296ef450489eff1aef5a8bea8b99d83b8",
++    },
++    {
++      action: "pk-b-create",
++      method: "POST",
++      credentialRef: "principal-b",
++      headerLines: [
++        {
++          name: "accept",
++          value: "application/json",
++        },
++        {
++          name: "content-type",
++          value: "application/json",
++        },
++        {
++          name: "idempotency-key",
++          value: "principal-shared",
++        },
++      ],
++      body: '{"operations":[{"operation":"createBead","id":"beads/b","type":"https://reference.invalid/acme/types/task","properties":{"title":"b"},"metadata":{}}]}',
++      bodyBytes: 150,
++      bodySha256: "b26bbe9a43f5cc9b54d7fe7778786b33e5e8d613bf30248de3af65f5eac0cdc8",
++    },
++    {
++      action: "pk-a-rotated",
++      method: "POST",
++      credentialRef: "principal-a-rotated",
++      headerLines: [
++        {
++          name: "accept",
++          value: "application/json",
++        },
++        {
++          name: "content-type",
++          value: "application/json",
++        },
++        {
++          name: "idempotency-key",
++          value: "principal-shared",
++        },
++      ],
++      body: '{"operations":[{"operation":"createBead","id":"beads/a","type":"https://reference.invalid/acme/types/task","properties":{"title":"a"},"metadata":{}}]}',
++      bodyBytes: 150,
++      bodySha256: "54f0fefb0965a8210bb22cf09601c18296ef450489eff1aef5a8bea8b99d83b8",
++    },
++    {
++      action: "pk-b-replay",
++      method: "POST",
++      credentialRef: "principal-b",
++      headerLines: [
++        {
++          name: "accept",
++          value: "application/json",
++        },
++        {
++          name: "content-type",
++          value: "application/json",
++        },
++        {
++          name: "idempotency-key",
++          value: "principal-shared",
++        },
++      ],
++      body: '{"operations":[{"operation":"createBead","id":"beads/b","type":"https://reference.invalid/acme/types/task","properties":{"title":"b"},"metadata":{}}]}',
++      bodyBytes: 150,
++      bodySha256: "b26bbe9a43f5cc9b54d7fe7778786b33e5e8d613bf30248de3af65f5eac0cdc8",
++    },
++    {
++      action: "pk-a-conflict",
++      method: "POST",
++      credentialRef: "principal-a",
++      headerLines: [
++        {
++          name: "accept",
++          value: "application/json",
++        },
++        {
++          name: "content-type",
++          value: "application/json",
++        },
++        {
++          name: "idempotency-key",
++          value: "principal-shared",
++        },
++      ],
++      body: '{"operations":[{"operation":"createBead","id":"beads/c","type":"https://reference.invalid/acme/types/task","properties":{"title":"c"},"metadata":{}}]}',
++      bodyBytes: 150,
++      bodySha256: "3de2f9bb5fb4b4b0537d252ba722b05a3385414129cf35fc6ab0355720f9ff62",
++    },
++    {
++      action: "pk-current",
++      method: "GET",
++      credentialRef: "principal-a",
++      headerLines: [
++        {
++          name: "accept",
++          value: "application/json",
++        },
++      ],
++      body: null,
++      bodyBytes: 0,
++      bodySha256: null,
++    },
++    {
++      action: "pk-events",
++      method: "GET",
++      credentialRef: "principal-a",
++      headerLines: [
++        {
++          name: "accept",
++          value: "application/json",
++        },
++      ],
++      body: null,
++      bodyBytes: 0,
++      bodySha256: null,
++    },
++  ];
++  for (const [i, action] of row.actions.entries()) {
++    const literal = expected[i]!;
++    expect(action.family).toBe("http");
++    expect(action.method).toBe(literal.method);
++    expect(action.credentialRef).toBe(literal.credentialRef);
++    expect(action.raw.headerLines).toEqual(literal.headerLines);
++    expect(action.raw.body?.value).toBe(literal.body ?? undefined);
++    expect(action.assertions).toContainEqual({
++      id: "request-headers",
++      kind: "request-authored-headers",
++    });
++    expect(action.assertions).toContainEqual({ id: "request-body", kind: "request-authored-body" });
++    for (const name of ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"])
++      expect(action.assertions).toContainEqual({
++        id: `present-${name}`,
++        kind: "header",
++        name,
++        absent: false,
++      });
++  }
++  expect(
++    row.actions.map((a: { assertions: { id: string }[] }) => a.assertions.map((x) => x.id)),
++  ).toEqual([
++    [
++      "http-status",
++      "schema",
++      "media",
++      "present-bdp-scope-epoch",
++      "present-bdp-authorization-view",
++      "present-bdp-scope-position",
++      "serving-position",
++      "request-headers",
++      "request-body",
++      "disposition",
++      "detail",
++      "key",
++      "receipt-id",
++      "transaction",
++      "required-position",
++      "effect-position",
++      "no-next",
++      "result-indices",
++      "resource-id",
++      "resource-type",
++      "resource-revision",
++      "resource-properties",
++      "resource-metadata",
++      "no-owned-links",
++      "no-provenance",
++    ],
++    [
++      "http-status",
++      "schema",
++      "media",
++      "present-bdp-scope-epoch",
++      "present-bdp-authorization-view",
++      "present-bdp-scope-position",
++      "serving-position",
++      "request-headers",
++      "request-body",
++      "disposition",
++      "detail",
++      "key",
++      "receipt-id",
++      "transaction",
++      "required-position",
++      "effect-position",
++      "no-next",
++      "result-indices",
++      "resource-id",
++      "resource-type",
++      "resource-revision",
++      "resource-properties",
++      "resource-metadata",
++      "no-owned-links",
++      "no-provenance",
++    ],
++    [
++      "http-status",
++      "schema",
++      "media",
++      "present-bdp-scope-epoch",
++      "present-bdp-authorization-view",
++      "present-bdp-scope-position",
++      "serving-position",
++      "request-headers",
++      "request-body",
++      "disposition",
++      "detail",
++      "key",
++      "receipt-id",
++      "transaction",
++      "required-position",
++      "effect-position",
++      "no-next",
++      "result-indices",
++      "resource-id",
++      "resource-type",
++      "resource-revision",
++      "resource-properties",
++      "resource-metadata",
++      "no-owned-links",
++      "no-provenance",
++    ],
++    [
++      "http-status",
++      "schema",
++      "media",
++      "present-bdp-scope-epoch",
++      "present-bdp-authorization-view",
++      "present-bdp-scope-position",
++      "serving-position",
++      "request-headers",
++      "request-body",
++      "disposition",
++      "detail",
++      "key",
++      "receipt-id",
++      "transaction",
++      "required-position",
++      "effect-position",
++      "no-next",
++      "result-indices",
++      "resource-id",
++      "resource-type",
++      "resource-revision",
++      "resource-properties",
++      "resource-metadata",
++      "no-owned-links",
++      "no-provenance",
++    ],
++    [
++      "http-status",
++      "schema",
++      "media",
++      "present-bdp-scope-epoch",
++      "present-bdp-authorization-view",
++      "present-bdp-scope-position",
++      "serving-position",
++      "request-headers",
++      "request-body",
++      "exact-problem",
++    ],
++    [
++      "http-status",
++      "schema",
++      "media",
++      "present-bdp-scope-epoch",
++      "present-bdp-authorization-view",
++      "present-bdp-scope-position",
++      "serving-position",
++      "request-headers",
++      "request-body",
++      "no-next",
++      "ordered-state",
++    ],
++    [
++      "http-status",
++      "schema",
++      "media",
++      "present-bdp-scope-epoch",
++      "present-bdp-authorization-view",
++      "present-bdp-scope-position",
++      "serving-position",
++      "request-headers",
++      "request-body",
++      "no-next",
++      "ordered-facts",
++      "source",
++      "a-properties",
++      "a-metadata",
++      "a-no-provenance",
++      "b-properties",
++      "b-metadata",
++      "b-no-provenance",
++    ],
++  ]);
++  expect(
++    createHash("sha256").update(JSON.stringify(row)).digest("hex"),
++    "principal-independent-complete-facts",
++  ).toBe("097a27abcff4db5d788f3c9a37889f1590cbcbc011a77e2b8a97d17a260973ff");
++  const coverage = JSON.parse(read("coverage").toString()).rows.find(
++    (r: { id: string }) => r.id === principalId,
++  )!;
++  expect(coverage.wholeContract).toBe(false);
++  expect(coverage.bindings).toEqual([
++    {
++      scenario: principalId,
++      assertions: row.actions.flatMap((a: { id: string; assertions: { id: string }[] }) =>
++        a.assertions.map((x) => `${a.id}:${x.id}`),
++      ),
++    },
++  ]);
++  for (const name of ["manifest", "coverage"] as const)
++    withoutPrincipalRow(read(name).toString(), name);
++});
+diff --git a/packages/conformance/test-support/transactional/coverage-v1.json b/packages/conformance/test-support/transactional/coverage-v1.json
+index ad80f6a..d48fdbf 100644
+--- a/packages/conformance/test-support/transactional/coverage-v1.json
++++ b/packages/conformance/test-support/transactional/coverage-v1.json
+@@ -4,6 +4,157 @@
+   "status": "bounded-observation",
+   "transportAdmission": "private-exact-available",
+   "rows": [
++    {
++      "id": "read-update.idempotency.principal-isolation",
++      "wholeContract": false,
++      "reason": "Bounded authenticated A/B key namespaces, same-principal credential rotation, terminal retained batch retries, conflict and complete two-Bead/Scope Event state under the actual bound Transactional configuration. Manifest literals/schema/context and app actual-wire supplements jointly validate independent initial receipts, full replay equality, Resources/revisions and exact private projected Event IDs. App comparisons are not manifest assertion bindings. Whole contract remains unqualified: anonymous namespace, carried attribution independence, changed views, foreign receipt access, other mutation families, pending/crash/expiry/restart and actual Read+Update execution are omitted; historical standalone evidence is not relabeled.",
++      "bindings": [
++        {
++          "scenario": "read-update.idempotency.principal-isolation",
++          "assertions": [
++            "pk-a-create:http-status",
++            "pk-a-create:schema",
++            "pk-a-create:media",
++            "pk-a-create:present-bdp-scope-epoch",
++            "pk-a-create:present-bdp-authorization-view",
++            "pk-a-create:present-bdp-scope-position",
++            "pk-a-create:serving-position",
++            "pk-a-create:request-headers",
++            "pk-a-create:request-body",
++            "pk-a-create:disposition",
++            "pk-a-create:detail",
++            "pk-a-create:key",
++            "pk-a-create:receipt-id",
++            "pk-a-create:transaction",
++            "pk-a-create:required-position",
++            "pk-a-create:effect-position",
++            "pk-a-create:no-next",
++            "pk-a-create:result-indices",
++            "pk-a-create:resource-id",
++            "pk-a-create:resource-type",
++            "pk-a-create:resource-revision",
++            "pk-a-create:resource-properties",
++            "pk-a-create:resource-metadata",
++            "pk-a-create:no-owned-links",
++            "pk-a-create:no-provenance",
++            "pk-b-create:http-status",
++            "pk-b-create:schema",
++            "pk-b-create:media",
++            "pk-b-create:present-bdp-scope-epoch",
++            "pk-b-create:present-bdp-authorization-view",
++            "pk-b-create:present-bdp-scope-position",
++            "pk-b-create:serving-position",
++            "pk-b-create:request-headers",
++            "pk-b-create:request-body",
++            "pk-b-create:disposition",
++            "pk-b-create:detail",
++            "pk-b-create:key",
++            "pk-b-create:receipt-id",
++            "pk-b-create:transaction",
++            "pk-b-create:required-position",
++            "pk-b-create:effect-position",
++            "pk-b-create:no-next",
++            "pk-b-create:result-indices",
++            "pk-b-create:resource-id",
++            "pk-b-create:resource-type",
++            "pk-b-create:resource-revision",
++            "pk-b-create:resource-properties",
++            "pk-b-create:resource-metadata",
++            "pk-b-create:no-owned-links",
++            "pk-b-create:no-provenance",
++            "pk-a-rotated:http-status",
++            "pk-a-rotated:schema",
++            "pk-a-rotated:media",
++            "pk-a-rotated:present-bdp-scope-epoch",
++            "pk-a-rotated:present-bdp-authorization-view",
++            "pk-a-rotated:present-bdp-scope-position",
++            "pk-a-rotated:serving-position",
++            "pk-a-rotated:request-headers",
++            "pk-a-rotated:request-body",
++            "pk-a-rotated:disposition",
++            "pk-a-rotated:detail",
++            "pk-a-rotated:key",
++            "pk-a-rotated:receipt-id",
++            "pk-a-rotated:transaction",
++            "pk-a-rotated:required-position",
++            "pk-a-rotated:effect-position",
++            "pk-a-rotated:no-next",
++            "pk-a-rotated:result-indices",
++            "pk-a-rotated:resource-id",
++            "pk-a-rotated:resource-type",
++            "pk-a-rotated:resource-revision",
++            "pk-a-rotated:resource-properties",
++            "pk-a-rotated:resource-metadata",
++            "pk-a-rotated:no-owned-links",
++            "pk-a-rotated:no-provenance",
++            "pk-b-replay:http-status",
++            "pk-b-replay:schema",
++            "pk-b-replay:media",
++            "pk-b-replay:present-bdp-scope-epoch",
++            "pk-b-replay:present-bdp-authorization-view",
++            "pk-b-replay:present-bdp-scope-position",
++            "pk-b-replay:serving-position",
++            "pk-b-replay:request-headers",
++            "pk-b-replay:request-body",
++            "pk-b-replay:disposition",
++            "pk-b-replay:detail",
++            "pk-b-replay:key",
++            "pk-b-replay:receipt-id",
++            "pk-b-replay:transaction",
++            "pk-b-replay:required-position",
++            "pk-b-replay:effect-position",
++            "pk-b-replay:no-next",
++            "pk-b-replay:result-indices",
++            "pk-b-replay:resource-id",
++            "pk-b-replay:resource-type",
++            "pk-b-replay:resource-revision",
++            "pk-b-replay:resource-properties",
++            "pk-b-replay:resource-metadata",
++            "pk-b-replay:no-owned-links",
++            "pk-b-replay:no-provenance",
++            "pk-a-conflict:http-status",
++            "pk-a-conflict:schema",
++            "pk-a-conflict:media",
++            "pk-a-conflict:present-bdp-scope-epoch",
++            "pk-a-conflict:present-bdp-authorization-view",
++            "pk-a-conflict:present-bdp-scope-position",
++            "pk-a-conflict:serving-position",
++            "pk-a-conflict:request-headers",
++            "pk-a-conflict:request-body",
++            "pk-a-conflict:exact-problem",
++            "pk-current:http-status",
++            "pk-current:schema",
++            "pk-current:media",
++            "pk-current:present-bdp-scope-epoch",
++            "pk-current:present-bdp-authorization-view",
++            "pk-current:present-bdp-scope-position",
++            "pk-current:serving-position",
++            "pk-current:request-headers",
++            "pk-current:request-body",
++            "pk-current:no-next",
++            "pk-current:ordered-state",
++            "pk-events:http-status",
++            "pk-events:schema",
++            "pk-events:media",
++            "pk-events:present-bdp-scope-epoch",
++            "pk-events:present-bdp-authorization-view",
++            "pk-events:present-bdp-scope-position",
++            "pk-events:serving-position",
++            "pk-events:request-headers",
++            "pk-events:request-body",
++            "pk-events:no-next",
++            "pk-events:ordered-facts",
++            "pk-events:source",
++            "pk-events:a-properties",
++            "pk-events:a-metadata",
++            "pk-events:a-no-provenance",
++            "pk-events:b-properties",
++            "pk-events:b-metadata",
++            "pk-events:b-no-provenance"
++          ]
++        }
++      ]
++    },
+     {
+       "id": "read-update.http.command-minimum-fields",
+       "wholeContract": false,
+diff --git a/packages/conformance/test-support/transactional/manifest-v1.json b/packages/conformance/test-support/transactional/manifest-v1.json
+index 29a21ef..336a16d 100644
+--- a/packages/conformance/test-support/transactional/manifest-v1.json
++++ b/packages/conformance/test-support/transactional/manifest-v1.json
+@@ -2,6 +2,1185 @@
+   "manifestVersion": 2,
+   "catalogId": "transactional-v1",
+   "scenarios": [
++    {
++      "id": "read-update.idempotency.principal-isolation",
++      "requiredProfile": "read-update",
++      "setup": {
++        "fixture": "reference-transactional-v1",
++        "requires": ["installed-transactional-http"]
++      },
++      "applicability": {
++        "requires": []
++      },
++      "cleanup": {
++        "resetFixture": true
++      },
++      "actions": [
++        {
++          "id": "pk-a-create",
++          "family": "http",
++          "method": "POST",
++          "target": {
++            "binding": "batch"
++          },
++          "credentialRef": "principal-a",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "accept",
++                "value": "application/json"
++              },
++              {
++                "name": "content-type",
++                "value": "application/json"
++              },
++              {
++                "name": "idempotency-key",
++                "value": "principal-shared"
++              }
++            ],
++            "body": {
++              "encoding": "utf8",
++              "value": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"},\"metadata\":{}}]}"
++            }
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/mutationReceipt"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-1"
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "disposition",
++              "kind": "json-pointer",
++              "pointer": "/status",
++              "exists": true,
++              "equals": "completed"
++            },
++            {
++              "id": "detail",
++              "kind": "json-pointer",
++              "pointer": "/detail",
++              "exists": true,
++              "equals": "available"
++            },
++            {
++              "id": "key",
++              "kind": "json-pointer",
++              "pointer": "/idempotencyKey",
++              "exists": true,
++              "equals": "principal-shared"
++            },
++            {
++              "id": "receipt-id",
++              "kind": "json-pointer",
++              "pointer": "/id",
++              "exists": true
++            },
++            {
++              "id": "transaction",
++              "kind": "json-pointer",
++              "pointer": "/transaction",
++              "exists": true
++            },
++            {
++              "id": "required-position",
++              "kind": "json-pointer",
++              "pointer": "/requiredPosition",
++              "exists": true,
++              "equals": "pos-1"
++            },
++            {
++              "id": "effect-position",
++              "kind": "json-pointer",
++              "pointer": "/effectPosition",
++              "exists": true,
++              "equals": "pos-1"
++            },
++            {
++              "id": "no-next",
++              "kind": "json-pointer",
++              "pointer": "/next",
++              "exists": true,
++              "equals": null
++            },
++            {
++              "id": "result-indices",
++              "kind": "json-array-tuples",
++              "pointer": "/results",
++              "ordered": true,
++              "projections": [
++                {
++                  "pointer": "/operationIndex"
++                },
++                {
++                  "pointer": "/outcome"
++                }
++              ],
++              "equals": [[0, "created"]]
++            },
++            {
++              "id": "resource-id",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/id",
++              "exists": true,
++              "equals": "https://reference.invalid/acme/beads/a"
++            },
++            {
++              "id": "resource-type",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/type",
++              "exists": true,
++              "equals": "https://reference.invalid/acme/types/task"
++            },
++            {
++              "id": "resource-revision",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/revision",
++              "exists": true
++            },
++            {
++              "id": "resource-properties",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/properties",
++              "exists": true,
++              "equals": {
++                "title": "a"
++              }
++            },
++            {
++              "id": "resource-metadata",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/metadata",
++              "exists": true,
++              "equals": {}
++            },
++            {
++              "id": "no-owned-links",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/ownedLinks",
++              "exists": false
++            },
++            {
++              "id": "no-provenance",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/revisionProvenance",
++              "exists": false
++            }
++          ]
++        },
++        {
++          "id": "pk-b-create",
++          "family": "http",
++          "method": "POST",
++          "target": {
++            "binding": "batch"
++          },
++          "credentialRef": "principal-b",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "accept",
++                "value": "application/json"
++              },
++              {
++                "name": "content-type",
++                "value": "application/json"
++              },
++              {
++                "name": "idempotency-key",
++                "value": "principal-shared"
++              }
++            ],
++            "body": {
++              "encoding": "utf8",
++              "value": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"b\"},\"metadata\":{}}]}"
++            }
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/mutationReceipt"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-2"
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "disposition",
++              "kind": "json-pointer",
++              "pointer": "/status",
++              "exists": true,
++              "equals": "completed"
++            },
++            {
++              "id": "detail",
++              "kind": "json-pointer",
++              "pointer": "/detail",
++              "exists": true,
++              "equals": "available"
++            },
++            {
++              "id": "key",
++              "kind": "json-pointer",
++              "pointer": "/idempotencyKey",
++              "exists": true,
++              "equals": "principal-shared"
++            },
++            {
++              "id": "receipt-id",
++              "kind": "json-pointer",
++              "pointer": "/id",
++              "exists": true
++            },
++            {
++              "id": "transaction",
++              "kind": "json-pointer",
++              "pointer": "/transaction",
++              "exists": true
++            },
++            {
++              "id": "required-position",
++              "kind": "json-pointer",
++              "pointer": "/requiredPosition",
++              "exists": true,
++              "equals": "pos-2"
++            },
++            {
++              "id": "effect-position",
++              "kind": "json-pointer",
++              "pointer": "/effectPosition",
++              "exists": true,
++              "equals": "pos-2"
++            },
++            {
++              "id": "no-next",
++              "kind": "json-pointer",
++              "pointer": "/next",
++              "exists": true,
++              "equals": null
++            },
++            {
++              "id": "result-indices",
++              "kind": "json-array-tuples",
++              "pointer": "/results",
++              "ordered": true,
++              "projections": [
++                {
++                  "pointer": "/operationIndex"
++                },
++                {
++                  "pointer": "/outcome"
++                }
++              ],
++              "equals": [[0, "created"]]
++            },
++            {
++              "id": "resource-id",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/id",
++              "exists": true,
++              "equals": "https://reference.invalid/acme/beads/b"
++            },
++            {
++              "id": "resource-type",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/type",
++              "exists": true,
++              "equals": "https://reference.invalid/acme/types/task"
++            },
++            {
++              "id": "resource-revision",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/revision",
++              "exists": true
++            },
++            {
++              "id": "resource-properties",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/properties",
++              "exists": true,
++              "equals": {
++                "title": "b"
++              }
++            },
++            {
++              "id": "resource-metadata",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/metadata",
++              "exists": true,
++              "equals": {}
++            },
++            {
++              "id": "no-owned-links",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/ownedLinks",
++              "exists": false
++            },
++            {
++              "id": "no-provenance",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/revisionProvenance",
++              "exists": false
++            }
++          ]
++        },
++        {
++          "id": "pk-a-rotated",
++          "family": "http",
++          "method": "POST",
++          "target": {
++            "binding": "batch"
++          },
++          "credentialRef": "principal-a-rotated",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "accept",
++                "value": "application/json"
++              },
++              {
++                "name": "content-type",
++                "value": "application/json"
++              },
++              {
++                "name": "idempotency-key",
++                "value": "principal-shared"
++              }
++            ],
++            "body": {
++              "encoding": "utf8",
++              "value": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"},\"metadata\":{}}]}"
++            }
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/mutationReceipt"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-2"
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "disposition",
++              "kind": "json-pointer",
++              "pointer": "/status",
++              "exists": true,
++              "equals": "completed"
++            },
++            {
++              "id": "detail",
++              "kind": "json-pointer",
++              "pointer": "/detail",
++              "exists": true,
++              "equals": "available"
++            },
++            {
++              "id": "key",
++              "kind": "json-pointer",
++              "pointer": "/idempotencyKey",
++              "exists": true,
++              "equals": "principal-shared"
++            },
++            {
++              "id": "receipt-id",
++              "kind": "json-pointer",
++              "pointer": "/id",
++              "exists": true
++            },
++            {
++              "id": "transaction",
++              "kind": "json-pointer",
++              "pointer": "/transaction",
++              "exists": true
++            },
++            {
++              "id": "required-position",
++              "kind": "json-pointer",
++              "pointer": "/requiredPosition",
++              "exists": true,
++              "equals": "pos-1"
++            },
++            {
++              "id": "effect-position",
++              "kind": "json-pointer",
++              "pointer": "/effectPosition",
++              "exists": true,
++              "equals": "pos-1"
++            },
++            {
++              "id": "no-next",
++              "kind": "json-pointer",
++              "pointer": "/next",
++              "exists": true,
++              "equals": null
++            },
++            {
++              "id": "result-indices",
++              "kind": "json-array-tuples",
++              "pointer": "/results",
++              "ordered": true,
++              "projections": [
++                {
++                  "pointer": "/operationIndex"
++                },
++                {
++                  "pointer": "/outcome"
++                }
++              ],
++              "equals": [[0, "created"]]
++            },
++            {
++              "id": "resource-id",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/id",
++              "exists": true,
++              "equals": "https://reference.invalid/acme/beads/a"
++            },
++            {
++              "id": "resource-type",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/type",
++              "exists": true,
++              "equals": "https://reference.invalid/acme/types/task"
++            },
++            {
++              "id": "resource-revision",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/revision",
++              "exists": true
++            },
++            {
++              "id": "resource-properties",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/properties",
++              "exists": true,
++              "equals": {
++                "title": "a"
++              }
++            },
++            {
++              "id": "resource-metadata",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/metadata",
++              "exists": true,
++              "equals": {}
++            },
++            {
++              "id": "no-owned-links",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/ownedLinks",
++              "exists": false
++            },
++            {
++              "id": "no-provenance",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/revisionProvenance",
++              "exists": false
++            }
++          ]
++        },
++        {
++          "id": "pk-b-replay",
++          "family": "http",
++          "method": "POST",
++          "target": {
++            "binding": "batch"
++          },
++          "credentialRef": "principal-b",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "accept",
++                "value": "application/json"
++              },
++              {
++                "name": "content-type",
++                "value": "application/json"
++              },
++              {
++                "name": "idempotency-key",
++                "value": "principal-shared"
++              }
++            ],
++            "body": {
++              "encoding": "utf8",
++              "value": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"b\"},\"metadata\":{}}]}"
++            }
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/mutationReceipt"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-2"
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "disposition",
++              "kind": "json-pointer",
++              "pointer": "/status",
++              "exists": true,
++              "equals": "completed"
++            },
++            {
++              "id": "detail",
++              "kind": "json-pointer",
++              "pointer": "/detail",
++              "exists": true,
++              "equals": "available"
++            },
++            {
++              "id": "key",
++              "kind": "json-pointer",
++              "pointer": "/idempotencyKey",
++              "exists": true,
++              "equals": "principal-shared"
++            },
++            {
++              "id": "receipt-id",
++              "kind": "json-pointer",
++              "pointer": "/id",
++              "exists": true
++            },
++            {
++              "id": "transaction",
++              "kind": "json-pointer",
++              "pointer": "/transaction",
++              "exists": true
++            },
++            {
++              "id": "required-position",
++              "kind": "json-pointer",
++              "pointer": "/requiredPosition",
++              "exists": true,
++              "equals": "pos-2"
++            },
++            {
++              "id": "effect-position",
++              "kind": "json-pointer",
++              "pointer": "/effectPosition",
++              "exists": true,
++              "equals": "pos-2"
++            },
++            {
++              "id": "no-next",
++              "kind": "json-pointer",
++              "pointer": "/next",
++              "exists": true,
++              "equals": null
++            },
++            {
++              "id": "result-indices",
++              "kind": "json-array-tuples",
++              "pointer": "/results",
++              "ordered": true,
++              "projections": [
++                {
++                  "pointer": "/operationIndex"
++                },
++                {
++                  "pointer": "/outcome"
++                }
++              ],
++              "equals": [[0, "created"]]
++            },
++            {
++              "id": "resource-id",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/id",
++              "exists": true,
++              "equals": "https://reference.invalid/acme/beads/b"
++            },
++            {
++              "id": "resource-type",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/type",
++              "exists": true,
++              "equals": "https://reference.invalid/acme/types/task"
++            },
++            {
++              "id": "resource-revision",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/revision",
++              "exists": true
++            },
++            {
++              "id": "resource-properties",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/properties",
++              "exists": true,
++              "equals": {
++                "title": "b"
++              }
++            },
++            {
++              "id": "resource-metadata",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/metadata",
++              "exists": true,
++              "equals": {}
++            },
++            {
++              "id": "no-owned-links",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/ownedLinks",
++              "exists": false
++            },
++            {
++              "id": "no-provenance",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/revisionProvenance",
++              "exists": false
++            }
++          ]
++        },
++        {
++          "id": "pk-a-conflict",
++          "family": "http",
++          "method": "POST",
++          "target": {
++            "binding": "batch"
++          },
++          "credentialRef": "principal-a",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "accept",
++                "value": "application/json"
++              },
++              {
++                "name": "content-type",
++                "value": "application/json"
++              },
++              {
++                "name": "idempotency-key",
++                "value": "principal-shared"
++              }
++            ],
++            "body": {
++              "encoding": "utf8",
++              "value": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/c\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"c\"},\"metadata\":{}}]}"
++            }
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 409
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/transactionalProblem"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/problem+json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-2"
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "exact-problem",
++              "kind": "json-pointer",
++              "pointer": "",
++              "exists": true,
++              "equals": {
++                "type": "https://github.com/gastownhall/bdp/problems/conflict",
++                "code": "idempotency-conflict",
++                "status": 409,
++                "retry": "never"
++              }
++            }
++          ]
++        },
++        {
++          "id": "pk-current",
++          "family": "http",
++          "method": "GET",
++          "target": {
++            "binding": "scope",
++            "path": "beads/",
++            "query": {
++              "limit": "32"
++            }
++          },
++          "credentialRef": "principal-a",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "accept",
++                "value": "application/json"
++              }
++            ]
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/currentBeadCollection"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-2"
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "no-next",
++              "kind": "json-pointer",
++              "pointer": "/next",
++              "exists": true,
++              "equals": null
++            },
++            {
++              "id": "ordered-state",
++              "kind": "json-array-tuples",
++              "pointer": "/items",
++              "ordered": true,
++              "projections": [
++                {
++                  "pointer": "/id"
++                },
++                {
++                  "pointer": "/type"
++                },
++                {
++                  "pointer": "/properties"
++                },
++                {
++                  "pointer": "/metadata"
++                }
++              ],
++              "equals": [
++                [
++                  "https://reference.invalid/acme/beads/a",
++                  "https://reference.invalid/acme/types/task",
++                  {
++                    "title": "a"
++                  },
++                  {}
++                ],
++                [
++                  "https://reference.invalid/acme/beads/b",
++                  "https://reference.invalid/acme/types/task",
++                  {
++                    "title": "b"
++                  },
++                  {}
++                ]
++              ]
++            }
++          ]
++        },
++        {
++          "id": "pk-events",
++          "family": "http",
++          "method": "GET",
++          "target": {
++            "binding": "scope",
++            "path": "events/"
++          },
++          "credentialRef": "principal-a",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "accept",
++                "value": "application/json"
++              }
++            ]
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/eventPage"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-2"
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "no-next",
++              "kind": "json-pointer",
++              "pointer": "/next",
++              "exists": true,
++              "equals": null
++            },
++            {
++              "id": "ordered-facts",
++              "kind": "json-array-tuples",
++              "pointer": "/events",
++              "ordered": true,
++              "projections": [
++                {
++                  "pointer": "/source"
++                },
++                {
++                  "pointer": "/type"
++                },
++                {
++                  "pointer": "/subject"
++                },
++                {
++                  "pointer": "/subjectType"
++                },
++                {
++                  "pointer": "/ordinal"
++                }
++              ],
++              "equals": [
++                [
++                  "https://reference.invalid/acme/events/",
++                  "created",
++                  "https://reference.invalid/acme/beads/a",
++                  "https://reference.invalid/acme/types/task",
++                  0
++                ],
++                [
++                  "https://reference.invalid/acme/events/",
++                  "created",
++                  "https://reference.invalid/acme/beads/b",
++                  "https://reference.invalid/acme/types/task",
++                  0
++                ]
++              ]
++            },
++            {
++              "id": "source",
++              "kind": "json-pointer",
++              "pointer": "/source",
++              "exists": true,
++              "equals": "https://reference.invalid/acme/events/"
++            },
++            {
++              "id": "a-properties",
++              "kind": "json-pointer",
++              "pointer": "/events/0/data/properties",
++              "exists": true,
++              "equals": {
++                "title": "a"
++              }
++            },
++            {
++              "id": "a-metadata",
++              "kind": "json-pointer",
++              "pointer": "/events/0/data/metadata",
++              "exists": true,
++              "equals": {}
++            },
++            {
++              "id": "a-no-provenance",
++              "kind": "json-pointer",
++              "pointer": "/events/0/data/revisionProvenance",
++              "exists": false
++            },
++            {
++              "id": "b-properties",
++              "kind": "json-pointer",
++              "pointer": "/events/1/data/properties",
++              "exists": true,
++              "equals": {
++                "title": "b"
++              }
++            },
++            {
++              "id": "b-metadata",
++              "kind": "json-pointer",
++              "pointer": "/events/1/data/metadata",
++              "exists": true,
++              "equals": {}
++            },
++            {
++              "id": "b-no-provenance",
++              "kind": "json-pointer",
++              "pointer": "/events/1/data/revisionProvenance",
++              "exists": false
++            }
++          ]
++        }
++      ]
++    },
+     {
+       "id": "read-update.http.command-minimum-fields",
+       "requiredProfile": "read-update",

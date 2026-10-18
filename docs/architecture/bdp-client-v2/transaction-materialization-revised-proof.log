@@ -1,0 +1,21 @@
+{"node":"v24.16.0","maxStringLength":536870888,"sqliteCompileOptions":[{"compile_options":"MAX_LENGTH=1000000000"}]}
+{"S":65536,"M":32,"E":4096,"K":64,"group":169345024,"eventBound":4833411072,"invocationBound":169345024,"receipt":39391232,"groupFits":true,"receiptFits":true}
+{"S":65536,"M":64,"E":256,"K":96,"group":253493248,"eventBound":303824896,"invocationBound":253493248,"receipt":58527744,"groupFits":true,"receiptFits":true}
+{"S":65536,"M":128,"E":256,"K":160,"group":304349184,"eventBound":304349184,"invocationBound":421789696,"receipt":96800768,"groupFits":true,"receiptFits":true}
+{"S":65536,"M":256,"E":128,"K":288,"group":154402816,"eventBound":154402816,"invocationBound":758382592,"receipt":173346816,"groupFits":true,"receiptFits":true}
+{"S":65536,"M":256,"E":256,"K":288,"group":305397760,"eventBound":305397760,"invocationBound":758382592,"receipt":173346816,"groupFits":true,"receiptFits":true}
+{"S":65536,"M":256,"E":384,"K":288,"group":456392704,"eventBound":456392704,"invocationBound":758382592,"receipt":173346816,"groupFits":true,"receiptFits":true}
+{"S":65536,"M":256,"E":512,"K":288,"group":607387648,"eventBound":607387648,"invocationBound":758382592,"receipt":173346816,"groupFits":false,"receiptFits":true}
+{"S":4096,"M":32,"E":4096,"K":64,"group":153616384,"eventBound":4581752832,"invocationBound":153616384,"receipt":39329792,"groupFits":true,"receiptFits":true}
+{"S":4096,"M":64,"E":256,"K":96,"group":229900288,"eventBound":288096256,"invocationBound":229900288,"receipt":58466304,"groupFits":true,"receiptFits":true}
+{"S":4096,"M":128,"E":256,"K":160,"group":288620544,"eventBound":288620544,"invocationBound":382468096,"receipt":96739328,"groupFits":true,"receiptFits":true}
+{"S":4096,"M":256,"E":128,"K":288,"group":146538496,"eventBound":146538496,"invocationBound":687603712,"receipt":173285376,"groupFits":true,"receiptFits":true}
+{"S":4096,"M":256,"E":256,"K":288,"group":289669120,"eventBound":289669120,"invocationBound":687603712,"receipt":173285376,"groupFits":true,"receiptFits":true}
+{"S":4096,"M":256,"E":384,"K":288,"group":432799744,"eventBound":432799744,"invocationBound":687603712,"receipt":173285376,"groupFits":true,"receiptFits":true}
+{"S":4096,"M":256,"E":512,"K":288,"group":575930368,"eventBound":575930368,"invocationBound":687603712,"receipt":173285376,"groupFits":false,"receiptFits":true}
+{"input":"1e20","output":"100000000000000000000","inputBytes":4,"outputBytes":21,"ratio":5.25}
+{"input":"9e9","output":"9000000000","inputBytes":3,"outputBytes":10,"ratio":3.3333333333333335}
+{"input":"-0.0000010000000000000002","output":"-0.0000010000000000000002","inputBytes":25,"outputBytes":25,"ratio":1}
+{"input":"\"\\ud800\"","rejected":"unpaired surrogate"}
+{"input":"\"\\udfff\"","rejected":"unpaired surrogate"}
+{"input":"\"\\ud83d\\ude00\"","output":"\"😀\"","inputBytes":14,"outputBytes":6,"ratio":0.42857142857142855}

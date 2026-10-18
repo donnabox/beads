@@ -1,0 +1,131 @@
+Tree is still clean at `31007d8` — frozen source preserved, nothing written into the checkout.
+
+# Review — `31007d84a91964786cdc1424e4a55d2af83204c6` (frozen, clean)
+
+## Scope and authored boundary
+
+| Commit | Files | Delta | Status |
+|---|---|---|---|
+| `11cbe3c` (vs `a3eada1`) | 2 | +39/−5 | **authored** — carrier/readiness separation |
+| `572d725` (vs `8d7f267`) | 18 | +6119/−121 | **authored** — the executable slice |
+| `31007d8` (vs `be5d256`) | 2 | +7/−5 | **authored** — readiness/obligation prose |
+| `dea6f9e`, `39a7674`, `4cf6acd`, `d9b9817` ancestry | — | — | **inherited** — not reviewed as authored |
+
+I reviewed the final `31007d8` source, not the patches. Inherited P1/`d9` semantics (nine-field `qualification.ready`, authority-read/pagination/transaction-read/member diagnostics, symlink refusal) are treated as pre-reviewed ancestry and only assessed where the authored harness depends on them.
+
+## Independent verification performed
+
+Node 24.16.0 (nvm) on PATH; vitest 4.1.10 from the repo's installed `node_modules` (`packageManager: pnpm@11.20.0`, confirmed resolvable via corepack). I did **not** build — a build writes `dist/`, which the no-write constraint forbids — so probes ran against the author's already-emitted `dist`, i.e. emitted bytes, not a fresh clean build and not the packed tarball.
+
+- **Targeted tests, not another broad suite.** `cumulative-artifact`, `observed-binding-assertion`, `profile-contract-plan`, `read-update-catalog`, `read-update-exact-client` → **5 files / 72 tests pass** (622 ms). `apps/bdptest/src/read-update-matrix.test.ts` → **1 file / 5 tests pass** (3.99 s).
+- **Reproduced the progress record** (`BDP_CUMULATIVE_REPORT_PATH` → `/tmp`): 134 scenarios, **7 pass / 127 `harness-error` + category `not-implemented`**, 129 required, 124 uncovered, 7 sessions, 44 client exchanges, `claimEligible:false`, `sourceDirty:false`, `sourceCommit 31007d8`, `selectedScenarioIds` length 134 (unfiltered). All four report digests reproduced bit-exact: `catalogDigest 03ca39f2…`, `manifestDigest f07bafef…`, `fixtureDigest 529c8951…`, `exactConfigurationDigest 67049d45…`.
+- **Independent recount** of the catalog selection in Python (no project code): 134 applicable at `read-update` = 129 normative + 5 diagnostic; exactly one retired row (`read.discovery.document`); inventory row order **equals** canonical required order; all **43** inherited Read-profile required rows `omitted`.
+- **Per-file catalog digests** equal sha256 of the exact raw bytes for all five committed files (UTF-8 round-trip is byte-identical), so `catalogDigests` means what its comment says.
+- **Transport data is real and reproducible**: for an actual POST, `sha256(JSON.stringify(request.body)) === observation.bodyDigest` and `len === bodyOctets`.
+- **Honored vs allocated identity confirmed on the wire**: `id: "beads/a"` → `…/beads/a`; omitted `id` → `…/beads/a0042bf78f94…`.
+- **No credential bytes** in the record (0 occurrences of either token, of `Bearer`, of `Authorization`); the run report redacts header and response values (`"authorization": "<redacted>"`, `elidedHeaderLines: 2`).
+- **Cross-checked the author's `read-update-installed-31007d8/progress.json`**: identical to mine on `catalogSources`, `reportBinding`, counts, states and every identity **except `payloadIdentity`** (`6503d708…` installed prefix vs `d12573ef…` emitted dist) — expected, and it is the basis of Finding 5.
+
+---
+
+## Findings
+
+### F‑A — MEDIUM — `wholeContract` is unenforced for planned rows; the 5/124 headline has no machine check
+**File** `packages/conformance/src/cumulative-artifact.test.ts:127-141`
+The pinning loop constrains `wholeContract` only inside `if (!planned)` (`:131`). For the 7 planned rows nothing constrains the flag, and nothing cross-checks it against the row's catalog citations. The matrix test's only numeric guard is `expect(report.uncoveredIds.length).toBeGreaterThan(100)` (`read-update-matrix.test.ts:250`), and `uncoveredIds` is derived from exactly that flag (`:230-232`).
+**Repro** (by code reading — I did not mutate files): flip `read-update.discovery.document`'s `wholeContract` to `true` in `test-support/read-update-coverage-v1.json`. `read-update.discovery.document` is planned, so the `!planned` branch never runs; `uncoveredIds` drops 124 → 123, still `> 100`. All tests stay green.
+**Impact** The one number in the slice that carries the coverage claim — "five whole-contract observations, 124 uncovered" — is author prose with no enforcement. This is precisely the drift F12 was raised to prevent, and it is the number a reviewer would most want pinned.
+**Fix** Two lines: `expect(inventory.rows.filter(r => r.wholeContract).map(r => r.id)).toEqual([...the five ids])` in `cumulative-artifact.test.ts`, and `expect(report.uncoveredIds).toHaveLength(124)` in the matrix test.
+
+### F‑B — MEDIUM — `update-bead` is marked whole-contract, but half of one citation is unobserved on a target that supports it
+**File** `packages/conformance/test-support/read-update-coverage-v1.json` (`read-update.singleton.update-bead`, `wholeContract: true`, boilerplate reason); `packages/conformance/matrices/read-update-v1.json` (same row)
+Citation `#property-change-values`: *"Applying the properties patch must yield a JSON object satisfying every effective Type schema. **The metadata patch must yield a JSON object.**"* Observed legs are `update` and `noop`, both `propertiesChange` only. **No `metadataChange` patch is ever sent, and no Type-schema-violating patch is refused.**
+The target supports both: `packages/server/src/resource-evaluator.ts:807-808,1030-1034` applies `metadataChange`, and the server's own tests exercise schema-violating patches (`member-executor.test.ts:2432`, `member-identity.test.ts:1212`). So this is a skipped leg, not an inapplicable one.
+**Impact** Under the slice's own whole-contract rule, 4 of the 5 `wholeContract: true` rows are defensible, not 5. The other four check out: `create-bead` (allocated + honored id, both read back), `delete-bead` (incident-Link refusal, unchanged GET, no minted version, three 404 views), `expected-revision` (matching guard, stale update **and** stale delete with unchanged afterstate, omitted-guard leg, guarded delete), `idempotency-conflict` (conflict, unchanged afterstate, retained disposition re-returned).
+**Fix** Either add a `metadataChange` leg plus a schema-violating refusal leg, or set `wholeContract: false` with reason "metadata patch and Type-schema refusal legs unobserved" — which moves the uncovered count to 125.
+
+### F‑C — LOW — `noop-rev`/`noop-record` are captured and never asserted; the no-op *result*'s retained revision is unverified
+**File** `packages/conformance/matrices/read-update-v1.json`, `read-update.singleton.update-bead`, action `noop`
+The citation is "succeeds with outcome `updated` and **the retained revision**". `noop` asserts status / `writeState` / outcome / `properties/n` / `guard-wire` and captures `noop-rev` + `noop-record` — then nothing references either. Retention is proved only transitively, by `read-noop.retained` comparing the afterstate GET to `b-record`.
+**Repro** A target that returns a freshly minted revision in the no-op *response* while storing the old one passes this row today.
+**Fix** One assertion, using a capture that already exists: `{"id":"retained-revision","kind":"json-pointer","pointer":"/body/resource","exists":true,"equalsBinding":"b-record"}` on `noop`.
+
+### F‑D — LOW — `guard-wire` re-reads the harness's own request echo, not the serialized bytes
+**File** `apps/bdptest/test-support/read-update-exact-client.ts:105-156`; assertions `update.guard-wire`, `noop.guard-wire`
+The client sets `body[field] = string(execution.bindings[binding])` (`:114`), serializes that object (`:137`), and embeds **the same object** in `output.request.body` (`:156`). The runner then compares `/request/body/expectedRevision` against `bindings.get("a-rev")` — identical by construction. The assertion can only fail if the manifest's `bodyBindings` name and the assertion's `equalsBinding` name disagree (which the `old-revision` negative control does exercise, at `read-update-matrix.test.ts:271`). It cannot detect the client failing to put the guard on the wire.
+**Impact** The inventory lists `update.guard-wire` / `noop.guard-wire` among the row's assertion bindings as evidence the guard reached the wire; it evidences manifest↔harness binding agreement instead.
+**Mitigation I confirmed** `observation.bodyDigest`/`bodyOctets` are genuine serializer output and reproducible from the recorded body (verified above), so a reviewer *can* close the loop by hand — but no assertion does.
+**Fix** Assert `observation.bodyDigest` against a fixture oracle, or use the existing `request-authored-body` assertion kind (`runner.ts:1805`) over the exact bytes.
+
+### F‑E — LOW — the bootstrap configuration gate is partly self-comparing; payload and target identity are recorded, never pinned
+**File** `apps/bdptest/src/read-update-matrix.test.ts:124,134-142`
+`expected` is built as `{...baselineReceipt, profile/history/artifactIdentity/policyIdentity/authenticationIdentity: expectedCapture.*}`. So `installedPayloadDigest`, `scope` and `sourceCommit` come from the same source on both sides — `assertSameServedProfileConfiguration(expected, baseline)` is **vacuous for payload and source commit at that gate**, and `artifactIdentity` is already pinned separately at `:133`. The substantive content is policy / auth / profile / History.
+Further, `expectedCapture` comes from `captureInstalledReferenceConfiguration` loaded from `path.dirname(entry)` (`:45-46`) — the target's own module. The check is self-consistency of the target's identity function, not an independent derivation.
+**Repro (executed)** I ran the same test with `entry` defaulting to `packages/server/dist/installed-reference-process.js` instead of the author's installed prefix. All five tests passed; the record differed only in `payloadIdentity` (`d12573ef…` vs `6503d708…`). Nothing in code pins which payload was observed.
+**Impact** Bounds what the installed observation proves. Consistent with `claimEligible:false` — but the report calls the installed run "the authoritative latest observation", and that authority rests entirely on a reviewer reading `targetEntry` and `payloadIdentity` out of band.
+**Fix** When `BDP_CUMULATIVE_INSTALLED_ENTRY` is set, pin the expected `installedPayloadDigest`; or say in the report that the installed observation's authority is reviewer-checked provenance, not an asserted binding.
+
+### F‑F — LOW — carrier NEW‑1 closed by prose only; the planner's v2 admission is now doubly fail-open
+**File** `packages/conformance/test-support/profile-contract-plan.ts:244-258`
+The rule now admits `read-v1`+v2+`read-update` **and** `read-update-v1`+v2+`read-update`+`!history`, both unconditionally. `exactExecution` is modeled nowhere in the module. `31007d8` added the conditional language to the comment (`:209-212`) and the design doc; the expression's direction is unchanged, and the new branch widens it. `planProfileExecution`'s `execution` parameter compares its two `ServedProfileConfiguration` inputs to each other (`:230-233`), not the runner's `ExactHttpModeOptions` (routes, credential handles, body bounds).
+**Impact** Still the only fail-open gate in an otherwise fail-closed module, as NEW‑1 said — now at two cells instead of one.
+**Additional observation** The installed harness calls `planProfileExecution(...)` at `read-update-matrix.test.ts:144-147` and **discards the return value**. The plan is invoked for its throws only; no readiness value is asserted anywhere in the installed run, so the "the actual installed harness does so before requests" sentence in the report describes the harness's `assertSameServedProfileConfiguration` gate, not the planner.
+**Fix** NEW‑1's own: key the rule on a modeled exact-execution binding, or fold the condition into the readiness value.
+
+### F‑G — LOW — carrier NEW‑2/NEW‑3 residuals and three untested carrier cells
+- `docs/design/profile-contract-planning.md:47` still calls `carrier-unsupported` a "manifest catalog/profile combination", omitting the manifest version the rule reads — NEW‑2's second half, unaddressed. The only test that opens the file (`profile-contract-plan.test.ts:226-240`) parses the 81-row inheritance-audit table, not the readiness prose, so **no lockstep test exists**. NEW‑2's first half *is* fixed: the false clause "normative Update/TX carriers therefore remain unsupported in this groundwork" was replaced in `572d725`.
+- NEW‑3 is addressed in the **doc** ("Version-1 non-Read manifests remain rejected because that carrier does not bind the non-Read exact execution configuration") but the code comment at `:244-247` still explains only the v2 admission, not the refusal the expression encodes.
+- Untested cells: `read-v1`+v2+`read` (flagged in the carrier review, still unpinned — `:289-311` covers `read` only with `unadmitted-v1`), `read-update-v1`+v1+`read-update`, `read-update-v1`+v2+`read`. The v1 cell is pinned for the **factory** (`cumulative-artifact.test.ts:78-83`) but not for the planner.
+**Fix** Add the three cells to the existing `it.each` table; add "version" to the doc table row.
+
+### F‑H — LOW — no correspondence assertion for `manifestDigest` / `exactConfigurationDigest`
+F5's fix asked for a test asserting the progress-record↔report correspondence. `read-update-matrix.test.ts:143` does assert exactly F5's named check (`baseline.fixtureDigest === bundle.digests.fixtureDigest`), but `planProfileExecution`'s returned `manifestDigest` is discarded, nothing asserts `plan.manifestDigest === bundle.digests.manifestDigest`, and `reportBinding.exactConfigurationDigest` is recorded without any assertion.
+Separately, `exactConfigurationDigest` (`runner.ts:1362-1380`) still excludes `credentialHandles` and `defaultCredentialRef`, so the **run report's** exact-configuration identity is insensitive to the credential configuration; the auth identity exists only in the private progress record. The report does not claim otherwise — stated here as a limit.
+**Fix** Capture the plan and assert both digests; pin `exactConfigurationDigest`.
+
+---
+
+## Plan findings F1–F12, closed against code
+
+| | Disposition |
+|---|---|
+| **F1** catalog digest | **CLOSED.** `createCumulativeReadUpdateArtifactBundle` takes the `ProfileContractSelection` itself (`artifact-bundle.ts:102-121`); `catalogDigest = sha256(canonicalJson(selection.catalogDigests))` (`:203-206`), pinned by `cumulative-artifact.test.ts:110-112`. Per-file map recorded verbatim in the progress record (`catalogSources`, verified = sha256 of exact bytes). Exactly F1's prescribed fix. |
+| **F2** carrier gate | **CLOSED.** `test-support/profile-contract-plan.ts` was edited and the carrier rule widened (`:248-258`); negative controls exist for `read-v1`+v1 at RU (`:276`), TX at both versions and unknown catalog (`:289-310`), and History-selected RU (`cumulative-artifact.test.ts:148-167`). Residual direction = F‑F. |
+| **F3** three named cases | **CLOSED with one residual (F‑B).** `create-bead` gained the `id`-omitted leg (verified on the wire: omitted → `beads/a0042bf…`); `update-bead` gained the `noop` leg; `delete-bead` gained `create-link` → `blocked-delete` (409 `incident-links-exist`) → `unchanged` → `delete-link` → `delete` → three 404 views; `idempotent-retry` moved to `wholeContract:false` with the in-flight/expired/sequence reason. `discovery.document` is also honestly `false` (omitted-`order` fallback). F3's `update-bead` metadata-patch clause survives as F‑B. |
+| **F4** nine fields vs three identities | **CLOSED by the inherited successor, option (i)+(ii) mixed.** `installed-reference-process.ts:49-60` now emits all nine (`scope`, `claimEligible`, `configurationIdentity`, `artifactIdentity`, `payloadIdentity`, `policyIdentity`, `authenticationIdentity`, `profile`, `history`); `installed-reference-configuration.ts:169-201` derives policy/auth separately. `sourceCommit` is launcher-asserted (`read-update-matrix.test.ts:99-102`) and the report says so explicitly. `bindServedProfileConfiguration` enforces `/^[0-9a-f]{64}$/` on all four digests and `/^[0-9a-f]{40}$/` on the commit (`:134-141`) — stricter than the IPC helper, which only `typeof`-checks `policyIdentity`. |
+| **F5** installed provenance seam | **CLOSED in design, partial in test (F‑H).** Identity lives in the source-private progress record; F5's named assertion (`ServedProfileConfiguration.fixtureDigest === bundle.digests.fixtureDigest`) is present at `:143`. |
+| **F6** bounded vs reported gaps | **CLOSED and reproduced.** No `scenarioSelection` in the main run (`:201`); `selectedScenarioIds` length 134; 127 rows land `state: "harness-error"`, `category: "not-implemented"` (`runner.ts:2734-2739`); the test asserts the per-row state for every unplanned id (`:245-248`). `scenarioSelection` is reserved for the focused negative controls, as F6 prescribed. |
+| **F7** cumulative is selection-only | **CLOSED by explicit statement**, and verified: all 43 inherited Read-profile required rows plus the 5 companion rows are `omitted`. `docs/design/read-update-executable-progress.md` says it in the first paragraph; the report says it twice. |
+| **F8** reachability | **CLOSED.** `test-support/testing.ts:1-3` re-exports the selection loader, configuration binder, `planProfileExecution` and the cumulative factory. `@bdp/conformance/testing` is a vitest alias + `tsconfig.check.json:17` path only — absent from `package.json` `exports`, so unreachable from an installed consumer. |
+| **F9** provenance enforcement point | **CLOSED.** The gate is named and implemented: bootstrap `assertSameServedProfileConfiguration` (`:142`) before the target exists, and per-scenario against each freshly launched child (`:170`). Negative control mutates one digest and asserts the throw (`:309-311`). Vacuity caveat = F‑E; the per-scenario gate is non-vacuous. |
+| **F10** stale P1 section | **CLOSED.** The dependency is named and the answers hold against code: IPC fork with an `ipc` stdio slot and `{configuration}` send, `{command:"close"}`/SIGTERM/disconnect teardown (`scripts/installed-reference-observation.mjs:18-82`); `credentials: [{token, principal}]` + per-principal `policies` (`:86-99`); `payloadIdentity` as described. |
+| **F11** exact-mode harness is new work | **CLOSED.** The new harness is listed as `apps/bdptest/test-support/read-update-exact-client.ts`, and the route set is enumerated up front (`read-update-matrix.test.ts:79-87`). F11's "literal `{encoding,value}` bodies only" constraint turns out **moot**: RU mutations go through dynamic `client` actions, and `executeExact` computes `Content-Length` itself (`http-executor.ts:715`), so no byte-authored length is needed. |
+| **F12** machine inventory | **CLOSED in substance, with F‑A's enforcement gap.** `test-support/read-update-coverage-v1.json` lists all 129 required ids once in canonical order (independently verified) with exact per-action assertion ids cross-checked against the manifest (`cumulative-artifact.test.ts:126-140`). Shape adapted rather than copied: `wholeContract` added; `developmentOnly`, `normativeCatalog` and `category` dropped versus the development-lane shape. The existing diagnostic inventory at `packages/conformance/development/` is untouched. |
+
+## Carrier-review dispositions
+
+- **N1 / N2** — confirmed closed in the final source: `!carrierBlocker &&` is gone from the `dependencyReady` loop (`:304-313`), and the v2 RU cell is admitted.
+- **N3** — not in scope; the single-pass traversal and lookup-budget test survive (`:399-457`).
+- **NEW‑1 (LOW)** — closed by documentation only; the fail-open direction stands and now covers two cells. See **F‑F**.
+- **NEW‑2 (LOW)** — the false clause is fixed; the `carrier-unsupported` table row and the missing lockstep test are not. See **F‑G**.
+- **NEW‑3 (nit)** — fixed in the doc, not in the code comment. See **F‑G**.
+- **Residual (planner merged order vs runner bundle order)** — now **closed for the cumulative path by construction**: the cumulative factory passes `selection.catalog` as the bundle catalog (`artifact-bundle.ts:113`), so both orders are the same object's order. Still open for `read-v1` bundles, unchanged.
+- **Tautological `plan.unobservedIds`** — still tautological (`:345`, asserted at `:452`, `:488`). Inherited, unchanged.
+- **N1-named test also covering N2** — unchanged (`:458`).
+
+## Actual limits of this slice
+
+1. **The runner's exact preflight covers 35 of 79 exchanges.** `preflightExactPlans` filters `action.family === "http"` (`runner.ts:1382-1398`), so the 44 client exchanges are gated by `createInstalledExactClient` plus a single-route `exactMode` per request — test-support code, not the runner. I verified the transport is nonetheless genuinely exact for them: `executeExact` enforces the route allowlist (`http-executor.ts:670`), exact credential-handle **set equality** (`:671-705`), rejection of authored secret/reserved header lines (`:666`), and executor-computed `Content-Length` (`:715`). The claim is sound; the enforcement location is worth knowing.
+2. **The prerequisite DAG is exercised vacuously by the real run.** All 7 rows carry no `prerequisiteScenario` and repeat the same 6-action cold-discovery prologue, so `dependencyReady` is trivially true and `blockedPrerequisites` empty for every planned row. The planner's prerequisite logic is covered only by synthetic tests.
+3. **`profile` and `history` in the receipt are compile-time constants** (`installed-reference-configuration.ts:173-174`: `"read-update" as const`, `false as const`), so those two boundary fields cannot distinguish targets — F4's "captured from the boundary" holds nominally.
+4. **Policy/auth verification is self-consistency, not independent derivation** — same module, same input (F‑E).
+5. **`catalogDigests` commits 5 files, not 6.** `history-v1.json`'s *presence* is enforced by the directory-exactness guard (`profile-contract-selection.ts:48-55`) but its bytes are not in the digest. Correct for `history:false`; just not a six-file commitment.
+6. **My probes used emitted `dist`, not a clean build and not the packed tarball** — because building would write files. The author's clean→typecheck→build→1,474-test run and the tarball install remain unreproduced by me; I treated the 1,474-test figure as the author's evidence, not as proof, and substituted the bounded probes above.
+
+## No-public-qualification check — clean
+
+`createCumulativeReadUpdateArtifactBundle` and `loadProfileContractSelection` are absent from `src/index.ts` (asserted by `cumulative-artifact.test.ts:94-96`) and from `dist/index.js` (**0** occurrences; `dist/artifact-bundle.js` carries the symbol but `exports` maps only `"."`). `package.json` `exports` is unchanged — no `read-update-v1` catalog/matrix/fixture subpath. Those bytes do ship via the pre-existing `files: ["dist","catalog","matrices","fixtures"]`, but `createConformanceArtifactBundle` rejects `catalogId: "read-update-v1"` (verified, `cumulative-artifact.test.ts:92`) and the development factory rejects it as non-diagnostic (`:93`). **No arbitrary/reduced catalog is reachable**: `inspectProfileContractSourcesForTest` results are never added to the `selections` WeakSet, so `assertCanonicalProfileContractSelection` rejects them, and a structurally-cloned selection with `required: []` throws `"factory-loaded"` (`:56-58`). `claimEligible` is hardcoded `false` on both the plan (`:338`) and the run report.
+
+## Bottom line
+
+The executor is well-built and its headline claims reproduce exactly. I found no correctness defect in the catalog boundary, the exact client, the `equalsBinding` assertion, the IPC/identity binding, or the negative controls — the malicious-capture, absent-capture, anonymous/unknown-credential, stale-revision, wrong-postimage and configuration-mismatch controls all do what the report says, and I re-ran them. The two Medium findings are both coverage-claim integrity: the `wholeContract` flag that produces the 5/124 figures is the only unenforced number in the slice (**F‑A**), and one of the five rows it marks whole-contract has a skipped leg the target supports (**F‑B**). Those two plus **F‑C** are the ones I would fix before the next slice builds on these counts; **F‑D** through **F‑H** are accurate-as-documented limits with cheap improvements.

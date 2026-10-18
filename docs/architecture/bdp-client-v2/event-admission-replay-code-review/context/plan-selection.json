@@ -1,0 +1,67 @@
+{
+  "newSource": {
+    "file": "packages/server/src/transaction-event-sse.test.ts",
+    "rows": [
+      {
+        "title": "gates current Event replay minima before cursor validation: %s",
+        "labels": [
+          "scope",
+          "bead",
+          "link"
+        ]
+      },
+      {
+        "title": "captures current Event replay minimum once across owner entries: %s",
+        "labels": [
+          "scope-json",
+          "bead-json",
+          "link-json",
+          "scope-sse",
+          "bead-sse",
+          "link-sse"
+        ]
+      },
+      {
+        "title": "drains current Event replay admission before owner close: %s",
+        "labels": [
+          "json",
+          "sse"
+        ]
+      },
+      {
+        "title": "serves current Event replay minima across media and reconnect selection",
+        "labels": null
+      }
+    ]
+  },
+  "legacySource": {
+    "packages/server/src/transaction-events.test.ts": [
+      "serves initial finite Scope Event opaque minima through bounded waiting",
+      "serves initial finite Bead Event opaque minima with retained identity and route fences",
+      "serves initial finite Link Event opaque minima with retained identity and route fences"
+    ],
+    "packages/server/src/transaction-event-sse.test.ts": [
+      "serves initial Scope Event SSE opaque minima before conditional admission",
+      "Event reconnect syntax, minimum ordering and exact context codes are preserved over HTTP"
+    ]
+  },
+  "installed": {
+    "file": "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+    "historical": "installed Event cursors survive restart with Last-Event-ID precedence and source binding",
+    "new": "observes installed current Event replay minimum admission across sources"
+  },
+  "counts": {
+    "sourceCallbacks": 17,
+    "installedCallbacks": 2,
+    "sourceHttp": 200,
+    "installedHistoricalHttp": 5,
+    "installedNewHttp": 10,
+    "sourceStores": 17,
+    "installedStores": 2,
+    "installedSequentialChildren": 3,
+    "sourceListeners": 6,
+    "newSourceReports": 12,
+    "existingSourceReports": 4
+  },
+  "executionAuthorized": false
+}

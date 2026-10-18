@@ -1,0 +1,5 @@
+The installed Transactional matrix lacked a witness that a sequence can commit one member, retain a later member's failure, and continue with a separate final commit. Add a ten-action scenario that checks success/failure/success, recovers all three outcomes through their original receipt URLs, replays the complete sequence without new effects, and verifies the final records and two Events.
+
+The counterexample changes the middle delete to succeed and must produce exactly seven named assertion failures. Existing cross-carrier controls retain their checks and also exercise the new scenario. All prior manifest and coverage objects remain byte-for-byte intact; measured fixture fences retain their existing margins. This adds partial conformance evidence only—no runtime, public profile advertisement, or release change.
+
+Validation completed: typecheck, build, formatting, lint, dependency boundaries, unchanged Read evidence verification, and eight selected static callbacks. Native review and measurement/preservation audits are complete. Actual Claude review and four fresh installed-package cohorts are pending; this prepared description is not publication approval.

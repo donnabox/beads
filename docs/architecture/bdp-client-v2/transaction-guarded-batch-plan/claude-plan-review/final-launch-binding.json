@@ -1,0 +1,35 @@
+{
+  "status": "Root released actual committed-source plan review only",
+  "rootLaunchReleased": true,
+  "reviewHead": "98c600767e8e91a79e109cb741beb91e23b9bebe",
+  "reviewTree": "fde859381752d15c8caabcbc946d3c2e384b9cf6",
+  "promptSha256": "8892c411b624f61903e4673115b92f1532bfe3467e86e6de8eaf6865c96fbf59",
+  "sourceHashes": {
+    "packages/server/src/resource-evaluator.ts": "89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
+    "packages/server/src/transaction-batch.ts": "70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014",
+    "packages/server/src/transaction-store.ts": "fcd6882b29e538db45867c894c06dfbaa6ca588db0c2e403ef1b7abb14f6c706",
+    "packages/server/src/transaction-submission.ts": "4336e45d7b4f90eec685b70c7ba059219954bb20271aa2c942ee9e140f0743af",
+    "packages/server/src/transaction-http.ts": "b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf",
+    "packages/server/src/read-http-routing.ts": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42",
+    "packages/server/src/transaction-events.ts": "c6052433662fcb2d0a202ad4e408a24d4c43f980313fa89659501b4475790db5",
+    "packages/server/src/authority-read.ts": "fd6554c4ee0d08b997fb3622c2f21697f02d58b838f4ae0de10aca4707f67734",
+    "packages/server/src/transaction-store.test.ts": "7cd155ddd959ec31a207adbe6f8eb0a26f0af968a144abb58915720436bf0774",
+    "packages/server/src/transaction-installed-configuration.ts": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+    "packages/server/src/transaction-installed-process.ts": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7",
+    "scripts/transaction-installed-observation.mjs": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+    "apps/bdptest/test-support/transactional-execution-binding.ts": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+    "packages/server/src/transaction-runtime.ts": "77954f0a85029d76443feac54cd53cda4339ffc126660ace5a9f5af92466c573",
+    "docs/specs/bdp.md": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+    "schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227"
+  },
+  "plans": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/plan.md": "926505e28844ca8fe970e496f8fcab48179c1d86dd1e3f6b24ccb8f06f3671c4",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/ledger.json": "bfc60e1afee17b9ee9ac4e024c21e404d7d93703696a67cde782f95bb5667607",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/source-binding.json": "079c2335889021aa8cebc0cf00d3d2c487d5e4d40e750605a98dc8730e95d71d",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/report.json": "676405a754c155ecb2eea6259abadbd84d5d042a1d3597dddd86474ba0863227",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/claude-plan-review/source-context.txt": "7a93315b69e07002f05ae65bd1400fdd7399a829ec066ccbbc860d9b0500f495",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/claude-plan-review/source-inventory.json": "62a45ee01c9580f71798ce7e4ae75e681bc953db40bb5b8aa040543962db23e8",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/native-review.md": "e2a334e9e0bce277996a6f3307b43b02955eeab3afceeec7aeb579b868018e1c"
+  },
+  "sourceReadMethod": "exact committed blobs only; no live same-key source inputs"
+}

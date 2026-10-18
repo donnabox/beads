@@ -1,0 +1,44 @@
+{
+  "rootExecutionReleased": true,
+  "approvedStages": [
+    "dependencies",
+    "format-check",
+    "lint",
+    "check-boundaries",
+    "typecheck",
+    "build",
+    "bind-build",
+    "full-test",
+    "e2e-ready-preflight",
+    "smoke",
+    "evidence-verify",
+    "type-examples",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install"
+  ],
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/candidate-source.json",
+    "sha256": "27b75c94374685505b3503f9a321767831350b25906cae37364ca95bc556fc5f"
+  },
+  "finalHead": "d7197e97a29bff8f075028419afad05388e2e655",
+  "finalTree": "630a94d0ca1545f898cb8a8b614d4b7d2dd6d454",
+  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+  "workspaceTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation-private-tmp-successor/workspace-tools.json",
+    "sha256": "b786d3cbd749a07cb938407f09cc62ac46d25f90e7d572c51c47f9ca4591cbd6"
+  },
+  "rootResultsAccepted": [
+    "full-test"
+  ],
+  "consumerLockSha256": null,
+  "installedProvenance": null,
+  "consumerInventory": null,
+  "preparationIndexSha256": "6dbd50ad5aeacad6323996a0127a6f788a0bf6cf7fba6a7d721ceb89d6de0a08",
+  "note": "CLOSED fresh 25-stage private-tmp validation successor. Original failed outputs remain untouched. Source binding references exact unchanged reviewed candidate. Root must recapture workspace tool identities after this new dependencies stage; no prior stage records reused.",
+  "expectedParentEvidenceExit": 0
+}

@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "exec",
+    "biome",
+    "format",
+    "--write",
+    "packages/conformance/test-support/transactional/manifest-v1.json",
+    "packages/conformance/test-support/transactional/coverage-v1.json",
+    "packages/conformance/src/transactional-cumulative.test.ts",
+    "apps/bdptest/src/transactional-matrix.test.ts"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 1.915136167081073
+}

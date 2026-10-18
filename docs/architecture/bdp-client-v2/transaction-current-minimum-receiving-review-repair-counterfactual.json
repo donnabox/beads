@@ -1,0 +1,9 @@
+{
+  "source": "c534fcab840ef2e3753ab179feae10d3ce6431e5",
+  "mutation": "only per-attempt facet.perform(request, captured) becomes facet.perform(request, undefined); wait-loop captured signal unchanged",
+  "patchSha256": "aaaae2d4145f487e0cce86f2cfd4d5affa6278fb71ee00ee0952fdfa95c76098",
+  "failedTest": "current minimum perform receiving capture retains the captured signal inside the second owner read after a genuine behind wait",
+  "failureMessages": [
+    "AssertionError: expected undefined to be an instance of ScopeServerOperationAbortedError\n    at Proxy.<anonymous> (file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-current-minimum-receiving-review-repair/signal-dropping-mutant/node_modules/.pnpm/@vitest+expect@4.1.10/node_modules/@vitest/expect/dist/index.js:1386:15)\n    at Proxy.<anonymous> (file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-current-minimum-receiving-review-repair/signal-dropping-mutant/node_modules/.pnpm/@vitest+expect@4.1.10/node_modules/@vitest/expect/dist/index.js:1156:15)\n    at Proxy.methodWrapper (file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-current-minimum-receiving-review-repair/signal-dropping-mutant/node_modules/.pnpm/chai@6.2.2/node_modules/chai/index.js:1700:25)\n    at /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-current-minimum-receiving-review-repair/signal-dropping-mutant/packages/server/src/transaction-service.test.ts:1709:28\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-current-minimum-receiving-review-repair/signal-dropping-mutant/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+  ]
+}

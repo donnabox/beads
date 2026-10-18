@@ -1,0 +1,9 @@
+# Sequence replay assertion diagnosis and correction
+
+The original source run on f864c4d stopped at sequence13:12passed/1failed. Earlier6static stages,3set cases and7submission cases passed. No source HTTP stages, Snapshot group, control or installed phase ran. All recorded groups/runtime directories were absent and inputs unchanged. Original logs/results remain untouched.
+
+The separate emitted-owner probe (exit0, one temporary owner/database directory, zeroHTTP) compared70 nodes. Exactly41 differences were null versus ordinary Object prototypes along the metadata chain; no primitive, key or key-order mismatch. JSON bytes were identical. Owner was closed and directory removed. The underlying parser constructs null-prototype metadata; initial execution returns its in-memory result, retained replay decodes stored JSON into normal objects. Neither JavaScript prototype is a BDP wire value.
+
+One existing callback now compares exact JSON.stringify outputs with an explicit41-level fixture bound. This is independent of the production equality helper, preserves every represented field/value and key order, and does not introduce recursive serialization on12000-deep witnesses. Native source diagnosis confirmed this chain and repair. Other assertions, inputs, counts and production code are unchanged. Ordinary local child a17af9b records this correction. Full required source prefix will run against that exact child; original success/failure attribution remains f864c4d.
+
+One manual format invocation used a shell PATH that allowed pnpm child tooling to report Node24.19/pnpm11.25; its output is not treated as pinned validation. The absolute primary Node24.16/pnpm11.20 paths and all5 gate tool hashes remained unchanged, source lock unchanged, and pinned PATH format check then passed. The supervised source runs always prepend the pinned Node path. Fresh rebuild/tool checks in recovery remain mandatory.

@@ -1,0 +1,47 @@
+No files written; working tree still clean at `94c863b` (`git status --porcelain` empty). I ran no suite, no build, no network action — only reads of the diff, the two review artifacts, the frozen logs, and the surrounding source.
+
+## Scope confirmed
+
+Diff `b50c5e8 → 94c863b` is exactly 3 files / 65 insertions / 2 deletions: the new test (`installed-reference.test.ts:99-158`), one comment line (`installed-reference-observation.mjs:325`), one doc word (`update-implementation-progress.md:591`). **Runtime unchanged** — `development-runtime.ts` is byte-identical across the range, including the mutant target `socket.end(refusal, () => socket.destroy())` at `:492`.
+
+## Does the new test independently pin the destroy callback?
+
+Yes, and more strongly than the prior LOW asked for.
+
+- **Real half-open non-reading peer.** `createConnection({...listener, allowHalfOpen: true})` + `peer.pause()` + never reading. `allowHalfOpen: true` is a genuine strengthening over the public sibling (`node-http-listener.test.ts:440-455`, helper `:710-721`), which relies only on `pause()` suppressing `'end'` to avoid the auto-FIN. Here the peer cannot FIN even if a future edit consumes the bytes. `expect(peer.readableLength).toBeGreaterThan(0)` proves the refusal actually arrived and is unread, so this is a withheld-FIN peer, not a reset peer — precisely the case the prior review measured as indistinguishable in the observation loop.
+- **Mechanism is real and unbounded without the fix.** `closeListener` (`development-runtime.ts:499-504`) awaits `server.close()` plus `closeAllConnections()`, which does not reach a CONNECT-detached socket; `close()` (`:570-580`) awaits the listener *before* `authority.close()`; and the child (`installed-reference-process.ts:63`) awaits `runtime.close()` with no timeout of its own. So the only bound in the unfixed product is an external kill.
+- **Mutant proof holds and is well-targeted.** `mutant.log`: fails at **2208 ms** with the test's own message `installed shutdown blocked by non-reading CONNECT peer` at `:139`, in isolation (1 failed / 13 skipped) — not a launcher SIGKILL (10 s, `observation.mjs:43-46`) and not the `it` budget. `restored.log`: passes at **407 ms** against a 2000 ms cap, ≈5× margin. The test pins the *property* (bounded shutdown with a live detached socket), not the line, which is the right granularity: any alternative fix that also releases the socket would pass.
+- **Reliable bounded cleanup.** `running` is pushed to `children` before the `try`, so `afterEach` (`:86-90`) closes it even if the body is abandoned; `close()` is re-entrant (`observation.mjs:76-80` — `exited` is a cached promise, and SIGTERM is skipped once `exitCode`/`signalCode` is set), so the `finally`'s second `close()` is a no-op on the happy path and a bounded 10 s + SIGKILL on the bad path. `peer.destroy()` precedes that await, which is what let the mutant run finish in 2.53 s total instead of sitting out the launcher deadline. `report.md`'s no-leftover-children claim is consistent with that structure.
+
+Nothing at MEDIUM or above. Four INFO/LOW items, all about diagnosability and prose, none about shipped behavior.
+
+## Findings
+
+**1 — LOW · `apps/bdptest/src/installed-reference.test.ts:116-137` · failure-mode diagnosability**
+Socket errors are pushed into `errors` and only asserted at `:149`, after the happy path. Neither `bounded(once(peer,"connect"))` nor `bounded(refusal)` races the error, so any connect refusal, RST or ECONNRESET stalls for the full 2 s and reports `"CONNECT peer connection deadline"` / `"CONNECT refusal arrival deadline"` with the actual errno silently discarded — the exact "fails as a deadline rather than as the property that broke" shape the prior review objected to in the probe. *Fix:* race the error (`once(peer,"error").then(([e]) => { throw e })`) inside each `bounded`, or assert `expect(errors).toEqual([])` immediately after the refusal await. The sibling observation loop already does this with `socket.once("error", reject)` (`observation.mjs:330`).
+
+**2 — INFO · `installed-reference.test.ts:136` and `:141` · unfalsifiable assertion**
+`peer.writableEnded` is set only by `peer.end()`; the server's FIN and its `socket.destroy()` cannot set it, and `allowHalfOpen: true` + `pause()` blocks the auto-end path. Both assertions therefore guard the test's own precondition against future edits (removing `allowHalfOpen`, adding a read) rather than pinning runtime behavior — which is not what `report.md`'s "verifies the client has sent no FIN before and after child shutdown" implies. *Fix:* keep one as a precondition guard and make the post-close one falsifiable: `expect(peer.destroyed).toBe(false)` (plus the existing `readableLength` check) actually demonstrates a live half-open socket at the moment the owner was released.
+
+**3 — INFO · `installed-reference.test.ts:158` · budget headroom**
+15 000 ms `it` budget against a nested worst case over 20 s: two `launchInstalledReference` calls at 10 s each (`observation.mjs:41-44`), two `requestInstalled` calls at 5 s each (`:118`), three 2 s bounds. Benign — observed 384-407 ms, and an overrun still fails with `afterEach` cleanup bounded — but the bad mode is an opaque vitest timeout replacing the specific message. Same class as prior Finding 5. *Fix (optional):* 30 000 ms, matching the test immediately above it.
+
+**4 — INFO · evidence coverage, not code**
+All measurements in both this pass and the prior review are darwin. CI is `ubuntu-latest` / Node 24.16.0 (`ci.yml:18,31`) and runs this file under `pnpm test` (`:66`). The unmeasured assumption is close-with-unread-data: the test's refusal-arrival await and `errors == []` both depend on the server's post-`end()` `destroy()` producing FIN rather than RST. Low risk — the server's receive queue is empty (the parser consumed the whole CONNECT request), and RST-on-close requires unread *inbound* data — but it is the one in-scope claim the frozen logs don't cover. *Fix:* nothing in code; just don't state cross-platform durability.
+
+## Wording / nits
+
+- **`docs/design/update-implementation-progress.md:591` — INFO.** `captured installed schemas` is correct (`schemaArtifacts` is `[]` whenever `transport === undefined`, `development-runtime.ts:203-205`, so the path is installed-only), but the one-word insertion pushed the line to **87 chars** inside a paragraph hand-wrapped at 64-79. Biome doesn't format markdown and the file max is 113, so nothing enforces it. *Fix:* rewrap the paragraph.
+- **`installed-reference.test.ts:12-13` — INFO.** The new `node:net` / `node:events` imports land unsorted and extend the `assist/source/organizeImports` failure in `checks.log`. `report.md`'s "rejected import organization in the two existing files" is accurate — I confirmed both files already failed at `b50c5e8` (`node:url` before `node:http`, no blank line before `const helpers`; `node:net` before `node:http` before `node:events` in the `.mjs`) — and `pnpm format:check` / `pnpm lint`, the actual CI gates, don't run assist. No action required.
+- **Local `bounded` duplication — not a defect.** A third near-identical timeout helper (alongside `observation.mjs:35-50` and `withTimeout` at `node-http-listener.test.ts:723`). Reuse across `apps/bdptest` ← `packages/server` test internals would cross the boundary check, so re-implementing is the right call.
+
+## Prior-finding closure
+
+- **Prior Finding 1 (LOW, destroy-after-end unpinned) — CLOSED, over-delivered.** The requested fix was to mirror the in-process public unit. The author instead pinned it against the emitted child: real `spawn`, real SIGTERM, real `authority.close()`, plus a `create: false` reopen asserting the stored Bead byte-for-byte (`:142-148`), which covers the "store lock never released, owner close never invoked" half of the prior impact statement. The mutant discriminates with a 5× margin and reports the property, not a deadline artifact.
+- **Prior Finding 2 (INFO, comment overclaimed socket release) — CLOSED.** `observation.mjs:325` now reads "must remain usable after a reset peer," which is exactly what `:340` observes (`bdp.json` → 200). The release half it previously over-claimed is now pinned in the right place, by the new test.
+- **Prior Finding 3 (INFO, unlabeled "captured schemas") — CLOSED**, with the wrap nit above as the only residual. All five configuration-specific paths in that paragraph are now attributed.
+- **Prior Findings 4 and 5 (INFO, recorded with no change recommended) — correctly untouched.** The mixed `includes`/`/i` styles at `:320-322` were not "unified" toward `/i`.
+
+**No regression.** Nothing executable in the product changed; the diff is one additive test, one comment correction, one doc word. No existing assertion is loosened or deleted; the new test is independent (it builds its own config, port and directory, and passed alone in `restored.log`). Frozen evidence reads consistent with the code: 30 tests / 2 files, mutant fails at the intended deadline with the intended message, restored passes.
+
+**Not verified by me:** I re-ran nothing — no suite, build, packed smoke, mutant reproduction or socket probe. My conclusions about the mutant and timings are reads of `mutant.log` / `restored.log` / `tests.log` cross-checked against the source paths they implicate, not independent execution. Linux behavior remains unmeasured by anyone in this range.

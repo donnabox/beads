@@ -1,0 +1,45 @@
+{
+  "state": "proposed successor for root acceptance; no authoring/execution/review launch",
+  "originalPlanSha256": "a7af69fd59fb7f1554190103b418541985698aa725405ce524f6b41107c449fb",
+  "originalLedgerSha256": "1e24b04e4a64aa25ac607a4f364e8dab7fe79328ba6850f15ad5910553351361",
+  "actualReview": {
+    "exitCode": 0,
+    "timeout": false,
+    "forcedTermination": false,
+    "elapsedSeconds": 749.9513593330048,
+    "sourceAndPlanUnchanged": true,
+    "checkoutUnchanged": true,
+    "stdoutSha256": "89a5b00025a0faeedc9ff74dc81a0572a45bf14194224c0baa32b781359bc997",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cleanupSha256": "21274aca6e3d271c88b1b2dcbf8d2ca51e711b867acb73b55369f1a3c9eb9c0b",
+    "sourceAfterSha256": "0cf215bc8fdb9aa2f8ccbf6858a27871ff69bf442e653190bb863399179c06e9"
+  },
+  "files": {
+    "plan.md": {
+      "sha256": "07827411c1b243f5ab4cc91188f453a22d365c3bbb9d03c2cd814c3f4617c8e0",
+      "bytes": 16174
+    },
+    "ledger.json": {
+      "sha256": "4ffbc5aaf6ee3f59008a65e5899679d2dd5383872cb1574ff34391839e3399f3",
+      "bytes": 19221
+    },
+    "source-binding.json": {
+      "sha256": "ab1acfca1ee804427d60010b976be7b4d8354d453b6167c82c10ba2711bcad77",
+      "bytes": 4808
+    },
+    "source-dispositions.md": {
+      "sha256": "762d174a908354a28c539888f49c70d79c20887026e256b9206e833ebb211865",
+      "bytes": 5831
+    },
+    "correction.patch": {
+      "sha256": "03faa298329119660594f53182c34232b689fff04b166030c36ae56ef4bfb055",
+      "bytes": 27540
+    }
+  },
+  "sourceCases": 18,
+  "sourceHttp": 21,
+  "sourceOwners": 16,
+  "aggregateHttpExpected": 31,
+  "aggregateHttpMaximum": 40,
+  "installedBodyBytesUnchanged": true
+}

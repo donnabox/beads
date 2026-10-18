@@ -1,0 +1,10 @@
+{
+  "status": "MASKED_LOG_PROJECTION_NOT_ORIGINAL_JSON",
+  "rawLogSha256": "e3c4607e9d7eed25050975c38c3d6402096291afde547c2d169e9dbf56fbc0c3",
+  "originalUncoloredRecordSha256": "2d29b9fcc3dbfca635f1bba0acabea0ddd043975de58a91f21aaa9aca5df7d93",
+  "exactMaskedFragment": "\"www-authenticate\":\"***\"bdp-transaction-development\\\"\"",
+  "replacement": "\"www-authenticate\":null",
+  "count": 1,
+  "path": "/completedResponses/8/headers/www-authenticate",
+  "meaning": "null denotes unavailable GitHub-masked challenge only in this projection; it does not denote an absent original HTTP field. No original challenge bytes reconstructed or independently verified from CI log. Local installed evidence has separate genuine header attribution."
+}

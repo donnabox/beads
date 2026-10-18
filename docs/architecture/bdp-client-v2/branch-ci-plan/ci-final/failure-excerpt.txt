@@ -1,0 +1,31 @@
+2026-10-16T06:11:04.1016895Z ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+2026-10-16T06:11:04.1017345Z 
+2026-10-16T06:11:04.1020410Z  FAIL  packages/server/src/transaction-service.test.ts > nonexecuting sequence refusal observation > keeps excluded sequence responses unobserved and without refusal context
+2026-10-16T06:11:04.1026088Z AssertionError: expected 406 to be 500 // Object.is equality
+2026-10-16T06:11:04.1026613Z 
+2026-10-16T06:11:04.1026840Z - Expected
+2026-10-16T06:11:04.1027279Z + Received
+2026-10-16T06:11:04.1027504Z 
+2026-10-16T06:11:04.1027685Z - 500
+2026-10-16T06:11:04.1028034Z + 406
+2026-10-16T06:11:04.1028214Z 
+2026-10-16T06:11:04.1028931Z  ❯ packages/server/src/transaction-service.test.ts:2061:31
+2026-10-16T06:11:04.1345723Z     2059|         { text },
+2026-10-16T06:11:04.1355572Z     2060|       );
+2026-10-16T06:11:04.1355877Z 
+2026-10-16T06:11:04.1356893Z     2061|       expect(response.status).toBe(status);
+2026-10-16T06:11:04.1357842Z        |                               ^
+2026-10-16T06:11:04.1359038Z     2062|       expect(response.headers.get("x-bdp-development")).toBe("non-atte…
+2026-10-16T06:11:04.1360070Z     2063|       if (status === 500) {
+2026-10-16T06:11:04.1360520Z 
+2026-10-16T06:11:04.1374893Z ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+2026-10-16T06:11:04.1375783Z 
+2026-10-16T06:11:04.1395158Z  Test Files  1 failed | 184 passed (185)
+2026-10-16T06:11:04.1457711Z       Tests  1 failed | 9348 passed | 1 skipped (9350)
+2026-10-16T06:11:04.1458858Z    Start at  05:57:56
+2026-10-16T06:11:04.1462868Z    Duration  787.69s (transform 8.58s, setup 3.18s, import 45.96s, tests 1723.58s, environment 25ms)
+2026-10-16T06:11:04.1464519Z 
+2026-10-16T06:11:04.2133181Z [ELIFECYCLE] Test failed. See above for more details.
+2026-10-16T06:11:04.2371489Z ##[error]Process completed with exit code 1.
+2026-10-16T06:11:04.2477568Z Post job cleanup.
+2026-10-16T06:11:04.3976742Z Pruning is unnecessary.

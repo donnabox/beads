@@ -1,0 +1,58 @@
+{
+  "sourceBindingSha256": "881ebb8224d75fd899aae5851dcc6a76b72293ae42595ce56ea795c7141b0952",
+  "environment": "BDP_COMMAND_MINIMUM_REPORT_PATH",
+  "path": "Distinct absolute file per invocation, initial wx0600 then same-invocation rewrite",
+  "maximumBytes": 262144,
+  "safeFields": [
+    "sourceCommit",
+    "targetEntry",
+    "actual configuration and baselineReceipt",
+    "artifacts and exactConfigurationDigest",
+    "claimEligible:false",
+    "cleanupComplete",
+    "commandMinimum.status/checksPassed/control/applications/provenance",
+    "actual dispatch localIndex/method/url/credentialRef safe handle",
+    "original completion status/write/body digest and boolean checks",
+    "actual observed action IDs/method/url/status and structured assertion id/passed"
+  ],
+  "forbidden": [
+    "tokens",
+    "raw header values",
+    "full bodies",
+    "invented executor action ID"
+  ],
+  "retention": "Actual runner result saved before supplemental checks/cleanup; refreshed after checks and cleanup, including genuine partial failure. Earlier runner throw fabricates no result. Absent row emits no supplement.",
+  "positive": {
+    "responses": 11,
+    "assertionsPassed": 47,
+    "applications": 0
+  },
+  "negative": {
+    "responses": 2,
+    "actualStatuses": [
+      200,
+      200
+    ],
+    "control": "replay-outcome",
+    "kind": "assertion-input-only",
+    "applications": 1,
+    "passed": 7,
+    "failed": [
+      {
+        "exchange": "singleton-replay",
+        "assertion": "outcome"
+      }
+    ],
+    "wireBodyUnchanged": true
+  },
+  "privateOracles": [
+    "ordered case-sensitive serialized authored prefix and no duplicate minimum fields in suffix",
+    "full schema before baseline",
+    "strict singleton/sequence result Resource equality",
+    "retained replay equality",
+    "state unchanged by refusals",
+    "no TX context/receipt",
+    "stale revision independently differs before dispatch"
+  ],
+  "publicQualification": false
+}

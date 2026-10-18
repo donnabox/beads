@@ -1,0 +1,19 @@
+{
+  "at": "2026-10-15T12:58:30.506794+00:00",
+  "decision": "accepted targeted stale assertion correction and source validation",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/stale-assertion-repair/source-binding.json",
+    "sha256": "e96f012c8502285454eb3867f8b7b35c82c483ae3ceb3f7fc21eaa31127d0cf3"
+  },
+  "originalSourceBindingSha256": "edc5c98c8e5c82f2073e1bf35aa84098efe9552c7dbc74537784de75788cca5a",
+  "correctionSha256": "4ae1f2cf7d02670b406fb13b57c37e43997ca66f50180997df173c917a8f32c2",
+  "reportSha256": "fc5f6c1be3044867cfccfb879bc63599aac564894291a2ca24861c07e2676001",
+  "summarySha256": "6dc4926d03bad8283accfa938397a2d6b954f195d1675019051fd33fa95406fe",
+  "cleanupSha256": "fb616e7c12bb8c45b9151708c7eeadbcccabaa6b8840257824c8c3914485b564",
+  "rootVerification": "Root independently compared original and successor eight paths, read exact one-line patch and entire callback, checked all three exit records and exact one passed/76 not selected JSON; fresh ps confirms all sampled PIDs absent. No production/build change. Original14 positives and control retain original attribution.",
+  "sourceCases": 15,
+  "additionalSourceDerivedHttp": 14,
+  "noRebuild": true,
+  "fullCiRequired": true,
+  "claudeSupplementPending": true
+}

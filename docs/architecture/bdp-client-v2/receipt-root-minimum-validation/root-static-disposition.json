@@ -1,0 +1,21 @@
+{
+  "accepted": true,
+  "at": "2026-10-17T08:29:22.569883+00:00",
+  "sourceBindingSha256": "1b27cf5ed010bf8dc9405632c0777dac52350fdfcc6d72041c14dabbbb127477",
+  "dependencyInstallAuthorized": true,
+  "staticValidationAuthorized": true,
+  "runtimeValidationAuthorized": false,
+  "nativeCodeSha256": "33eda490bea3336104e57dfc32ffe067483b665d6a42f960255d472e6b6d0a9c",
+  "nativePreparationSha256": "88f05a278fee01047162bd43f7782333bf06a0089c571a4f52bafd202f541173",
+  "nativeCorrectionClosureSha256": "316002fbe1585f4dafe5d3316b4754be34295f9f690c9bacefdf6376a94e3f65",
+  "rootRead": "Full gate/run/audit/packages, stage argv/cwd/selected source callbacks, correction plan and exact one-value cwd patch. Verified all125archive/123active/679source/reference pins. Native N1 closed without execution.",
+  "actualClaude": "Running full CODE review at frozen source; no verdict yet. Static-only exception explicit; runtime/build/source/installed stages remain closed.",
+  "scope": [
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint"
+  ],
+  "sourceMutationAllowed": false
+}

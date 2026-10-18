@@ -1,0 +1,53 @@
+# Next consistency decision audit
+
+**No recorded answer found for either retained-read minimum comparison or command-header applicability.** Retained Snapshot comparison is already pending as **S1-Q1**, not a newly discovered question. The smallest useful next decision is to resolve that existing question, explicitly covering ordinary collection continuations as well. Recommend comparing the minimum to the current serving observation while preserving the pinned body/anchor. Command-header applicability is a separate smaller decision; recommend read-only applicability and ignoring these controls on mutation POSTs. Neither recommendation is current law or implementation authorization.
+
+## Source and search scope
+
+Read-only clean `/Users/dbox/repos/wt/vickie/vickie-ci-headroom`, HEAD `40806dd3ac3e74ff94c07330c89ee47dc730080c`, tree `e870145ffa8f49821ea3a1fb59c1c06506b8bf17`. All source/spec line references below are current at that pin. The sole design checkout was at `d654a4546ccdf9e07f59f6401c267e27906d8786`; its design.md had no working-tree modification when inspected. No assumption that CI or the maintenance successor is merged is needed for these unchanged seams.
+
+Searched the753 top-level Markdown records in integration logs and866 top-level Markdown records in the sole design directory for minimum/Snapshot/retained/continuation/command/anchor terms and operator/root/ruling/answer wording. Read the targeted historical consistency audit, current Snapshot plan and its question/appendix, fresh-creation root acceptance, latest live ledger and retained histories, explicit start-now operator ruling, sole design priority/questions, current implementation progress, and actual spec/HTTP/read/store seams. Searched repository docs/design decisions and every normative minimum-position reference. Installed copies/node_modules and old temporary source copies were excluded as duplicated evidence. This is a bounded local-record search, not a claim to have inspected unsaved human conversation or remote message history. No network, source edit, test, build or service execution.
+
+## Ruling status: existing pending question, not silently settled
+
+- `transaction-snapshot-plan.md:78` explicitly says **“Question S1-Q1 remains with the operator”** and **“Root has already asked the operator.”** It asks current serving prefix versus immutable anchor, and warns that the receipt-specific rule is not a Snapshot ruling. Lines80 and134–136 preserve the private unsupported boundary and distinguish current headers from minimum comparison.
+- `transaction-start-now-resume-operator-ruling.md:3–9` contains an actual human answer only for saved Last-Event-ID overriding start=now. Line9 expressly leaves other minimum/retention/selector rulings unanswered. Do not generalize that answer to these cases.
+- `transaction-snapshot-creation-minimum-root-acceptance.md:7` authorizes fresh creation only and explicitly excludes retained-anchor interpretation and new mutation barriers. Current `docs/design/transaction-implementation-progress.md:715–731` still identifies the retained query anchor/current observation distinction and retained Snapshot minimums as unresolved.
+- The live ledger's remaining-delivery section and sole `design.md:9,106` retain other wire decisions as pending. No narrower saved answer choosing anchor/current or ignore/reject on commands was located. The historical `transaction-consistency-rulings-audit.md:10,14–15` remains accurate on these specific questions; its proposed fresh-creation work is historical and already implemented.
+
+Do not send another metadata-only Link Event question. Also do not create a second pending S1-Q1 record: reuse its identity and update the existing queue if root chooses to present the narrowed wording below.
+
+## Retained Snapshot and collection continuation: what is settled
+
+Spec `bdp.md:5899–5907` requires retained manifest identity, anchor, checkpoint and expiry to remain unchanged; a refetch cannot replace the Snapshot or renew expiry. `:5923–5936` binds stream pages to the original anchor and distinguishes ordinary collection cursors. `:1570–1581` requires continuation pages to keep the original selected set, projection and Resource revisions, never silently restart at newer state. These obligations do not need a ruling.
+
+`bdp.md:5758–5786` requires strict ordinary reads and an at-or-after minimum representation or the established wait/route/failure alternatives. `:5793–5807` requires observed context and checks before conditional shortcuts; current context on304/412 is settled. `:5916` expressly includes ordinary minimum-position failures for retained Snapshot targets. But no retained Snapshot/collection-specific sentence selects which position the minimum compares against when the pinned data is older than the eligible serving head. The explicit receipt/page current-observation rule at `:5233–5244` supplies a useful model, not authority to extend its scope silently.
+
+Actual current behavior:
+
+- `transaction-http.ts:144–147` notices presence of any of the three minimum-control fields, even empty. `:409–415` permits parsed complete minima only on fresh Snapshot creation; any retained manifest/page minimum returns the private development-gap500. `transaction-store.ts:1439–1446` independently restricts a supplied minimum to create/preflight. Existing retained reads already pair immutable body with actual current context in the same owner entry (`:1462–1471`; compatibility reads`:1502–1515`).
+- Collection and incident-Link continuations are excluded by `transaction-read.ts:48–56`; HTTP maps supplied valid controls on unsupported routes to the private route gap at `transaction-http.ts:552–562`. Internally, `transactionReadContexts` already separates current and retained snapshot contexts (`transaction-read.ts:262–304`); their existence does not decide minimum semantics. Current supported reads check current context at`:137–161`.
+
+**Smallest question to reuse for S1-Q1:**
+
+> For a still-valid retained Snapshot or collection continuation, should the minimum gate the server's current observed position while the returned data stays pinned to its original snapshot? I recommend yes. For example, a snapshot was captured at P5, the server has reached P8, and the client requests its next page with minimum P8: return the original P5 page with current response context P8, without changing its anchor or expiry.
+
+P5/P8 are explanatory ordering labels, not client arithmetic or prescribed token encodings. Assume the same valid epoch/view, an authorized disclosed handle, and no expiry/erasure conflict. The recommendation gives useful replica-read eligibility without defeating pagination or forcing recapture; clients wanting fresh data start a new collection query/Snapshot. It must explicitly say the minimum is **not a freshness promise for the immutable pinned payload**. Current response context must be observed, not fabricated from the requested minimum. If the serving replica is still behind, its established finite wait/route/failure path applies before conditional success.
+
+The alternative is to constrain the immutable anchor. Then P5 cannot satisfy P8 even when the server has reached P8; waiting cannot change that handle. An anchor choice consequently needs an explicit permitted response for this valid, unexpired handle. Do not guess cursor-expired or fabricate a catch-up-timeout from the current server's already-satisfied position. This is why the current-observation recommendation resolves the useful case with the least additional protocol machinery.
+
+A yes answer should be recorded to cover **both** retained Snapshot manifests/streams and ordinary collection/incident-view continuations; the old S1-Q1 phrasing specifically named Snapshot, so do not assume an answer about Snapshot alone automatically covers every cursor. It would unblock a bounded serving plan for complete supported tuples and valid disclosed handles. It would not settle malformed tuples, unknown positions or simultaneous nondisclosure/expiry/minimum precedence, and would not activate public profile admission.
+
+## Command minimum fields: separate applicability decision
+
+Current mutation handling `transaction-http.ts:293–302` refuses any supplied minimum-control field after its special authorization check, before key lookup/effects. The comment explicitly labels this private development behavior, not a command precondition or catch-up rule. This can turn an otherwise valid POST carrying a client's usual read-consistency headers into500.
+
+The strongest settled constraints are the ordered admission/key/duplicate rules at `bdp.md:4490–4530`, command status table`:4595–4603`, and catch-up-timeout's explicit **read** definition at`:5293–5296`. The receipt rule`:5238–5239` distinguishes synchronous post-execution response from a later minimum-bearing receipt read. They do not establish a client minimum as a new pre-execution command barrier. `:3565–3577` and`:5817–5819` concern HTTP conditional fields; they do not themselves say to ignore these BDP minimum fields. The remaining question is applicability/ignore versus rejection, not a mandate to design mutation consistency.
+
+**Separate concise question, after S1-Q1 or independently if root prioritizes commands:**
+
+> Should the minimum-position request fields be read-only controls and be ignored on mutation POSTs, with normal idempotency, authorization and expected-revision rules unchanged? I recommend yes. A valid new command carrying an older cached minimum should execute normally, and an equal-key retry should return its existing receipt rather than fail solely because those read headers were copied onto the POST.
+
+The recommended applicability rule concerns all three fields when used as request minimum controls (`BDP-Scope-Epoch`, `BDP-Authorization-View`, `BDP-Minimum-Scope-Position`): their presence alone would add no command gate or identity input. It does not remove generic HTTP header syntax/bounds, command revision guards, response-context obligations, or minimum enforcement on a later receipt GET/HEAD. If the intended answer is rejection instead, the direct code/ordering must be specified; if it is a command barrier, it needs additional precedence, duplicate and retention law. Neither alternative follows merely from the current private500.
+
+Keep these decisions independent. An answer about retained-read comparison does not authorize changing POST handling. The next implementation plans should pin the accepted observable examples and preserved boundaries, then undergo normal review; this audit proposes no source change or execution.

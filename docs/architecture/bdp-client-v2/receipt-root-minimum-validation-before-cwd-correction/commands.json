@@ -1,0 +1,440 @@
+{
+  "configurationFinalized": true,
+  "state": "Finalized CLOSED receipt-root draft preparation; no execution authorized",
+  "finalOrder": [
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "review-focused-source",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "receipt-history-external",
+    "review-receipt-history-external",
+    "receipt-root-external",
+    "review-receipt-root-external"
+  ],
+  "commands": {
+    "workspace-install": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--frozen-lockfile"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "bind-workspace-tools": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/audit.py",
+        "tools"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "typecheck": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "format-check": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum/node_modules/@biomejs/biome/bin/biome",
+        "format",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum/biome.json",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-service.ts",
+        "packages/server/src/transaction-store.ts",
+        "packages/server/src/transaction-service.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "lint": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum/node_modules/@biomejs/biome/bin/biome",
+        "lint",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum/biome.json",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-service.ts",
+        "packages/server/src/transaction-store.ts",
+        "packages/server/src/transaction-service.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "fresh-build": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "build"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "bind-fresh-build": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/audit.py",
+        "build"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "focused-source": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-service.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/run/focused-source.results.json",
+        "--testNamePattern",
+        "^(?:captures\\ opaque\\ receipt\\ root\\ minima\\ through\\ real\\ owner\\ retries|drains\\ an\\ opaque\\ receipt\\ root\\ wait\\ before\\ closing\\ its\\ owner|private\\ minimum\\-read\\ owner/lifecycle\\ checks\\ minimum\\ before\\ read\\-triggered\\ expiry\\ but\\ honors\\ independently\\ forgotten\\ receipts\\ \\(false\\)|private\\ minimum\\-read\\ owner/lifecycle\\ checks\\ minimum\\ before\\ read\\-triggered\\ expiry\\ but\\ honors\\ independently\\ forgotten\\ receipts\\ \\(true\\)|private\\ minimum\\-read\\ owner/lifecycle\\ checks\\ minimum\\ before\\ read\\-triggered\\ expiry\\ but\\ honors\\ independently\\ forgotten\\ receipts\\ \\(opaque\\ false\\)|private\\ minimum\\-read\\ owner/lifecycle\\ checks\\ minimum\\ before\\ read\\-triggered\\ expiry\\ but\\ honors\\ independently\\ forgotten\\ receipts\\ \\(opaque\\ true\\)|preserves\\ current\\ receipt\\ absence\\ context\\ across\\ ordinary\\ and\\ minimum\\ service\\ entrypoints|source\\-private\\ actual\\ Transactional\\ HTTP\\ authenticates\\ and\\ hides\\ receipts\\ before\\ minimum\\-control\\ refusal\\ or\\ conditional\\ shortcuts|keeps\\ receipt\\ minimum\\ enforcement\\ after\\ commands\\ ignore\\ copied\\ controls|checks\\ a\\ stored\\ failed\\ receipt\\ minimum\\ before\\ read\\-triggered\\ retention\\ disposal\\ over\\ HTTP|refuses\\ unsupported\\ root\\ controls\\ after\\ nondisclosure\\ but\\ before\\ read\\-triggered\\ retention|serves\\ opaque\\ receipt\\ root\\ minima\\ before\\ HTTP\\ shortcuts\\ with\\ private\\ fences)$"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "captures opaque receipt root minima through real owner retries",
+        "drains an opaque receipt root wait before closing its owner",
+        "private minimum-read owner/lifecycle checks minimum before read-triggered expiry but honors independently forgotten receipts (false)",
+        "private minimum-read owner/lifecycle checks minimum before read-triggered expiry but honors independently forgotten receipts (true)",
+        "private minimum-read owner/lifecycle checks minimum before read-triggered expiry but honors independently forgotten receipts (opaque false)",
+        "private minimum-read owner/lifecycle checks minimum before read-triggered expiry but honors independently forgotten receipts (opaque true)",
+        "preserves current receipt absence context across ordinary and minimum service entrypoints",
+        "source-private actual Transactional HTTP authenticates and hides receipts before minimum-control refusal or conditional shortcuts",
+        "keeps receipt minimum enforcement after commands ignore copied controls",
+        "checks a stored failed receipt minimum before read-triggered retention disposal over HTTP",
+        "refuses unsupported root controls after nondisclosure but before read-triggered retention",
+        "serves opaque receipt root minima before HTTP shortcuts with private fences"
+      ],
+      "prospectiveWorkload": {
+        "sourceCallbacks": 12,
+        "sourceStores": 12,
+        "sourceNetworkRequests": 36,
+        "sourceNetworkMethods": {
+          "POST": 6,
+          "GET": 21,
+          "HEAD": 9
+        },
+        "sourceServiceLiveRootAttempts": 28,
+        "sourceServiceLivePageAttempts": 4,
+        "separatePostCloseOwnerProbes": 1,
+        "sourceServiceWaits": 9,
+        "sourceServiceClockCalls": 33,
+        "sourceServiceMutations": 9,
+        "installedCallbacks": 2,
+        "installedRequests": 27,
+        "installedChildrenSequential": 2,
+        "installedStores": 2,
+        "allSelectedStores": 14
+      },
+      "selectionAttribution": "Exact frozen source suite placement and accepted selection reconciled; totals are prospective/source-derived, only three new instrumented observations"
+    },
+    "review-focused-source": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/audit.py",
+        "source"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "node-version": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "prepare-package-directory": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/packages.py",
+        "directory"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "pack-protocol": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/run/packages"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "pack-server": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/run/packages"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "verify-archives": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/packages.py",
+        "tar"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "prepare-consumer": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/packages.py",
+        "consumer"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "consumer-install": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "verify-installed-consumer": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/packages.py",
+        "installed"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "receipt-history-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/run/receipt-history-external.results.json",
+        "--testNamePattern",
+        "^(?:rejects\\ malformed\\ read\\ minimum\\ tuples\\ before\\ observation\\ while\\ preserving\\ receipt\\ nondisclosure)$"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "rejects malformed read minimum tuples before observation while preserving receipt nondisclosure"
+      ],
+      "prospectiveWorkload": {
+        "file": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+        "title": "rejects malformed read minimum tuples before observation while preserving receipt nondisclosure",
+        "new": false,
+        "httpRequests": 22,
+        "children": 1,
+        "stores": 1
+      },
+      "expectedObservation": "private-installed-minimum-receiving",
+      "expectedExchanges": 22,
+      "expectedChildren": 1
+    },
+    "review-receipt-history-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/audit.py",
+        "history"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "receipt-root-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/run/receipt-root-external.results.json",
+        "--testNamePattern",
+        "^(?:observes\\ installed\\ opaque\\ receipt\\ root\\ timeout\\ with\\ principal\\ nondisclosure)$"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "observes installed opaque receipt root timeout with principal nondisclosure"
+      ],
+      "prospectiveWorkload": {
+        "file": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+        "title": "observes installed opaque receipt root timeout with principal nondisclosure",
+        "new": true,
+        "label": "E",
+        "httpRequests": 5,
+        "children": 1,
+        "stores": 1
+      },
+      "expectedObservation": "private-installed-receipt-root-minimum",
+      "expectedExchanges": 5,
+      "expectedChildren": 1
+    },
+    "review-receipt-root-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation/audit.py",
+        "root"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    }
+  },
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "pending": [
+    "full native and actual Claude CODE dispositions and root acceptance",
+    "root bootstrap/static/runtime releases",
+    "fresh workspace install and measured tools/build/archive/consumer proof",
+    "actual consumer lock and installed provenance acceptance"
+  ],
+  "freshBootstrapStages": 2,
+  "postBootstrapStages": 19,
+  "totalStages": 21,
+  "reusedEvidence": [],
+  "sourceBindingSha256": "1b27cf5ed010bf8dc9405632c0777dac52350fdfcc6d72041c14dabbbb127477"
+}

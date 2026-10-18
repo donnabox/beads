@@ -1,0 +1,75 @@
+{
+  "name": "lint",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "exec",
+    "biome",
+    "lint",
+    "--config-path",
+    "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/biome.json",
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+    "packages/server/src/transaction-read.test.ts"
+  ],
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "exec",
+    "biome",
+    "lint",
+    "--config-path",
+    "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/biome.json",
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+    "packages/server/src/transaction-read.test.ts"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+  "started": "2026-10-16T04:51:09.210256+00:00",
+  "adjudication": {
+    "kind": "command-only",
+    "testVerdict": "not-applicable"
+  },
+  "elapsedSeconds": 1.1442142080049962,
+  "exit": 0,
+  "supervisorExit": 0,
+  "timeout": false,
+  "forcedCleanup": false,
+  "errors": [],
+  "processGroup": 65217,
+  "remainingBeforeCleanup": [],
+  "remainingAfterCleanup": [],
+  "sampledPids": [
+    65217,
+    65221,
+    65251,
+    65279,
+    65289
+  ],
+  "sampledPidsStillPresent": {},
+  "sampledTempEntries": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/ci-expectation-repair/validation-v2/run/lint.tmp/node-compile-cache"
+  ],
+  "tempEntriesAfter": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/ci-expectation-repair/validation-v2/run/lint.tmp/node-compile-cache"
+  ],
+  "remainingTempEntriesForClassification": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/ci-expectation-repair/validation-v2/run/lint.tmp/node-compile-cache"
+  ],
+  "runtimeDirectoriesStillPresent": [],
+  "unclassifiedTempEntriesStillPresent": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/ci-expectation-repair/validation-v2/run/lint.tmp/node-compile-cache"
+  ],
+  "sourceUnchanged": true,
+  "sourceSha256After": {
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": "615caab0e5a846c546e718f65c4041c5ca41bef59df1d56a6dea0e42638b0174",
+    "packages/server/src/transaction-read.test.ts": "58e745c2ade0804bf0ab0230c34ff5e522c28725fa77ecb9303dbe972162e0f2"
+  },
+  "samplingSeconds": 0.05,
+  "commandWindowSeconds": 115,
+  "groupHardDeadlineSeconds": 120,
+  "cleanupBound": "TERM at115s, KILL no later than120s; wait/reap after kill adds no product execution allowance",
+  "samplingLimitation": "Short-lived or detached descendants may evade group sampling; helper counts and independent final checks remain separate.",
+  "tempClassification": "Only the selected fixture prefixes under this attempt TMPDIR are owned runtime roots; all other entries are preserved for review, not deleted or called leaks.",
+  "resultLimitation": "A declared negative raw exit1 may complete its supervisor; subsequent strict review is mandatory. No generic exit1 acceptance or product qualification."
+}

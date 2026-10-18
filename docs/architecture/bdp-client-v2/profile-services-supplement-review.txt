@@ -1,0 +1,124 @@
+I have the full picture. Below are the findings — static review only; I did not install, build, or write anything in this checkout.
+
+---
+
+# Supplemental review — frozen source `03b7f43`
+
+**Scope:** complete delta `b225fe5..03b7f43` (2 commits, 8 files, +192/−46), plus whole-file re-read of `read-pagination.ts`, `authority-read.ts` (context seams), `transaction-read.ts`, `read-sequence-lifecycle.ts`, `index.ts` (pagination/controls paths), `development.ts`, `package.json`, `smoke-executables.mjs`, `smoke-safety.mjs`, `vitest.config.ts`, `tsconfig.*`.
+
+**Verification constraint (stated, not worked around):** this checkout has no `node_modules` and no `packages/server/dist`. Installing or building would write files, which was prohibited, so **no `typecheck` / `lint` / `test` / `smoke` run was performed here.** Everything below is static. Where a claim depends on a tool run, I say so.
+
+---
+
+## VERDICT ON THE MEDIUM: **CLOSED** at `03b7f43`
+
+The public `ReadPagination` surface no longer carries the source-context capability, and the closure is enforced at four independent layers.
+
+**Type surface removed**
+- `packages/server/src/read-pagination.ts:34-44` — `ReadFirstPageInput` no longer declares `sourceContext`.
+- `read-pagination.ts:110-121` — `ReadPagination` no longer declares `sourceContext(page)`; exactly six members remain.
+- `read-pagination.ts:123-131` — capability relocated to `ContextualReadPagination` (`firstPageWithContext` + `sourceContext`), documented package-private.
+- `index.ts:1515` re-exports only the narrowed `ReadPagination` + `ReadPaginationOptions`. `ReadSourceContext` and `ContextualReadPagination` are **not** re-exported (verified by repo-wide grep).
+
+**Runtime surface narrowed, and the original facade genuinely preserved**
+- `read-pagination.ts:135-141` — public `createReadPagination` destructures six members off the engine and returns `Object.freeze({…})`. `index.ts:175-181` returns that object unwrapped and brands it into `serverReadPaginations`; `index.ts:1099` identity check still holds because `snapshotServerReadControls` passes the same object through by reference (`index.ts:908`).
+- `read-pagination.ts:338-340` — the engine's `firstPage` forwards **one** argument to `firstPageWithContext`. An extra positional argument is dropped and `input.sourceContext` is never read, so a public composition cannot populate or read back context.
+- **Whole-file check for the destructuring hazard:** no method in the engine object (`limits`, `validateLimit`, `firstPage`, `continuePage`, `cleanupExpired`, `close`) references `this`; all reach state through the closure or the `pagination` binding. Detaching them onto a new object is therefore behavior-preserving. This was the main regression risk in the chosen fix shape and it does not fire.
+
+**Admission boundary intact**
+- `packages/server/package.json:10-19` — `exports` is exactly `.` and `./development`. `scripts/smoke-safety.mjs:5-14` deep-equals that map, so adding a `./read-pagination` subpath fails the smoke.
+- `read-pagination-public.test.ts:45-47` asserts `@bdp/server/read-pagination` and `@bdp/server/dist/read-pagination.js` reject with `ERR_PACKAGE_PATH_NOT_EXPORTED` via ESM `import()`; `smoke-executables.mjs:394-395` asserts the same two specifiers via CJS resolution on a packed install.
+- `development.ts:1-10` exposes nothing pagination-related, so the second admitted subpath is not an escape today.
+
+**Emitted-runtime probes are real (as claimed)**
+- `read-pagination-public.test.ts:50-56` spawns `process.execPath --input-type=module -e` with `cwd` = `packages/server/`. Vitest's `resolve.alias` (`vitest.config.ts`) does not apply to a child process, and Node's package self-reference resolves `@bdp/server` through `packages/server/package.json` `exports` → `dist/index.js`. So this probe runs against **emitted output**, not source. `smoke-executables.mjs:325-377` repeats it against a **packed install**.
+- Both probes prove non-consumption positively, not just by key absence: `input.sourceContext` is a throwing getter and the extra argument is a `Proxy` with a throwing `ownKeys` trap; both counters are asserted `0`. A regression that read either would throw (`snapshotJson` rejects proxies at `read-pagination.ts:724` before any trap runs), so the tripwire fails loudly either way.
+
+**No regression in the context/retention engine** (the renaming was the other risk)
+- `read-pagination.ts:370-392` — the validated copy is now the local `capturedContext`; the raw parameter `sourceContext` is referenced only at `:371` and `:373` (the undefined test and the `snapshotJson` call). No path stores the caller's un-snapshotted object, so the immutability guarantee at `read-pagination.test.ts:713-736` still has teeth.
+- `:388-392` context bytes/nodes are still deducted from the item budget and summed into `retainedBytes`/`retainedNodes`; `:426` carries the copy onto the snapshot; `:204-206` releases it. Terminal first pages still retain only the `WeakMap` entry (`:395-398`).
+- `authority-read.ts:873-883` — `firstPageWithContext(input, result.observation.sourceContext)` is semantically identical to the prior conditional spread, including the `undefined` case. `exactOptionalPropertyTypes` is not implicated: it governs optional properties, not optional parameters.
+- No test stubs `firstPage` to simulate a pagination failure (grep: zero `firstPage` occurrences in `authority-read.test.ts` and `read-sequence-lifecycle.test.ts`), so redirecting authority-read to `firstPageWithContext` did not silently de-fang any existing mock. The three retargeted spies override `close` only.
+
+**On the `03b7f43` CI fix specifically:** it is correct and necessary. `tsconfig.check.json` includes `packages/*/src/**/*.ts` with no test exclusion, while `packages/server/tsconfig.json:6` excludes `src/**/*.test.ts` from the build — so `read-pagination-public.test.ts` is typechecked but `../dist/index.js` does not exist pre-build. Switching to `./index.js` is the minimal fix, the four `expectTypeOf` assertions hold identically against the source types (`keyof ReadPagination<X>` and `Parameters<…>["length"]` are invariant in `X`), and the emitted-runtime probe in the same file is untouched.
+
+---
+
+## Findings
+
+### 1. [Low] The slice doc now overclaims its own evidence — "Emitted public declarations" are no longer asserted anywhere
+
+**Location:** `docs/design/transaction-implementation-progress.md:495-496`
+
+**Evidence:** the doc paragraph added by `1949f25` says the separation is covered by "Emitted public declarations, an actual Node package-root import and installed-package smoke tests." That was true at `1949f25`, where `read-pagination-public.test.ts:4,16` imported types from `../dist/index.js`. `03b7f43` repointed both to `./index.js` and renamed the test from "keeps the **emitted** public pagination declarations…" to "keeps the public pagination types…" — but left the doc sentence unchanged. Nothing now reads `dist/index.d.ts`: the smoke asserts the packed *file list* (`smoke-executables.mjs:258-259`) and the packed *exports map*, never declaration content, and the two runtime probes assert `Object.keys`, not types.
+
+**Impact:** documentation/evidence-integrity defect, in the one document this slice uses to make its containment claim. The original review explicitly certified these disclaimers free of overclaim; this sentence is now inaccurate. No code or runtime consequence — declaration emit is derived from the source types the test does assert, and a stale `dist` is caught by the runtime probe's key assertion, so the *protection* is intact and only the *description* is wrong.
+
+**Fix:** reword `:495` to "Public declarations, an actual Node package-root import and installed-package smoke tests…", or restore an emitted-declaration assertion as a post-build step (e.g. a `tsconfig` project that typechecks the probe against `dist/index.d.ts`) rather than in the pre-build `tsconfig.check.json` set.
+
+---
+
+### 2. [Low] The new tripwire is name-specific and root-only: `./development` keys and renamed re-exports are unpinned
+
+**Location:** `packages/server/src/read-pagination-public.test.ts:16,24`; `scripts/smoke-executables.mjs:327-329`
+
+**Evidence:** all three new checks test one exact identifier on one subpath — `"createContextualReadPagination" extends keyof typeof import("./index.js")`, `'createContextualReadPagination' in server`, and the `in publicServer` check. There is no pinned allow-list of root exports anywhere in the repo (grep for a root export-key assertion returns nothing), and the second admitted subpath is only checked for *resolution target* (`smoke-executables.mjs:320-324`), never for its export keys.
+
+**Failure scenario:** adding `export { createContextualReadPagination as createPrivatePagination } from "./read-pagination.js";` to `index.ts`, or `export { createContextualReadPagination } from "./read-pagination.js";` to `development.ts`, re-grants the full context capability to an installed consumer. Every check added by `1949f25` still passes: the name probes miss the alias, the `Object.keys(pagination)` assertions inspect a *pagination instance* rather than the module, `assertServerExports` only deep-equals the two-entry map, and the blocked-specifier loop only covers deep paths. Separately, `keyof typeof import(…)` enumerates value exports only, so a type-only `export type { ContextualReadPagination }` also slips through — harmless on its own, since the factory stays unreachable, but it is not the tripwire the doc describes.
+
+**Impact:** the regression vector actually covered is "someone re-points `createReadPagination` at the engine," which is the likely accident and is well covered. The deliberate-rename and `./development` vectors are not. Low, because both require new intentional code against an explicitly documented boundary.
+
+**Fix:** in the child-process probe, assert the full sorted key list of both `@bdp/server` and `@bdp/server/development` against an expected allow-list instead of testing one name, and mirror that in `smoke-executables.mjs` next to `assertServerExports`.
+
+---
+
+### 3. [Low] First `packages/*/src/*.test.ts` that cannot pass on a clean checkout, and it is ~fully redundant with the smoke that already requires a build
+
+**Location:** `packages/server/src/read-pagination-public.test.ts:20-57` vs `vitest.config.ts:8-11`
+
+**Evidence:** `vitest.config.ts` documents its alias layer as existing so "`pnpm test` works from a clean checkout without a prior build," and `test.include` covers `packages/**/*.test.ts`. The second case in this file resolves `@bdp/server` in a child process, which bypasses the alias and requires `packages/server/dist` to exist; without it the child exits with `ERR_MODULE_NOT_FOUND` and `execFileSync` throws. Pre-existing dist coupling lived in `apps/bdptest/test-support/development-discovery.ts:14-19` and `development-process.ts:7-11` — fixtures and a spawned harness, outside the server package's own unit tests. This is the first instance inside `packages/*/src`.
+
+Comparing the probe to `smoke-executables.mjs:325-377` line by line: the private-factory absence check, the six-key assertion, the throwing-getter/`Proxy`-trap non-consumption check, and the two deep-import rejections are all already there, against a *packed install* (strictly stronger than worktree `dist`). The probe adds only a `continuePage` round-trip and two `=== undefined` assertions that `Object.keys` already implies.
+
+**Impact:** no false confidence — a stale or missing `dist` makes the probe fail, never silently pass, so the direction of failure is safe. The cost is that the server package's unit suite now carries a build precondition for coverage it already has elsewhere, which is why **a source-only clean `pnpm test` must not be claimed for this slice** (consistent with the F7 disposition).
+
+**Fix:** move the `continuePage` round-trip into the existing smoke block and drop the vitest runtime case, keeping the four `expectTypeOf` assertions (which are build-free). That restores the documented clean-checkout property with no loss of boundary coverage.
+
+---
+
+### 4. [Info] F8 confirmed still present
+
+`packages/server/src/development-runtime.ts:173` repeats `typeof composition.createReadRoute !== "function"`, already rejected at `:164`. Unreachable, cosmetic; it obscures that the second block validates the scope path. Unchanged by this delta.
+
+---
+
+## Assessment of the carried-forward dispositions
+
+**I found no concrete reason any of these must block this private slice.** Per-item, with the specific evidence that makes the deferral sound rather than speculative:
+
+**F2 — broad `StoreReader` at the pre-existing owner seam: deferral SOUND.** `sequence-executor.ts:543-546` still hands the unfiltered reader to caller-supplied `scopeConfiguration.capture` / `captureReadAuthorization`. Decisive fact for scope: **neither `sequence-executor.ts` nor `read-sequence-lifecycle.ts` is reachable by an installed consumer** — `index.ts:1514-1518` re-exports nothing from them, and `package.json` `exports` admits only `.` and `./development`. Their sole caller is `development-authority.ts:109,19`. Within this slice those callbacks are in-package closures that ignore the reader (`transaction-read.ts:33,37`). The TX owner is runtime-narrowed as claimed (`transaction-store.ts:453`, frozen five-method reader with `check()` expiry). So this becomes a gate only when an installed or config-driven composition can supply capture callbacks — exactly where it was deferred to.
+
+**F3 / T2 — plane↔owner close asymmetry: deferral SOUND, and the lifecycle behavior is explicit, not assumed.** `read-sequence-lifecycle.ts:301-314` observes `captured.closed` and calls `close()`; `close()` invokes `plane.close()` at `:280` and settles the joint on `Promise.allSettled([captured.closed, plane.closed])` at `:286`. This is pinned, not incidental: `read-sequence-lifecycle.test.ts:1181-1266`, `"automatic"` case, asserts `calls.read === 1`, `calls.disposed === 1`, `calls.released === [{releasedSnapshots: 1, releasedCursors: 1}]`, and `vi.getTimerCount() === 0` after the owner's completion rejects — i.e. owner-initiated shutdown does close the Read plane and dispose pagination.
+
+I also checked the one way that explicit behavior could fail: if `gate(false)` refused inside the `ownerFinished` reaction, `:310-311` would call `failSettlement` and `plane.close()` would never run, leaking the plane with `plane.closed` pending. It is not reachable — every phase that `gate` refuses (`"read-callback"` at `:316-327`, `"submitting"` at `:353-358`, `"closing"` at `:278-281`) is a strictly synchronous window, and `captured.closed` reactions are microtasks that run after those unwind; `"draining"`/`"closed"` are short-circuited at `:306`.
+
+Residual, non-blocking: `transaction-read.ts:58` (`closed: plane.closed`) still never settles from the owner side for a *direct* consumer of that module, and its comment at `:21-23` documents only plane→owner independence. `transaction-read.ts` is not exported, so this is a private-contract clarity item, not a public claim.
+
+**F4 — startup `closeListener` rejection skipping `authority.close()`: acceptance SOUND.** `development-runtime.ts:366-369` confirmed unchanged. Reachable only through the dev facade, requires `server.close()` to report an error, and the consequence is a held SQLite handle in a process that is already throwing out of startup. One correction to the framing worth noting: `development-runtime.ts` backs the shipped `bdptest` executable, so "dev-only" means "test/reference binary," not "never shipped." That does not change the disposition — it is still not a public serving-path or contract claim in this slice.
+
+**F5 — public `?view=properties` ETag gap: deferral SOUND.** `read-http-routing.ts:55-64` makes `observedResourceRevision` an optional third parameter; `index.ts:731` passes two arguments, which is byte-identical to pre-slice public behavior. The slice adds capability and wires it only privately, exactly as disposed. Residual: still nothing pins the public omission, so the divergence can drift in either direction unnoticed once `ReadServer.perform` gains an observation. Public-readiness, not a private-slice gate.
+
+**F6 — `observe()` suppression: disposition CORRECT, and it corrects the original finding.** `transaction-read.ts:53-56` attaches `.catch(() => {})` to `promise` and returns **that same promise object**, so an `await`ing or `.then`ing caller still receives the `checked()` integrity rejection. The original F6 text ("the integrity error vanishes entirely: no rejection surfaces") holds only for a fire-and-forget `void facet.perform(...)`; it is not a conversion of error to success. What is actually lost is Node's unhandled-rejection diagnostic on that one path. Residual: the comparable suppressions at `authority-read.ts:952,1010` carry explaining comments and this one does not — worth one comment line, not a gate.
+
+**F7 — dist-dependent tests require a build: disposition SOUND as stated**, with the scope change named in Finding 3 above (it now reaches inside `packages/server/src`). I am explicitly **not** claiming a source-only clean `pnpm test`, and I could not run the suite here at all.
+
+**F8 — redundant predicate: confirmed harmless.** See Finding 4.
+
+---
+
+## What I could not verify, stated plainly
+
+- `pnpm typecheck`, `pnpm lint` / `format:check`, `pnpm test`, and `pnpm smoke` were **not run** — no `node_modules`/`dist` in this checkout and installing would have written files. My reading of `tsconfig.check.json` + `tsconfig.base.json` (`exactOptionalPropertyTypes`, `verbatimModuleSyntax`, `noUnusedLocals`) says the delta should typecheck cleanly and that `03b7f43` is precisely what makes that true pre-build, but that is static reasoning, not a tool result. The author/root runs and the separate CI rerun remain the authority for those.
+- Biome formatting of the new test file (notably the long embedded template literal) is unchecked.
+
+No files were written or modified; no outward actions taken.

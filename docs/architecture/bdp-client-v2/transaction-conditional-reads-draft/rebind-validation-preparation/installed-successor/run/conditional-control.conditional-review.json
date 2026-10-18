@@ -1,0 +1,14 @@
+{
+  "command": "conditional-control",
+  "sourceCommit": "8ee4d86cadc9a1c79a9656cc8b106f34712b3ade",
+  "sourceTree": "fb0cc3ac06be798fe6fe8ab69a1ad78ac5964257",
+  "conditionalHTTP": 4,
+  "failedIds": [
+    "conditional-get:status",
+    "conditional-get:body-absent"
+  ],
+  "reportSha256": "f1d60e6350538f5cb786825acbd292bb54d77efbfdb20b43e4d52b1359094b3e",
+  "rootReviewRequired": true,
+  "claimEligible": false,
+  "limits": "Full JSON schema/postimage equality executes in frozen app before redaction; safe fingerprints do not independently reconstruct bodies. Actual dispatch handles are not wire credential attestation."
+}

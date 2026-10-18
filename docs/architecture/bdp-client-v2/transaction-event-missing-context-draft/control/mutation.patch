@@ -1,0 +1,20 @@
+--- positive/packages/server/dist/transaction-http.js
++++ control/packages/server/dist/transaction-http.js
+@@ -370,7 +370,7 @@
+             if (selectChangefeedMedia(request.headers.get("accept")) !== "sse") {
+                 const observed = await service.events(eventRequest.source.url, eventRequest.after, minimum, request.signal);
+                 if (observed.kind === "missing")
+-                    return transactionHttpProblem("resource-not-found", observed.context);
++                    return transactionHttpProblem("resource-not-found");
+                 if (observed.kind === "unsupported")
+                     return developmentGap("minimum-position");
+                 return context(jsonResponse(observed.page), observed.context);
+@@ -379,7 +379,7 @@
+                 (request.headers.has("last-event-id") ? [request.headers.get("last-event-id")] : []);
+             const observed = await service.beginEvents(eventRequest.source.url, fields.length === 1 ? fields[0] : eventRequest.after, minimum, request.signal, fields.length > 1);
+             if (observed.kind === "missing")
+-                return transactionHttpProblem("resource-not-found", observed.context);
++                return transactionHttpProblem("resource-not-found");
+             if (observed.kind === "unsupported")
+                 return developmentGap("minimum-position");
+             const response = streamResponse(request, observed.context);

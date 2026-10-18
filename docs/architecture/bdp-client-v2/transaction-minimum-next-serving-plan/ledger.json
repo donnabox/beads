@@ -1,0 +1,240 @@
+{
+  "status": "PROPOSED_NOT_EXECUTABLE",
+  "basis": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+  "rows": [
+    {
+      "index": 1,
+      "method": "POST",
+      "target": "operations/batch",
+      "status": 200,
+      "minimum": null,
+      "oracle": "seed actual two Beads, Link and alias; freeze supported literal and genuine key before authoring"
+    },
+    {
+      "index": 2,
+      "method": "GET",
+      "target": "beads/missing",
+      "status": 404,
+      "minimum": "ahead",
+      "oracle": "uniform resource-not-found/current context, no Location or conditional success"
+    },
+    {
+      "index": 3,
+      "method": "HEAD",
+      "target": "beads/missing",
+      "status": 404,
+      "minimum": "foreign-epoch",
+      "oracle": "uniform resource-not-found/current context, no Location or conditional success"
+    },
+    {
+      "index": 4,
+      "method": "GET",
+      "target": "links/missing",
+      "status": 404,
+      "minimum": "foreign-view",
+      "oracle": "uniform resource-not-found/current context, no Location or conditional success"
+    },
+    {
+      "index": 5,
+      "method": "HEAD",
+      "target": "links/missing",
+      "status": 404,
+      "minimum": "ahead",
+      "oracle": "uniform resource-not-found/current context, no Location or conditional success"
+    },
+    {
+      "index": 6,
+      "method": "GET",
+      "target": "alias/missing",
+      "status": 404,
+      "minimum": "foreign-epoch",
+      "oracle": "uniform resource-not-found/current context, no Location or conditional success"
+    },
+    {
+      "index": 7,
+      "method": "HEAD",
+      "target": "alias/missing",
+      "status": 404,
+      "minimum": "foreign-view",
+      "oracle": "uniform resource-not-found/current context, no Location or conditional success"
+    },
+    {
+      "index": 8,
+      "method": "GET",
+      "target": "beads/missing",
+      "status": 404,
+      "minimum": "unknown-current-context",
+      "oracle": "lexically valid opaque token;404 without wait"
+    },
+    {
+      "index": 9,
+      "method": "GET",
+      "target": "links/missing",
+      "status": 404,
+      "minimum": "unknown-current-context",
+      "oracle": "lexically valid opaque token;404 without wait"
+    },
+    {
+      "index": 10,
+      "method": "GET",
+      "target": "alias/missing",
+      "status": 404,
+      "minimum": "unknown-current-context",
+      "oracle": "lexically valid opaque token;404 without wait"
+    },
+    {
+      "index": 11,
+      "method": "GET",
+      "target": "beads/a",
+      "status": 503,
+      "minimum": "unknown-current-context",
+      "oracle": "actual bounded catch-up-timeout/after-delay; no stale Resource"
+    },
+    {
+      "index": 12,
+      "method": "HEAD",
+      "target": "beads/a",
+      "status": 503,
+      "minimum": "unknown-current-context",
+      "oracle": "actual bounded catch-up-timeout/after-delay; no stale Resource"
+    },
+    {
+      "index": 13,
+      "method": "GET",
+      "target": "links/self",
+      "status": 503,
+      "minimum": "unknown-current-context",
+      "oracle": "actual bounded catch-up-timeout/after-delay; no stale Resource"
+    },
+    {
+      "index": 14,
+      "method": "GET",
+      "target": "beads/a",
+      "status": 200,
+      "minimum": "compatible",
+      "oracle": "full actual seeded Resource equality"
+    },
+    {
+      "index": 15,
+      "method": "GET",
+      "target": "beads/a",
+      "status": 404,
+      "minimum": "ahead",
+      "oracle": "after actual publication: uniform hidden404/current policy context"
+    },
+    {
+      "index": 16,
+      "method": "HEAD",
+      "target": "beads/a",
+      "status": 404,
+      "minimum": "foreign-epoch",
+      "oracle": "after actual publication: uniform hidden404/current policy context"
+    },
+    {
+      "index": 17,
+      "method": "GET",
+      "target": "links/self",
+      "status": 404,
+      "minimum": "foreign-view",
+      "oracle": "after actual publication: uniform hidden404/current policy context"
+    },
+    {
+      "index": 18,
+      "method": "HEAD",
+      "target": "links/self",
+      "status": 404,
+      "minimum": "ahead",
+      "oracle": "after actual publication: uniform hidden404/current policy context"
+    },
+    {
+      "index": 19,
+      "method": "GET",
+      "target": "alias/work",
+      "status": 404,
+      "minimum": "foreign-epoch",
+      "oracle": "after actual publication: uniform hidden404/current policy context"
+    },
+    {
+      "index": 20,
+      "method": "HEAD",
+      "target": "alias/work",
+      "status": 404,
+      "minimum": "foreign-view",
+      "oracle": "after actual publication: uniform hidden404/current policy context"
+    },
+    {
+      "index": 21,
+      "method": "GET",
+      "target": "beads/a",
+      "status": 404,
+      "minimum": "unknown-current-context",
+      "oracle": "hidden404 without wait or disclosure"
+    },
+    {
+      "index": 22,
+      "method": "GET",
+      "target": "links/self",
+      "status": 404,
+      "minimum": "unknown-current-context",
+      "oracle": "hidden404 without wait or disclosure"
+    },
+    {
+      "index": 23,
+      "method": "GET",
+      "target": "alias/work",
+      "status": 404,
+      "minimum": "unknown-current-context",
+      "oracle": "hidden404 without wait or disclosure"
+    },
+    {
+      "index": 24,
+      "method": "GET",
+      "target": "beads/a",
+      "status": 401,
+      "minimum": "unknown-current-context",
+      "oracle": "no credentials; no projected context"
+    },
+    {
+      "index": 25,
+      "method": "PUT",
+      "target": "beads/a",
+      "status": 405,
+      "minimum": "unknown-current-context",
+      "oracle": "method refusal; no owner"
+    },
+    {
+      "index": 26,
+      "method": "GET",
+      "target": "beads/a",
+      "status": 400,
+      "minimum": "incomplete-or-duplicate",
+      "oracle": "malformed tuple afterauth beforeowner; no projected context"
+    }
+  ],
+  "publicationAfterRequest": 14,
+  "expectedHTTP": 26,
+  "maximumHTTP": 26,
+  "children": 1,
+  "controls": [
+    {
+      "id": "restore-missing-gap",
+      "expectedHTTP": 2,
+      "maximumHTTP": 26,
+      "namedFailure": "minimum-current:missing-before-minimum",
+      "expectedActualStatus": 500
+    },
+    {
+      "id": "restore-unknown-gap",
+      "expectedHTTP": 2,
+      "maximumHTTP": 26,
+      "namedFailure": "minimum-current:unknown-catch-up-timeout",
+      "expectedActualStatus": 500
+    }
+  ],
+  "totalExpectedHTTP": 30,
+  "totalMaximumHTTP": 78,
+  "totalChildren": 3,
+  "literalBodiesPending": true,
+  "authIntegrationPending": true,
+  "authoringReleased": false
+}

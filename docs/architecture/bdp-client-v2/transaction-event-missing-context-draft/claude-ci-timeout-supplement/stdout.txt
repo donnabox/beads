@@ -1,0 +1,34 @@
+## Verdict
+
+**No blocking findings.** The diff is a test-only, callback-scoped wall-clock relaxation that leaves the oracle, the product limits, and the failed-CI record intact. It is admissible as-is.
+
+## Oracle preservation (evaluator refusal / key correction)
+
+The reviewed oracle is entirely inside the callback body at `apps/bdptest/src/development-contracts.test.ts:628`, and every statement is byte-identical in the successor:
+
+- Direct refusal: `compilePrivateSchemaEvaluator({ ..., limits: compiler.EVALUATOR_CEILINGS })` plus `toMatchObject({ kind: "refused", phase: "instance", reason: "limit-work" })` — still asserted against the full `work: 16777216` ceiling in `packages/server/src/installed-schema-value.ts:12`, driven by the unchanged 4000-element `uniqueItems` input and the unchanged O(n²) comparison at `packages/server/src/installed-schema-evaluator.ts:597-606`.
+- HTTP locality: `status === 500`, empty body, and the `404` read of `beads/work` — still asserted against the same `validateProperties` throw path at `packages/server/src/development-contracts.ts:106-110`.
+- Key correction: the second `createBead` reusing idempotency key `"work"` → `200`, and wire read equality — unchanged.
+
+A Vitest per-test timeout argument only bounds callback wall clock; it does not alter `EVALUATOR_CEILINGS`, `SCHEMA_GRAPH_CEILINGS`, `CONTRACT_ARTIFACT_CEILINGS`, the fixture bundle, the HTTP surface, or the 7-request successful path. No product input or limit moved.
+
+## Boundedness relative to observed headroom
+
+10000ms is 2× the Vitest default and ~1.99× the single observed overrun (5029ms at CI38728209051/job116399188531), ~2.26× the prior same-callback 4430ms (PR126 log5508), and ~12× root's unchanged isolated 813ms. It is scoped to this one callback rather than a global `testTimeout`, so every other callback in the file retains the default 5000ms bound. That is a proportionate, minimal-blast-radius response to the recorded measurements.
+
+The scope is also the correct one: the heavy work — the two dynamic `dist` imports, `compilePrivateSchemaEvaluator`, `fixture(input)` server start, and all seven HTTP calls — executes inside the test function, not in `afterEach`. The third-argument timeout covers exactly that region and leaves hook timeouts untouched, so a teardown hang would still surface in the `afterEach` at lines 29-32 rather than being absorbed.
+
+## Attribution honesty
+
+The comment claims only that the callback "Exercises the full evaluator work ceiling directly and through HTTP" (true per the two `EVALUATOR_CEILINGS` call sites above) and that it allows "CI wall-clock headroom without changing that ceiling" (true per the diff). It asserts no root cause, no worst-case bound, no release or profile claim, and does not represent the original failed CI as green. Nothing in the diff overwrites or softens the failed-run record.
+
+## Non-blocking notes
+
+1. **Non-blocking — informational, `development-contracts.test.ts:628` comment.** The comment does not record the measurements that motivated 10000ms (5029ms observed, 4430ms prior, 813ms isolated). Citing them would make the number auditable later, but their absence is not a correctness or honesty defect.
+2. **Non-blocking — unverifiable from supplied material.** The installed Vitest version was not supplied, so I cannot confirm whether `it(name, fn, number)` emits a deprecation notice in this toolchain. A bare numeric third argument is supported across Vitest majors; if the repo has standardized on the options-object form elsewhere, matching that convention would be a style alignment only.
+3. **Non-blocking — pre-existing, not introduced here.** `afterEach` removes directories only after `await server.close()`, so a throwing close still skips `rmSync`, and a Vitest timeout does not cancel an in-flight callback. Both conditions predate this diff and are untouched by it; raising the per-test bound neither creates nor conceals them.
+4. **Non-blocking — timing is not an oracle here.** The body contains no latency assertion, and 5000ms was the uniform framework default rather than a declared performance contract for this callback, so relaxing it removes no stated guarantee. Worst-case suite cost rises by at most ~5s against a 755.84s suite.
+
+## Outstanding
+
+Root's independent run of the exact successor callback has not been supplied and I have not assumed its outcome. Fresh exact-head full CI is still required; the observations on hand do not isolate the cause of the original overrun, do not establish a worst-case bound, and do not turn the original failed run green.

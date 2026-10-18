@@ -1,0 +1,815 @@
+{
+  "status": "CLOSED_TEMPLATE_FUTURE_AUTHORED_SOURCE_UNKNOWN",
+  "workspace": null,
+  "placeholderPolicy": "${WORKTREE} is never shell-expanded or executed; root must replace exact strings after real source freeze and rehash all preparation. No executable scripts/gate exist.",
+  "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+  "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+  "pathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "ownedPaths": [
+    "packages/conformance/test-support/transactional/manifest-v1.json",
+    "packages/conformance/test-support/transactional/coverage-v1.json",
+    "packages/conformance/src/transactional-cumulative.test.ts",
+    "apps/bdptest/src/transactional-matrix.test.ts"
+  ],
+  "sourceBinding": null,
+  "finalCommit": null,
+  "executionOrder": [
+    "offline-setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "static-cases",
+    "build-inventory",
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed",
+    "principal-positive",
+    "principal-positive-review",
+    "principal-collapse",
+    "principal-collapse-review",
+    "full-positive",
+    "full-positive-review",
+    "cross-batch",
+    "cross-batch-review",
+    "cross-sequence",
+    "cross-sequence-review"
+  ],
+  "commands": {
+    "offline-setup": {
+      "phase": "source",
+      "cwd": "${WORKTREE}",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [],
+      "ownedTempPrefixes": []
+    },
+    "typecheck": {
+      "phase": "source",
+      "cwd": "${WORKTREE}",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "offline-setup",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "build": {
+      "phase": "source",
+      "cwd": "${WORKTREE}",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "typecheck",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "format-check": {
+      "phase": "source",
+      "cwd": "${WORKTREE}",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "format:check"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "build",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "lint": {
+      "phase": "source",
+      "cwd": "${WORKTREE}",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "format-check",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "boundaries": {
+      "phase": "source",
+      "cwd": "${WORKTREE}",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "lint",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "read-seal": {
+      "phase": "source",
+      "cwd": "${WORKTREE}",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "boundaries",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "static-cases": {
+      "phase": "source",
+      "cwd": "${WORKTREE}",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "${WORKTREE}/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/conformance/src/transactional-cumulative.test.ts",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/run/static-cases.results.json",
+        "-t",
+        "^(?:binds\\ the\\ canonical\\ cumulative\\ TX\\ selection\\ and\\ exact\\ source\\ digests\\ without\\ qualification|rejects\\ noncanonical\\ selections,\\ History,\\ wrong\\ factories,\\ retired\\ and\\ misprofiled\\ rows|copies\\ source\\ bytes\\ before\\ binding\\ and\\ exposes\\ all\\ missing\\ obligations\\ without\\ executing\\ them|pins\\ the\\ inherited\\ command\\-minimum\\ manifest\\ facts,\\ read\\-header\\ absence\\ and\\ all\\ thirteen\\ prior\\ objects|preserves\\ every\\ original\\ TX\\ scenario\\ and\\ coverage\\ object\\ while\\ adding\\ one\\ bounded\\ partial\\ cross\\-carrier\\ row|pins\\ the\\ one\\-page\\ matched\\-plus\\-updated\\ witness\\ without\\ advertised\\-limit\\ or\\ other\\-outcome\\ credit|pins\\ the\\ partial\\ principal\\ namespace\\ row,\\ full\\ parent\\ and\\ exact\\ credential\\ roles|pins\\ the\\ matching\\ no\\-op\\ installed\\ route\\ digest\\ and\\ fifteen\\-action\\ ledger|pins\\ deletion\\-safety\\ derivative\\ carriers,\\ complete\\ positives,\\ and\\ measured\\ source\\ bounds)$"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "read-seal",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "selectedFullNames": [
+        "binds the canonical cumulative TX selection and exact source digests without qualification",
+        "rejects noncanonical selections, History, wrong factories, retired and misprofiled rows",
+        "copies source bytes before binding and exposes all missing obligations without executing them",
+        "pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects",
+        "preserves every original TX scenario and coverage object while adding one bounded partial cross-carrier row",
+        "pins the one-page matched-plus-updated witness without advertised-limit or other-outcome credit",
+        "pins the partial principal namespace row, full parent and exact credential roles",
+        "pins the matching no-op installed route digest and fifteen-action ledger",
+        "pins deletion-safety derivative carriers, complete positives, and measured source bounds"
+      ],
+      "selectedPathNames": [
+        {
+          "file": "packages/conformance/src/transactional-cumulative.test.ts",
+          "fullName": "binds the canonical cumulative TX selection and exact source digests without qualification"
+        },
+        {
+          "file": "packages/conformance/src/transactional-cumulative.test.ts",
+          "fullName": "rejects noncanonical selections, History, wrong factories, retired and misprofiled rows"
+        },
+        {
+          "file": "packages/conformance/src/transactional-cumulative.test.ts",
+          "fullName": "copies source bytes before binding and exposes all missing obligations without executing them"
+        },
+        {
+          "file": "packages/conformance/src/transactional-cumulative.test.ts",
+          "fullName": "pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects"
+        },
+        {
+          "file": "packages/conformance/src/transactional-cumulative.test.ts",
+          "fullName": "preserves every original TX scenario and coverage object while adding one bounded partial cross-carrier row"
+        },
+        {
+          "file": "packages/conformance/src/transactional-cumulative.test.ts",
+          "fullName": "pins the one-page matched-plus-updated witness without advertised-limit or other-outcome credit"
+        },
+        {
+          "file": "packages/conformance/src/transactional-cumulative.test.ts",
+          "fullName": "pins the partial principal namespace row, full parent and exact credential roles"
+        },
+        {
+          "file": "apps/bdptest/src/transactional-matrix.test.ts",
+          "fullName": "pins the matching no-op installed route digest and fifteen-action ledger"
+        },
+        {
+          "file": "apps/bdptest/src/transactional-matrix.test.ts",
+          "fullName": "pins deletion-safety derivative carriers, complete positives, and measured source bounds"
+        }
+      ],
+      "expectedCases": 9,
+      "expectedExit": 0,
+      "workload": {
+        "http": 0,
+        "productChildren": 0,
+        "storeOwners": 0,
+        "listeners": 0
+      },
+      "sourceExistenceVerified": false
+    },
+    "build-inventory": {
+      "phase": "inventory",
+      "cwd": "${WORKTREE}",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/inventory.py"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "static-cases",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "actualScriptPending": true
+    },
+    "node-version": {
+      "phase": "package",
+      "cwd": "${WORKTREE}",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "build-inventory",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "package-directory": {
+      "phase": "package",
+      "cwd": "${WORKTREE}",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/packages.py",
+        "directory"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "node-version",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "pack-protocol": {
+      "phase": "package",
+      "cwd": "${WORKTREE}",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/run/packages"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "package-directory",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "pack-server": {
+      "phase": "package",
+      "cwd": "${WORKTREE}",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/run/packages"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "pack-protocol",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "verify-tar": {
+      "phase": "package",
+      "cwd": "${WORKTREE}",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/packages.py",
+        "tar"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "pack-server",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "prepare-consumer": {
+      "phase": "package",
+      "cwd": "${WORKTREE}",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/packages.py",
+        "consumer"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "verify-tar",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "consumer-install": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/run/consumer",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "prepare-consumer",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "verify-installed": {
+      "phase": "package",
+      "cwd": "${WORKTREE}",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/packages.py",
+        "installed"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "consumer-install",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "rootCheckpointBefore": "actual consumer lock independently read and hash-bound"
+    },
+    "principal-positive": {
+      "phase": "installed",
+      "cwd": "${WORKTREE}",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "${WORKTREE}/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/run/principal-positive.results.json",
+        "-t",
+        "^observes\\ authenticated\\ principal\\ isolation\\ and\\ rotation\\ through\\ selected\\ cumulative\\ HTTP$"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "verify-installed",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [
+        "bdp-tx-installed-"
+      ],
+      "selectedFullNames": [
+        "observes authenticated principal isolation and rotation through selected cumulative HTTP"
+      ],
+      "selectedPathNames": [
+        {
+          "file": "apps/bdptest/src/transactional-matrix.test.ts",
+          "fullName": "observes authenticated principal isolation and rotation through selected cumulative HTTP"
+        }
+      ],
+      "expectedCases": 1,
+      "expectedExit": 0,
+      "reportOverrides": {
+        "BDP_TRANSACTIONAL_PRINCIPAL_CUMULATIVE_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/run/principal-positive.observation.json"
+      },
+      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/run/principal-positive.observation.json",
+      "reportPathPendingSourceVerification": true,
+      "workload": {
+        "httpExpected": 7,
+        "httpMaximum": 7,
+        "children": 2,
+        "requestBodyBytes": 750,
+        "maximumRequestBodyBytes": 750,
+        "cohortMs": 90000,
+        "requestMs": 5000,
+        "prepareMs": 10000,
+        "cleanupMs": 10000,
+        "externalMs": 120000
+      }
+    },
+    "principal-positive-review": {
+      "phase": "review",
+      "cwd": "${WORKTREE}",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/review-installed.py",
+        "principal-positive"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "principal-positive",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "actualScriptPending": true
+    },
+    "principal-collapse": {
+      "phase": "installed",
+      "cwd": "${WORKTREE}",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "${WORKTREE}/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/run/principal-collapse.results.json",
+        "-t",
+        "^discriminates\\ principal\\ isolation\\ against\\ a\\ separately\\ bound\\ collapsed\\ namespace$"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "principal-positive-review",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [
+        "bdp-tx-installed-"
+      ],
+      "selectedFullNames": [
+        "discriminates principal isolation against a separately bound collapsed namespace"
+      ],
+      "selectedPathNames": [
+        {
+          "file": "apps/bdptest/src/transactional-matrix.test.ts",
+          "fullName": "discriminates principal isolation against a separately bound collapsed namespace"
+        }
+      ],
+      "expectedCases": 1,
+      "expectedExit": 0,
+      "reportOverrides": {
+        "BDP_TRANSACTIONAL_PRINCIPAL_CUMULATIVE_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/run/principal-collapse.observation.json"
+      },
+      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/run/principal-collapse.observation.json",
+      "reportPathPendingSourceVerification": true,
+      "workload": {
+        "httpExpected": 2,
+        "httpMaximum": 7,
+        "children": 2,
+        "requestBodyBytes": 300,
+        "maximumRequestBodyBytes": 750,
+        "cohortMs": 90000,
+        "requestMs": 5000,
+        "prepareMs": 10000,
+        "cleanupMs": 10000,
+        "externalMs": 120000
+      }
+    },
+    "principal-collapse-review": {
+      "phase": "review",
+      "cwd": "${WORKTREE}",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/review-installed.py",
+        "principal-collapse"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "principal-collapse",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "actualScriptPending": true
+    },
+    "full-positive": {
+      "phase": "installed",
+      "cwd": "${WORKTREE}",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "${WORKTREE}/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/run/full-positive.results.json",
+        "-t",
+        "^observes\\ sixteen\\ partial\\ Transactional\\ contracts\\ through\\ packed\\-capable\\ actual\\ installed\\ HTTP$"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "principal-collapse-review",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [
+        "bdp-tx-installed-"
+      ],
+      "selectedFullNames": [
+        "observes sixteen partial Transactional contracts through packed-capable actual installed HTTP"
+      ],
+      "selectedPathNames": [
+        {
+          "file": "apps/bdptest/src/transactional-matrix.test.ts",
+          "fullName": "observes sixteen partial Transactional contracts through packed-capable actual installed HTTP"
+        }
+      ],
+      "expectedCases": 1,
+      "expectedExit": 0,
+      "reportOverrides": {
+        "BDP_TRANSACTIONAL_OBSERVATION_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/run/full-positive.observation.json"
+      },
+      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/run/full-positive.observation.json",
+      "reportPathPendingSourceVerification": true,
+      "workload": {
+        "httpExpected": 220,
+        "httpMaximum": 220,
+        "children": 24,
+        "requestBodyBytes": 18606,
+        "maximumRequestBodyBytes": 18606,
+        "cohortMs": 90000,
+        "requestMs": 5000,
+        "prepareMs": 10000,
+        "cleanupMs": 10000,
+        "externalMs": 120000,
+        "fullPositiveElapsedMs": 63000
+      }
+    },
+    "full-positive-review": {
+      "phase": "review",
+      "cwd": "${WORKTREE}",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/review-installed.py",
+        "full-positive"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "full-positive",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "actualScriptPending": true
+    },
+    "cross-batch": {
+      "phase": "installed",
+      "cwd": "${WORKTREE}",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "${WORKTREE}/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/run/cross-batch.results.json",
+        "-t",
+        "^discriminates\\ retained\\ cross\\-carrier\\ evidence\\ against\\ batch\\-semantic\\-conflict$"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "full-positive-review",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [
+        "bdp-tx-installed-"
+      ],
+      "selectedFullNames": [
+        "discriminates retained cross-carrier evidence against batch-semantic-conflict"
+      ],
+      "selectedPathNames": [
+        {
+          "file": "apps/bdptest/src/transactional-matrix.test.ts",
+          "fullName": "discriminates retained cross-carrier evidence against batch-semantic-conflict"
+        }
+      ],
+      "expectedCases": 1,
+      "expectedExit": 0,
+      "reportOverrides": {
+        "BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/run/cross-batch.observation"
+      },
+      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/run/cross-batch.observation-batch-semantic-conflict.json",
+      "reportPathPendingSourceVerification": true,
+      "workload": {
+        "httpExpected": 211,
+        "httpMaximum": 211,
+        "children": 24,
+        "requestBodyBytes": 17550,
+        "maximumRequestBodyBytes": 17550,
+        "cohortMs": 90000,
+        "requestMs": 5000,
+        "prepareMs": 10000,
+        "cleanupMs": 10000,
+        "externalMs": 120000
+      }
+    },
+    "cross-batch-review": {
+      "phase": "review",
+      "cwd": "${WORKTREE}",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/review-installed.py",
+        "cross-batch"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "cross-batch",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "actualScriptPending": true
+    },
+    "cross-sequence": {
+      "phase": "installed",
+      "cwd": "${WORKTREE}",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "${WORKTREE}/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/run/cross-sequence.results.json",
+        "-t",
+        "^discriminates\\ retained\\ cross\\-carrier\\ evidence\\ against\\ sequence\\-fresh\\-key$"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "cross-batch-review",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [
+        "bdp-tx-installed-"
+      ],
+      "selectedFullNames": [
+        "discriminates retained cross-carrier evidence against sequence-fresh-key"
+      ],
+      "selectedPathNames": [
+        {
+          "file": "apps/bdptest/src/transactional-matrix.test.ts",
+          "fullName": "discriminates retained cross-carrier evidence against sequence-fresh-key"
+        }
+      ],
+      "expectedCases": 1,
+      "expectedExit": 0,
+      "reportOverrides": {
+        "BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/run/cross-sequence.observation"
+      },
+      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/run/cross-sequence.observation-sequence-fresh-key.json",
+      "reportPathPendingSourceVerification": true,
+      "workload": {
+        "httpExpected": 212,
+        "httpMaximum": 212,
+        "children": 24,
+        "requestBodyBytes": 17754,
+        "maximumRequestBodyBytes": 17754,
+        "cohortMs": 90000,
+        "requestMs": 5000,
+        "prepareMs": 10000,
+        "cleanupMs": 10000,
+        "externalMs": 120000
+      }
+    },
+    "cross-sequence-review": {
+      "phase": "review",
+      "cwd": "${WORKTREE}",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/execution-preparation/review-installed.py",
+        "cross-sequence"
+      ],
+      "supervisorSeconds": 120,
+      "released": false,
+      "requires": [
+        {
+          "id": "cross-sequence",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "actualScriptPending": true
+    }
+  },
+  "selectionBasis": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-plan/selection.json",
+    "sha256": "22130b2ab8bed332a99ad4547cdd2c80b92292b38a23ee928e1ee86c14132341"
+  },
+  "limits": {
+    "staticCases": 9,
+    "installedCases": 5,
+    "httpExpected": 652,
+    "httpMaximum": 657,
+    "childrenMaximum": 76,
+    "requestBodyBytes": 54960,
+    "maximumRequestBodyBytes": 55410,
+    "noAutomaticRetry": true,
+    "maximumWorkers": 1
+  },
+  "allStagesReleased": false
+}

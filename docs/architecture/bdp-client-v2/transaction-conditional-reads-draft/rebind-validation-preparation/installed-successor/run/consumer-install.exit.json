@@ -1,0 +1,71 @@
+{
+  "name": "consumer-install",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "install",
+    "--offline",
+    "--ignore-scripts",
+    "--no-frozen-lockfile",
+    "--prod"
+  ],
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "install",
+    "--offline",
+    "--ignore-scripts",
+    "--no-frozen-lockfile",
+    "--prod"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/consumer",
+  "started": "2026-10-16T20:55:13.019883+00:00",
+  "adjudication": {
+    "kind": "command-only",
+    "testVerdict": "not-applicable"
+  },
+  "elapsedSeconds": 0.9994939588941634,
+  "exit": 0,
+  "supervisorExit": 0,
+  "timeout": false,
+  "forcedCleanup": false,
+  "errors": [],
+  "processGroup": 51952,
+  "remainingBeforeCleanup": [],
+  "remainingAfterCleanup": [],
+  "sampledPids": [
+    51952,
+    51954,
+    51959
+  ],
+  "sampledPidsStillPresent": {},
+  "sampledTempEntries": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/consumer-install.tmp/node-compile-cache"
+  ],
+  "tempEntriesAfter": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/consumer-install.tmp/node-compile-cache"
+  ],
+  "remainingTempEntriesForClassification": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/consumer-install.tmp/node-compile-cache"
+  ],
+  "runtimeDirectoriesStillPresent": [],
+  "unclassifiedTempEntriesStillPresent": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/consumer-install.tmp/node-compile-cache"
+  ],
+  "sourceUnchanged": true,
+  "sourceSha256After": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "bbb7def1bf11e1d14efbcb369e6a7fae6eb5aff01f483f8e99f7443ce9a6ee73",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "a2c620ce489257f4cd425207195af89b4e2aac238333cf6e7d21ce629d98a238",
+    "packages/conformance/src/transactional-cumulative.test.ts": "5ecfa916baca16b24c9c57b5f52e6c2cb5fa771d8cc6b5ea412ba570ba796993",
+    "apps/bdptest/src/transactional-matrix.test.ts": "95e07ead41f9cb39087a155e87cad22998d92cd3967cb9c3c446568ff6139bc8"
+  },
+  "samplingSeconds": 0.05,
+  "commandWindowSeconds": 115,
+  "groupHardDeadlineSeconds": 120,
+  "cleanupBound": "TERM at115s, KILL no later than120s; wait/reap after kill adds no product execution allowance",
+  "samplingLimitation": "Short-lived or detached descendants may evade group sampling; helper counts and independent final checks remain separate.",
+  "tempClassification": "Only the selected fixture prefixes under this attempt TMPDIR are owned runtime roots; all other entries are preserved for review, not deleted or called leaks.",
+  "resultLimitation": "A declared negative raw exit1 may complete its supervisor; subsequent strict review is mandatory. No generic exit1 acceptance or product qualification."
+}

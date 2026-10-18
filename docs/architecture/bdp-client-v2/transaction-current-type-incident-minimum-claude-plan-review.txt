@@ -1,0 +1,97 @@
+No files written; read-only review against frozen `9b95df5` (tree `d6749c7`, clean worktree). Plan SHA256 confirmed `49155d64…98ec4`. Predecessor `transaction-compatible-missing-minimum-plan-v2.md` confirmed `08d9e072…98f1` plus its root-acceptance (conditional gate satisfied, five-file scope, ordinary-facet narrowing accepted); I treated it as **pending**, not as a property of 9b95 — correctly, since `transaction-read.ts:96-99` still forwards `options` wholesale and `:61-64` still throws the unconditional visibility gap.
+
+---
+
+# Findings
+
+## 1. No in-Scope Type descriptor exists in either owned source fixture — the plan's first surface is not route-reachable there
+**Severity: Medium-High (blocks a required oracle as written)**
+**Location:** plan §"Source and HTTP evidence" item 1 and §"Six owned files" items 3–4; code `packages/server/src/transaction-read.test.ts:20-33`, `packages/server/src/transaction-http.test.ts:38-50,84`, `packages/server/src/transaction-runtime.ts:310`
+
+The canonical descriptor route is match-by-exact-id: `read-request.ts:209-219` always synthesizes `id = <scope>types/<local>`, and `authority-read.ts:789-793` serves only `prepared.types.find(c => c.id === intent.id)`.
+
+- `transaction-read.test.ts` installs `https://example.test/types/bead|link` under scope `https://example.test/transaction/` — never equal to a URL-derived id.
+- `transaction-http.test.ts` installs `https://example.test/bead|link` while the runtime scope is `new URL("acme/", listenUrl)` on an **ephemeral port** (`transaction-runtime.ts:310`), so the module-level `types` array (built before start) cannot contain an in-Scope descriptor id at all.
+
+**Impact:** the plan's "expected literal descriptor", the "Type descriptor bytes stay equal while position advances" proof, and the HTTP descriptor rows of evidence item 6 cannot be witnessed on the existing fixtures. The only escape at facet level is to call `minimumFor().perform({kind:"resource",resource:"type",id:"https://example.test/types/bead"})` — an out-of-Scope id the HTTP route can never produce, i.e. exactly the weak oracle the plan forbids ("Do not test only the predicate or mock a successful projection"). This also collides with the plan's own stop boundary "fixture contract changes".
+
+**Bounded fix:** state explicitly that the descriptor witness requires adding an in-Scope descriptor to the two owned test fixtures: in `transaction-read.test.ts` pass `fixture({ types: [...types, parseTypeDescriptor({ id: `${scope}types/task`, name, describes:"bead", conformsTo: [] })] })`; in `transaction-http.test.ts` reuse the **existing** pinned-canonical-scope pattern at `:765-800` (`scope: "https://canonical.test/acme/"` + pathname-rewritten `send()`) so the descriptor id is known before `startTransactionRuntime`. Note this is additive (do not retarget the shared `bead`/`link` constants — `create()` at `:69-74` seeds every Bead with `bead`).
+
+## 2. Existing HTTP exclusion table is not reconciled — three entries become guaranteed reds
+**Severity: Medium (unlisted mandatory edit; the predecessor named its analogue)**
+**Location:** plan §"Six owned files" item 4 and evidence item 6; code `packages/server/src/transaction-http.test.ts:1155-1169`
+
+That table asserts 500 `minimum-position-route` for, among others, `types/`, `beads/a?view=links`, and `beads/missing?view=links`. After the predicate widens, those become 200, 200, and (404 + current context, under the predecessor) respectively. The plan says only "Preserve all three discovery refusals and alias/continuation/Type-properties exclusions" and never instructs the split. Compare the predecessor, which pinned its analogous change by line ("Split the old 'does not invent absent Resource versus minimum ordering' test (aebf line1190)").
+
+**Impact:** a reviewer accepting "only the six files above differ" has no notice that an existing positive assertion inverts; the `beads/missing?view=links` row additionally has a *predecessor-dependent* expectation (404+context if the repair landed, `minimum-position-visibility` if not), which is precisely the dependency the plan elsewhere takes care to keep explicit.
+
+**Bounded fix:** add to item 4 a sentence naming `transaction-http.test.ts:1155-1169`: remove `types/`, `beads/a?view=links`, `beads/missing?view=links`; keep `links/?cursor=missing`, `beads/?cursor=missing`, `alias/missing`, `""`, `bdp.json`, `operations/`; re-assert the three removed targets in the new matrix, with the missing-anchor row stated as inherited from the predecessor's callback.
+
+## 3. "Preserve materialized limit-exceeded refusal ordering" has no oracle on the two new page surfaces
+**Severity: Medium (asserted invariant, unassigned evidence)**
+**Location:** plan §"Small production delta" ("Preserve materialized invalid-parameter/limit-exceeded refusal ordering") vs. evidence items 3 and 6; code `authority-read.ts:751-761`, `transaction-read.ts:59`, existing test `transaction-read.test.ts:606-634`
+
+The existing control-refusal-before-minimum test covers only `{kind:"collection",collection:"beads"}`. Widening admission newly routes two more page operations through `validateLimit` → materialized refusal → the callback's early return at `transaction-read.ts:59`. Evidence item 3 only promises *token-allocation* ordering for behind attempts; item 6 only says controls "retain shared semantics".
+
+Note the precise shape worth testing: for `types` and `bead-links` the **only** reachable materialized control refusal is `limit-exceeded` (413) — `selector` is not an accepted parameter on either (`read-request.ts:295-299,237`), and a malformed `limit` is a parser 400 short-circuited at `transaction-http.ts:527`.
+
+**Bounded fix:** extend `transaction-read.test.ts:624-633`'s table with `{kind:"collection",collection:"types",limit:33}` and `{kind:"bead-links",bead,limit:33}` at a behind minimum, asserting 413 **and** `allocations === 0`.
+
+## 4. Progress-doc reconciliation is underspecified relative to text that directly contradicts the slice
+**Severity: Low-Medium**
+**Location:** plan §"Six owned files" item 6; doc `docs/design/transaction-implementation-progress.md:623,637,653-654,665-667`
+
+Three concrete statements go stale and the plan names none of them:
+- `:665-667` — "Collection continuations, **Types**, **incident Links**, aliases and discovery retain the development gap when minimum controls are supplied." Types and incident Links must be struck and moved to the implemented subset, with continuations/aliases/discovery retained.
+- `:623` — the section heading "Canonical point, initial collection and receipt minimum-read subset" no longer describes its contents.
+- `:637` "Collections gain no ETag" and `:653-654` "Point and initial collection waits stop at the next loop check after abort becomes observable" both need extension to the descriptor/inventory/incident views.
+
+The predecessor pinned its doc targets by line ("Reconcile the existing minimum-subset prose around661–671 with the Event paragraph"); this plan's "exact implemented subset, exclusions and source-bound evidence" does not. **Fix:** name `:623`, `:637`, `:653-654`, `:665-667` in item 6.
+
+## 5. Type-properties exclusion is mis-grouped with the 500 route gaps
+**Severity: Low (wrong expected status in the test matrix)**
+**Location:** plan evidence item 6, "Preserve all three discovery refusals and alias/continuation/Type-properties exclusions"; code `read-request.ts:218-219` → `transaction-http.ts:527`
+
+`types/task?view=properties` fails `validateParameters(url, [])` and returns `invalid-parameter`, which `transaction-http.ts:527` serves as an **early 400 Problem** — not `developmentGap("minimum-position-route")` (500) as alias and continuation exclusions do. Grouping the three invites asserting the wrong status. **Fix:** split the sentence — alias/continuation → 500 `minimum-position-route`; Type-properties and any other parser-rejected spelling → 400 `invalid-parameter` via the preserved early-400 path.
+
+## 6. Typecheck hazard in the stated predicate shape
+**Severity: Low**
+**Location:** plan §"Small production delta", bullet "`kind:properties`, resource bead/link only"; code `packages/protocol/src/index.ts:393-403,414-423`
+
+`ReadRequest`'s properties arm is only `BeadPropertiesRequest | LinkPropertiesRequest`, so `resource` is narrowed to `"bead" | "link"`. An explicit `request.resource !== "type"` exclusion on that arm is a TS2367 no-overlap **error**, which breaks the plan's own "clean prebuild typecheck" gate. **Fix:** word the bullet as a positive enumeration (`request.resource === "bead" || request.resource === "link"`), which also satisfies the plan's "no wildcard `resource`/`collection` acceptance" intent without an impossible comparison.
+
+## 7. Systematic off-by-one in source citations; two spec clauses mislabelled
+**Severity: Low (audit-trail precision; the plan only authorizes re-anchoring for spec citations)**
+
+Source citations, each off by one (actual in parentheses): `transaction-read.ts26–32` (27–33); `minimumFor.perform112–125` (112–124); `transaction-http.ts525–538` (gate 521–536, predicate 528–534); `read-request.ts199–221` (200–219); `read-request.ts145–164` (types branch 148–164); `authority-read.ts790–795` (789–794), `809–814` (808–813), `816–844` (815–838), `977–998` (entry 976–996); `transaction-service.ts289–308` (`readAtMinimum` 289–304).
+
+Spec (`docs/specs/bdp.md`): "**Transactional HTTP consistency**5758–5787" — that heading is at **5766**; 5758–5765 is the preceding strict-read paragraph, which the predecessor correctly cited as a *separate* range. "**Conditional read projection**5801–5811" — no such heading exists; the actual heading is "**Transactional conditional reads**" at **5800**. Since the plan instructs "re-anchor by heading", a nonexistent heading name is unresolvable.
+
+## 8. Widened predicate inherits no facet-level negative guard
+**Severity: Low (test-coverage)**
+**Location:** plan evidence item 3, final sentence; code `transaction-read.ts:112-126`
+
+Nothing in the repo asserts the `TypeError("minimum-read route outside supported subset")` at `transaction-read.ts:118` (repo-wide grep: that string appears only at the definition). The facet rejection for aliases (`:125`) is likewise unasserted. The plan's only stated source-level exclusion oracle is "The same next URL with a minimum remains refused". **Fix:** add a small facet-level negative table (continuation collection, continuation bead-links, `resolveAlias`) alongside the widened positive cases, so a future over-broad predicate fails at source and not only at HTTP.
+
+---
+
+# Verified as sound (do not re-litigate)
+
+- **Two production files suffice.** `isInitialTransactionCollection` is referenced only at `transaction-read.ts:27,114` and `transaction-http.ts:51,531`; `packages/server/src/index.ts` does not re-export `transaction-read.js`. Replacing it touches no public export and no unowned file.
+- **Same-entry context and ordering.** `authority-read.ts:976-996` captures, materializes, and invokes `checkSourceCondition` inside one `prepared.enter`; `finish()` (→ `firstPageWithContext`) runs only at `:1017`. A behind throw therefore precedes any token allocation for the inventory and incident views — the plan's `limit:1` + token-counter method mirrors the existing `transaction-read.test.ts:706-736` exactly.
+- **Wait/abort/lifetime.** `transaction-service.ts:289-304` wraps each attempt in `waitForTransactionMinimum`; budget default 1000 ms (`transaction-runtime-configuration.ts:112`); `transaction-consistency.ts:107` samples `signal.aborted` at each loop head; `minimumReads.{budgetMs,now,wait}` seams are validated at `transaction-runtime-configuration.ts:160-174`. No entry spans the wait. `handle()` rethrows `ScopeServerOperationAbortedError` (`transaction-http.ts:560`). Pre-abort DatabaseSync-spy pattern exists at `transaction-read.test.ts:757-791`.
+- **Canonical Type body vs. position.** Descriptors come from `configuration.installedTypes` (`transaction-store.ts:576`), not from resource rows — so a subsequent Bead commit advances `sourceContext` while descriptor and inventory bytes stay equal. `parseTypeDescriptor` (`read-values.ts:72-91`) validates without rewriting, so deep-equality against the authored descriptor holds.
+- **No fabricated ETag.** `scopeDataResponse` (`read-http-routing.ts:63-74`) excludes `resource === "type"` and emits no tag for collections or `bead-links`; the authority attaches `resourceRevision` only on bead/link record/properties (`authority-read.ts:805`). Rows 8–10 are therefore correct: `If-None-Match: *` → 304 via the `*` branch at `read-http.ts:63`, mismatching `If-Match` → 412 via `:52` with `etag === null`.
+- **Conditional-after-eligibility.** `applyReadHttpSemantics` applies conditionals only to 200-JSON/204 (`read-http.ts:12-14`), so the 503/410/409 rows cannot be shortcut to 304/412, and `context()` headers survive into 304/412. This matches the normative "minimum-position … MUST precede any conditional shortcut. Required current Scope context remains required on 304 and 412" (bdp.md §Transactional conditional reads).
+- **Status mapping.** `foreign-view` → 409, `cursor-expired` → 410 (`packages/protocol/src/index.ts:506-507`); catch-up-timeout → 503 with `retry-after: 1` (`transaction-http.ts:104,561-574`). HEAD bodies are stripped with the GET content-length (`read-http.ts:42-46`).
+- **Missing-anchor reachability.** Absent Type (`authority-read.ts:793`) and absent/deleted/invisible incident anchor (`:817,820`) both produce `observed(notFound())`, whose `problem.code === "resource-not-found"` reaches the callback at `authority-read.ts:990`. The predecessor's callback needs no request-kind argument — the plan's claim holds. Spec support is exact: bdp.md:1445-1447 names "ordinary `GET`, `view=properties`, and, for a Bead, `view=links`".
+- **Continuation exclusion.** `read-request.ts:157-158,188-189,244-245` yield continuation-bearing variants for types/beads/links/bead-links, all rejected by a `continuation === undefined` clause. `continuationUrlFor` (`:410-431`) round-trips types and bead-links correctly.
+- **Installed ledger arithmetic.** 1+6+3+3+3+1+2+1 = **20**; URL identities = **7** as enumerated; **1** child. Direction semantics check out (`structural` at `authority-read.ts:682-692`): inbound of `a` = `l-ba`, outbound = `l-ab`. Canonical order `l-ab` < `l-ba` and `types/relationship` < `types/task` (Relationship then Task) are both as the plan states. `next: null` is correct — `read-pagination.ts:311-314` emits a cursor only when `followingOffset < items.length`, and with `readDefaultItems: 2` (`transaction-runtime-configuration.ts:96`) a 2-item page retains nothing, so "the wire ledger does not retain extra pagination state" holds.
+- **Receipt shape.** `receiptMaximumItems` defaults to 32 (`transaction-store.ts:217` ← `TRANSACTION_MAXIMUM_OPERATIONS = 32`), so a five-member batch inlines 5 per-operation results with `next: null` and clears the `transaction-service.ts:181-191` inline bound. `requiredPosition`/`effectPosition` exist and equal the commit position for an effective commit (`transaction-store.ts:1275-1276`), so "effect/required/current = pos-1" is assertable. Owned-link side effects are as described: `ownsOutgoing` is declared only on Task (`artifacts()` in the installed test), so `l-ab` bumps `a` and `l-ba` bumps `b`, Link revisions stay at creation value, and no extra `beads/a` GET is needed.
+- **Budgets.** 90 s `withDeadline`, 120 s outer `it`, 5 s `requestTimeoutMs`, 10 s launcher lifecycle (`scripts/transaction-installed-observation.mjs:31`), 32768/16384/65536, and the 80-response ceiling (`…installed.test.ts:317`) are all real and unchanged; `observations` is per-`start()`, so ledgers stay separate. Three 1 s future waits is the correct count for rows 11–13 (rows 14–16 fail immediately, reason ≠ `behind`). Anonymous 401 precedes the minimum gate (`transaction-http.ts:360` vs `:521`) and carries no context.
+- **Credential routing.** The per-exchange executor with `routes: [{method, url}]` and the `bdp-authorization-view`-only resolver channel (`…installed.test.ts:254-284`) supports the plan's "per-request route grants are exact and do not imply one identical executor-route digest" and the anonymous handle used by row 20.
+- **Predecessor handling.** No duplication of the predecessor's edit is requested; signal-only forwarding and the ordinary-facet `sourceCondition` prohibition are carried forward correctly; `claimEligible: false` and the no-whole-profile/no-discovery-activation disclaimers are intact; unresolved receiving / retained-continuation / Event questions are quarantined in the closing paragraph as required.
+
+---
+
+**Net:** the mechanism analysis is accurate and the two-production-file boundary is real — I found no semantic defect in the predicate, the callback reuse, the eligibility/conditional ordering, or the 20/1/7 ledger. The actionable defects are evidence-side: one surface (canonical Type descriptor) has no usable fixture in either owned source test file (#1), one existing assertion table inverts without notice (#2), one asserted invariant has no assigned oracle (#3), and the doc reconciliation plus three precision items (#4–#7) need tightening before authoring.

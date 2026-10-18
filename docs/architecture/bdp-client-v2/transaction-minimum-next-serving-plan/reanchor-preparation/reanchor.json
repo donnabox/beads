@@ -1,0 +1,95 @@
+{
+  "kind": "read-only candidate reanchor preparation; not merged authority or authoring release",
+  "created": "2026-10-16T02:08:23.776306+00:00",
+  "base": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+  "candidate": "1647c5df37a82e1364d281ac46beb60a94ab6c76",
+  "candidateTree": "a070420a4c17aa67a821c742d363ff9e82e872a6",
+  "candidateParents": [
+    "dae39d526ea543112da68bdb483a8af7e90972fd",
+    "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1"
+  ],
+  "workingTreeClean": true,
+  "planPins": {
+    "packages/server/src/transaction-consistency.ts": {
+      "baseSha256": "00a420c3e9f5dcb1b8814a6476d5ce52edfb7adbbd1c64ab082833f17322a336",
+      "candidateSha256": "00a420c3e9f5dcb1b8814a6476d5ce52edfb7adbbd1c64ab082833f17322a336",
+      "changed": false
+    },
+    "packages/server/src/transaction-read.ts": {
+      "baseSha256": "c3b486baf6b9e48d4a716d36b4162c2ba1f0c7672a6f48988192e2591eda7910",
+      "candidateSha256": "66e71ff74a8139b12f0c7581c30a6798cc8724bb488cac8517119b9678ace212",
+      "changed": true
+    },
+    "packages/server/src/transaction-service.ts": {
+      "baseSha256": "53f655faf494209996aac2e0f93a4c2c785e471f66aac6af9ea41f92c9cfbe00",
+      "candidateSha256": "8e2a00fba538fc38fd81241301d38b232190f7241fa695e1dcdaf10641e97dc8",
+      "changed": true
+    },
+    "packages/server/src/transaction-http.ts": {
+      "baseSha256": "ebb3550110bd6fda638572966e5faa05c15f062f37a10947f6e442fc7d4570f4",
+      "candidateSha256": "c6bac496033781306d1c63e570e1c65b5786d41ebb8dc565c5a8be44e91ccfa9",
+      "changed": true
+    },
+    "packages/server/src/transaction-consistency.test.ts": {
+      "baseSha256": "4d45ba52c028c3081188a6f76498889d7170cceaaad114004458b86331191bc9",
+      "candidateSha256": "4d45ba52c028c3081188a6f76498889d7170cceaaad114004458b86331191bc9",
+      "changed": false
+    },
+    "packages/server/src/transaction-read.test.ts": {
+      "baseSha256": "9345c091e7ad31a94d5726dcb1ac525347dfe59204d2043203d29833ef1cd7b6",
+      "candidateSha256": "9345c091e7ad31a94d5726dcb1ac525347dfe59204d2043203d29833ef1cd7b6",
+      "changed": false
+    },
+    "packages/server/src/transaction-http.test.ts": {
+      "baseSha256": "ca2e4e7663a93060ba2a0788c5ef349a3de4991e3108f81507f37a723d964781",
+      "candidateSha256": "ca2e4e7663a93060ba2a0788c5ef349a3de4991e3108f81507f37a723d964781",
+      "changed": false
+    },
+    "packages/server/src/authority-read.ts": {
+      "baseSha256": "fd6554c4ee0d08b997fb3622c2f21697f02d58b838f4ae0de10aca4707f67734",
+      "candidateSha256": "fd6554c4ee0d08b997fb3622c2f21697f02d58b838f4ae0de10aca4707f67734",
+      "changed": false
+    },
+    "packages/server/src/transaction-runtime-configuration.ts": {
+      "baseSha256": "e594e930f845255cafc7e2f5b5b28149b7e95fe8a09052b187a492c96328f7ca",
+      "candidateSha256": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
+      "changed": true
+    },
+    "packages/server/src/read-request.ts": {
+      "baseSha256": "57675afc647df3e8ad1f26a40aef72584aa388ade6af4a465e3ffef16670f6a2",
+      "candidateSha256": "57675afc647df3e8ad1f26a40aef72584aa388ade6af4a465e3ffef16670f6a2",
+      "changed": false
+    },
+    "docs/specs/bdp.md": {
+      "baseSha256": "63e93be562334c84c1e967da2fce212e8ef515aa3c9448924c5f9a272ea7b80b",
+      "candidateSha256": "63e93be562334c84c1e967da2fce212e8ef515aa3c9448924c5f9a272ea7b80b",
+      "changed": false
+    },
+    "docs/design/transaction-implementation-progress.md": {
+      "baseSha256": "9aa001e2da6e37f0e12aa15fd124a489bc951519064370afbb76c9aee9aad185",
+      "candidateSha256": "9aa001e2da6e37f0e12aa15fd124a489bc951519064370afbb76c9aee9aad185",
+      "changed": false
+    }
+  },
+  "changedPins": 4,
+  "unchangedPins": 8,
+  "additionalCandidateContextPins": {
+    "packages/server/src/transaction-authorization.ts": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2",
+    "packages/server/src/transaction-store.ts": "bc10df9d02316e395b8c4ea7db6134ab2646c8e8abd83ea785b0ea09f2f0c82c",
+    "packages/server/src/transaction-runtime.ts": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+    "packages/server/src/transaction-runtime.test.ts": "4ac87ec1121760db3aff9221c2d291c3dfca45adc065c09eebcd84ed88d882f5",
+    "packages/server/src/read-http.ts": "31934105eff6fff8ded8ce2ca9e3c19028991ca7c3d5f51b848004177e8c9268"
+  },
+  "immutableInputHashes": {
+    "plan.md": "c76853749217cd2a62b3d0e92c0c8976376ab8d86d78cdf9a49e24d2fa096bc8",
+    "ledger.json": "cd04e4c1de3cd2f2f17b1f7691fca5158cba0066b5b873205fbce185f9434def",
+    "operator-rulings.json": "dc9d3a1ae9027f92aadb68638f38507a7fad4dbb169954ded6e5299d83d24951",
+    "source-binding.json": "efcf81e24eaedb5a43f2dc010b31044e49f58a6f0e52ab89da80c85cc38ecbe7",
+    "claude-preparation/prompt.txt": "cedae8b24d5ca265f0521207da0634fb1045a771d7338ef7fb8b17ed90ec1ffe",
+    "claude-preparation/binding.json": "23a108e2a19615aad6a7fdc54fdf5711fba363ff18f0c03d0982a0ad82cb4469"
+  },
+  "planRelevantDiffSha256": "d2dccde36392f48607470b029522401271fd34059327f2e953b8155e93be8203",
+  "futureAuthoringParent": null,
+  "authoringReleased": false,
+  "runtimeExecutedByThisAudit": false
+}

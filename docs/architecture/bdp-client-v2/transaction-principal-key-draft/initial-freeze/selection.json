@@ -1,0 +1,49 @@
+{
+  "fullName": "observes independent principal keys and same-principal credential rotation through installed HTTP",
+  "file": "apps/bdptest/src/transactional-principal-key-installed.test.ts",
+  "regexp": "^observes independent principal keys and same-principal credential rotation through installed HTTP$",
+  "positive": {
+    "mode": "absent or positive",
+    "expectedTestsPassed": 1,
+    "expectedHttp": 7,
+    "maxHttp": 7,
+    "children": 1
+  },
+  "negative": {
+    "mode": "collapse-b-to-a",
+    "expectedTestsFailed": 1,
+    "expectedHttp": 2,
+    "maxHttp": 7,
+    "children": 1,
+    "expectedNamedFailure": "principal-key:b-independent-create:completed",
+    "expectedCurrentAssertion": "principal-key:b-independent-create:completed",
+    "expectedCompletedResponseStatuses": [
+      200,
+      409
+    ],
+    "expectedProblem": {
+      "type": "https://github.com/gastownhall/bdp/problems/conflict",
+      "code": "idempotency-conflict",
+      "status": 409,
+      "retry": "never"
+    },
+    "expectedContext": "request2 same scopeEpoch/authorizationView as request1; scopePosition pos-1",
+    "mustReject": "transport/schema/wire/cleanup/output/unhandled error or any failure other than named expected200 actual409"
+  },
+  "commandTemplates": {
+    "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+      "run",
+      "apps/bdptest/src/transactional-principal-key-installed.test.ts",
+      "--maxWorkers=1",
+      "--reporter=verbose",
+      "--reporter=json",
+      "--outputFile=<cohort-specific absolute results.json>",
+      "-t",
+      "^observes independent principal keys and same-principal credential rotation through installed HTTP$"
+    ]
+  },
+  "released": false
+}

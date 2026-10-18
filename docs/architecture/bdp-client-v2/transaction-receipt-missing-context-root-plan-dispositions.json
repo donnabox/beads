@@ -1,0 +1,29 @@
+{
+  "at": "2026-10-15T12:06:48.962114+00:00",
+  "scope": "receipt-root/page missing current context",
+  "originalPlanSHA256": "618e69a22bf6f0d5acc01dbbee6001dbd63b17d16fee4529c18e000bfcf47d18",
+  "originalLedgerSHA256": "133d93f01d6fb85bf111b016a49a0467470ce09694b8dff7dd1b40b591f5ce9d",
+  "actualClaudeSHA256": "84560b126c82859fed06f6d5b3923b224dd4f9c07a5c8a4f6d5fa595acb09878",
+  "sourceAuditSHA256": "9a8595132244550a273e23b48d6ce49cef586f438760942514b45b4682a2fcdf",
+  "decision": "accept all23 numbered source-grounded dispositions, with derived unknown sibling URL option selected; successor packet and actual merged Event parent required before authoring",
+  "mandatoryCorrections": [
+    "request2 uses change;179B/3999B total",
+    "missing page context captured at each return after existing integrity checks",
+    "404 union preserves required root context;401 distinct",
+    "same-view ahead minimum with zero-wait counter, no latency claim",
+    "page.receipt equals actual root; root and page provenance distinct",
+    "per-request hard metadata/body prerequisites then one soft three-field tuple",
+    "source local streaming bounded fetch with redirect:error and abort signals for all13 requests",
+    "metadata validation fault with clean rollback is nonsticky; real SQLite/uncertain rollback fencing preserved",
+    "45s aggregate abort and existing grace bounds remain distinct; do not sum per-request maxima",
+    "401 transport/service attribution and exact partial-scope limitations"
+  ],
+  "preserved": [
+    "original23finding review and original plan/ledger unchanged",
+    "eight-path production/test/doc scope",
+    "14sourcecases/68HTTP plus13HTTP emittedcontrol plus14HTTP installed",
+    "no new product decisions or public profile claim"
+  ],
+  "authoringReleased": false,
+  "executionReleased": false
+}

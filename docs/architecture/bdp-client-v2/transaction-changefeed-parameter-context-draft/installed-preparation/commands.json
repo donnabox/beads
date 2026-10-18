@@ -1,0 +1,284 @@
+{
+  "status": "CLOSED_PREPARATION_ONLY",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
+  "ownedPaths": [
+    "packages/server/src/transaction-changefeed.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "executionOrder": [
+    "fresh-build",
+    "build-inventory",
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed",
+    "installed-positive",
+    "installed-review"
+  ],
+  "commands": {
+    "node-version": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "build-inventory",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "package-directory": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/installed-preparation/packages.py",
+        "directory"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "node-version",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "pack-protocol": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/installed-preparation/run/packages"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "package-directory",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "pack-server": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/installed-preparation/run/packages"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "pack-protocol",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "verify-tar": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/installed-preparation/packages.py",
+        "tar"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "pack-server",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "prepare-consumer": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/installed-preparation/packages.py",
+        "consumer"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "verify-tar",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "consumer-install": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/installed-preparation/run/consumer",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "prepare-consumer",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "verify-installed": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/installed-preparation/packages.py",
+        "installed"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "consumer-install",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "installed-positive": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/installed-preparation/run/installed-positive.json",
+        "-t",
+        "^(?:observes\\ genuine\\ installed\\ current\\ context\\ on\\ changefeed\\ parameter\\ refusals)$"
+      ],
+      "selectedFullNames": [
+        "observes genuine installed current context on changefeed parameter refusals"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 1,
+      "http": 10,
+      "owners": 1,
+      "directories": 1,
+      "listeners": 1,
+      "productChildren": 1,
+      "requires": [
+        {
+          "id": "verify-installed",
+          "exit": 0
+        }
+      ],
+      "phase": "installed",
+      "ownedTempPrefixes": [
+        "bdp-changefeed-context-installed-"
+      ],
+      "workload": {
+        "cases": 1,
+        "httpExpected": 10,
+        "httpMaximum": 10,
+        "children": 1,
+        "listeners": 1,
+        "owners": 1,
+        "directories": 1,
+        "requestTimeoutMs": 5000,
+        "cohortDeadlineMs": 45000,
+        "testTimeoutMs": 60000,
+        "startupMs": 10000,
+        "closeMs": 10000
+      }
+    },
+    "installed-review": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/installed-preparation/review-installed.py"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "installed-positive",
+          "exit": 0
+        }
+      ],
+      "phase": "review",
+      "ownedTempPrefixes": []
+    },
+    "fresh-build": {
+      "phase": "build",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [],
+      "ownedTempPrefixes": []
+    },
+    "build-inventory": {
+      "phase": "inventory",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/installed-preparation/inventory.py"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "fresh-build",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    }
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/source-binding.json",
+    "sha256": "0abed77764ff7763e5e5a6f9b5a767090423fed01b21ea01b162a17b3b743e70"
+  },
+  "requests": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/ledger.json",
+    "sha256": "37210f4b4561b0669583cadbb0d3525cc97b3939548e66a6b3032f7bc7709940"
+  },
+  "limits": {
+    "installedCases": 1,
+    "httpExpected": 10,
+    "httpMaximum": 10,
+    "childrenMaximum": 1,
+    "noAutomaticRetry": true
+  },
+  "finalCommit": "PENDING_ROOT_COUNCIL_CONTROL_AND_ORDINARY_CLEAN_COMMIT"
+}

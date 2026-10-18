@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-15T11:32:48.687774+00:00",
+  "decision": "Release the first seven sequential fresh packaging stages only, then inspect actual consumer lock before verify-installed; inspect actual provenance before installed child. No automatic retries.",
+  "recipeRead": [
+    "gate.py",
+    "supervise.py",
+    "packages.py",
+    "review-installed.py",
+    "commands.json"
+  ],
+  "sourceHead": "3df82ac480f50c8f486b4e456336366e7acbdf87",
+  "sourceTree": "d5f02c936cf080666a8e73bb5f253e52086705f4",
+  "limits": {
+    "installedCases": 1,
+    "httpExpected": 11,
+    "httpMaximum": 11,
+    "childrenMaximum": 1,
+    "noAutomaticRetry": true
+  }
+}

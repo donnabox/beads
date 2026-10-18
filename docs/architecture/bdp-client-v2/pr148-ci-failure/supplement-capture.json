@@ -1,0 +1,29 @@
+{
+  "job-full.log": {
+    "sha256": "6262a6214663fcbc71f1ecc36c02f904ab9f6021d87b57bb8a2d934b939130d1",
+    "bytes": 3538312,
+    "command": [
+      "gh",
+      "api",
+      "repos/gastownhall/bdp/actions/jobs/117193262561/logs"
+    ]
+  },
+  "check-run.json": {
+    "sha256": "fcfbce613e2eb21dce516824cb6cc405aaeb0804588250f23625e5a1efb5adf8",
+    "bytes": 3523,
+    "command": [
+      "gh",
+      "api",
+      "repos/gastownhall/bdp/check-runs/117193262561"
+    ]
+  },
+  "annotations.json": {
+    "sha256": "6b8d99e87f38cd3a842ecbf14d56e3f678184ad102946d28d0c1871f5aca1b6e",
+    "bytes": 1381,
+    "command": [
+      "gh",
+      "api",
+      "repos/gastownhall/bdp/check-runs/117193262561/annotations"
+    ]
+  }
+}

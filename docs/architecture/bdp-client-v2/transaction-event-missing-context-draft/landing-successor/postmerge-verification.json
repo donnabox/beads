@@ -1,0 +1,39 @@
+{
+  "actualMerge": "015cac1aa4fa827cc4a2c647dff08454c6c8e6f8",
+  "tree": "2e16329e195eb8214836de20340a5887236d78f0",
+  "parents": [
+    "88c9408e908590ab1a4c64c9b9dee1a8b705999c",
+    "db5a4d6a41814e59704ebef60fda02a2d57e9ad2"
+  ],
+  "mergedAt": "2026-10-15T12:16:12Z",
+  "testedMerge": "52a71dbbfb6a4d9cbf231bc057189dee369c1cf0",
+  "at": "2026-10-15T12:16:16.760643+00:00",
+  "head": "db5a4d6a41814e59704ebef60fda02a2d57e9ad2",
+  "parent": "3df82ac480f50c8f486b4e456336366e7acbdf87",
+  "run": 38731731790,
+  "job": 116410895014,
+  "mode": "postmerge",
+  "rootAcceptanceSha256": "da560e3a320f54ba54a87d9b8c76366361a2bf71e97136003255b2a224b18af6",
+  "verifiedEventFiles": 6,
+  "verifiedCumulativePaths": 7,
+  "productOutputsPreserved": 312,
+  "requiredSteps": [
+    "Run pnpm format:check",
+    "Run pnpm lint",
+    "Run pnpm check:boundaries",
+    "Run pnpm typecheck",
+    "Run pnpm build",
+    "Run pnpm test",
+    "Run pnpm e2e:ready:preflight",
+    "Run pnpm smoke",
+    "Read-cohort evidence gate"
+  ],
+  "checks": [
+    {
+      "id": 116410895014,
+      "name": "verify",
+      "conclusion": "success"
+    }
+  ],
+  "installedAttribution": "3df82ac480f50c8f486b4e456336366e7acbdf87"
+}

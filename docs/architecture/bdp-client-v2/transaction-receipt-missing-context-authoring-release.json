@@ -1,0 +1,36 @@
+{
+  "at": "2026-10-15T12:17:22.043809+00:00",
+  "base": "015cac1aa4fa827cc4a2c647dff08454c6c8e6f8",
+  "tree": "2e16329e195eb8214836de20340a5887236d78f0",
+  "branch": "codex/vickie-receipt-missing-context",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "planSHA256": "ede6786c64c073ab6ea92c1de8d38628043180d8c61daed41f657f4125dd80cd",
+  "v3LedgerSHA256": "6e331db3f43af838c7f028b5c8a4a9c58fd0f3a07dbb1b49b0687804d50110b7",
+  "reanchoredLedgerSHA256": "909296413af80c17964cbf42ad69c2ecd073574dd9dd36902d29b87c12579990",
+  "nativeClosureSHA256": "554656588ef734f130d701b1abad308f46d5936c61a4a87d7998f827ec1d4203",
+  "actualClaudeOriginalSHA256": "84560b126c82859fed06f6d5b3923b224dd4f9c07a5c8a4f6d5fa595acb09878",
+  "rootDispositionsSHA256": "32dd75f2837ce1440b6fc317691d735fc45227d56ae6367b6fbcc85d7b919d7d",
+  "postmergeVerificationSHA256": "58c631c8082d1d9e196f9f5770408b959ad23eea8d374a97d13e8902b3076687",
+  "decision": "author eight-path draft on verified merge under v3 plus native cleanup/readlimit checkpoints; no tests or product imports until measured draft review",
+  "ownedPaths": [
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-receipt-pages.test.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "currentPathHashesVerified": true,
+  "sourceAndTestAuthoring": true,
+  "formatOnlyAllowed": true,
+  "executionReleased": false,
+  "commitPushAllowed": false,
+  "checkpoints": [
+    "preserve overloaded readReceipt delegation",
+    "match both page maxima2",
+    "local cleanup boundary captured before fixture startup; drain all callbacks independently; preserve primary+cleanup errors",
+    "95HTTP remains prospective measured budget, not coverage completion"
+  ]
+}

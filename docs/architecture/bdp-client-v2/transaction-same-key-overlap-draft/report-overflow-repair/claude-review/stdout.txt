@@ -1,0 +1,21 @@
+## Verdict
+
+F3's core defect is fixed. In the path where the first serialization fits (file written, `reportOverflow` false, no failure) and the second overflows, the run now records the overflow and throws `same-key report ceiling`, so `outcome:"failed"` / `reportOverflow:true` / `failureCount:n≥1` on stdout are no longer fabricated. The added `addFailure` only appends (`failures.includes` dedupe is reference-based, never removes), so no pre-existing failure is dropped or downgraded; the primary error still surfaces, as `AggregateError` rather than bare throw when overflow co-occurs. Privacy and bounds are unchanged: the fallback payload keeps the same six fixed fields (no `binding`, `served*`, paths, or error text), `failureCount` is a number, the object stays far under 65536, and no timer/limit/ceiling constant is touched. Braces are correct; no dangling-else.
+
+## Introduced defect
+
+**1. Single overflow condition records two distinct failures — Low — new lines 952–953 vs. 931–934.**
+When the *first* serialization overflows, 932–933 set `reportOverflow = true` and push a `new Error("same-key report ceiling")`. The re-serialization at 943 is then strictly larger (`reportOverflow:true`, `failureCount` incremented), so the new `else` block almost always runs too and pushes a *second* `new Error` with the same message. `addFailure` dedupes by object identity, not message, so both are retained: the thrown `AggregateError` and stdout `failureCount` report 2 failures for one root cause, and a supervisor counting failures over-counts. Also turns what would have been a single-cause direct throw into an AggregateError of two identical messages.
+*Fix:* guard the new block — `if (!reportOverflow) { reportOverflow = true; addFailure(new Error("same-key report ceiling")); }` — or hoist one `const ceiling = new Error(...)` and pass it to `addFailure` in both branches so identity dedupe applies.
+
+## Residual (not introduced, F3 only half-applied)
+
+**2. `outcome:"failed"` still hardcoded — Low — line 957.** F3's second half ("derive `outcome` from `failures.length` instead of hardcoding") was not applied. With `inconclusiveBothPending === true`, `observation()` yields `"inconclusive-both-pending"` (that arm precedes `failures.length`), while the fallback prints `"failed"`; the on-disk report, if the first call fit, disagrees. The new `addFailure` additionally converts such a run from non-throwing inconclusive to thrown failure.
+*Fix:* reuse the same ternary: `inconclusiveBothPending ? "inconclusive-both-pending" : failures.length ? "failed" : "passed"`.
+
+**3. On-disk report can still claim `passed` while the run fails — Low-Medium — 935–940 vs. 943.** The `wx` write already happened and cannot be corrected, so a file-only reader sees `outcome:"passed", reportOverflow:false, failureCount:0` for a run that exits nonzero. Stdout and the test exit are now truthful, so this is a reconciliation gap, not a silent pass.
+*Fix:* decide the ceiling once (measure the stdout serialization before writing), or add `reportWritten`/`primaryFailureCount` to the fallback so the two sinks are reconcilable.
+
+## Limits
+
+Diff-only reasoning; no execution, no file or stdout snapshot comparison. Reachability of either overflow branch under ordinary fixtures is undemonstrated, which caps practical severity of all three. Root's synthetic branch evidence is taken as reported, not re-run. Unchanged HTTP/oracle middle, `check`, and `child.close` semantics assumed as stated.

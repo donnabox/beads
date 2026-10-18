@@ -1,0 +1,81 @@
+### 1. Findings (Proven Defects vs. Questions Needing Omitted Context)
+
+#### Proven Defects
+
+* **Severity**: Low
+* **File & Line**: `apps/bdptest/src/development-matrix.test.ts`, line 105
+* **Concrete Issue**: Fragile URL canonicality check in `observeIdentity`: `new URL(identity).href === identity` throws an unhandled `TypeError` (terminating the test process with an uncaught exception rather than failing an assertion) if `identity` returned in `response.body.resource.id` is not an absolute URL (for example, if the receiver returned a relative path like `beads/alloc-1` or an unparseable URI string).
+* **Reachable Trigger**: A receiver regression where an authority-allocated Bead ID fails to format as an absolute URL or returns a non-URI token while `input.observeIdentity === true`.
+* **Impact**: The test runner crashes abruptly during test action execution with an unhandled exception rather than recording a clean diagnostic assertion failure at `/identity/canonical`.
+* **Fix/Next Step**: Safely validate the URL format (e.g., using `URL.canParse(identity)` or wrapping `new URL(identity)` in a `try/catch` block that evaluates `canonical: false` upon throwing).
+
+---
+
+#### Questions Needing Omitted Context
+
+1. **Deterministic collision-skipping test harness omission**:
+   * **Context**: `read-update.alias.allocation-avoids-aliases` (and `read-update.bead.authority-allocated-id`) binds to `development.read-update.alias-allocation`.
+   * **Omitted Context**: The test matrix runs solely against the external HTTP receiver surface. Because the authority's allocator generates random/opaque single-segment IDs, HTTP requests cannot deterministically force the allocator to select a known existing live alias path to test collision skipping.
+   * **Assessment**: Both `README.md` and `read-update-coverage-v1.json` explicitly limit the claim (`"The private random allocation namespace prevents forcing the next candidate to collide through HTTP; collision-skipping itself is NOT exercised or qualified."`). This is an honest bounded diagnostic limit rather than an invalid qualification claim.
+
+2. **Authorization view / hidden subject verification omission**:
+   * **Context**: `read-update.alias.unknown-subject` binds to `development.read-update.alias-unknown-subjects`.
+   * **Omitted Context**: The development harness runs under a single, fixed all-visible development principal. The normative specification requires that aliases pointing to Beads not visible in the request's Authorization View fail with `resource-not-found` (not disclosing target existence).
+   * **Assessment**: The packet inventory explicitly documents this limitation (`"Unknown and wrong-root subjects only; hidden subjects are not observable under the fixed all-visible policy."`). Multi-principal or ACL test fixtures remain omitted.
+
+3. **Tombstone expiration, retention window, and crash recovery state**:
+   * **Context**: `read-update.alias.reference-idempotency` and `read-update.idempotency.retained-failures`.
+   * **Omitted Context**: Test scenarios verify retained dispositions and replay during the active life of disposable SQLite stores. They do not simulate retention window expiration (`idempotency-expired`), tombstone memory bounds across long-term logical Scope lifetimes, or process SIGKILL/crash recovery midway through member execution.
+   * **Assessment**: Documented as bounded exclusions; no durability across power-loss or retention expiry is claimed.
+
+---
+
+### 2. Known Bounded Exclusions Relevant to Packet 04
+
+1. **Non-attesting diagnostic lane only**:
+   All new scenarios carry `kind: diagnostic`, run under test-only `development.read-update.*` catalog identifiers, and generate reports with `claimEligible: false`. Public write-profile qualification remains disabled.
+2. **Deterministic allocator collision skipping**:
+   The allocation observation only verifies that an authority-minted Bead ID is canonical, in-Scope, single-segment, non-empty, readable, and that an explicit create at a live alias path is rejected (`alias-path-taken`). It does not simulate or qualify candidate collision skipping.
+3. **No historical resolution or external fetch**:
+   Pinned link endpoint tests (`pinned-references`) observe that opaque revision strings and external URI spellings are stored, echoed, and compared byte-identically. No historical revision traversal or external endpoint network fetching is implemented or claimed.
+4. **No disclosure or authorization view variants**:
+   All observations run against the fixed development principal; permission checks across distinct tenants/principals and authorization-based non-disclosure behavior remain outside this packet.
+
+---
+
+### 3. Supplement Focus Area Analysis
+
+* **Alias Canonicalization & Validation (`alias-invalid-targets`)**:
+  Correctly tests rejection (422 `validation-failed`, single descriptive diagnostic) of alias targets pointing to local aliases, absolute aliases, Link paths, external URIs, and opaque URNs. Read-back (`GET alias/{path}`) confirms that rejected alias creations leave no state (`resource-not-found`). Re-running with a fresh key succeeds. Re-running the original key with the invalid target retains the 422 failure, and re-running that key with a corrected target fails with 409 `idempotency-conflict`.
+* **Unknown and Wrong-Root Subjects (`alias-unknown-subjects`)**:
+  Correctly observes that non-existent canonical Bead targets and deletes of unknown aliases return 404 `resource-not-found` without acting as an oracle. Wrong-root subjects (`beads/wrong` in alias put, `links/wrong` in alias delete) fail with 404. When the missing Bead is subsequently created, retrying under the original key returns the retained 404, while retrying under a fresh key succeeds.
+* **Retained Targets vs. Fresh-Locator Retry (`alias-recorded-targets`)**:
+  Validates that an alias locator recorded with an original link creation (`alias/old` -> `beads/a`) retains its target (`beads/a`) on idempotency retry across alias repointing, deletion, reassignment, and cross-slot reuse (`target: "alias/old"`). Conversely, tests that a previously unrecorded fresh locator (`alias/fresh`) is resolved anew on retry: succeeding when it points to `beads/a`, conflicting (409) when repointed to `beads/b` or deleted, and succeeding again once restored to `beads/a`. State read-back (`GET links/kept`) confirms original links remained intact throughout retries.
+* **Retained Misses & Live State Proofs (`alias-recorded-misses`)**:
+  Validates that an originally recorded missing alias retains its miss status across subsequent assignment, deletion, and reassignment. Distinct missing alias locators and direct canonical references compare unequally (409 `idempotency-conflict`). Read-back verifies that neither target Bead was affected or deleted.
+* **Opaque Pin Equality & Sequence-Local Renaming (`pinned-references`)**:
+  Verifies that pins are treated strictly as provenance: opaque revision strings are preserved byte-for-byte and compared for exact equality. Demonstrates that NFC vs. NFD Unicode encodings (`past:\u00e9/%2F` vs. `past:e\u0301/%2F`) correctly trigger 409 `idempotency-conflict` due to byte inequality. Demonstrates that sequence-local `@name` references resolve to creator durable identity and that renaming a local label (`@made` to `@renamed`) preserves semantic identity on retry.
+* **Test Harness Extensions (`development-matrix.test.ts`)**:
+  The addition of `targetBinding`, `referenceBindings`, `absoluteReferences`, and `observeIdentity` cleanly enables dynamic URL binding, relative-to-absolute expansion, and structural inspection of authority-minted IDs without altering production runtime pathways.
+
+---
+
+### 4. Explicit List of Files and Ranges Read
+
+#### Files and Diffs Read Directly from Packet:
+1. `apps/bdptest/src/development-matrix.test.ts`: lines 53–118 (diff chunk replacing lines 53–85)
+2. `docs/design/update-implementation-progress.md`: lines 294–335 (diff chunk adding lines 297–335)
+3. `packages/conformance/development/README.md`: lines 4–30, 110–154 (diff chunks modifying summary and adding alias/pin section)
+4. `packages/conformance/development/read-update-catalog-v1.json`: lines 825–994 (diff chunk adding 6 diagnostic catalog rows)
+5. `packages/conformance/development/read-update-coverage-v1.json`: lines 39–48, 119–145, 271–306, 411–523, 497–637, 733–888 (diff chunks updating coverage mappings and limits)
+6. `packages/conformance/development/read-update-manifest-v1.json`: lines 6663–9723 (diff chunk adding 6 diagnostic scenarios: `alias-allocation`, `alias-invalid-targets`, `alias-unknown-subjects`, `alias-recorded-targets`, `alias-recorded-misses`, `pinned-references`)
+
+#### Normative Specifications Read from Packet:
+* `docs/specs/bdp.md`:
+  * lines 2099–2167 (Creation and identity allocation, mutation revisions, allocation failures, attribution)
+  * lines 2372–2439 (Sequence-local Resource references, Pinned References)
+  * lines 2902–3051 (Alias targets, idempotency semantics, validation, non-disclosure)
+  * lines 3141–3375 (Idempotency keys, duplicate keys, retained dispositions, retention, durability & recovery)
+
+#### Truncated/Unread Material:
+* Complete unchanged repository files and whole-branch histories outside the 6-file diff and supplied normative clauses were intentionally not accessed, scanned, or executed. Entire-branch coverage is explicitly not claimed.

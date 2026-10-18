@@ -1,0 +1,236 @@
+{
+  "status": "LOCAL_VALIDATION_PASSED",
+  "sourceBindingSha256": "71a70bf7150f43fbcc4b0a29ea7647eb5c17347132e59bc710d6833312790d3b",
+  "sourceFiles": 679,
+  "freshStages": {
+    "typecheck": {
+      "exitSha256": "d2bc6b61f558d3fb7056c9dea01dd43e392051b30df3f9a103cb1358662d04bc",
+      "elapsed": 4.7994790826924145
+    },
+    "format-check": {
+      "exitSha256": "671c462d41d84518c170ddf03b5197b5ea61718c1d2ad1846870d42fcacb4cc2",
+      "elapsed": 3.711272749584168
+    },
+    "lint": {
+      "exitSha256": "f4a1e32e9c869a4fe253f78a4f9858cd7f523ecda7f6bf6275279b77d29e25b1",
+      "elapsed": 3.745730540715158
+    },
+    "fresh-build": {
+      "exitSha256": "dea89e3d6d0a3a450fcf1ceb872039713fe6f6ff62a4fe1c3482645fbeb60123",
+      "elapsed": 4.4370870417915285
+    },
+    "bind-fresh-build": {
+      "exitSha256": "82ec462d454256d199843ad81f49c6383f23725a32462e39c6b905976610ab12",
+      "elapsed": 7.9102599998004735
+    },
+    "focused-source": {
+      "exitSha256": "a75558adfb260d17df6f9d347e73abcc4489b200e7454510fc3b714e1e93a16b",
+      "elapsed": 5.03093708306551
+    },
+    "review-focused-source": {
+      "exitSha256": "6be84b7261c86a1bf7e2444484aa36bdb1d20acb7539e7d0bac0ac229b64f561",
+      "elapsed": 8.064055250026286
+    },
+    "node-version": {
+      "exitSha256": "caf3c515dd3a225533cda74beb8466c1453379bb904b760e952dc9b54e181b82",
+      "elapsed": 3.5596582498401403
+    },
+    "prepare-package-directory": {
+      "exitSha256": "5aafe2dbf288f5cfb47b77ac023fd7dcac7d16b908314974e0fda72300271a8f",
+      "elapsed": 7.898321957793087
+    },
+    "pack-protocol": {
+      "exitSha256": "52985c919abcb8c2523c6090227d57b34d5d5f53d46aac5b4be7f77dbbe8f5d3",
+      "elapsed": 3.9117358750663698
+    },
+    "pack-server": {
+      "exitSha256": "0b86a044fe3688e7ec134544fb8bca7030cba3488048914f1ce9c7e32245ea29",
+      "elapsed": 3.873633291106671
+    },
+    "verify-archives": {
+      "exitSha256": "44ed21be94c51fac385fbc67104ba3070b0eb6e9abb54540036e5f29f8504dfc",
+      "elapsed": 8.143690249882638
+    },
+    "prepare-consumer": {
+      "exitSha256": "f4b12b9120489acffb10a4477bf89a6c28b44976df5a7db6ac46a6ec30166837",
+      "elapsed": 8.111835459247231
+    },
+    "consumer-install": {
+      "exitSha256": "921b52084230027e2e121125a5744c76b07488900a4191a4d49205648c22f4f0",
+      "elapsed": 4.204483208246529
+    },
+    "verify-installed-consumer": {
+      "exitSha256": "aa9f5620105ef653e6529b1ab66668b722acd4af429b50a3cc22fb3d76dc8ec9",
+      "elapsed": 8.40072691719979
+    },
+    "changefeed-history-external": {
+      "exitSha256": "8b226a5b33cb33ee9e1b2af56a8fef599975b7e0aff58f7ee27cf416e95960b4",
+      "elapsed": 4.3350705415941775
+    },
+    "review-changefeed-history-external": {
+      "exitSha256": "af00e66b9022bb9486625da2094868b02bd30fcaebcfe8fd2eaff6bc0cb4b2e3",
+      "elapsed": 8.676300541963428
+    },
+    "changefeed-opaque-external": {
+      "exitSha256": "8d0db382e83682cc8a49cb5e851c8f969a7c378f12c488d7211517ec3745ef5c",
+      "elapsed": 6.27947370801121
+    },
+    "review-changefeed-opaque-external": {
+      "exitSha256": "625083430e249f3f762a77d760a4681f93bf9b2ffcffcc2cdf0811965ca38313",
+      "elapsed": 8.092017957940698
+    },
+    "boundaries": {
+      "exitSha256": "ba3796823e0fe6b52c0bb094018823b1ec74769b2c3f74b067ea8cd4b75d0012",
+      "elapsed": 3.811554375104606
+    },
+    "preflight": {
+      "exitSha256": "f078740545e17cdbe90b6fdd7816cffe22a2c81597e517db66c365194b00fa9b",
+      "elapsed": 4.328698208089918
+    },
+    "package-smoke": {
+      "exitSha256": "9a46ab33eb7450fcc3776d17cf6ce049bc6a91b19b240b97d8df435f2c642f35",
+      "elapsed": 8.580568540841341
+    },
+    "historical-read-evidence": {
+      "exitSha256": "0e1ee0ffa366c8e6b1a00f0fc9e457f2b57918a9e80b466507077b903a20ff3c",
+      "elapsed": 4.400414041243494
+    }
+  },
+  "reusedBootstrapOnly": {
+    "state": "Only two successful original bootstrap stages reused as prerequisites; no successor run attribution",
+    "predecessorSource": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/source-binding.json",
+      "sha256": "4807cc637a06a320b9128d8401a03f35764dbfb5c9457b204a751f1d10a326d5"
+    },
+    "successorSource": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/source-binding.json",
+      "sha256": "71a70bf7150f43fbcc4b0a29ea7647eb5c17347132e59bc710d6833312790d3b"
+    },
+    "predecessorSourceIdentity": "2c787f2afdb4d4e8d7dbe5a4cacfacc8c7b7e1d64bf670eda387669c4faff82d",
+    "successorSourceIdentity": "c47a8bea7cb18b190235ebe4a560eec5d91eb34257e85db6040dc3fe3ccb8542",
+    "allowedSourceChanges": {
+      "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": {
+        "before": "6560198780d3d5e8f90b54ed2d012d403d7482c3b6c6a771e16958faf871d3fd",
+        "after": "7beb2ef803aa2bf7befb21bc5bb427d7a40d18428ee69d1425140fa33de5153b"
+      },
+      "packages/server/src/transaction-changefeed.test.ts": {
+        "before": "3413c3280cd93a0f9cc8b40072f9678182e42d7cd0f793114f0a4dcc8e9b8158",
+        "after": "29f99ffba99c96c2d770ede016fe64af762eea9a3eb9ddaf9de6165bffe5e1bf"
+      }
+    },
+    "unchangedOtherSourceFiles": 677,
+    "dependencyInputs": {
+      ".node-version": "2722b61f414f07f08be7f1f1316012813818f26f1c40d6a24a748686cec7d2ff",
+      ".npmrc": "7151cf397def0c2cb0ab65643701d27d335a72c90f775675b5f826bc7005818a",
+      ".nvmrc": "2722b61f414f07f08be7f1f1316012813818f26f1c40d6a24a748686cec7d2ff",
+      "apps/bdp/package.json": "862dbaed2f8efb3cc039de70e2b6f928cea32a3dff24226242d6102a13ac3421",
+      "apps/bdpbd/package.json": "406919d9f53f4b102b0448472e5195ffb0f8ac332995d529084fe9905ff6849a",
+      "apps/bdptest/package.json": "38b8b72d245af1d147bc0e7ec90abc42c3f513468397d9886444c8ab46cfdb4a",
+      "package.json": "f081baa3202b4815663d360d3ad1608206efe1b023086a4c8feff4d7fb97d8d0",
+      "packages/adapter-bd/package.json": "678e848888f078cdf2c3b2c26058ca973bf4739be13d1c3077c4d63e54c9cac3",
+      "packages/adapter-in-memory/package.json": "ef062f61923313e35d2165d72363310c22fadfb9081c0111805501918c68c93c",
+      "packages/bd-domain/package.json": "a72b9fcbe511216e1503e4748bed79a136f4c2d8728413c6e292646e0e3f8429",
+      "packages/client/package.json": "0891e97c217e6ecf514326746d06431f38838ffd5f0a6b91ede38493219b0128",
+      "packages/config/package.json": "983ca52c4463429c9c5dfe37ac1e7205f51b12d455d7057c45b987a638466c05",
+      "packages/conformance/package.json": "418d4d50ea4fbed59dbc2df3dc1298d30b56760428e47a5be1ae39a46960abc8",
+      "packages/protocol/package.json": "80e6aef5232de49581cc14ba75ab780b41145a54d5754596297dcf22d38ad5e2",
+      "packages/server/package.json": "110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e",
+      "pnpm-lock.yaml": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+      "pnpm-workspace.yaml": "08d75840c97ab0e72d1d9b5b84a17e47a2e06cb159a5fbec5ee0a6a56682dad7"
+    },
+    "workspaceTools": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/workspace-tools.json",
+      "sha256": "9c63f40ec5410f1969c577b31ad664c268b4e9fcdf11eed6c6a03265bebadf76"
+    },
+    "origins": {
+      "workspace-install": {
+        "started.json": {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/workspace-install.started.json",
+          "sha256": "95e1f2d08022bc87dee4fefd475d8bd4b3995bceae96439075c883666fb80571"
+        },
+        "exit.json": {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/workspace-install.exit.json",
+          "sha256": "f9e0062b243a706ede4ab7ed124d52d55e14a241df5964f4b124c5802d1fb42d"
+        },
+        "log": {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/workspace-install.log",
+          "sha256": "dccc635676642c044945e02c473a57b7140b90cde11211ddc9a25a5a72d44996"
+        },
+        "processes.jsonl": {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/workspace-install.processes.jsonl",
+          "sha256": "3a66ca286da48a595a06b2f754c56c6a13cabb73ba641065b1439615c4f693b3"
+        }
+      },
+      "bind-workspace-tools": {
+        "started.json": {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/bind-workspace-tools.started.json",
+          "sha256": "708db2024a3a923185d5a52f8d6139c0be55f2e47eca6863a9c7a1f1cdde875d"
+        },
+        "exit.json": {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/bind-workspace-tools.exit.json",
+          "sha256": "216bfe24647972d3666c41d4156431fac086056bd82b2b2b308478dd24674cf6"
+        },
+        "log": {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/bind-workspace-tools.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "processes.jsonl": {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/bind-workspace-tools.processes.jsonl",
+          "sha256": "3fdbb4c3893560cf558f2664635d48678e2ce454242996ccc8532e37e07eb673"
+        }
+      }
+    },
+    "toolCount": 11,
+    "excludedPriorStages": [
+      "typecheck",
+      "format-check"
+    ],
+    "sourceCorrection": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-author/format-successor-1/correction.patch",
+      "sha256": "e05ba3c1e1f72666d9edc1ab717e9cc9516933a0f4e76eb1328d7e482c5af316"
+    }
+  },
+  "selectedSourceCases": 17,
+  "newSourceRecords": 9,
+  "historicalSourceRecords": 1,
+  "installedHistoricalExchanges": 10,
+  "installedNewExchanges": 4,
+  "newLifecycle": {
+    "launchAttempted": true,
+    "returnedChild": true,
+    "pid": 87514,
+    "exitCode": 0,
+    "signalCode": null,
+    "observedExit": {
+      "code": 0,
+      "signal": null
+    },
+    "observedClose": {
+      "code": 0,
+      "signal": null
+    },
+    "childStdioDrainObserved": true,
+    "closure": "clean",
+    "cleanClose": true,
+    "cleanupDeadlineExceeded": false,
+    "pendingExchanges": 0,
+    "pendingDrained": true,
+    "settledExchanges": 4,
+    "socketCloseCensusAvailable": false,
+    "transportSettlementContract": "executor destroys socket before exchange settles",
+    "lateCleanupRejectionObserved": false,
+    "directory": "/private/tmp/vickie-changefeed-validation-changefeed-opaque-external-u4b6jndh/bdp-changefeed-opaque-installed-NcCorv",
+    "directoryRemoved": true,
+    "directoryPresent": false
+  },
+  "sampledPidsAbsent": 393,
+  "payloadIdentity": "1a3211afe8e479f5b3adf36331254149eb05ac8becdf34c1ea6d025a76bfe087",
+  "limits": [
+    "17 selected cases not full file census",
+    "Original failedformat and predecessor typecheck preserved",
+    "External consumer proof distinct from future CI workspace-dist",
+    "Private profile, no full Write or public admission claim",
+    "No local full-suite claim; exact-head CI remains required"
+  ],
+  "nativeFinalAuditSha256": "83e6a2f72cb15430e4174385ab24b56b839b760ed94e0a928bc55dc983de724a"
+}

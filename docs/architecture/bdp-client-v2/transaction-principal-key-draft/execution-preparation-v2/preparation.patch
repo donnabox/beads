@@ -1,0 +1,174 @@
+--- execution-preparation/gate.py
++++ execution-preparation-v2/gate.py
+@@ -3,7 +3,7 @@
+ import hashlib,json,re,subprocess
+ P=Path(__file__).resolve().parent;D=P.parent;L=D.parent;E=P/"run"
+ W=Path("/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation")
+-GUARD=L/"guarded-action.py";COMMANDS=P/"commands.json";COMMANDS_SHA="b0e5c5846d5cde44d54dea08622cc1d2264233de74249eabf0e21429aa374be0"
++GUARD=L/"guarded-action.py";COMMANDS=P/"commands.json";COMMANDS_SHA="c1d63cd680a657eada8a611206ae3f8103cae4377386842265a69ab645ca0074"
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def require(ok,message):
+  if not ok:raise RuntimeError(message)
+--- execution-preparation/supervise.py
++++ execution-preparation-v2/supervise.py
+@@ -7,6 +7,7 @@
+     if "selectedFullNames" not in spec:
+         return {"kind": "command-only", "testVerdict": "not-applicable"}
+     output = next(Path(arg.split("=", 1)[1]) for arg in spec["argv"] if arg.startswith("--outputFile="))
++    if not output.is_absolute(): output = Path(spec["cwd"]) / output
+     report = json.loads(output.read_text())
+     assertions = [case for file in report["testResults"] for case in file.get("assertionResults", [])]
+     executed = [case for case in assertions if case["status"] not in ["pending", "skipped", "todo"]]
+--- execution-preparation/commands.json
++++ execution-preparation-v2/commands.json
+@@ -1,5 +1,5 @@
+ {
+-  "status": "CLOSED_SOURCE_AND_FINAL_PARENT_PENDING",
++  "status": "CLOSED_REVIEW_REPAIR_SOURCE_BOUND_FINAL_CANDIDATE_PENDING",
+   "workspace": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+   "ownedPaths": [
+     "apps/bdptest/src/transactional-principal-key-installed.test.ts",
+@@ -199,7 +199,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation/inventory.py"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/inventory.py"
+       ],
+       "supervisorSeconds": 120,
+       "expectedExit": 0,
+@@ -233,7 +233,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/packages.py",
+         "directory"
+       ],
+       "supervisorSeconds": 120,
+@@ -256,7 +256,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/packages"
+       ],
+       "supervisorSeconds": 120,
+       "expectedExit": 0,
+@@ -278,7 +278,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/packages"
+       ],
+       "supervisorSeconds": 120,
+       "expectedExit": 0,
+@@ -295,7 +295,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/packages.py",
+         "tar"
+       ],
+       "supervisorSeconds": 120,
+@@ -313,7 +313,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/packages.py",
+         "consumer"
+       ],
+       "supervisorSeconds": 120,
+@@ -328,7 +328,7 @@
+     },
+     "consumer-install": {
+       "phase": "package",
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/consumer",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -353,7 +353,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/packages.py",
+         "installed"
+       ],
+       "supervisorSeconds": 120,
+@@ -377,7 +377,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation/run/installed-positive.results.json",
++        "--outputFile=../bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/installed-positive.results.json",
+         "-t",
+         "^observes independent principal keys and same-principal credential rotation through installed HTTP$"
+       ],
+@@ -437,7 +437,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation/review-cohort.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/review-cohort.py",
+         "positive"
+       ],
+       "supervisorSeconds": 120,
+@@ -461,7 +461,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation/run/installed-principal-collapse.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/installed-principal-collapse.results.json",
+         "-t",
+         "^observes independent principal keys and same-principal credential rotation through installed HTTP$"
+       ],
+@@ -530,7 +530,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation/review-cohort.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/review-cohort.py",
+         "principal-collapse"
+       ],
+       "supervisorSeconds": 120,
+@@ -544,8 +544,11 @@
+       ]
+     }
+   },
+-  "sourceBinding": null,
+-  "finalParent": null,
++  "sourceBinding": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/review-repair/source-binding.json",
++    "sha256": "fce5c0dfb33221f9cc29fd6420eab607722d88d0d9b6076b64a57f763f5f9406"
++  },
++  "finalParent": "f5511718371a6935614eae6756e796cef71570c2",
+   "finalCommit": null,
+   "limits": {
+     "expectedHttp": 9,
+--- execution-preparation/report-adapter-binding.json
++++ execution-preparation-v2/report-adapter-binding.json
+@@ -1,9 +1,9 @@
+ {
+   "ready": true,
+-  "status": "PREPARED_NOT_ACTIVATED",
+-  "sourceBindingSha256": "3c227b20d066ea97684ebdd0f2876734a537d61d53f1c9b3b2c4cdf263f46110",
++  "status": "PREPARED_CLOSED_REVIEW_REPAIR",
++  "sourceBindingSha256": "fce5c0dfb33221f9cc29fd6420eab607722d88d0d9b6076b64a57f763f5f9406",
+   "reviewerSha256": "87f7895e3458ec082cecd342b785a1093c5caa8466dcdc4938992bb5acd6f46b",
+-  "testSha256": "e6af6263f164032ea4ae97167740412b9ad2a23af98e2a92729cd85dfa6d9b32",
++  "testSha256": "0f941001445e001f96f8c432a7099a5eb29dc4b68bc4458d6d1dfae472a3ce20",
+   "reportContract": {
+     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/report-contract.json",
+     "sha256": "600d21b4b1d8cfff91a16ebca1053db9d55c2d7c9ec1e91df031bb9572b3d7c0"
+@@ -23,5 +23,5 @@
+   "actualIntegratedParent": "f5511718371a6935614eae6756e796cef71570c2",
+   "candidateCommit": null,
+   "executed": false,
+-  "activation": "Root must preserve old placeholder, install exact pending bytes at review-cohort.py and this binding at report-adapter-binding.json; rebind gate hashes only after active static stages finish."
++  "activation": "Root must bind this exact adapter/source, final clean candidate and installed provenance before release. No execution gate exists here."
+ }

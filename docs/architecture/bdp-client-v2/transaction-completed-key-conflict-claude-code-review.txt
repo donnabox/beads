@@ -1,0 +1,62 @@
+# Review — b130550 vs parent 2172092
+
+Source frozen and clean at `b13055049ed7c1bd09ad2d7af29e0a38a81001ea`; exactly the four authorized files changed. Evidence report `report.md` is final (`report.sha256` matches). No file was written or modified by this review.
+
+## Findings
+
+### 1. MEDIUM-HIGH — Each negative control overwrites the oracle it is meant to protect, and the plan's compensating static pins were not authored
+`packages/conformance/src/transactional-cumulative.test.ts:1000-1099`; `apps/bdptest/src/transactional-matrix.test.ts:1102-1135`
+
+The control factory does `delete assertion.equalsBinding; assertion.equals = wrong` on the targeted assertion. A control therefore passes whether the authored expectation was strong or absent. Concrete scenario: weaken `c-retry-reopened:retained-body` (`manifest-v1.json:12752`) from `{pointer:"", exists:true, equalsBinding:"c-body"}` to `{pointer:"", exists:true}`. The positive run still passes — `evaluateAssertion`'s json-pointer branch passes on existence alone when `equals`/`equalsBinding`/`fixturePointer` are all absent (`runner.ts:2280-2291`). Control 4 then injects `equals: {}`, the assertion fails, and the control still reports success. The replay-equality witness is gone and nothing in the commit notices. The same holds for `c-retry:retained-body`/`retained-root` (`12581`, `12588`), `c-state:retained-record` (`12424`), `c-state-reopened:retained-record` (`12910`), `reopened-conflict-root:retained-body` (`12837`), and for `c-conflict-reopened:http-status` weakened from `equals:409` to `oneOf:[200,409]` (control 2 sets `equals`, which takes precedence at `runner.ts:2036-2037`). `c-conflict`/`c-conflict-reopened`'s `problem-media`, `schema`, `problem-type`, `problem-status`, `retry` and `c-conflict:http-status` are neither controlled nor pinned; `problem-code` weakened to `exists:true` also survives control 1.
+
+The accepted plan (`transaction-after-receipts-next-plan-v2.md:81`) required exactly these static pins: "both 409 shape assertions… exact single Resource/Event tuples, original body/record bindings, and whole-body equality on both replay POSTs and reopened root." `assertCompletedConflictRequests` pins only ids/order, the five raw bodies, header lines, `credentialRef`, `target`, `captures`, and the presence of `request-authored-headers`/`request-authored-body`. The coverage mirror (`transactional-cumulative.test.ts:107-112`) pins assertion *ids* only and is derived from the manifest, so it cannot see content weakening.
+
+Impact: the evidence for this frozen source is sound — I statically confirmed all 99 authored assertions are strong today and `mapping-audit.json` shows all 99 passing — but the row has no regression floor for its core oracles.
+
+Fix: extend `assertCompletedConflictRequests` with independently constructed literals for (a) the seven 409 assertions on both conflict actions, (b) the `ordered-state`/`ordered-facts` `projections` + `equals` tuples on all four read actions, (c) `c-original.captures` (`c-body` ← `/body`, `c-record` ← `/body/results/0/resource`), and (d) the exact `{pointer, exists, equalsBinding}` triples for every `retained-*` assertion.
+
+### 2. MEDIUM — Coverage reason and report assert `Accept`-negotiation *precedence* that the artifact set cannot discriminate from negotiation being absent
+`packages/conformance/test-support/transactional/coverage-v1.json:1259`; `report.md:11`
+
+The reason states "same-key changed semantics are refused with 409 before unacceptable-success-media handling"; the report states "demonstrates conflict precedence over unacceptable success media." The row's only evidence is `c-conflict` carrying `accept: text/plain` and receiving 409/122 bytes. There is no `406` observation anywhere in `manifest-v1.json` (grepped: zero occurrences). An ordering claim between two stages requires evidence that the later stage exists; this row cannot distinguish a target that correctly orders conflict-before-negotiation from one that never negotiates at all, so the claim is unfalsifiable from the evidence it cites.
+
+The ordering is real in the source (`transaction-store.ts:1076-1084` returns `conflict` before the `!controls.acceptsJson → not-acceptable` branch; `transaction-submission.ts:119-130`; `transaction-http.ts:343-354`), and `exactHeadersMatch` (`runner.ts:1845-1867`) does prove exactly one `Accept: text/plain` reached the wire with no `*/*` default appended. So the wire fact is honest; the inference stated on top of it is not supported by the row.
+
+Fix: restate the observed fact — "refused with `409` even when `Accept` admits no successful response media" — or add a companion `406` witness (same key, *same* normalized request, unacceptable `Accept`) in a later slice before claiming precedence. Both the coverage reason and the report sentence need the same correction.
+
+### 3. LOW — The new row's two `response-metadata-equals` assertions escape the presence-before-comparison guard, and are authored in the order the guard forbids
+`packages/conformance/src/transactional-cumulative.test.ts:870-902`; `manifest-v1.json:12496`, `12982`
+
+That guard is row-id-scoped to `transactional.set.mutation` and `transactional.set.zero-match` (line 872), so it checks none of the new row. It enforces four things the new row's `c-events`/`c-events-reopened` now get for free: the referenced prior action exists, `headers` is exactly the three context headers, the prior action declares `header/absent:false` for each, and the current action declares those presence assertions *before* the comparison (`slice(0, index)`). In the new row `serving-context` sits at assertion index 4 and `present-bdp-*` at 5-7 — it would fail the guard's ordering clause if covered. The plan (`:67`, `:81`) says "Presence assertions precede every context comparison."
+
+Ordering is inert at runtime (`runner.ts:1440` maps every assertion before throwing), and the presence assertions do exist on both sides today, so the comparison is not vacuous now. The exposure is forward-looking: `evaluateAssertion`'s `response-metadata-equals` branch (`runner.ts:2185-2192`) returns `current === prior`, which is `true` when a header is absent on both responses, so dropping the three `present-bdp-*` assertions from `c-events` would silently make `serving-context` pass with no context headers at all — and no static guard would see it. (Three pre-existing rows — `batch.atomic-commit`, `batch.rollback`, `idempotency.failed-retained` — have the same ordering and the same exemption, so this is pattern inheritance rather than a new deviation.)
+
+Fix: widen the guard's row filter to every row containing a `response-metadata-equals` assertion, and reorder the new row's three presence assertions ahead of `serving-context`.
+
+### 4. LOW — The new pagination drift discriminator tests a key rename, not byte drift, and accepts any throw
+`packages/conformance/src/transactional-cumulative.test.ts:1088-1098`
+
+The control replaces `"transactional.receipt.pagination"` with `"…paginations"` inside the pinned span, then asserts a bare `toThrow()`. After the rename, `objectSlices` keys the object under the new id, so `assertOriginalObjects` hits `objects.get(id)!` → `undefined` and `Buffer.byteLength(undefined)` throws a `TypeError` before any hash or length is compared. The test therefore passes without ever exercising the hash/length comparison it is meant to discriminate, and would also pass on an unrelated throw. Contrast the existing counterexample at `:798-801`, which mutates a value (`"equals": 401` → `402`) and asserts the message names `transactional.batch.atomic-commit`.
+
+The newly added ninth pins are nonetheless genuinely live — the positive call at `:796-797` compares both pagination spans against the hardcoded hash/length, and I independently reproduced all 18 pins byte-for-byte against both `2172092` and `b130550`.
+
+Fix: mutate a value inside the pagination span while keeping its `id`, and assert `.toThrow("transactional.receipt.pagination")`.
+
+### 5. LOW — Conflict controls emit `claimEligible: false` as a literal instead of the observed value
+`apps/bdptest/src/transactional-matrix.test.ts:1162`
+
+The control's evidence log reports `artifacts` and `declarations` from `observed.result` but hardcodes `claimEligible: false`, and the control body never asserts `observed.result.claimEligible`. The emitted control record (now persisted in `summary.json`) states a claim-eligibility fact the control did not observe. The positive test does assert it (`:339`).
+
+Fix: `expect(observed.result.claimEligible).toBe(false)` in the control body and log `observed.result.claimEligible`.
+
+## Verified against the accepted scope
+
+- Four files; no fixture, route, config, schema, runtime, catalog or RU change. `fixture-v1.json` unchanged at 716 B / `3a7899ce…`; route inventory and `exactConfigurationDigest 634214546089…` unchanged in both the positive and all five controls.
+- One new row at canonical index 8, `wholeContract:false`, 12 actions, 99 assertions, coverage mirror exact. Totals: 151 actions, 10 partial rows, 0 whole, 255 result mappings, 250 required, 240 required-unplanned.
+- Nine manifest and nine coverage raw spans byte-identical between parent and head (independently recomputed; all 18 pins match, eight unchanged, pagination's two newly added and correct).
+- Growth baselines are the parent's real values: manifest 377449 → 407227 (≤410217), nodes 10082 → 10891 (≤11282), coverage 54875 → 60059 (≤63067); obsolete inequalities removed, not left active. POST bodies 173 B each (≤2048); max response 696 B (≤8192).
+- Sessions 17 / children 18, all closed; `reopened-conflict-root` added to the reopened ledger and satisfies the generation/identity/URL checks in the reopened loop.
+- Both pinned clauses match the catalog object exactly, and `catalog.ts:175` machine-verifies `selectedText` against `docs/specs/bdp.md#mutation-transactions` (lines 3888-3889 and 3931-3933).
+- Replay-vs-conflict separation is sound: `c-conflict`/`c-conflict-reopened` present an unused identity `beads/b` under a byte-identical key, and re-execution would be visible as a second Bead, a second Event, an advanced position, or a `failed` replay receipt. Durable reopen is genuine (`create:false` on the same directory, generation 15→16) and `c-events-reopened`'s comparison to `c-commit` proves the epoch did not change across the restart, which is what makes the "for as long as the key is bound" clause applicable.
+- Control attribution is sound: `row.state === "fail"` excludes harness misclassification, the asserted wire status is the real one in all five, and all assertions in an action are evaluated before the scenario aborts, so the single-failure assertion is meaningful. The 17/18 child split matches whether the control fails before or after `c-reopen`.
+- `mapping-audit.json` and `summary.json` agree with `report.md` on every number I could check (151 actions, 11 exchanges, 99 passing assertions, 409 responses at 122 B, max 696 B, 3701.057 ms, 0 remaining children). No pending evidence; nothing in the evidence slice supports profile qualification, and none is claimed.

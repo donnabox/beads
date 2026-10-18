@@ -1,0 +1,13 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads
+
+ ✓ apps/bdptest/src/transactional-binding.test.ts > aborts and drains a real registered dynamic socket via close 7ms
+ ✓ apps/bdptest/src/transactional-binding.test.ts > aborts and drains a real registered dynamic socket via cohort 2ms
+ ✓ apps/bdptest/src/transactional-binding.test.ts > rebinds ordinary raw requests to the new validated physical session while base mode stays fixed 2ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  13:10:36
+   Duration  262ms (transform 135ms, setup 16ms, import 183ms, tests 11ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic/run/binding-source.results.json

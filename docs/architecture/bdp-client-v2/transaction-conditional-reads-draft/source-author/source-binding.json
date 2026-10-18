@@ -1,0 +1,27 @@
+{
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+  "branch": "codex/vickie-transaction-conditional-reads",
+  "head": "1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05",
+  "tree": "773614c5ebc6c97d90c4c629c7c7a02ed51bc2ef",
+  "files": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": {
+      "sha256": "479ec242a91668d5b54abd5711e75658b3ea9e57a20db49ac3eba3be1f3f63f2",
+      "new": false
+    },
+    "packages/conformance/test-support/transactional/coverage-v1.json": {
+      "sha256": "2d73a595ae02fef6e86b1c06bdef9e3549e004a16943e1b0afc76ff23e137e15",
+      "new": false
+    },
+    "packages/conformance/src/transactional-cumulative.test.ts": {
+      "sha256": "de26dc3f257c026eeb16e9a0a2df3c4bf69a050c98fb41c264e3c1e7b3acb6c9",
+      "new": false
+    },
+    "apps/bdptest/src/transactional-matrix.test.ts": {
+      "sha256": "eb4c68fc8d7df2525587dc36e3d6b89149a1afbdf82d022f7a1801edd6456f8d",
+      "new": false
+    }
+  },
+  "diffSha256": "f15893f627a86690b3d7760ba11ae8e1b2a32075ffdd31e6dfe488a4f482aa1a",
+  "status": " M apps/bdptest/src/transactional-matrix.test.ts\n M packages/conformance/src/transactional-cumulative.test.ts\n M packages/conformance/test-support/transactional/coverage-v1.json\n M packages/conformance/test-support/transactional/manifest-v1.json\n",
+  "scope": "four-file isolated author draft; no product execution; numeric fences pending root acceptance"
+}

@@ -1,0 +1,44 @@
+{
+  "observedAt": "2026-10-16T02:28:39.409113+00:00",
+  "head": "1647c5df37a82e1364d281ac46beb60a94ab6c76",
+  "tree": "a070420a4c17aa67a821c742d363ff9e82e872a6",
+  "actualState": "dirty only two authorized test fixtures; future successor not created",
+  "fullFeatureBase": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+  "featurePaths": 17,
+  "repairPaths": [
+    "packages/server/src/transaction-read.test.ts",
+    "packages/server/src/transaction-snapshot.test.ts"
+  ],
+  "productionHashes": {
+    "packages/server/src/transaction-authorization.ts": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2",
+    "packages/server/src/transaction-changefeed.ts": "1e678ecb1b2c3e59023dbb6a2e6516763907babd79f7926ca572a4764e40fc1e",
+    "packages/server/src/transaction-events.ts": "6c5ab4482f0b00110a71a96b16d44ca5fe713cb5f397ff78778cc6646f632a3a",
+    "packages/server/src/transaction-http.ts": "c6bac496033781306d1c63e570e1c65b5786d41ebb8dc565c5a8be44e91ccfa9",
+    "packages/server/src/transaction-read.ts": "66e71ff74a8139b12f0c7581c30a6798cc8724bb488cac8517119b9678ace212",
+    "packages/server/src/transaction-runtime-configuration.ts": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
+    "packages/server/src/transaction-runtime.ts": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+    "packages/server/src/transaction-service.ts": "8e2a00fba538fc38fd81241301d38b232190f7241fa695e1dcdaf10641e97dc8",
+    "packages/server/src/transaction-snapshot.ts": "d74aad937b0a07ea2878ef2c275cec6dbdb033cf112006e2569d64537520b15c",
+    "packages/server/src/transaction-store.ts": "bc10df9d02316e395b8c4ea7db6134ab2646c8e8abd83ea785b0ea09f2f0c82c"
+  },
+  "original15FeatureHashesPreserved": true,
+  "otherTrackedInputsUnchanged": 673,
+  "emittedUnchanged": 444,
+  "packageSourceFilesUnchanged": 316,
+  "archiveAndInstalledMembersRechecked": 317,
+  "installedActualSource": "1647c5df37a82e1364d281ac46beb60a94ab6c76",
+  "installedPayloadIdentity": "2a50d50d28418d1edb81a950922da057ce209b361b48e7202351d9b3595a0714",
+  "installedEntrySha256": "2dc1386a8a9f38d32c1fbf4ab8413538e86e3d41a20db9b9ab275a73b8c4040f",
+  "attribution": "Actual fresh build, archives and18+4installed observations were performed at clean1647. Current two-test-only repair leaves all corresponding product inputs/outputs/package members identical; it does not relabel those runs to an uncreated successor. Root should pin successor identity and this exact equivalence before relying on historical installed results.",
+  "pins": {
+    "ci-fixture-repair/correction.patch": "a7e62900feae145482227a89bad8366d8ebf4e374002411339fce9addea34d11",
+    "ci-fixture-repair/source-binding.json": "61afa5ea5adbdaddece495c3983bbe20723c09d687f89f86f4804d55fef3ad1f",
+    "ci-fixture-repair/combined-source-binding.json": "dd3f2f156480c2bbee4b6a0b0e30d07504974d993cad717d4c59a15e6f686337",
+    "ci-fixture-repair/actual-outcome.json": "ecf9f7370f41997f06b92ea9d85c7755dae631cca14e70d20fdf1b5e1c937ef2",
+    "ci-fixture-repair/root-validation-acceptance.json": "fccd16a4e678cb26f659d8cd36f53aaded6b532f368bccd99974cdab29220ed5",
+    "final-build-preparation/run/build-output-inventory.json": "ba9fbe9b511a2a477b515e6f799e044a73904604011ef9b503c12f38f47c9aee",
+    "installed-validation-plan/run/installed-provenance.json": "3d0670ee88860acd8b0e9245cef7e1d45b7deec7e918de370f74618daf369f10",
+    "installed-validation-plan/run/tar-source-provenance.json": "a03b4cad90e66b312f9013a19fbea7ae1a35111861b18886f7cc360a513741ff",
+    "installed-observation-v2/native-actual-audit.json": "31fcccbacfb50353141f4301a04fa5b3239738a58bb77769a0fd66dab644dfe6"
+  }
+}

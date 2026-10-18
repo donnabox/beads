@@ -1,0 +1,244 @@
+I did not write either report file. Your instructions conflict — the task names `review.md` and `numeric-contract-report.md` as report targets, but then says "Do not write or modify any files. Output findings only in stdout." I followed the explicit no-write constraint and am emitting both reports below; say the word and I'll write them to those paths verbatim.
+
+I also did not build or run tests (both checkouts frozen, and `apps/bdptest/src/development-contracts.test.ts` imports `packages/server/dist/development-contracts.js`, which would require a build). All findings below are from source reading, with line-level evidence.
+
+---
+
+# Report 1 — `update-contracts/review.md`
+
+**Target:** `/Users/dbox/repos/wt/vickie/vickie-update-contracts`, `3edba21..2c5fe9e` ("Add private installed contract and trusted principal HTTP composition")
+**Scope honored:** private development-contracts path only. Public profile admission/evidence treated as unchanged and out of scope. No Type-lifecycle or IAM proposals. Current normative laws only (`schemas/bdp-v0.schema.json`, `property-validation.ts`, `authority-read.ts`, `recovery-store.ts`).
+
+## A1 — High — Evaluator-side diagnostic truncation is converted into a 500, although the receiver's bound is 32× tighter
+
+**Location:** `packages/server/src/development-contracts.ts:87-89`
+
+**Evidence**
+- The adapter faults before emitting anything: `if (outcome.kind !== "evaluated" || !outcome.diagnosticsComplete) throw new Error("installed schema evaluation did not complete")`.
+- `diagnosticsComplete: false` is a *normal* evaluator outcome, not a fault: `installed-schema-evaluator.ts:1081-1089` sets it when an invalid instance yields `>= limits.diagnostics` failures or exhausts `limits.diagnosticBytes` (only the *first*-diagnostic-doesn't-fit case refuses).
+- Evaluator bounds are `EVALUATOR_CEILINGS.diagnostics = 1024`, `diagnosticBytes = 1048576` (`installed-schema-value.ts:17-18`), passed verbatim at `development-contracts.ts:84`.
+- The receiver's bounds are 32× / 2× tighter: `DEVELOPMENT_LIMITS.diagnosticCount = 32`, `diagnosticBytes = 512 * 1024` (`development-authority.ts:43-44`), enforced by `collectDiagnostics` (`resource-evaluator.ts:180-215`).
+- The protocol already has an exact representation for this state: `PropertyValidationResult = {valid:false, diagnosticsComplete:boolean}` (`property-validation.ts:21-27`), and the receiver's law is `complete === !stopped` (`resource-evaluator.ts:304`).
+
+**Failure scenario**
+The pinned test at `apps/bdptest/src/development-contracts.test.ts:466-490` proves the schema compiles: `allOf` of 1025 `{required:[pN]}` branches. Over real HTTP against that Type, `POST .../create-bead` with `{"id":"beads/x","type":<base>,"properties":{}}` → evaluator returns `kind:"evaluated"`, `valid:false`, 1024 diagnostics, `diagnosticsComplete:false` → `throw` → escapes `validateProperties` (`resource-evaluator.ts:292-296`) → `runMember` fault → `sequence-executor.ts:492-497` rejects `submission.completion` → `development-authority.ts:301` rethrows → `development-runtime.ts:356-360` `empty(response, 500)`.
+
+**Impact**
+An administratively accepted, successfully compiled schema makes *every* create/update on that Type answer `500` instead of `422 validation-failed` with 32 diagnostics. Store state is correct (`finish` → `store.abandonAttempt`, no effects, no retained disposition, so retries legitimately re-run) and the owner is not shut down (`fatal` stays false), so this is availability + wire-conformance, not corruption. It is reachable purely through configuration the compiler admitted — a self-DoS. The design note in `docs/design/update-implementation-progress.md` only requires that incomplete evaluation "cannot become successful validation or invented complete diagnostics"; emitting the 1024 diagnostics the evaluator *did* produce and returning `diagnosticsComplete:false` invents nothing and is not success, so the throw is stricter than the stated law and the 500 is gratuitous.
+
+**Fix** — move the completeness check after the emit loop and fault only when the receiver did *not* already stop. This preserves the pinned test at `:466` exactly (its emitter always returns `true`, so `stopped` stays false and it still throws "did not complete"):
+
+```ts
+if (outcome.kind !== "evaluated") throw new Error("installed schema evaluation did not complete");
+if (outcome.valid) return { valid: true };
+if (!outcome.diagnostics.length) throw new Error("invalid schema result lacks diagnostics");
+for (const diagnostic of outcome.diagnostics) {
+  /* ...existing bound checks... */
+  if (!emitter.emit(diagnostic)) return { valid: false, diagnosticsComplete: false };
+}
+// The receiver's tighter bound did not stop us, so our own truncation is unrepresentable.
+if (!outcome.diagnosticsComplete) throw new Error("installed schema evaluation did not complete");
+return { valid: false, diagnosticsComplete: true };
+```
+
+Because `diagnosticCount (32) < diagnostics (1024)` and `diagnosticBytes (512 KiB) < 1 MiB`, the residual throw becomes unreachable for count-driven truncation and narrow for byte-driven truncation (only when the evaluator's *next* entry alone would have exceeded 1 MiB while the accepted prefix stayed under 512 KiB). `kind:"refused"` has no protocol representation, so keeping that as a local fault is correct — I'm not disputing that half.
+
+## A2 — Medium — `max: 0` aggregate policy is admitted by installed configuration, rejected by the Read plane, and unrepresentable on the wire
+
+**Location:** `packages/server/src/development-authority.ts:127-131`
+
+**Evidence**
+- Admin admission: `!Number.isSafeInteger(item.max) || item.max < 0` — accepts `max === 0`.
+- Read plane refuses it: `authority-read.ts:421-426` uses `max <= 0` → `AuthorityReadError("configuration", "invalid aggregate policy")`.
+- Normative wire schema forbids it: `schemas/bdp-v0.schema.json:1114-1115`, `"max": {"$ref": "#/$defs/positiveInteger"}`.
+- The Update plane *does* implement it: `resource-evaluator.ts:985-992` starts `count = 1` for the link being created, so `count > 0` always fails → every such link gets `aggregate-constraint-violation`.
+
+**Failure scenario**
+`configuration.maximumEndpointMultiplicity = [{endpoint:"source", linkConformsTo:<edge>, max:0}]`. `openDevelopmentAuthority` accepts it and provisions the store (`recovery-store.ts:304-312` creates the directory and `reference.sqlite` with `openSync(..., "wx")`). The new startup loop then calls `await view.discover()` (`development-runtime.ts:404`), which reaches `captureContext` → `aggregateSnapshot` → throws. `perform` rejects (`read-sequence-lifecycle.ts:378-379`), startup's `catch` closes and rethrows.
+
+**Impact**
+Fail-closed, so no runtime authorization hazard — but the operator gets an opaque `AuthorityReadError` from the Read plane instead of the intended `TypeError("invalid installed aggregate policy")`, *after* `reference.sqlite` has been created. Retrying is then blocked both ways: `create: true` hits `EEXIST` at `recovery-store.ts:310`, and `create: false` with a corrected `max: 1` hits `store-mismatch` at `recovery-store.ts:586-595` because the aggregate hash is folded into `installationId`. The directory must be deleted by hand.
+
+**Fix** — align the admin bound with the normative schema and the Read plane: `item.max < 1` (or `!(item.max >= 1)`). If `max: 0` is genuinely wanted as "forbid this endpoint type", that needs a `positiveInteger` relaxation in `schemas/bdp-v0.schema.json` and `authority-read.ts` first — which is out of this slice's scope.
+
+## A3 — Medium — `installationIdentity` hashes the aggregate array in caller-supplied order with no canonicalization
+
+**Location:** `packages/server/src/development-authority.ts:141-143`
+
+**Evidence**
+`installationIdentity = \`${contractIdentity}-${sha256(stringifyJsonValue(aggregate))}\``, where `aggregate` preserves the caller's array order (`:115-139`) and permits duplicate `(endpoint, linkConformsTo)` pairs. Contrast the deliberate canonicalization applied to the access policy's id lists: `development-contracts.ts:160`, `Object.freeze([...new Set(values)].sort())`.
+
+**Failure scenario**
+`[{t,L,5},{s,L,5}]` and `[{s,L,5},{t,L,5}]` are semantically identical and enforced identically by `resource-evaluator.ts:980` (which iterates all entries, so order and duplicates are immaterial to enforcement), yet they hash differently → reopening an existing store after a cosmetic reorder (a config-file refactor, a `JSON.parse` of a reordered list, a `Set`-to-array change upstream) throws `store-mismatch` at `recovery-store.ts:586-595`. Adding a redundant duplicate entry has the same effect.
+
+**Impact**
+Permanently strands the dev store's data on a no-op configuration edit. The design note's law is *"Fixed aggregate policy changes require a new installation"* and the test at `development-contracts.test.ts:386-391` pins that for a real change (`[] vs [one]`) — a reorder is not a change, so this is unintended breakage of the "exact-config durable reopen" observation at `:361-385`.
+
+**Fix** — canonicalize before hashing, mirroring `access()`: dedupe and sort the normalized entries, e.g. `[...new Set(entries.map(stringifyJsonValue))].sort()`, and hash that. Optionally reject exact duplicates with the existing `TypeError("invalid installed aggregate policy")`.
+
+## A4 — Medium — Startup validation of configured principals runs after the store is provisioned
+
+**Location:** `packages/server/src/development-runtime.ts:389-419`
+
+**Evidence**
+`openDevelopmentAuthority` (which provisions when `create: true`) runs at `:389`; the per-credential loop that first exercises the access policy runs at `:401-419`. The only thing that detects a credential principal with no policy is `configured.access.capture(principal.id)` inside `captureReadAuthorization` (`development-authority.ts:270`), reached lazily via `view.discover()`.
+
+**Failure scenario**
+`credentials: [{token, principal:"carol"}]` with `createDevelopmentAccessPolicy({alice, bob})`. The store is created and seeded with installed Types, then `view.discover()` rejects with `TypeError("principal lacks administrative policy")`, and startup rethrows — leaving the same unopenable `reference.sqlite` described in A2.
+
+**Impact**
+A cheap, purely-local configuration error is only caught after irreversible filesystem provisioning. Same recovery cost as A2.
+
+**Fix** — pre-check before `openDevelopmentAuthority`, where `credentials` and `deployment.configuration.access` are both already in hand:
+
+```ts
+if (configuredDeployment)
+  for (const { principal } of credentials)
+    (configuredDeployment.configuration as DevelopmentAuthorityConfiguration).access.capture(principal);
+```
+
+**Related, same site (Low):** `await view.discover()` at `:404` discards its result, so the comment *"Validate the configured principal against the actual authority before serving"* only holds for thrown faults; any `{kind:"problem"}` outcome passes silently. Today `captureReadAuthorization` either authorizes or throws, so nothing is missed — but the check is weaker than it reads. Assert `(await view.discover()).kind === "success"`.
+
+## A5 — Medium — `DevelopmentContracts.identity` does not cover `receipt.limits`, which does feed compilation
+
+**Location:** `packages/server/src/development-contracts.ts:63` and `:112`
+
+**Evidence**
+`identity: \`development-schema5-${captured.sha256}\`` (`:112`), while the ingester documents exactly what the digest covers: *"URI bytes enter the digest; this measured counter and limits do not"* (`installed-contract-artifact.ts:93-95`). Yet `:63` puts those same limits into the compiler input: `limits: captured.receipt.limits`, consumed by `compilePrivateSchemaEvaluator` (`:71-76`).
+
+**Impact**
+The header comment claims *"Reconstruct solely from captured bytes: caller mutation/accessors cannot alter compilation"* (`:49`), and the design note claims *"The installation identity binds the captured closure"*. Neither holds for `limits`: two bundles with byte-identical artifacts and different `ContractArtifactLimits` produce the same `identity`, hence the same persisted `installationId`/`lineageId` (`development-authority.ts:167-168`), hence a store that reopens cleanly under a different compilation input. I did **not** construct a pair of limits that both compile successfully and evaluate differently — every divergence I traced causes one side to refuse and `compileDevelopmentContracts` to throw (`:69-70`). So the defect I'm asserting is the identity-coverage gap and the overstated closure claim, not a demonstrated behavioral divergence.
+
+**Fix** — fold the limits into the identity, e.g. `sha256(stringifyJsonValue({bundle: captured.sha256, limits: captured.receipt.limits}))`, or stop threading `receipt.limits` into the compiler and pass a fixed ceiling (as is already done for `graphLimits: SCHEMA_GRAPH_CEILINGS` and `limits: EVALUATOR_CEILINGS` at `:74-75`).
+
+## A6 — Low — `policyIdentity` is a global hash over every principal's snapshot, not the acting principal's
+
+**Location:** `packages/server/src/development-authority.ts:145`
+
+**Evidence**
+`policyIdentity: configured?.access.identity() ?? installation`, where `identity()` hashes `[...snapshots.entries()].sort()` across *all* principals (`development-contracts.ts:191-195`). It lands in `ReadObservation.policyIdentity` (`authority-read.ts:455-460`) and in every `MemberContext` (`member-executor.ts:499-526`).
+
+**Impact**
+Two separable issues, both minor here:
+1. **Mislabeled field.** `ReadObservation.policyIdentity` reads as "the policy this observation was authorized under", but it changes when an *unrelated* principal's policy is replaced. Any in-process consumer that keys a cache or validator on it over-invalidates for every principal on any single-principal change.
+2. **Cross-principal fingerprint.** Every authenticated principal's observation carries a hash that moves whenever another principal's policy changes, i.e. a side channel for "somebody else's authorization changed". Not reachable over this fixture's HTTP surface — `development-runtime.ts:300-311` serializes only `result.body`, never `observation` — so disclosure is confined to in-process consumers such as `createReadRoute`.
+
+Continuation-token binding is **correct and unaffected**: it keys on `authorizationView` (`read-pagination.ts:408`), which the diff correctly makes per-principal and per-snapshot (`development-authority.ts:270`), and the test pins the resulting `foreign-view` refusal (`development-contracts.test.ts:354-355`).
+
+**Fix** — set `policyIdentity` to the acting principal's `snapshot.identity`. That requires threading the principal into `capturedConfiguration`, which `captureMemberContext(_reader, principal)` already receives; `scopeConfiguration.capture` does not, so either extend that seam or leave the scope-level value as the aggregate and document it as a scope-configuration digest rather than a policy identity.
+
+**Related, same function (Low):** `capturedConfiguration()` now returns a fresh **unfrozen** object per call, where the previous code returned the shared frozen `configuration` singleton (`:55-59`, old `scopeConfiguration: { capture: () => configuration }`). `authority-read.ts:453-463` re-validates and re-freezes defensively, so nothing is exploitable today, but handing a mutable snapshot across the capture seam drops a guarantee the rest of this file maintains everywhere else. `Object.freeze` the return.
+
+## A7 — Low — Read access is default-allow and deniable only by enumerating up to 1000 existing ids
+
+**Location:** `packages/server/src/development-contracts.ts:139-166`
+
+**Evidence**
+`DevelopmentAccess` exposes booleans for `create` and `write` but nothing for read; readability is expressed solely as the `hidden` deny-list, capped at `administrativeArray(v, 1000)` (`:151`) with no wildcard.
+
+**Impact**
+"Principal B may not read this scope" is inexpressible. Because `canRead` is `!snapshot.hidden.includes(local(record.id))` (`development-authority.ts:153-154`), a resource created by principal A is immediately readable by every configured principal, and there is no way to pre-deny it — the operator must observe the new id and call `replace` afterwards. For a *trusted*-principal fixture that may be acceptable, but it is an asymmetry worth stating before this shape is reused: `create`/`write` are capability switches while read is enumerate-the-denied.
+
+**Fix** — add a `read: boolean` to `DevelopmentAccess` (defaulting to the current allow) and gate `canRead` on it before consulting `hidden`. This is a one-field change to `access()` and `capturedPolicy`, not an IAM model.
+
+## A8 — Low — `hidden`/`readOnly` cannot name most legal local resource ids
+
+**Location:** `packages/server/src/development-contracts.ts:152`
+
+**Evidence**
+The policy regex is `^(beads|links)\/[A-Za-z0-9_-]+$` — a single segment from a restricted charset. Legal local ids are far broader: `assertCanonicalPathSegments` / `validateCanonicalIdSegment` (`packages/protocol/src/read-values.ts:428-462`) permit multiple segments and any canonically-encoded segment that is not `.`, `..`, or control-bearing — so `beads/a.b`, `beads/team/a`, and percent-encoded ids are all creatable in this authority.
+
+**Impact**
+Such a resource can never be hidden or made read-only. This is **fail-closed, not a bypass**: the policy builder throws `TypeError("invalid access resource identity")` at configuration time rather than silently accepting an ineffective entry, so the operator is told. It is a capability gap — a dev store containing dotted or multi-segment ids cannot be partially restricted at all.
+
+**Fix** — validate entries with the protocol's own predicate instead of a local regex: require the `beads/`/`links/` root, then run `assertCanonicalPathSegments` on the remainder (the same pairing already used by `resource-evaluator.ts:340-348`).
+
+## A9 — Low — The authority still exposes a hard-coded default-operator view alongside `forPrincipal`
+
+**Location:** `packages/server/src/development-authority.ts:323-327`
+
+**Evidence**
+`return Object.freeze({ ...forPrincipal(principal), forPrincipal, close })`, where `principal` is the module constant `{id:"bdptest-development-operator"}` (`:48`). In the configured case this spreads `discover`/`perform`/`read`/`mutate`/`sequence` bound to a principal that the credential map may never mention.
+
+**Impact**
+Latent, not currently exploited — `development-runtime.ts` is the only caller in-tree and always goes through `forPrincipal` (`:235`, `:402`). Behavior is fail-closed for an unconfigured principal (`capture` throws). But if a deployment happens to define a policy named `bdptest-development-operator`, the spread methods act as that principal with no credential involved, which is precisely the binding the diff otherwise establishes. `forPrincipal` also calls `lifecycle.readFor` eagerly at open time for that principal.
+
+**Fix** — in the configured case return only `{ forPrincipal, close }` and require callers to name a principal; keep the spread for the unconfigured default so existing callers are unaffected.
+
+## A10 — Low — Per-request facet construction ahead of the cheap gates, and linear policy membership tests
+
+**Locations:** `packages/server/src/development-runtime.ts:235-236`; `packages/server/src/development-contracts.ts:154,156`
+
+**Evidence**
+- `authority.forPrincipal(principal)` runs on every request at `:235` — i.e. before the `host`, `origin`, raw-target and method checks at `:237-262` — and each call re-enters `lifecycle.readFor` (`read-sequence-lifecycle.ts:362-397` → `authority-read.ts:951-953`), allocating a fresh facet and principal snapshot. I traced `readFor` and it registers no retained pagination or owner state, so there is **no leak**; it is wasted allocation on requests that are about to be refused.
+- `canRead`/`canWrite` use `Array.prototype.includes` over `hidden`/`readOnly`, each up to 1000 entries, and `canRead` is invoked per record during page scans — up to 10⁵ records × 10³ entries in the configured pagination bounds (`development-authority.ts:253-256`).
+
+**Fix** — move `forPrincipal`/`composedReads.get` below the host/origin/method gates; store `hidden`/`readOnly` as `Set`s inside the frozen snapshot (keeping the sorted arrays for `identity` hashing).
+
+**Also noted at this site:** credential uniqueness is enforced on the token only (`development-runtime.ts:215-219`), not on the principal, so two tokens may map to one principal; `composedReads.set(principal, route)` (`:417`) then builds and silently discards one `createReadRoute` result. Harmless, but the discarded route is a constructed object the composition seam was told would be used. The test at `:429-432` pins only the duplicate-*token* refusal.
+
+## Verified sound (no finding)
+
+These are the areas you flagged that I tried to break and could not:
+
+- **Accessor / proxy / coercion / descriptor escapes.** `administrativeData` and `administrativeArray` (`development-contracts.ts:16-45`) reject non-objects and functions (`typeof !== "object"`), direct proxies (`isProxy`), foreign prototypes, extra *or* symbol keys (`Reflect.ownKeys(getOwnPropertyDescriptors(...))`), accessors (`!Object.hasOwn(d,"value")`), and sparse arrays (`length !== value.length + 1`). Index reads go through own data descriptors, and `Array.from({length}, ...)` avoids the iterator protocol entirely, so neither a prototype getter nor a tampered `Symbol.iterator` is reachable. The test at `:398-418` pins both the getter-principal and getter-index cases with `invoked === false`.
+- **WeakSet attestation / TOCTOU.** `installed.add(value)` and `policies.add(policy)` happen strictly after `Object.freeze` (`:118-120`, `:198-200`), so no mutable object is ever attested. A `Proxy` wrapping an attested object is not a WeakSet member, so `assertDevelopmentContracts`/`assertDevelopmentAccessPolicy` reject it. `openDevelopmentAuthority` attests the frozen *extraction* (`development-authority.ts:98-111`), so post-open caller mutation cannot reach compilation — pinned by the byte-fill at `development-contracts.test.ts:181-184`.
+- **Transport principal vs actor attribution.** `revisionProvenance.actor` reaches metadata only (`resource-evaluator.ts:879-881`, `:1141-1146`) and is consulted by no policy predicate; authorization derives solely from `authenticated.principal` (`development-runtime.ts:229-235`). The forged-`actor: "alice"`-under-bob's-token case is pinned at `development-contracts.test.ts:281-288`.
+- **Retained replay disclosure.** Idempotency keys are principal-scoped (`reader.key(principalId, key)`, `member-executor.ts:701`), so no cross-principal replay exists; and replay re-checks the *current* captured policy via `mayDiscloseRetainedResource` (`:773-779`), downgrading to `forbidden` rather than disclosing a now-hidden postimage. Pinned at `development-contracts.test.ts:303-309` and `:349-353`, including that the response text omits the id.
+- **Policy snapshot immutability across turns.** `capturedPolicy` resolves `access.capture(...)` once and closes over the frozen snapshot (`development-authority.ts:149-163`), so a `replace` mid-turn cannot split a single member's view; `access()` freezes and content-addresses each snapshot (`development-contracts.ts:167-176`).
+- **Emitted Type diagnostics cannot be spoofed by the installed validator.** The receiver re-projects only `message`/`schemaLocation`/`instanceLocation` and supplies `type: entry.descriptor.id` itself (`resource-evaluator.ts:262-290`), validating the whole problem through `parseReadUpdateProblem` (`:196-211`), which enforces the `type` ↔ `schemaLocation` `dependentRequired` coupling from `schemas/bdp-v0.schema.json:2084-2086`. Extra fields on an evaluator diagnostic cannot leak to the wire.
+- **Registry byte-exactness.** `types` is a null-prototype map and `registry.get` requires exact installed bytes (`development-contracts.ts:57,114`), matched against `store.visitInstalledTypes` (`development-authority.ts:177-181`); duplicate descriptor ids are already rejected upstream as `identity-conflict`.
+- **No new package exports.** The `scripts/smoke-executables.mjs:338-353` additions are *negative* assertions (`ERR_PACKAGE_PATH_NOT_EXPORTED`); `packages/server/package.json` still exports only `.` and `./development`. The doc's "nor acquires new package exports" claim holds.
+- **Default public lifecycle.** With `deployment === undefined`, credentials, `installationIdentity`, `installedTypes`, `aggregate`, `policy` and `policyIdentity` all collapse to the previous constants, and `capturedConfiguration()` returns exactly the three fields of the old frozen `configuration`. The one behavioral change is that startup now performs a `discover()` read per credential (`development-runtime.ts:401-404`) even without composition — so a store that previously opened but could not be read now fails at startup instead of at first request. Fail-closed and arguably an improvement; noting it because it is a default-path change.
+
+---
+
+# Report 2 — `numeric-contract-report.md`
+
+**Target:** `/Users/dbox/repos/wt/vickie/vickie-numeric-admission-contract`, `b225fe5..4f5f5b1` ("Keep numeric admission diagnostics separate from Type schema failures")
+**Spec 3459 requirement checked:** Type/schema must be absent from non-Type numeric failures.
+
+## Verdict: the correction is right, and it closes a second latent defect
+
+**Spec 3459 conformance — satisfied on every reachable branch** (`packages/server/src/member-numeric-diagnostics.ts`):
+
+| Branch | Emitted fields | `type`/`schemaLocation` |
+|---|---|---|
+| `createBead`/`createLink` (`:18-32`) | `message`, `document?`, `instanceLocation` | absent |
+| `updateBead`/`updateLink`, non-`/metadataChange/` (`:42-45`) | `message` | absent |
+| `updateBead`/`updateLink`, `/metadataChange/` (`:48-51`) | `message`, `document` | absent (already compliant pre-diff) |
+
+Reachability is closed, not merely untested. `memberNumericDiagnosticBudget` is applied to `state.original` — the *already shape-validated* operation (`member-identity.ts:429-432`), so numeric literals can only survive in free-form JSON members. Per `schemas/bdp-v0.schema.json`, those are exactly `properties`/`metadata` on `createBeadMembers`/`createLinkMembers` and `propertiesChange`/`metadataChange` on `updateBeadMembers`; every other member is a string, URL or reference ref. That confirms two things: the create branch's `if (!object) throw new TypeError("unexpected numeric position in admitted create operation")` (`:22-23`) is genuinely unreachable rather than a live 500 path, and the update branch's `else` correctly covers all non-metadata positions.
+
+**Schema validity of the new shapes — confirmed.** `#/$defs/validationDiagnostic` (`schemas/bdp-v0.schema.json:2062-2087`) requires only `message`, allows `instanceLocation` independently, and couples `type` ↔ `schemaLocation` via `dependentRequired`. So `{message, instanceLocation}` and `{message}` are both valid.
+
+**Secondary defect closed (worth recording explicitly).** The removed code copied `type` and `schemaLocation` through *independent* optional spreads, in both the create path and the update path, and `admitReadUpdateOperationNumbers` likewise copies them independently with no coupling and no schema check (`packages/protocol/src/json-admission.ts:335-345`). An embedder callback returning one without the other therefore produced a diagnostic violating `dependentRequired`, which `problem()` → `parseReadUpdateProblem` (`member-executor.ts:121-132`) would reject — surfacing as a local throw, i.e. a 500, on a request that should have been a clean numeric refusal. Dropping both fields removes that path. The diff's commit message and comments only claim the Spec 3459 separation; this is a real bonus and should be stated in the record.
+
+## Replay / no-effects / pointer preservation — all three hold
+
+- **Pointer preservation.** `occurrence.pointer.slice(object.length + 1)` (`:30`) is arithmetically correct for both documents: `"/properties/bad".slice(11) === "/bad"` and `"/metadata/bad".slice(9) === "/bad"`. The create branch retains `instanceLocation`; the update branch deliberately omits it, and the retained comment gives the correct reason (`:46-47`) — an unapplied patch's input pointer, especially an array append, need not name a position in the resulting document. The asymmetry is intentional and correct, not an oversight.
+- **No effects.** `member-executor.test.ts:2321-2322` asserts all three pre-existing bodies are byte-identical after the refusal and that the would-be-created resource is `undefined`.
+- **Replay.** `:2324-2334` reopens the store and reruns with a `diagnostic` callback that throws, asserting `replay.disposition` deep-equals the original — proving the retained failure is replayed without re-entering numeric validation.
+- **Ordering.** `:2308-2312` installs `contracts: { get() { throw } }`, proving numeric admission precedes Type lookup — exactly the law the code comment asserts (`:24-25`).
+
+The test's `expect(refused.disposition).toHaveProperty("diagnostics", [...])` uses deep equality on the array, so an added `type` or `schemaLocation` would fail it. The matrix covers all four reachable operations × both documents.
+
+## N1 — Low — Non-create/update operations retain the raw embedder passthrough
+
+**Location:** `packages/server/src/member-numeric-diagnostics.ts:12` and `:55`
+
+**Evidence** `let selectedBudget = budget` falls through unchanged for `deleteBead`, `deleteLink`, `putAlias` and `deleteAlias`, forwarding the embedder's `type` and `schemaLocation` verbatim.
+
+**Impact** Not reachable today — per the schema survey above, those operations' inputs contain no free-form JSON, and shape validation precedes admission, so no occurrence can be generated. It is a latent Spec 3459 hole: the moment any of those operations gains a numeric-bearing member, a non-Type numeric failure starts carrying Type/schema claims again, silently and with no test to catch it.
+
+**Fix** — make the stripping the default rather than the exception: initialize the fallthrough to a budget whose `diagnostic` returns `Object.freeze({ message: diagnostic(occurrence).message })`, and let the create/update branches add `document`/`instanceLocation` on top. That makes "no Type claims on a numeric refusal" structural rather than per-operation.
+
+## N2 — Low (test coverage) — `diagnosticsTruncated` absence is not asserted
+
+**Location:** `packages/server/src/member-executor.test.ts:2300-2307`
+
+The new matrix pins the `diagnostics` array exactly but asserts nothing about `diagnosticsTruncated`, which `problem()` conditionally attaches (`member-executor.ts:129`) and which `#/$defs/readUpdateProblem` forbids outside `validation-failed`. Each case produces a single occurrence, so truncation should be absent; adding `expect(refused.disposition).not.toHaveProperty("diagnosticsTruncated")` costs one line and pins it.
+
+---
+
+**Not reported, for the record:** `json-admission.ts:344` takes `message: formatted.message` with no non-empty check, while the wire schema requires `minLength: 1` — so an embedder returning `""` yields a `parseReadUpdateProblem` throw rather than a refusal. Pre-existing, outside this diff, and unreachable from the in-tree embedders (`development-authority.ts:208-213` always returns a non-empty message). Flagging only so it is not mistaken for something this change introduced.

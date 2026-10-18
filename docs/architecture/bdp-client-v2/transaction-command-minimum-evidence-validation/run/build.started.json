@@ -1,0 +1,33 @@
+{
+  "name": "build",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "build"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+  "started": "2026-10-15T07:02:44.011526+00:00",
+  "head": "453b6dab386746bb03aac2c0a293572b8a71c969",
+  "workspaceDirty": true,
+  "sourceSha256": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af",
+    "packages/conformance/src/transactional-cumulative.test.ts": "0d1f87199222e2426b048eae1a5aadd11c20c04298d31e3198ca46897e5492d3",
+    "packages/conformance/src/profile-contract-plan.test.ts": "e5be4864e456431db74bd325ec64d785bf3c5301a6be5b230bfcc7351ade4fc4",
+    "apps/bdptest/src/transactional-matrix.test.ts": "e319109ab0e9f7258e6918ae789ed7a5672eb7aabd0ec8725ae38e3634164e68"
+  },
+  "sourceDiffSha256": "ea04e6ba34c9e1d9b724348f32407c6fd6bd78b795cad0481e7f4093b0f21762",
+  "rootAcceptanceSha256": "7371dbcd0b38b8d1b71793c26bc1cad8f7375c3468f8906089d7ba86c2bba8d0",
+  "preparationSha256": {
+    "gate.py": "8f2cb4f83bd89380c3d9f26a8c1e639016a902b846edb6d03e35ec6bb8abc8ec",
+    "supervise.py": "304c538d9f501c1b11c95f721a367ce990b4322bfe155ced022073f496252942",
+    "packages.py": "e5cde5e8943eca879257c744e108e6a401272d6926d265c2927f8bdd3ee23655",
+    "build-inventory.py": "979c2aaba88b1085712fe95d79ce61549b53c2d0f1247ca05907a1282db6dc1a",
+    "adjudicate.py": "cb206b6ad9983018dcc1903f1f5907324894474bdf4d38660fce896a33880d16",
+    "commands.json": "45439af274022c6b3c668043af35bc2d68e6d0be5d86a29e6bc8975a6ba0a514"
+  },
+  "bdpOverrides": {},
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {},
+  "derivativeBinding": null
+}

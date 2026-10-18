@@ -1,0 +1,27 @@
+--- event-installed/gate.py
++++ receipt-installed/gate.py
+@@ -7,11 +7,11 @@
+ E=P/"run"
+ L=D.parent
+ GUARD=L/"guarded-action.py"
+-PARENT="88c9408e908590ab1a4c64c9b9dee1a8b705999c"
+-BINDING=D/"redirect-repair/source-binding.json"
+-BINDING_SHA="acf190e742dfb669fe5607085a3ac60c5ecb66f4f86b1f05025424a7873615b0"
++PARENT="015cac1aa4fa827cc4a2c647dff08454c6c8e6f8"
++BINDING=D/"source-binding.json"
++BINDING_SHA="edc5c98c8e5c82f2073e1bf35aa84098efe9552c7dbc74537784de75788cca5a"
+ COMMANDS=P/"commands.json"
+-COMMANDS_SHA="5622bcafb804ab1dfcbda17d8a7f1088ae644a634d7fd17a89633ad308b8cbdb"
++COMMANDS_SHA="f0c2809747d4e7f6f3489eb3dd4e282920744e675580a875bce9da90c5667e2c"
+ GUARD_SHA="fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84"
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def require(ok,message):
+@@ -75,7 +75,7 @@
+     final=document(g,"finalSource")
+     require(final["head"]==g["finalHead"] and final["tree"]==g["finalTree"] and final["sourceBindingSha256"]==BINDING_SHA,"Final source document differs")
+     source=source_hashes()
+-    require(set(git("diff","--name-only",PARENT,"HEAD").decode().splitlines())==set(source),"Six-file scope differs")
++    require(set(git("diff","--name-only",PARENT,"HEAD").decode().splitlines())==set(source),"Eight-file scope differs")
+     require(sha((W/"pnpm-lock.yaml").read_bytes())==g["sourceLockSha256"],"Source lock differs")
+     require(g["node"]=="/Users/dbox/.nvm/versions/node/v24.16.0/bin/node" and g["pnpm"]=="/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs","Tool paths changed")
+     verify_build(g)

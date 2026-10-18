@@ -1,0 +1,27 @@
+--- a/packages/conformance/src/profile-contract-plan.test.ts
++++ b/packages/conformance/src/profile-contract-plan.test.ts
+@@ -256,7 +256,10 @@
+       loadScenarioCatalogJson(read("transactional-v1.json")).scenarios.map((row) => row.id),
+     ).not.toContain(id);
+     const coverage = JSON.parse(
+-      readFileSync(new URL("../test-support/read-update-coverage-v1.json", import.meta.url), "utf8"),
++      readFileSync(
++        new URL("../test-support/read-update-coverage-v1.json", import.meta.url),
++        "utf8",
++      ),
+     ) as {
+       rows: {
+         id: string;
+--- a/packages/conformance/src/transactional-cumulative.test.ts
++++ b/packages/conformance/src/transactional-cumulative.test.ts
+@@ -78,7 +78,9 @@
+ it("binds the canonical cumulative TX selection and exact source digests without qualification", () => {
+   const actual = bundle();
+   expect(selected.required).toHaveLength(251);
+-  expect(selected.required.map((row) => row.id)).toContain("read-update.http.command-minimum-fields");
++  expect(selected.required.map((row) => row.id)).toContain(
++    "read-update.http.command-minimum-fields",
++  );
+   expect(actual.manifest.scenarios.map((row) => row.id)).not.toContain(
+     "read-update.http.command-minimum-fields",
+   );

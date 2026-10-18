@@ -1,0 +1,140 @@
+{
+  "accepted": true,
+  "checkedAt": "2026-10-16T02:16:23.868752+00:00",
+  "records": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/source-validation/source-run/boundaries.exit.json",
+      "sha256": "165c0e11515de2ff124cb8a4da3939e175f5a2e971b6fd2c692f0049803818c1",
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.1770075000822544,
+      "remainingTemp": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/source-validation/source-run/boundaries.tmp/node-compile-cache"
+      ]
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/source-validation/source-run/cpu-eight.exit.json",
+      "sha256": "fcc45aff984c7dd72436940cd67330285980f67f6b282b0496d534459ef8143f",
+      "exit": 1,
+      "supervisorExit": 1,
+      "elapsedSeconds": 2.2515140001196414,
+      "remainingTemp": []
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/source-validation/source-run/format-check.exit.json",
+      "sha256": "1beaf4ac76a7de1c8ada7cd7b4c1211a72e51e2a0a0d313239e8cf4d2cb44bf2",
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.5815057079307735,
+      "remainingTemp": []
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/source-validation/source-run/fresh-build.exit.json",
+      "sha256": "51b4bb5676ff6b844879557c1a8b7cf940b03b3aa758e503f2530eac517f845a",
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.5094580419827253,
+      "remainingTemp": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/source-validation/source-run/fresh-build.tmp/node-compile-cache"
+      ]
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/source-validation/source-run/lint.exit.json",
+      "sha256": "3f141453475fe3333cdad3d103bd0437c4a4b3bbd0ca43c443cb9e2d5fe20ff5",
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.4011608341243118,
+      "remainingTemp": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/source-validation/source-run/lint.tmp/node-compile-cache"
+      ]
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/source-validation/source-run/read-evidence.exit.json",
+      "sha256": "df95fbfef007a4080d92422cf9b2987e78ca2fac45e740778bfbb79495612665",
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.8765603338833898,
+      "remainingTemp": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/source-validation/source-run/read-evidence.tmp/node-compile-cache"
+      ]
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/source-validation/source-run/typecheck.exit.json",
+      "sha256": "ce146da2d542be3a68d4baffca57125652cea92dd467f1516689a77f2bbc1d34",
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.6971152918413281,
+      "remainingTemp": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/source-validation/source-run/typecheck.tmp/node-compile-cache"
+      ]
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/literal-order-repair/source-run/cumulative-callback.exit.json",
+      "sha256": "0c4dfff0df7a89928b657ba1f05d86ab8fe0f189a4089f771cad9852c5c79d18",
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.9907413749024272,
+      "remainingTemp": []
+    }
+  ],
+  "sourceTests": {
+    "initialPassed": 7,
+    "initialFailed": 1,
+    "initialFailure": [
+      "pins cumulative source digest map, catalog order and every coverage binding"
+    ],
+    "repairedCallbackPassed": 1,
+    "distinctPassed": 8
+  },
+  "sampledPidsAbsent": [
+    25186,
+    25188,
+    25192,
+    25216,
+    25217,
+    25243,
+    25244,
+    25246,
+    25247,
+    25253,
+    25325,
+    25327,
+    25333,
+    25357,
+    25406,
+    25408,
+    25412,
+    25413,
+    25442,
+    25444,
+    25449,
+    25472,
+    25530,
+    25532,
+    25616,
+    25659,
+    25668,
+    25693,
+    25695,
+    25699,
+    25723,
+    25736,
+    25803,
+    25805,
+    25810,
+    25813,
+    25817,
+    25820,
+    25830,
+    26539,
+    26541,
+    26545,
+    26548
+  ],
+  "warnings": {
+    "lintWarnings": 913,
+    "lintInfos": 56
+  },
+  "historicalReadSeal": "unchanged evidence.verified 89 applicable rows; historical runHead e5f7d0c and evidenceCommit dbaf63a preserved",
+  "scope": "Build/static/eight CPU tests only. No HTTP or installed product children. Historical failed run retained. Final successor changes only literal expected catalog order; product/app/data bytes unchanged."
+}

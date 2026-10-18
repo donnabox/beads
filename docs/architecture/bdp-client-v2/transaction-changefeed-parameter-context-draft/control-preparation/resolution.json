@@ -1,0 +1,1470 @@
+{
+  "runner": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/control-preparation/mirror/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+  "runnerSha256": "39db22f579acf5639bbb17a261408debbde03f4692c0c439e77e7f13aeba74d6",
+  "runtimeDynamicImport": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/control-preparation/mirror/packages/server/dist/transaction-runtime.js",
+  "mutatedHttp": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/control-preparation/mirror/packages/server/dist/transaction-http.js",
+  "aliases": {
+    "@bdp/adapter-in-memory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/control-preparation/mirror/packages/adapter-in-memory/src/index.ts",
+    "@bdp/bd-domain": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/control-preparation/mirror/packages/bd-domain/src/index.ts",
+    "@bdp/adapter-bd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/control-preparation/mirror/packages/adapter-bd/src/index.ts",
+    "@bdp/config": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/control-preparation/mirror/packages/config/src/index.ts",
+    "@bdp/server": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/control-preparation/mirror/packages/server/src/index.ts",
+    "@bdp/server/testing": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/control-preparation/mirror/packages/server/test-support/testing.ts",
+    "@bdp/server/development": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/control-preparation/mirror/packages/server/src/development.ts",
+    "@bdp/protocol": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/control-preparation/mirror/packages/protocol/src/index.ts",
+    "@bdp/client": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/control-preparation/mirror/packages/client/src/index.ts",
+    "@bdp/client/testing": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/control-preparation/mirror/packages/client/test-support/testing.ts",
+    "@bdp/conformance": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/control-preparation/mirror/packages/conformance/src/index.ts",
+    "@bdp/conformance/testing": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/control-preparation/mirror/packages/conformance/test-support/testing.ts"
+  },
+  "emittedRelativeEdges": [
+    {
+      "from": "apps/bdpbd/dist/main.js",
+      "specifier": "./server-composition.js",
+      "target": "apps/bdpbd/dist/server-composition.js",
+      "sha256": "2b9ac6b83b8a2d579e97985f091bab5a2a2c2290fd108656d0baf3048f6dc8c7"
+    },
+    {
+      "from": "apps/bdptest/dist/main.js",
+      "specifier": "./server-composition.js",
+      "target": "apps/bdptest/dist/server-composition.js",
+      "sha256": "9e5936fcb5f9edecd1c36fa1a860e323e11dd3baa983a16beaac3954392cc154"
+    },
+    {
+      "from": "packages/bd-domain/dist/index.js",
+      "specifier": "./ready-output.js",
+      "target": "packages/bd-domain/dist/ready-output.js",
+      "sha256": "c66fa0d3004dede88aa430f449725b595efffb8565235a22988764883501c5e5"
+    },
+    {
+      "from": "packages/client/dist/history-session.js",
+      "specifier": "./continuations.js",
+      "target": "packages/client/dist/continuations.js",
+      "sha256": "3ff3d93259388748f033646fd9435293390ec5881fcdbc9712079c847f67ad24"
+    },
+    {
+      "from": "packages/client/dist/history-session.js",
+      "specifier": "./read-record-validation.js",
+      "target": "packages/client/dist/read-record-validation.js",
+      "sha256": "c50f2e0249be638f68e092e972e264227e2410415dd9a283a61382b87e0d052d"
+    },
+    {
+      "from": "packages/client/dist/index.js",
+      "specifier": "./read-session.js",
+      "target": "packages/client/dist/read-session.js",
+      "sha256": "956190bc7b8cd90c54f4fef814b77ee6e0159be2d8783e7ac09b177187c161c1"
+    },
+    {
+      "from": "packages/client/dist/index.js",
+      "specifier": "./read-update.js",
+      "target": "packages/client/dist/read-update.js",
+      "sha256": "834aaa26beaa56d6b10188a39ee2cb5e8b0f59dd3690cef01e60133ca6efa8fd"
+    },
+    {
+      "from": "packages/client/dist/index.js",
+      "specifier": "./history-session.js",
+      "target": "packages/client/dist/history-session.js",
+      "sha256": "3740924c79fe8b3e4912f8693a82245f9986c23bcf1f3971c9a3b947cf897c1d"
+    },
+    {
+      "from": "packages/client/dist/index.js",
+      "specifier": "./read-update-transport.js",
+      "target": "packages/client/dist/read-update-transport.js",
+      "sha256": "8e12118c6089e8f84d7f8ec751a520c559068fa433e6fb146f61265fd99da979"
+    },
+    {
+      "from": "packages/client/dist/index.js",
+      "specifier": "./continuations.js",
+      "target": "packages/client/dist/continuations.js",
+      "sha256": "3ff3d93259388748f033646fd9435293390ec5881fcdbc9712079c847f67ad24"
+    },
+    {
+      "from": "packages/client/dist/read-record-validation.js",
+      "specifier": "./continuations.js",
+      "target": "packages/client/dist/continuations.js",
+      "sha256": "3ff3d93259388748f033646fd9435293390ec5881fcdbc9712079c847f67ad24"
+    },
+    {
+      "from": "packages/client/dist/read-session.js",
+      "specifier": "./continuations.js",
+      "target": "packages/client/dist/continuations.js",
+      "sha256": "3ff3d93259388748f033646fd9435293390ec5881fcdbc9712079c847f67ad24"
+    },
+    {
+      "from": "packages/client/dist/read-session.js",
+      "specifier": "./read-record-validation.js",
+      "target": "packages/client/dist/read-record-validation.js",
+      "sha256": "c50f2e0249be638f68e092e972e264227e2410415dd9a283a61382b87e0d052d"
+    },
+    {
+      "from": "packages/client/dist/read-update.js",
+      "specifier": "./read-update-transport.js",
+      "target": "packages/client/dist/read-update-transport.js",
+      "sha256": "8e12118c6089e8f84d7f8ec751a520c559068fa433e6fb146f61265fd99da979"
+    },
+    {
+      "from": "packages/client/dist/read-update.js",
+      "specifier": "./read-session.js",
+      "target": "packages/client/dist/read-session.js",
+      "sha256": "956190bc7b8cd90c54f4fef814b77ee6e0159be2d8783e7ac09b177187c161c1"
+    },
+    {
+      "from": "packages/conformance/dist/artifact-bundle.js",
+      "specifier": "./profile-contract-selection.js",
+      "target": "packages/conformance/dist/profile-contract-selection.js",
+      "sha256": "b40e912c9de83609b1636654f46e51ecffeebaa7a48423a00a0f86f9ab49ca5b"
+    },
+    {
+      "from": "packages/conformance/dist/artifact-bundle.js",
+      "specifier": "./executable-manifest.js",
+      "target": "packages/conformance/dist/executable-manifest.js",
+      "sha256": "62e113f98f7df97f87685d792ac045a25f2cb56c3dc2579429832e0fbc75976d"
+    },
+    {
+      "from": "packages/conformance/dist/artifact-bundle.js",
+      "specifier": "./canonical-json.js",
+      "target": "packages/conformance/dist/canonical-json.js",
+      "sha256": "3acccc2e74a2717368b63752922a2bcdcdf6d88c9769e235b5bb5c3f5fba3aa3"
+    },
+    {
+      "from": "packages/conformance/dist/artifact-bundle.js",
+      "specifier": "./catalog.js",
+      "target": "packages/conformance/dist/catalog.js",
+      "sha256": "da0ea5bfb6bec29b2b2bccfcaacb0db0917c1881a1c392bd16066c5cce83e483"
+    },
+    {
+      "from": "packages/conformance/dist/catalog.js",
+      "specifier": "./markdown.js",
+      "target": "packages/conformance/dist/markdown.js",
+      "sha256": "cdaed64f8b34c1d849230eb47cfe556b7d98988afa1a74d24a09940c186a2d6f"
+    },
+    {
+      "from": "packages/conformance/dist/cohort-artifact.js",
+      "specifier": "./report.js",
+      "target": "packages/conformance/dist/report.js",
+      "sha256": "e7a303acec530985dfc8682942084e414c92fdf6c7989f618ab67b549347f436"
+    },
+    {
+      "from": "packages/conformance/dist/cohort-artifact.js",
+      "specifier": "./canonical-json.js",
+      "target": "packages/conformance/dist/canonical-json.js",
+      "sha256": "3acccc2e74a2717368b63752922a2bcdcdf6d88c9769e235b5bb5c3f5fba3aa3"
+    },
+    {
+      "from": "packages/conformance/dist/cohort-verification.js",
+      "specifier": "./cohort-artifact.js",
+      "target": "packages/conformance/dist/cohort-artifact.js",
+      "sha256": "6fb5922f2e16af34c5d1818e56963b68099c6f4f43d1b5153b74e5a20074cb07"
+    },
+    {
+      "from": "packages/conformance/dist/executable-manifest.js",
+      "specifier": "./conditional-header.js",
+      "target": "packages/conformance/dist/conditional-header.js",
+      "sha256": "d143e9f11f490a43311d517d84f69db845f4c49e7160dc25083801a1d7077050"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./report.js",
+      "target": "packages/conformance/dist/report.js",
+      "sha256": "e7a303acec530985dfc8682942084e414c92fdf6c7989f618ab67b549347f436"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./artifact-bundle.js",
+      "target": "packages/conformance/dist/artifact-bundle.js",
+      "sha256": "4e0f8e235d55e151611fd53a3827ddc976a26e8f7ca68fe1fdaac98c468ecddd"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./raw-http-scenario-target.js",
+      "target": "packages/conformance/dist/raw-http-scenario-target.js",
+      "sha256": "ea89146dce8987ed4a598cdd9667dc5934ef136ac45dcbae9ecb79aaf23adf92"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./schema-read-projection.js",
+      "target": "packages/conformance/dist/schema-read-projection.js",
+      "sha256": "4c3ce4998efd7a0db83a3021cb1acaa1917f2f4305368f217489c6f1df2289be"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./http-executor.js",
+      "target": "packages/conformance/dist/http-executor.js",
+      "sha256": "25c702652cadf6be40f915d9190a5a92734fd21d8dc3112c570174a6082ea82c"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./cohort-verification.js",
+      "target": "packages/conformance/dist/cohort-verification.js",
+      "sha256": "84b168abbeb9f3910075012ef61d0eaa9b07510b9a39f1683c34b731e27b2309"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./schema-validator.js",
+      "target": "packages/conformance/dist/schema-validator.js",
+      "sha256": "d86cda857ca5b4f064a289970bbea0b1162646e60be3777fbf29cff8ccae4ab6"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./symbolic-url.js",
+      "target": "packages/conformance/dist/symbolic-url.js",
+      "sha256": "fc3aed7093a9dcafcaec2b4b2f326526dfaccaa1284a2599b9da10e980a2d4d8"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./executable-manifest.js",
+      "target": "packages/conformance/dist/executable-manifest.js",
+      "sha256": "62e113f98f7df97f87685d792ac045a25f2cb56c3dc2579429832e0fbc75976d"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./runner.js",
+      "target": "packages/conformance/dist/runner.js",
+      "sha256": "4fe7d33116bc01953a404ad8c8c19d84d5661babeab02c275ff5262e9a6c13b8"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./canonical-json.js",
+      "target": "packages/conformance/dist/canonical-json.js",
+      "sha256": "3acccc2e74a2717368b63752922a2bcdcdf6d88c9769e235b5bb5c3f5fba3aa3"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./selection.js",
+      "target": "packages/conformance/dist/selection.js",
+      "sha256": "cc2dd151e5f3e63c758bf2837de250e5ef1bdcffa3be40fb5ce0c9c93b119a73"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./result-state.js",
+      "target": "packages/conformance/dist/result-state.js",
+      "sha256": "a4c13490e3f03afa95fcf5509f9e9dab7b9d550ced3fb5341fcde03cb91d86f8"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./cohort-artifact.js",
+      "target": "packages/conformance/dist/cohort-artifact.js",
+      "sha256": "6fb5922f2e16af34c5d1818e56963b68099c6f4f43d1b5153b74e5a20074cb07"
+    },
+    {
+      "from": "packages/conformance/dist/index.js",
+      "specifier": "./catalog.js",
+      "target": "packages/conformance/dist/catalog.js",
+      "sha256": "da0ea5bfb6bec29b2b2bccfcaacb0db0917c1881a1c392bd16066c5cce83e483"
+    },
+    {
+      "from": "packages/conformance/dist/profile-contract-selection.js",
+      "specifier": "./canonical-json.js",
+      "target": "packages/conformance/dist/canonical-json.js",
+      "sha256": "3acccc2e74a2717368b63752922a2bcdcdf6d88c9769e235b5bb5c3f5fba3aa3"
+    },
+    {
+      "from": "packages/conformance/dist/profile-contract-selection.js",
+      "specifier": "./selection.js",
+      "target": "packages/conformance/dist/selection.js",
+      "sha256": "cc2dd151e5f3e63c758bf2837de250e5ef1bdcffa3be40fb5ce0c9c93b119a73"
+    },
+    {
+      "from": "packages/conformance/dist/profile-contract-selection.js",
+      "specifier": "./catalog.js",
+      "target": "packages/conformance/dist/catalog.js",
+      "sha256": "da0ea5bfb6bec29b2b2bccfcaacb0db0917c1881a1c392bd16066c5cce83e483"
+    },
+    {
+      "from": "packages/conformance/dist/raw-http-scenario-target.js",
+      "specifier": "./http-executor.js",
+      "target": "packages/conformance/dist/http-executor.js",
+      "sha256": "25c702652cadf6be40f915d9190a5a92734fd21d8dc3112c570174a6082ea82c"
+    },
+    {
+      "from": "packages/conformance/dist/report.js",
+      "specifier": "./transactional-observation.js",
+      "target": "packages/conformance/dist/transactional-observation.js",
+      "sha256": "a748727d7debea5a6e56e18ecc32bdf9c38c1352a110dead1a3e73529b8ef33e"
+    },
+    {
+      "from": "packages/conformance/dist/runner.js",
+      "specifier": "./artifact-bundle.js",
+      "target": "packages/conformance/dist/artifact-bundle.js",
+      "sha256": "4e0f8e235d55e151611fd53a3827ddc976a26e8f7ca68fe1fdaac98c468ecddd"
+    },
+    {
+      "from": "packages/conformance/dist/runner.js",
+      "specifier": "./http-executor.js",
+      "target": "packages/conformance/dist/http-executor.js",
+      "sha256": "25c702652cadf6be40f915d9190a5a92734fd21d8dc3112c570174a6082ea82c"
+    },
+    {
+      "from": "packages/conformance/dist/runner.js",
+      "specifier": "./transactional-observation.js",
+      "target": "packages/conformance/dist/transactional-observation.js",
+      "sha256": "a748727d7debea5a6e56e18ecc32bdf9c38c1352a110dead1a3e73529b8ef33e"
+    },
+    {
+      "from": "packages/conformance/dist/runner.js",
+      "specifier": "./executable-manifest.js",
+      "target": "packages/conformance/dist/executable-manifest.js",
+      "sha256": "62e113f98f7df97f87685d792ac045a25f2cb56c3dc2579429832e0fbc75976d"
+    },
+    {
+      "from": "packages/conformance/dist/runner.js",
+      "specifier": "./conditional-header.js",
+      "target": "packages/conformance/dist/conditional-header.js",
+      "sha256": "d143e9f11f490a43311d517d84f69db845f4c49e7160dc25083801a1d7077050"
+    },
+    {
+      "from": "packages/conformance/dist/runner.js",
+      "specifier": "./selection.js",
+      "target": "packages/conformance/dist/selection.js",
+      "sha256": "cc2dd151e5f3e63c758bf2837de250e5ef1bdcffa3be40fb5ce0c9c93b119a73"
+    },
+    {
+      "from": "packages/conformance/dist/schema-read-projection.js",
+      "specifier": "./canonical-json.js",
+      "target": "packages/conformance/dist/canonical-json.js",
+      "sha256": "3acccc2e74a2717368b63752922a2bcdcdf6d88c9769e235b5bb5c3f5fba3aa3"
+    },
+    {
+      "from": "packages/protocol/dist/history-values.js",
+      "specifier": "./read-values.js",
+      "target": "packages/protocol/dist/read-values.js",
+      "sha256": "117a54e6cabeff81ba4a7e3290a8d41652cf8c58915d7a082e20f6279e432b60"
+    },
+    {
+      "from": "packages/protocol/dist/history-values.js",
+      "specifier": "./schema-formats.js",
+      "target": "packages/protocol/dist/schema-formats.js",
+      "sha256": "fba76af9b124c8de74b7dd1f2b2cc01cfe6628f9ead6f8b5d496da73691d2f8a"
+    },
+    {
+      "from": "packages/protocol/dist/history-values.js",
+      "specifier": "./protocol-errors.js",
+      "target": "packages/protocol/dist/protocol-errors.js",
+      "sha256": "01953c4f785548b510cfb0af188ebec6eb2fcd887108713aa5f9e9747622ffec"
+    },
+    {
+      "from": "packages/protocol/dist/index.js",
+      "specifier": "./link-header.js",
+      "target": "packages/protocol/dist/link-header.js",
+      "sha256": "b1daae38417b979869487bcd7e1c0d09834976bdd1ffc7fe8f7b4709c46cebbf"
+    },
+    {
+      "from": "packages/protocol/dist/index.js",
+      "specifier": "./schema-formats.js",
+      "target": "packages/protocol/dist/schema-formats.js",
+      "sha256": "fba76af9b124c8de74b7dd1f2b2cc01cfe6628f9ead6f8b5d496da73691d2f8a"
+    },
+    {
+      "from": "packages/protocol/dist/index.js",
+      "specifier": "./read-update-values.js",
+      "target": "packages/protocol/dist/read-update-values.js",
+      "sha256": "f79cbfd230d85242763e7f946a0d58934195cdf7d8ebed269c805fd79939b89a"
+    },
+    {
+      "from": "packages/protocol/dist/index.js",
+      "specifier": "./read-update-problems.js",
+      "target": "packages/protocol/dist/read-update-problems.js",
+      "sha256": "53e20c0f8fdf4429a9b718a84c68e2655d172240d6204b8b0c1da5e4b6a47643"
+    },
+    {
+      "from": "packages/protocol/dist/index.js",
+      "specifier": "./read-update-preflight.js",
+      "target": "packages/protocol/dist/read-update-preflight.js",
+      "sha256": "1c7594da5cfa2520673df23aceabf8edb414b60a97b1baf86f1009bc472180ae"
+    },
+    {
+      "from": "packages/protocol/dist/index.js",
+      "specifier": "./transaction-discovery-values.js",
+      "target": "packages/protocol/dist/transaction-discovery-values.js",
+      "sha256": "26341c6e6c3e1e11e212b6e8d827572e343dea1287abfaf0d7de7dee7ac3efed"
+    },
+    {
+      "from": "packages/protocol/dist/index.js",
+      "specifier": "./history-values.js",
+      "target": "packages/protocol/dist/history-values.js",
+      "sha256": "06928d65b343c2c3e45dbb1ed96c2dd0c31cd7973145bc15a385ec667bb1134b"
+    },
+    {
+      "from": "packages/protocol/dist/index.js",
+      "specifier": "./reference-domain.js",
+      "target": "packages/protocol/dist/reference-domain.js",
+      "sha256": "640962f3d4490e90bd89071655671a4507b4626c86eb1adc38c951f46a59feeb"
+    },
+    {
+      "from": "packages/protocol/dist/index.js",
+      "specifier": "./read-values.js",
+      "target": "packages/protocol/dist/read-values.js",
+      "sha256": "117a54e6cabeff81ba4a7e3290a8d41652cf8c58915d7a082e20f6279e432b60"
+    },
+    {
+      "from": "packages/protocol/dist/index.js",
+      "specifier": "./type-conformance.js",
+      "target": "packages/protocol/dist/type-conformance.js",
+      "sha256": "a4cd37710d9daeb504d6ba116c3070e349f2a9f413dd3b671d3b9b8209393718"
+    },
+    {
+      "from": "packages/protocol/dist/index.js",
+      "specifier": "./json-admission.js",
+      "target": "packages/protocol/dist/json-admission.js",
+      "sha256": "4eb14f77a22b9d47939becad6912993ddf988cc6fc3aa6532245a4a525b1389e"
+    },
+    {
+      "from": "packages/protocol/dist/index.js",
+      "specifier": "./json-values.js",
+      "target": "packages/protocol/dist/json-values.js",
+      "sha256": "c68b1d5abf4fd4d35122c9bff408e27359fbb12790d23d5562e0e12e8b370289"
+    },
+    {
+      "from": "packages/protocol/dist/json-values.js",
+      "specifier": "./json-admission.js",
+      "target": "packages/protocol/dist/json-admission.js",
+      "sha256": "4eb14f77a22b9d47939becad6912993ddf988cc6fc3aa6532245a4a525b1389e"
+    },
+    {
+      "from": "packages/protocol/dist/json-values.js",
+      "specifier": "./protocol-errors.js",
+      "target": "packages/protocol/dist/protocol-errors.js",
+      "sha256": "01953c4f785548b510cfb0af188ebec6eb2fcd887108713aa5f9e9747622ffec"
+    },
+    {
+      "from": "packages/protocol/dist/read-update-preflight.js",
+      "specifier": "./read-values.js",
+      "target": "packages/protocol/dist/read-values.js",
+      "sha256": "117a54e6cabeff81ba4a7e3290a8d41652cf8c58915d7a082e20f6279e432b60"
+    },
+    {
+      "from": "packages/protocol/dist/read-update-preflight.js",
+      "specifier": "./read-update-values.js",
+      "target": "packages/protocol/dist/read-update-values.js",
+      "sha256": "f79cbfd230d85242763e7f946a0d58934195cdf7d8ebed269c805fd79939b89a"
+    },
+    {
+      "from": "packages/protocol/dist/read-update-problems.js",
+      "specifier": "./read-update-values.js",
+      "target": "packages/protocol/dist/read-update-values.js",
+      "sha256": "f79cbfd230d85242763e7f946a0d58934195cdf7d8ebed269c805fd79939b89a"
+    },
+    {
+      "from": "packages/protocol/dist/read-update-values.js",
+      "specifier": "./schema-formats.js",
+      "target": "packages/protocol/dist/schema-formats.js",
+      "sha256": "fba76af9b124c8de74b7dd1f2b2cc01cfe6628f9ead6f8b5d496da73691d2f8a"
+    },
+    {
+      "from": "packages/protocol/dist/read-update-values.js",
+      "specifier": "./read-values.js",
+      "target": "packages/protocol/dist/read-values.js",
+      "sha256": "117a54e6cabeff81ba4a7e3290a8d41652cf8c58915d7a082e20f6279e432b60"
+    },
+    {
+      "from": "packages/protocol/dist/read-update-values.js",
+      "specifier": "./json-admission.js",
+      "target": "packages/protocol/dist/json-admission.js",
+      "sha256": "4eb14f77a22b9d47939becad6912993ddf988cc6fc3aa6532245a4a525b1389e"
+    },
+    {
+      "from": "packages/protocol/dist/read-update-values.js",
+      "specifier": "./protocol-errors.js",
+      "target": "packages/protocol/dist/protocol-errors.js",
+      "sha256": "01953c4f785548b510cfb0af188ebec6eb2fcd887108713aa5f9e9747622ffec"
+    },
+    {
+      "from": "packages/protocol/dist/read-values.js",
+      "specifier": "./schema-formats.js",
+      "target": "packages/protocol/dist/schema-formats.js",
+      "sha256": "fba76af9b124c8de74b7dd1f2b2cc01cfe6628f9ead6f8b5d496da73691d2f8a"
+    },
+    {
+      "from": "packages/protocol/dist/read-values.js",
+      "specifier": "./index.js",
+      "target": "packages/protocol/dist/index.js",
+      "sha256": "1554d12e06f39934809b0546aaa667ca682594b5a8597c82a36e7e80285b4a36"
+    },
+    {
+      "from": "packages/protocol/dist/read-values.js",
+      "specifier": "./json-values.js",
+      "target": "packages/protocol/dist/json-values.js",
+      "sha256": "c68b1d5abf4fd4d35122c9bff408e27359fbb12790d23d5562e0e12e8b370289"
+    },
+    {
+      "from": "packages/protocol/dist/read-values.js",
+      "specifier": "./protocol-errors.js",
+      "target": "packages/protocol/dist/protocol-errors.js",
+      "sha256": "01953c4f785548b510cfb0af188ebec6eb2fcd887108713aa5f9e9747622ffec"
+    },
+    {
+      "from": "packages/protocol/dist/transaction-discovery-values.js",
+      "specifier": "./read-values.js",
+      "target": "packages/protocol/dist/read-values.js",
+      "sha256": "117a54e6cabeff81ba4a7e3290a8d41652cf8c58915d7a082e20f6279e432b60"
+    },
+    {
+      "from": "packages/protocol/dist/transaction-discovery-values.js",
+      "specifier": "./schema-formats.js",
+      "target": "packages/protocol/dist/schema-formats.js",
+      "sha256": "fba76af9b124c8de74b7dd1f2b2cc01cfe6628f9ead6f8b5d496da73691d2f8a"
+    },
+    {
+      "from": "packages/protocol/dist/transaction-discovery-values.js",
+      "specifier": "./protocol-errors.js",
+      "target": "packages/protocol/dist/protocol-errors.js",
+      "sha256": "01953c4f785548b510cfb0af188ebec6eb2fcd887108713aa5f9e9747622ffec"
+    },
+    {
+      "from": "packages/protocol/dist/type-conformance.js",
+      "specifier": "./read-values.js",
+      "target": "packages/protocol/dist/read-values.js",
+      "sha256": "117a54e6cabeff81ba4a7e3290a8d41652cf8c58915d7a082e20f6279e432b60"
+    },
+    {
+      "from": "packages/server/dist/alias-evaluator.js",
+      "specifier": "./resource-evaluator.js",
+      "target": "packages/server/dist/resource-evaluator.js",
+      "sha256": "eace74bfbe555a50735d8a54e7bcc2cb032aa586d6595a6e7444f0ce8c5fad3a"
+    },
+    {
+      "from": "packages/server/dist/authority-read.js",
+      "specifier": "./read-pagination.js",
+      "target": "packages/server/dist/read-pagination.js",
+      "sha256": "a87360206f50ace4a8cd3cba6497d8075746189f681cefe112d3057d6c5496b2"
+    },
+    {
+      "from": "packages/server/dist/authority-read.js",
+      "specifier": "./read-request.js",
+      "target": "packages/server/dist/read-request.js",
+      "sha256": "be23340bb132331fd3bcdae33eca90d6c85f18bbf2d8c004ca963f52cb8be624"
+    },
+    {
+      "from": "packages/server/dist/authority-read.js",
+      "specifier": "./read-selector.js",
+      "target": "packages/server/dist/read-selector.js",
+      "sha256": "b4a69b8934eb039387137ba016ffbeab03cbdc59da19ebc5b26b4120732258f8"
+    },
+    {
+      "from": "packages/server/dist/authority-read.js",
+      "specifier": "./resource-evaluator.js",
+      "target": "packages/server/dist/resource-evaluator.js",
+      "sha256": "eace74bfbe555a50735d8a54e7bcc2cb032aa586d6595a6e7444f0ce8c5fad3a"
+    },
+    {
+      "from": "packages/server/dist/development-authority.js",
+      "specifier": "./recovery-store.js",
+      "target": "packages/server/dist/recovery-store.js",
+      "sha256": "eb75b6a8e7e4a8272f869978d8ead8829c14ab2c13e9d2e78ebde3061b4bfee0"
+    },
+    {
+      "from": "packages/server/dist/development-authority.js",
+      "specifier": "./read-update-runtime-limits.js",
+      "target": "packages/server/dist/read-update-runtime-limits.js",
+      "sha256": "7483588c18a447d310cbe32baababf7d866f82f164687ec310c1ee8ad0430608"
+    },
+    {
+      "from": "packages/server/dist/development-authority.js",
+      "specifier": "./read-sequence-lifecycle.js",
+      "target": "packages/server/dist/read-sequence-lifecycle.js",
+      "sha256": "d10315f9bccb80d994c7b67b27716f5a84d174a53f817eb207e46cab75828b2b"
+    },
+    {
+      "from": "packages/server/dist/development-authority.js",
+      "specifier": "./resource-evaluator.js",
+      "target": "packages/server/dist/resource-evaluator.js",
+      "sha256": "eace74bfbe555a50735d8a54e7bcc2cb032aa586d6595a6e7444f0ce8c5fad3a"
+    },
+    {
+      "from": "packages/server/dist/development-authority.js",
+      "specifier": "./development-contracts.js",
+      "target": "packages/server/dist/development-contracts.js",
+      "sha256": "038a7144b879ee3b89b6cf1ec670af92c47a2d01073ab5f24c922c3c121863cd"
+    },
+    {
+      "from": "packages/server/dist/development-authority.js",
+      "specifier": "./sequence-executor.js",
+      "target": "packages/server/dist/sequence-executor.js",
+      "sha256": "c3820c429ad7e622b7cc501e601a8ac02d28d5042c8b39d94572c2016799ce16"
+    },
+    {
+      "from": "packages/server/dist/development-authority.js",
+      "specifier": "./installed-contract-artifact.js",
+      "target": "packages/server/dist/installed-contract-artifact.js",
+      "sha256": "d30354c471c34d24b5567b5a950d59952705765ba2b8aa5a7c853dcc3979bdcb"
+    },
+    {
+      "from": "packages/server/dist/development-authority.js",
+      "specifier": "./read-request.js",
+      "target": "packages/server/dist/read-request.js",
+      "sha256": "be23340bb132331fd3bcdae33eca90d6c85f18bbf2d8c004ca963f52cb8be624"
+    },
+    {
+      "from": "packages/server/dist/development-composition.js",
+      "specifier": "./read-http-routing.js",
+      "target": "packages/server/dist/read-http-routing.js",
+      "sha256": "13b49961facf8eb468a5ea2038dc640285268cb664ac9c5392e2577b3d2bad49"
+    },
+    {
+      "from": "packages/server/dist/development-contracts.js",
+      "specifier": "./installed-schema-evaluator.js",
+      "target": "packages/server/dist/installed-schema-evaluator.js",
+      "sha256": "56e4b0fb6d71504744f62868f05346b43335d062ecdf62ecfd93ccced0f5d6ca"
+    },
+    {
+      "from": "packages/server/dist/development-contracts.js",
+      "specifier": "./installed-contract-artifact.js",
+      "target": "packages/server/dist/installed-contract-artifact.js",
+      "sha256": "d30354c471c34d24b5567b5a950d59952705765ba2b8aa5a7c853dcc3979bdcb"
+    },
+    {
+      "from": "packages/server/dist/development-contracts.js",
+      "specifier": "./installed-schema-shape.js",
+      "target": "packages/server/dist/installed-schema-shape.js",
+      "sha256": "5774c022d1a45569e4983fdfb86006282579d45e8ab40f8e3634945c661e5bb5"
+    },
+    {
+      "from": "packages/server/dist/development-runtime.js",
+      "specifier": "./development-authority.js",
+      "target": "packages/server/dist/development-authority.js",
+      "sha256": "adcd555997c226a428baf4c5514579e611fab8f9e08a604ec2d72ad9ed77bba1"
+    },
+    {
+      "from": "packages/server/dist/development-runtime.js",
+      "specifier": "./read-http.js",
+      "target": "packages/server/dist/read-http.js",
+      "sha256": "39a3dd43650c30f84a8100af1a36c158b863cda7added8810df7251ff467c0b2"
+    },
+    {
+      "from": "packages/server/dist/development-runtime.js",
+      "specifier": "./development-contracts.js",
+      "target": "packages/server/dist/development-contracts.js",
+      "sha256": "038a7144b879ee3b89b6cf1ec670af92c47a2d01073ab5f24c922c3c121863cd"
+    },
+    {
+      "from": "packages/server/dist/development-runtime.js",
+      "specifier": "./node-http-target.js",
+      "target": "packages/server/dist/node-http-target.js",
+      "sha256": "7085b22ad2eab1cb9d1590b744f5948df8f27122cf48304c83ff2782c93ad1fc"
+    },
+    {
+      "from": "packages/server/dist/development.js",
+      "specifier": "./development-authority.js",
+      "target": "packages/server/dist/development-authority.js",
+      "sha256": "adcd555997c226a428baf4c5514579e611fab8f9e08a604ec2d72ad9ed77bba1"
+    },
+    {
+      "from": "packages/server/dist/development.js",
+      "specifier": "./development-runtime.js",
+      "target": "packages/server/dist/development-runtime.js",
+      "sha256": "e1f7571f43ed5ad3d7155f866c0142d07a09772ba8ad668e1b55393a75003431"
+    },
+    {
+      "from": "packages/server/dist/index.js",
+      "specifier": "./read-pagination.js",
+      "target": "packages/server/dist/read-pagination.js",
+      "sha256": "a87360206f50ace4a8cd3cba6497d8075746189f681cefe112d3057d6c5496b2"
+    },
+    {
+      "from": "packages/server/dist/index.js",
+      "specifier": "./read-http.js",
+      "target": "packages/server/dist/read-http.js",
+      "sha256": "39a3dd43650c30f84a8100af1a36c158b863cda7added8810df7251ff467c0b2"
+    },
+    {
+      "from": "packages/server/dist/index.js",
+      "specifier": "./node-http-disconnect.js",
+      "target": "packages/server/dist/node-http-disconnect.js",
+      "sha256": "195f6a6ca6205d4f307a443401ae7a2ea15c0babab64c59e8365bd920769e5bd"
+    },
+    {
+      "from": "packages/server/dist/index.js",
+      "specifier": "./read-selector.js",
+      "target": "packages/server/dist/read-selector.js",
+      "sha256": "b4a69b8934eb039387137ba016ffbeab03cbdc59da19ebc5b26b4120732258f8"
+    },
+    {
+      "from": "packages/server/dist/index.js",
+      "specifier": "./read-conformance-capability.js",
+      "target": "packages/server/dist/read-conformance-capability.js",
+      "sha256": "8448816d732fb0b49be124bac2c403876ebaf135e4ed913d8495170d861817d1"
+    },
+    {
+      "from": "packages/server/dist/index.js",
+      "specifier": "./read-http-routing.js",
+      "target": "packages/server/dist/read-http-routing.js",
+      "sha256": "13b49961facf8eb468a5ea2038dc640285268cb664ac9c5392e2577b3d2bad49"
+    },
+    {
+      "from": "packages/server/dist/index.js",
+      "specifier": "./node-http-target.js",
+      "target": "packages/server/dist/node-http-target.js",
+      "sha256": "7085b22ad2eab1cb9d1590b744f5948df8f27122cf48304c83ff2782c93ad1fc"
+    },
+    {
+      "from": "packages/server/dist/index.js",
+      "specifier": "./read-request.js",
+      "target": "packages/server/dist/read-request.js",
+      "sha256": "be23340bb132331fd3bcdae33eca90d6c85f18bbf2d8c004ca963f52cb8be624"
+    },
+    {
+      "from": "packages/server/dist/installed-reference-configuration.js",
+      "specifier": "./development-authority.js",
+      "target": "packages/server/dist/development-authority.js",
+      "sha256": "adcd555997c226a428baf4c5514579e611fab8f9e08a604ec2d72ad9ed77bba1"
+    },
+    {
+      "from": "packages/server/dist/installed-reference-configuration.js",
+      "specifier": "./development-contracts.js",
+      "target": "packages/server/dist/development-contracts.js",
+      "sha256": "038a7144b879ee3b89b6cf1ec670af92c47a2d01073ab5f24c922c3c121863cd"
+    },
+    {
+      "from": "packages/server/dist/installed-reference-configuration.js",
+      "specifier": "./installed-contract-artifact.js",
+      "target": "packages/server/dist/installed-contract-artifact.js",
+      "sha256": "d30354c471c34d24b5567b5a950d59952705765ba2b8aa5a7c853dcc3979bdcb"
+    },
+    {
+      "from": "packages/server/dist/installed-reference-process.js",
+      "specifier": "./installed-reference.js",
+      "target": "packages/server/dist/installed-reference.js",
+      "sha256": "be57131fe4af37b30ee94c332436d18db889ff454c2a680b05fdf1308b94737c"
+    },
+    {
+      "from": "packages/server/dist/installed-reference-process.js",
+      "specifier": "./development-contracts.js",
+      "target": "packages/server/dist/development-contracts.js",
+      "sha256": "038a7144b879ee3b89b6cf1ec670af92c47a2d01073ab5f24c922c3c121863cd"
+    },
+    {
+      "from": "packages/server/dist/installed-reference.js",
+      "specifier": "./installed-reference-configuration.js",
+      "target": "packages/server/dist/installed-reference-configuration.js",
+      "sha256": "9ca2071ccd43e0eba1a512bdbc3a5edd9b3a24912b14b487d4886e45002b4c79"
+    },
+    {
+      "from": "packages/server/dist/installed-reference.js",
+      "specifier": "./installed-payload.js",
+      "target": "packages/server/dist/installed-payload.js",
+      "sha256": "dc0da1f44913d3f9c3839c5f21d3f17a33ca7a97dac1da1434e0e6565f0a57a5"
+    },
+    {
+      "from": "packages/server/dist/installed-reference.js",
+      "specifier": "./development-composition.js",
+      "target": "packages/server/dist/development-composition.js",
+      "sha256": "54db32e28c39c656bbb7d3f8580472f6d38c82e37694a89f68a77e951c8cc318"
+    },
+    {
+      "from": "packages/server/dist/installed-reference.js",
+      "specifier": "./development-runtime.js",
+      "target": "packages/server/dist/development-runtime.js",
+      "sha256": "e1f7571f43ed5ad3d7155f866c0142d07a09772ba8ad668e1b55393a75003431"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-evaluator.js",
+      "specifier": "./installed-schema-pattern.js",
+      "target": "packages/server/dist/installed-schema-pattern.js",
+      "sha256": "7d44816cea2b104c4001b14263a561815f4b169dddc89203d0bcaed02f565299"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-evaluator.js",
+      "specifier": "./installed-schema-value.js",
+      "target": "packages/server/dist/installed-schema-value.js",
+      "sha256": "82ac8756bae5b324093857b41dc54796ece46d0b1963a2d6bf132b9adc489754"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-evaluator.js",
+      "specifier": "./installed-schema-graph.js",
+      "target": "packages/server/dist/installed-schema-graph.js",
+      "sha256": "a5fa3ad25207824da1dafda2df268ed328a46609bccf7c4cfb1b46116bca268d"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-evaluator.js",
+      "specifier": "./installed-schema-recursion.js",
+      "target": "packages/server/dist/installed-schema-recursion.js",
+      "sha256": "5c060c5b5e1a6fa6fdb26e59751d4eedd2de39f57fb0b51f10067c1a35b04d0c"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-evaluator.js",
+      "specifier": "./installed-schema-builtins.js",
+      "target": "packages/server/dist/installed-schema-builtins.js",
+      "sha256": "bcb55ba8d30780fc183d77f4f68c8d547783808d3a5abba44742428ea3f60235"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-evaluator.js",
+      "specifier": "./installed-contract-artifact.js",
+      "target": "packages/server/dist/installed-contract-artifact.js",
+      "sha256": "d30354c471c34d24b5567b5a950d59952705765ba2b8aa5a7c853dcc3979bdcb"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-evaluator.js",
+      "specifier": "./installed-schema-shape.js",
+      "target": "packages/server/dist/installed-schema-shape.js",
+      "sha256": "5774c022d1a45569e4983fdfb86006282579d45e8ab40f8e3634945c661e5bb5"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-evaluator.js",
+      "specifier": "./installed-schema-decimal.js",
+      "target": "packages/server/dist/installed-schema-decimal.js",
+      "sha256": "4d18c4125c509703e849b336623a08344b981207f89918b3410182950373a74d"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-graph.js",
+      "specifier": "./installed-schema-builtins.js",
+      "target": "packages/server/dist/installed-schema-builtins.js",
+      "sha256": "bcb55ba8d30780fc183d77f4f68c8d547783808d3a5abba44742428ea3f60235"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-graph.js",
+      "specifier": "./installed-schema-uri.js",
+      "target": "packages/server/dist/installed-schema-uri.js",
+      "sha256": "5c2b746f2db51b586beeba4b816cf9364546399ef129d2a90ceac5f3548705fe"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-graph.js",
+      "specifier": "./installed-contract-artifact.js",
+      "target": "packages/server/dist/installed-contract-artifact.js",
+      "sha256": "d30354c471c34d24b5567b5a950d59952705765ba2b8aa5a7c853dcc3979bdcb"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-graph.js",
+      "specifier": "./installed-schema-shape.js",
+      "target": "packages/server/dist/installed-schema-shape.js",
+      "sha256": "5774c022d1a45569e4983fdfb86006282579d45e8ab40f8e3634945c661e5bb5"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-pattern.js",
+      "specifier": "./installed-schema-value.js",
+      "target": "packages/server/dist/installed-schema-value.js",
+      "sha256": "82ac8756bae5b324093857b41dc54796ece46d0b1963a2d6bf132b9adc489754"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-recursion.js",
+      "specifier": "./installed-schema-value.js",
+      "target": "packages/server/dist/installed-schema-value.js",
+      "sha256": "82ac8756bae5b324093857b41dc54796ece46d0b1963a2d6bf132b9adc489754"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-uri.js",
+      "specifier": "./installed-schema-shape.js",
+      "target": "packages/server/dist/installed-schema-shape.js",
+      "sha256": "5774c022d1a45569e4983fdfb86006282579d45e8ab40f8e3634945c661e5bb5"
+    },
+    {
+      "from": "packages/server/dist/installed-schema-value.js",
+      "specifier": "./installed-schema-decimal.js",
+      "target": "packages/server/dist/installed-schema-decimal.js",
+      "sha256": "4d18c4125c509703e849b336623a08344b981207f89918b3410182950373a74d"
+    },
+    {
+      "from": "packages/server/dist/member-executor.js",
+      "specifier": "./alias-evaluator.js",
+      "target": "packages/server/dist/alias-evaluator.js",
+      "sha256": "7a03692769d46e735c775f75152a0b73c10863c811469584eea23ed7820fe447"
+    },
+    {
+      "from": "packages/server/dist/member-executor.js",
+      "specifier": "./recovery-store.js",
+      "target": "packages/server/dist/recovery-store.js",
+      "sha256": "eb75b6a8e7e4a8272f869978d8ead8829c14ab2c13e9d2e78ebde3061b4bfee0"
+    },
+    {
+      "from": "packages/server/dist/member-executor.js",
+      "specifier": "./semantic-identity.js",
+      "target": "packages/server/dist/semantic-identity.js",
+      "sha256": "4e9baff204a18846bfd25d9ee33d3dd25078d2c226e08692c75870fb0c159b72"
+    },
+    {
+      "from": "packages/server/dist/member-executor.js",
+      "specifier": "./retained-disclosure.js",
+      "target": "packages/server/dist/retained-disclosure.js",
+      "sha256": "3ce3d9909a47d78a20b256a0d0affe605224938e5ed92e35d63b3a3d7e517100"
+    },
+    {
+      "from": "packages/server/dist/member-executor.js",
+      "specifier": "./resource-evaluator.js",
+      "target": "packages/server/dist/resource-evaluator.js",
+      "sha256": "eace74bfbe555a50735d8a54e7bcc2cb032aa586d6595a6e7444f0ce8c5fad3a"
+    },
+    {
+      "from": "packages/server/dist/member-executor.js",
+      "specifier": "./member-identity.js",
+      "target": "packages/server/dist/member-identity.js",
+      "sha256": "0d44888e873a7b421c7408c8f619f82c02608966166f5a1d396b29ad8dfe360f"
+    },
+    {
+      "from": "packages/server/dist/member-identity.js",
+      "specifier": "./member-numeric-diagnostics.js",
+      "target": "packages/server/dist/member-numeric-diagnostics.js",
+      "sha256": "b26abb89fe14dcf8c84df49dc45bdb192da3262104e37e08274120c3b6f3612a"
+    },
+    {
+      "from": "packages/server/dist/member-identity.js",
+      "specifier": "./semantic-identity.js",
+      "target": "packages/server/dist/semantic-identity.js",
+      "sha256": "4e9baff204a18846bfd25d9ee33d3dd25078d2c226e08692c75870fb0c159b72"
+    },
+    {
+      "from": "packages/server/dist/read-http-routing.js",
+      "specifier": "./read-request.js",
+      "target": "packages/server/dist/read-request.js",
+      "sha256": "be23340bb132331fd3bcdae33eca90d6c85f18bbf2d8c004ca963f52cb8be624"
+    },
+    {
+      "from": "packages/server/dist/read-http-routing.js",
+      "specifier": "./read-http.js",
+      "target": "packages/server/dist/read-http.js",
+      "sha256": "39a3dd43650c30f84a8100af1a36c158b863cda7added8810df7251ff467c0b2"
+    },
+    {
+      "from": "packages/server/dist/read-request.js",
+      "specifier": "./read-selector.js",
+      "target": "packages/server/dist/read-selector.js",
+      "sha256": "b4a69b8934eb039387137ba016ffbeab03cbdc59da19ebc5b26b4120732258f8"
+    },
+    {
+      "from": "packages/server/dist/read-sequence-lifecycle.js",
+      "specifier": "./read-request.js",
+      "target": "packages/server/dist/read-request.js",
+      "sha256": "be23340bb132331fd3bcdae33eca90d6c85f18bbf2d8c004ca963f52cb8be624"
+    },
+    {
+      "from": "packages/server/dist/read-sequence-lifecycle.js",
+      "specifier": "./authority-read.js",
+      "target": "packages/server/dist/authority-read.js",
+      "sha256": "0d579df0ede780551c369679dbfce6727433e15bfbfbea49c39baac76851f7fe"
+    },
+    {
+      "from": "packages/server/dist/read-update-runtime-limits.js",
+      "specifier": "./member-executor.js",
+      "target": "packages/server/dist/member-executor.js",
+      "sha256": "3d39cad981b60b62fbea36f380e28b4b9ac0bd2b0af11b7a9738cd13734d6c1b"
+    },
+    {
+      "from": "packages/server/dist/read-update-runtime-limits.js",
+      "specifier": "./alias-evaluator.js",
+      "target": "packages/server/dist/alias-evaluator.js",
+      "sha256": "7a03692769d46e735c775f75152a0b73c10863c811469584eea23ed7820fe447"
+    },
+    {
+      "from": "packages/server/dist/read-update-runtime-limits.js",
+      "specifier": "./resource-evaluator.js",
+      "target": "packages/server/dist/resource-evaluator.js",
+      "sha256": "eace74bfbe555a50735d8a54e7bcc2cb032aa586d6595a6e7444f0ce8c5fad3a"
+    },
+    {
+      "from": "packages/server/dist/retained-disclosure.js",
+      "specifier": "./resource-evaluator.js",
+      "target": "packages/server/dist/resource-evaluator.js",
+      "sha256": "eace74bfbe555a50735d8a54e7bcc2cb032aa586d6595a6e7444f0ce8c5fad3a"
+    },
+    {
+      "from": "packages/server/dist/sequence-executor.js",
+      "specifier": "./member-executor.js",
+      "target": "packages/server/dist/member-executor.js",
+      "sha256": "3d39cad981b60b62fbea36f380e28b4b9ac0bd2b0af11b7a9738cd13734d6c1b"
+    },
+    {
+      "from": "packages/server/dist/sequence-executor.js",
+      "specifier": "./recovery-store.js",
+      "target": "packages/server/dist/recovery-store.js",
+      "sha256": "eb75b6a8e7e4a8272f869978d8ead8829c14ab2c13e9d2e78ebde3061b4bfee0"
+    },
+    {
+      "from": "packages/server/dist/transaction-batch.js",
+      "specifier": "./alias-evaluator.js",
+      "target": "packages/server/dist/alias-evaluator.js",
+      "sha256": "7a03692769d46e735c775f75152a0b73c10863c811469584eea23ed7820fe447"
+    },
+    {
+      "from": "packages/server/dist/transaction-batch.js",
+      "specifier": "./read-update-runtime-limits.js",
+      "target": "packages/server/dist/read-update-runtime-limits.js",
+      "sha256": "7483588c18a447d310cbe32baababf7d866f82f164687ec310c1ee8ad0430608"
+    },
+    {
+      "from": "packages/server/dist/transaction-batch.js",
+      "specifier": "./transaction-set.js",
+      "target": "packages/server/dist/transaction-set.js",
+      "sha256": "e37522d5a56d9a949a9d4f805fa616481b8b15acf2fdf23a1c67772fafd0c009"
+    },
+    {
+      "from": "packages/server/dist/transaction-batch.js",
+      "specifier": "./semantic-identity.js",
+      "target": "packages/server/dist/semantic-identity.js",
+      "sha256": "4e9baff204a18846bfd25d9ee33d3dd25078d2c226e08692c75870fb0c159b72"
+    },
+    {
+      "from": "packages/server/dist/transaction-batch.js",
+      "specifier": "./read-selector.js",
+      "target": "packages/server/dist/read-selector.js",
+      "sha256": "b4a69b8934eb039387137ba016ffbeab03cbdc59da19ebc5b26b4120732258f8"
+    },
+    {
+      "from": "packages/server/dist/transaction-batch.js",
+      "specifier": "./resource-evaluator.js",
+      "target": "packages/server/dist/resource-evaluator.js",
+      "sha256": "eace74bfbe555a50735d8a54e7bcc2cb032aa586d6595a6e7444f0ce8c5fad3a"
+    },
+    {
+      "from": "packages/server/dist/transaction-batch.js",
+      "specifier": "./member-numeric-diagnostics.js",
+      "target": "packages/server/dist/member-numeric-diagnostics.js",
+      "sha256": "b26abb89fe14dcf8c84df49dc45bdb192da3262104e37e08274120c3b6f3612a"
+    },
+    {
+      "from": "packages/server/dist/transaction-changefeed.js",
+      "specifier": "./transaction-events.js",
+      "target": "packages/server/dist/transaction-events.js",
+      "sha256": "cdcca02ea7d097774f615523cadd4cdc7d7a8ae82f3d87f659eae58c06806f2a"
+    },
+    {
+      "from": "packages/server/dist/transaction-changefeed.js",
+      "specifier": "./transaction-batch.js",
+      "target": "packages/server/dist/transaction-batch.js",
+      "sha256": "887697c6d28f94c954bce87ffb41cb6828a20dffc2b8ca505324cddd188f5efc"
+    },
+    {
+      "from": "packages/server/dist/transaction-changefeed.js",
+      "specifier": "./transaction-consistency.js",
+      "target": "packages/server/dist/transaction-consistency.js",
+      "sha256": "49ecc02d89212b5e815f0f9336a45d5318fa246fe934d8e0a343dd02958e3b23"
+    },
+    {
+      "from": "packages/server/dist/transaction-comparison.js",
+      "specifier": "./transaction-store.js",
+      "target": "packages/server/dist/transaction-store.js",
+      "sha256": "a3482b112a62c1df6dba3babfa123a35868a9ec2eba0917a4335950f9a71cffe"
+    },
+    {
+      "from": "packages/server/dist/transaction-consistency.js",
+      "specifier": "./read-request.js",
+      "target": "packages/server/dist/read-request.js",
+      "sha256": "be23340bb132331fd3bcdae33eca90d6c85f18bbf2d8c004ca963f52cb8be624"
+    },
+    {
+      "from": "packages/server/dist/transaction-dependencies.js",
+      "specifier": "./transaction-batch.js",
+      "target": "packages/server/dist/transaction-batch.js",
+      "sha256": "887697c6d28f94c954bce87ffb41cb6828a20dffc2b8ca505324cddd188f5efc"
+    },
+    {
+      "from": "packages/server/dist/transaction-dependencies.js",
+      "specifier": "./semantic-identity.js",
+      "target": "packages/server/dist/semantic-identity.js",
+      "sha256": "4e9baff204a18846bfd25d9ee33d3dd25078d2c226e08692c75870fb0c159b72"
+    },
+    {
+      "from": "packages/server/dist/transaction-discovery.js",
+      "specifier": "./transaction-batch.js",
+      "target": "packages/server/dist/transaction-batch.js",
+      "sha256": "887697c6d28f94c954bce87ffb41cb6828a20dffc2b8ca505324cddd188f5efc"
+    },
+    {
+      "from": "packages/server/dist/transaction-discovery.js",
+      "specifier": "./transaction-set.js",
+      "target": "packages/server/dist/transaction-set.js",
+      "sha256": "e37522d5a56d9a949a9d4f805fa616481b8b15acf2fdf23a1c67772fafd0c009"
+    },
+    {
+      "from": "packages/server/dist/transaction-events.js",
+      "specifier": "./transaction-consistency.js",
+      "target": "packages/server/dist/transaction-consistency.js",
+      "sha256": "49ecc02d89212b5e815f0f9336a45d5318fa246fe934d8e0a343dd02958e3b23"
+    },
+    {
+      "from": "packages/server/dist/transaction-events.js",
+      "specifier": "./transaction-batch.js",
+      "target": "packages/server/dist/transaction-batch.js",
+      "sha256": "887697c6d28f94c954bce87ffb41cb6828a20dffc2b8ca505324cddd188f5efc"
+    },
+    {
+      "from": "packages/server/dist/transaction-http.js",
+      "specifier": "./transaction-events.js",
+      "target": "packages/server/dist/transaction-events.js",
+      "sha256": "cdcca02ea7d097774f615523cadd4cdc7d7a8ae82f3d87f659eae58c06806f2a"
+    },
+    {
+      "from": "packages/server/dist/transaction-http.js",
+      "specifier": "./read-http.js",
+      "target": "packages/server/dist/read-http.js",
+      "sha256": "39a3dd43650c30f84a8100af1a36c158b863cda7added8810df7251ff467c0b2"
+    },
+    {
+      "from": "packages/server/dist/transaction-http.js",
+      "specifier": "./transaction-changefeed.js",
+      "target": "packages/server/dist/transaction-changefeed.js",
+      "sha256": "a63a271af94c04a45b0ca5dd81ffdaf72628f3aacaa9dfcb18350189fa77eb76"
+    },
+    {
+      "from": "packages/server/dist/transaction-http.js",
+      "specifier": "./transaction-batch.js",
+      "target": "packages/server/dist/transaction-batch.js",
+      "sha256": "887697c6d28f94c954bce87ffb41cb6828a20dffc2b8ca505324cddd188f5efc"
+    },
+    {
+      "from": "packages/server/dist/transaction-http.js",
+      "specifier": "./read-http-routing.js",
+      "target": "packages/server/dist/read-http-routing.js",
+      "sha256": "13b49961facf8eb468a5ea2038dc640285268cb664ac9c5392e2577b3d2bad49"
+    },
+    {
+      "from": "packages/server/dist/transaction-http.js",
+      "specifier": "./transaction-read.js",
+      "target": "packages/server/dist/transaction-read.js",
+      "sha256": "6d7201b113008139a52ce3784d8f0ffe3b914fb17e72efcec2721ea74cf1cb9c"
+    },
+    {
+      "from": "packages/server/dist/transaction-http.js",
+      "specifier": "./transaction-consistency.js",
+      "target": "packages/server/dist/transaction-consistency.js",
+      "sha256": "49ecc02d89212b5e815f0f9336a45d5318fa246fe934d8e0a343dd02958e3b23"
+    },
+    {
+      "from": "packages/server/dist/transaction-http.js",
+      "specifier": "./transaction-discovery.js",
+      "target": "packages/server/dist/transaction-discovery.js",
+      "sha256": "2cf8c1519d05eb3f9d402db7e59f1db02e12ae79e165c5876f888712233fab71"
+    },
+    {
+      "from": "packages/server/dist/transaction-http.js",
+      "specifier": "./read-request.js",
+      "target": "packages/server/dist/read-request.js",
+      "sha256": "be23340bb132331fd3bcdae33eca90d6c85f18bbf2d8c004ca963f52cb8be624"
+    },
+    {
+      "from": "packages/server/dist/transaction-installed-configuration.js",
+      "specifier": "./installed-contract-artifact.js",
+      "target": "packages/server/dist/installed-contract-artifact.js",
+      "sha256": "d30354c471c34d24b5567b5a950d59952705765ba2b8aa5a7c853dcc3979bdcb"
+    },
+    {
+      "from": "packages/server/dist/transaction-installed-configuration.js",
+      "specifier": "./development-contracts.js",
+      "target": "packages/server/dist/development-contracts.js",
+      "sha256": "038a7144b879ee3b89b6cf1ec670af92c47a2d01073ab5f24c922c3c121863cd"
+    },
+    {
+      "from": "packages/server/dist/transaction-installed-process.js",
+      "specifier": "./transaction-installed.js",
+      "target": "packages/server/dist/transaction-installed.js",
+      "sha256": "2dc1386a8a9f38d32c1fbf4ab8413538e86e3d41a20db9b9ab275a73b8c4040f"
+    },
+    {
+      "from": "packages/server/dist/transaction-installed-process.js",
+      "specifier": "./development-contracts.js",
+      "target": "packages/server/dist/development-contracts.js",
+      "sha256": "038a7144b879ee3b89b6cf1ec670af92c47a2d01073ab5f24c922c3c121863cd"
+    },
+    {
+      "from": "packages/server/dist/transaction-installed.js",
+      "specifier": "./transaction-installed-configuration.js",
+      "target": "packages/server/dist/transaction-installed-configuration.js",
+      "sha256": "786a945b8ab3609a9d1ed6e4cd0c5f6e94b502f7ae945f173c40fd979254aea9"
+    },
+    {
+      "from": "packages/server/dist/transaction-installed.js",
+      "specifier": "./installed-payload.js",
+      "target": "packages/server/dist/installed-payload.js",
+      "sha256": "dc0da1f44913d3f9c3839c5f21d3f17a33ca7a97dac1da1434e0e6565f0a57a5"
+    },
+    {
+      "from": "packages/server/dist/transaction-installed.js",
+      "specifier": "./transaction-runtime.js",
+      "target": "packages/server/dist/transaction-runtime.js",
+      "sha256": "b16df10012c986765c62e442839509aece3e8522ad0e721fab66b1b109b7742c"
+    },
+    {
+      "from": "packages/server/dist/transaction-read.js",
+      "specifier": "./transaction-consistency.js",
+      "target": "packages/server/dist/transaction-consistency.js",
+      "sha256": "49ecc02d89212b5e815f0f9336a45d5318fa246fe934d8e0a343dd02958e3b23"
+    },
+    {
+      "from": "packages/server/dist/transaction-read.js",
+      "specifier": "./authority-read.js",
+      "target": "packages/server/dist/authority-read.js",
+      "sha256": "0d579df0ede780551c369679dbfce6727433e15bfbfbea49c39baac76851f7fe"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime-configuration.js",
+      "specifier": "./transaction-store.js",
+      "target": "packages/server/dist/transaction-store.js",
+      "sha256": "a3482b112a62c1df6dba3babfa123a35868a9ec2eba0917a4335950f9a71cffe"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime-configuration.js",
+      "specifier": "./transaction-sse.js",
+      "target": "packages/server/dist/transaction-sse.js",
+      "sha256": "93ca231304322cc9e4521e8df0a11f3a050949825d9b2b72ebb880ba1e6b8736"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime-configuration.js",
+      "specifier": "./transaction-events.js",
+      "target": "packages/server/dist/transaction-events.js",
+      "sha256": "cdcca02ea7d097774f615523cadd4cdc7d7a8ae82f3d87f659eae58c06806f2a"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime-configuration.js",
+      "specifier": "./transaction-http.js",
+      "target": "packages/server/dist/transaction-http.js",
+      "sha256": "71e4a41978f975b8424b4be5cb835aa2545d4a03d006ee27b4b7ccea971bc6de"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime-configuration.js",
+      "specifier": "./transaction-snapshot.js",
+      "target": "packages/server/dist/transaction-snapshot.js",
+      "sha256": "ffa2991a7f1cf18b0f0a4943ebded5c2dd33b75dc04c68a0254c7c71901c650c"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime-configuration.js",
+      "specifier": "./transaction-batch.js",
+      "target": "packages/server/dist/transaction-batch.js",
+      "sha256": "887697c6d28f94c954bce87ffb41cb6828a20dffc2b8ca505324cddd188f5efc"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime-configuration.js",
+      "specifier": "./development-contracts.js",
+      "target": "packages/server/dist/development-contracts.js",
+      "sha256": "038a7144b879ee3b89b6cf1ec670af92c47a2d01073ab5f24c922c3c121863cd"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime-configuration.js",
+      "specifier": "./installed-contract-artifact.js",
+      "target": "packages/server/dist/installed-contract-artifact.js",
+      "sha256": "d30354c471c34d24b5567b5a950d59952705765ba2b8aa5a7c853dcc3979bdcb"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime.js",
+      "specifier": "./transaction-store.js",
+      "target": "packages/server/dist/transaction-store.js",
+      "sha256": "a3482b112a62c1df6dba3babfa123a35868a9ec2eba0917a4335950f9a71cffe"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime.js",
+      "specifier": "./transaction-sse.js",
+      "target": "packages/server/dist/transaction-sse.js",
+      "sha256": "93ca231304322cc9e4521e8df0a11f3a050949825d9b2b72ebb880ba1e6b8736"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime.js",
+      "specifier": "./transaction-http.js",
+      "target": "packages/server/dist/transaction-http.js",
+      "sha256": "71e4a41978f975b8424b4be5cb835aa2545d4a03d006ee27b4b7ccea971bc6de"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime.js",
+      "specifier": "./transaction-service.js",
+      "target": "packages/server/dist/transaction-service.js",
+      "sha256": "d3a25ed2181228c2e27b34798ea011fc3219df2d91909212af53825a9083d671"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime.js",
+      "specifier": "./node-http-disconnect.js",
+      "target": "packages/server/dist/node-http-disconnect.js",
+      "sha256": "195f6a6ca6205d4f307a443401ae7a2ea15c0babab64c59e8365bd920769e5bd"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime.js",
+      "specifier": "./transaction-batch.js",
+      "target": "packages/server/dist/transaction-batch.js",
+      "sha256": "887697c6d28f94c954bce87ffb41cb6828a20dffc2b8ca505324cddd188f5efc"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime.js",
+      "specifier": "./transaction-schema-http.js",
+      "target": "packages/server/dist/transaction-schema-http.js",
+      "sha256": "62a7f0fb4fc29124e52566646a749ca8c2640f3f1e8d859c7957b87d9c463b3d"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime.js",
+      "specifier": "./node-http-target.js",
+      "target": "packages/server/dist/node-http-target.js",
+      "sha256": "7085b22ad2eab1cb9d1590b744f5948df8f27122cf48304c83ff2782c93ad1fc"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime.js",
+      "specifier": "./transaction-runtime-configuration.js",
+      "target": "packages/server/dist/transaction-runtime-configuration.js",
+      "sha256": "118e7f0dabe8886104216e50dbf59f5df5e1f0ae53c103d337dd2412511098b3"
+    },
+    {
+      "from": "packages/server/dist/transaction-runtime.js",
+      "specifier": "./read-request.js",
+      "target": "packages/server/dist/read-request.js",
+      "sha256": "be23340bb132331fd3bcdae33eca90d6c85f18bbf2d8c004ca963f52cb8be624"
+    },
+    {
+      "from": "packages/server/dist/transaction-schema-http.js",
+      "specifier": "./transaction-http.js",
+      "target": "packages/server/dist/transaction-http.js",
+      "sha256": "71e4a41978f975b8424b4be5cb835aa2545d4a03d006ee27b4b7ccea971bc6de"
+    },
+    {
+      "from": "packages/server/dist/transaction-schema-http.js",
+      "specifier": "./development-contracts.js",
+      "target": "packages/server/dist/development-contracts.js",
+      "sha256": "038a7144b879ee3b89b6cf1ec670af92c47a2d01073ab5f24c922c3c121863cd"
+    },
+    {
+      "from": "packages/server/dist/transaction-schema-http.js",
+      "specifier": "./read-http.js",
+      "target": "packages/server/dist/read-http.js",
+      "sha256": "39a3dd43650c30f84a8100af1a36c158b863cda7added8810df7251ff467c0b2"
+    },
+    {
+      "from": "packages/server/dist/transaction-service.js",
+      "specifier": "./transaction-read.js",
+      "target": "packages/server/dist/transaction-read.js",
+      "sha256": "6d7201b113008139a52ce3784d8f0ffe3b914fb17e72efcec2721ea74cf1cb9c"
+    },
+    {
+      "from": "packages/server/dist/transaction-service.js",
+      "specifier": "./sequence-executor.js",
+      "target": "packages/server/dist/sequence-executor.js",
+      "sha256": "c3820c429ad7e622b7cc501e601a8ac02d28d5042c8b39d94572c2016799ce16"
+    },
+    {
+      "from": "packages/server/dist/transaction-service.js",
+      "specifier": "./transaction-consistency.js",
+      "target": "packages/server/dist/transaction-consistency.js",
+      "sha256": "49ecc02d89212b5e815f0f9336a45d5318fa246fe934d8e0a343dd02958e3b23"
+    },
+    {
+      "from": "packages/server/dist/transaction-service.js",
+      "specifier": "./transaction-discovery.js",
+      "target": "packages/server/dist/transaction-discovery.js",
+      "sha256": "2cf8c1519d05eb3f9d402db7e59f1db02e12ae79e165c5876f888712233fab71"
+    },
+    {
+      "from": "packages/server/dist/transaction-service.js",
+      "specifier": "./transaction-submission.js",
+      "target": "packages/server/dist/transaction-submission.js",
+      "sha256": "9c413ba5154993ad8cbadfe73c33dd26bc916d9503a718dc379b173da809269e"
+    },
+    {
+      "from": "packages/server/dist/transaction-service.js",
+      "specifier": "./transaction-sequence.js",
+      "target": "packages/server/dist/transaction-sequence.js",
+      "sha256": "8128db5c3846c72c7949527865b36ece9a539162bf569390e3c363854b52584b"
+    },
+    {
+      "from": "packages/server/dist/transaction-set.js",
+      "specifier": "./read-selector.js",
+      "target": "packages/server/dist/read-selector.js",
+      "sha256": "b4a69b8934eb039387137ba016ffbeab03cbdc59da19ebc5b26b4120732258f8"
+    },
+    {
+      "from": "packages/server/dist/transaction-snapshot.js",
+      "specifier": "./transaction-changefeed.js",
+      "target": "packages/server/dist/transaction-changefeed.js",
+      "sha256": "a63a271af94c04a45b0ca5dd81ffdaf72628f3aacaa9dfcb18350189fa77eb76"
+    },
+    {
+      "from": "packages/server/dist/transaction-snapshot.js",
+      "specifier": "./transaction-batch.js",
+      "target": "packages/server/dist/transaction-batch.js",
+      "sha256": "887697c6d28f94c954bce87ffb41cb6828a20dffc2b8ca505324cddd188f5efc"
+    },
+    {
+      "from": "packages/server/dist/transaction-snapshot.js",
+      "specifier": "./resource-evaluator.js",
+      "target": "packages/server/dist/resource-evaluator.js",
+      "sha256": "eace74bfbe555a50735d8a54e7bcc2cb032aa586d6595a6e7444f0ce8c5fad3a"
+    },
+    {
+      "from": "packages/server/dist/transaction-snapshot.js",
+      "specifier": "./read-request.js",
+      "target": "packages/server/dist/read-request.js",
+      "sha256": "be23340bb132331fd3bcdae33eca90d6c85f18bbf2d8c004ca963f52cb8be624"
+    },
+    {
+      "from": "packages/server/dist/transaction-sse.js",
+      "specifier": "./transaction-events.js",
+      "target": "packages/server/dist/transaction-events.js",
+      "sha256": "cdcca02ea7d097774f615523cadd4cdc7d7a8ae82f3d87f659eae58c06806f2a"
+    },
+    {
+      "from": "packages/server/dist/transaction-sse.js",
+      "specifier": "./transaction-changefeed.js",
+      "target": "packages/server/dist/transaction-changefeed.js",
+      "sha256": "a63a271af94c04a45b0ca5dd81ffdaf72628f3aacaa9dfcb18350189fa77eb76"
+    },
+    {
+      "from": "packages/server/dist/transaction-store.js",
+      "specifier": "./transaction-set.js",
+      "target": "packages/server/dist/transaction-set.js",
+      "sha256": "e37522d5a56d9a949a9d4f805fa616481b8b15acf2fdf23a1c67772fafd0c009"
+    },
+    {
+      "from": "packages/server/dist/transaction-store.js",
+      "specifier": "./transaction-events.js",
+      "target": "packages/server/dist/transaction-events.js",
+      "sha256": "cdcca02ea7d097774f615523cadd4cdc7d7a8ae82f3d87f659eae58c06806f2a"
+    },
+    {
+      "from": "packages/server/dist/transaction-store.js",
+      "specifier": "./transaction-snapshot.js",
+      "target": "packages/server/dist/transaction-snapshot.js",
+      "sha256": "ffa2991a7f1cf18b0f0a4943ebded5c2dd33b75dc04c68a0254c7c71901c650c"
+    },
+    {
+      "from": "packages/server/dist/transaction-store.js",
+      "specifier": "./transaction-changefeed.js",
+      "target": "packages/server/dist/transaction-changefeed.js",
+      "sha256": "a63a271af94c04a45b0ca5dd81ffdaf72628f3aacaa9dfcb18350189fa77eb76"
+    },
+    {
+      "from": "packages/server/dist/transaction-store.js",
+      "specifier": "./development-contracts.js",
+      "target": "packages/server/dist/development-contracts.js",
+      "sha256": "038a7144b879ee3b89b6cf1ec670af92c47a2d01073ab5f24c922c3c121863cd"
+    },
+    {
+      "from": "packages/server/dist/transaction-store.js",
+      "specifier": "./transaction-batch.js",
+      "target": "packages/server/dist/transaction-batch.js",
+      "sha256": "887697c6d28f94c954bce87ffb41cb6828a20dffc2b8ca505324cddd188f5efc"
+    },
+    {
+      "from": "packages/server/dist/transaction-store.js",
+      "specifier": "./transaction-consistency.js",
+      "target": "packages/server/dist/transaction-consistency.js",
+      "sha256": "49ecc02d89212b5e815f0f9336a45d5318fa246fe934d8e0a343dd02958e3b23"
+    },
+    {
+      "from": "packages/server/dist/transaction-store.js",
+      "specifier": "./transaction-dependencies.js",
+      "target": "packages/server/dist/transaction-dependencies.js",
+      "sha256": "0d16fc892bb0cfef17ed013a511a11a251cf30c7589c2cf0f448d1f33c0688e8"
+    },
+    {
+      "from": "packages/server/dist/transaction-store.js",
+      "specifier": "./installed-contract-artifact.js",
+      "target": "packages/server/dist/installed-contract-artifact.js",
+      "sha256": "d30354c471c34d24b5567b5a950d59952705765ba2b8aa5a7c853dcc3979bdcb"
+    },
+    {
+      "from": "packages/server/dist/transaction-submission.js",
+      "specifier": "./transaction-store.js",
+      "target": "packages/server/dist/transaction-store.js",
+      "sha256": "a3482b112a62c1df6dba3babfa123a35868a9ec2eba0917a4335950f9a71cffe"
+    },
+    {
+      "from": "packages/server/dist/transaction-submission.js",
+      "specifier": "./transaction-set.js",
+      "target": "packages/server/dist/transaction-set.js",
+      "sha256": "e37522d5a56d9a949a9d4f805fa616481b8b15acf2fdf23a1c67772fafd0c009"
+    },
+    {
+      "from": "packages/server/dist/transaction-submission.js",
+      "specifier": "./transaction-batch.js",
+      "target": "packages/server/dist/transaction-batch.js",
+      "sha256": "887697c6d28f94c954bce87ffb41cb6828a20dffc2b8ca505324cddd188f5efc"
+    },
+    {
+      "from": "packages/server/dist/transaction-submission.js",
+      "specifier": "./transaction-comparison.js",
+      "target": "packages/server/dist/transaction-comparison.js",
+      "sha256": "7ffe623ec7d78f61f74431acd5fc58d0a03ba92aed757a8f035ca33cd8878466"
+    }
+  ],
+  "boundary": "All source/config/dist and complete dependency/tool node_modules graphs physically copied, symlinks rewritten only to equivalent copied target. No positive-workspace product or runner fallback. Relative-edge regex is not a semantic JavaScript parser; actual named control remains required.",
+  "importsExecuted": false
+}

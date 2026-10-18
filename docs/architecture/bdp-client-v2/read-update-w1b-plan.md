@@ -1,0 +1,21 @@
+# W1b owned-Link clause map
+
+Author successor `/Users/dbox/repos/wt/vickie/vickie-read-update-w1b`, branch `codex/vickie-read-update-w1b`, base `459d32b67e3d8c2c4e4e667bc7481649ca33eee3`; GitHub origin verified. Runtime and frozen predecessors are read-only. Existing Decision Type explicitly owns relates; Task is an unowned source/target. No Type/contract/policy/configuration change, no wildcard or hidden-view qualification.
+
+Canonical requirements come from `packages/conformance/catalog/read-update-v1.json`, matched below before implementation. Shared runner/protocol/schema/public artifact/admission remain unchanged.
+
+| Required row / actual current clause | Planned row-local observation |
+| --- | --- |
+| singleton.update-link: created/updated complete postimage equal to GET | Literal identity, Type, endpoints and full properties/metadata assertions; capture result record, independently GET first-class Link and compare full record. Separate properties-only and metadata-only updates. |
+| update-link: owned Link remains first-class URL/revision | Owned Link ordinary GET validates currentLinkRecord; actual guard references its independently observed revision; returns full updated Link record with opaque revision, never a fabricated fixture revision. |
+| update-link: creating/deleting unowned Link changes neither endpoint | Actual unowned Task→Task creation/update/deletion controls, full independently read endpoint records unchanged after each; source/sourceRevision absent in each result. |
+| singleton.owned-link-source-revision: every effectful mutation versions source | Owned create, properties update, metadata update, deletion; source is literal owner URL, sourceRevision equals subsequent owner GET revision. Prior independently read owner revision is rejected by a real guarded semantic-no-op owner request after each transition, proving the version changed rather than only echoing a token. |
+| owned-link-source-revision: result source/sourceRevision pair on create/update/delete, absent elsewhere | Complete mutationResult schema plus both pair fields on owned results; explicit absence on unowned Link results and complete unchanged endpoint GETs. Bead results retain canonical schema's source-pair prohibition. |
+| singleton.owned-link-no-op: sourceRevision unchanged | No-op result reports sourceRevision equal to prior independent owner GET; full owner GET remains byte-value equal to prior captured full record. |
+| owned-link-no-op: equal documents retain Link revision and entire envelope | Known nonempty actor/agent/message context independently checked in current Link and owner before capture. Both document patches are semantic no-ops with reordered object keys and different supplied provenance. Direct result's full Link equals actual prior Link GET; later full Link/owner GETs unchanged. |
+
+Every owner GET uses currentBeadRecord schema, literal owner identity/Decision Type and independent properties/metadata, and proves the exact current inline owned Link record equals the separately fetched first-class Link. Empty explicit relates/cites entries checked after deletion. Target record compared in full after every owned phase. Changed context inputs are checked independently before retaining actual dynamic committed time/envelopes as equality oracles.
+
+Negative controls will target actual response observations: omitted/wrong source pair, wrong reported source revision, corrupted owner inline current Link, overwritten no-op Link/source provenance, changed target, or first-class metadata corruption. Each must fail a named clause assertion; no substituted value is represented as authority wire behavior. No whole flag is promised before actual observations and audit. Canonical inventory remains single source, unimplemented obligations visible.
+
+Files: cumulative manifest/fixture/coverage inventory; existing installed matrix harness finite routes/action counterfactuals; exact whole-ID pin; progress doc. Reuse private body schema wrappers and client executor. No runtime edits. Full clean/typecheck/build, focused conformance/regressions, fresh packed same-configuration run; frozen source and review report on completion. W1 reviewer findings may be incorporated only in this successor.

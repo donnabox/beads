@@ -1,0 +1,11 @@
+# PR128 successor CI outcome
+
+Exact run38744089439/job116453031614 succeeded for `1a37f7209e3ff6f409f43491d670c881259406ba`. All 27 recorded steps completed successfully; none failed or were skipped. Job:13:36:09–13:52:48UTC,999seconds. Full suite:9300passed,1skipped,0failed across175files;769.38seconds. No failure/error summary markers occur in the retained full log.
+
+Actual checkout was synthetic `062fd1086fda3af7098832a2ff2d6c72316d15b2` (log line430). Independently retrieved terminal Git object has tree `a9cca0e1e5c52ac8bbd06ce989a94ca6e4f2b272` and ordered parents `015cac1aa4fa827cc4a2c647dff08454c6c8e6f8`, `1a37f7209e3ff6f409f43491d670c881259406ba`. The tested tree equals the candidate tree. Terminal PRhead/base remain exact; this does not verify an eventual real merge.
+
+The repaired real-wire cancellation callback passed in1847ms; pre-aborted callback passed in1ms. The new receipt HTTP callback passed in67ms, service callback23ms, owner/page callback29ms, installed callback1142ms, and corrected existing authentication/hiding callback31ms. Exact names and log lines are in `ci-outcome.json` and the compact excerpt. Source observation reports13responses/eighttuplechecks/twocleanups; installed observation reports14responses,normalchildexit0,closedstore,failureCount0 andclaimEligiblefalse. Those remote cleanup facts are reported by the bounded tests, not a local inspection of vanished runner PIDs.
+
+Downstream preflight passed7cases in1.45seconds (2second step); smoke succeeded (9second step); Read evidence gate actually reported evidence.verified with89rows (same-second step). All setup/static/build/postcleanup steps succeeded; their exact names/timestamps/durations are retained in JSON. Job999seconds leaves an observed201seconds relative to the existing1200second budget, not a future runtime guarantee.
+
+Raw log3333915bytes SHA`67cc58ffc4af87abfad14cad46ee6459bb1ce10d6a45f915f3f73343be6c9ed0`. Full original failed CI remains preserved separately under `../landing`. Historical local source/fresh-consumer evidence remains on its accepted original source bindings; this is the exact successor's full CI result, not a claim that earlier local cohorts were rerun. No premerge verifier, merge, release, promotion or qualification was performed.

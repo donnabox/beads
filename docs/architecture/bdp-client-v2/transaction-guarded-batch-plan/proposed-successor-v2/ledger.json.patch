@@ -1,0 +1,117 @@
+--- proposed-successor/ledger.json
++++ proposed-successor-v2/ledger.json
+@@ -1,5 +1,5 @@
+ {
+-  "status": "proposed successor; incomplete original external review preserved; full standalone supplemental council/root acceptance pending; authoring/execution closed",
++  "status": "Proposed v2 after complete focused supplement/source dispositions; actual merged-parent reanchor and root acceptance pending",
+   "planningHead": "98c600767e8e91a79e109cb741beb91e23b9bebe",
+   "planningTree": "fde859381752d15c8caabcbc946d3c2e384b9cf6",
+   "pendingPredecessor": {
+@@ -40,7 +40,8 @@
+         "Content-Type": "application/json",
+         "Idempotency-Key": "guarded-seed",
+         "Content-Length": "actual UTF8 body byte length"
+-      }
++      },
++      "expectedStatus": 200
+     },
+     {
+       "index": 2,
+@@ -57,7 +58,8 @@
+         "Content-Type": "application/json",
+         "Idempotency-Key": "guarded-a",
+         "Content-Length": "actual UTF8 body byte length"
+-      }
++      },
++      "expectedStatus": 200
+     },
+     {
+       "index": 3,
+@@ -74,7 +76,8 @@
+         "Content-Type": "application/json",
+         "Idempotency-Key": "guarded-b",
+         "Content-Length": "actual UTF8 body byte length"
+-      }
++      },
++      "expectedStatus": 200
+     },
+     {
+       "index": 4,
+@@ -91,7 +94,8 @@
+         "Content-Type": "application/json",
+         "Idempotency-Key": "exact actual losing key",
+         "Content-Length": "actual UTF8 body byte length"
+-      }
++      },
++      "expectedStatus": 200
+     },
+     {
+       "index": 5,
+@@ -105,7 +109,8 @@
+         "Accept": "application/json",
+         "Connection": "close",
+         "Authorization": "in-memory Bearer token; excluded from evidence"
+-      }
++      },
++      "expectedStatus": 200
+     },
+     {
+       "index": 6,
+@@ -119,7 +124,8 @@
+         "Accept": "application/json",
+         "Connection": "close",
+         "Authorization": "in-memory Bearer token; excluded from evidence"
+-      }
++      },
++      "expectedStatus": 200
+     },
+     {
+       "index": 7,
+@@ -133,7 +139,8 @@
+         "Accept": "application/json",
+         "Connection": "close",
+         "Authorization": "in-memory Bearer token; excluded from evidence"
+-      }
++      },
++      "expectedStatus": 200
+     }
+   ],
+   "inputs": {
+@@ -308,7 +315,7 @@
+     "controlRetainedBodySumCeiling": 98304,
+     "combinedRetainedBodySumCeiling": 327680,
+     "workBudgetPolicy": "45000ms is sole binding aggregate work deadline; ready/exchange caps cannot all be spent independently",
+-    "cleanupBudgetPolicy": "hard10000ms local race retained; inherited close may enter another drain after failure; late promises handled; deadline race is nonpassing; no increase"
++    "cleanupBudgetPolicy": "Hard10000ms local pass/failure and await race; helper can nest a second10000ms wait after failure. No extra allowance; late rejection handled, unknown process/store retained for external cleanup; timeout is nonpassing."
+   },
+   "failedProblem": {
+     "type": "https://github.com/gastownhall/bdp/problems/conflict",
+@@ -382,5 +389,28 @@
+     "path": "packages/conformance/test-support/transactional/fixture-v1.json",
+     "shape": "{bytes:Uint8Array}",
+     "meaning": "identity metadata only; never execute extra scenarios or imply qualification"
++  },
++  "positiveExpectedStatuses": [
++    200,
++    200,
++    200,
++    200,
++    200,
++    200,
++    200
++  ],
++  "cleanupMeaning": "Intended control oracle follows three completed responses and settled pair. Stop remaining work; abort invokes same graceful IPC close. Destroy only remaining owned sockets; every cleanup error remains nonpassing.",
++  "retentionMeaning": "Fresh terminal expiry=authority instant+86400000ms; normal45000ms work is within retention. Unexpected clock/expiry evidence stops for diagnosis, no new wall-clock MUST/probe/retry.",
++  "sourceClarifications": {
++    "allocateRevision": "transaction-store.ts:1218",
++    "postVary": "transaction-http.ts:620",
++    "canonicalCollectionOrder": "authority-read.ts:887; read-request.ts:376\u2013380",
++    "receiptRoot": "Private safe client allowlist for actual issued UUID root; store:1113",
++    "completeStandaloneReview": {
++      "stdoutSha256": "fb89ac5304fd2061d0d810cfbcc11c8201b027fb9cd9f9851b338b4cb3d1e7be",
++      "findings": 6,
++      "contextQuestions": 8,
++      "rootAcceptancePending": true
++    }
+   }
+ }

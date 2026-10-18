@@ -1,0 +1,30 @@
+{
+  "status": "PROPOSAL_ONLY_NO_EXECUTION",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+  "head": "1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05",
+  "frozenDraftBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/fence-amendment/source-binding.json",
+    "sha256": "b630e46d04a67edc5d59b511c8489a680d6275cd14ece3c65aa49a8b48299999"
+  },
+  "files": {
+    "packages/conformance/src/executable-manifest.ts": "65af0451cd046d57c10b0666e54efbaaecc2225551d3accc5cc1d032322913fa",
+    "packages/conformance/src/artifact-bundle.ts": "bbf54915eb792433ae492fd73a5334717e74e0942c485a72daa5105928546dd6",
+    "packages/conformance/src/runner.ts": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+    "packages/conformance/src/executable-manifest.test.ts": "ca570192d8763610b39a750d376df899b3f0f01a06b3c928e95bf3d83fd538af",
+    "packages/conformance/src/runner.test.ts": "ad7e756bad1f70ecc6285e19830bc001ebec01899ed868af3fb4b08e888aba86",
+    "packages/conformance/src/transactional-cumulative.test.ts": "60acebc7f3bacc2b405a42b27b4d3a2d38473ba31fbbe4ec13b97a763d5bfde9",
+    "packages/conformance/src/profile-contract-plan.test.ts": "3fec4ca8c6eee7a20bbcdd1aa53ef2a015989087ba2f8d6b37fd997dcae7dd64",
+    "packages/conformance/src/index.ts": "00e71df4fbb221e89986a231a053028adc40943d5e78fcf1a51ff5a7f308cf25",
+    "packages/conformance/src/profile-contract-selection.ts": "5b1caf61688bfa6a5465b5f8dc817b84f02be76bfc5bdd886a19e749b6441543",
+    "packages/conformance/src/cohort-verification.ts": "0de08e4bd8e213ec69fb996d00dd5a4b01f21f1524071cce011df26b7e14b7eb",
+    "packages/conformance/src/schema-read-projection.ts": "d0e8a491c5b4385a9355e549f73dfe060ade1e9342e1a290e35261570ae0a3c8",
+    "scripts/read-cohort-evidence.mjs": "451d77cf880329238f044e3f0e92d681d6493c509fcb3b050f6e292ce3f2a21e",
+    "scripts/generate-read-cohort.mts": "42111310e1e76df5dee938648bc84144c30fe6a9f15c3b4d30caf670584b6847",
+    "apps/bdptest/src/transactional-binding.test.ts": "957212ef227905f2b8b9ae3403fab9d6d0659ed308395696aef1baad112815d8",
+    "packages/conformance/test-support/profile-contract-plan.ts": "18c953443e6695cfa48f89677231fecffc349df02bd080f107a5c739db10b728"
+  },
+  "predecessorBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/conditional-representation-plan/before-revision/source-binding.json",
+    "sha256": "c3e849b8ecfc27caea67589871d9e8f64a42fecb339b8f9ab28947911c2619e1"
+  }
+}

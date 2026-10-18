@@ -1,0 +1,82 @@
+Review only this two-test-file repair against HEAD b0213805. Do not write or modify any files. Output findings only in stdout. Do not run tests or commands. You may read source with Read/Glob/Grep. Focus on concrete bugs, semantic weakening, test selection, independent oracle equality and cleanup/deadline preservation. Production files are unchanged. Native+Claude review required. Return numbered actionable findings with severity and smallest correction, or no blockers. Do not repeat plan-only suggestions already adopted. No model/main/Types/release changes.
+
+Files packages/server/src/transaction-set.test.ts and transaction-submission.test.ts. Prior CI stale valid-depth throw and final20s runtime failure after semantic checks. Current patch keeps12000depth,20swork/5scleanup/30scallback,18 existing equalitycalls and matcher diagnostics onlyonmismatch. Newtop-level controls independent. No production comparator reuse.
+
+Root plan dispositions:
+# CI repair plan dispositions
+
+Native plan and actual Claude review accepted with corrections. Claude exit0/497.461s, unchanged inputs, no survivors; stdout b98fe888782d346007d0cb881f0766a28070557b845e048a0d3a31e0830f608e.
+
+F1 bind actual prepared carrier, original selector and grammar summary, preserving forged-capability rejection. F2 retain old matchers only on mismatch plus guaranteed throw; steady success path uses explicit array-kind/sorted-key checks. F3 preserve === including -0 and sorted key comparison. F4 add key-order, signed-zero, null-prototype and permuted-array controls alongside proposed deep/shape/key/null cases. F5 declare helper regression top-level and require exactly3 executed passes; unselected skips expected in focused run, not zero total skips as review suggests. Full105 requires no skips. F6 retain20s/5s/30s and outer120s; local result is not a full-CI guarantee, stop on breach/timeout and preserve cleanup failure. Static timing arithmetic is not measured profiling. F7/F8 optional counters/array fast path deferred. F9 counts104+1 and independent oracle confirmed; F10/F11 review limitations preserved.
+
+Only two test files authorized. No production comparator import, removed semantic callsite, lowered depth, widened deadline, or installed evidence relabeling. Actual validation and code review follow frozen patch.
+
+Complete patch:
+diff --git a/packages/server/src/transaction-set.test.ts b/packages/server/src/transaction-set.test.ts
+index e5ada68..53595a9 100644
+--- a/packages/server/src/transaction-set.test.ts
++++ b/packages/server/src/transaction-set.test.ts
+@@ -1106,9 +1106,15 @@ it("preserves literal Selector identity and original mixed-carrier diagnostic po
+   expect(() =>
+     batch.prepareTransaction(scope, JSON.stringify({ operations: [deep, update("$..*")] })),
+   ).toThrow(TransactionSelectorSyntaxError);
+-  expect(() =>
+-    batch.prepareTransaction(scope, JSON.stringify({ operations: [deep, update()] })),
+-  ).toThrow(batch.TransactionDevelopmentLimitError);
++  const preparedDeep = batch.prepareTransaction(
++    scope,
++    JSON.stringify({ operations: [deep, update()] }),
++  );
++  expect(preparedDeep.carrier.operations).toHaveLength(2);
++  const preparedSet = preparedDeep.carrier.operations[1]!;
++  if (preparedSet.operation !== "updateWhere") throw new Error("expected prepared updateWhere");
++  expect(preparedSet.input.selector).toBe(update().selector);
++  expect(transactionSelectorCapacity(preparedSet)).toBeUndefined();
+   expect(() =>
+     transactionSelectorCapacity(
+       Object.freeze({
+diff --git a/packages/server/src/transaction-submission.test.ts b/packages/server/src/transaction-submission.test.ts
+index 9951df7..8654e9c 100644
+--- a/packages/server/src/transaction-submission.test.ts
++++ b/packages/server/src/transaction-submission.test.ts
+@@ -1751,13 +1751,38 @@ function assertDeepSubmissionValue(actual: unknown, expected: unknown) {
+     if (a === b) continue;
+     if (a === null || b === null || typeof a !== "object" || typeof b !== "object")
+       throw new Error("deep submission primitive mismatch");
+-    expect(Array.isArray(a)).toBe(Array.isArray(b));
++    if (Array.isArray(a) !== Array.isArray(b)) {
++      expect(Array.isArray(a)).toBe(Array.isArray(b));
++      throw new Error("deep submission array-kind mismatch");
++    }
+     const keys = Object.keys(a).sort();
+-    expect(keys).toEqual(Object.keys(b).sort());
++    const expectedKeys = Object.keys(b).sort();
++    if (keys.length !== expectedKeys.length || keys.some((key, i) => key !== expectedKeys[i])) {
++      expect(keys).toEqual(expectedKeys);
++      throw new Error("deep submission keys mismatch");
++    }
+     for (const key of keys)
+       stack.push([(a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key]]);
+   }
+ }
++it("preserves independent deep submission oracle equality and rejection", () => {
++  const nested = (leaf: string) => `${"[".repeat(12000)}${leaf}${"]".repeat(12000)}`;
++  const left: unknown = JSON.parse(nested("0"));
++  const right: unknown = JSON.parse(nested("0"));
++  expect(() => assertDeepSubmissionValue(left, right)).not.toThrow();
++  expect(() => assertDeepSubmissionValue(left, JSON.parse(nested("1")))).toThrow();
++  expect(() => assertDeepSubmissionValue([], {})).toThrow();
++  expect(() => assertDeepSubmissionValue({ a: 1 }, { b: 1 })).toThrow();
++  expect(() => assertDeepSubmissionValue({ a: 1 }, { a: 1, b: 2 })).toThrow();
++  expect(() => assertDeepSubmissionValue({ a: 1, b: 2 }, { a: 1 })).toThrow();
++  expect(() => assertDeepSubmissionValue(null, {})).toThrow();
++  expect(() => assertDeepSubmissionValue({ a: 1, b: 2 }, { b: 2, a: 1 })).not.toThrow();
++  expect(() => assertDeepSubmissionValue(-0, 0)).not.toThrow();
++  expect(() =>
++    assertDeepSubmissionValue(Object.assign(Object.create(null), { a: 1 }), JSON.parse('{"a":1}')),
++  ).not.toThrow();
++  expect(() => assertDeepSubmissionValue([1, 2], [2, 1])).toThrow();
++});
+ function assertDeepReceiptFrozen(value: unknown) {
+   const pending: unknown[] = [value];
+   while (pending.length) {

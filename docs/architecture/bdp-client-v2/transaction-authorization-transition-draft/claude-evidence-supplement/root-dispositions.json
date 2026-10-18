@@ -1,0 +1,56 @@
+{
+  "status": "accepted",
+  "actualReviewExit": {
+    "exitCode": 0,
+    "shellEquivalentExit": 0,
+    "timeout": false,
+    "forcedTermination": false,
+    "elapsedSeconds": 285.52274741698056,
+    "sourceAndInputsUnchanged": true,
+    "sourceCheckError": null,
+    "stdoutSha256": "e0861dd701137c8666bba662a27100aed1507a22e242e7723ae0763a619c3278",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutBytes": 10639,
+    "stderrBytes": 0,
+    "cleanupSha256": "152ec89ac5dd10c1f3a45ff695880a17afc5c20d5fc73c7acb5b48a5600a1e5e",
+    "cleanupClear": true
+  },
+  "outputSha256": "e0861dd701137c8666bba662a27100aed1507a22e242e7723ae0763a619c3278",
+  "findings": [
+    {
+      "id": 1,
+      "disposition": "Closed by actual source and passing current T1. read-http-routing.ts44-51 jsonResponse sets200/content-type/private,no-store; transaction-http.ts255-269 permitsGET/HEAD,537-572 routesreceipt,645-660 appliesReadHttpSemantics. Keep literal leak-sensitive assertions; no weakened agreement oracle."
+    },
+    {
+      "id": 2,
+      "disposition": "No defect for current exact shapes; reviewer traced safety. Owner projections are intended wire representations and actual five-case run passes strictschema. Do not serialize away undefined or extra-field defects merely to weaken check."
+    },
+    {
+      "id": 3,
+      "disposition": "Optional class/message strengthening deferred. Exact code values distinguish real guard outcomes in controlled fixture and no injected thrown values. Suggested name assertion is incorrect for current class: TransactionAuthorizationFailure inherits Error.name without override. No protocol regression established."
+    },
+    {
+      "id": 4,
+      "disposition": "Acknowledged bounded temporarily-unavailable classification; fixture sequence state and later forbidden check distinguish required admission behavior. No claim identifying every possible internal guard."
+    },
+    {
+      "id": 5,
+      "disposition": "Optional broader corrupt-frame detector deferred. Actual production transaction-sse.ts40/44 emits all change-group/Event frames id-first. Current no-id assertion plus server-close checks catches supported emitted frames; no arbitrary malformed-framing robustness claimed."
+    },
+    {
+      "id": 6,
+      "disposition": "Keep bounded exact equality/transaction substring checks as reviewer recommends. No arbitrary encoded leakage proof claimed."
+    },
+    {
+      "id": 7,
+      "disposition": "Documented derived SSE body byte count is unused by schema helper and not used as HEAD evidence. HEAD chain uses genuine finite GET wirebytes. Optional type separation deferred."
+    },
+    {
+      "id": 8,
+      "disposition": "Reopen/cleanup placements verified sound. Actual typecheck/format stages passed; no import-order defect established."
+    }
+  ],
+  "productionChangeRequired": false,
+  "additionalTestsRequired": false,
+  "rootReadFullOutput": true
+}

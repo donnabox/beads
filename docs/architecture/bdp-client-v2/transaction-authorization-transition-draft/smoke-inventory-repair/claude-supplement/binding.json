@@ -1,0 +1,70 @@
+{
+  "scope": "smoke-inventory-supplement",
+  "base": "87911dce8146339ccf42d35fac55daec52760843",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+  "sourceBindingPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/smoke-inventory-repair/source-binding.json",
+  "sourceBindingSha256": "1d163c7b17364bc5ac94ccb853642ba86993ac5bd3639db3066b8106afc9212c",
+  "sourceHashes": {
+    "scripts/smoke-executables.mjs": "96701a2e4a7535e44ad4490a109d8e4c93925b4702b5453f3c55abe689a88060"
+  },
+  "ownedPaths": [
+    "scripts/smoke-executables.mjs"
+  ],
+  "newPaths": [],
+  "dependencyHashes": {
+    "scripts/smoke-executables.mjs": "96701a2e4a7535e44ad4490a109d8e4c93925b4702b5453f3c55abe689a88060",
+    "scripts/smoke-safety.mjs": "8aa35543d3236187aa377ad01d2255ecc6abcab3a81665aa6498baff2bf73803",
+    "packages/server/package.json": "110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e",
+    "packages/server/tsconfig.json": "da054bc9239dfe20febb2fd9255e4263781627499af7eccc3c40a5c80526b1da",
+    "tsconfig.base.json": "6c70be275f9f7d5de533cbd3f2454ae7cb84bc765ab84f4f199889580e18e152",
+    "packages/server/src/transaction-store.ts": "bc10df9d02316e395b8c4ea7db6134ab2646c8e8abd83ea785b0ea09f2f0c82c"
+  },
+  "inputHashes": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/smoke-inventory-repair/source-binding.json": "1d163c7b17364bc5ac94ccb853642ba86993ac5bd3639db3066b8106afc9212c",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/smoke-inventory-repair/correction.patch": "5920d52bd180373fcf2c830aeed75afac56f8ad14ba51c9ab4c09671726246d0",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/smoke-inventory-repair/report.md": "4bebaa7235a5cd23aad4d6c0ec382c04c2d65cdb478dd708d43db154951e97ea"
+  },
+  "patchSha256": "5920d52bd180373fcf2c830aeed75afac56f8ad14ba51c9ab4c09671726246d0",
+  "promptSha256": "35aa98b93359c1040e224626f3b8076ccda5459b53ba2ba67829f4e3e2e9640f",
+  "timeoutSeconds": 900,
+  "headChronology": "Actual879 plus one four-line dirty script; original review/build/installed at1647 remain historical, original failedCI preserved.",
+  "contextExcerpts": [
+    {
+      "path": "scripts/smoke-executables.mjs",
+      "first": 1,
+      "last": 614,
+      "sha256": "96701a2e4a7535e44ad4490a109d8e4c93925b4702b5453f3c55abe689a88060"
+    },
+    {
+      "path": "scripts/smoke-safety.mjs",
+      "first": 1,
+      "last": 35,
+      "sha256": "8aa35543d3236187aa377ad01d2255ecc6abcab3a81665aa6498baff2bf73803"
+    },
+    {
+      "path": "packages/server/package.json",
+      "first": 1,
+      "last": 27,
+      "sha256": "110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e"
+    },
+    {
+      "path": "packages/server/tsconfig.json",
+      "first": 1,
+      "last": 10,
+      "sha256": "da054bc9239dfe20febb2fd9255e4263781627499af7eccc3c40a5c80526b1da"
+    },
+    {
+      "path": "tsconfig.base.json",
+      "first": 1,
+      "last": 26,
+      "sha256": "6c70be275f9f7d5de533cbd3f2454ae7cb84bc765ab84f4f199889580e18e152"
+    },
+    {
+      "path": "packages/server/src/transaction-store.ts",
+      "first": 1,
+      "last": 80,
+      "sha256": "bc10df9d02316e395b8c4ea7db6134ab2646c8e8abd83ea785b0ea09f2f0c82c"
+    }
+  ],
+  "reviewKind": "closed single-file package-inventory supplement"
+}

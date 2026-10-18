@@ -1,0 +1,712 @@
+{
+  "source": "8d23862a03e65fa378a246310d804f0408b73937",
+  "row": "transactional.idempotency.conflict",
+  "rowState": "pass",
+  "claimEligible": false,
+  "wire": [
+    {
+      "action": "c-commit",
+      "status": 200,
+      "writeState": "complete",
+      "responseBytes": 696,
+      "assertions": [
+        {
+          "id": "http-status",
+          "passed": true
+        },
+        {
+          "id": "schema",
+          "passed": true
+        },
+        {
+          "id": "disposition",
+          "passed": true
+        },
+        {
+          "id": "no-next",
+          "passed": true
+        },
+        {
+          "id": "effect-position",
+          "passed": true
+        },
+        {
+          "id": "created-record",
+          "passed": true
+        },
+        {
+          "id": "present-bdp-scope-epoch",
+          "passed": true
+        },
+        {
+          "id": "present-bdp-authorization-view",
+          "passed": true
+        },
+        {
+          "id": "present-bdp-scope-position",
+          "passed": true
+        },
+        {
+          "id": "request-headers",
+          "passed": true
+        },
+        {
+          "id": "request-body",
+          "passed": true
+        }
+      ],
+      "sourceReceiptObservation": null,
+      "servedSession": {
+        "scenario": "transactional.idempotency.conflict",
+        "generation": 15,
+        "listenUrl": "http://127.0.0.1:56456/",
+        "runtimeConfigurationIdentity": "8f68c488183d5d99796418df6ee6ba4a31e312aed397e4a3c11fa4c12c8987a0",
+        "responseLimits": {
+          "headerBytes": 65536,
+          "bodyBytes": 1048576,
+          "wireBytes": 2097152
+        },
+        "configurationDigest": "390843f0d6bd17bd530c7ad2f01d7caa2b1fd73ec691bf79a72e4e4511bbbbb2"
+      }
+    },
+    {
+      "action": "c-original",
+      "status": 200,
+      "writeState": "complete",
+      "responseBytes": 696,
+      "assertions": [
+        {
+          "id": "actual-status",
+          "passed": true
+        },
+        {
+          "id": "actual-request",
+          "passed": true
+        },
+        {
+          "id": "actual-body",
+          "passed": true
+        }
+      ],
+      "sourceReceiptObservation": {
+        "action": "c-commit",
+        "pointer": "/id",
+        "receipt": "https://reference.invalid/acme/receipts/8dda6c5e-4446-4014-84fa-ad01e44d24ec",
+        "responseDigest": "0a3b86339d79adddf3576e14468764f7155bed5bf39b41a74beee1e9e9e0ceaf",
+        "credentialRef": "operator",
+        "session": {
+          "scenario": "transactional.idempotency.conflict",
+          "generation": 15,
+          "listenUrl": "http://127.0.0.1:56456/",
+          "runtimeConfigurationIdentity": "8f68c488183d5d99796418df6ee6ba4a31e312aed397e4a3c11fa4c12c8987a0",
+          "responseLimits": {
+            "headerBytes": 65536,
+            "bodyBytes": 1048576,
+            "wireBytes": 2097152
+          },
+          "configurationDigest": "390843f0d6bd17bd530c7ad2f01d7caa2b1fd73ec691bf79a72e4e4511bbbbb2"
+        }
+      },
+      "servedSession": {
+        "scenario": "transactional.idempotency.conflict",
+        "generation": 15,
+        "listenUrl": "http://127.0.0.1:56456/",
+        "runtimeConfigurationIdentity": "8f68c488183d5d99796418df6ee6ba4a31e312aed397e4a3c11fa4c12c8987a0",
+        "responseLimits": {
+          "headerBytes": 65536,
+          "bodyBytes": 1048576,
+          "wireBytes": 2097152
+        },
+        "configurationDigest": "390843f0d6bd17bd530c7ad2f01d7caa2b1fd73ec691bf79a72e4e4511bbbbb2"
+      }
+    },
+    {
+      "action": "c-conflict",
+      "status": 409,
+      "writeState": "complete",
+      "responseBytes": 122,
+      "assertions": [
+        {
+          "id": "http-status",
+          "passed": true
+        },
+        {
+          "id": "problem-media",
+          "passed": true
+        },
+        {
+          "id": "schema",
+          "passed": true
+        },
+        {
+          "id": "problem-type",
+          "passed": true
+        },
+        {
+          "id": "problem-code",
+          "passed": true
+        },
+        {
+          "id": "problem-status",
+          "passed": true
+        },
+        {
+          "id": "retry",
+          "passed": true
+        },
+        {
+          "id": "request-headers",
+          "passed": true
+        },
+        {
+          "id": "request-body",
+          "passed": true
+        }
+      ],
+      "sourceReceiptObservation": null,
+      "servedSession": {
+        "scenario": "transactional.idempotency.conflict",
+        "generation": 15,
+        "listenUrl": "http://127.0.0.1:56456/",
+        "runtimeConfigurationIdentity": "8f68c488183d5d99796418df6ee6ba4a31e312aed397e4a3c11fa4c12c8987a0",
+        "responseLimits": {
+          "headerBytes": 65536,
+          "bodyBytes": 1048576,
+          "wireBytes": 2097152
+        },
+        "configurationDigest": "390843f0d6bd17bd530c7ad2f01d7caa2b1fd73ec691bf79a72e4e4511bbbbb2"
+      }
+    },
+    {
+      "action": "c-state",
+      "status": 200,
+      "writeState": "complete",
+      "responseBytes": 236,
+      "assertions": [
+        {
+          "id": "http-status",
+          "passed": true
+        },
+        {
+          "id": "schema",
+          "passed": true
+        },
+        {
+          "id": "no-next",
+          "passed": true
+        },
+        {
+          "id": "ordered-state",
+          "passed": true
+        },
+        {
+          "id": "retained-record",
+          "passed": true
+        },
+        {
+          "id": "request-headers",
+          "passed": true
+        },
+        {
+          "id": "request-body",
+          "passed": true
+        }
+      ],
+      "sourceReceiptObservation": null,
+      "servedSession": {
+        "scenario": "transactional.idempotency.conflict",
+        "generation": 15,
+        "listenUrl": "http://127.0.0.1:56456/",
+        "runtimeConfigurationIdentity": "8f68c488183d5d99796418df6ee6ba4a31e312aed397e4a3c11fa4c12c8987a0",
+        "responseLimits": {
+          "headerBytes": 65536,
+          "bodyBytes": 1048576,
+          "wireBytes": 2097152
+        },
+        "configurationDigest": "390843f0d6bd17bd530c7ad2f01d7caa2b1fd73ec691bf79a72e4e4511bbbbb2"
+      }
+    },
+    {
+      "action": "c-events",
+      "status": 200,
+      "writeState": "complete",
+      "responseBytes": 624,
+      "assertions": [
+        {
+          "id": "http-status",
+          "passed": true
+        },
+        {
+          "id": "schema",
+          "passed": true
+        },
+        {
+          "id": "no-next",
+          "passed": true
+        },
+        {
+          "id": "ordered-facts",
+          "passed": true
+        },
+        {
+          "id": "serving-context",
+          "passed": true
+        },
+        {
+          "id": "present-bdp-scope-epoch",
+          "passed": true
+        },
+        {
+          "id": "present-bdp-authorization-view",
+          "passed": true
+        },
+        {
+          "id": "present-bdp-scope-position",
+          "passed": true
+        },
+        {
+          "id": "request-headers",
+          "passed": true
+        },
+        {
+          "id": "request-body",
+          "passed": true
+        }
+      ],
+      "sourceReceiptObservation": null,
+      "servedSession": {
+        "scenario": "transactional.idempotency.conflict",
+        "generation": 15,
+        "listenUrl": "http://127.0.0.1:56456/",
+        "runtimeConfigurationIdentity": "8f68c488183d5d99796418df6ee6ba4a31e312aed397e4a3c11fa4c12c8987a0",
+        "responseLimits": {
+          "headerBytes": 65536,
+          "bodyBytes": 1048576,
+          "wireBytes": 2097152
+        },
+        "configurationDigest": "390843f0d6bd17bd530c7ad2f01d7caa2b1fd73ec691bf79a72e4e4511bbbbb2"
+      }
+    },
+    {
+      "action": "c-retry",
+      "status": 200,
+      "writeState": "complete",
+      "responseBytes": 696,
+      "assertions": [
+        {
+          "id": "http-status",
+          "passed": true
+        },
+        {
+          "id": "schema",
+          "passed": true
+        },
+        {
+          "id": "disposition",
+          "passed": true
+        },
+        {
+          "id": "retained-body",
+          "passed": true
+        },
+        {
+          "id": "retained-root",
+          "passed": true
+        },
+        {
+          "id": "request-headers",
+          "passed": true
+        },
+        {
+          "id": "request-body",
+          "passed": true
+        }
+      ],
+      "sourceReceiptObservation": null,
+      "servedSession": {
+        "scenario": "transactional.idempotency.conflict",
+        "generation": 15,
+        "listenUrl": "http://127.0.0.1:56456/",
+        "runtimeConfigurationIdentity": "8f68c488183d5d99796418df6ee6ba4a31e312aed397e4a3c11fa4c12c8987a0",
+        "responseLimits": {
+          "headerBytes": 65536,
+          "bodyBytes": 1048576,
+          "wireBytes": 2097152
+        },
+        "configurationDigest": "390843f0d6bd17bd530c7ad2f01d7caa2b1fd73ec691bf79a72e4e4511bbbbb2"
+      }
+    },
+    {
+      "action": "c-conflict-reopened",
+      "status": 409,
+      "writeState": "complete",
+      "responseBytes": 122,
+      "assertions": [
+        {
+          "id": "http-status",
+          "passed": true
+        },
+        {
+          "id": "problem-media",
+          "passed": true
+        },
+        {
+          "id": "schema",
+          "passed": true
+        },
+        {
+          "id": "problem-type",
+          "passed": true
+        },
+        {
+          "id": "problem-code",
+          "passed": true
+        },
+        {
+          "id": "problem-status",
+          "passed": true
+        },
+        {
+          "id": "retry",
+          "passed": true
+        },
+        {
+          "id": "request-headers",
+          "passed": true
+        },
+        {
+          "id": "request-body",
+          "passed": true
+        }
+      ],
+      "sourceReceiptObservation": null,
+      "servedSession": {
+        "scenario": "transactional.idempotency.conflict",
+        "generation": 16,
+        "listenUrl": "http://127.0.0.1:56463/",
+        "runtimeConfigurationIdentity": "8f68c488183d5d99796418df6ee6ba4a31e312aed397e4a3c11fa4c12c8987a0",
+        "responseLimits": {
+          "headerBytes": 65536,
+          "bodyBytes": 1048576,
+          "wireBytes": 2097152
+        },
+        "configurationDigest": "390843f0d6bd17bd530c7ad2f01d7caa2b1fd73ec691bf79a72e4e4511bbbbb2"
+      }
+    },
+    {
+      "action": "c-retry-reopened",
+      "status": 200,
+      "writeState": "complete",
+      "responseBytes": 696,
+      "assertions": [
+        {
+          "id": "http-status",
+          "passed": true
+        },
+        {
+          "id": "schema",
+          "passed": true
+        },
+        {
+          "id": "disposition",
+          "passed": true
+        },
+        {
+          "id": "retained-body",
+          "passed": true
+        },
+        {
+          "id": "retained-root",
+          "passed": true
+        },
+        {
+          "id": "request-headers",
+          "passed": true
+        },
+        {
+          "id": "request-body",
+          "passed": true
+        }
+      ],
+      "sourceReceiptObservation": null,
+      "servedSession": {
+        "scenario": "transactional.idempotency.conflict",
+        "generation": 16,
+        "listenUrl": "http://127.0.0.1:56463/",
+        "runtimeConfigurationIdentity": "8f68c488183d5d99796418df6ee6ba4a31e312aed397e4a3c11fa4c12c8987a0",
+        "responseLimits": {
+          "headerBytes": 65536,
+          "bodyBytes": 1048576,
+          "wireBytes": 2097152
+        },
+        "configurationDigest": "390843f0d6bd17bd530c7ad2f01d7caa2b1fd73ec691bf79a72e4e4511bbbbb2"
+      }
+    },
+    {
+      "action": "reopened-conflict-root",
+      "status": 200,
+      "writeState": "complete",
+      "responseBytes": 696,
+      "assertions": [
+        {
+          "id": "actual-status",
+          "passed": true
+        },
+        {
+          "id": "actual-request",
+          "passed": true
+        },
+        {
+          "id": "actual-body",
+          "passed": true
+        }
+      ],
+      "sourceReceiptObservation": {
+        "action": "c-commit",
+        "pointer": "/id",
+        "receipt": "https://reference.invalid/acme/receipts/8dda6c5e-4446-4014-84fa-ad01e44d24ec",
+        "responseDigest": "0a3b86339d79adddf3576e14468764f7155bed5bf39b41a74beee1e9e9e0ceaf",
+        "credentialRef": "operator",
+        "session": {
+          "scenario": "transactional.idempotency.conflict",
+          "generation": 15,
+          "listenUrl": "http://127.0.0.1:56456/",
+          "runtimeConfigurationIdentity": "8f68c488183d5d99796418df6ee6ba4a31e312aed397e4a3c11fa4c12c8987a0",
+          "responseLimits": {
+            "headerBytes": 65536,
+            "bodyBytes": 1048576,
+            "wireBytes": 2097152
+          },
+          "configurationDigest": "390843f0d6bd17bd530c7ad2f01d7caa2b1fd73ec691bf79a72e4e4511bbbbb2"
+        }
+      },
+      "servedSession": {
+        "scenario": "transactional.idempotency.conflict",
+        "generation": 16,
+        "listenUrl": "http://127.0.0.1:56463/",
+        "runtimeConfigurationIdentity": "8f68c488183d5d99796418df6ee6ba4a31e312aed397e4a3c11fa4c12c8987a0",
+        "responseLimits": {
+          "headerBytes": 65536,
+          "bodyBytes": 1048576,
+          "wireBytes": 2097152
+        },
+        "configurationDigest": "390843f0d6bd17bd530c7ad2f01d7caa2b1fd73ec691bf79a72e4e4511bbbbb2"
+      }
+    },
+    {
+      "action": "c-state-reopened",
+      "status": 200,
+      "writeState": "complete",
+      "responseBytes": 236,
+      "assertions": [
+        {
+          "id": "http-status",
+          "passed": true
+        },
+        {
+          "id": "schema",
+          "passed": true
+        },
+        {
+          "id": "no-next",
+          "passed": true
+        },
+        {
+          "id": "ordered-state",
+          "passed": true
+        },
+        {
+          "id": "retained-record",
+          "passed": true
+        },
+        {
+          "id": "request-headers",
+          "passed": true
+        },
+        {
+          "id": "request-body",
+          "passed": true
+        }
+      ],
+      "sourceReceiptObservation": null,
+      "servedSession": {
+        "scenario": "transactional.idempotency.conflict",
+        "generation": 16,
+        "listenUrl": "http://127.0.0.1:56463/",
+        "runtimeConfigurationIdentity": "8f68c488183d5d99796418df6ee6ba4a31e312aed397e4a3c11fa4c12c8987a0",
+        "responseLimits": {
+          "headerBytes": 65536,
+          "bodyBytes": 1048576,
+          "wireBytes": 2097152
+        },
+        "configurationDigest": "390843f0d6bd17bd530c7ad2f01d7caa2b1fd73ec691bf79a72e4e4511bbbbb2"
+      }
+    },
+    {
+      "action": "c-events-reopened",
+      "status": 200,
+      "writeState": "complete",
+      "responseBytes": 624,
+      "assertions": [
+        {
+          "id": "http-status",
+          "passed": true
+        },
+        {
+          "id": "schema",
+          "passed": true
+        },
+        {
+          "id": "no-next",
+          "passed": true
+        },
+        {
+          "id": "ordered-facts",
+          "passed": true
+        },
+        {
+          "id": "serving-context",
+          "passed": true
+        },
+        {
+          "id": "present-bdp-scope-epoch",
+          "passed": true
+        },
+        {
+          "id": "present-bdp-authorization-view",
+          "passed": true
+        },
+        {
+          "id": "present-bdp-scope-position",
+          "passed": true
+        },
+        {
+          "id": "request-headers",
+          "passed": true
+        },
+        {
+          "id": "request-body",
+          "passed": true
+        }
+      ],
+      "sourceReceiptObservation": null,
+      "servedSession": {
+        "scenario": "transactional.idempotency.conflict",
+        "generation": 16,
+        "listenUrl": "http://127.0.0.1:56463/",
+        "runtimeConfigurationIdentity": "8f68c488183d5d99796418df6ee6ba4a31e312aed397e4a3c11fa4c12c8987a0",
+        "responseLimits": {
+          "headerBytes": 65536,
+          "bodyBytes": 1048576,
+          "wireBytes": 2097152
+        },
+        "configurationDigest": "390843f0d6bd17bd530c7ad2f01d7caa2b1fd73ec691bf79a72e4e4511bbbbb2"
+      }
+    }
+  ],
+  "client": [
+    {
+      "action": "c-original",
+      "assertions": [
+        {
+          "id": "status",
+          "passed": true
+        },
+        {
+          "id": "body-present",
+          "passed": true
+        },
+        {
+          "id": "bdp-scope-epoch",
+          "passed": true
+        },
+        {
+          "id": "bdp-authorization-view",
+          "passed": true
+        },
+        {
+          "id": "bdp-scope-position",
+          "passed": true
+        },
+        {
+          "id": "private-cache",
+          "passed": true
+        },
+        {
+          "id": "no-etag",
+          "passed": true
+        },
+        {
+          "id": "no-last-modified",
+          "passed": true
+        },
+        {
+          "id": "disposition",
+          "passed": true
+        },
+        {
+          "id": "no-next",
+          "passed": true
+        },
+        {
+          "id": "effect-position",
+          "passed": true
+        },
+        {
+          "id": "created-record",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "action": "c-reopen",
+      "assertions": [
+        {
+          "id": "reopened",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "action": "reopened-conflict-root",
+      "assertions": [
+        {
+          "id": "status",
+          "passed": true
+        },
+        {
+          "id": "body-present",
+          "passed": true
+        },
+        {
+          "id": "bdp-scope-epoch",
+          "passed": true
+        },
+        {
+          "id": "bdp-authorization-view",
+          "passed": true
+        },
+        {
+          "id": "bdp-scope-position",
+          "passed": true
+        },
+        {
+          "id": "private-cache",
+          "passed": true
+        },
+        {
+          "id": "no-etag",
+          "passed": true
+        },
+        {
+          "id": "no-last-modified",
+          "passed": true
+        },
+        {
+          "id": "retained-body",
+          "passed": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+--- a/packages/server/src/transaction-snapshot.test.ts
++++ b/packages/server/src/transaction-snapshot.test.ts
+@@ -1433,7 +1433,6 @@
+   await deepSnapshotWitness(false, true);
+ }, 30000);
+ 
+-
+ it("gates fresh Snapshot opaque minima before allocation and expiry", () => {
+   const f = fixture();
+   f.run([create("a")]);
+--- a/packages/server/src/transaction-service.test.ts
++++ b/packages/server/src/transaction-service.test.ts
+@@ -3203,8 +3203,9 @@
+   );
+ });
+ 
+-
+-function freshSnapshotOpaqueFixture(minimumReads: TransactionServiceOptions["minimumReads"]) {
++function freshSnapshotOpaqueFixture(
++  minimumReads: NonNullable<TransactionServiceOptions["minimumReads"]>,
++) {
+   const f = fixture();
+   const observeSnapshot = vi.fn(f.owner.observeSnapshot);
+   const service = createTransactionService(
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -5609,7 +5609,6 @@
+   });
+ });
+ 
+-
+ it("serves fresh Snapshot opaque minima with terminal preflight and retained fences", async () => {
+   let tick = 0;
+   let waits = 0;
+@@ -5697,8 +5696,7 @@
+     for (const method of ["GET", "HEAD"] as const) {
+       const result = await get(url, method, { "bdp-minimum-scope-position": "opaque" });
+       expect(result.response.status).toBe(400);
+-      for (const name of Object.keys(current))
+-        expect(result.response.headers.get(name)).toBeNull();
++      for (const name of Object.keys(current)) expect(result.response.headers.get(name)).toBeNull();
+       if (method === "HEAD") expect(result.text).toBe("");
+       else expect(checkedProblem(record(JSON.parse(result.text))).code).toBe("malformed-request");
+     }
+@@ -5729,8 +5727,7 @@
+       // The ordinary fixture helper injects credentials; these two calls do not.
+       const result = await observed(method, url, await fetch(url, { method, headers: minimum }));
+       expect(result.response.status).toBe(401);
+-      for (const name of Object.keys(current))
+-        expect(result.response.headers.get(name)).toBeNull();
++      for (const name of Object.keys(current)) expect(result.response.headers.get(name)).toBeNull();
+       if (method === "HEAD") expect(result.text).toBe("");
+     }
+     expect(responses).toHaveLength(27);
+--- a/apps/bdptest/src/transactional-snapshot-installed.test.ts
++++ b/apps/bdptest/src/transactional-snapshot-installed.test.ts
+@@ -1085,9 +1085,7 @@
+             ).toBe("snapshot-opaque-seed");
+           }
+           for (const [name, value] of Object.entries(minimum))
+-            expect(headers.find((header) => header.name.toLowerCase() === name)?.value).toBe(
+-              value,
+-            );
++            expect(headers.find((header) => header.name.toLowerCase() === name)?.value).toBe(value);
+           expect(response.wireResponseBytes?.length).toBeGreaterThan(0);
+           if (
+             response.bodyOctets === undefined ||
+@@ -1134,6 +1132,7 @@
+         for (const method of ["GET", "HEAD"] as const) {
+           const response = await exchange(method, minimum);
+           snapshotTimeout(response, seed, "pos-1", method === "HEAD");
++          expect(response.headers["retry-after"]).toBe("1");
+           expect(response.headers["cache-control"]).toBe("private, no-store");
+           expect(response.headers["x-bdp-development-limit"]).toBeUndefined();
+         }

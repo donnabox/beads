@@ -1,0 +1,11 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/claude-production-readonly/run.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/claude-source-tests-readonly/run.py
+@@ -2,7 +2,7 @@
+ from pathlib import Path
+ import argparse,datetime,hashlib,json,os,signal,subprocess,time
+ parser=argparse.ArgumentParser()
+-parser.add_argument("scope",choices=("production",))
++parser.add_argument("scope",choices=("source-tests",))
+ args=parser.parse_args()
+ C=Path(__file__).resolve().parent
+ P=C/args.scope

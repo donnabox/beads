@@ -1,0 +1,20 @@
+{
+  "status": "corrected-selector-source-only-released",
+  "sourceBindingSha256": "5fbe5c9b0c57f2c253fb16d114675ccb4929a9e4e18b21a1efbf1ca18385d778",
+  "oldSelector": "private direct Transactional receiving order uses the same depth boundary for singleton and wrapped set content",
+  "correctedSelector": "valid private set admission uses the same depth boundary for singleton and wrapped set content",
+  "reason": "Existing test belongs to valid private set admission describe; original plan selected wrong prefix. First actual Vitest run passed16 but selection adjudicator failed17, correctly retained. No source changes.",
+  "priorStaticExactArtifacts": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/execution-preparation-v2/run/offline-setup.exit.json": "54b193da99a1193ceb587c2799c83d2468f7ef5220d2b561bf6e0ba1b6c8d775",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/execution-preparation-v2/run/typecheck.exit.json": "bffee8c3c5c430e6696c349662964da7fa751966f9df12661fbd41869809d08e",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/execution-preparation-v2/run/build.exit.json": "84f7730cebd1b215e90e890d78352670745edc40a1f09de4b2d12289096e363d",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/execution-preparation-v2/run/format-check.exit.json": "fa6442f277033a7c9b5d977c0e67c6c9a1789f05252dcc12fb7dccd3181691f0",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/execution-preparation-v2/run/lint.exit.json": "1d6c643ad132b6e9abf2f721b3c11f54ca83ad140574a31920e891c9d1d701c9",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/execution-preparation-v2/run/boundaries.exit.json": "f56c63b5a81b8a3208e6d1ece990d99fea59857b950e3e1aa71be99d066b42db",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/execution-preparation-v2/run/read-seal.exit.json": "5c11c935ab7cf0129551bc40829854853f8e507ee97f30e7c2fa086f03733a81"
+  },
+  "originalPartialRun": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/execution-preparation-v2/run/source-positive.exit.json",
+  "sourceRepeats": "One corrected17-case rerun, not fabricated complete prior coverage",
+  "controlGate": "closed",
+  "installedGate": "closed"
+}

@@ -1,0 +1,29 @@
+{
+  "positive": {
+    "source": "c555fe01df5cd20454fb0d663431df816c1270aa",
+    "tree": "062a3ab7e24236417bd915b373a4b44ba9908647",
+    "requests": 14,
+    "payload": "0431b66bb506d46c3414587cf34f6d8007472a3aeaf2ec1488b3e59ae56b1200",
+    "pidsAbsent": [
+      60913
+    ],
+    "outcome": "passed",
+    "summarySha256": "5f1e0efc142a4c1cfd9a781a7392d610221ea174add9136437134d79cd2a480a"
+  },
+  "negative": {
+    "source": "4aa2d0be950f157f3f0617278dd37c40f41ec035",
+    "tree": "5afa00950cb042b931450bb7545369c4274ef8ba",
+    "requests": 3,
+    "payload": "f1bc055701323b1a8adfb474b8b651a9522d06e91deaba53efeb5afab5520859",
+    "pidsAbsent": [
+      61977
+    ],
+    "outcome": "failed",
+    "summarySha256": "cae5b71e8a69d86c93eb6edfea981a3b2ce378eefe1b358fcdc4846c016d53f6"
+  },
+  "checkedAt": "2026-10-14T17:23:52.693088+00:00",
+  "sourceHashesVerified": 9,
+  "totalRequests": 17,
+  "totalChildren": 2,
+  "claimsEligible": false
+}

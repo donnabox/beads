@@ -1,0 +1,99 @@
+{
+  "name": "smoke",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "run",
+    "smoke"
+  ],
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "run",
+    "smoke"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+  "started": "2026-10-16T02:54:46.117032+00:00",
+  "adjudication": {
+    "kind": "complete-existing-smoke",
+    "installedObservation": {
+      "event": "installed.reference.observed",
+      "claimEligible": false,
+      "configurationIdentity": "79b9c98d76d5fbd3b1b0523c45151787e8846858089615549e11f0f58ccc2081",
+      "payloadIdentity": "2a50d50d28418d1edb81a950922da057ce209b361b48e7202351d9b3595a0714",
+      "artifactIdentity": "development-schema5-e1dff401b5caafb04a4d935775d67eeefeae7bcf306d5d100b979a64eef148e7",
+      "allNineTargets": true,
+      "stableScope": "https://reference.invalid/acme/"
+    },
+    "logSha256": "9e383693a1c28dcc28e242d707d28124f23484ac07ac0482c327f8e1cd2a1ce4",
+    "noConformanceCredit": true
+  },
+  "elapsedSeconds": 4.979564500041306,
+  "exit": 0,
+  "supervisorExit": 0,
+  "timeout": false,
+  "forcedCleanup": false,
+  "errors": [],
+  "processGroup": 42886,
+  "remainingBeforeCleanup": [],
+  "remainingAfterCleanup": [],
+  "sampledPids": [
+    42886,
+    42889,
+    42893,
+    42918,
+    42919,
+    42927,
+    42938,
+    42942,
+    42945,
+    42947,
+    42950,
+    42954,
+    42956,
+    42959,
+    42962,
+    42965,
+    42968,
+    42970,
+    42973,
+    42976,
+    42979,
+    42983,
+    42985,
+    42989,
+    42990,
+    42992,
+    42995,
+    42998,
+    43002
+  ],
+  "sampledPidsStillPresent": {},
+  "sampledTempEntries": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/smoke-inventory-repair/run/smoke.tmp/bdp-smoke-W4qqtC",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/smoke-inventory-repair/run/smoke.tmp/node-compile-cache"
+  ],
+  "tempEntriesAfter": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/smoke-inventory-repair/run/smoke.tmp/node-compile-cache"
+  ],
+  "remainingTempEntriesForClassification": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/smoke-inventory-repair/run/smoke.tmp/node-compile-cache"
+  ],
+  "runtimeDirectoriesStillPresent": [],
+  "unclassifiedTempEntriesStillPresent": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/smoke-inventory-repair/run/smoke.tmp/node-compile-cache"
+  ],
+  "sourceUnchanged": true,
+  "sourceSha256After": {
+    "scripts/smoke-executables.mjs": "96701a2e4a7535e44ad4490a109d8e4c93925b4702b5453f3c55abe689a88060"
+  },
+  "samplingSeconds": 0.05,
+  "commandWindowSeconds": 115,
+  "groupHardDeadlineSeconds": 120,
+  "cleanupBound": "TERM at115s, KILL no later than120s; wait/reap after kill adds no product execution allowance",
+  "samplingLimitation": "Short-lived or detached descendants may evade group sampling; helper counts and independent final checks remain separate.",
+  "tempClassification": "Only the selected fixture prefixes under this attempt TMPDIR are owned runtime roots; all other entries are preserved for review, not deleted or called leaks.",
+  "resultLimitation": "Exit0 is command completion, not independent oracle/claim/provenance adjudication."
+}

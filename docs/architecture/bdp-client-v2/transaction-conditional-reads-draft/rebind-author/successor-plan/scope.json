@@ -1,0 +1,115 @@
+{
+  "status": "PLAN ONLY; no source mutation/execution",
+  "headInspected": "1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05",
+  "sourceBefore": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": {
+      "sha256": "60c527f6a5673161eacf022c0015d09bea2743d153b8b0d0c86160b76fafeb68",
+      "new": false
+    },
+    "packages/conformance/test-support/transactional/coverage-v1.json": {
+      "sha256": "33032fe07eb06d2a8968fcd8e5a3cf93cb4637c551868c22da9ea0c4edd587a3",
+      "new": false
+    },
+    "packages/conformance/src/transactional-cumulative.test.ts": {
+      "sha256": "9f70f8a24ea358b2cd613fd392be68057abd7b1552ec8cc6c4bc1a3241de69f6",
+      "new": false
+    },
+    "apps/bdptest/src/transactional-matrix.test.ts": {
+      "sha256": "136de49e859546e081c39410f1d3ee6fc01e32faf1879084718ad67b553d62ec",
+      "new": false
+    }
+  },
+  "sourcePatchSha256": "bc7e620ea97a37933901ee4bf2e2d818685178bd974a262e88b025e513e2a60a",
+  "reviewPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/review-monitored/final-review.txt",
+  "reviewSha256": "3d24aff5093197758368bab5b6bb8d5f125df2235c0eca381c0a83b9222a0de1",
+  "removeAssertionIds": [
+    "anonymous-get:absent-bdp-scope-epoch",
+    "anonymous-get:absent-bdp-authorization-view",
+    "anonymous-get:absent-bdp-scope-position",
+    "anonymous-head:absent-bdp-scope-epoch",
+    "anonymous-head:absent-bdp-authorization-view",
+    "anonymous-head:absent-bdp-scope-position",
+    "anonymous-head:media",
+    "missing-head:media"
+  ],
+  "countsByAction": [
+    {
+      "action": "seed",
+      "before": 26,
+      "after": 26
+    },
+    {
+      "action": "initial-get",
+      "before": 18,
+      "after": 18
+    },
+    {
+      "action": "initial-head",
+      "before": 11,
+      "after": 11
+    },
+    {
+      "action": "conditional-get",
+      "before": 10,
+      "after": 10
+    },
+    {
+      "action": "conditional-head",
+      "before": 11,
+      "after": 11
+    },
+    {
+      "action": "mismatch-get",
+      "before": 9,
+      "after": 9
+    },
+    {
+      "action": "mismatch-head",
+      "before": 10,
+      "after": 10
+    },
+    {
+      "action": "anonymous-get",
+      "before": 11,
+      "after": 8
+    },
+    {
+      "action": "anonymous-head",
+      "before": 11,
+      "after": 7
+    },
+    {
+      "action": "missing-get",
+      "before": 11,
+      "after": 11
+    },
+    {
+      "action": "missing-head",
+      "before": 11,
+      "after": 10
+    },
+    {
+      "action": "update",
+      "before": 26,
+      "after": 26
+    },
+    {
+      "action": "current-get",
+      "before": 18,
+      "after": 18
+    },
+    {
+      "action": "current-head",
+      "before": 11,
+      "after": 11
+    }
+  ],
+  "newRowAssertionsBefore": 194,
+  "newRowAssertionsAfter": 186,
+  "totalAssertionsBefore": 2836,
+  "totalAssertionsAfter": 2828,
+  "actionsUnchanged": 14,
+  "allActionsUnchanged": 241,
+  "parentRawObjectsUnchanged": 32,
+  "proposedRuntimeBase": "2dfd (root will resolve and verify full commit/tree before authoring)"
+}

@@ -1,0 +1,52 @@
+{
+  "head": "b0213805e4b15bb7bac4e09da5fdddb236cf6ea5",
+  "sourceFiles": {
+    "packages/server/src/transaction-set.test.ts": "86642f122eb0ab8d0ba1b5c454d4bd76fb31a7b1c485e6bbe05284c4ccd9b85f",
+    "packages/server/src/transaction-submission.test.ts": "22a6f8da462658b13fd1e7bd40a75ab39ba60103e4268b5f29d17efbca69d6b8"
+  },
+  "checks": {
+    "typecheck": {
+      "exit": 0,
+      "accepted": true,
+      "elapsedSeconds": 1.0362607911229134,
+      "logSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+      "cases": 0,
+      "skipped": null
+    },
+    "format-check": {
+      "exit": 0,
+      "accepted": true,
+      "elapsedSeconds": 0.1598230409435928,
+      "logSha256": "cfc44eee29bc0c3e74191c4443141ef74fcc5cdf5d6335942c98d2d05ab84aa1",
+      "cases": 0,
+      "skipped": null
+    },
+    "lint": {
+      "exit": 0,
+      "accepted": true,
+      "elapsedSeconds": 0.24476229189895093,
+      "logSha256": "cd65911fc38cf4e6038a359fa3e0520d369474e53e0ff498c5f5dffeee0ea826",
+      "cases": 0,
+      "skipped": null
+    },
+    "focused-three": {
+      "exit": 0,
+      "accepted": true,
+      "elapsedSeconds": 1.9608779579866678,
+      "logSha256": "2ab0d9c01435310048d12db97fe32878792f1040261d7e4251d370f01f174b83",
+      "cases": 3,
+      "skipped": 102
+    },
+    "full-two-files": {
+      "exit": 0,
+      "accepted": true,
+      "elapsedSeconds": 2.5569644591305405,
+      "logSha256": "c416e1ba02416c0ec4a70716eae859128e215571d25f278202eaa78193fa1b34",
+      "cases": 105,
+      "skipped": 0
+    }
+  },
+  "priorFailedPacket": "validation-council-successor (format-only line wrapping; typecheck passed)",
+  "productionPayload": "unchanged b021 installed evidence; no fresh installed run claimed",
+  "fullCI": "Required after successor commit"
+}

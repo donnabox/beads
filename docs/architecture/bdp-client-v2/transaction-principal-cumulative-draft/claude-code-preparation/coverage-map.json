@@ -1,0 +1,32 @@
+{
+  "base": "5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854",
+  "tree": "057f879132074166f2c0f643a8b45bbd9dd47c6f",
+  "sourceBindingSha256": "0dbae7cb6139263cbfd3931e80d8dec2c628d7e982deecdd6c8242573a35c6e2",
+  "fullDiffSha256": "471e354a504a45cdd785e3c3be7ebbab99c657122b616d00d14b14bfc954bdb4",
+  "unionExactlyFourPaths": true,
+  "scopes": {
+    "wire": {
+      "changedPaths": [
+        "apps/bdptest/src/transactional-matrix.test.ts"
+      ],
+      "allHunksIncluded": true,
+      "patchSha256": "32e39f5e8b8e07ee10baa9c51994fbe20d2d1d41eda0a9d343fe9b2cc52b093a",
+      "contextBindings": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/claude-code-preparation/wire/context-binding.json",
+      "promptBytes": 80959,
+      "omissions": "No full giant original tests or complete schema dependency closure; counterpart owns complementary changed paths. No product execution or final clean candidate assumed."
+    },
+    "composition": {
+      "changedPaths": [
+        "packages/conformance/test-support/transactional/manifest-v1.json",
+        "packages/conformance/test-support/transactional/coverage-v1.json",
+        "packages/conformance/src/transactional-cumulative.test.ts"
+      ],
+      "allHunksIncluded": true,
+      "patchSha256": "ac14a8a2f0684764682f632f11c96db0dadacc394e53c8703f58d3b073a7517e",
+      "contextBindings": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/claude-code-preparation/composition/context-binding.json",
+      "promptBytes": 70032,
+      "omissions": "No full giant original tests or complete schema dependency closure; counterpart owns complementary changed paths. No product execution or final clean candidate assumed.",
+      "jsonPresentation": "Full compact value-complete first objects; only insertions, parsed parent equality checked; raw complete insertion diff retained/pinned in scope.patch. Entire cumulative test diff included unchanged."
+    }
+  }
+}

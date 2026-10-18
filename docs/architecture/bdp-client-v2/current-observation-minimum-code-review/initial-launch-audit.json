@@ -1,0 +1,49 @@
+{
+  "at": "2026-10-17T19:25:31.812061+00:00",
+  "kind": "bounded-initial-launch-audit-not-terminal",
+  "rootReleaseSha256": "bc44beecf4af0a674518a668273344dad18bd987ebc47dd1d00d9fe257a49394",
+  "authorizedBindingTransition": [
+    "rootLaunchReleased"
+  ],
+  "closedBindingSha256": "1d67e07a9ceb78b287234a38be1bf97373a31a596c7b2b0ff8eac9734fc8f290",
+  "releasedBindingSha256": "d22bd980d6aeb4a5d3e5bc4b84e39cdf4e173cf479cf56c011af3c645804b916",
+  "preparedIndexEntriesVerified": 36,
+  "sourceFilesVerified": 679,
+  "contextsVerified": 24,
+  "artifactsVerified": 9,
+  "sourceBeforeMatchesReleasedBinding": true,
+  "head": "d9c3eb9e61b1982b9bd56aa77e4cdc114384e886",
+  "patchSha256": "194419e1b5210531b781fd822dd8e0de1be4d2c18c70e4d9a77a503a0a78bf7c",
+  "pid": 91732,
+  "pgid": 91732,
+  "started": "2026-10-17T19:24:47.432162+00:00",
+  "observedProcesses": [
+    {
+      "pid": "91732",
+      "ppid": "91718",
+      "pgid": "91732",
+      "elapsed": "00:44",
+      "comm": "/opt/homebrew/bin/claude"
+    }
+  ],
+  "argvMatches": true,
+  "timeoutSeconds": 1800,
+  "termAfterSeconds": 1790,
+  "streamSnapshotBytes": 218029,
+  "completeRecordsRead": 239,
+  "partialTailBytesNotParsed": 0,
+  "invalidCompleteRecords": 0,
+  "toolUsesInCompleteAssistantMessages": {
+    "Read": 7
+  },
+  "errorMarkedToolResultsSoFar": 0,
+  "terminalResultsSoFar": 0,
+  "exitExists": false,
+  "stderrBytesSoFar": 0,
+  "knownNativeFinding": "Native N1: Link Event HTTP 500 aggregate expects 12, should be 8. Preserved unchanged pending independent CODE review and disposition.",
+  "findingDisposition": "None; frozen source preserved for independent actual review",
+  "approvalInferred": false,
+  "pollingLoop": false,
+  "terminalAuditPending": true,
+  "nextAudit": "At terminal independently map one result to final text; verify raw hash/counts, current679/24/9/index36 with closed-binding exception, before==after and sampled PID/group absence; classify actual tool accesses/errors without claiming all contexts read."
+}

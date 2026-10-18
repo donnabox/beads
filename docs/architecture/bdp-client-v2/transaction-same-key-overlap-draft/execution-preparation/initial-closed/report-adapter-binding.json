@@ -1,0 +1,62 @@
+{
+  "status": "PENDING_ACTUAL_REPORT_CONTRACT",
+  "ready": false,
+  "sourceBinding": null,
+  "testSha256": null,
+  "selection": null,
+  "reportContract": null,
+  "ledger": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-plan/proposed-successor/ledger.json",
+    "sha256": "fb6ba0315c982ee174d7e25ab2f2a4c6cad4bfae2a202410daa319d54577ae8f"
+  },
+  "reviewerSha256": "10127f2045b4edd3a96b48b8a5d1bbbd21bfe0e3b66d61f2882d905a3bcb59b9",
+  "positive": {
+    "requiredHttp": 6,
+    "requiredCaseCount": 1,
+    "testExit": 0,
+    "adapterExit": 0,
+    "require": [
+      "actual complete writes and six completed responses",
+      "literal methods/routes/headers/body byte+SHA ledger; canonical Host and query preserved",
+      "actual issued validated receipt root for GET3",
+      "each required full schema/literal/body comparison performed in test",
+      "same receipt/transaction/key/allocation; exact current Resource and Event; terminal replay equality",
+      "actual bounded pair milestones: both invoked/end before first settled, distinct sockets, no overflow",
+      "stronger connected/finish-before-response booleans retained but not required true",
+      "pendingObserved from actual 202 only; one pending uses independently validated terminal baseline",
+      "all six requests completed; both-pending or any other inconclusive outcome rejected"
+    ]
+  },
+  "negative": {
+    "mode": "second-key-distinct",
+    "requiredHttp": 2,
+    "maximumScheduledHttp": 6,
+    "requiredCaseCount": 1,
+    "testExit": 1,
+    "adapterExit": 0,
+    "soleNamedFailure": "same-key-overlap:shared-receipt-id",
+    "require": [
+      "only second request idempotency-key changed",
+      "two complete writes and two200/completed/available schema-valid receipts",
+      "each own sent key, full Resource facts and requiredPosition==effectPosition",
+      "unordered effects/required positions pos-1,pos-2; each own effect<=serving<=pos-2; matching epoch/view",
+      "distinct receipt IDs, transaction IDs, allocated Resource IDs",
+      "actual bounded dispatch/client milestones; stronger timing booleans not required",
+      "no third request and sole intended inner assertion with report matching genuine Vitest failure",
+      "no transport/startup/deadline/schema/report/cleanup/unhandled error; generic exit1 never accepted"
+    ]
+  },
+  "shared": [
+    "exact frozen report safe-key allowlist, reject unexpected credential-bearing fields",
+    "report exists and bounded<=65536; never accept missing report",
+    "actual source and external entry/package/payload/config/artifact/policy/auth identities bound independently",
+    "report fingerprints do not substitute for absent bodies or schema validation",
+    "known stopped/closed product child; real exit; store absent; unknown pre-ready stop rejected/preserved",
+    "raw test exit1 separate successful control-adjudicator exit0",
+    "sampled group/PID absence independently rechecked; short-lived/detached sampling limits disclosed",
+    "unknown temp entries preserved/classified; never delete caches as if runtime roots",
+    "dirty build attribution remains actual; later clean commit requires exact input/output bridge"
+  ],
+  "fieldNames": "PENDING actual frozen author report contract; do not infer names from this requirement vocabulary",
+  "executed": false
+}

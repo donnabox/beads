@@ -1,0 +1,59 @@
+# Review — proposed private installed guarded-batch contest
+
+## Findings (actual defects in the plan as written)
+
+**1. Medium — §"Transport, lifetime, reports" + §control + `ledger.reports.negativeRequired` (`cleanupFailureCount: 0`).**
+The plan says "On any failure, abort and destroy owned requests/sockets, drain all promises and returned-child close concurrently," and the control cohort fails *by design* on the named oracle. That routes the intended failure through the abort path: `scripts/transaction-installed-observation.mjs:38-65` has `onAbort → close()`, and `close()` treats any `code !== 0 || signal !== null` as "did not close cleanly" → `drainFailure` → `SIGKILL` → `AggregateError`. The control's required `cleanupFailureCount: 0` is then contingent on the child always exiting 0 while its sockets are being destroyed mid-flight.
+*Smallest fix:* classify the intended named-assertion failure as **graceful termination** — stop dispatch, drain in-flight responses, then ordinary `{command:"close"}` and await clean exit — and reserve abort/destroy for setup/launch/transport/deadline failures. Keep `cleanupFailureCount: 0` required only on that graceful path.
+
+**2. Medium — `ledger.limits.cleanupMs: 10000` vs `scripts/transaction-installed-observation.mjs:38-65`.**
+The inherited close path can await `bounded(exited)` **twice** in one `close()` call: once in the `try`, then again inside `drainFailure` after `SIGKILL`. `closing ??=` prevents a second *close*, but not the nested second bound. So worst-case inherited cleanup is ≈2× the inherited bound, which can exceed the declared 10 s "overall cleanup." The plan's prose gestures at this ("can re-enter its 10s drain after a close failure") but attributes it to re-entry rather than the nested wait, and still publishes 10 s as a cap while forbidding "merely observational" cleanup.
+*Smallest fix:* record the inherited bound's measured value and declare the worst case as 2× it, accounted inside the single 45 s work deadline; keep local 10 s as the retained race it already is (coincident deadline = nonpassing), not as an enforceable ceiling.
+
+**3. Medium — positive row 4; `ledger.requests[3]`; `ledger.control.expectedStatuses`.**
+Expected HTTP statuses are pinned only for the control's three rows. Row 4 (retained-failure replay) is the one row where status is genuinely contestable — a retained failed key could plausibly be served as 200-with-receipt or as a key-reuse conflict (`transaction-store.ts:1424-1432` has a `conflict` branch) — and the plan pins only "full retained failed receipt equality."
+*Smallest fix:* pin `expectedStatuses` for all seven positive rows in the ledger, explicitly `200` with the retained failed receipt body for row 4, so a conflict/409 is a declared nonpass rather than an interpretation.
+
+**4. Low — row 4 vs `transaction-store.ts:1054-1063`.**
+Admission calls `expireRow(stored, instant())`. If the retained row has expired before replay, the request **re-executes** instead of returning the retained receipt; the full-equality assertion (including original `expiresAt`) then fails with a misleading "retention broken" diagnosis.
+*Smallest fix:* before row 4, assert captured `expiresAt` is strictly in the future and record elapsed work; classify an expiry-crossing run as inconclusive, not as a retained-failure defect.
+
+**5. Low — §header oracles, "POST `Vary: Accept` is checked".**
+`transaction-http.ts:626-629` applies `applyReadHttpSemantics` only to `GET`/`HEAD`; nothing in supplied context sets `Vary` on the POST path. The assertion may be a predecessor-pattern carryover.
+*Smallest fix:* cite the predecessor's measured POST header set as the basis, or demote `Vary: Accept` to a GET-only named check.
+
+**6. Low — §collection oracle, "the actual canonical URI sorting in authority-read 878-893."**
+Supplied `authority-read.ts:821-838` appends items in `reader.resources()` order with no sort visible; the cited sort range is outside supplied context. The ordering conclusion is probably right (`beads/guarded-seed` < `beads/marker-*`), but a wrong assumption fails the test for a non-defect reason.
+*Smallest fix:* assert full-Resource **set** equality plus `length === 2` and `next: null`, with observed order recorded rather than asserted. This preserves field coverage (no weakening to id-only) while removing the dependence on an unverified sort site.
+
+## Missing-context uncertainty (not defects; verify before authoring)
+
+- **Failed-receipt member set.** `transaction-store.ts:1266-1275` builds `{...core, status, detail, requiredPosition, problem, expiresAt}`. Whether `core` carries `next`, `effectPosition`, or `results` is unsupplied, yet the plan asserts their absence under full equality.
+- **Problem optional members.** `receiptProblem` permits `title`/`detail`; `resource-evaluator.ts:139-159` (the Problem constructor) is unsupplied, so the exact five-member equality is unconfirmed. `operationIndex`-only augmentation is confirmed (`transaction-batch.ts:749-759`, unnamed ops).
+- **Event `data` shapes.** Only `change`/`metadataChange` are confirmed (`transaction-events.ts:262-270`). `previousRevision`, and `{revision, properties, metadata}` on created events, are unverified.
+- **Page bounds.** Only `TRANSACTION_EVENT_PAGE_BYTES = 4 MiB` is supplied. "Default receipt/event maximum 32" rests on `TRANSACTION_MAXIMUM_OPERATIONS` being `TRANSACTION_RUNTIME_LIMITS.maximumOperations` (`transaction-store.ts:226-230` vs `transaction-batch.ts:63-69`) — plausible, unshown; the events-page default limit is not shown at all.
+- **`beads/?limit=32`** query support, and the canonical `receipts/` href rules behind the ≤8192 / no-query-fragment-userinfo checks.
+- **Helper identifier.** Plan says `installedTransactionBinding`; supplied file is `apps/bdptest/test-support/transactional-execution-binding.ts` with the export name not shown.
+- **Loser `requiredPosition = pos-2`** depends on `previous` being the last committed position at failure time (2), not the position observed at transaction start (1). Serialized writes make pos-2 the natural reading; the `previous` assignment site is unsupplied.
+- **All spec citations** (2156-2160, 4173-4183, 3420, 5263-5274, 5275+, 5353-5356), `store.test` 539-569 / 671-694, the three referenced SHAs, prior stdout, and the native review are unreadable here. The missing H1–H4/M1–M6/L1–L5 are **not** reconstructed and remain outstanding.
+
+## Verified against supplied context
+
+- **Body arithmetic is exact.** Recomputed independently: seed 172 B; reference contender 381 B; control contender 323 B; `343 + r` with `r = 38` → 381; `r ≤ 128` → 471 max; totals 1315 / 1585 / 818 / 2133 / 2403 all reconcile. Descriptor 170 B and schema 166 B also recompute exactly. `requestBodyBytes 65536` matches `transaction-batch.ts:63-69`.
+- **The core claim is source-grounded.** Loser's op0 marker is staged (`resource-evaluator.ts:1085-1098` writes after `fault.check()`), op1 fails on guard (`1022-1027`), batch returns that failure (`1055-1062`), store rolls back to the `effects` savepoint and retains the failed receipt (`1266-1275`). Hence exactly two Resources and three Events, no loser Event.
+- **No top-level 409 for the loser** matches `transaction-http.ts:176-190` (202 only for `pending` mutations; otherwise receipt body at 200). Explicitly not copying RU's 409 expectation is correct.
+- **`Accept: application/json`** correctly avoids the SSE branch (`transaction-http.ts:488-505`), and sending no minimum controls avoids `developmentGap("minimum-position")`.
+- **Problem shape** satisfies `receiptProblem`'s conditional `required: ["operationIndex"]` and `readUpdateProblem/allOf/7` (conflict/409/after-state-change); `status: 409` is in the enum.
+- **Relative creation ids** `beads/<id>` satisfy `read-update-values.ts:263-280` root/segment rules and `durableResourceReference`.
+- **Event ID formula and literal tags** match `transaction-events.ts:75-101` (43-char base64url segments, group checkpoint, ordinal); treating the spelling as a private fixture assertion is consistent with the in-source comment.
+- **`claimEligible: false`, `history: false`** match `transaction-runtime-configuration.ts:391-401` and `transactional-execution-binding.ts:74-88`; `{bytes}`-only fixture identity matches `profile-contract-plan.ts:102-107`.
+- **Both-guards-removed control** is the right counterfactual, and distinct literal titles (`guarded-seed`/`winner-a`/`winner-b`) genuinely exclude no-op updates under either arrival order.
+- Non-exhaustive header oracles, 200-not-409 pair semantics, honest 202/503 handling, separate report and Vitest paths per cohort, and the refusal to credit catalog `transactional.batch.revision-guard-race` are all sound.
+
+## Context limits
+
+No tools, filesystem, or execution were used; this review is confined to the quoted plan, ledger, and source excerpts. All referenced SHAs, prior review artifacts, spec lines, and the non-quoted source closure are unverifiable here. This is a focused supplement, not source closure, and it does **not** supply the omitted H1–H4/M1–M6/L1–L5.
+
+## Verdict
+
+**Six actionable findings (0 High, 3 Medium, 3 Low); no blockers.** Nothing found invalidates the design: the evidence target is real, bounded, correctly scoped to two files, honest about claiming neither physical concurrency nor a production mutant, and its arithmetic and central rollback claim check out against supplied source. Findings 1–3 should land before authoring because they shape the adjudication contract (graceful-vs-abort termination, cleanup budget truth, pinned row-4 status); 4–6 are cheap hardening. Reanchoring to the actually merged same-key parent and resolving the uncertainty list remain preconditions, and the incomplete external council is still outstanding.

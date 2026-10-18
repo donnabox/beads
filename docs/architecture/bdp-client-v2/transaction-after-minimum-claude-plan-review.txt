@@ -1,0 +1,91 @@
+## Review: `transaction-after-minimum-plan.md` vs. frozen `d3252087`
+
+Verified against the frozen tree (`git rev-parse HEAD` = `d3252087a31529cf97b5bfcfe2c402f02c694b91`, worktree clean). No files written.
+
+### Citations and claims that hold up
+
+Spot-checked every spec range and code call site the plan names. All of these are accurate: `bdp.md:3831–3833`, `4952–4979`, `5067–5073`, `5115–5139`, `5167–5187`, the receipt/page ordering at `4618–4624`, the status table at `4595–4605`, set rules at `4240–4280`/`4904–4918`/`5578–5594`; `read-selector.ts:164 selectReadResources`; `transaction-batch.ts` `PreparedReadUpdateCarrier` (18/54/216); store `creatorFact` (611), terminal receipt (883), observed admission (1004); catalog really is 133 normative Transactional scenarios and really does carry `receipt.pagination` / `receipt.page-expiry` / `receipt.page-restart`. The representation core is right and load-bearing: `expireRow` (305–376) reads the full `results` array and refuses `next !== null` at line 328, `creatorFact` reads `results[0]`, and `transaction-sequence.ts:60` demands exactly one result with `next === null` — so "keep full facts in the row, project the prefix on delivery" is the correct call, not a preference. Acceptance 8's validator/HEAD/conditional/Retry-After behavior and acceptance 10's drain semantics already fall out of `applyReadHttpSemantics` (read-http.ts:10–56), `jsonResponse` (no ETag), `problem()` (`transaction-http.ts:76`), and `run()`/`close()` — no new machinery. Byte-identical startup refusal is structurally achievable: the configuration compare at `transaction-store.ts:408–415` precedes the pending retraction (416) and `sweep` (420), and the precedent test exists at `transaction-store.test.ts:1919–1941`.
+
+---
+
+### F1 — The receipt page bound is tied to `page.maximumItems`, which the plan treats as a ceiling. High.
+
+**Location:** plan 11–14, 99–101, acceptance item 1 (171–173); `transaction-runtime.ts:238–242`; `bdp.md:5068–5069` and `5167–5172`.
+
+**Impact:** `bdp.md:5170–5171` keys the inline/`next` decision to *the bound*, and defines the bound as `page.maximumItems` when advertised, "a bound of its own" only when it is not: "When every entry fits within the bound, `results` holds them all and `next` is `null`." `5068–5069` repeats it against "the advertised bound." The fixture configures `page: { defaultItems: 2, maximumItems: 32 }`. So a 5-entry receipt with `maximumItems` = 32 in force **must** inline all five with `next: null`. Acceptance item 1 as written ("page bound 2 … two inline entries, then pages of 2 and 1") is conformant only because this fixture serves no discovery at all (`transaction-http.ts:143` and `346–351` both answer `developmentGap("transactional-discovery")`), making `advertisedLimits` purely internal Read enforcement rather than an advertisement. The plan never says this, and its phrase "checked against the service's actual `page.maximumItems`" reads as though 32 were an advertised ceiling under which paging at 2 is legal. It is not — it becomes a violation the moment the "Cold discovery / qualification" row lands.
+
+**Fix:** state the legality basis explicitly — a private authority bound is permitted *because no Transactional or Read discovery document is served in this fixture* — and keep `bound ≤ advertisedLimits.page.maximumItems` only as an internal sanity ceiling, not as the conformance argument. Then add a precondition to the discovery row: any truthful discovery must either omit `limits.page` (it is optional, `schemas/bdp-v0.schema.json:4854`) or advertise `page.maximumItems` equal to the enforced receipt page bound. Record the coupling that forces: `page` is one member shared with Read query pagination (`bdp.md:1059`, `3831–3833`), and `authority-read.ts:371–384` requires `limits.page.maximumItems === pagination.maxPageItems`, so advertising a receipt bound of 2 also caps Read query pages at 2.
+
+Related: the plan never mentions `page.defaultItems`, even though `bdp.md:3831–3833` names it alongside `maximumItems` as counting receipt result entries, and the fixture **already** configures `defaultItems: 2` (`transaction-runtime.ts:239`). Deriving the receipt bound from `advertisedLimits.page.defaultItems` gives acceptance item 1's "bound 2" for free, honors 3831–3833, and removes the need for the new `transaction-runtime.ts` page-bound seam the plan proposes at line 154. Introducing a fourth independent number instead creates a value that can silently disagree with both advertised members.
+
+### F2 — Page expiry would be decided before the unsupported-minimum-tuple gap, inverting `4618–4620`. High.
+
+**Location:** `transaction-http.ts:317–328`; plan 122–128 and 226.
+
+**Impact:** the receipts branch runs the lookup first (321–323), returns any refusal at 324, and only then reaches `if (hasMinimumControls(request) && !minimum) return developmentGap("minimum-position")` at 327. That order is safe today only because no receipt lookup can produce a consistency or expiry refusal — `service.receipt` yields 200/401/404 and nothing else (`transaction-service.ts:41–44`). A page read introduces a `410 cursor-expired` refusal. Then a request carrying minimum-position headers in a form `snapshotTransactionMinimum` rejects (`transaction-consistency.ts:19–41`, surfaced as `transactionMinimumHeaders` returning `undefined`) against a visible, detail-expired page gets answered `410 cursor-expired` at line 324 — asserting a decision the owner never made, and placing page expiry ahead of the minimum-position context that `bdp.md:4618–4620` requires to precede it. The plan's intent ("Unknown minimum tuple handling stays exactly the private gap from d325; no new normative response invented") is right but does not survive the existing code shape.
+
+**Fix:** for page targets, order the branch: resolve existence/nondisclosure first (uniform 404, no context disclosed), then `hasMinimumControls && !minimum → developmentGap("minimum-position")`, then the supported minimum tuple and wait, then detail-expiry 410, then representation. Keep the 404 ahead of the development gap so a hidden page still discloses nothing — that part of the current order is correct and must be preserved.
+
+### F3 — `checked()` rejects every paginated root receipt, and the plan names only the constructor restriction. High.
+
+**Location:** `transaction-service.ts:131–148` (specifically the `observed.receipt.next !== null` clause at 142); plan 147–149.
+
+**Impact:** the plan's service bullet lists "remove >=32 restriction" (that is lines 62–63) but not this second, per-delivery invariant. `checked()` runs on all three receipt delivery paths — `submit` (253), the duplicate/existing path (157), and `receipt`/`receiptAtMinimum` — and throws "transaction receipt exceeds supported inline result bound" whenever `next` is non-null. Every paginated root receipt therefore becomes a bodyless 500 on POST, on the equal retry, and on the independent root GET. Acceptance items 1, 2 and 3 cannot pass with it in place.
+
+**Fix:** replace the invariant rather than deleting it: assert `results.length ≤ configured receipt bound ≤ advertisedLimits.page.maximumItems`, `next` non-null iff more entries are recorded beyond the prefix, and add the page-shaped counterpart (`results` non-empty — `mutationReceiptPage` sets `"minItems": 1` at `schemas/bdp-v0.schema.json:4104`, so an exact-fit receipt must never link an empty page — `results.length ≤ bound`, and `page.receipt === root.id`, which `bdp.md:5173` requires and the schema does not check). Add the 410 page refusal to `TransactionServiceReceiptResult` (`transaction-service.ts:41–44`); `readProblem("cursor-expired")` already yields gone/410/`after-state-change` (`packages/protocol/src/index.ts:507`), so the HTTP mapping needs no new problem code.
+
+### F4 — The page relation's primary lookup has no key, and `next token` is a second source of ordering truth. Medium.
+
+**Location:** plan 88–92.
+
+**Impact:** a page GET supplies only the URL. The plan indexes "parent principal/key plus start index," which serves the first/next boundary lookup but not the lookup the wire actually performs — by page token — and nothing in the proposed shape makes tokens unique. Separately, storing `next token` alongside `start`/exclusive `end` means ordering is recorded twice; a torn or mis-sequenced write set makes the two disagree with no detection, and the plan's own immutability claim ("same-epoch reopen never derives them from a new current default") rests on the boundaries, not the link.
+
+**Fix:** `PRIMARY KEY(token)`, plus `UNIQUE(principal, key, start)`. Drop the stored `next token` and derive the successor as the row with `start = this.end`; the root's first page is the row with the lowest `start`, which is also the prefix length the plan already specifies. Keeping both `parent receipt ID` and `(principal, key)` on the page row *is* justified — it is what lets the page GET reach the receipt row by primary key instead of inheriting `retainedReceipt`'s id scan (`transaction-store.ts:487–498`) — so keep that redundancy and say why.
+
+### F5 — No default receipt page bound is stated; the existing suite depends on one. Medium.
+
+**Location:** plan 99–101 ("fixed at store construction"); `transaction-store.test.ts:1289`; `transaction-dependencies.test.ts:178`; `transaction-sequence.ts:60`; `transaction-store.ts:328`.
+
+**Impact:** the bound becomes a new `openTransactionStore` option, but the plan never says what existing fixtures get. If it defaults low, `transaction-store.test.ts:1289` (`toMatchObject({ … next: null })`), the raw-receipt reads at `transaction-dependencies.test.ts:178`, the singleton guard at `transaction-sequence.ts:60`, and the `expireRow` guard at `transaction-store.ts:328` all become bound-dependent, and acceptance item 12's "all TX regressions" is a much larger blast radius than the file list implies.
+
+**Fix:** default the store bound to `TRANSACTION_MAXIMUM_OPERATIONS` (32, `transaction-batch.ts:1`) so every existing fixture keeps full inline results and `next: null`, and set it to 2 only in the new paging fixtures. Also state the asymmetry the plan currently only half-implies: `store.execute` / `store.admit` / `store.receipt` (1246, 1040, 1262) keep returning *retained facts*, never a wire representation; only `executeObserved` / `admitObserved` / `readReceipt` / `readReceiptPage` project a prefix. That is what keeps `nextSequence` (1205), `creatorFact` and `expireRow` correct, and it is worth naming because `store.receipt()` is read for `.results` in tests today.
+
+### F6 — Folding the bound into the byte-compared fingerprint makes acceptance item 11 unassertable. Medium.
+
+**Location:** plan 102–106 and acceptance 11 (207–209); `transaction-store.ts:167–172`, `408–415`.
+
+**Impact:** reopen has exactly two refusals: an explicit `identityPolicy` check with its own message (409–412) and the generic `storedConfiguration !== configuration` byte compare (413–414). Putting the page bound into `configuration` collapses "prior private format", "incompatible page bound" and "different installed Types" into one indistinguishable `"transaction installation mismatch"`. Acceptance 11 asks to refuse "prior private format **or** incompatible bound" — neither can be asserted distinctly, and the existing byte-identical test (`transaction-store.test.ts:1919–1941`) covers only the `identityPolicy` branch, not the `format` branch a bump to `-6` would take.
+
+**Fix:** add explicit `format` and page-bound comparisons with their own messages ahead of the byte compare, mirroring the `identityPolicy` precedent at 409–412, and extend the byte-identical assertion to the format branch. Secondary note: since the plan also records immutable per-receipt boundaries, the fingerprint check is belt-and-braces rather than the correctness mechanism — say so, and state the cost it buys (changing the fixture bound later invalidates existing store files, no migration, by design).
+
+### F7 — "Removes the artificial `page.maximumItems >= 32` restriction" overstates the benefit. Low–Medium.
+
+**Location:** plan 13–14; `transaction-service.ts:62–63`; `authority-read.ts:382–384`; acceptance 12 ("unchanged Read evidence") and 152 ("No shared Read router edits").
+
+**Impact:** nothing in the acceptance set needs `maximumItems` below 32 — the fixture already satisfies the guard at 32. And lowering it is not free: `authority-read.ts:382–384` forces `limits.page.maximumItems === pagination.maxPageItems`, so any lowering also lowers the Read query page cap (`transaction-runtime.ts:246`), which contradicts the plan's own "unchanged Read evidence" and "no shared Read router edits" constraints.
+
+**Fix:** keep the removal as correctness cleanup (the guard's premise — "until durable receipt pages are added" — expires with this slice), but drop it as a reason to sequence paging first. The sequencing argument stands on 5167–5187 alone.
+
+### Smaller concrete items
+
+- **Restart witness needs the existing `scope` option.** `transaction-runtime.ts:222` derives `scope` from the ephemeral listener port unless `options.scope` is given, and `configuration` byte-compares `scope`, which is why the current process test must reuse the same port (`transaction-runtime.test.ts:75`). Acceptance 5's "a changed canonical listener address does not rewrite links" therefore requires passing `options.scope` (already present, `transaction-runtime.ts:23–24`) — no new option, but the plan should say it. *Low.*
+- **Fault stages.** `TransactionStoreOptions.fault` is a closed union (`transaction-store.ts:113–123`). `after-terminal` (906) already fires inside `atomic` and covers full rollback, so "no orphan page" is demonstrable today; a fault *between* page allocation and the terminal receipt write is not, and would need a new stage name. Failed-COMMIT injection needs nothing new — the existing pattern is at `transaction-store.test.ts:2144`. *Low.*
+- **The `pages` path segment adds an intermediate URL.** With `receipts/{token}/pages/{page-token}`, `receipts/{token}/pages` becomes reachable. It already answers uniform 404 (`methodResponse` gates GET/HEAD at `transaction-http.ts:199`, then the receipts branch finds no matching receipt `id`), so no new code — but the plan's "uniform 404" sentence (111–113) should name it. The path form is also the better choice over the `?page=` spelling in `fixtures/transactional/receipt-pagination.json` and `http-contracts.json`, because an unknown query on a receipt URL must not be mistakable for a page; both fixtures self-describe as non-normative illustrations, so there is no evidence conflict. Worth one sentence so a reviewer doesn't read the divergence as drift. *Low.*
+- **Citation precision.** Plan 73 cites `5158–5172` for set rules, but the set-expansion-order clause is `5160–5166` and `5167–5172` is the receipt page bound the plan already cites as paging authority. Plan 66's `5189–5239` truncates the "immutable execution facts versus the serving observation" clause, which runs to `5244`. Plan 85–86 lists `expireRow` "around 328" as a call site to touch; `expireRow` is defined at 305 and 328 is its `receipt.next !== null` guard, which under the chosen representation needs **no** change — it is a constraint on the representation, not a work item. *Low.*
+
+---
+
+### True normative ambiguities (not resolvable by implementation choice)
+
+1. **Whether an advertised `page.maximumItems` or an authority's own smaller bound governs the inline/`next` split when both exist.** `5170–5171` says the advertised value governs when advertised; it does not say an authority may page more finely than it advertises. This is the substance of F1. It needs no ruling *now* only because nothing is advertised — the ruling becomes unavoidable at the discovery row.
+2. **Whether the receipt page size is `page.defaultItems`.** `3831–3833` makes `defaultItems` count receipt entries, but no clause states that a receipt's page size *is* `defaultItems`, and receipts admit no client page-size parameter. Deriving the bound from `defaultItems` is the defensible reading; the plan should record it as a chosen reading, not a free choice.
+3. **The unknown/partial minimum-tuple response** — correctly carried forward from d325 as an open private gap (plan 226). Still open; F2 is only about not letting a 410 pre-empt it.
+4. **Retained query-page minimum meaning** — correctly excluded (plan 64–66, 227). `4618–4624` is receipt/page authority and does not reach it.
+
+### Ordinary implementation choices needing no permission
+
+Page URL spelling and the `pages` path segment; page token generation (`randomUUID` already in use, and within the checkpoint character profile even though `5087` constrains only the receipt token); the page relation's exact column set and indexes; where the prefix projection lives (`observeReceipt` plus a principal/key parameter); the private format bump `-5` → `-6`; whether a `transaction-receipt-pages.ts` helper exists at all. None of these are protocol surface.
+
+### Unsupported optional configurations correctly excluded
+
+Advertised `transaction.duration` (plan 47–48 is right: not advertised, so not mandatory, but must be implemented if ever chosen); `retention.receipt` as an advertised bound; History/restore and cross-epoch tokens; variable grant projection and version erasure — correctly held as *required-where-applicable* follow-up rather than optional, and correctly not claimed satisfied by the all-visible fixture (plan 37, 201–203, 222–224). The "133 obligations, not 133 passes" framing and the open large-set pagination witness are both honest.

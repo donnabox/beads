@@ -1,0 +1,82 @@
+{
+  "name": "restore-missing-gap",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+    "--maxWorkers=1",
+    "--testNamePattern",
+    "^serves missing-first current Resources and bounds unproved minimum eligibility$",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/run/restore-missing-gap.results.json"
+  ],
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+    "--maxWorkers=1",
+    "--testNamePattern",
+    "^serves missing-first current Resources and bounds unproved minimum eligibility$",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/run/restore-missing-gap.results.json"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+  "started": "2026-10-16T04:10:21.875365+00:00",
+  "adjudication": {
+    "kind": "command-only",
+    "testVerdict": "not-applicable"
+  },
+  "elapsedSeconds": 1.6919417909812182,
+  "exit": 1,
+  "supervisorExit": 0,
+  "timeout": false,
+  "forcedCleanup": false,
+  "errors": [],
+  "processGroup": 88956,
+  "remainingBeforeCleanup": [],
+  "remainingAfterCleanup": [],
+  "sampledPids": [
+    88956,
+    88958,
+    88962,
+    88965,
+    88981
+  ],
+  "sampledPidsStillPresent": {},
+  "sampledTempEntries": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/run/restore-missing-gap.tmp/bdp-minimum-current-installed-CWhNyn",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/run/restore-missing-gap.tmp/xrf2C3lBUGJUBOOyxT0yq"
+  ],
+  "tempEntriesAfter": [],
+  "remainingTempEntriesForClassification": [],
+  "runtimeDirectoriesStillPresent": [],
+  "unclassifiedTempEntriesStillPresent": [],
+  "sourceUnchanged": true,
+  "sourceSha256After": {
+    "packages/server/src/transaction-consistency.ts": "ad51311d6098db32fd47849e0b78d3118162cdf1e80ee9ef4d46324bfa9f436f",
+    "packages/server/src/transaction-read.ts": "7e2cc29b668bb80a3ba2948e90511518a98a7ff798b1dbfb8c6f51f0c0bd2a6f",
+    "packages/server/src/transaction-service.ts": "c700d5719918b60c3239a336eef02c9dff6717faca698777aba01181ebdcd278",
+    "packages/server/src/transaction-http.ts": "90489b22858be99579f7ce8753bab0d6204d4caae215f7a293c1537d09477636",
+    "packages/server/src/transaction-consistency.test.ts": "904d1f74ff06237da41c45f3dc1d4727a1387dc760950860ef548db51e7f02c4",
+    "packages/server/src/transaction-read.test.ts": "c3a9e76a1d221ef1712e3f96082e7a36503232693cf9c3a3ba5689e2c47cb6a1",
+    "packages/server/src/transaction-http.test.ts": "1ae690d8135c0ecd44f01b39a3412f50921828d83e7395bd076ff2404e503672",
+    "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts": "21146871e6b5bfa3d9e96ff2db7c4897dd62fac026de538981832de295628f15",
+    "docs/specs/bdp.md": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+    "docs/design/transaction-implementation-progress.md": "6a792498a0ac19b342dcaa6700cfdab0651fe95d665c649d3cd7134bdd5f26e9"
+  },
+  "samplingSeconds": 0.05,
+  "commandWindowSeconds": 115,
+  "groupHardDeadlineSeconds": 120,
+  "cleanupBound": "TERM at115s, KILL no later than120s; wait/reap after kill adds no product execution allowance",
+  "samplingLimitation": "Short-lived or detached descendants may evade group sampling; helper counts and independent final checks remain separate.",
+  "tempClassification": "Only the selected fixture prefixes under this attempt TMPDIR are owned runtime roots; all other entries are preserved for review, not deleted or called leaks.",
+  "resultLimitation": "A declared negative raw exit1 may complete its supervisor; subsequent strict review is mandatory. No generic exit1 acceptance or product qualification."
+}

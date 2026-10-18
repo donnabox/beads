@@ -1,0 +1,24 @@
+{
+  "releasedAt": "2026-10-17T01:00:50.483481+00:00",
+  "scope": "Source authoring only: exactly six nominated files under accepted plan-v3. No tests, builds, installs, services, commit/push or integration.",
+  "planSha256": "92993265e606c5d338f4f02601ceb3ddfe3a34ef1af28f56aca77982ca360858",
+  "nativeClosureSha256": "55992d28eab4d0348ea277b09f128429c23c0402c667fc96dcc7b343c47f5e58",
+  "findingsDispositionSha256": "c9c994f3fb79ccbcb80236fee6971c8966c0c7a8af535308cbcc0755076bcbba",
+  "sourceHead": "b76c3b7df77ea9b33611bc9027db651833e20abb",
+  "sourceTree": "4d9f8ac00702d32a45c3eb38cf50fac55ac96f2d",
+  "worktree": "/Users/dbox/repos/wt/vickie/vickie-finite-event-minimum",
+  "branch": "codex/vickie-finite-event-minimum",
+  "verifiedTrackedInputs": 679,
+  "frozenCheckpoint": "PR150 d4f3f4be unchanged; PR151 b76 unchanged",
+  "preserve": {
+    "file": "packages/server/src/transaction-http.ts",
+    "baselineLines": [
+      574,
+      591
+    ],
+    "bytes": 976,
+    "sha256": "608121c6366636acd322899a0aace194601fe04917523639af96a98f8297afa6",
+    "testFile": "packages/server/src/transaction-http.test.ts",
+    "testFileSha256": "88748d8473a9940187724a0328aad45a46ca56c0de035c61d746b9de7214267f"
+  }
+}

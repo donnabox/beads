@@ -1,0 +1,9 @@
+# CLOSED PR147 repair plan review
+
+Prompt 19370 bytes, SHA256 9655bbe74a84e225455ab9e2e6b4b7aff2d0e3db7e5ce09854ea5e31d98afa5f. Runner SHA256 d0be50ccf572b10b416dca2b03e6c7d59505202d64a15a1713ac096d113aca87. Binding SHA256 3e25eab1daafdc5f8dae2334b1b9173bce47a0ea68e0d843d19c4c7b5fd7fa39. Actual Claude has NOT launched; rootLaunchReleased=false is enforced before output creation.
+
+Prepared using claude-review skill. CLI is /opt/homebrew/bin/claude, confirmed present. Exact argv is unchanged from the reviewed conditional runner: --safe-mode -p --tools Read,Glob,Grep --allowedTools Read,Glob,Grep --disable-slash-commands --strict-mcp-config --mcp-config '{"mcpServers":{}}' --no-session-persistence. No model override. cwd=/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving. Prompt via stdin.
+
+Complete diagnosis/native review supplied; full affected tests and listed production context available via read-only tools. Only two tests are primary review source. Supporting context and three external plan artifacts are independently hashed before/after. Current clean b021 head is required, no mutation or main inspection. Preserved CI excerpt is exact; rawlog hash is recorded, not copied wholesale. Broader unpinned dependencies must be named in findings.
+
+Reviewed runner mechanics preserved: one direct CLI process group, fixed900s/TERM895, actual stdout/stderr/exit, process sampling/descendant cleanup, immutable before/after evidence. Narrow adaptations enforce explicit rootrelease, no existing attempt output, exact source head/cleanliness and context/artifact pins. AST parsing only; no CLI review, product import or test executed. Original conditional review inputs untouched. Root launch after inspection: python3 /Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py python3 /Users/dbox/repos/wt/vickie/bdp-integration-logs/pr147-ci-failure/claude-plan-review/run.py.

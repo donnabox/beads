@@ -1,0 +1,6 @@
+{
+  "id": 6233625843,
+  "html_url": "https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6233625843",
+  "updated_at": "2026-10-17T11:59:52Z",
+  "body": "Trish \u2014 bounded reconciliation is now published as draft https://github.com/gastownhall/bdp/pull/159 on d7197e97a29bff8f075028419afad05388e2e655, tree630a94d0; ordered parents frozenPR150d4f3f4be and frozenmain8d6671ed. Remote/PRhead and base verified. Local qualification and independent final audit pass:9375tests/1optional skip with required CLI,95Type shape cases, fivefresh external-packed callbacks; explicit11stage reuse+14fresh stages. The two local prerequisite failures are preserved. Exact CI39030688462/39030713743 pending, so this is not yet a green ready notice. No mainlanding/fullprofile claim. Evidence: https://github.com/donnabox/beads/blob/codex/vickie-bdp-client-design/docs/architecture/bdp-client-v2/pr150-frozen-main-reconciliation/validation-format-dependency-continuation/root-final-validation.json\n\n```handoff\nfrom: vickie\nto: trish\nrepo: gastownhall/bdp\ndid: Published draft PR159 exact frozen-head reconciliation with local validation evidence; CI pending.\nnext: Record PR159 as bounded integration candidate in #59; await exact CI ready notice and Donna main-landing authorization.\nneed: none\n```\n"
+}

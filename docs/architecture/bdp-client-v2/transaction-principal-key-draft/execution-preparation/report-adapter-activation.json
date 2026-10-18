@@ -1,0 +1,26 @@
+{
+  "status": "ADAPTER_AVAILABLE_ROOT_REBIND_REQUIRED",
+  "adapterSha256": "87f7895e3458ec082cecd342b785a1093c5caa8466dcdc4938992bb5acd6f46b",
+  "bindingSha256": "405947308c1cf0ba1b9bfeff94c0170275c17255d7016aef08dfce0dce3ed200",
+  "exampleSha256": "7f49a7fdb0c0f3ff96e292b39630187cf619ef5dedc864bacb4f38e0edbee6db",
+  "originalPreserved": {
+    "review-cohort.py": "9ffc8ad94feb36aaaba437b37a33cd4b8c5c7c1075e12241b351889d3630ef9f",
+    "execution-gate.example.json": "b4b6b5a8f654da61c376d4b3af5fe4e0ab7d7c2e5e6a3e70928d4cc8ddcd5129",
+    "preparation-hashes.json": "548072d120eaaf5aa1f8ba55bff85247fe5f90b24a3fcf06f02ea16bec9f9c44",
+    "README.md": "7f95c3a8daa0e50a7d10d2113bbcdcdc51a4299c5c24e815abeb04ca4b7d7e7c",
+    "report.md": "800095c3a60ac9b858a64287b1d18a2f2612faab7bc381add55ae834e5f821b4"
+  },
+  "staticEvidenceInspected": [
+    "setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "build-inventory"
+  ],
+  "adapterExecuted": false,
+  "productSourceChanged": false,
+  "rootExecutionGateChanged": false
+}

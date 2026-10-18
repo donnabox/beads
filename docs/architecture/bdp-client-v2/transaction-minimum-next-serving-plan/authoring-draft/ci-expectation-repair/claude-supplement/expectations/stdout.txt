@@ -1,0 +1,71 @@
+# Supplementary review — two-test expectation correction (parent `2e1676c`)
+
+Scope: only the supplied diff and the supplied post-diff excerpts. No files written, no tools run, no product executed, no model override. Line numbers are post-diff.
+
+---
+
+**1. Severity: High — `AuthorityReadError` is referenced with no import hunk in the diff**
+
+- Location: `packages/server/src/transaction-read.test.ts:1267` (`rejects.toBeInstanceOf(AuthorityReadError)`).
+- Impact: The diff contains exactly one hunk for this file and no import change; the file's import block is not supplied. If `AuthorityReadError` is not already a *value* import in this test file, all 11 parameterized cases fail at typecheck/runtime, not just the 4 repaired ones. Three distinct ways this breaks even if the identifier resolves: (a) it is imported `import type`, which compiles in a type position but is `undefined` at runtime for `toBeInstanceOf`; (b) it is declared in `authority-read.ts` but not exported (the supplied excerpt at `packages/server/src/authority-read.ts:296–314` shows only `new AuthorityReadError(...)`, never its declaration or export); (c) it is imported via a package entry while production throws from the relative module, giving two class identities and a failing `instanceof`. "Typecheck passed on substantive predecessor" is suggestive but does not establish that the predecessor contained this reference.
+- Minimal correction: confirm a runtime value import of `AuthorityReadError` from the same module specifier production throws from, and add it to the existing import list if absent. If the class is intentionally unexported, replace line 1267 with `await expect(delivery).rejects.toMatchObject({ name: "AuthorityReadError" })` folded into the existing `toMatchObject` at 1268–1271 (single assertion, no new import).
+
+**2. Severity: High — exact Problem-body equality is asserted against an uncorroborated hand-written literal**
+
+- Location: `apps/bdptest/src/transactional-collection-minimum-installed.test.ts:736–745` and `:1143–1154`.
+- Impact: `toEqual(missingProblem)` asserts the 404 body has *exactly* four members (`type`, `code`, `retry`, `status`). Nothing in the supplied context corroborates that member set: the `transactionalProblem` schema bundle is omitted, no observed 404 body appears anywhere in the excerpts, and the CI note records only the status transition (500 → 404), not the body. The supplied code only evidences that `code` and `retry` are real members (via `foreignEpoch`/`behind` at `:1100` region). If the real representation carries an RFC 9457 `title`, `detail`, or `instance`, then line 742 fails, and every derived assertion collapses with it (743 `bodyText`, 744 `bodyOctets`, 745 `content-length`), plus the independent literal at 1143–1154 asserts a wrong `content-length`. This is the single largest "will it actually be green, and is it green for the right reason" risk in the patch, and it is avoidable at zero request cost.
+- Minimal correction: anchor both literals to an actually observed response in the same callback.
+  - Resource callback: capture the loop's first GET 404 (`beads/never`, `earlier`) body and add `expect(ahead.bodyText).toBe(firstMissingBody)` alongside `toEqual(missingProblem)`. A uniform 404 must be byte-identical, so this makes the literal self-validating rather than asserted.
+  - Alias callback: `absent` (`:1119` region) is already an observed GET 404 on the same `alias/never` URL. Pin `expect(absent.bodyText).toBe(JSON.stringify(notFoundProblem))` there, then replace 1143–1154 with `expect(collision.headers["content-length"]).toBe(absent.headers["content-length"])`. That is also the stronger oracle for the rule being tested — "HEAD retains the corresponding GET response metadata" — because the current code *reconstructs* the expected bytes instead of comparing against the real GET representation.
+
+**3. Severity: Medium — the same Problem literal is duplicated across two callbacks with no shared constant**
+
+- Location: `:736–741` (object form) vs `:1145–1152` (re-inlined inside `Buffer.byteLength(JSON.stringify({...}))`).
+- Impact: Drift. A future change to the Problem shape will plausibly be applied at one site; the other then asserts a stale byte count. Because `JSON.stringify` byte length is invariant under key reordering and across any member substitution of equal total length, the stale alias assertion can keep passing while no longer describing the real representation — a silently weakened oracle rather than a failure.
+- Minimal correction: hoist one module-level constant beside the schema helpers (`:60–86`), e.g. `const notFoundProblem = { type: …, code: …, retry: …, status: 404 } as const;` and reference it from both callbacks (with `Buffer.byteLength(JSON.stringify(notFoundProblem))` for the HEAD length, if finding 2's `absent`-anchored form is not adopted).
+
+**4. Severity: Medium — the resource callback retains no ahead-minimum case against an *existing* resource, so 404-before-minimum is no longer distinguishable from minimum-not-evaluated**
+
+- Location: `:733–749` (the `behind`/ahead case) read against the satisfiable-minimum loop at `:712–732`.
+- Impact: Every remaining case in this callback uses a satisfiable minimum (`earlier`/`equal`) or targets a missing resource. The removed sentinel (`x-bdp-development-limit: minimum-position-visibility`) was the only thing making the minimum-evaluation path observable here. After the repair, a production regression that ignored `bdp-minimum-scope-position` entirely on Bead/Link resource reads would satisfy all 10 exchanges, because "plain 404 with current context" is exactly what the broken implementation would also return. The alias callback does preserve the contrast (`behind` existing alias + `future` → 503 `catch-up-timeout` vs `collision` missing alias + `future` → 404), so the precedence rule is pinned for the alias route; the resource route's 503 arm is pinned only in the omitted sibling callbacks, which I cannot confirm.
+- Minimal correction: one added exchange on the surviving resource — `exchange(\`${scope}beads/b?view=properties\`, "GET", minimum(removed, "pos-3"))` expecting `json(..., 503)` `{ code: "catch-up-timeout", retry: "after-delay" }`, `retry-after`, and `context(..., equal)`. This requires raising this callback's cap from 10 → 11 (`:591` guard, `:750` `expect(count).toBe(10)`, `:751` `urls.size` 9 → 10) and the stated validation scope 28 → 29 HTTP. If the operator wants the request budget frozen as stated, then record explicitly that resource-route minimum evaluation is pinned only by omitted callbacks — do not leave that inference implicit.
+
+**5. Severity: Medium-Low — the `requestShapeMessage` ternary is non-exhaustive and defaults silently to the weak branch**
+
+- Location: `packages/server/src/transaction-read.test.ts:1258–1265`, consumed at `:1266`/`:1272`.
+- Impact: Any kind not named in the chain falls to `undefined` and is routed to `rejects.toThrow("outside supported subset")`. Adding a twelfth malformed kind to the `it.each` list at `:1206–1217` therefore gets the loose assertion with no compile-time or review signal — the 4-exact/7-subset split the operator ruled on becomes implicit rather than enforced.
+- Minimal correction: replace the chain with an exhaustive map keyed by the parameter union, e.g. `const shapeMessages = { accessor: "Read request cannot have accessors", inherited: "Read request must have a plain prototype", proxy: "Read request must be a plain data object", revoked: "Read request must be a plain data object", omitted: undefined, undefined: undefined, null: undefined, number: undefined, false: undefined, empty: undefined, method: undefined } satisfies Record<typeof kind, string | undefined>;` so a new kind is a type error.
+
+**6. Severity: Low — neither new 404 asserts `retry-after` is absent**
+
+- Location: `:736–749` and `:1139–1158`.
+- Impact: The Problem body declares `retry: "after-state-change"`, but the response headers are unconstrained for `retry-after`, and the sibling 503 case at `:1105` region pins `retry-after: "1"`. A regression emitting `retry-after` on the uniform 404 (mixing after-state-change with after-delay framing) passes both tests.
+- Minimal correction: add `expect(ahead.headers["retry-after"]).toBeUndefined();` and `expect(collision.headers["retry-after"]).toBeUndefined();`.
+
+**7. Severity: Low — the `behind` identifier now contradicts the renamed title and collides conceptually with the alias callback's `behind`**
+
+- Location: `:733` (declared just above, at the `const behind = await exchange(` line) vs `:1095` region in the alias callback.
+- Impact: The title change to "compatible and ahead" is correct — `minimum(removed, "pos-3")` against current `pos-2` is an ahead/unrecognized position — but the variable still reads "behind", while `behind` in the alias callback names the genuine 503 catch-up case. Two different precedence rules under one name in one file invites a future reader to conflate them.
+- Minimal correction: rename to `ahead` in the resource callback (local, no behavioral effect). Leave the `withInstalled` label `"private-installed-compatible-missing-minimum"` at `:755` unchanged — it is an external observation identifier emitted by `report()` at `:343–366`, and churning it would alter the recorded observation key for no oracle gain. Secondary nit at `:1134–1138`: `noDisclosure` is now declared immediately above a site that no longer calls it; its two remaining uses are the 401 and the `?invalid=1` 404 further down.
+
+**8. Severity: Low — exact `bodyText` string equality pins member *order*, which nothing else in the oracle requires**
+
+- Location: `:743`.
+- Impact: `toEqual` at 742 already pins the complete member set and values; 743 additionally pins serialization order and whitespace. That converts a serializer key-order change into a red test with no semantic regression. It is defensible under the operator's "exact complete 404 GET Problem" wording, so this is a tradeoff note, not a defect.
+- Minimal correction (only if byte-exactness is not intended): drop 743 and re-anchor the framing chain to the constant instead of to the observed body — `expect(ahead.headers["content-length"]).toBe(String(Buffer.byteLength(JSON.stringify(missingProblem))))` and `expect(ahead.bodyOctets).toBe(Number(ahead.headers["content-length"]))`. `JSON.stringify` byte length is order-invariant for a fixed member set, so completeness and framing stay pinned without ordering brittleness. If byte-exactness *is* intended, keep 743 and add a one-line comment saying so, because lines 744–745 currently read as independent checks when they are in fact derived from 743.
+
+**9. Severity: Low — the 7 retained subset cases are now visibly weaker than the 4 repaired ones in the same block**
+
+- Location: `packages/server/src/transaction-read.test.ts:1272`.
+- Impact: `rejects.toThrow("outside supported subset")` is a substring match with no class constraint. Production rejects these with `new TypeError("minimum-read route outside supported subset")` from the wrapper (`packages/server/src/transaction-read.ts:300`), but the assertion would equally accept a rejection raised from the authority layer, or a non-`TypeError`, as long as the substring survives. The repair makes this asymmetry conspicuous without introducing it.
+- Minimal correction (zero cost, same block): `await expect(delivery).rejects.toBeInstanceOf(TypeError)` plus the exact message `"minimum-read route outside supported subset"`. Note this *strengthens* rather than removes the seven cases the ruling said must stay; confirm that reading of "stay" before applying.
+
+---
+
+## Scope, verification basis, and omitted-context limitations
+
+Verified consistent against the supplied material, no finding raised: the three message mappings at `:1260/1262/1264` match the supplied `ownData` control flow exactly (proxy/revoked trip `isProxy` first → "plain data object"; inherited trips the prototype gate → "plain prototype"; accessor reaches the per-key descriptor gate → "cannot have accessors"), and none of the four reads a getter, so `expect(invoked).not.toHaveBeenCalled()` at `:1273` still holds given `captureTransactionReadRequest`'s descriptor-only copy. `context(collision, headers)` asserting *present* current context on a missing-alias 404 is corroborated by the existing unchanged passing `absent` case on the same URL, and by `checkSourceCondition`'s `if (kind !== "strict") return;` branch, which skips minimum comparison on `resource-not-found` for both the alias (`"missing"`) and resource (`"resource"`) kinds. Request-budget arithmetic is undisturbed: resource callback 2 batch + 7 loop + 1 ahead = 10 exchanges over 9 distinct URLs; alias callback 18 exchanges over the 7 URLs in the sorted assertion; 10 + 18 = the stated 28 HTTP, and 11 Type cases + 2 installed = the stated 13. The title change is confined to removing the preserved-gap claim.
+
+Not reviewed and not approved: the other installed callbacks, the full `bdp-v0.schema.json` bundle, the complete authority implementation, store execution, unrelated HTTP routes, the full-PR corpus, and the pinned consumer entry/binding. I did not run anything and make no pass claim for this proposed successor — the historical `32+2+2` local run and the failed PR141 CI run `38850496734` both predate it, and current validation is separate per the brief.
+
+Two omissions materially limit findings 1 and 2 and are the only context I would need to convert them from risk flags to verdicts: (a) the import block of `packages/server/src/transaction-read.test.ts` plus the export site of `AuthorityReadError`; (b) one actually observed 404 `application/problem+json` body from this build, or the `transactionalProblem` definition's required/additional-member rules. Everything else needed for the findings above was supplied. Findings 2, 3 and 4 are the ones I would resolve before landing; the rest are safe to defer. This is a focused supplementary review of the two-test expectation correction only, not approval of PR141 as a whole.

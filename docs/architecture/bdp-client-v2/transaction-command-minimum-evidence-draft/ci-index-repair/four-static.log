@@ -1,0 +1,50 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence
+
+ ✓ packages/conformance/src/transactional-cumulative.test.ts > binds the canonical cumulative TX selection and exact source digests without qualification 15ms
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > rejects noncanonical selections, History, wrong factories, retired and misprofiled rows
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > copies source bytes before binding and exposes all missing obligations without executing them
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > enforces TX1MiB and preserves RU4MiB at factory and planner boundaries
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > denies genuine TX bundles through public runner declared read
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > denies genuine TX bundles through public runner declared read-update
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > denies genuine TX bundles through public runner declared transactional
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > private runner refuses lookalikes, RU bundles, wrong profiles and absent exact transport before setup
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > keeps private cumulative factories, TX runner, receipt recorder and brand predicate out of public exports
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > refuses reserved receipt actions in an ordinary RU run before setup or a programmable callback
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > uses preparation rather than HTTP timeout for private reopen lifecycle
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > retains safe wire receipt reason with correct attribution over raw HTTP (harness-error/receipt wire headers mismatch/batch)
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > retains safe wire receipt reason with correct attribution over raw HTTP (harness-error/receipt wire headers mismatch/update-where)
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > retains safe validator receipt reason with correct attribution over raw HTTP (harness-error/source receipt validator unavailable/batch)
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > retains safe validator receipt reason with correct attribution over raw HTTP (harness-error/source receipt validator unavailable/update-where)
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > retains safe wire-id receipt reason with correct attribution over raw HTTP (harness-error/receipt wire body mismatch/batch)
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > retains safe wire-id receipt reason with correct attribution over raw HTTP (harness-error/receipt wire body mismatch/update-where)
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > retains safe source-id receipt reason with correct attribution over raw HTTP (fail/source receipt identity invalid/batch)
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > retains safe source-id receipt reason with correct attribution over raw HTTP (fail/source receipt identity invalid/update-where)
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > retains safe source-schema receipt reason with correct attribution over raw HTTP (fail/source receipt schema invalid/batch)
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > retains safe source-schema receipt reason with correct attribution over raw HTTP (fail/source receipt schema invalid/update-where)
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > retains safe retained receipt reason with correct attribution over raw HTTP (fail/retained receipt differs from original wire facts/batch)
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > retains safe retained receipt reason with correct attribution over raw HTTP (fail/retained receipt differs from original wire facts/update-where)
+ ✓ packages/conformance/src/transactional-cumulative.test.ts > preserves every original TX scenario and coverage object while adding one bounded partial cross-carrier row 24ms
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > pins required context presence before equality in set and cross-carrier rows
+ ✓ packages/conformance/src/transactional-cumulative.test.ts > pins the one-page matched-plus-updated witness without advertised-limit or other-outcome credit 1ms
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > pins complete conflict responses and rejects retained-record equality weakening
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > rejects removing mandatory context presence from either comparison side
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > pins the completed-key conflict law, five presentations, and semantic request difference
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > pins the complete matching no-op partition and its exact selected clauses
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > rejects independent no-op oracle weakening in n-noop:bead-retained-record
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > rejects independent no-op oracle weakening in n-noop:no-effect
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > rejects independent no-op oracle weakening in n-noop:present-bdp-scope-position
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > rejects independent no-op oracle weakening in n-noop-groups:group-inventory
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > pins complete operation-time deletion safety and its exact selected clause
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > rejects deletion-safety oracle weakening: unchanged-link
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > rejects deletion-safety oracle weakening: problem-index
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > rejects deletion-safety oracle weakening: rollback-metadata
+ ↓ packages/conformance/src/transactional-cumulative.test.ts > resolves every authored TX schema and rejects the undefined deleted-point reference
+ ✓ packages/conformance/src/transactional-cumulative.test.ts > pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects 24ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed | 36 skipped (40)
+   Start at  01:20:32
+   Duration  286ms (transform 121ms, setup 16ms, import 154ms, tests 66ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/ci-index-repair/four-static.results.json

@@ -1,0 +1,76 @@
+"""Reconcile one actual installed receipt result; no product import or response fabrication."""
+from pathlib import Path
+import json,os,re
+from gate import P,W,E,load_gate,completed,document,require,sha
+name="installed-positive"
+g,_=load_gate("installed-review");completed(name)
+spec=json.loads((P/"commands.json").read_text())["commands"][name]
+r=json.loads((E/(name+".json")).read_text())
+actual=[a for f in r["testResults"] for a in f["assertionResults"] if a["status"] not in ("pending","skipped","todo")]
+require(len(actual)==1 and actual[0]["status"]=="passed" and [a["fullName"] for a in actual]==spec["selectedFullNames"],"Wrong case/result")
+require(r["success"] and r["numPassedTests"]==1 and r["numFailedTests"]==0 and not r.get("unhandledErrors") and not r.get("errors"),"Test failure")
+records=[]
+for line in (E/(name+".log")).read_text().splitlines():
+    line=re.sub(r"\x1b\[[0-9;]*m","",line).strip()
+    if not line.startswith("{"):continue
+    try:value=json.loads(line)
+    except json.JSONDecodeError:continue
+    if value.get("observation")=="private-installed-receipt-missing-context":records.append((value,line))
+require(len(records)==1,"Exactly one observation required")
+o,line=records[0];p=document(g,"installedProvenance")
+require(o["outcome"]=="passed" and not o["deadlineExceeded"] and o["failureCount"]==0 and o["claimEligible"] is False and o["workspaceDirty"] is False,"Invalid outcome")
+require(o["declaredSourceCommit"]==g["finalHead"] and Path(o["entry"]).resolve()==Path(p["entryRealpath"]) and o["entrySha256"]==p["entrySha256"],"Wrong source/entry")
+b=o["binding"];s=b["served"]
+require(b["authorityMode"]=="canonical" and re.fullmatch("[0-9a-f]{64}",b["runtimeConfigurationIdentity"]) is not None,"Wrong runtime binding")
+require(s["sourceCommit"]==g["finalHead"] and s["installedPayloadDigest"]==p["payloadIdentity"] and s["scope"]=="https://reference.invalid/acme/" and s["profile"]=="transactional" and s["history"] is False,"Wrong served binding")
+for key in ("installedContractsDigest","policyDigest","authenticationDigest","fixtureDigest"):
+    require(re.fullmatch("[0-9a-f]{64}",s[key]) is not None,"Invalid configuration digest")
+require(s["fixtureDigest"]==sha((W/"packages/conformance/test-support/transactional/fixture-v1.json").read_bytes()),"Wrong fixture")
+require(o["artifactBytes"]==328,"Wrong artifacts")
+requestpin=json.loads((P/"commands.json").read_text())["requests"]
+require(sha(Path(requestpin["path"]).read_bytes())==requestpin["sha256"],"Request ledger changed")
+requests=json.loads(Path(requestpin["path"]).read_text())["installed"]["requests"]
+responses=o["completedResponses"]
+require(o["attempted"]==o["exchanges"]==len(responses)==len(requests)==14,"Wrong dispatch/response count")
+# Actual root/page URLs are retained in response mapping, while issued id/next and
+# page.receipt equality were schema-checked in memory by the bound test. Do not
+# infer receipt body contents from these response fingerprints.
+from urllib.parse import urlsplit
+root=responses[5]["url"];page=responses[2]["url"]
+require(root.startswith("https://reference.invalid/acme/receipts/") and re.fullmatch(r"[A-Za-z0-9_-]+",root.rsplit("/",1)[1]) is not None,"Invalid root mapping")
+require(page.startswith(root+"/pages/") and re.fullmatch(r"[A-Za-z0-9_-]+",page[len(root+"/pages/"):]) is not None,"Invalid page mapping")
+unknown=root.rsplit("/",1)[0]+"/unknown"
+for value in (root,page,unknown):
+    u=urlsplit(value)
+    require(not u.query and not u.fragment and u.username is None and u.password is None and len(value.encode())<=8192,"Noncanonical receipt mapping")
+substitutions={"$root":root,"$page":page,"$unknownRoot":unknown}
+require([(x["method"],x["url"],x["accept"],x["status"]) for x in responses]==[(x["method"],substitutions.get(x["url"],x["url"]),x["accept"],x["expectedStatus"]) for x in requests],"Wrong actual request/response map")
+context=["bdp-scope-epoch","bdp-authorization-view","bdp-scope-position"]
+known=[responses[1]["headers"][k] for k in context]
+require(all(known) and known[2]=="pos-2","Missing comparator context")
+for i,x in enumerate(responses):
+    require(type(x["bodyOctets"]) is int and 0<=x["bodyOctets"]<=32768,"Invalid response size")
+    for key in ("wireSha256","bodySha256"):require(re.fullmatch("[0-9a-f]{64}",x[key]) is not None,"Missing fingerprint")
+    require(x["headers"]["x-bdp-development"]=="non-attesting","Missing private marker")
+    expected=([known[0],known[1],"pos-1"] if i==0 else known if i<9 else [known[0],known[1],"pos-3"] if i<12 else [None,None,None])
+    require([x["headers"][k] for k in context]==expected,"Wrong context tuple")
+    if x["status"]==404:
+        require(x["headers"]["content-type"]=="application/problem+json" and x["headers"]["cache-control"]=="private, no-store","Wrong404 metadata")
+        require(all(x["headers"][k] is None for k in ["retry-after","www-authenticate","x-bdp-development-limit","etag","last-modified"]),"Unexpected404 metadata")
+        if x["method"]=="HEAD":
+            require(x["bodyOctets"]==0 and x["bodySha256"]==sha(b"") and x["headers"]["content-length"]==responses[i-1]["headers"]["content-length"],"HEAD mismatch")
+        else:require(int(x["headers"]["content-length"])==x["bodyOctets"] and x["bodyOctets"]>0,"GET length mismatch")
+    if x["status"]==401:
+        require(x["headers"]["www-authenticate"]=='Bearer realm="bdp-transaction-development"',"Wrong anonymous challenge")
+        if x["method"]=="HEAD":require(x["bodyOctets"]==0 and x["bodySha256"]==sha(b""),"Anonymous HEAD body")
+require(o["closed"] is True and o["startupCompleted"] is True and o["childExitCode"]==0 and o["childSignalCode"] is None,"Child did not close normally")
+pid=o["childPid"];require(type(pid) is int and pid>0,"Missing child PID")
+try:os.kill(pid,0)
+except ProcessLookupError:pass
+else:raise RuntimeError("Child remains alive")
+directory=Path(o["directory"])
+require(directory.is_relative_to(E/(name+".tmp")) and directory.name.startswith("bdp-receipt-missing-context-installed-") and o["directoryAbsent"] is True and not directory.exists(),"Owned store remains")
+with (E/"installed-observation.json").open("x") as f:f.write(line+"\n")
+result={"candidateMatches":True,"rootReviewRequired":True,"actualHttp":14,"actualChildren":1,"childPidIndependentlyAbsent":pid,"storeDirectoryAbsent":str(directory),"sourceCommit":g["finalHead"],"sourceTree":g["finalTree"],"payloadIdentity":p["payloadIdentity"],"runtimeConfigurationIdentity":b["runtimeConfigurationIdentity"],"servedConfigurationSha256":sha(json.dumps(s,separators=(",",":"),ensure_ascii=False).encode()),"observationSha256":sha((E/"installed-observation.json").read_bytes()),"resultsSha256":sha((E/(name+".json")).read_bytes()),"claimEligible":False,"limitations":"Full schemas/bodies and exact-request serializer fields asserted in process; log retains safe headers/fingerprints only. Method is authored ledger plus returned response mapping, not invented exactRequest.method. Git attribution is supervisor verified, not child attested; no qualification or public admission."}
+with (E/"installed-review.json").open("x") as f:f.write(json.dumps(result,indent=2)+"\n")
+print(json.dumps(result))

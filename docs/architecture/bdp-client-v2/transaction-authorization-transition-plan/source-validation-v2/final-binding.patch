@@ -1,0 +1,83 @@
+--- before-final/source-binding.json
++++ final/source-binding.json
+@@ -5,7 +5,7 @@
+   "base": "67a2842e3f1918e70978f745587cf11eaf0df5a8",
+   "baseTree": "596abe870220fb61ce606f8382a9da52d554d063",
+   "workspaceDirty": true,
+-  "diffSha256": "beba7a15a94b70d4efc42f369fc851ef233f59032a59af66b0f0db5004d8515f",
++  "diffSha256": "d26986f7d3174240b8de7760ba2fdb65d33d67b18f18df0d0399c637eda11ff4",
+   "files": {
+     "packages/server/src/transaction-authorization.test.ts": {
+       "sha256": "04478392bbabeaef274deba3558a9275ed5b1849711b1d92ecc7dbd66ac8c02e",
+@@ -74,8 +74,8 @@
+       "author": "cross_carrier_native_review"
+     },
+     "packages/server/src/transaction-service.test.ts": {
+-      "sha256": "1cd7e1ccddbec75ca1c0d94d036a358fca98405e749000d28a0384cd9bfd4922",
+-      "bytes": 93734,
++      "sha256": "b6ec4b39ade9a204232bcf6ae10855011dacf23086948c9df2a8e04a9d4873e2",
++      "bytes": 93737,
+       "new": false,
+       "author": "update_implementation"
+     },
+@@ -108,8 +108,13 @@
+     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/administrative-lifetime-correction.md": "0b1e7bf427faaaad163bdda1af3bc0cda8e2b839e294e34c2c1751295d4be111",
+     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/transport-author/source-binding.json": "1eab9a67dca2f6526a9338347506a1f71dc53cc0c099f79d2e9c7218bfededf7"
+   },
+-  "predecessorSourceBinding": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/source-binding.json",
+-  "predecessorSourceBindingSha256": "2928d83d55f2496bb3687ac0c3e87b1a536bea45fa511cd0a7ff4f2aceb5bcac",
+-  "correctionSha256": "e1f0dedf9c04c608a35516435d59cb3d3cfd3a8dcc3630359032ac911b6b7eaa",
++  "predecessorSourceBinding": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/review-repair/source-binding.json",
++  "predecessorSourceBindingSha256": "c3471ed8963747e9a873f28308ecc067b2f4578e36ec49fd99177e8b69870e6a",
++  "correctionSha256": "eb4e33f9a8903c8ab5e9c4ecd52583af64a790fefd1ebb2098f436a007dca2d9",
++  "originalSourceBindingSha256": "2928d83d55f2496bb3687ac0c3e87b1a536bea45fa511cd0a7ff4f2aceb5bcac",
++  "t4Correction": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/t4-expectation-repair/correction.patch",
++    "sha256": "3391c050c15e7fc862ff9b5a9c8a2885739b24ec5ed5a2d773879ea9bc1708d3"
++  },
+   "tree": "596abe870220fb61ce606f8382a9da52d554d063"
+ }
+--- before-final/binding-derivation.json
++++ final/binding-derivation.json
+@@ -1,10 +1,9 @@
+ {
+-  "originalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/review-repair/source-binding.json",
+-  "originalSha256": "c3471ed8963747e9a873f28308ecc067b2f4578e36ec49fd99177e8b69870e6a",
+-  "derivedPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v2/source-binding.json",
+-  "derivedSha256": "bbdfe411dee553d4ab1ee9d7d26aeef183b73ad49ace69b6fb1b1ed3c3b2a0e7",
+-  "derivation": "Add tree=baseTree; all original fields unchanged; original remains immutable.",
++  "originalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/final-code/source-binding.json",
++  "originalSha256": "106e81dac3a936b395a7d1b28c34b0ca1da9f463ff0ec7bdf2c07b6dc0b1f307",
++  "derivedSha256": "c1a3e8bb8993e44e536474e28b4eff4a65857e3ae1f765f5a1d22e35368606bd",
++  "derivation": "Add tree=baseTree; all original fields retained. Prior c347-derived closed preparation preserved under before-final-t4-binding.",
+   "verifiedActualFiles": 15,
+-  "fullDiffSha256": "beba7a15a94b70d4efc42f369fc851ef233f59032a59af66b0f0db5004d8515f",
++  "fullDiffSha256": "d26986f7d3174240b8de7760ba2fdb65d33d67b18f18df0d0399c637eda11ff4",
+   "runtimeExecuted": false
+ }
+--- before-final/execution-gate.example.json
++++ final/execution-gate.example.json
+@@ -2,7 +2,7 @@
+   "status": "closed",
+   "session": "2026-10-08T20:26:35Z-81e5",
+   "sourceBindingPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v2/source-binding.json",
+-  "sourceBindingSha256": "bbdfe411dee553d4ab1ee9d7d26aeef183b73ad49ace69b6fb1b1ed3c3b2a0e7",
++  "sourceBindingSha256": "c1a3e8bb8993e44e536474e28b4eff4a65857e3ae1f765f5a1d22e35368606bd",
+   "ownedPaths": [
+     "packages/server/src/transaction-authorization.test.ts",
+     "packages/server/src/transaction-authorization.ts",
+--- before-final/report.md
++++ final/report.md
+@@ -1,9 +1,11 @@
+ # Closed repaired-source validation successor
+ 
+-Original source-validation preparation and all six successful static records are preserved. No original runtime callback ran. This successor binds the native-reviewed stored-view string guard plus fifth rejected-open fixture and sensitive receipt-page oracle repair; its15 actual hashes and full binary patch were independently checked. The derived manifest only adds tree=baseTree to the author's immutable repair manifest.
++Original source-validation preparation and all six successful static records are preserved. No original runtime callback ran. This successor binds the native-reviewed stored-view string guard plus fifth rejected-open fixture, sensitive receipt-page oracle repair and the authorized T4 foreign-view expectation; its15 actual hashes and full binary patch were independently checked. The derived manifest only adds tree=baseTree to the author's immutable final-code manifest.
+ 
+ The same ten-stage sequence remains: typecheck, build, format-check, lint, boundaries, Read seal, then transport2, queued-frame1, stale-lease1 and authorization-owner7. Exact titles/argv remain unchanged except JSON output paths now use this successor directory. Only workload metadata changes from four to five rejected-open directories. Total11 positive callbacks/21 HTTP/14 successful owner opens/11 ordinary dirs+5 rejected-open copy dirs/2 listeners/zero product children.
+ 
+ The runner body is byte-identical except the commands hash. Existing120s/115s process-group bounds, source/session/drift/prior-stage gates, no retries, safe process/temp evidence and exact JSON test adjudication all remain. No live execution-gate.json or run directory exists. Root acceptance and stage-prefix release remain null/empty. Commands and generator were not executed; only Python syntax compiled.
+ 
+ The old C1 emitted graph stays provisional historical evidence. Use the actual successful successor build before rebinding/generating its mirror. Do not reuse original production bytes or silently qualify the author's separate build. Control and installed gates remain closed.
++
++Final rebind: final-code/source-binding106e81da and fullpatchd26986f7 verified against all15 actual files. Earlier c347-derived preparation is retained in before-final-t4-binding. Commands and supervisor bytes are unchanged by the final rebind. No execution occurred.

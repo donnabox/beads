@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/read-update-matrix.test.ts",
+    "--maxWorkers=1",
+    "--testNamePattern",
+    "^pins attribution/numeric action ledgers, raw literals and prior scenario bytes$",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/ci-pin-repair/test.results.json"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory",
+  "cases": 1,
+  "http": 0,
+  "productChildren": 0,
+  "sourceBindingSha256": "6d1082f538660e552aab4c623134f7f02c611c1bbbee71b9334b176848bf1341",
+  "timeoutSeconds": 120
+}

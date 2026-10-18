@@ -1,0 +1,47 @@
+{
+  "finding": "Native Medium N1: comparison-level mutation was masked by submission mapping",
+  "correction": "Move enumerable undefined context mutant to legacy submission timeout return; same strict result assertion.",
+  "before": {
+    "preflight.md": "2aba0c1f70a31bdd0ccfc801945c337f146c397622923af20d8ba83b3bd73203",
+    "preflight-bounds.json": "e0816f18a489ad29130b63a060c2da1f86be1d1f370eaaa98055e3675349e1cc",
+    "source.diff": "27fc1610da057443639bbd49012e73ec2e9f951f4fdfc20d8801435922809cbe",
+    "measure.py": "d25df72716af3672a3527751815a34d794ff40a7a28fc0310717a7cad3171de3"
+  },
+  "after": {
+    "preflight.md": "aeefef2b264571a162b24809192734939e9b7b36399c4b95da4e93e76c904785",
+    "preflight-bounds.json": "68afc70753899701e4d570a65b4db5f527c1918f114bc084c40ae3c9c3b8d595",
+    "source.diff": "27fc1610da057443639bbd49012e73ec2e9f951f4fdfc20d8801435922809cbe",
+    "measure.py": "4b1b5d932a52fc77e50d288f7b1d18c05dd5b9c4c5c793a427a063834ce8206d"
+  },
+  "oldControl": {
+    "name": "leak-unobserved-fields",
+    "path": "packages/server/src/transaction-comparison.ts",
+    "patchSha256": "b9eaedf8dcd25f8fbc2dcecf3e28b196f34f18fa67dda705ebc8aae7e811ff7a",
+    "mutantSha256": "14a4633a8f9b256f7c154d2df054e7fba08ec0d6d84271d11094ebda863c53ab",
+    "testFile": "packages/server/src/transaction-submission.test.ts",
+    "title": "keeps full-owner unobserved comparison exact and excludes a caller callback",
+    "expectedFailure": "legacy comparison result exact",
+    "plannedHttpUntilFailure": 0,
+    "plannedMaxHttp": 0,
+    "installedChildren": 0,
+    "executed": false
+  },
+  "newControl": {
+    "name": "leak-unobserved-fields",
+    "path": "packages/server/src/transaction-submission.ts",
+    "patchSha256": "829165a4c17bcb58aff2492f6510da6726ebf9c7264b2316e20bf6f755b39fbe",
+    "mutantSha256": "4c852cc5ce218cf561244f7c0078f6b7f2d81d7ca868de6f95cd7545a6de792c",
+    "testFile": "packages/server/src/transaction-submission.test.ts",
+    "title": "keeps full-owner unobserved comparison exact and excludes a caller callback",
+    "expectedFailure": "legacy comparison result exact",
+    "plannedHttpUntilFailure": 0,
+    "plannedMaxHttp": 0,
+    "installedChildren": 0,
+    "executed": false
+  },
+  "sourceFilesIdentical": true,
+  "sourceDiffIdentical": true,
+  "allNoncontrolMeasurementsIdentical": true,
+  "otherFourControlsIdentical": true,
+  "executionOccurred": false
+}

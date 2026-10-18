@@ -1,0 +1,730 @@
+{
+  "status": "CLOSED: actual clean final18-path source and phase releases required",
+  "executionOrder": [
+    "typecheck",
+    "fresh-build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "transaction-set-positive",
+    "transaction-submission-positive",
+    "transaction-sequence-positive",
+    "transaction-http-positive",
+    "transaction-snapshot-positive",
+    "resource-evaluator-positive",
+    "review-source-measurements",
+    "build-inventory",
+    "prepare-control",
+    "strict-control",
+    "review-control",
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed",
+    "direct-installed",
+    "review-direct-installed",
+    "sequence-installed",
+    "review-sequence-installed",
+    "fresh-installed",
+    "review-fresh-installed"
+  ],
+  "commands": {
+    "typecheck": {
+      "id": "typecheck",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "cases": 0,
+      "http": 0,
+      "owners": 0,
+      "listeners": 0,
+      "directories": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": [],
+      "phase": "source"
+    },
+    "fresh-build": {
+      "id": "fresh-build",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "build"
+      ],
+      "cases": 0,
+      "http": 0,
+      "owners": 0,
+      "listeners": 0,
+      "directories": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": [],
+      "phase": "source"
+    },
+    "format-check": {
+      "id": "format-check",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "format:check"
+      ],
+      "cases": 0,
+      "http": 0,
+      "owners": 0,
+      "listeners": 0,
+      "directories": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": [],
+      "phase": "source"
+    },
+    "lint": {
+      "id": "lint",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "lint"
+      ],
+      "cases": 0,
+      "http": 0,
+      "owners": 0,
+      "listeners": 0,
+      "directories": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": [],
+      "phase": "source"
+    },
+    "boundaries": {
+      "id": "boundaries",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "check:boundaries"
+      ],
+      "cases": 0,
+      "http": 0,
+      "owners": 0,
+      "listeners": 0,
+      "directories": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": [],
+      "phase": "source"
+    },
+    "read-seal": {
+      "id": "read-seal",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "evidence:verify"
+      ],
+      "cases": 0,
+      "http": 0,
+      "owners": 0,
+      "listeners": 0,
+      "directories": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": [],
+      "phase": "source"
+    },
+    "transaction-set-positive": {
+      "id": "transaction-set-positive",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "phase": "source",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-set.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^(?:serializes\\ byte\\-bounded\\ deep\\ syntax\\ iteratively\\ without\\ changing\\ number\\ lexemes\\ or\\ key\\ order|keeps\\ receiving\\ and\\ legacy\\ preparation\\ branded\\ while\\ accepting\\ byte\\-bounded\\ deep\\ input|prepares\\ deep\\ sequence\\ members\\ after\\ complete\\ carrier\\ syntax\\ with\\ strict\\ brands\\ and\\ frozen\\ wrappers)$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/run/transaction-set-positive.results.json"
+      ],
+      "selectedFullNames": [
+        "serializes byte-bounded deep syntax iteratively without changing number lexemes or key order",
+        "keeps receiving and legacy preparation branded while accepting byte-bounded deep input",
+        "prepares deep sequence members after complete carrier syntax with strict brands and frozen wrappers"
+      ],
+      "cases": 3,
+      "http": 0,
+      "owners": 0,
+      "directories": 0,
+      "listeners": 0,
+      "offlineSQLiteHandles": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": []
+    },
+    "transaction-submission-positive": {
+      "id": "transaction-submission-positive",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "phase": "source",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-submission.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^(?:private\\ direct\\ Transactional\\ receiving\\ order\\ keeps\\ invalid\\ Selector\\ grammar\\ distinct\\ from\\ valid\\ deep\\ input|valid\\ private\\ set\\ admission\\ accepts\\ byte\\-bounded\\ singleton\\ and\\ wrapped\\ set\\ content\\ across\\ the\\ former\\ depth\\ boundary|finishes\\ batch\\ synthetic\\ syntax\\ before\\ admission,\\ including\\ deeply\\ nested\\ received\\ input|finishes\\ singleton\\ synthetic\\ syntax\\ before\\ admission,\\ including\\ deeply\\ nested\\ received\\ input|compares\\ retained\\ direct\\ keys\\ before\\ negotiation\\ and\\ admits\\ valid\\ fresh\\ deep\\ input|compares\\ deep\\ metadata\\ against\\ genuine\\ pending\\ and\\ dependent\\ keys\\ without\\ changing\\ saved\\ outcomes|executes\\ deep\\ values\\ through\\ set\\ and\\ dependent\\ sequence\\ with\\ durable\\ receipt\\ recovery)$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/run/transaction-submission-positive.results.json"
+      ],
+      "selectedFullNames": [
+        "private direct Transactional receiving order keeps invalid Selector grammar distinct from valid deep input",
+        "valid private set admission accepts byte-bounded singleton and wrapped set content across the former depth boundary",
+        "finishes batch synthetic syntax before admission, including deeply nested received input",
+        "finishes singleton synthetic syntax before admission, including deeply nested received input",
+        "compares retained direct keys before negotiation and admits valid fresh deep input",
+        "compares deep metadata against genuine pending and dependent keys without changing saved outcomes",
+        "executes deep values through set and dependent sequence with durable receipt recovery"
+      ],
+      "cases": 7,
+      "http": 0,
+      "owners": 8,
+      "directories": 7,
+      "listeners": 0,
+      "offlineSQLiteHandles": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": [
+        "bdp-tx-submission-",
+        "bdp-tx-deep-"
+      ]
+    },
+    "transaction-sequence-positive": {
+      "id": "transaction-sequence-positive",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "phase": "source",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-sequence.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^(?:private\\ Transactional\\ sequence\\ slice\\ runs\\ all\\ eight\\ explicit\\ operation\\ kinds\\ as\\ separate\\ commits\\ with\\ locator\\-only\\ aliases|private\\ Transactional\\ sequence\\ slice\\ reserves\\ all\\ unknown\\ keys\\ together,\\ commits\\ a\\ prefix,\\ continues\\ past\\ failure\\ and\\ permits\\ interleaving|private\\ Transactional\\ sequence\\ slice\\ joins\\ overlapping\\ presentations\\ without\\ running\\ a\\ completed\\ member\\ twice\\ and\\ projects\\ current\\ labels|private\\ Transactional\\ sequence\\ slice\\ projects\\ another\\ owner's\\ pending\\ receipt\\ before\\ immutable\\ mismatch\\ and\\ never\\ retracts\\ that\\ owner|private\\ Transactional\\ sequence\\ slice\\ shares\\ singleton\\ and\\ one\\-operation\\ batch\\ identity,\\ preserving\\ exact\\ numbers\\ and\\ creation\\ defaults|private\\ Transactional\\ sequence\\ slice\\ leaves\\ no\\ partial\\ bulk\\ admission\\ on\\ after\\-sequence\\-reservation\\ failure|private\\ Transactional\\ sequence\\ slice\\ leaves\\ no\\ partial\\ bulk\\ admission\\ on\\ after\\-sequence\\-admission\\ failure|private\\ Transactional\\ sequence\\ slice\\ classifies\\ foreign\\ key\\ state\\ at\\ its\\ turn\\ after\\ failed\\ detail\\ is\\ forgotten|private\\ Transactional\\ sequence\\ slice\\ compares\\ retained\\ deep\\ sequence\\ members\\ without\\ executing\\ them\\ or\\ replacing\\ their\\ receipts|private\\ Transactional\\ sequence\\ slice\\ admits\\ fresh\\ deep\\ sequence\\ members\\ without\\ changing\\ atomic\\ reservation\\ behavior|private\\ Transactional\\ sequence\\ slice\\ executes\\ fresh\\ deep\\ input\\ after\\ a\\ retained\\ failed\\ member\\ expires\\ between\\ sequence\\ turns|private\\ Transactional\\ sequence\\ slice\\ rejects\\ duplicate\\ keys\\ and\\ invalid\\ dependency\\ edges\\ before\\ any\\ key\\ effects|private\\ Transactional\\ sequence\\ slice\\ projects\\ mixed\\ retained,\\ conflicting,\\ failed\\ and\\ unknown\\ keys\\ in\\ declaration\\ order)$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/run/transaction-sequence-positive.results.json"
+      ],
+      "selectedFullNames": [
+        "private Transactional sequence slice runs all eight explicit operation kinds as separate commits with locator-only aliases",
+        "private Transactional sequence slice reserves all unknown keys together, commits a prefix, continues past failure and permits interleaving",
+        "private Transactional sequence slice joins overlapping presentations without running a completed member twice and projects current labels",
+        "private Transactional sequence slice projects another owner's pending receipt before immutable mismatch and never retracts that owner",
+        "private Transactional sequence slice shares singleton and one-operation batch identity, preserving exact numbers and creation defaults",
+        "private Transactional sequence slice leaves no partial bulk admission on after-sequence-reservation failure",
+        "private Transactional sequence slice leaves no partial bulk admission on after-sequence-admission failure",
+        "private Transactional sequence slice classifies foreign key state at its turn after failed detail is forgotten",
+        "private Transactional sequence slice compares retained deep sequence members without executing them or replacing their receipts",
+        "private Transactional sequence slice admits fresh deep sequence members without changing atomic reservation behavior",
+        "private Transactional sequence slice executes fresh deep input after a retained failed member expires between sequence turns",
+        "private Transactional sequence slice rejects duplicate keys and invalid dependency edges before any key effects",
+        "private Transactional sequence slice projects mixed retained, conflicting, failed and unknown keys in declaration order"
+      ],
+      "cases": 13,
+      "http": 0,
+      "owners": 13,
+      "directories": 13,
+      "listeners": 0,
+      "offlineSQLiteHandles": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": [
+        "bdp-transaction-sequence-"
+      ]
+    },
+    "transaction-http-positive": {
+      "id": "transaction-http-positive",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "phase": "source",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-http.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^(?:accepts\\ byte\\-bounded\\ deep\\ sequences\\ and\\ keeps\\ sequence\\ capacity\\ distinct\\ from\\ direct\\ transaction\\ capacity|compares\\ retained\\ sequence\\ members\\ and\\ accepts\\ deep\\ input\\ while\\ preserving\\ receiving\\ failures|source\\-private\\ actual\\ Transactional\\ HTTP\\ rejects\\ sequence\\ carrier\\ syntax/keys/negotiation\\ before\\ claiming\\ any\\ member|serves\\ retained\\ direct\\ key\\ conflicts\\ and\\ genuine\\ fresh\\ deep\\ effects|source\\-private\\ actual\\ Transactional\\ HTTP\\ rejects\\ invalid\\ set\\ Selector\\ grammar\\ and\\ admits\\ valid\\ deep\\ content\\ without\\ partial\\ effects|preserves\\ actual\\ singleton\\ bytes\\ and\\ wrapper\\-equivalent\\ deep\\ content\\ without\\ accepting\\ a\\ body\\ operation\\ override)$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/run/transaction-http-positive.results.json"
+      ],
+      "selectedFullNames": [
+        "accepts byte-bounded deep sequences and keeps sequence capacity distinct from direct transaction capacity",
+        "compares retained sequence members and accepts deep input while preserving receiving failures",
+        "source-private actual Transactional HTTP rejects sequence carrier syntax/keys/negotiation before claiming any member",
+        "serves retained direct key conflicts and genuine fresh deep effects",
+        "source-private actual Transactional HTTP rejects invalid set Selector grammar and admits valid deep content without partial effects",
+        "preserves actual singleton bytes and wrapper-equivalent deep content without accepting a body operation override"
+      ],
+      "cases": 6,
+      "http": 47,
+      "owners": 9,
+      "directories": 6,
+      "listeners": 9,
+      "offlineSQLiteHandles": 3,
+      "productChildren": 0,
+      "ownedTempPrefixes": [
+        "bdp-tx-http-"
+      ]
+    },
+    "transaction-snapshot-positive": {
+      "id": "transaction-snapshot-positive",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "phase": "source",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-snapshot.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^(?:refuses\\ retained\\ corruption:\\ missing\\-record\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ changed\\-record\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ oversized\\-record\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ missing\\-range\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ wrong\\-kind\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ wrong\\-context\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ wrong\\-anchor\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ wrong\\-expiry\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ missing\\ owned\\ or\\ endpoint\\ data\\ before\\ issuing\\ a\\ capture|new\\ private\\ Snapshot\\ entry\\ points\\ do\\ not\\ escape\\ package\\ public\\ exports|captures\\ and\\ reopens\\ deep\\ owned\\ Links\\ without\\ losing\\ JSON\\ value\\ equality|rejects\\ deep\\ owned\\-Link\\ divergence\\ before\\ Snapshot\\ issuance)$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/run/transaction-snapshot-positive.results.json"
+      ],
+      "selectedFullNames": [
+        "refuses retained corruption: missing-record rather than rebuilding current graph",
+        "refuses retained corruption: changed-record rather than rebuilding current graph",
+        "refuses retained corruption: oversized-record rather than rebuilding current graph",
+        "refuses retained corruption: missing-range rather than rebuilding current graph",
+        "refuses retained corruption: wrong-kind rather than rebuilding current graph",
+        "refuses retained corruption: wrong-context rather than rebuilding current graph",
+        "refuses retained corruption: wrong-anchor rather than rebuilding current graph",
+        "refuses retained corruption: wrong-expiry rather than rebuilding current graph",
+        "refuses missing owned or endpoint data before issuing a capture",
+        "new private Snapshot entry points do not escape package public exports",
+        "captures and reopens deep owned Links without losing JSON value equality",
+        "rejects deep owned-Link divergence before Snapshot issuance"
+      ],
+      "cases": 12,
+      "http": 0,
+      "owners": 23,
+      "directories": 11,
+      "listeners": 0,
+      "offlineSQLiteHandles": 12,
+      "productChildren": 0,
+      "ownedTempPrefixes": [
+        "bdp-snapshot-",
+        "bdp-snapshot-deep-"
+      ]
+    },
+    "resource-evaluator-positive": {
+      "id": "resource-evaluator-positive",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "phase": "source",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/resource-evaluator.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^(?:pure\\ member\\ Resource\\ evaluation\\ normalizes\\ accepted\\ numeric\\ spellings\\ and\\ preserves\\ revisions\\ and\\ metadata\\ on\\ semantic\\ no\\-ops)$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/run/resource-evaluator-positive.results.json"
+      ],
+      "selectedFullNames": [
+        "pure member Resource evaluation normalizes accepted numeric spellings and preserves revisions and metadata on semantic no-ops"
+      ],
+      "cases": 1,
+      "http": 0,
+      "owners": 0,
+      "directories": 0,
+      "listeners": 0,
+      "offlineSQLiteHandles": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": []
+    },
+    "review-source-measurements": {
+      "id": "review-source-measurements",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "phase": "source",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/review-source.py"
+      ]
+    },
+    "build-inventory": {
+      "id": "build-inventory",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/inventory.py"
+      ],
+      "phase": "source"
+    },
+    "prepare-control": {
+      "id": "prepare-control",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "phase": "control",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/control.py",
+        "prepare"
+      ],
+      "rawExpectedExit": 0,
+      "ownedTempPrefixes": []
+    },
+    "strict-control": {
+      "id": "strict-control",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/mirror",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "phase": "control",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/control-execute.py"
+      ],
+      "rawExpectedExit": 0,
+      "ownedTempPrefixes": [
+        "bdp-snapshot-deep-"
+      ],
+      "expectedHTTP": 0,
+      "maxHTTP": 0,
+      "owners": 1,
+      "listeners": 0,
+      "directories": 1,
+      "productChildren": 0,
+      "cases": 1,
+      "directArgv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/mirror/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-snapshot.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^captures\\ and\\ reopens\\ deep\\ owned\\ Links\\ without\\ losing\\ JSON\\ value\\ equality$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/run/strict-control.results.json"
+      ],
+      "directExpectedExit": 1,
+      "exitMeaning": "Guarded adapter exits0 only after recording direct Vitest exit1; JSON/named-cause adjudication is a separate required stage."
+    },
+    "review-control": {
+      "id": "review-control",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "phase": "control",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/control.py",
+        "review"
+      ],
+      "rawExpectedExit": 0,
+      "ownedTempPrefixes": []
+    },
+    "node-version": {
+      "id": "node-version",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "phase": "package"
+    },
+    "package-directory": {
+      "id": "package-directory",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/packages.py",
+        "directory"
+      ],
+      "phase": "package"
+    },
+    "pack-protocol": {
+      "id": "pack-protocol",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/run/packages"
+      ],
+      "phase": "package"
+    },
+    "pack-server": {
+      "id": "pack-server",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/run/packages"
+      ],
+      "phase": "package"
+    },
+    "verify-tar": {
+      "id": "verify-tar",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/packages.py",
+        "tar"
+      ],
+      "phase": "package"
+    },
+    "prepare-consumer": {
+      "id": "prepare-consumer",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/packages.py",
+        "consumer"
+      ],
+      "phase": "package"
+    },
+    "consumer-install": {
+      "id": "consumer-install",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/run/consumer",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "phase": "package"
+    },
+    "verify-installed": {
+      "id": "verify-installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/packages.py",
+        "installed"
+      ],
+      "phase": "package"
+    },
+    "direct-installed": {
+      "id": "direct-installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "phase": "installed",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-depth-key-order-installed.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^observes\\ installed\\ retained\\ key\\ conflicts\\ and\\ fresh\\ deep\\ carrier\\ execution$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/run/direct-installed.results.json"
+      ],
+      "selectedFullNames": [
+        "observes installed retained key conflicts and fresh deep carrier execution"
+      ],
+      "cases": 1,
+      "expectedHTTP": 13,
+      "maxHTTP": 13,
+      "owners": 1,
+      "directories": 1,
+      "listeners": 1,
+      "productChildren": 1,
+      "ownedTempPrefixes": [
+        "bdp-depth-key-installed-"
+      ]
+    },
+    "review-direct-installed": {
+      "id": "review-direct-installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "phase": "adjudication",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/review-installed.py",
+        "direct-installed"
+      ]
+    },
+    "sequence-installed": {
+      "id": "sequence-installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "phase": "installed",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-sequence-depth-installed.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^observes\\ retained\\ sequence\\ member\\ conflict\\ and\\ fresh\\ deep\\ execution\\ over\\ packed\\ bytes$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/run/sequence-installed.results.json"
+      ],
+      "selectedFullNames": [
+        "observes retained sequence member conflict and fresh deep execution over packed bytes"
+      ],
+      "cases": 1,
+      "expectedHTTP": 8,
+      "maxHTTP": 8,
+      "owners": 1,
+      "directories": 1,
+      "listeners": 1,
+      "productChildren": 1,
+      "ownedTempPrefixes": [
+        "bdp-sequence-depth-installed-"
+      ]
+    },
+    "review-sequence-installed": {
+      "id": "review-sequence-installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "phase": "adjudication",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/review-installed.py",
+        "sequence-installed"
+      ]
+    },
+    "fresh-installed": {
+      "id": "fresh-installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "phase": "installed",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-fresh-depth-installed.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^serves\\ byte\\-bounded\\ deep\\ mutations\\ receipts\\ Events\\ and\\ owned\\-Link\\ Snapshots\\ over\\ packed\\ bytes$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/run/fresh-installed.results.json"
+      ],
+      "selectedFullNames": [
+        "serves byte-bounded deep mutations receipts Events and owned-Link Snapshots over packed bytes"
+      ],
+      "cases": 1,
+      "expectedHTTP": 13,
+      "maxHTTP": 13,
+      "owners": 1,
+      "directories": 1,
+      "listeners": 1,
+      "productChildren": 1,
+      "ownedTempPrefixes": [
+        "bdp-fresh-depth-installed-"
+      ]
+    },
+    "review-fresh-installed": {
+      "id": "review-fresh-installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "phase": "adjudication",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/review-installed.py",
+        "fresh-installed"
+      ]
+    }
+  },
+  "workload": {
+    "sourceCases": 42,
+    "sourceHTTP": 47,
+    "sourceOwnerOpens": 53,
+    "sourceDirectories": 37,
+    "sourceListenerLifetimes": 9,
+    "sourceOfflineSQLiteHandles": 15,
+    "sourceProductChildren": 0,
+    "controlCases": 1,
+    "controlHTTP": 0,
+    "controlOwnerOpens": 1,
+    "controlDirectories": 1,
+    "installedCases": 3,
+    "installedHTTP": 34,
+    "installedProductChildren": 3,
+    "totalCases": 46,
+    "totalExpectedHTTP": 81,
+    "totalMaxHTTP": 81,
+    "automaticRetries": 0,
+    "status": "Prospective code-derived inventory; runtime sizes/lifecycle remain unobserved"
+  }
+}

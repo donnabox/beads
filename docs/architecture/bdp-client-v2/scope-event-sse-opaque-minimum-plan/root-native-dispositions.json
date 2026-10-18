@@ -1,0 +1,18 @@
+{
+  "at": "2026-10-17T15:57:48.111274+00:00",
+  "planSha256": "bf2f84fe9e7e358b743cb5f363a53943bac12a00070258e3a480477cd4e0eb7b",
+  "nativeReviewSha256": "243fe21ef31aeace85d33be91413b42a659cb0d93c51c3a29e1851a22062c40a",
+  "nativeClosureSha256": "184762b8be935e7739032302c2b853be6379f6147475b72f502ed33b458bcae5",
+  "findings": {
+    "N1": "Accepted: exactly two finite baseline pages; D30/source75/combined86; no fixture alteration",
+    "N2": "Accepted: callback-owned raw recorder/controller for actual signal/lifecycle proof",
+    "N3": "Accepted: first SQL preparation observation null/unobserved, later actual preparation counts only"
+  },
+  "status": "PLAN_SUCCESSOR_ACCEPTED_FOR_EXTERNAL_REVIEW_PREPARATION",
+  "authoringReleased": false,
+  "runtimeReleased": false,
+  "claudeLaunchReleased": false,
+  "sourceBase": "bbfa5b2cac0e381b497384e3a8e29cd937ea2738",
+  "baseCI": 39044573943,
+  "baseCIAccepted": true
+}

@@ -1,0 +1,1899 @@
+{
+  "head": "09bcaab75800cae89cf738ea88f012168ff733fc",
+  "tree": "fde859381752d15c8caabcbc946d3c2e384b9cf6",
+  "clean": true,
+  "packages": {
+    "protocol": {
+      "archive": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/packages/bdp-protocol-0.0.0.tgz",
+      "archiveSha256": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+      "files": {
+        "dist/history-values.js": {
+          "sha256": "06928d65b343c2c3e45dbb1ed96c2dd0c31cd7973145bc15a385ec667bb1134b",
+          "bytes": 6653,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/history-values.js",
+          "sourceSha256": "06928d65b343c2c3e45dbb1ed96c2dd0c31cd7973145bc15a385ec667bb1134b"
+        },
+        "dist/index.js": {
+          "sha256": "1554d12e06f39934809b0546aaa667ca682594b5a8597c82a36e7e80285b4a36",
+          "bytes": 7634,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/index.js",
+          "sourceSha256": "1554d12e06f39934809b0546aaa667ca682594b5a8597c82a36e7e80285b4a36"
+        },
+        "dist/json-admission.js": {
+          "sha256": "4eb14f77a22b9d47939becad6912993ddf988cc6fc3aa6532245a4a525b1389e",
+          "bytes": 12513,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/json-admission.js",
+          "sourceSha256": "4eb14f77a22b9d47939becad6912993ddf988cc6fc3aa6532245a4a525b1389e"
+        },
+        "dist/json-values.js": {
+          "sha256": "c68b1d5abf4fd4d35122c9bff408e27359fbb12790d23d5562e0e12e8b370289",
+          "bytes": 5969,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/json-values.js",
+          "sourceSha256": "c68b1d5abf4fd4d35122c9bff408e27359fbb12790d23d5562e0e12e8b370289"
+        },
+        "dist/link-header.js": {
+          "sha256": "b1daae38417b979869487bcd7e1c0d09834976bdd1ffc7fe8f7b4709c46cebbf",
+          "bytes": 2825,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/link-header.js",
+          "sourceSha256": "b1daae38417b979869487bcd7e1c0d09834976bdd1ffc7fe8f7b4709c46cebbf"
+        },
+        "dist/property-validation.js": {
+          "sha256": "b785b92ab97b9f1b4168cd700c659e313fd962fdd4cd444e9d34a4e4975800e2",
+          "bytes": 58,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/property-validation.js",
+          "sourceSha256": "b785b92ab97b9f1b4168cd700c659e313fd962fdd4cd444e9d34a4e4975800e2"
+        },
+        "dist/protocol-errors.js": {
+          "sha256": "01953c4f785548b510cfb0af188ebec6eb2fcd887108713aa5f9e9747622ffec",
+          "bytes": 307,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/protocol-errors.js",
+          "sourceSha256": "01953c4f785548b510cfb0af188ebec6eb2fcd887108713aa5f9e9747622ffec"
+        },
+        "dist/read-update-preflight.js": {
+          "sha256": "1c7594da5cfa2520673df23aceabf8edb414b60a97b1baf86f1009bc472180ae",
+          "bytes": 6350,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/read-update-preflight.js",
+          "sourceSha256": "1c7594da5cfa2520673df23aceabf8edb414b60a97b1baf86f1009bc472180ae"
+        },
+        "dist/read-update-problems.js": {
+          "sha256": "53e20c0f8fdf4429a9b718a84c68e2655d172240d6204b8b0c1da5e4b6a47643",
+          "bytes": 342,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/read-update-problems.js",
+          "sourceSha256": "53e20c0f8fdf4429a9b718a84c68e2655d172240d6204b8b0c1da5e4b6a47643"
+        },
+        "dist/read-update-values.js": {
+          "sha256": "f79cbfd230d85242763e7f946a0d58934195cdf7d8ebed269c805fd79939b89a",
+          "bytes": 14023,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/read-update-values.js",
+          "sourceSha256": "f79cbfd230d85242763e7f946a0d58934195cdf7d8ebed269c805fd79939b89a"
+        },
+        "dist/read-values.js": {
+          "sha256": "117a54e6cabeff81ba4a7e3290a8d41652cf8c58915d7a082e20f6279e432b60",
+          "bytes": 19997,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/read-values.js",
+          "sourceSha256": "117a54e6cabeff81ba4a7e3290a8d41652cf8c58915d7a082e20f6279e432b60"
+        },
+        "dist/reference-domain.js": {
+          "sha256": "640962f3d4490e90bd89071655671a4507b4626c86eb1adc38c951f46a59feeb",
+          "bytes": 2958,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/reference-domain.js",
+          "sourceSha256": "640962f3d4490e90bd89071655671a4507b4626c86eb1adc38c951f46a59feeb"
+        },
+        "dist/schema-formats.js": {
+          "sha256": "fba76af9b124c8de74b7dd1f2b2cc01cfe6628f9ead6f8b5d496da73691d2f8a",
+          "bytes": 1485,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/schema-formats.js",
+          "sourceSha256": "fba76af9b124c8de74b7dd1f2b2cc01cfe6628f9ead6f8b5d496da73691d2f8a"
+        },
+        "dist/transaction-discovery-values.js": {
+          "sha256": "26341c6e6c3e1e11e212b6e8d827572e343dea1287abfaf0d7de7dee7ac3efed",
+          "bytes": 2308,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/transaction-discovery-values.js",
+          "sourceSha256": "26341c6e6c3e1e11e212b6e8d827572e343dea1287abfaf0d7de7dee7ac3efed"
+        },
+        "dist/type-conformance.js": {
+          "sha256": "a4cd37710d9daeb504d6ba116c3070e349f2a9f413dd3b671d3b9b8209393718",
+          "bytes": 4269,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/type-conformance.js",
+          "sourceSha256": "a4cd37710d9daeb504d6ba116c3070e349f2a9f413dd3b671d3b9b8209393718"
+        },
+        "schemas/bdp-v0.schema.json": {
+          "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+          "bytes": 133208,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/schemas/bdp-v0.schema.json",
+          "sourceSha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227"
+        },
+        "package.json": {
+          "sha256": "2415a9a929050fc642fceceb15dce1084debaf1bf7b05f1602ba034afa57f17f",
+          "bytes": 428,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/package.json",
+          "sourceSha256": "80e6aef5232de49581cc14ba75ab780b41145a54d5754596297dcf22d38ad5e2"
+        },
+        "dist/history-values.d.ts.map": {
+          "sha256": "82576288aa1c8a61f1594df92457bddd9cb6c10a0c3a1bfc0def922a96082188",
+          "bytes": 3744,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/history-values.d.ts.map",
+          "sourceSha256": "82576288aa1c8a61f1594df92457bddd9cb6c10a0c3a1bfc0def922a96082188"
+        },
+        "dist/history-values.js.map": {
+          "sha256": "2b4e060660eccc01fec82ce2c1b74287e5f4fec36be3ca961fc197935b38c187",
+          "bytes": 6136,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/history-values.js.map",
+          "sourceSha256": "2b4e060660eccc01fec82ce2c1b74287e5f4fec36be3ca961fc197935b38c187"
+        },
+        "dist/index.d.ts.map": {
+          "sha256": "3c58455cb83d7f770e1cdd016dda9916bdd40151e1f29e0d5a662d6b5e9b2130",
+          "bytes": 11098,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/index.d.ts.map",
+          "sourceSha256": "3c58455cb83d7f770e1cdd016dda9916bdd40151e1f29e0d5a662d6b5e9b2130"
+        },
+        "dist/index.js.map": {
+          "sha256": "38751e8255e7c06f9ade5a1da0368460181e72015bf11eb2831621cc58a8cf0c",
+          "bytes": 6027,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/index.js.map",
+          "sourceSha256": "38751e8255e7c06f9ade5a1da0368460181e72015bf11eb2831621cc58a8cf0c"
+        },
+        "dist/json-admission.d.ts.map": {
+          "sha256": "6f083d5ea1694cd826c051ae6c8fd1461e348943a40b7fb54ab70b9f3e4a9ea3",
+          "bytes": 1792,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/json-admission.d.ts.map",
+          "sourceSha256": "6f083d5ea1694cd826c051ae6c8fd1461e348943a40b7fb54ab70b9f3e4a9ea3"
+        },
+        "dist/json-admission.js.map": {
+          "sha256": "afb807d90257c0ee8069365e61ff18e335c0c480361f7e7e6cf75f549ba3853f",
+          "bytes": 11130,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/json-admission.js.map",
+          "sourceSha256": "afb807d90257c0ee8069365e61ff18e335c0c480361f7e7e6cf75f549ba3853f"
+        },
+        "dist/json-values.d.ts.map": {
+          "sha256": "d732aa80681451e02cf6914fdaaf1d19c90a86bc35925cdb65dea55ed56e3222",
+          "bytes": 345,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/json-values.d.ts.map",
+          "sourceSha256": "d732aa80681451e02cf6914fdaaf1d19c90a86bc35925cdb65dea55ed56e3222"
+        },
+        "dist/json-values.js.map": {
+          "sha256": "1ba8c7ddff07620dc9f13401e1d5b645ed142d936a6de8887743a34cf128debb",
+          "bytes": 5281,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/json-values.js.map",
+          "sourceSha256": "1ba8c7ddff07620dc9f13401e1d5b645ed142d936a6de8887743a34cf128debb"
+        },
+        "dist/link-header.d.ts.map": {
+          "sha256": "9bfc82371786206b92258ba19887e845d69ed2f0ffa748c85e1195f69d8f89df",
+          "bytes": 437,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/link-header.d.ts.map",
+          "sourceSha256": "9bfc82371786206b92258ba19887e845d69ed2f0ffa748c85e1195f69d8f89df"
+        },
+        "dist/link-header.js.map": {
+          "sha256": "2050be2cfcbad1bc1882c3934a5819d8dc626a04fd95fe857b38684f04739614",
+          "bytes": 3151,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/link-header.js.map",
+          "sourceSha256": "2050be2cfcbad1bc1882c3934a5819d8dc626a04fd95fe857b38684f04739614"
+        },
+        "dist/property-validation.d.ts.map": {
+          "sha256": "3d5739d5f46e3d7a1a4e274d1e015f19e5d029d13d65046e2770f87afd4b8500",
+          "bytes": 694,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/property-validation.d.ts.map",
+          "sourceSha256": "3d5739d5f46e3d7a1a4e274d1e015f19e5d029d13d65046e2770f87afd4b8500"
+        },
+        "dist/property-validation.js.map": {
+          "sha256": "64d17d9c9523ec6c8d0970dcf45d6e15a339752b889e340413ed766692b04856",
+          "bytes": 130,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/property-validation.js.map",
+          "sourceSha256": "64d17d9c9523ec6c8d0970dcf45d6e15a339752b889e340413ed766692b04856"
+        },
+        "dist/protocol-errors.d.ts.map": {
+          "sha256": "0973d0744e883ae7a7c5cd616157533ddbbd735cafe73e90d497d9bb6927e335",
+          "bytes": 222,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/protocol-errors.d.ts.map",
+          "sourceSha256": "0973d0744e883ae7a7c5cd616157533ddbbd735cafe73e90d497d9bb6927e335"
+        },
+        "dist/protocol-errors.js.map": {
+          "sha256": "f7b695f11b18c0b07062c504bcbf4f24a7d172ba051106eef79d82b86f879453",
+          "bytes": 298,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/protocol-errors.js.map",
+          "sourceSha256": "f7b695f11b18c0b07062c504bcbf4f24a7d172ba051106eef79d82b86f879453"
+        },
+        "dist/read-update-preflight.d.ts.map": {
+          "sha256": "050d77da70972a3ac14ad85c5e270f0efd2edef9e12cf7236fdd68987082e4e5",
+          "bytes": 912,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/read-update-preflight.d.ts.map",
+          "sourceSha256": "050d77da70972a3ac14ad85c5e270f0efd2edef9e12cf7236fdd68987082e4e5"
+        },
+        "dist/read-update-preflight.js.map": {
+          "sha256": "e594ce5130c993d4d180f06eaf8808ac47fe8a1c30dcbe345197257f663e3ee2",
+          "bytes": 4963,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/read-update-preflight.js.map",
+          "sourceSha256": "e594ce5130c993d4d180f06eaf8808ac47fe8a1c30dcbe345197257f663e3ee2"
+        },
+        "dist/read-update-problems.d.ts.map": {
+          "sha256": "f2ba49bb563300461a236a2c9d63298e120c0aa68926177d9d1d704b31bc195a",
+          "bytes": 1338,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/read-update-problems.d.ts.map",
+          "sourceSha256": "f2ba49bb563300461a236a2c9d63298e120c0aa68926177d9d1d704b31bc195a"
+        },
+        "dist/read-update-problems.js.map": {
+          "sha256": "89d5258e5130dc6c5bc154d13b0b9a14085b77cbc58ba8612c730c811bcde9fc",
+          "bytes": 364,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/read-update-problems.js.map",
+          "sourceSha256": "89d5258e5130dc6c5bc154d13b0b9a14085b77cbc58ba8612c730c811bcde9fc"
+        },
+        "dist/read-update-values.d.ts.map": {
+          "sha256": "5d215775dfea93d5ea63b428da991875c633d5fc641415ea3f79156c4b95d7ec",
+          "bytes": 5508,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/read-update-values.d.ts.map",
+          "sourceSha256": "5d215775dfea93d5ea63b428da991875c633d5fc641415ea3f79156c4b95d7ec"
+        },
+        "dist/read-update-values.js.map": {
+          "sha256": "7ae49cf7585062c36994372669599d9b897d536a58662f06527578e66d8aee0c",
+          "bytes": 11682,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/read-update-values.js.map",
+          "sourceSha256": "7ae49cf7585062c36994372669599d9b897d536a58662f06527578e66d8aee0c"
+        },
+        "dist/read-values.d.ts.map": {
+          "sha256": "4751725d0cd3a7aa81d4416edaf396d28dd13faa45ccf506ff579afe5d925679",
+          "bytes": 2211,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/read-values.d.ts.map",
+          "sourceSha256": "4751725d0cd3a7aa81d4416edaf396d28dd13faa45ccf506ff579afe5d925679"
+        },
+        "dist/read-values.js.map": {
+          "sha256": "18ff43e68deb7df99a05b11c6413d5678f5da5b6df7f59dac511f6549f41d52b",
+          "bytes": 17433,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/read-values.js.map",
+          "sourceSha256": "18ff43e68deb7df99a05b11c6413d5678f5da5b6df7f59dac511f6549f41d52b"
+        },
+        "dist/reference-domain.d.ts.map": {
+          "sha256": "bd937ea84f04f6f828cc30e45caf829ac52c9ea6c09c515ee84a067cf0dd2149",
+          "bytes": 669,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/reference-domain.d.ts.map",
+          "sourceSha256": "bd937ea84f04f6f828cc30e45caf829ac52c9ea6c09c515ee84a067cf0dd2149"
+        },
+        "dist/reference-domain.js.map": {
+          "sha256": "60bb012e965da232e7e35d15b7a5c906dd8900f7ffe9984c03bd5107c98d6505",
+          "bytes": 2240,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/reference-domain.js.map",
+          "sourceSha256": "60bb012e965da232e7e35d15b7a5c906dd8900f7ffe9984c03bd5107c98d6505"
+        },
+        "dist/schema-formats.d.ts.map": {
+          "sha256": "90153da56410e76324b080463ed24426118bcfc99c9a801d48ad3a4d514f9f7b",
+          "bytes": 256,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/schema-formats.d.ts.map",
+          "sourceSha256": "90153da56410e76324b080463ed24426118bcfc99c9a801d48ad3a4d514f9f7b"
+        },
+        "dist/schema-formats.js.map": {
+          "sha256": "c26b601a6f5da7f849721a1e9de21fcac3e6c7d497ef3c27bc3964649008bde6",
+          "bytes": 853,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/schema-formats.js.map",
+          "sourceSha256": "c26b601a6f5da7f849721a1e9de21fcac3e6c7d497ef3c27bc3964649008bde6"
+        },
+        "dist/transaction-discovery-values.d.ts.map": {
+          "sha256": "3c6faa621db513792060992739168716430b51e985b34ee86f297db3e3f95557",
+          "bytes": 837,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/transaction-discovery-values.d.ts.map",
+          "sourceSha256": "3c6faa621db513792060992739168716430b51e985b34ee86f297db3e3f95557"
+        },
+        "dist/transaction-discovery-values.js.map": {
+          "sha256": "7d979440777252c4c1846a3999baaf563c06ab86d7d77373fa8c4fb96fcc3c13",
+          "bytes": 2077,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/transaction-discovery-values.js.map",
+          "sourceSha256": "7d979440777252c4c1846a3999baaf563c06ab86d7d77373fa8c4fb96fcc3c13"
+        },
+        "dist/type-conformance.d.ts.map": {
+          "sha256": "78c3067885e05e6360edacfd2be6a5f30ece7e7d873b50a055ce2eaea5fc9b17",
+          "bytes": 945,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/type-conformance.d.ts.map",
+          "sourceSha256": "78c3067885e05e6360edacfd2be6a5f30ece7e7d873b50a055ce2eaea5fc9b17"
+        },
+        "dist/type-conformance.js.map": {
+          "sha256": "18995a63045a8f7358e00497d34a4a4a5316a68309d1f5713ace717427d18eb7",
+          "bytes": 4261,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/type-conformance.js.map",
+          "sourceSha256": "18995a63045a8f7358e00497d34a4a4a5316a68309d1f5713ace717427d18eb7"
+        },
+        "dist/history-values.d.ts": {
+          "sha256": "332bdd418d06a66207d7d42e22d5c19662b0054439fb9718fd5c60c07febaa7f",
+          "bytes": 4831,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/history-values.d.ts",
+          "sourceSha256": "332bdd418d06a66207d7d42e22d5c19662b0054439fb9718fd5c60c07febaa7f"
+        },
+        "dist/index.d.ts": {
+          "sha256": "883fdd539de137503c655c3f158d7eb7e44a8df5117d8cdb4481a21fc678af7b",
+          "bytes": 17182,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/index.d.ts",
+          "sourceSha256": "883fdd539de137503c655c3f158d7eb7e44a8df5117d8cdb4481a21fc678af7b"
+        },
+        "dist/json-admission.d.ts": {
+          "sha256": "80a8c06d828c84495df46cd999eb09ad4c724c960265c28a971854eae8cf7429",
+          "bytes": 3400,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/json-admission.d.ts",
+          "sourceSha256": "80a8c06d828c84495df46cd999eb09ad4c724c960265c28a971854eae8cf7429"
+        },
+        "dist/json-values.d.ts": {
+          "sha256": "4960fbaee826b5a53ac0361237e40a9c44be931183be3ea83d5afaf64d130121",
+          "bytes": 1523,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/json-values.d.ts",
+          "sourceSha256": "4960fbaee826b5a53ac0361237e40a9c44be931183be3ea83d5afaf64d130121"
+        },
+        "dist/link-header.d.ts": {
+          "sha256": "a1a525758e85bfbebd5579295fc7b322bf8e48a8d75462b5153bd4b3bf9d968b",
+          "bytes": 530,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/link-header.d.ts",
+          "sourceSha256": "a1a525758e85bfbebd5579295fc7b322bf8e48a8d75462b5153bd4b3bf9d968b"
+        },
+        "dist/property-validation.d.ts": {
+          "sha256": "3f3f01bf9597417535f50872947f283a44ba84df7080cf26ebc9c25429040c3a",
+          "bytes": 1651,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/property-validation.d.ts",
+          "sourceSha256": "3f3f01bf9597417535f50872947f283a44ba84df7080cf26ebc9c25429040c3a"
+        },
+        "dist/protocol-errors.d.ts": {
+          "sha256": "e0d793997aa5bdde114187294195483ccf91dd50eff7f80dac41ad5c5c0e206b",
+          "bytes": 240,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/protocol-errors.d.ts",
+          "sourceSha256": "e0d793997aa5bdde114187294195483ccf91dd50eff7f80dac41ad5c5c0e206b"
+        },
+        "dist/read-update-preflight.d.ts": {
+          "sha256": "193fcb7b397cb6da5dd9a3aaf9a5badb80c24bd064f1b5c9919d1308d0ccec6e",
+          "bytes": 1755,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/read-update-preflight.d.ts",
+          "sourceSha256": "193fcb7b397cb6da5dd9a3aaf9a5badb80c24bd064f1b5c9919d1308d0ccec6e"
+        },
+        "dist/read-update-problems.d.ts": {
+          "sha256": "f10a42bdc478b08dd02d6977c3d00e7b4fd82fe9432f174acc0e378f9b575426",
+          "bytes": 1738,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/read-update-problems.d.ts",
+          "sourceSha256": "f10a42bdc478b08dd02d6977c3d00e7b4fd82fe9432f174acc0e378f9b575426"
+        },
+        "dist/read-update-values.d.ts": {
+          "sha256": "4ec3f708dac69f50e4d599f669f9833e43e0e669a6480e8fcbfd75cf1c4864af",
+          "bytes": 7973,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/read-update-values.d.ts",
+          "sourceSha256": "4ec3f708dac69f50e4d599f669f9833e43e0e669a6480e8fcbfd75cf1c4864af"
+        },
+        "dist/read-values.d.ts": {
+          "sha256": "c7f147b2386189d75eb39628d6e7c6593c50114a6110b37fd7d15147f661f006",
+          "bytes": 4551,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/read-values.d.ts",
+          "sourceSha256": "c7f147b2386189d75eb39628d6e7c6593c50114a6110b37fd7d15147f661f006"
+        },
+        "dist/reference-domain.d.ts": {
+          "sha256": "0ef42b36ddabd35672bda4b6b41613ce0c432dd2034b1ceaae227e99b8e8e515",
+          "bytes": 1238,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/reference-domain.d.ts",
+          "sourceSha256": "0ef42b36ddabd35672bda4b6b41613ce0c432dd2034b1ceaae227e99b8e8e515"
+        },
+        "dist/schema-formats.d.ts": {
+          "sha256": "678c0289a3d1ff529f65009c8340713e0133e3b1b5184b9b619f9a5166b51cc8",
+          "bytes": 568,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/schema-formats.d.ts",
+          "sourceSha256": "678c0289a3d1ff529f65009c8340713e0133e3b1b5184b9b619f9a5166b51cc8"
+        },
+        "dist/transaction-discovery-values.d.ts": {
+          "sha256": "3f63ddea66b91fd80f9c6261e5230fba406589ae1220a8f905e26115c64685a6",
+          "bytes": 911,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/transaction-discovery-values.d.ts",
+          "sourceSha256": "3f63ddea66b91fd80f9c6261e5230fba406589ae1220a8f905e26115c64685a6"
+        },
+        "dist/type-conformance.d.ts": {
+          "sha256": "7a60398c4a5aea6ed5ceb027e8ddc07b85d88d67b4d5223689fc21646755c9be",
+          "bytes": 1431,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/protocol/dist/type-conformance.d.ts",
+          "sourceSha256": "7a60398c4a5aea6ed5ceb027e8ddc07b85d88d67b4d5223689fc21646755c9be"
+        },
+        "LICENSE": {
+          "sha256": "1bc5a9f778e62e7383078d5588aed7296f6e266934de1cb9bff35fc9ee240816",
+          "bytes": 1070,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/LICENSE",
+          "sourceSha256": "1bc5a9f778e62e7383078d5588aed7296f6e266934de1cb9bff35fc9ee240816"
+        }
+      }
+    },
+    "server": {
+      "archive": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/packages/bdp-server-0.0.0.tgz",
+      "archiveSha256": "6ca3ee46dbd61c130ed3b69d0c6a3b4242d356d4e72de4eb7eb0282843285303",
+      "files": {
+        "dist/alias-evaluator.js": {
+          "sha256": "7a03692769d46e735c775f75152a0b73c10863c811469584eea23ed7820fe447",
+          "bytes": 6645,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/alias-evaluator.js",
+          "sourceSha256": "7a03692769d46e735c775f75152a0b73c10863c811469584eea23ed7820fe447"
+        },
+        "dist/authority-read.js": {
+          "sha256": "0d579df0ede780551c369679dbfce6727433e15bfbfbea49c39baac76851f7fe",
+          "bytes": 37413,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/authority-read.js",
+          "sourceSha256": "0d579df0ede780551c369679dbfce6727433e15bfbfbea49c39baac76851f7fe"
+        },
+        "dist/development-authority.js": {
+          "sha256": "adcd555997c226a428baf4c5514579e611fab8f9e08a604ec2d72ad9ed77bba1",
+          "bytes": 14655,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/development-authority.js",
+          "sourceSha256": "adcd555997c226a428baf4c5514579e611fab8f9e08a604ec2d72ad9ed77bba1"
+        },
+        "dist/development-composition.js": {
+          "sha256": "54db32e28c39c656bbb7d3f8580472f6d38c82e37694a89f68a77e951c8cc318",
+          "bytes": 3953,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/development-composition.js",
+          "sourceSha256": "54db32e28c39c656bbb7d3f8580472f6d38c82e37694a89f68a77e951c8cc318"
+        },
+        "dist/development-contracts.js": {
+          "sha256": "038a7144b879ee3b89b6cf1ec670af92c47a2d01073ab5f24c922c3c121863cd",
+          "bytes": 9970,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/development-contracts.js",
+          "sourceSha256": "038a7144b879ee3b89b6cf1ec670af92c47a2d01073ab5f24c922c3c121863cd"
+        },
+        "dist/development-runtime.js": {
+          "sha256": "e1f7571f43ed5ad3d7155f866c0142d07a09772ba8ad668e1b55393a75003431",
+          "bytes": 24324,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/development-runtime.js",
+          "sourceSha256": "e1f7571f43ed5ad3d7155f866c0142d07a09772ba8ad668e1b55393a75003431"
+        },
+        "dist/development.js": {
+          "sha256": "101188d34f75d6ba9976d4097c6cd7e7141efff4ec1b6f4f4ba937218eff907f",
+          "bytes": 407,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/development.js",
+          "sourceSha256": "101188d34f75d6ba9976d4097c6cd7e7141efff4ec1b6f4f4ba937218eff907f"
+        },
+        "dist/index.js": {
+          "sha256": "7145b97293f4a0ec307cd32b98b69c4487c1fd9cefb15a5c4bb643a1dca70f59",
+          "bytes": 46910,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/index.js",
+          "sourceSha256": "7145b97293f4a0ec307cd32b98b69c4487c1fd9cefb15a5c4bb643a1dca70f59"
+        },
+        "dist/installed-contract-artifact.js": {
+          "sha256": "d30354c471c34d24b5567b5a950d59952705765ba2b8aa5a7c853dcc3979bdcb",
+          "bytes": 16274,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-contract-artifact.js",
+          "sourceSha256": "d30354c471c34d24b5567b5a950d59952705765ba2b8aa5a7c853dcc3979bdcb"
+        },
+        "dist/installed-payload.js": {
+          "sha256": "dc0da1f44913d3f9c3839c5f21d3f17a33ca7a97dac1da1434e0e6565f0a57a5",
+          "bytes": 3928,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-payload.js",
+          "sourceSha256": "dc0da1f44913d3f9c3839c5f21d3f17a33ca7a97dac1da1434e0e6565f0a57a5"
+        },
+        "dist/installed-reference-configuration.js": {
+          "sha256": "9ca2071ccd43e0eba1a512bdbc3a5edd9b3a24912b14b487d4886e45002b4c79",
+          "bytes": 7992,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-reference-configuration.js",
+          "sourceSha256": "9ca2071ccd43e0eba1a512bdbc3a5edd9b3a24912b14b487d4886e45002b4c79"
+        },
+        "dist/installed-reference-process.js": {
+          "sha256": "3eb9a6bc8df1237d78ba4aae7e95589df6fb7f4781f572e04adda583f359c71d",
+          "bytes": 3241,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-reference-process.js",
+          "sourceSha256": "3eb9a6bc8df1237d78ba4aae7e95589df6fb7f4781f572e04adda583f359c71d"
+        },
+        "dist/installed-reference.js": {
+          "sha256": "be57131fe4af37b30ee94c332436d18db889ff454c2a680b05fdf1308b94737c",
+          "bytes": 1644,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-reference.js",
+          "sourceSha256": "be57131fe4af37b30ee94c332436d18db889ff454c2a680b05fdf1308b94737c"
+        },
+        "dist/installed-schema-builtins.js": {
+          "sha256": "bcb55ba8d30780fc183d77f4f68c8d547783808d3a5abba44742428ea3f60235",
+          "bytes": 15616,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-builtins.js",
+          "sourceSha256": "bcb55ba8d30780fc183d77f4f68c8d547783808d3a5abba44742428ea3f60235"
+        },
+        "dist/installed-schema-decimal.js": {
+          "sha256": "4d18c4125c509703e849b336623a08344b981207f89918b3410182950373a74d",
+          "bytes": 6055,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-decimal.js",
+          "sourceSha256": "4d18c4125c509703e849b336623a08344b981207f89918b3410182950373a74d"
+        },
+        "dist/installed-schema-evaluator.js": {
+          "sha256": "56e4b0fb6d71504744f62868f05346b43335d062ecdf62ecfd93ccced0f5d6ca",
+          "bytes": 45318,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-evaluator.js",
+          "sourceSha256": "56e4b0fb6d71504744f62868f05346b43335d062ecdf62ecfd93ccced0f5d6ca"
+        },
+        "dist/installed-schema-graph.js": {
+          "sha256": "a5fa3ad25207824da1dafda2df268ed328a46609bccf7c4cfb1b46116bca268d",
+          "bytes": 19700,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-graph.js",
+          "sourceSha256": "a5fa3ad25207824da1dafda2df268ed328a46609bccf7c4cfb1b46116bca268d"
+        },
+        "dist/installed-schema-pattern.js": {
+          "sha256": "7d44816cea2b104c4001b14263a561815f4b169dddc89203d0bcaed02f565299",
+          "bytes": 20924,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-pattern.js",
+          "sourceSha256": "7d44816cea2b104c4001b14263a561815f4b169dddc89203d0bcaed02f565299"
+        },
+        "dist/installed-schema-recursion.js": {
+          "sha256": "5c060c5b5e1a6fa6fdb26e59751d4eedd2de39f57fb0b51f10067c1a35b04d0c",
+          "bytes": 16521,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-recursion.js",
+          "sourceSha256": "5c060c5b5e1a6fa6fdb26e59751d4eedd2de39f57fb0b51f10067c1a35b04d0c"
+        },
+        "dist/installed-schema-shape.js": {
+          "sha256": "5774c022d1a45569e4983fdfb86006282579d45e8ab40f8e3634945c661e5bb5",
+          "bytes": 9547,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-shape.js",
+          "sourceSha256": "5774c022d1a45569e4983fdfb86006282579d45e8ab40f8e3634945c661e5bb5"
+        },
+        "dist/installed-schema-uri.js": {
+          "sha256": "5c2b746f2db51b586beeba4b816cf9364546399ef129d2a90ceac5f3548705fe",
+          "bytes": 7647,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-uri.js",
+          "sourceSha256": "5c2b746f2db51b586beeba4b816cf9364546399ef129d2a90ceac5f3548705fe"
+        },
+        "dist/installed-schema-value.js": {
+          "sha256": "82ac8756bae5b324093857b41dc54796ece46d0b1963a2d6bf132b9adc489754",
+          "bytes": 13954,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-value.js",
+          "sourceSha256": "82ac8756bae5b324093857b41dc54796ece46d0b1963a2d6bf132b9adc489754"
+        },
+        "dist/member-executor.js": {
+          "sha256": "3d39cad981b60b62fbea36f380e28b4b9ac0bd2b0af11b7a9738cd13734d6c1b",
+          "bytes": 29174,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/member-executor.js",
+          "sourceSha256": "3d39cad981b60b62fbea36f380e28b4b9ac0bd2b0af11b7a9738cd13734d6c1b"
+        },
+        "dist/member-identity.js": {
+          "sha256": "0d44888e873a7b421c7408c8f619f82c02608966166f5a1d396b29ad8dfe360f",
+          "bytes": 21748,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/member-identity.js",
+          "sourceSha256": "0d44888e873a7b421c7408c8f619f82c02608966166f5a1d396b29ad8dfe360f"
+        },
+        "dist/member-numeric-diagnostics.js": {
+          "sha256": "b26abb89fe14dcf8c84df49dc45bdb192da3262104e37e08274120c3b6f3612a",
+          "bytes": 2735,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/member-numeric-diagnostics.js",
+          "sourceSha256": "b26abb89fe14dcf8c84df49dc45bdb192da3262104e37e08274120c3b6f3612a"
+        },
+        "dist/node-http-disconnect.js": {
+          "sha256": "195f6a6ca6205d4f307a443401ae7a2ea15c0babab64c59e8365bd920769e5bd",
+          "bytes": 491,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/node-http-disconnect.js",
+          "sourceSha256": "195f6a6ca6205d4f307a443401ae7a2ea15c0babab64c59e8365bd920769e5bd"
+        },
+        "dist/node-http-target.js": {
+          "sha256": "7085b22ad2eab1cb9d1590b744f5948df8f27122cf48304c83ff2782c93ad1fc",
+          "bytes": 2687,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/node-http-target.js",
+          "sourceSha256": "7085b22ad2eab1cb9d1590b744f5948df8f27122cf48304c83ff2782c93ad1fc"
+        },
+        "dist/read-conformance-capability.js": {
+          "sha256": "8448816d732fb0b49be124bac2c403876ebaf135e4ed913d8495170d861817d1",
+          "bytes": 2833,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-conformance-capability.js",
+          "sourceSha256": "8448816d732fb0b49be124bac2c403876ebaf135e4ed913d8495170d861817d1"
+        },
+        "dist/read-http-routing.js": {
+          "sha256": "13b49961facf8eb468a5ea2038dc640285268cb664ac9c5392e2577b3d2bad49",
+          "bytes": 2586,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-http-routing.js",
+          "sourceSha256": "13b49961facf8eb468a5ea2038dc640285268cb664ac9c5392e2577b3d2bad49"
+        },
+        "dist/read-http.js": {
+          "sha256": "39a3dd43650c30f84a8100af1a36c158b863cda7added8810df7251ff467c0b2",
+          "bytes": 9418,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-http.js",
+          "sourceSha256": "39a3dd43650c30f84a8100af1a36c158b863cda7added8810df7251ff467c0b2"
+        },
+        "dist/read-pagination.js": {
+          "sha256": "a87360206f50ace4a8cd3cba6497d8075746189f681cefe112d3057d6c5496b2",
+          "bytes": 28225,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-pagination.js",
+          "sourceSha256": "a87360206f50ace4a8cd3cba6497d8075746189f681cefe112d3057d6c5496b2"
+        },
+        "dist/read-request.js": {
+          "sha256": "be23340bb132331fd3bcdae33eca90d6c85f18bbf2d8c004ca963f52cb8be624",
+          "bytes": 30808,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-request.js",
+          "sourceSha256": "be23340bb132331fd3bcdae33eca90d6c85f18bbf2d8c004ca963f52cb8be624"
+        },
+        "dist/read-selector.js": {
+          "sha256": "b4a69b8934eb039387137ba016ffbeab03cbdc59da19ebc5b26b4120732258f8",
+          "bytes": 29703,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-selector.js",
+          "sourceSha256": "b4a69b8934eb039387137ba016ffbeab03cbdc59da19ebc5b26b4120732258f8"
+        },
+        "dist/read-sequence-lifecycle.js": {
+          "sha256": "d10315f9bccb80d994c7b67b27716f5a84d174a53f817eb207e46cab75828b2b",
+          "bytes": 14335,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-sequence-lifecycle.js",
+          "sourceSha256": "d10315f9bccb80d994c7b67b27716f5a84d174a53f817eb207e46cab75828b2b"
+        },
+        "dist/read-update-runtime-limits.js": {
+          "sha256": "7483588c18a447d310cbe32baababf7d866f82f164687ec310c1ee8ad0430608",
+          "bytes": 3525,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-update-runtime-limits.js",
+          "sourceSha256": "7483588c18a447d310cbe32baababf7d866f82f164687ec310c1ee8ad0430608"
+        },
+        "dist/recovery-store.js": {
+          "sha256": "eb75b6a8e7e4a8272f869978d8ead8829c14ab2c13e9d2e78ebde3061b4bfee0",
+          "bytes": 34994,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/recovery-store.js",
+          "sourceSha256": "eb75b6a8e7e4a8272f869978d8ead8829c14ab2c13e9d2e78ebde3061b4bfee0"
+        },
+        "dist/resource-evaluator.js": {
+          "sha256": "eace74bfbe555a50735d8a54e7bcc2cb032aa586d6595a6e7444f0ce8c5fad3a",
+          "bytes": 41452,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/resource-evaluator.js",
+          "sourceSha256": "eace74bfbe555a50735d8a54e7bcc2cb032aa586d6595a6e7444f0ce8c5fad3a"
+        },
+        "dist/retained-disclosure.js": {
+          "sha256": "3ce3d9909a47d78a20b256a0d0affe605224938e5ed92e35d63b3a3d7e517100",
+          "bytes": 1667,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/retained-disclosure.js",
+          "sourceSha256": "3ce3d9909a47d78a20b256a0d0affe605224938e5ed92e35d63b3a3d7e517100"
+        },
+        "dist/semantic-identity.js": {
+          "sha256": "4e9baff204a18846bfd25d9ee33d3dd25078d2c226e08692c75870fb0c159b72",
+          "bytes": 6509,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/semantic-identity.js",
+          "sourceSha256": "4e9baff204a18846bfd25d9ee33d3dd25078d2c226e08692c75870fb0c159b72"
+        },
+        "dist/sequence-executor.js": {
+          "sha256": "c3820c429ad7e622b7cc501e601a8ac02d28d5042c8b39d94572c2016799ce16",
+          "bytes": 22535,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/sequence-executor.js",
+          "sourceSha256": "c3820c429ad7e622b7cc501e601a8ac02d28d5042c8b39d94572c2016799ce16"
+        },
+        "dist/transaction-batch.js": {
+          "sha256": "95f4c546d5f2b80e438fea50a92ae8eb9ce87def014c01efc99c2931115b36aa",
+          "bytes": 42622,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-batch.js",
+          "sourceSha256": "95f4c546d5f2b80e438fea50a92ae8eb9ce87def014c01efc99c2931115b36aa"
+        },
+        "dist/transaction-changefeed.js": {
+          "sha256": "a63a271af94c04a45b0ca5dd81ffdaf72628f3aacaa9dfcb18350189fa77eb76",
+          "bytes": 5699,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-changefeed.js",
+          "sourceSha256": "a63a271af94c04a45b0ca5dd81ffdaf72628f3aacaa9dfcb18350189fa77eb76"
+        },
+        "dist/transaction-comparison.js": {
+          "sha256": "7ffe623ec7d78f61f74431acd5fc58d0a03ba92aed757a8f035ca33cd8878466",
+          "bytes": 2214,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-comparison.js",
+          "sourceSha256": "7ffe623ec7d78f61f74431acd5fc58d0a03ba92aed757a8f035ca33cd8878466"
+        },
+        "dist/transaction-consistency.js": {
+          "sha256": "49ecc02d89212b5e815f0f9336a45d5318fa246fe934d8e0a343dd02958e3b23",
+          "bytes": 4693,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-consistency.js",
+          "sourceSha256": "49ecc02d89212b5e815f0f9336a45d5318fa246fe934d8e0a343dd02958e3b23"
+        },
+        "dist/transaction-dependencies.js": {
+          "sha256": "0d16fc892bb0cfef17ed013a511a11a251cf30c7589c2cf0f448d1f33c0688e8",
+          "bytes": 12938,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-dependencies.js",
+          "sourceSha256": "0d16fc892bb0cfef17ed013a511a11a251cf30c7589c2cf0f448d1f33c0688e8"
+        },
+        "dist/transaction-discovery.js": {
+          "sha256": "2cf8c1519d05eb3f9d402db7e59f1db02e12ae79e165c5876f888712233fab71",
+          "bytes": 2720,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-discovery.js",
+          "sourceSha256": "2cf8c1519d05eb3f9d402db7e59f1db02e12ae79e165c5876f888712233fab71"
+        },
+        "dist/transaction-events.js": {
+          "sha256": "cdcca02ea7d097774f615523cadd4cdc7d7a8ae82f3d87f659eae58c06806f2a",
+          "bytes": 10641,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-events.js",
+          "sourceSha256": "cdcca02ea7d097774f615523cadd4cdc7d7a8ae82f3d87f659eae58c06806f2a"
+        },
+        "dist/transaction-http.js": {
+          "sha256": "4d2afa08788305abf0d801bff14731fabda2033ef1dfd47aa8b394ffec4441a0",
+          "bytes": 26714,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-http.js",
+          "sourceSha256": "4d2afa08788305abf0d801bff14731fabda2033ef1dfd47aa8b394ffec4441a0"
+        },
+        "dist/transaction-installed-configuration.js": {
+          "sha256": "786a945b8ab3609a9d1ed6e4cd0c5f6e94b502f7ae945f173c40fd979254aea9",
+          "bytes": 2946,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-installed-configuration.js",
+          "sourceSha256": "786a945b8ab3609a9d1ed6e4cd0c5f6e94b502f7ae945f173c40fd979254aea9"
+        },
+        "dist/transaction-installed-process.js": {
+          "sha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+          "bytes": 2971,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-installed-process.js",
+          "sourceSha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c"
+        },
+        "dist/transaction-installed.js": {
+          "sha256": "2dc1386a8a9f38d32c1fbf4ab8413538e86e3d41a20db9b9ab275a73b8c4040f",
+          "bytes": 1222,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-installed.js",
+          "sourceSha256": "2dc1386a8a9f38d32c1fbf4ab8413538e86e3d41a20db9b9ab275a73b8c4040f"
+        },
+        "dist/transaction-read.js": {
+          "sha256": "6d7201b113008139a52ce3784d8f0ffe3b914fb17e72efcec2721ea74cf1cb9c",
+          "bytes": 12358,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-read.js",
+          "sourceSha256": "6d7201b113008139a52ce3784d8f0ffe3b914fb17e72efcec2721ea74cf1cb9c"
+        },
+        "dist/transaction-runtime-configuration.js": {
+          "sha256": "118e7f0dabe8886104216e50dbf59f5df5e1f0ae53c103d337dd2412511098b3",
+          "bytes": 16435,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-runtime-configuration.js",
+          "sourceSha256": "118e7f0dabe8886104216e50dbf59f5df5e1f0ae53c103d337dd2412511098b3"
+        },
+        "dist/transaction-runtime.js": {
+          "sha256": "b16df10012c986765c62e442839509aece3e8522ad0e721fab66b1b109b7742c",
+          "bytes": 15005,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-runtime.js",
+          "sourceSha256": "b16df10012c986765c62e442839509aece3e8522ad0e721fab66b1b109b7742c"
+        },
+        "dist/transaction-schema-http.js": {
+          "sha256": "62a7f0fb4fc29124e52566646a749ca8c2640f3f1e8d859c7957b87d9c463b3d",
+          "bytes": 2286,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-schema-http.js",
+          "sourceSha256": "62a7f0fb4fc29124e52566646a749ca8c2640f3f1e8d859c7957b87d9c463b3d"
+        },
+        "dist/transaction-sequence.js": {
+          "sha256": "8128db5c3846c72c7949527865b36ece9a539162bf569390e3c363854b52584b",
+          "bytes": 5342,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-sequence.js",
+          "sourceSha256": "8128db5c3846c72c7949527865b36ece9a539162bf569390e3c363854b52584b"
+        },
+        "dist/transaction-service.js": {
+          "sha256": "d3a25ed2181228c2e27b34798ea011fc3219df2d91909212af53825a9083d671",
+          "bytes": 23056,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-service.js",
+          "sourceSha256": "d3a25ed2181228c2e27b34798ea011fc3219df2d91909212af53825a9083d671"
+        },
+        "dist/transaction-set.js": {
+          "sha256": "e37522d5a56d9a949a9d4f805fa616481b8b15acf2fdf23a1c67772fafd0c009",
+          "bytes": 6496,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-set.js",
+          "sourceSha256": "e37522d5a56d9a949a9d4f805fa616481b8b15acf2fdf23a1c67772fafd0c009"
+        },
+        "dist/transaction-snapshot.js": {
+          "sha256": "ffa2991a7f1cf18b0f0a4943ebded5c2dd33b75dc04c68a0254c7c71901c650c",
+          "bytes": 30595,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-snapshot.js",
+          "sourceSha256": "ffa2991a7f1cf18b0f0a4943ebded5c2dd33b75dc04c68a0254c7c71901c650c"
+        },
+        "dist/transaction-sse.js": {
+          "sha256": "93ca231304322cc9e4521e8df0a11f3a050949825d9b2b72ebb880ba1e6b8736",
+          "bytes": 5393,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-sse.js",
+          "sourceSha256": "93ca231304322cc9e4521e8df0a11f3a050949825d9b2b72ebb880ba1e6b8736"
+        },
+        "dist/transaction-store.js": {
+          "sha256": "bf399d40b42f20583ce6ce9c9106ee92e320eb5c777cea4ba03e5a788e9f229c",
+          "bytes": 84648,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-store.js",
+          "sourceSha256": "bf399d40b42f20583ce6ce9c9106ee92e320eb5c777cea4ba03e5a788e9f229c"
+        },
+        "dist/transaction-submission.js": {
+          "sha256": "5bb0ccf5cf01f0601a719aeb32e80599590192b9bcc50bbcca4728a4fbb0e6be",
+          "bytes": 5830,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-submission.js",
+          "sourceSha256": "5bb0ccf5cf01f0601a719aeb32e80599590192b9bcc50bbcca4728a4fbb0e6be"
+        },
+        "package.json": {
+          "sha256": "d583f4158c3a393923c37d70a61212f6a716c951a5f3be7ed9bbe3aa8846ca2e",
+          "bytes": 488,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/package.json",
+          "sourceSha256": "110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e"
+        },
+        "dist/alias-evaluator.d.ts.map": {
+          "sha256": "4d58d5422acba04f14b1786b5195a542c27cd266d653f1b7ccd8b286ad60b957",
+          "bytes": 1399,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/alias-evaluator.d.ts.map",
+          "sourceSha256": "4d58d5422acba04f14b1786b5195a542c27cd266d653f1b7ccd8b286ad60b957"
+        },
+        "dist/alias-evaluator.js.map": {
+          "sha256": "586068a8a7f76318d86d8b75158176e0e775386fb3f8d04b1d0de01638509a3f",
+          "bytes": 5279,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/alias-evaluator.js.map",
+          "sourceSha256": "586068a8a7f76318d86d8b75158176e0e775386fb3f8d04b1d0de01638509a3f"
+        },
+        "dist/authority-read.d.ts.map": {
+          "sha256": "be5b4034a0a1919fa89d25f11315ed3eb9ab3cf8143f35f6d1d6ef617c284c11",
+          "bytes": 5260,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/authority-read.d.ts.map",
+          "sourceSha256": "be5b4034a0a1919fa89d25f11315ed3eb9ab3cf8143f35f6d1d6ef617c284c11"
+        },
+        "dist/authority-read.js.map": {
+          "sha256": "2d0ce8c6a1f8f0bada98b884b728ac721560e895a3ab8fd99793cd987dc092da",
+          "bytes": 32226,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/authority-read.js.map",
+          "sourceSha256": "2d0ce8c6a1f8f0bada98b884b728ac721560e895a3ab8fd99793cd987dc092da"
+        },
+        "dist/development-authority.d.ts.map": {
+          "sha256": "c3baad05dbff5f8cc315e2b1143a06a74a757a4b5b21355c0fdeec5341c8c303",
+          "bytes": 1621,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/development-authority.d.ts.map",
+          "sourceSha256": "c3baad05dbff5f8cc315e2b1143a06a74a757a4b5b21355c0fdeec5341c8c303"
+        },
+        "dist/development-authority.js.map": {
+          "sha256": "5e9fc07f23e23d0c3489b3a338b9b525f96744691b450dafac90ea8109487cd4",
+          "bytes": 11209,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/development-authority.js.map",
+          "sourceSha256": "5e9fc07f23e23d0c3489b3a338b9b525f96744691b450dafac90ea8109487cd4"
+        },
+        "dist/development-composition.d.ts.map": {
+          "sha256": "03125637d5dfc62653b244b2ed16024c99eb15e14ed36b3fa51abe3cf7618c08",
+          "bytes": 247,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/development-composition.d.ts.map",
+          "sourceSha256": "03125637d5dfc62653b244b2ed16024c99eb15e14ed36b3fa51abe3cf7618c08"
+        },
+        "dist/development-composition.js.map": {
+          "sha256": "3ceac4b2732353e57707d1d504fade853b5368ca18500a9bfc9324e7c5f8f898",
+          "bytes": 2965,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/development-composition.js.map",
+          "sourceSha256": "3ceac4b2732353e57707d1d504fade853b5368ca18500a9bfc9324e7c5f8f898"
+        },
+        "dist/development-contracts.d.ts.map": {
+          "sha256": "f46cd61c60e43bd1120a86cbd31300d39c157d8136e45a8794c959f5122d0fcd",
+          "bytes": 1886,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/development-contracts.d.ts.map",
+          "sourceSha256": "f46cd61c60e43bd1120a86cbd31300d39c157d8136e45a8794c959f5122d0fcd"
+        },
+        "dist/development-contracts.js.map": {
+          "sha256": "990aa315a171f06d84e13e5fe5bae128aff1227a8f0f1cd5b16c44714ba37e70",
+          "bytes": 9399,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/development-contracts.js.map",
+          "sourceSha256": "990aa315a171f06d84e13e5fe5bae128aff1227a8f0f1cd5b16c44714ba37e70"
+        },
+        "dist/development-runtime.d.ts.map": {
+          "sha256": "013041faaeddcbf87ae6616c830f76345602e54d9c99e8b2c3fd5798887e763f",
+          "bytes": 1470,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/development-runtime.d.ts.map",
+          "sourceSha256": "013041faaeddcbf87ae6616c830f76345602e54d9c99e8b2c3fd5798887e763f"
+        },
+        "dist/development-runtime.js.map": {
+          "sha256": "e0cd6a2b9220d85aa4d6d18abc5a54663761460f73f488fd714ca92bfc07e205",
+          "bytes": 21700,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/development-runtime.js.map",
+          "sourceSha256": "e0cd6a2b9220d85aa4d6d18abc5a54663761460f73f488fd714ca92bfc07e205"
+        },
+        "dist/development.d.ts.map": {
+          "sha256": "3f1df29915c4cd2eb0b5c9f910e51f082a6bdd172e7ab7691f3df028a7906ab4",
+          "bytes": 330,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/development.d.ts.map",
+          "sourceSha256": "3f1df29915c4cd2eb0b5c9f910e51f082a6bdd172e7ab7691f3df028a7906ab4"
+        },
+        "dist/development.js.map": {
+          "sha256": "7aa8ce2d3c7628c619fa2e67636f577588f2b992bafc0c31a422768190bdd70d",
+          "bytes": 311,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/development.js.map",
+          "sourceSha256": "7aa8ce2d3c7628c619fa2e67636f577588f2b992bafc0c31a422768190bdd70d"
+        },
+        "dist/index.d.ts.map": {
+          "sha256": "215b408cac7370ed0780e8f397462fdefd9d5375c5bdfdb973978e3467a58ef1",
+          "bytes": 6248,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/index.d.ts.map",
+          "sourceSha256": "215b408cac7370ed0780e8f397462fdefd9d5375c5bdfdb973978e3467a58ef1"
+        },
+        "dist/index.js.map": {
+          "sha256": "544aefec78c82b9a45a267882e48a1654b0de3311a0749ed81547c7296395f2e",
+          "bytes": 39779,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/index.js.map",
+          "sourceSha256": "544aefec78c82b9a45a267882e48a1654b0de3311a0749ed81547c7296395f2e"
+        },
+        "dist/installed-contract-artifact.d.ts.map": {
+          "sha256": "49bcac633bc4548d94d7016f7c980219bcf1bc216c501d4ad3f3e881c3b3404b",
+          "bytes": 1845,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-contract-artifact.d.ts.map",
+          "sourceSha256": "49bcac633bc4548d94d7016f7c980219bcf1bc216c501d4ad3f3e881c3b3404b"
+        },
+        "dist/installed-contract-artifact.js.map": {
+          "sha256": "abed46f15eaa688eb695c497f54c9d57d166ce6cd6b858cc4f794eee3c1aaeed",
+          "bytes": 15078,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-contract-artifact.js.map",
+          "sourceSha256": "abed46f15eaa688eb695c497f54c9d57d166ce6cd6b858cc4f794eee3c1aaeed"
+        },
+        "dist/installed-payload.d.ts.map": {
+          "sha256": "a0e14479605288f8189e46db4a8a99071b8f865fe12080c717e8d6f402dcf949",
+          "bytes": 167,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-payload.d.ts.map",
+          "sourceSha256": "a0e14479605288f8189e46db4a8a99071b8f865fe12080c717e8d6f402dcf949"
+        },
+        "dist/installed-payload.js.map": {
+          "sha256": "c37fc102d2bcdbc71973953a2adc394337c91f2af5e93cbff5e0e9c08c975ec4",
+          "bytes": 3453,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-payload.js.map",
+          "sourceSha256": "c37fc102d2bcdbc71973953a2adc394337c91f2af5e93cbff5e0e9c08c975ec4"
+        },
+        "dist/installed-reference-configuration.d.ts.map": {
+          "sha256": "cecbd98da318d3e26f727085ea9554ef3a5c7687256e3bba8150b9decc63d9a3",
+          "bytes": 346,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-reference-configuration.d.ts.map",
+          "sourceSha256": "cecbd98da318d3e26f727085ea9554ef3a5c7687256e3bba8150b9decc63d9a3"
+        },
+        "dist/installed-reference-configuration.js.map": {
+          "sha256": "cd573608226508cb1ef2e252ef503e9ebd69d51c23d1e744022dfb8f67e6d83d",
+          "bytes": 7507,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-reference-configuration.js.map",
+          "sourceSha256": "cd573608226508cb1ef2e252ef503e9ebd69d51c23d1e744022dfb8f67e6d83d"
+        },
+        "dist/installed-reference-process.d.ts.map": {
+          "sha256": "0a87caae52ef1bcd90df3f4767454032d04536026e2a1693156a9a1d35935f2b",
+          "bytes": 148,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-reference-process.d.ts.map",
+          "sourceSha256": "0a87caae52ef1bcd90df3f4767454032d04536026e2a1693156a9a1d35935f2b"
+        },
+        "dist/installed-reference-process.js.map": {
+          "sha256": "658adce28f16f3ea6f2be062942a7d675e0a902dca4a742a1007387c29d4b03c",
+          "bytes": 3072,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-reference-process.js.map",
+          "sourceSha256": "658adce28f16f3ea6f2be062942a7d675e0a902dca4a742a1007387c29d4b03c"
+        },
+        "dist/installed-reference.d.ts.map": {
+          "sha256": "3d0d3b7eccf04ff51b23b20cc9ad1c3f21c1b1e3d6aca13e312d7ddb2b8ef3db",
+          "bytes": 187,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-reference.d.ts.map",
+          "sourceSha256": "3d0d3b7eccf04ff51b23b20cc9ad1c3f21c1b1e3d6aca13e312d7ddb2b8ef3db"
+        },
+        "dist/installed-reference.js.map": {
+          "sha256": "99260facf34b15591b17e3dce32ea09eb9241ae8f81ba1989e420495f1223170",
+          "bytes": 1342,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-reference.js.map",
+          "sourceSha256": "99260facf34b15591b17e3dce32ea09eb9241ae8f81ba1989e420495f1223170"
+        },
+        "dist/installed-schema-builtins.d.ts.map": {
+          "sha256": "f8d70b4f71bbf3606d4595f6739a9e5f2fd0ec06afb7811043f1be26e16ea89f",
+          "bytes": 260,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-builtins.d.ts.map",
+          "sourceSha256": "f8d70b4f71bbf3606d4595f6739a9e5f2fd0ec06afb7811043f1be26e16ea89f"
+        },
+        "dist/installed-schema-builtins.js.map": {
+          "sha256": "e733e9675dade037df43bb460198e851f1061c9de8d2c06d070fd97a1f547a14",
+          "bytes": 1032,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-builtins.js.map",
+          "sourceSha256": "e733e9675dade037df43bb460198e851f1061c9de8d2c06d070fd97a1f547a14"
+        },
+        "dist/installed-schema-decimal.d.ts.map": {
+          "sha256": "9b4260165c1f35ae016cb87d0081d03cb71a327c41044aa2287359fa81cb1ed8",
+          "bytes": 965,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-decimal.d.ts.map",
+          "sourceSha256": "9b4260165c1f35ae016cb87d0081d03cb71a327c41044aa2287359fa81cb1ed8"
+        },
+        "dist/installed-schema-decimal.js.map": {
+          "sha256": "321b205c478ce70a6fa1fb410ac430245bf249bae46f1be2366a809aa994052e",
+          "bytes": 9112,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-decimal.js.map",
+          "sourceSha256": "321b205c478ce70a6fa1fb410ac430245bf249bae46f1be2366a809aa994052e"
+        },
+        "dist/installed-schema-evaluator.d.ts.map": {
+          "sha256": "6d4b6e113699cfeb1781bca8373d1621c11f1073e65a73e27e36dd24e102b019",
+          "bytes": 2425,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-evaluator.d.ts.map",
+          "sourceSha256": "6d4b6e113699cfeb1781bca8373d1621c11f1073e65a73e27e36dd24e102b019"
+        },
+        "dist/installed-schema-evaluator.js.map": {
+          "sha256": "d5507ff2cb21190dba1c8ed94a78ff1419fdda280360253b01f6b9d23f969100",
+          "bytes": 41065,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-evaluator.js.map",
+          "sourceSha256": "d5507ff2cb21190dba1c8ed94a78ff1419fdda280360253b01f6b9d23f969100"
+        },
+        "dist/installed-schema-graph.d.ts.map": {
+          "sha256": "c56e5afed626f485da5b8d25e369a319ec64fee334029d7ebf636d88e832e204",
+          "bytes": 3153,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-graph.d.ts.map",
+          "sourceSha256": "c56e5afed626f485da5b8d25e369a319ec64fee334029d7ebf636d88e832e204"
+        },
+        "dist/installed-schema-graph.js.map": {
+          "sha256": "2e7ca44436188dc954c0a2d887adad0e874edfc8d0877d426535ef36a079288c",
+          "bytes": 18680,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-graph.js.map",
+          "sourceSha256": "2e7ca44436188dc954c0a2d887adad0e874edfc8d0877d426535ef36a079288c"
+        },
+        "dist/installed-schema-pattern.d.ts.map": {
+          "sha256": "f548a00d8f66c57f997f6083015094b1ccf9cdfc3705d711bfc404bde9fd9970",
+          "bytes": 894,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-pattern.d.ts.map",
+          "sourceSha256": "f548a00d8f66c57f997f6083015094b1ccf9cdfc3705d711bfc404bde9fd9970"
+        },
+        "dist/installed-schema-pattern.js.map": {
+          "sha256": "9a4ff11dc03168a1ba93c09a86e9df7c8536ef64e055c283e61a8aa6a5b8ec2c",
+          "bytes": 24709,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-pattern.js.map",
+          "sourceSha256": "9a4ff11dc03168a1ba93c09a86e9df7c8536ef64e055c283e61a8aa6a5b8ec2c"
+        },
+        "dist/installed-schema-recursion.d.ts.map": {
+          "sha256": "ccc151b20bdf01fbe5502226192b25f3bcd2426cb15eab70e77857121ef2ec3f",
+          "bytes": 1817,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-recursion.d.ts.map",
+          "sourceSha256": "ccc151b20bdf01fbe5502226192b25f3bcd2426cb15eab70e77857121ef2ec3f"
+        },
+        "dist/installed-schema-recursion.js.map": {
+          "sha256": "7f6eb4c77bb1aef748fe7d39fe76dcb583f2908ca0ace3e1a3acda2efc612003",
+          "bytes": 16302,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-recursion.js.map",
+          "sourceSha256": "7f6eb4c77bb1aef748fe7d39fe76dcb583f2908ca0ace3e1a3acda2efc612003"
+        },
+        "dist/installed-schema-shape.d.ts.map": {
+          "sha256": "9a3d17c8986e1892b8c4e3ae37d68138edc6a11d1cc2226d489ce3e032439600",
+          "bytes": 1833,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-shape.d.ts.map",
+          "sourceSha256": "9a3d17c8986e1892b8c4e3ae37d68138edc6a11d1cc2226d489ce3e032439600"
+        },
+        "dist/installed-schema-shape.js.map": {
+          "sha256": "92d2ad1ce609e3b693a8fa00f51e113a059362c5ae17136ec3e367a6a5dbbaa8",
+          "bytes": 9823,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-shape.js.map",
+          "sourceSha256": "92d2ad1ce609e3b693a8fa00f51e113a059362c5ae17136ec3e367a6a5dbbaa8"
+        },
+        "dist/installed-schema-uri.d.ts.map": {
+          "sha256": "e710cb937f1c4562e4fe0ec3b7cfb9004f9404023159b1f6cd446d196e2c41c0",
+          "bytes": 562,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-uri.d.ts.map",
+          "sourceSha256": "e710cb937f1c4562e4fe0ec3b7cfb9004f9404023159b1f6cd446d196e2c41c0"
+        },
+        "dist/installed-schema-uri.js.map": {
+          "sha256": "f533a6d7d49669cbc054f5b1bec26720da76cae62173ea613d658b01f4f5a3c7",
+          "bytes": 7835,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-uri.js.map",
+          "sourceSha256": "f533a6d7d49669cbc054f5b1bec26720da76cae62173ea613d658b01f4f5a3c7"
+        },
+        "dist/installed-schema-value.d.ts.map": {
+          "sha256": "3c229d7611b9de7775fe90e4cd251c205362550ae58c05e1a90f1788675e3378",
+          "bytes": 2277,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-value.d.ts.map",
+          "sourceSha256": "3c229d7611b9de7775fe90e4cd251c205362550ae58c05e1a90f1788675e3378"
+        },
+        "dist/installed-schema-value.js.map": {
+          "sha256": "d35b7e046d1a2398d065b9651a9a001bc8fb739a84b480690e1ee6594dc6f497",
+          "bytes": 14380,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-value.js.map",
+          "sourceSha256": "d35b7e046d1a2398d065b9651a9a001bc8fb739a84b480690e1ee6594dc6f497"
+        },
+        "dist/member-executor.d.ts.map": {
+          "sha256": "5bbf2f34e851fe33391e0ae2d49376bd78a2aa2e9bea26577582b29902b7e171",
+          "bytes": 2299,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/member-executor.d.ts.map",
+          "sourceSha256": "5bbf2f34e851fe33391e0ae2d49376bd78a2aa2e9bea26577582b29902b7e171"
+        },
+        "dist/member-executor.js.map": {
+          "sha256": "3df26cda7984c47c85d8bda8f06fc58cdf0b12390031c1c1aae40ea52f7daead",
+          "bytes": 25996,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/member-executor.js.map",
+          "sourceSha256": "3df26cda7984c47c85d8bda8f06fc58cdf0b12390031c1c1aae40ea52f7daead"
+        },
+        "dist/member-identity.d.ts.map": {
+          "sha256": "4fc0c8ac4f56cace12fa0ef711303574da30ebf9f6d64881f650ff5c373cece6",
+          "bytes": 3764,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/member-identity.d.ts.map",
+          "sourceSha256": "4fc0c8ac4f56cace12fa0ef711303574da30ebf9f6d64881f650ff5c373cece6"
+        },
+        "dist/member-identity.js.map": {
+          "sha256": "b2006bfad7d897344387417211ab54c224b84979eabf96f2a70d039b47a2b632",
+          "bytes": 19400,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/member-identity.js.map",
+          "sourceSha256": "b2006bfad7d897344387417211ab54c224b84979eabf96f2a70d039b47a2b632"
+        },
+        "dist/member-numeric-diagnostics.d.ts.map": {
+          "sha256": "469778f48c736522609c9489648e22ccbe92d8eebe58b08dc24b6550d7227820",
+          "bytes": 303,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/member-numeric-diagnostics.d.ts.map",
+          "sourceSha256": "469778f48c736522609c9489648e22ccbe92d8eebe58b08dc24b6550d7227820"
+        },
+        "dist/member-numeric-diagnostics.js.map": {
+          "sha256": "3de735597e4d4f5a2103227b9667eeede9e5839a0a88a3811fb9d2ee61fff4cf",
+          "bytes": 2062,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/member-numeric-diagnostics.js.map",
+          "sourceSha256": "3de735597e4d4f5a2103227b9667eeede9e5839a0a88a3811fb9d2ee61fff4cf"
+        },
+        "dist/node-http-disconnect.d.ts.map": {
+          "sha256": "759f7e98d7139b774c834826ffc430a09c386949b55a131f8e21164351d6b94c",
+          "bytes": 453,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/node-http-disconnect.d.ts.map",
+          "sourceSha256": "759f7e98d7139b774c834826ffc430a09c386949b55a131f8e21164351d6b94c"
+        },
+        "dist/node-http-disconnect.js.map": {
+          "sha256": "9158335f2512421ebb7c4b36a699d275ce33d17d2e5ecaebb71acd6920a3d507",
+          "bytes": 536,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/node-http-disconnect.js.map",
+          "sourceSha256": "9158335f2512421ebb7c4b36a699d275ce33d17d2e5ecaebb71acd6920a3d507"
+        },
+        "dist/node-http-target.d.ts.map": {
+          "sha256": "6d02721cdba6c523e5c2a3fa4fe7bf3abcf21c251f6be623f5fb6cc8d28185e3",
+          "bytes": 191,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/node-http-target.d.ts.map",
+          "sourceSha256": "6d02721cdba6c523e5c2a3fa4fe7bf3abcf21c251f6be623f5fb6cc8d28185e3"
+        },
+        "dist/node-http-target.js.map": {
+          "sha256": "859bbddd6837091010d9bba2b8454df8f35bd6287eb5a90b2494c1464dd8275b",
+          "bytes": 2988,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/node-http-target.js.map",
+          "sourceSha256": "859bbddd6837091010d9bba2b8454df8f35bd6287eb5a90b2494c1464dd8275b"
+        },
+        "dist/read-conformance-capability.d.ts.map": {
+          "sha256": "87ff5d63986622ad3dc61de64d7bd6731ce6880073ee2d6dd0d3ac06deef2292",
+          "bytes": 348,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-conformance-capability.d.ts.map",
+          "sourceSha256": "87ff5d63986622ad3dc61de64d7bd6731ce6880073ee2d6dd0d3ac06deef2292"
+        },
+        "dist/read-conformance-capability.js.map": {
+          "sha256": "0d42cae6ddc1f8dc01f9f1656a02a451cac80925c21873ca6b191d909fdd93f9",
+          "bytes": 871,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-conformance-capability.js.map",
+          "sourceSha256": "0d42cae6ddc1f8dc01f9f1656a02a451cac80925c21873ca6b191d909fdd93f9"
+        },
+        "dist/read-http-routing.d.ts.map": {
+          "sha256": "11dae087d2a77a100d14f256175273882122cceb9eb3275b15a6f6c5d0b69290",
+          "bytes": 936,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-http-routing.d.ts.map",
+          "sourceSha256": "11dae087d2a77a100d14f256175273882122cceb9eb3275b15a6f6c5d0b69290"
+        },
+        "dist/read-http-routing.js.map": {
+          "sha256": "9e1a32a5d80cb69b78c164c05d863f7af8b0d328a689f42fa417e048a55a4b30",
+          "bytes": 2240,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-http-routing.js.map",
+          "sourceSha256": "9e1a32a5d80cb69b78c164c05d863f7af8b0d328a689f42fa417e048a55a4b30"
+        },
+        "dist/read-http.d.ts.map": {
+          "sha256": "5b7ad3c1ba3b25a19687032ab56d5411a71ee2bb492ca0b347ae73c155f943e8",
+          "bytes": 571,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-http.d.ts.map",
+          "sourceSha256": "5b7ad3c1ba3b25a19687032ab56d5411a71ee2bb492ca0b347ae73c155f943e8"
+        },
+        "dist/read-http.js.map": {
+          "sha256": "91d509204d507a138bec61a56d95ccc3991d33f256d7c387abc30914af600193",
+          "bytes": 8336,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-http.js.map",
+          "sourceSha256": "91d509204d507a138bec61a56d95ccc3991d33f256d7c387abc30914af600193"
+        },
+        "dist/read-pagination.d.ts.map": {
+          "sha256": "cf869f0cafa1518cd193c374089ea94b5863e90471dca0f5a9f02721076fd8ab",
+          "bytes": 2878,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-pagination.d.ts.map",
+          "sourceSha256": "cf869f0cafa1518cd193c374089ea94b5863e90471dca0f5a9f02721076fd8ab"
+        },
+        "dist/read-pagination.js.map": {
+          "sha256": "de22a1a07433b30bcf8d11592d93adcfb7b69f187647c017997be9cd1316245f",
+          "bytes": 22534,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-pagination.js.map",
+          "sourceSha256": "de22a1a07433b30bcf8d11592d93adcfb7b69f187647c017997be9cd1316245f"
+        },
+        "dist/read-request.d.ts.map": {
+          "sha256": "9e6f170b0da3f953a8b29602d5e1d6897d39185d425b5f94d6388e748d3bdee1",
+          "bytes": 3409,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-request.d.ts.map",
+          "sourceSha256": "9e6f170b0da3f953a8b29602d5e1d6897d39185d425b5f94d6388e748d3bdee1"
+        },
+        "dist/read-request.js.map": {
+          "sha256": "fcf0507fb790df3f8eb209b60e0fa3ffba6af51798a9ea241956a1e64bdbf707",
+          "bytes": 27584,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-request.js.map",
+          "sourceSha256": "fcf0507fb790df3f8eb209b60e0fa3ffba6af51798a9ea241956a1e64bdbf707"
+        },
+        "dist/read-selector.d.ts.map": {
+          "sha256": "2918fc5b69de0a1981604408481af630556fa706dfb264baf94c86978d394e9a",
+          "bytes": 1088,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-selector.d.ts.map",
+          "sourceSha256": "2918fc5b69de0a1981604408481af630556fa706dfb264baf94c86978d394e9a"
+        },
+        "dist/read-selector.js.map": {
+          "sha256": "df473221f92f74cf5d34bf17e7dce4f97a5cd64ae944768d154e264c9d5ea240",
+          "bytes": 29057,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-selector.js.map",
+          "sourceSha256": "df473221f92f74cf5d34bf17e7dce4f97a5cd64ae944768d154e264c9d5ea240"
+        },
+        "dist/read-sequence-lifecycle.d.ts.map": {
+          "sha256": "4ae0df27419d4cad2e0052a605a31f78b6213f9a65d45ac18583a289464936a9",
+          "bytes": 1944,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-sequence-lifecycle.d.ts.map",
+          "sourceSha256": "4ae0df27419d4cad2e0052a605a31f78b6213f9a65d45ac18583a289464936a9"
+        },
+        "dist/read-sequence-lifecycle.js.map": {
+          "sha256": "aa8ff6175fb4f26916ff7a40d1304385d6bc68be931924dc78233c51ada2171f",
+          "bytes": 11665,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-sequence-lifecycle.js.map",
+          "sourceSha256": "aa8ff6175fb4f26916ff7a40d1304385d6bc68be931924dc78233c51ada2171f"
+        },
+        "dist/read-update-runtime-limits.d.ts.map": {
+          "sha256": "7870291024179732fd8f819ae4c954ca6a5b7f9496b411d052e92b61ed270aba",
+          "bytes": 627,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-update-runtime-limits.d.ts.map",
+          "sourceSha256": "7870291024179732fd8f819ae4c954ca6a5b7f9496b411d052e92b61ed270aba"
+        },
+        "dist/read-update-runtime-limits.js.map": {
+          "sha256": "840d89361127c4d69660e469592bbdf58ef81614e46277d9aefd91c75d6fa466",
+          "bytes": 1857,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-update-runtime-limits.js.map",
+          "sourceSha256": "840d89361127c4d69660e469592bbdf58ef81614e46277d9aefd91c75d6fa466"
+        },
+        "dist/recovery-store.d.ts.map": {
+          "sha256": "e1bfae49851b52a2f10e1539cdc01df94d718d26c47ddc710283c5eccb8ac880",
+          "bytes": 5547,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/recovery-store.d.ts.map",
+          "sourceSha256": "e1bfae49851b52a2f10e1539cdc01df94d718d26c47ddc710283c5eccb8ac880"
+        },
+        "dist/recovery-store.js.map": {
+          "sha256": "a14fca98ab57bb746cede38a25f15a3a5b918a063b1c79ec032253b442ea9571",
+          "bytes": 24677,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/recovery-store.js.map",
+          "sourceSha256": "a14fca98ab57bb746cede38a25f15a3a5b918a063b1c79ec032253b442ea9571"
+        },
+        "dist/resource-evaluator.d.ts.map": {
+          "sha256": "0561fab0a9b912e380077c5545edcb4aa218b958153366d7817e3d51d9e045d8",
+          "bytes": 3832,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/resource-evaluator.d.ts.map",
+          "sourceSha256": "0561fab0a9b912e380077c5545edcb4aa218b958153366d7817e3d51d9e045d8"
+        },
+        "dist/resource-evaluator.js.map": {
+          "sha256": "65a58968fc641694afe6c3f27388ea1057382b002755a1822af14bde0d9d883a",
+          "bytes": 37894,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/resource-evaluator.js.map",
+          "sourceSha256": "65a58968fc641694afe6c3f27388ea1057382b002755a1822af14bde0d9d883a"
+        },
+        "dist/retained-disclosure.d.ts.map": {
+          "sha256": "9ea6ec3b3dbcb3752f18863c803e0660f1719188f8c272c3a19bc4a11d53bf5c",
+          "bytes": 403,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/retained-disclosure.d.ts.map",
+          "sourceSha256": "9ea6ec3b3dbcb3752f18863c803e0660f1719188f8c272c3a19bc4a11d53bf5c"
+        },
+        "dist/retained-disclosure.js.map": {
+          "sha256": "3e7ca3cf46476bbac5d96db8fe99f6f4f2f14973fe768ca3b675eb9d40041f76",
+          "bytes": 1366,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/retained-disclosure.js.map",
+          "sourceSha256": "3e7ca3cf46476bbac5d96db8fe99f6f4f2f14973fe768ca3b675eb9d40041f76"
+        },
+        "dist/semantic-identity.d.ts.map": {
+          "sha256": "144aaa850d51d9a626648dcc73478e5c67af3c05731a26763eddd1b2e1812038",
+          "bytes": 513,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/semantic-identity.d.ts.map",
+          "sourceSha256": "144aaa850d51d9a626648dcc73478e5c67af3c05731a26763eddd1b2e1812038"
+        },
+        "dist/semantic-identity.js.map": {
+          "sha256": "eeeb9f27dc559d72736a2ab1aed49278979a096e57cac2925bd38843584183ed",
+          "bytes": 5366,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/semantic-identity.js.map",
+          "sourceSha256": "eeeb9f27dc559d72736a2ab1aed49278979a096e57cac2925bd38843584183ed"
+        },
+        "dist/sequence-executor.d.ts.map": {
+          "sha256": "1cc3a17574d8cfbc4e78a2be0645707df58078433aded11d64f2b93322cca4ff",
+          "bytes": 2873,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/sequence-executor.d.ts.map",
+          "sourceSha256": "1cc3a17574d8cfbc4e78a2be0645707df58078433aded11d64f2b93322cca4ff"
+        },
+        "dist/sequence-executor.js.map": {
+          "sha256": "28e698e164652391e55c1c132159943313fbea60e96158e59e9e76e8aeea0ff5",
+          "bytes": 18148,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/sequence-executor.js.map",
+          "sourceSha256": "28e698e164652391e55c1c132159943313fbea60e96158e59e9e76e8aeea0ff5"
+        },
+        "dist/transaction-batch.d.ts.map": {
+          "sha256": "42d4e3a7c58d7cbd2da54752a14188a6f6a9a8cc0ada81294813d47f62c2e411",
+          "bytes": 5732,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-batch.d.ts.map",
+          "sourceSha256": "42d4e3a7c58d7cbd2da54752a14188a6f6a9a8cc0ada81294813d47f62c2e411"
+        },
+        "dist/transaction-batch.js.map": {
+          "sha256": "7d33cf6e30f71e7c4d56481f4f7e7742ea5546b27bcf11da592d8b430a100a19",
+          "bytes": 35277,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-batch.js.map",
+          "sourceSha256": "7d33cf6e30f71e7c4d56481f4f7e7742ea5546b27bcf11da592d8b430a100a19"
+        },
+        "dist/transaction-changefeed.d.ts.map": {
+          "sha256": "462e50602f3747c99971f9071585fef0deb0b3bf1a7d0397a57c238e27eef089",
+          "bytes": 1784,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-changefeed.d.ts.map",
+          "sourceSha256": "462e50602f3747c99971f9071585fef0deb0b3bf1a7d0397a57c238e27eef089"
+        },
+        "dist/transaction-changefeed.js.map": {
+          "sha256": "3ec68f065c3b7fff5e88bd8d903926acb466ea80466c8311613a07384b1ce3b4",
+          "bytes": 5382,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-changefeed.js.map",
+          "sourceSha256": "3ec68f065c3b7fff5e88bd8d903926acb466ea80466c8311613a07384b1ce3b4"
+        },
+        "dist/transaction-comparison.d.ts.map": {
+          "sha256": "e9f2f2371a84e525181f91a86eb017229445431245e26723c9f90af49868fb4a",
+          "bytes": 1222,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-comparison.d.ts.map",
+          "sourceSha256": "e9f2f2371a84e525181f91a86eb017229445431245e26723c9f90af49868fb4a"
+        },
+        "dist/transaction-comparison.js.map": {
+          "sha256": "efa16f479186585e8832583b2f80f81991b55e71a700fe2d9ad2c5a2ec16683a",
+          "bytes": 1845,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-comparison.js.map",
+          "sourceSha256": "efa16f479186585e8832583b2f80f81991b55e71a700fe2d9ad2c5a2ec16683a"
+        },
+        "dist/transaction-consistency.d.ts.map": {
+          "sha256": "b16a04b2e240e8775cff7d6bc0104f71a419503c784ae710e426960c85c56026",
+          "bytes": 1136,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-consistency.d.ts.map",
+          "sourceSha256": "b16a04b2e240e8775cff7d6bc0104f71a419503c784ae710e426960c85c56026"
+        },
+        "dist/transaction-consistency.js.map": {
+          "sha256": "c1af2554d4f041586d11d81c8d6ac3bba622785ce9618afd5b132e692bec7d4d",
+          "bytes": 4129,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-consistency.js.map",
+          "sourceSha256": "c1af2554d4f041586d11d81c8d6ac3bba622785ce9618afd5b132e692bec7d4d"
+        },
+        "dist/transaction-dependencies.d.ts.map": {
+          "sha256": "1f2eed9b5b1385913cc75eb932438d6ac16bb9a26dcf469310f89fae935f8ab5",
+          "bytes": 1657,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-dependencies.d.ts.map",
+          "sourceSha256": "1f2eed9b5b1385913cc75eb932438d6ac16bb9a26dcf469310f89fae935f8ab5"
+        },
+        "dist/transaction-dependencies.js.map": {
+          "sha256": "83c10692b52062f9afb1fdbbf1560a533e5b0a2e484fc2859d3db6f83bba53c8",
+          "bytes": 12904,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-dependencies.js.map",
+          "sourceSha256": "83c10692b52062f9afb1fdbbf1560a533e5b0a2e484fc2859d3db6f83bba53c8"
+        },
+        "dist/transaction-discovery.d.ts.map": {
+          "sha256": "7251a8b7a0ea5f0ff0aa23d69d0c87307fa36b43e0c9a401768fc691037a0cd8",
+          "bytes": 525,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-discovery.d.ts.map",
+          "sourceSha256": "7251a8b7a0ea5f0ff0aa23d69d0c87307fa36b43e0c9a401768fc691037a0cd8"
+        },
+        "dist/transaction-discovery.js.map": {
+          "sha256": "2c701469e27ac4cdef15136f78eeaeb04139f1dc0f167bb89d2104daae78864d",
+          "bytes": 1820,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-discovery.js.map",
+          "sourceSha256": "2c701469e27ac4cdef15136f78eeaeb04139f1dc0f167bb89d2104daae78864d"
+        },
+        "dist/transaction-events.d.ts.map": {
+          "sha256": "2ebe77b41ae806e1b92ecf311e88875467f492a554430c2d220a865ce9bfe22f",
+          "bytes": 2220,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-events.d.ts.map",
+          "sourceSha256": "2ebe77b41ae806e1b92ecf311e88875467f492a554430c2d220a865ce9bfe22f"
+        },
+        "dist/transaction-events.js.map": {
+          "sha256": "e52a177beed9c342204d11913e5deac65a4eb8fa2c071d165a2a9668c7d5394f",
+          "bytes": 10088,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-events.js.map",
+          "sourceSha256": "e52a177beed9c342204d11913e5deac65a4eb8fa2c071d165a2a9668c7d5394f"
+        },
+        "dist/transaction-http.d.ts.map": {
+          "sha256": "f331ad91af3b58680857e5f22fc9c809b9d377002bd65366031831b02d80958d",
+          "bytes": 1633,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-http.d.ts.map",
+          "sourceSha256": "f331ad91af3b58680857e5f22fc9c809b9d377002bd65366031831b02d80958d"
+        },
+        "dist/transaction-http.js.map": {
+          "sha256": "e9f785aa8dcf69c44d42b74a80fc836d6ad4e3d3f7147655c961e641c3b4d1bd",
+          "bytes": 21541,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-http.js.map",
+          "sourceSha256": "e9f785aa8dcf69c44d42b74a80fc836d6ad4e3d3f7147655c961e641c3b4d1bd"
+        },
+        "dist/transaction-installed-configuration.d.ts.map": {
+          "sha256": "8115e0c1a4b799bec665361044b802451d3924bc4f10b1f33171f6543dea9378",
+          "bytes": 272,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-installed-configuration.d.ts.map",
+          "sourceSha256": "8115e0c1a4b799bec665361044b802451d3924bc4f10b1f33171f6543dea9378"
+        },
+        "dist/transaction-installed-configuration.js.map": {
+          "sha256": "564e853c4a5a941e48fca53b715567ea513db00ac7d1bfe42067e0fb91c04d30",
+          "bytes": 2943,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-installed-configuration.js.map",
+          "sourceSha256": "564e853c4a5a941e48fca53b715567ea513db00ac7d1bfe42067e0fb91c04d30"
+        },
+        "dist/transaction-installed-process.d.ts.map": {
+          "sha256": "c6a126901e1d9f26b612870fd6b09e3a46c5a38f6ee6f5a41c0025fb12a19d8d",
+          "bytes": 152,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-installed-process.d.ts.map",
+          "sourceSha256": "c6a126901e1d9f26b612870fd6b09e3a46c5a38f6ee6f5a41c0025fb12a19d8d"
+        },
+        "dist/transaction-installed-process.js.map": {
+          "sha256": "f470646bf4232d0abdd5df9e163f6290ca71fae69b0055907961cec32b9d4971",
+          "bytes": 2911,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-installed-process.js.map",
+          "sourceSha256": "f470646bf4232d0abdd5df9e163f6290ca71fae69b0055907961cec32b9d4971"
+        },
+        "dist/transaction-installed.d.ts.map": {
+          "sha256": "21f9e011380b12719895ad24c9750e72b06d9f785a86683321701ef9361c1c6c",
+          "bytes": 197,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-installed.d.ts.map",
+          "sourceSha256": "21f9e011380b12719895ad24c9750e72b06d9f785a86683321701ef9361c1c6c"
+        },
+        "dist/transaction-installed.js.map": {
+          "sha256": "94c75cf5c65773359ea2ac7a4ec3e99b872fcdca91a1bace1b348240a7a38943",
+          "bytes": 998,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-installed.js.map",
+          "sourceSha256": "94c75cf5c65773359ea2ac7a4ec3e99b872fcdca91a1bace1b348240a7a38943"
+        },
+        "dist/transaction-read.d.ts.map": {
+          "sha256": "122e1b48010edb80d0a841b78df541e99d29080e59cabf6ea1c2a6b9ca540e3a",
+          "bytes": 1115,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-read.d.ts.map",
+          "sourceSha256": "122e1b48010edb80d0a841b78df541e99d29080e59cabf6ea1c2a6b9ca540e3a"
+        },
+        "dist/transaction-read.js.map": {
+          "sha256": "04ef6502a2c27af73c532ea85d0d31fe5a945eaaedfd3e7262250589ad898546",
+          "bytes": 8603,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-read.js.map",
+          "sourceSha256": "04ef6502a2c27af73c532ea85d0d31fe5a945eaaedfd3e7262250589ad898546"
+        },
+        "dist/transaction-runtime-configuration.d.ts.map": {
+          "sha256": "b005374ff5fc469cfb0d7ad7dab6252c64e261fdc70f3bb284472a9b47861922",
+          "bytes": 1263,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-runtime-configuration.d.ts.map",
+          "sourceSha256": "b005374ff5fc469cfb0d7ad7dab6252c64e261fdc70f3bb284472a9b47861922"
+        },
+        "dist/transaction-runtime-configuration.js.map": {
+          "sha256": "49ab62e531dfcd458f9020763a72c663896085672d535fab96cde3ce6f5ddbff",
+          "bytes": 13795,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-runtime-configuration.js.map",
+          "sourceSha256": "49ab62e531dfcd458f9020763a72c663896085672d535fab96cde3ce6f5ddbff"
+        },
+        "dist/transaction-runtime.d.ts.map": {
+          "sha256": "afe682bc6459ce17fdf1f11f3ba713ae5c6271fe0138602ac993c01a68298e4e",
+          "bytes": 1709,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-runtime.d.ts.map",
+          "sourceSha256": "afe682bc6459ce17fdf1f11f3ba713ae5c6271fe0138602ac993c01a68298e4e"
+        },
+        "dist/transaction-runtime.js.map": {
+          "sha256": "9c1b36842590909a7ed0aa7570c89e2bc4439fb39ff141a2cd707a1e40b8d48a",
+          "bytes": 12642,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-runtime.js.map",
+          "sourceSha256": "9c1b36842590909a7ed0aa7570c89e2bc4439fb39ff141a2cd707a1e40b8d48a"
+        },
+        "dist/transaction-schema-http.d.ts.map": {
+          "sha256": "00539943f8b33a3edcfaa17bb20d70acc58f54d3c1b48a35013d1127113954bf",
+          "bytes": 620,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-schema-http.d.ts.map",
+          "sourceSha256": "00539943f8b33a3edcfaa17bb20d70acc58f54d3c1b48a35013d1127113954bf"
+        },
+        "dist/transaction-schema-http.js.map": {
+          "sha256": "eca3fd8b0b20ed752ac0335bcf745c5c98f1c52b66f81eae1a776589523712c3",
+          "bytes": 2043,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-schema-http.js.map",
+          "sourceSha256": "eca3fd8b0b20ed752ac0335bcf745c5c98f1c52b66f81eae1a776589523712c3"
+        },
+        "dist/transaction-sequence.d.ts.map": {
+          "sha256": "357ca9aba7726dc1e452321d2eb65a72a5aa0acf79a5840e6908bdea9ffd96c1",
+          "bytes": 796,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-sequence.d.ts.map",
+          "sourceSha256": "357ca9aba7726dc1e452321d2eb65a72a5aa0acf79a5840e6908bdea9ffd96c1"
+        },
+        "dist/transaction-sequence.js.map": {
+          "sha256": "240c9b53bfc1de18c0faf098e56218cfd26ba28ac16ebd65b2ed3280244c6ff3",
+          "bytes": 4509,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-sequence.js.map",
+          "sourceSha256": "240c9b53bfc1de18c0faf098e56218cfd26ba28ac16ebd65b2ed3280244c6ff3"
+        },
+        "dist/transaction-service.d.ts.map": {
+          "sha256": "961ab1c20ec8ca07b51ea03249b2830aedb13916b12185a2d3a5404571266d25",
+          "bytes": 3551,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-service.d.ts.map",
+          "sourceSha256": "961ab1c20ec8ca07b51ea03249b2830aedb13916b12185a2d3a5404571266d25"
+        },
+        "dist/transaction-service.js.map": {
+          "sha256": "fc7e8ad8eb9636bd3cecb367b9fa65e0f73726ba3ed0f9f536dbdc05494710f8",
+          "bytes": 17418,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-service.js.map",
+          "sourceSha256": "fc7e8ad8eb9636bd3cecb367b9fa65e0f73726ba3ed0f9f536dbdc05494710f8"
+        },
+        "dist/transaction-set.d.ts.map": {
+          "sha256": "d02ab364fa49c879f9c1899116fc73add5f3cc922844fd8d797c8b6212dd8240",
+          "bytes": 1213,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-set.d.ts.map",
+          "sourceSha256": "d02ab364fa49c879f9c1899116fc73add5f3cc922844fd8d797c8b6212dd8240"
+        },
+        "dist/transaction-set.js.map": {
+          "sha256": "e01911be423e63a63eac45f28db1c0249fe3259e58722c34a1f5b54d16811d7a",
+          "bytes": 5887,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-set.js.map",
+          "sourceSha256": "e01911be423e63a63eac45f28db1c0249fe3259e58722c34a1f5b54d16811d7a"
+        },
+        "dist/transaction-snapshot.d.ts.map": {
+          "sha256": "49eae3284e1e62e9835c8ab9f28299813c442513dbb94abb3d0dfb40785e05ad",
+          "bytes": 2112,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-snapshot.d.ts.map",
+          "sourceSha256": "49eae3284e1e62e9835c8ab9f28299813c442513dbb94abb3d0dfb40785e05ad"
+        },
+        "dist/transaction-snapshot.js.map": {
+          "sha256": "33294270f18625e63079de537929678b8ba4017cc3c9da945ae994c813f50f9f",
+          "bytes": 27603,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-snapshot.js.map",
+          "sourceSha256": "33294270f18625e63079de537929678b8ba4017cc3c9da945ae994c813f50f9f"
+        },
+        "dist/transaction-sse.d.ts.map": {
+          "sha256": "e89a131a6458c47b881bb3af061aa4aed0a6c34e738f48a1cf25e5399a0f8714",
+          "bytes": 1671,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-sse.d.ts.map",
+          "sourceSha256": "e89a131a6458c47b881bb3af061aa4aed0a6c34e738f48a1cf25e5399a0f8714"
+        },
+        "dist/transaction-sse.js.map": {
+          "sha256": "eae5de472f977b1530977a15590e6011afca1bbd7d994ffbeb7d29456963d78c",
+          "bytes": 4667,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-sse.js.map",
+          "sourceSha256": "eae5de472f977b1530977a15590e6011afca1bbd7d994ffbeb7d29456963d78c"
+        },
+        "dist/transaction-store.d.ts.map": {
+          "sha256": "2ffa886daff1dc7d5d32725a649afb8fea5cf825eb649901bdb29d6668f25a28",
+          "bytes": 6253,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-store.d.ts.map",
+          "sourceSha256": "2ffa886daff1dc7d5d32725a649afb8fea5cf825eb649901bdb29d6668f25a28"
+        },
+        "dist/transaction-store.js.map": {
+          "sha256": "86802c4345490369d129202007e17835dd756d26c3264f73c3bdefb0ad3cf6e9",
+          "bytes": 65519,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-store.js.map",
+          "sourceSha256": "86802c4345490369d129202007e17835dd756d26c3264f73c3bdefb0ad3cf6e9"
+        },
+        "dist/transaction-submission.d.ts.map": {
+          "sha256": "020128351b1b30b30a7262ff2648f9d87dce57840d6ad40991d1ff80b352e8ab",
+          "bytes": 2272,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-submission.d.ts.map",
+          "sourceSha256": "020128351b1b30b30a7262ff2648f9d87dce57840d6ad40991d1ff80b352e8ab"
+        },
+        "dist/transaction-submission.js.map": {
+          "sha256": "e4c93589b2315cb8e1a58027297f2bc000e8b635038c1362b5443713e1fd7eb1",
+          "bytes": 4445,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-submission.js.map",
+          "sourceSha256": "e4c93589b2315cb8e1a58027297f2bc000e8b635038c1362b5443713e1fd7eb1"
+        },
+        "dist/alias-evaluator.d.ts": {
+          "sha256": "48847dc8fd56b586912325dc969d9a65bd1ed7e8aae6232cb9f4d41320d1e8a0",
+          "bytes": 2553,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/alias-evaluator.d.ts",
+          "sourceSha256": "48847dc8fd56b586912325dc969d9a65bd1ed7e8aae6232cb9f4d41320d1e8a0"
+        },
+        "dist/authority-read.d.ts": {
+          "sha256": "7fc50b93641debbfae050accf882b839f6cea5ff8494d21395c237036dfeac4c",
+          "bytes": 7267,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/authority-read.d.ts",
+          "sourceSha256": "7fc50b93641debbfae050accf882b839f6cea5ff8494d21395c237036dfeac4c"
+        },
+        "dist/development-authority.d.ts": {
+          "sha256": "e4bf27b9c39784ae7bd044064b4f408dce62348b5f0eb5252ecbad4b5095da69",
+          "bytes": 14454,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/development-authority.d.ts",
+          "sourceSha256": "e4bf27b9c39784ae7bd044064b4f408dce62348b5f0eb5252ecbad4b5095da69"
+        },
+        "dist/development-composition.d.ts": {
+          "sha256": "1923a827cb2024181ed95c20da754c33ec08b632e473513b121d9900da98eb8e",
+          "bytes": 230,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/development-composition.d.ts",
+          "sourceSha256": "1923a827cb2024181ed95c20da754c33ec08b632e473513b121d9900da98eb8e"
+        },
+        "dist/development-contracts.d.ts": {
+          "sha256": "45b4b907753bf5cb0583b75ca7109da32bc6a3e67eeb65d9828c652ba96d8119",
+          "bytes": 2705,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/development-contracts.d.ts",
+          "sourceSha256": "45b4b907753bf5cb0583b75ca7109da32bc6a3e67eeb65d9828c652ba96d8119"
+        },
+        "dist/development-runtime.d.ts": {
+          "sha256": "5bbf3438a65bc2c1d8ea2ecbf25483368d68e2d999dbbe4d7fb5219f61c6d56f",
+          "bytes": 1955,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/development-runtime.d.ts",
+          "sourceSha256": "5bbf3438a65bc2c1d8ea2ecbf25483368d68e2d999dbbe4d7fb5219f61c6d56f"
+        },
+        "dist/development.d.ts": {
+          "sha256": "1b65d503f500cf24314295c7275a4ab4ae627a87d92feb977bf25ca1f2813b1f",
+          "bytes": 527,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/development.d.ts",
+          "sourceSha256": "1b65d503f500cf24314295c7275a4ab4ae627a87d92feb977bf25ca1f2813b1f"
+        },
+        "dist/index.d.ts": {
+          "sha256": "c54e4439316798fa5630b157a297e4ab884ed1f814c92446a71a157d875ef7a2",
+          "bytes": 10090,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/index.d.ts",
+          "sourceSha256": "c54e4439316798fa5630b157a297e4ab884ed1f814c92446a71a157d875ef7a2"
+        },
+        "dist/installed-contract-artifact.d.ts": {
+          "sha256": "b04aba733095bc4fb9bb70fdea7aabd140139879aca7509921444b23ed1b8f78",
+          "bytes": 3100,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-contract-artifact.d.ts",
+          "sourceSha256": "b04aba733095bc4fb9bb70fdea7aabd140139879aca7509921444b23ed1b8f78"
+        },
+        "dist/installed-payload.d.ts": {
+          "sha256": "98b94ba37d2eb1215234da6fb578da14d370c5366facfd83f8df0cec69706bd8",
+          "bytes": 199,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-payload.d.ts",
+          "sourceSha256": "98b94ba37d2eb1215234da6fb578da14d370c5366facfd83f8df0cec69706bd8"
+        },
+        "dist/installed-reference-configuration.d.ts": {
+          "sha256": "3025fe8c2dc50dc9b7f3bdd8b4ca131b81140f78c3a8a8491e2b402fb04ae78c",
+          "bytes": 1197,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-reference-configuration.d.ts",
+          "sourceSha256": "3025fe8c2dc50dc9b7f3bdd8b4ca131b81140f78c3a8a8491e2b402fb04ae78c"
+        },
+        "dist/installed-reference-process.d.ts": {
+          "sha256": "f434b3f838d5b855178117c19a3385668a2723a3255641e32c705b6b3ea481da",
+          "bytes": 68,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-reference-process.d.ts",
+          "sourceSha256": "f434b3f838d5b855178117c19a3385668a2723a3255641e32c705b6b3ea481da"
+        },
+        "dist/installed-reference.d.ts": {
+          "sha256": "e4bb74603c7b0096f21627af1ad4f37350529cb0ee07761c2e45ccbbf2bbaf36",
+          "bytes": 430,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-reference.d.ts",
+          "sourceSha256": "e4bb74603c7b0096f21627af1ad4f37350529cb0ee07761c2e45ccbbf2bbaf36"
+        },
+        "dist/installed-schema-builtins.d.ts": {
+          "sha256": "34f1eac4ce18563423002be61a9773ecee1d3b10abe24312571518e2ad86f817",
+          "bytes": 1675,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-builtins.d.ts",
+          "sourceSha256": "34f1eac4ce18563423002be61a9773ecee1d3b10abe24312571518e2ad86f817"
+        },
+        "dist/installed-schema-decimal.d.ts": {
+          "sha256": "f3f734737a563a4b0bb5abe08941b626afb388ee576d2a47c71c6408f1c75f12",
+          "bytes": 956,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-decimal.d.ts",
+          "sourceSha256": "f3f734737a563a4b0bb5abe08941b626afb388ee576d2a47c71c6408f1c75f12"
+        },
+        "dist/installed-schema-evaluator.d.ts": {
+          "sha256": "b5949ee917a568d518c16cf9edde6ec97eed58b81645b2be378585fa337a7bfe",
+          "bytes": 3527,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-evaluator.d.ts",
+          "sourceSha256": "b5949ee917a568d518c16cf9edde6ec97eed58b81645b2be378585fa337a7bfe"
+        },
+        "dist/installed-schema-graph.d.ts": {
+          "sha256": "7f54a4e0617cf85a7818883830c750eb5f02249bc6390ef02e6f467eb3157459",
+          "bytes": 3682,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-graph.d.ts",
+          "sourceSha256": "7f54a4e0617cf85a7818883830c750eb5f02249bc6390ef02e6f467eb3157459"
+        },
+        "dist/installed-schema-pattern.d.ts": {
+          "sha256": "5f30e7235cf2caa5ad3a79621247452a19a92960c842c7172d2a61a8bb4decc2",
+          "bytes": 1443,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-pattern.d.ts",
+          "sourceSha256": "5f30e7235cf2caa5ad3a79621247452a19a92960c842c7172d2a61a8bb4decc2"
+        },
+        "dist/installed-schema-recursion.d.ts": {
+          "sha256": "1c68a30b07441d8139c02e0229f5f1aca7e8969f064e0a2ce4e7c31eb39675f8",
+          "bytes": 2924,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-recursion.d.ts",
+          "sourceSha256": "1c68a30b07441d8139c02e0229f5f1aca7e8969f064e0a2ce4e7c31eb39675f8"
+        },
+        "dist/installed-schema-shape.d.ts": {
+          "sha256": "8041ca80e68f68d92fb9eabe5cb6f68b2fe589ae44de9105e52739b2a38fa5ac",
+          "bytes": 2338,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-shape.d.ts",
+          "sourceSha256": "8041ca80e68f68d92fb9eabe5cb6f68b2fe589ae44de9105e52739b2a38fa5ac"
+        },
+        "dist/installed-schema-uri.d.ts": {
+          "sha256": "08bfd18a032b700262b18128982781d45d1d6bf54c8a5fe298563abaa4b3193f",
+          "bytes": 585,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-uri.d.ts",
+          "sourceSha256": "08bfd18a032b700262b18128982781d45d1d6bf54c8a5fe298563abaa4b3193f"
+        },
+        "dist/installed-schema-value.d.ts": {
+          "sha256": "81d445abc2cccf1d987ce8ff952f3d2be5b9f18a03ce85c2e7bd6e23cb440ec0",
+          "bytes": 4361,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/installed-schema-value.d.ts",
+          "sourceSha256": "81d445abc2cccf1d987ce8ff952f3d2be5b9f18a03ce85c2e7bd6e23cb440ec0"
+        },
+        "dist/member-executor.d.ts": {
+          "sha256": "47ad4631ff221f21cf031c19c78c23b90daaebf062be75495caa84ad31146687",
+          "bytes": 3769,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/member-executor.d.ts",
+          "sourceSha256": "47ad4631ff221f21cf031c19c78c23b90daaebf062be75495caa84ad31146687"
+        },
+        "dist/member-identity.d.ts": {
+          "sha256": "63b2bdbe92d3db1f0625207d829fb5db2826b59f5c7addfdbb3a4b191c774649",
+          "bytes": 6812,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/member-identity.d.ts",
+          "sourceSha256": "63b2bdbe92d3db1f0625207d829fb5db2826b59f5c7addfdbb3a4b191c774649"
+        },
+        "dist/member-numeric-diagnostics.d.ts": {
+          "sha256": "3a8ce95108ca1757e780a843124ca4c452d8182e1ff51e5f898ca6ffe0621b52",
+          "bytes": 374,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/member-numeric-diagnostics.d.ts",
+          "sourceSha256": "3a8ce95108ca1757e780a843124ca4c452d8182e1ff51e5f898ca6ffe0621b52"
+        },
+        "dist/node-http-disconnect.d.ts": {
+          "sha256": "ff9537f26060442d8204d11edb52695421194871845f0ae7768e0ea759023965",
+          "bytes": 521,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/node-http-disconnect.d.ts",
+          "sourceSha256": "ff9537f26060442d8204d11edb52695421194871845f0ae7768e0ea759023965"
+        },
+        "dist/node-http-target.d.ts": {
+          "sha256": "3934f50d99e33ac9d1d1ecb90291a4074d44cd0d2c97b500ae8ec308476c5b78",
+          "bytes": 139,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/node-http-target.d.ts",
+          "sourceSha256": "3934f50d99e33ac9d1d1ecb90291a4074d44cd0d2c97b500ae8ec308476c5b78"
+        },
+        "dist/read-conformance-capability.d.ts": {
+          "sha256": "728a3a028b35fce14c679ec542d763b4dbcbb45651f9be789720918b8423519b",
+          "bytes": 718,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-conformance-capability.d.ts",
+          "sourceSha256": "728a3a028b35fce14c679ec542d763b4dbcbb45651f9be789720918b8423519b"
+        },
+        "dist/read-http-routing.d.ts": {
+          "sha256": "116068f1b563bb5457e71c8a67afe8c83c4906f7b0c0468a6594fca2150285fe",
+          "bytes": 1078,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-http-routing.d.ts",
+          "sourceSha256": "116068f1b563bb5457e71c8a67afe8c83c4906f7b0c0468a6594fca2150285fe"
+        },
+        "dist/read-http.d.ts": {
+          "sha256": "3a5c0e3e7cee53bfd55e3d170970bddd784a252928c452311cac46cb5bcfab91",
+          "bytes": 1017,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-http.d.ts",
+          "sourceSha256": "3a5c0e3e7cee53bfd55e3d170970bddd784a252928c452311cac46cb5bcfab91"
+        },
+        "dist/read-pagination.d.ts": {
+          "sha256": "4b60ce459e72aa07abc7041f2a5e4b642aba29b6a2c80ba1dce258930f36ea8a",
+          "bytes": 4621,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-pagination.d.ts",
+          "sourceSha256": "4b60ce459e72aa07abc7041f2a5e4b642aba29b6a2c80ba1dce258930f36ea8a"
+        },
+        "dist/read-request.d.ts": {
+          "sha256": "dd658fb26c1c3a3429ef1632acb0e9dea1b523353cbf39a8efc806b00bf1ad1b",
+          "bytes": 4932,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-request.d.ts",
+          "sourceSha256": "dd658fb26c1c3a3429ef1632acb0e9dea1b523353cbf39a8efc806b00bf1ad1b"
+        },
+        "dist/read-selector.d.ts": {
+          "sha256": "99244075da47d84397cd7239ba78cf54c2df92aee387c02aa8e8c173e4f3fb9c",
+          "bytes": 1805,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-selector.d.ts",
+          "sourceSha256": "99244075da47d84397cd7239ba78cf54c2df92aee387c02aa8e8c173e4f3fb9c"
+        },
+        "dist/read-sequence-lifecycle.d.ts": {
+          "sha256": "475fb874eaaa9bf6698f1179c71355d631636fe2f50906c2d434529e251391ef",
+          "bytes": 2729,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-sequence-lifecycle.d.ts",
+          "sourceSha256": "475fb874eaaa9bf6698f1179c71355d631636fe2f50906c2d434529e251391ef"
+        },
+        "dist/read-update-runtime-limits.d.ts": {
+          "sha256": "4175601fa4f4132d156bcb644c9c82e932f40eb19a6e4ba2532ebab75c0475e3",
+          "bytes": 2024,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/read-update-runtime-limits.d.ts",
+          "sourceSha256": "4175601fa4f4132d156bcb644c9c82e932f40eb19a6e4ba2532ebab75c0475e3"
+        },
+        "dist/recovery-store.d.ts": {
+          "sha256": "314033927198c0dea3d79d44ddaf81bd07fc4e126cb07443f67e756478278c75",
+          "bytes": 8884,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/recovery-store.d.ts",
+          "sourceSha256": "314033927198c0dea3d79d44ddaf81bd07fc4e126cb07443f67e756478278c75"
+        },
+        "dist/resource-evaluator.d.ts": {
+          "sha256": "23bd07f581abeb577cb4dd547184b422403adae083b17e0bc82c3a3ed4dbdaa1",
+          "bytes": 6195,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/resource-evaluator.d.ts",
+          "sourceSha256": "23bd07f581abeb577cb4dd547184b422403adae083b17e0bc82c3a3ed4dbdaa1"
+        },
+        "dist/retained-disclosure.d.ts": {
+          "sha256": "1f5e46640b957728f421268cc1cdb6d6af1aa9d483de6edf4e05a091abad1427",
+          "bytes": 603,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/retained-disclosure.d.ts",
+          "sourceSha256": "1f5e46640b957728f421268cc1cdb6d6af1aa9d483de6edf4e05a091abad1427"
+        },
+        "dist/semantic-identity.d.ts": {
+          "sha256": "4ecde3eb0a17cd5171e4ddb6ba2b3fab73b1239fee451b8aa68aa95b95009263",
+          "bytes": 1549,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/semantic-identity.d.ts",
+          "sourceSha256": "4ecde3eb0a17cd5171e4ddb6ba2b3fab73b1239fee451b8aa68aa95b95009263"
+        },
+        "dist/sequence-executor.d.ts": {
+          "sha256": "9a2432e679a0be8fcbc331bbb16933fa6ea9f14fcd84044fc4360b750e87e296",
+          "bytes": 4011,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/sequence-executor.d.ts",
+          "sourceSha256": "9a2432e679a0be8fcbc331bbb16933fa6ea9f14fcd84044fc4360b750e87e296"
+        },
+        "dist/transaction-batch.d.ts": {
+          "sha256": "31ddae1413097a8a944fc08fc3d6d27b459df454e02ba9a189400e3e5513c9c7",
+          "bytes": 8538,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-batch.d.ts",
+          "sourceSha256": "31ddae1413097a8a944fc08fc3d6d27b459df454e02ba9a189400e3e5513c9c7"
+        },
+        "dist/transaction-changefeed.d.ts": {
+          "sha256": "4628515b5d4821a66ba36e10ab164d032d00c5faeccdf788c83041d6cd95142f",
+          "bytes": 2012,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-changefeed.d.ts",
+          "sourceSha256": "4628515b5d4821a66ba36e10ab164d032d00c5faeccdf788c83041d6cd95142f"
+        },
+        "dist/transaction-comparison.d.ts": {
+          "sha256": "2b61b8022f64142874ba6dba2952e95270b2db2b11fc604f4fa3c9fe02d3a480",
+          "bytes": 1509,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-comparison.d.ts",
+          "sourceSha256": "2b61b8022f64142874ba6dba2952e95270b2db2b11fc604f4fa3c9fe02d3a480"
+        },
+        "dist/transaction-consistency.d.ts": {
+          "sha256": "bbce1113e6a79948af65c17b408820e3d9f338f0a7fea98de99b9103aeae94b8",
+          "bytes": 1400,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-consistency.d.ts",
+          "sourceSha256": "bbce1113e6a79948af65c17b408820e3d9f338f0a7fea98de99b9103aeae94b8"
+        },
+        "dist/transaction-dependencies.d.ts": {
+          "sha256": "3e9a37bfe41b38425457f48164c6e74a81bcb17928fee93fd7d20f376d4d4c3a",
+          "bytes": 2148,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-dependencies.d.ts",
+          "sourceSha256": "3e9a37bfe41b38425457f48164c6e74a81bcb17928fee93fd7d20f376d4d4c3a"
+        },
+        "dist/transaction-discovery.d.ts": {
+          "sha256": "8617c1e150f224561ddfa6feed38f656750acfeba376ebd4bf3ceccdc838d529",
+          "bytes": 1254,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-discovery.d.ts",
+          "sourceSha256": "8617c1e150f224561ddfa6feed38f656750acfeba376ebd4bf3ceccdc838d529"
+        },
+        "dist/transaction-events.d.ts": {
+          "sha256": "afb50364cf0d01bf7a4b854d997668fa3a992b0650d92925505815ae78ee3eed",
+          "bytes": 2891,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-events.d.ts",
+          "sourceSha256": "afb50364cf0d01bf7a4b854d997668fa3a992b0650d92925505815ae78ee3eed"
+        },
+        "dist/transaction-http.d.ts": {
+          "sha256": "156e22b98ca2f346a127e3231fc69784bca9427779ab8fa63200526444fb68af",
+          "bytes": 2347,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-http.d.ts",
+          "sourceSha256": "156e22b98ca2f346a127e3231fc69784bca9427779ab8fa63200526444fb68af"
+        },
+        "dist/transaction-installed-configuration.d.ts": {
+          "sha256": "a8540a94e51d903eaebaf2a9f0f6de96f11e8db81b223ac6f2f7a627e4ffbb89",
+          "bytes": 249,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-installed-configuration.d.ts",
+          "sourceSha256": "a8540a94e51d903eaebaf2a9f0f6de96f11e8db81b223ac6f2f7a627e4ffbb89"
+        },
+        "dist/transaction-installed-process.d.ts": {
+          "sha256": "77ec0edad5e55fa71000c996b2ff41861558630c1238b35620f3ddf353e07898",
+          "bytes": 70,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-installed-process.d.ts",
+          "sourceSha256": "77ec0edad5e55fa71000c996b2ff41861558630c1238b35620f3ddf353e07898"
+        },
+        "dist/transaction-installed.d.ts": {
+          "sha256": "41005aa8d3e2bf71c1729b322e83da466a1838ab5ddb27e58e0057abc877ea70",
+          "bytes": 834,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-installed.d.ts",
+          "sourceSha256": "41005aa8d3e2bf71c1729b322e83da466a1838ab5ddb27e58e0057abc877ea70"
+        },
+        "dist/transaction-read.d.ts": {
+          "sha256": "d2be37be243a641064a780d620b11ce552bae32bc64736bd42473f1d317d471b",
+          "bytes": 2690,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-read.d.ts",
+          "sourceSha256": "d2be37be243a641064a780d620b11ce552bae32bc64736bd42473f1d317d471b"
+        },
+        "dist/transaction-runtime-configuration.d.ts": {
+          "sha256": "832e71cdd2dac399fe9f32003d4071354bd607a7f9556754dca7de5feba9d96b",
+          "bytes": 6190,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-runtime-configuration.d.ts",
+          "sourceSha256": "832e71cdd2dac399fe9f32003d4071354bd607a7f9556754dca7de5feba9d96b"
+        },
+        "dist/transaction-runtime.d.ts": {
+          "sha256": "fb8b04c18a4a53b122ecc71b5b8d1061ae6ad01b6733d41d5a0178a437986981",
+          "bytes": 2871,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-runtime.d.ts",
+          "sourceSha256": "fb8b04c18a4a53b122ecc71b5b8d1061ae6ad01b6733d41d5a0178a437986981"
+        },
+        "dist/transaction-schema-http.d.ts": {
+          "sha256": "7d876a57c2ebe413d5c62d6326b2576fa939e10e6661df53ea76841ace56401f",
+          "bytes": 821,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-schema-http.d.ts",
+          "sourceSha256": "7d876a57c2ebe413d5c62d6326b2576fa939e10e6661df53ea76841ace56401f"
+        },
+        "dist/transaction-sequence.d.ts": {
+          "sha256": "6cd76a3f87f15cde645ffff350661d1cd8085ac0ff2eca7fc1f960f34d1ae964",
+          "bytes": 1256,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-sequence.d.ts",
+          "sourceSha256": "6cd76a3f87f15cde645ffff350661d1cd8085ac0ff2eca7fc1f960f34d1ae964"
+        },
+        "dist/transaction-service.d.ts": {
+          "sha256": "25365c33ca1fd683c882ee69729a24bbc0af4f9d71599c4b9d81068883b03682",
+          "bytes": 9028,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-service.d.ts",
+          "sourceSha256": "25365c33ca1fd683c882ee69729a24bbc0af4f9d71599c4b9d81068883b03682"
+        },
+        "dist/transaction-set.d.ts": {
+          "sha256": "7d2af123c9a7f627f682b54b6f7b46ef1d1b63ea8d7f2a88c1536d2908690e3e",
+          "bytes": 2013,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-set.d.ts",
+          "sourceSha256": "7d2af123c9a7f627f682b54b6f7b46ef1d1b63ea8d7f2a88c1536d2908690e3e"
+        },
+        "dist/transaction-snapshot.d.ts": {
+          "sha256": "2399d8862c5db27e2f634ef435c289041c3817a67d8ccc13ba25c689247e2d06",
+          "bytes": 3431,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-snapshot.d.ts",
+          "sourceSha256": "2399d8862c5db27e2f634ef435c289041c3817a67d8ccc13ba25c689247e2d06"
+        },
+        "dist/transaction-sse.d.ts": {
+          "sha256": "51113550a4ad8552e3418cb60813ad0c5893249b3237e76d017b8f7cb29a7668",
+          "bytes": 1921,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-sse.d.ts",
+          "sourceSha256": "51113550a4ad8552e3418cb60813ad0c5893249b3237e76d017b8f7cb29a7668"
+        },
+        "dist/transaction-store.d.ts": {
+          "sha256": "036e0b5207c7bd61a1e31f1032f7da5e76a2ec8f47c4d6e3eb17cbb85db6afaf",
+          "bytes": 12420,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-store.d.ts",
+          "sourceSha256": "036e0b5207c7bd61a1e31f1032f7da5e76a2ec8f47c4d6e3eb17cbb85db6afaf"
+        },
+        "dist/transaction-submission.d.ts": {
+          "sha256": "1bb30988f46b628807fd093a345166ed8d550be45e4400c19bbee6c8de993987",
+          "bytes": 2810,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/packages/server/dist/transaction-submission.d.ts",
+          "sourceSha256": "1bb30988f46b628807fd093a345166ed8d550be45e4400c19bbee6c8de993987"
+        },
+        "LICENSE": {
+          "sha256": "1bc5a9f778e62e7383078d5588aed7296f6e266934de1cb9bff35fc9ee240816",
+          "bytes": 1070,
+          "source": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/LICENSE",
+          "sourceSha256": "1bc5a9f778e62e7383078d5588aed7296f6e266934de1cb9bff35fc9ee240816"
+        }
+      }
+    }
+  },
+  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+  "sourceAttribution": "Supervisor-verified clean source/build/archive binding, not child-attested source."
+}

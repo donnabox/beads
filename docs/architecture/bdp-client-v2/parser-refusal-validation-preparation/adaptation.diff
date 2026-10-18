@@ -1,0 +1,735 @@
+--- collection-successor2/run.py
++++ parser/run.py
+@@ -1,7 +1,7 @@
+-"""Single bounded stage. Usage: run.py final STAGE; existing AW tools are independently pinned. Closed without root gate."""
++"""Single bounded stage. Usage: run.py final STAGE; parser tools are captured after guarded offline install. Closed without root gate."""
+ import os,sys
+ if len(sys.argv)!=3 or sys.argv[1]!='final':raise SystemExit('usage: run.py final STAGE')
+-os.environ['COLLECTION_VALIDATION_PHASE']=sys.argv[1]
++os.environ['PARSER_VALIDATION_PHASE']=sys.argv[1]
+ import sys
+ sys.dont_write_bytecode=True
+ from gate import *
+@@ -12,10 +12,10 @@
+ env=os.environ.copy()
+ for k in list(env):
+  if k.startswith('BDP_') or k in ['NODE_OPTIONS','NODE_PATH','NODE_DEBUG','PYTHONOPTIMIZE','BIOME_BINARY','npm_execpath','npm_node_execpath','FORCE_COLOR']:env.pop(k)
+-env.update({'PATH':'/Users/dbox/.nvm/versions/node/v24.16.0/bin:'+env.get('PATH',''),'CI':'true','NO_COLOR':'1','PYTHONDONTWRITEBYTECODE':'1','COLLECTION_VALIDATION_PHASE':MODE})
++env.update({'PATH':'/Users/dbox/.nvm/versions/node/v24.16.0/bin:'+env.get('PATH',''),'CI':'true','NO_COLOR':'1','PYTHONDONTWRITEBYTECODE':'1','PARSER_VALIDATION_PHASE':MODE})
+ env.update(spec.get('environment',{}));tmp=E/(name+'.tmp');tmp.mkdir();env['TMPDIR']=str(tmp);env['npm_config_cache']=str(tmp/'npm-cache')
+ write(name+'.started.json',{'argv':spec['argv'],'cwd':spec['cwd'],'head':g['finalHead'],'tree':g['finalTree'],'sourceIdentity':g['_sourceIdentity'],'rootGateSha256':sha((P/('bootstrap-gate.json' if MODE=='bootstrap' else 'execution-gate.json')).read_bytes()),'outerSeconds':120,'automaticRetries':0,'overrides':spec.get('environment',{})})
+-env['COLLECTION_VALIDATION_STAGE']=name;env['COLLECTION_VALIDATION_ATTEMPT']=sha((E/(name+'.started.json')).read_bytes())
++env['PARSER_VALIDATION_STAGE']=name;env['PARSER_VALIDATION_ATTEMPT']=sha((E/(name+'.started.json')).read_bytes())
+ start=time.monotonic();p=None;seen=set();forced=False;errors=[]
+ def rows():
+  return [r.split(None,3) for r in subprocess.check_output(['ps','-axo','pid=,ppid=,pgid=,comm='],text=True,timeout=2).splitlines() if len(r.split(None,3))==4]
+@@ -62,8 +62,8 @@
+  except BaseException as e:errors.append('process verification:'+type(e).__name__)
+  try:
+   unchanged=source_check(g['_sourceBinding'])==g['_sourceIdentity']
+-  if MODE=='final' and name not in ['fresh-build','bind-fresh-build']:verify_build(g)
+-  if name in ['collection-external','review-collection-external']:verify_consumer(g)
++  if MODE=='final' and name not in ['workspace-install','bind-workspace-tools','typecheck','format-check','lint','fresh-build','bind-fresh-build']:verify_build(g)
++  if name in ['parser-external','review-parser-external','waiter-external','review-waiter-external']:verify_consumer(g)
+  except BaseException as e:errors.append('final binding:'+str(e))
+  try:runtime=[str(x) for x in tmp.rglob('*') if x.is_dir() and x.name.startswith('bdp-')]
+  except BaseException as e:errors.append('temp verification:'+type(e).__name__)
+--- collection-successor2/gate.py
++++ parser/gate.py
+@@ -1,13 +1,13 @@
+-"""Initial collection closed gates; no product imports. Root owns releases and measured pins."""
++"""Parser refusal closed gates; no product imports. Root owns releases and measured pins."""
+ from pathlib import Path
+ import hashlib,json,subprocess,os
+ P=Path(__file__).resolve().parent
+-W=Path('/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving')
++W=Path('/Users/dbox/repos/wt/vickie/vickie-parser-refusal')
+ GUARD=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py')
+-MODE=os.environ.get('COLLECTION_VALIDATION_PHASE','final')
++MODE=os.environ.get('PARSER_VALIDATION_PHASE','final')
+ assert MODE=='final'
+ E=P/'run'
+-INTEGRATION='2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96'
++INTEGRATION='d4f3f4be88c7837b71d6646518ca3589d464ba3d'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def require(ok,message):
+  if not ok:raise RuntimeError(message)
+@@ -19,7 +19,7 @@
+ def document(record):
+  p=Path(record['path']);require(p.is_absolute() and p.is_file() and not p.is_symlink() and sha(p.read_bytes())==record['sha256'],'Document absent/changed '+str(p));return read(p)
+ def source_check(b):
+- require(b['worktree']==str(W) and b['head']==INTEGRATION,'Wrong source binding')
++ require(b['worktree']==str(W) and b['head']==INTEGRATION and git('branch','--show-current').decode().strip()==b['branch'],'Wrong source binding')
+  require(git('rev-parse','HEAD').decode().strip()==b['head'] and git('rev-parse','HEAD^{tree}').decode().strip()==b['tree'],'Git identity changed')
+  actual={p:sha((W/p).read_bytes()) for p in git('ls-files').decode().splitlines()}
+  require(actual==b['trackedSourceFiles'],'Source files changed')
+@@ -74,17 +74,6 @@
+  for name,data in tar['packages'].items():require(sha(Path(data['archive']).read_bytes())==proof['packages'][name]['archiveSha256'],'Archive changed')
+  entry=Path(proof['entryRealpath']);require(entry.resolve(strict=True).is_relative_to((E/'consumer').resolve()) and sha(entry.read_bytes())==proof['entrySha256'],'External entry changed')
+  return proof
+-def verify_reused_static(g):
+- reuse=read(P/'static-reuse-binding.json')
+- require(reuse['sourceIdentity']==g['_sourceIdentity'] and reuse['sourceBinding']==g['sourceBinding'] and reuse['tools']==g['workspaceTools'],'Static reuse identity differs')
+- for path,digest in reuse['records'].items():require(sha(Path(path).read_bytes())==digest,'Static predecessor record changed '+path)
+- cfg=read(P/'commands.json')
+- for name in reuse['stages']:
+-  directory=Path(reuse['directory']);v=read(directory/(name+'.exit.json'));start=read(directory/(name+'.started.json'))
+-  require(v['accepted'] and v['exit']==0 and v['sourceUnchanged'] and not v['forcedCleanup'] and not v['errors'] and not v['remainingProcesses'] and not v['runtimeDirectoriesStillPresent'],'Static predecessor failed '+name)
+-  require(v['sourceIdentity']==start['sourceIdentity']==g['_sourceIdentity'] and start['head']==g['finalHead'] and start['tree']==g['finalTree'],'Static predecessor source differs')
+-  require(start['argv']==cfg['commands'][name]['argv'] and start['cwd']==cfg['commands'][name]['cwd'],'Static command differs')
+-  require(sha((directory/(name+'.log')).read_bytes())==v['logSha256'],'Static predecessor log changed')
+ def load_gate(name,child=False):
+  require(__debug__,'Assertions required')
+  g=read(P/'execution-gate.json')
+@@ -92,7 +81,7 @@
+  require(g['mode']==MODE,'Wrong phase')
+  if child:
+   record=E/(name+'.started.json')
+-  require(os.environ.get('COLLECTION_VALIDATION_STAGE')==name and record.is_file() and sha(record.read_bytes())==os.environ.get('COLLECTION_VALIDATION_ATTEMPT'),'Helper requires supervised attempt')
++  require(os.environ.get('PARSER_VALIDATION_STAGE')==name and record.is_file() and sha(record.read_bytes())==os.environ.get('PARSER_VALIDATION_ATTEMPT'),'Helper requires supervised attempt')
+   require(read(record)['rootGateSha256']==sha((P/('bootstrap-gate.json' if MODE=='bootstrap' else 'execution-gate.json')).read_bytes()),'Gate changed during attempt')
+  idx=P/'implementation-hashes.json';require(sha(idx.read_bytes())==g['implementationIndexSha256'],'Implementation index changed')
+  for f,h in read(idx)['files'].items():require(sha((P/f).read_bytes())==h,'Implementation changed '+f)
+@@ -102,16 +91,21 @@
+  cfg=read(P/'commands.json');order=cfg[MODE+'Order'];approved=g['approvedStages']
+  require(approved==order[:len(approved)] and name in approved,'Stage not released')
+  spec=cfg['commands'][name];require(spec['outerSeconds']==120 and spec['automaticRetries']==0,'Limits changed')
+- tools=document(g['workspaceTools']);tools_check(tools['tools'])
+- require(tools['sourceLockSha256']==g['sourceLockSha256'],'Tool source lock differs')
+- require(g['actualClaudeReviewDisposed'] is True or (name in ['typecheck','format-check','lint'] and g['staticValidationAuthorized'] is True),'Actual Claude review pending; only explicit static prefix may run')
+- require(disposition['staticValidationAuthorized'] is True if name in ['typecheck','format-check','lint'] else disposition['runtimeValidationAuthorized'] is True,'Root disposition does not authorize this stage')
+- require(disposition.get('staticEvidenceReuseAccepted') is True and disposition.get('staticReuseBinding')=={'path':str(P/'static-reuse-binding.json'),'sha256':sha((P/'static-reuse-binding.json').read_bytes())},'Root static reuse acceptance absent')
+- verify_reused_static(g)
++ base=document(g['baseTools']);tools_check(base['tools'])
++ require(base['sourceLockSha256']==g['sourceLockSha256'],'Base lock differs')
++ if name in ['workspace-install','bind-workspace-tools']:
++  require(disposition.get('dependencyInstallAuthorized') is True,'Dependency preparation not released')
++  if name=='workspace-install':require(not (W/'node_modules').exists(),'Workspace install already exists; preserve it and rebind explicitly')
++ else:
++  tb=document(g['workspaceTools']);tools_check(tb['tools'])
++  require(tb['sourceIdentity']==g['_sourceIdentity'] and tb['sourceLockSha256']==g['sourceLockSha256'] and tb['head']==g['finalHead'],'Installed tools source differs')
++  require(tb['installExitSha256']==sha((E/'workspace-install.exit.json').read_bytes()) and tb['installLogSha256']==sha((E/'workspace-install.log').read_bytes()),'Install evidence changed')
++  require(g['actualClaudeReviewDisposed'] is True or (name in ['typecheck','format-check','lint'] and g['staticValidationAuthorized'] is True),'Actual Claude review pending; only explicit static prefix may run')
++  require(disposition['staticValidationAuthorized'] is True if name in ['typecheck','format-check','lint'] else disposition['runtimeValidationAuthorized'] is True,'Root disposition does not authorize this stage')
+  for prior in order[:order.index(name)]:complete(prior,g)
+  if MODE=='final' and order.index(name)>order.index('bind-fresh-build'):verify_build(g)
+  if name=='verify-installed-consumer':require(isinstance(g.get('consumerLockSha256'),str) and sha((E/'consumer/pnpm-lock.yaml').read_bytes())==g['consumerLockSha256'],'Consumer lock not root-pinned')
+- if name in ['collection-external','review-collection-external']:
++ if name in ['parser-external','review-parser-external','waiter-external','review-waiter-external']:
+   proof=verify_consumer(g)
+   spec={**spec,'environment':{'BDP_TRANSACTIONAL_INSTALLED_ENTRY':proof['entryRealpath'],'BDP_TRANSACTIONAL_SOURCE_COMMIT':b['head']}}
+  guarded();return g,spec
+--- collection-successor2/audit.py
++++ parser/audit.py
+@@ -1,11 +1,20 @@
+-"""Standard-library collection validation auditor; no product imports."""
++"""Standard-library parser refusal validation auditor; no product imports."""
+ import sys
+ sys.dont_write_bytecode=True
+ from gate import *
+ import re
+-mode=sys.argv[1];stage={'source':'focused-source','external':'collection-external'}.get(mode)
+-g,_=load_gate({'build':'bind-fresh-build','source':'review-focused-source','external':'review-collection-external'}[mode],child=True)
+-if mode=='build':
++mode=sys.argv[1];stage={'source':'focused-source','parser':'parser-external','waiter':'waiter-external'}.get(mode)
++g,_=load_gate({'tools':'bind-workspace-tools','build':'bind-fresh-build','source':'review-focused-source','parser':'review-parser-external','waiter':'review-waiter-external'}[mode],child=True)
++if mode=='tools':
++ tools=dict(read(P/'base-tools.json')['tools'])
++ paths=[W/'node_modules'/n for n in ['@biomejs/biome/bin/biome','vitest/vitest.mjs','typescript/bin/tsc','typescript/lib/tsc.js','typescript/lib/getExePath.js','typescript/package.json']]
++ paths += [W/'node_modules/.pnpm/@biomejs+cli-darwin-arm64@2.5.7/node_modules/@biomejs/cli-darwin-arm64/biome',W/'node_modules/.pnpm/@typescript+typescript-darwin-arm64@7.0.2/node_modules/@typescript/typescript-darwin-arm64/lib/tsc']
++ for p in paths:tools[str(p)]={'realpath':str(p.resolve(strict=True)),'sha256':sha(p.read_bytes())}
++ versions={'@biomejs/biome':'2.5.7','vitest':'4.1.10','typescript':'7.0.2'}
++ for name,version in versions.items():require(read(W/'node_modules'/name/'package.json')['version']==version,'Installed tool version differs')
++ complete('workspace-install',g)
++ write('workspace-tools.json',{'tools':tools,'versions':versions,'head':g['finalHead'],'sourceIdentity':g['_sourceIdentity'],'sourceLockSha256':g['sourceLockSha256'],'installExitSha256':sha((E/'workspace-install.exit.json').read_bytes()),'installLogSha256':sha((E/'workspace-install.log').read_bytes())})
++elif mode=='build':
+  write('build-artifacts.json',{'head':g['finalHead'],'tree':g['finalTree'],'sourceIdentity':g['_sourceIdentity'],'artifacts':inventory(),**{key:{'path':str(E/('fresh-build.'+suffix)),'sha256':sha((E/('fresh-build.'+suffix)).read_bytes())} for key,suffix in [('start','started.json'),('exit','exit.json'),('log','log')]}})
+ else:
+  config=read(P/'commands.json')['commands'][stage];result=read(E/(stage+'.results.json'))
+@@ -15,7 +24,7 @@
+  require(all(x['status'] in ['pending','skipped','todo'] for x in cases if x not in chosen),'Unexpected callback executed')
+  report={'sourceIdentity':g['_sourceIdentity'],'sourceBindingSha256':g['sourceBinding']['sha256'],'qualification':False,'selectedCallbacks':config['selectedFullNames'],'resultsSha256':sha((E/(stage+'.results.json')).read_bytes()),'logSha256':sha((E/(stage+'.log')).read_bytes())}
+  if mode=='source':
+-  report.update({'attribution':'source-private callback checks','limits':'Exact controlled attempts, waits, owner availability, no token allocation, cancellation and HTTP semantics are assertions of the pinned passing callbacks; not fabricated runtime telemetry.'})
++  report.update({'attribution':'Four source-handler callbacks and three emitted-runtime fixture callbacks on one freshly bound candidate','plannedWorkload':config['prospectiveWorkload'],'limits':'100 handler invocations (67 new+33 existing),91 emitted HTTP exchanges and7 stores are source-derived planned workload, not fabricated observations. Exact refusal/no-owner/wait/token and regression semantics are assertions of the pinned passing callbacks.'})
+  else:
+   observations=[]
+   for line in (E/(stage+'.log')).read_text().splitlines():
+@@ -26,7 +35,7 @@
+   require(o['claimEligible'] is False and o['outcome']=='passed' and o['aborted'] is False and o['closed'] is True and o['workspaceDirty'] is True and o['declaredSourceCommit']==g['finalHead'],'Outcome/source/cleanup differs')
+   require(isinstance(o['childPid'],int) and o['childPid']>0 and o['childExitCode']==0,'Child exit absent')
+   execution=complete(stage,g);require(o['childPid'] in execution['sampledPids'],'Reported child was not observed by supervisor')
+-  require(o['exchanges']==42 and len(o['completedResponses'])==42,'Expected 42 exchanges')
++  require(o['exchanges']==config['expectedExchanges'] and len(o['completedResponses'])==config['expectedExchanges'],'Exchange count differs')
+   for response in o['completedResponses']:
+    require(response['method'] in ['GET','HEAD','POST'] and isinstance(response['status'],int) and response['url'].startswith('https://reference.invalid/acme/'),'Malformed response inventory')
+    for field in ['wireSha256','bodySha256']:require(re.fullmatch('[0-9a-f]{64}',response[field]),'Response fingerprint absent')
+@@ -37,11 +46,25 @@
+   require(served['fixtureDigest']==sha(fixture_path.read_bytes()) and served['fixtureId']==fixture['id'] and served['capabilities']==sorted(fixture['capabilities']),'Fixture binding differs')
+   proof=verify_consumer(g);entry=Path(proof['entryRealpath'])
+   require(Path(o['entry']).resolve(strict=True)==entry and o['entrySha256']==proof['entrySha256'] and served['installedPayloadDigest']==proof['payloadIdentity'],'Actual child differs from independently verified external payload')
+-  expected=[(c,m) for c in ['beads','links'] for m in ['GET','HEAD']]
+-  unknown=[x for x in observations if x['observation']=='installed-unknown-collection-minimum-timeout']
+-  require([(x['collection'],x['method']) for x in unknown]==expected and all(x['claimEligible'] is False and 1000<=x['elapsedMs']<5000 for x in unknown),'Unknown-minimum timing observations differ')
+-  known=[x for x in observations if x['observation']=='installed-minimum-timeout']
+-  require([(x['collection'],x['method']) for x in known]==expected,'Historical recognized-minimum observations missing')
+-  require(len([x for x in observations if x['observation']=='installed-position-oracle-control'])==2,'Existing position controls missing')
+-  report.update({'attribution':'verified external candidate from frozen four-file dirty draft; base HEAD is chronology, not complete source identity','observation':o,'unknownMinimumTimings':unknown,'recognizedMinimumTimings':known,'storeCleanup':'Supervisor observed no surviving bdp-prefixed directory beneath the owned stage TMPDIR; callback reports close after awaited child.close and removal. No store path was emitted by this historical helper.','limits':'Existing helper reports one child PID and normal exit code, not a signal field. Exact 503 Problem, HEAD suppression/content length, context and conditional precedence are assertions of the pinned passing callback. No complete profile or public qualification claim.'})
++  unknown=[];known=[]
++  if mode=='parser':
++   expected=[('https://reference.invalid/acme/beads/','GET',200)]
++   for collection in ['beads','links']:
++    for query in ['unsupported=x','limit=1&limit=2','limit=0']:
++     for method in ['GET','HEAD']:expected.append((f'https://reference.invalid/acme/{collection}/?{query}',method,400))
++   for control in ['absent','current']:
++    for method in ['GET','HEAD']:expected.append(('https://reference.invalid/acme/beads/?unsupported=x',method,400))
++   for suffix in ['types/task?view=properties','beads/a?view=links&direction=sideways','beads/missing?view=bogus']:
++    for method in ['GET','HEAD']:expected.append(('https://reference.invalid/acme/'+suffix,method,400))
++   expected += [('https://reference.invalid/acme/beads/?unsupported=x','GET',400),('https://reference.invalid/acme/beads/?unsupported=x','HEAD',400)]
++   require([(r['url'],r['method'],r['status']) for r in o['completedResponses']]==expected,'Parser request/result sequence differs')
++   require(all(r['responseBytes']==0 for r in o['completedResponses'] if r['method']=='HEAD'),'HEAD wire body is not empty')
++  else:
++   expected=[(c,m) for c in ['beads','links'] for m in ['GET','HEAD']]
++   unknown=[x for x in observations if x['observation']=='installed-unknown-collection-minimum-timeout']
++   require([(x['collection'],x['method']) for x in unknown]==expected and all(x['claimEligible'] is False and 1000<=x['elapsedMs']<5000 for x in unknown),'Unknown-minimum timing observations differ')
++   known=[x for x in observations if x['observation']=='installed-minimum-timeout']
++   require([(x['collection'],x['method']) for x in known]==expected,'Historical recognized-minimum observations missing')
++   require(len([x for x in observations if x['observation']=='installed-position-oracle-control'])==2,'Existing position controls missing')
++  report.update({'attribution':'verified external candidate from frozen three-file dirty draft; base HEAD is chronology, not complete source identity','observation':o,'unknownMinimumTimings':unknown,'recognizedMinimumTimings':known,'storeCleanup':'Supervisor observed no surviving bdp-prefixed directory beneath the owned stage TMPDIR; callback reports close after awaited child.close and removal. No store path was emitted by this historical helper.','limits':'Existing helper reports one child PID and normal exit code, not a signal field. Parser400 schema/retry/context absence and historical503/conditional/retention assertions are established by the separately pinned passing callbacks; source-owner counts are not inferred from installed wire records. No complete profile or public qualification claim.'})
+  write(stage+'.accepted-observation.json',report)
+--- collection-successor2/packages.py
++++ parser/packages.py
+@@ -1,5 +1,5 @@
+ """Read-only provenance modes plus external consumer preparation; never imports product.
+-Modes tar, consumer, installed. All require the initial collection dirty-source gate; copied narrowly from pinned packages.py.
++Modes tar, consumer, installed. All require the parser refusal dirty-source gate; copied narrowly from pinned packages.py.
+ """
+ from pathlib import Path
+ import json,tarfile,re,copy
+@@ -45,13 +45,13 @@
+    required.update(p.relative_to(root).as_posix() for p in (root/sub).rglob('*') if p.is_file())
+   assert set(files)==required,(name,set(files)^required)
+   packages[name]={'archive':str(archive),'archiveSha256':sha(archive.read_bytes()),'files':files}
+- write('tar-source-provenance.json',{'head':g['finalHead'],'tree':g['finalTree'],'clean':False,'dirtyPaths':g['_sourceBinding']['dirtyPaths'],'ownedSourceFiles':g['_sourceBinding']['ownedFiles'],'sourceIdentity':g['_sourceIdentity'],'sourceBindingSha256':g['sourceBinding']['sha256'],'binaryDiffSha256':g['_sourceBinding']['binaryDiffSha256'],'packages':packages,'sourceLockSha256':g['sourceLockSha256'],'sourceAttribution':'Base HEAD/tree plus independently verified four-file dirty source identity, fresh build and archives. Base commit does not contain the draft; not child-attested source.'})
++ write('tar-source-provenance.json',{'head':g['finalHead'],'tree':g['finalTree'],'clean':False,'dirtyPaths':g['_sourceBinding']['dirtyPaths'],'ownedSourceFiles':g['_sourceBinding']['ownedFiles'],'sourceIdentity':g['_sourceIdentity'],'sourceBindingSha256':g['sourceBinding']['sha256'],'binaryDiffSha256':g['_sourceBinding']['binaryDiffSha256'],'packages':packages,'sourceLockSha256':g['sourceLockSha256'],'sourceAttribution':'Base HEAD/tree plus independently verified three-file dirty source identity, fresh build and archives. Base commit does not contain the draft; not child-attested source.'})
+ elif mode=='consumer':
+  basis=json.loads((E/'tar-source-provenance.json').read_text());assert basis['head']==g['finalHead']
+  C.mkdir(exist_ok=False)
+  for data in basis['packages'].values():assert sha(Path(data['archive']).read_bytes())==data['archiveSha256']
+  deps={f'@bdp/{n}':'file:'+basis['packages'][n]['archive'] for n in ['protocol','server']}
+- (C/'package.json').write_text(json.dumps({'name':'initial-collection-external-consumer','private':True,'type':'module','dependencies':deps},indent=2)+'\n')
++ (C/'package.json').write_text(json.dumps({'name':'parser-refusal-external-consumer','private':True,'type':'module','dependencies':deps},indent=2)+'\n')
+  # pnpm11 reads workspace overrides here. Frozen lock is independently pinned by root gate.
+  (C/'pnpm-workspace.yaml').write_text('overrides:\n  "@bdp/protocol": '+json.dumps(deps['@bdp/protocol'])+'\n  "fast-uri": "3.1.5"\n')
+ elif mode=='installed':
+--- collection-successor2/commands.json
++++ parser/commands.json
+@@ -1,6 +1,10 @@
+ {
+-  "bootstrapOrder": [],
+   "finalOrder": [
++    "workspace-install",
++    "bind-workspace-tools",
++    "typecheck",
++    "format-check",
++    "lint",
+     "fresh-build",
+     "bind-fresh-build",
+     "focused-source",
+@@ -13,12 +17,43 @@
+     "prepare-consumer",
+     "consumer-install",
+     "verify-installed-consumer",
+-    "collection-external",
+-    "review-collection-external"
++    "parser-external",
++    "review-parser-external",
++    "waiter-external",
++    "review-waiter-external"
+   ],
+   "commands": {
++    "workspace-install": {
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-parser-refusal",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
++        "install",
++        "--offline",
++        "--ignore-scripts",
++        "--frozen-lockfile"
++      ],
++      "outerSeconds": 120,
++      "automaticRetries": 0,
++      "acceptedRawExitCodes": [
++        0
++      ]
++    },
++    "bind-workspace-tools": {
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-preparation",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-preparation/audit.py",
++        "tools"
++      ],
++      "outerSeconds": 120,
++      "automaticRetries": 0,
++      "acceptedRawExitCodes": [
++        0
++      ]
++    },
+     "typecheck": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-parser-refusal",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -32,16 +67,15 @@
+       ]
+     },
+     "format-check": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/@biomejs/biome/bin/biome",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-parser-refusal",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-parser-refusal/node_modules/@biomejs/biome/bin/biome",
+         "format",
+-        "--config-path=/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/biome.json",
++        "--config-path=/Users/dbox/repos/wt/vickie/vickie-parser-refusal/biome.json",
+         "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+         "packages/server/src/transaction-http.test.ts",
+-        "packages/server/src/transaction-read.test.ts",
+-        "packages/server/src/transaction-read.ts"
++        "packages/server/src/transaction-http.ts"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -50,16 +84,15 @@
+       ]
+     },
+     "lint": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/@biomejs/biome/bin/biome",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-parser-refusal",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-parser-refusal/node_modules/@biomejs/biome/bin/biome",
+         "lint",
+-        "--config-path=/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/biome.json",
++        "--config-path=/Users/dbox/repos/wt/vickie/vickie-parser-refusal/biome.json",
+         "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+         "packages/server/src/transaction-http.test.ts",
+-        "packages/server/src/transaction-read.test.ts",
+-        "packages/server/src/transaction-read.ts"
++        "packages/server/src/transaction-http.ts"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -68,7 +101,7 @@
+       ]
+     },
+     "fresh-build": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-parser-refusal",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -82,10 +115,10 @@
+       ]
+     },
+     "bind-fresh-build": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-preparation",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-preparation/audit.py",
+         "build"
+       ],
+       "outerSeconds": 120,
+@@ -94,8 +127,65 @@
+         0
+       ]
+     },
++    "focused-source": {
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-parser-refusal",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-parser-refusal/node_modules/vitest/vitest.mjs",
++        "run",
++        "packages/server/src/transaction-http.test.ts",
++        "--maxWorkers=1",
++        "--reporter=verbose",
++        "--reporter=json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-preparation/run/focused-source.results.json",
++        "--testNamePattern",
++        "^(?:rejects\\ collection\\ parser\\ errors\\ before\\ unknown\\ minimum\\ support\\ checks|preserves\\ parser\\ refusal\\ parity\\ on\\ noncollection\\ and\\ excluded\\ query\\ routes|preserves\\ receiving\\ and\\ HTTP\\ error\\ precedence\\ for\\ parser\\ refusals|waits\\ for\\ current\\ Resources\\ and\\ initial\\ collections\\ with\\ unknown\\ minima\\ and\\ preserves\\ residual\\ refusals|preserves\\ concrete\\ query\\ syntax\\ failures\\ and\\ accepts\\ the\\ reserved\\ genesis\\ minimum|serves\\ canonical\\ current\\ Type\\ and\\ incident\\ minimums\\ with\\ truthful\\ context\\ and\\ parser\\ boundaries|rejects\\ malformed\\ minimum\\ tuples\\ across\\ read\\ routes\\ without\\ entering\\ the\\ actual\\ owner)$"
++      ],
++      "outerSeconds": 120,
++      "automaticRetries": 0,
++      "acceptedRawExitCodes": [
++        0
++      ],
++      "selectedFullNames": [
++        "rejects collection parser errors before unknown minimum support checks",
++        "preserves parser refusal parity on noncollection and excluded query routes",
++        "preserves receiving and HTTP error precedence for parser refusals",
++        "waits for current Resources and initial collections with unknown minima and preserves residual refusals",
++        "preserves concrete query syntax failures and accepts the reserved genesis minimum",
++        "serves canonical current Type and incident minimums with truthful context and parser boundaries",
++        "rejects malformed minimum tuples across read routes without entering the actual owner"
++      ],
++      "prospectiveWorkload": {
++        "newSourceCallbacks": 3,
++        "newSourceHandlerInvocations": 67,
++        "newSourceSetupGETs": 3,
++        "newSourceStores": 3,
++        "sourceSelectionCallbacks": 7,
++        "sourceSelectionHandlerInvocations": 100,
++        "sourceSelectionHTTPExchanges": 91,
++        "sourceSelectionStores": 7,
++        "sourceSelectionProductChildren": 0,
++        "newInstalledCallbacks": 1,
++        "newInstalledHTTPExchanges": 25,
++        "installedPreservationHTTPExchanges": 42
++      },
++      "countAttribution": "Source-derived planned counts only; assertions and actual emitted logs remain separate."
++    },
++    "review-focused-source": {
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-preparation",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-preparation/audit.py",
++        "source"
++      ],
++      "outerSeconds": 120,
++      "automaticRetries": 0,
++      "acceptedRawExitCodes": [
++        0
++      ]
++    },
+     "node-version": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-parser-refusal",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "--version"
+@@ -107,10 +197,10 @@
+       ]
+     },
+     "prepare-package-directory": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-preparation",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-preparation/packages.py",
+         "directory"
+       ],
+       "outerSeconds": 120,
+@@ -120,7 +210,7 @@
+       ]
+     },
+     "pack-protocol": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-parser-refusal",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -128,7 +218,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-preparation/run/packages"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -137,7 +227,7 @@
+       ]
+     },
+     "pack-server": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-parser-refusal",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -145,7 +235,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-preparation/run/packages"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -154,10 +244,10 @@
+       ]
+     },
+     "verify-archives": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-preparation",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-preparation/packages.py",
+         "tar"
+       ],
+       "outerSeconds": 120,
+@@ -167,10 +257,10 @@
+       ]
+     },
+     "prepare-consumer": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-preparation",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-preparation/packages.py",
+         "consumer"
+       ],
+       "outerSeconds": 120,
+@@ -180,7 +270,7 @@
+       ]
+     },
+     "consumer-install": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-preparation/run/consumer",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -197,10 +287,10 @@
+       ]
+     },
+     "verify-installed-consumer": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-preparation",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-preparation/packages.py",
+         "installed"
+       ],
+       "outerSeconds": 120,
+@@ -209,19 +299,19 @@
+         0
+       ]
+     },
+-    "collection-external": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/vitest/vitest.mjs",
++    "parser-external": {
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-parser-refusal",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-parser-refusal/node_modules/vitest/vitest.mjs",
+         "run",
+         "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/run/collection-external.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-preparation/run/parser-external.results.json",
+         "--testNamePattern",
+-        "^(?:observes\\ genuine\\ installed\\ initial\\ collection\\ minimums,\\ fixed\\-budget\\ failures,\\ conditionals\\ and\\ retained\\ rows)$"
++        "^(?:observes\\ installed\\ parser\\ refusals\\ before\\ unknown\\ minimum\\ handling)$"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -229,53 +319,51 @@
+         0
+       ],
+       "selectedFullNames": [
+-        "observes genuine installed initial collection minimums, fixed-budget failures, conditionals and retained rows"
+-      ],
+-      "expectedObservation": "private-installed-collection-minimum",
++        "observes installed parser refusals before unknown minimum handling"
++      ],
++      "expectedObservation": "private-installed-parser-refusal",
++      "expectedExchanges": 25,
+       "prospectiveWorkload": {
+-        "beforeExchanges": 38,
+-        "afterExchanges": 42,
+-        "addedOpaqueRequests": 4,
+-        "recognizedTimeoutRequestsPreserved": 4,
+-        "realWaitBudgetMsPerTimeout": 1000,
+-        "addedElapsedLowerBoundMs": 1000,
+-        "addedElapsedUpperBoundMs": 5000,
+-        "exchangesCapUnchanged": 80,
+-        "workDeadlineMsUnchanged": 90000,
+-        "callbackTimeoutMsUnchanged": 120000,
+-        "requestTimeoutMsUnchanged": 5000,
+-        "children": 1,
++        "name": "observes installed parser refusals before unknown minimum handling",
++        "file": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
++        "line": 1489,
++        "boundarySha256": "1e2ba3ad3be5ee4e654413fb86fb5b63f05898661d0b15f4dd5ef86c5df4f7e3",
++        "evidenceKind": "packed-installed",
++        "httpExchanges": 25,
++        "setupGET": 1,
++        "refusalCalls": 24,
+         "stores": 1,
+-        "countOracle": "Existing emitted exchanges/completedResponses report audited externally; no helper/counter mode added."
++        "productChildren": 1,
++        "maximumConcurrentChildren": 1,
++        "notes": "1 actual setup+12 unknown+4current/absent+6noncollection+2conditions. Existing operator/reader credentials, operator handle only. No seed mutation/reopen/retry."
+       }
+     },
+-    "review-collection-external": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/audit.py",
+-        "external"
+-      ],
+-      "outerSeconds": 120,
+-      "automaticRetries": 0,
+-      "acceptedRawExitCodes": [
+-        0
+-      ]
+-    },
+-    "focused-source": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/vitest/vitest.mjs",
++    "review-parser-external": {
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-preparation",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-preparation/audit.py",
++        "parser"
++      ],
++      "outerSeconds": 120,
++      "automaticRetries": 0,
++      "acceptedRawExitCodes": [
++        0
++      ]
++    },
++    "waiter-external": {
++      "cwd": "/Users/dbox/repos/wt/vickie/vickie-parser-refusal",
++      "argv": [
++        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
++        "/Users/dbox/repos/wt/vickie/vickie-parser-refusal/node_modules/vitest/vitest.mjs",
+         "run",
+-        "packages/server/src/transaction-read.test.ts",
+-        "packages/server/src/transaction-http.test.ts",
++        "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/run/focused-source.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-preparation/run/waiter-external.results.json",
+         "--testNamePattern",
+-        "^(?:initial\\ collection\\ minimums\\ bounds\\ unrecognized\\ initial\\ collection\\ minima\\ without\\ retaining\\ state\\ or\\ holding\\ the\\ owner|waits\\ for\\ current\\ Resources\\ and\\ initial\\ collections\\ with\\ unknown\\ minima\\ and\\ preserves\\ residual\\ refusals)$"
++        "^(?:observes\\ genuine\\ installed\\ initial\\ collection\\ minimums,\\ fixed\\-budget\\ failures,\\ conditionals\\ and\\ retained\\ rows)$"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -283,42 +371,29 @@
+         0
+       ],
+       "selectedFullNames": [
+-        "initial collection minimums bounds unrecognized initial collection minima without retaining state or holding the owner",
+-        "waits for current Resources and initial collections with unknown minima and preserves residual refusals"
+-      ],
++        "observes genuine installed initial collection minimums, fixed-budget failures, conditionals and retained rows"
++      ],
++      "expectedObservation": "private-installed-collection-minimum",
++      "expectedExchanges": 42,
+       "prospectiveWorkload": {
+-        "callbacks": 2,
+-        "direct": {
+-          "unprovableRequests": 6,
+-          "attemptEntries": 18,
+-          "waits": 12,
+-          "waitStepsPerRequest": [
+-            5,
+-            2
+-          ],
+-          "tickDeltaPerRequest": 7,
+-          "preabortAttempts": 0,
+-          "preabortWaits": 0,
+-          "firstWaitAbortAttempts": 1,
+-          "firstWaitAbortWaits": 1,
+-          "separateRawOwnerChecksTotal": 13,
+-          "expectedTokenAllocations": 0
+-        },
+-        "http": {
+-          "requests": 18,
+-          "timeoutRequests": 8,
+-          "expectedWaitCalls": 8,
+-          "budgetMsPerTimeout": 2
+-        },
+-        "productChildProcesses": 0
++        "name": "observes genuine installed initial collection minimums, fixed-budget failures, conditionals and retained rows",
++        "file": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
++        "line": 391,
++        "boundarySha256": "9394a965287cdb5494a354e070ca85722900971956426c7afb4a64e52be5fb7e",
++        "evidenceKind": "packed-installed-preservation",
++        "httpExchanges": 42,
++        "stores": 1,
++        "productChildren": 1,
++        "maximumConcurrentChildren": 1,
++        "notes": "Predecessor callback is byte-identical; optional preservation selection for same final packed target, separate from new25.8 bounded real minimum waits remain unchanged."
+       }
+     },
+-    "review-focused-source": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/audit.py",
+-        "source"
++    "review-waiter-external": {
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-preparation",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-validation-preparation/audit.py",
++        "waiter"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -326,11 +401,6 @@
+         0
+       ]
+     }
+-  },
+-  "rootCheckpoints": {
+-    "beforeExecution": "Root accepts corrected build-before-source packet, exact source and explicitly verified predecessor static evidence. All new stages require actual Claude disposition and runtime release. Static commands retained only for identity comparison, not scheduled.",
+-    "beforeVerifyInstalledConsumer": "Root pins newly generated consumer lock; do not fabricate future pin.",
+-    "beforeCollectionExternal": "Root accepts actual eight-package provenance and pins full consumer inventory; external runtime only after this checkpoint."
+   },
+   "expectedProductionVersions": {
+     "@bdp/protocol": "0.0.0",
+@@ -342,9 +412,10 @@
+     "json-schema-traverse": "1.0.0",
+     "require-from-string": "2.0.2"
+   },
+-  "reusedStaticStages": [
+-    "typecheck",
+-    "format-check",
+-    "lint"
+-  ]
++  "rootCheckpoints": {
++    "afterWorkspaceTools": "Root pins real captured tools from actual offline frozen-lock install before static checks.",
++    "beforeRuntime": "Actual native+Claude code review disposition required for build/source/runtime; no code-review completion implied by plan review.",
++    "afterConsumerInstall": "Root pins newly generated consumer lock before verification.",
++    "afterConsumerVerification": "Root pins installed provenance and entire consumer inventory before either external callback."
++  }
+ }

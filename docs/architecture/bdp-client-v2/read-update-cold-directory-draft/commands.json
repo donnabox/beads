@@ -1,0 +1,105 @@
+{
+  "released": false,
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory",
+  "pinnedPathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "externalTimeoutSeconds": 120,
+  "stopOnUnexpectedFailure": true,
+  "buildBeforeCpuRequired": "App module imports emitted installed-reference-configuration; no build performed yet. Build before CPU invocation; dynamic config import launches no service.",
+  "stages": [
+    {
+      "id": "fresh-build",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    {
+      "id": "cpu-seven",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/conformance/src/read-update-artifact-set.test.ts",
+        "packages/conformance/src/cumulative-artifact.test.ts",
+        "packages/conformance/src/profile-contract-plan.test.ts",
+        "apps/bdptest/src/read-update-matrix.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "(?:accepts\\ the\\ actual\\ current\\ corpus\\ split\\ with\\ unchanged\\ prerequisite\\ groups\\ and\\ coverage|pins\\ cumulative\\ source\\ digest\\ map,\\ catalog\\ order\\ and\\ every\\ coverage\\ binding|inherits\\ partial\\ TX\\ command\\-minimum\\ evidence\\ while\\ preserving\\ RU\\ omission|pins\\ cold\\ RU\\ directory\\ literals,\\ actual\\ target\\ bindings\\ and\\ parent\\ preservation|pins\\ numeric\\ admission\\ source\\ growth,\\ old\\ blocks\\ and\\ independent\\ row\\ ledgers|pins\\ metadata\\ closure\\ growth,\\ old\\ B\\ actions\\ and\\ final\\ N\\ preservation|pins\\ bounded\\ R\\ closure\\ source,\\ changed\\-action\\ ledger\\ and\\ unchanged\\ companions)$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/source-run/cpu-seven-tests.json"
+      ]
+    }
+  ],
+  "installedStages": [
+    {
+      "id": "selected-positive",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/read-update-matrix.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^observes\\ all\\ nine\\ discovered\\ RU\\ operation\\ targets\\ through\\ cold\\ navigation$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/installed-run/0-tests.json"
+      ],
+      "environment": {
+        "BDP_CUMULATIVE_INSTALLED_ENTRY": "PENDING_VERIFIED_EXTERNAL_ENTRY",
+        "BDP_COLD_DIRECTORY_REPORT_PATH": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/installed-run/positive-directory.json"
+      },
+      "expectedSelectedCases": 1,
+      "expectedProcessExit": 0,
+      "actualRunnerFailureExpected": false
+    },
+    {
+      "id": "selected-directory-control",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/read-update-matrix.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^rejects\\ a\\ missing\\ updateLink\\ directory\\ member\\ in\\ actual\\ response\\ assertion\\ input$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/installed-run/1-tests.json"
+      ],
+      "environment": {
+        "BDP_CUMULATIVE_INSTALLED_ENTRY": "PENDING_VERIFIED_EXTERNAL_ENTRY",
+        "BDP_COLD_DIRECTORY_REPORT_PATH": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/installed-run/negative-directory.json"
+      },
+      "expectedSelectedCases": 1,
+      "expectedProcessExit": 0,
+      "actualRunnerFailureExpected": true
+    },
+    {
+      "id": "full-aggregate",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/read-update-matrix.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^executes\\ the\\ partial\\ cumulative\\ RU\\ matrix\\ against\\ actual\\ installed\\ factory\\ HTTP\\ and\\ afterstate$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/installed-run/2-tests.json"
+      ],
+      "environment": {
+        "BDP_CUMULATIVE_INSTALLED_ENTRY": "PENDING_VERIFIED_EXTERNAL_ENTRY",
+        "BDP_COLD_DIRECTORY_REPORT_PATH": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/installed-run/aggregate-directory.json",
+        "BDP_CUMULATIVE_REPORT_PATH": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/installed-run/aggregate.json"
+      },
+      "expectedSelectedCases": 1,
+      "expectedProcessExit": 0,
+      "actualRunnerFailureExpected": false
+    }
+  ]
+}

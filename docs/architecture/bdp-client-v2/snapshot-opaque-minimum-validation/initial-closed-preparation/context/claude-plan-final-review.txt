@@ -1,0 +1,75 @@
+I read the three required documents, the design/preservation context, and verified every claim against the pinned source at `0f215c0`. Findings below; blockers first.
+
+---
+
+## Blockers
+
+**1. A's offline inventory asserts an impossible `snapshot_pages` count**
+- Plan: `plan-v2.md:39` — "Offline after these calls assert snapshots1, snapshot_records1, **snapshot_pages0**, original expiry/disposition unchanged".
+- Source: `packages/server/src/transaction-snapshot.ts:711-761` — the page-range `do…while` runs at least once per stream kind and `:748-758` inserts a `snapshot_pages` row for every range when `retain` is true, including ordinal 0 of an empty stream.
+- Evidence in existing tests: `transaction-snapshot.test.ts:1093-1094` expects `snapshot_pages = 2` after one capture of a one-bead store; `:1121` expects `2` even for an empty capture.
+- Impact: A call 1 is a *real retained* create, so the offline assertion fails on a correct implementation. The whole callback is unrunnable as specified.
+- Correction: assert `snapshots=1, snapshot_records=1, snapshot_pages=2`. Better: read the three counts once immediately after call 1 (before advancing the clock) and assert the post-gate counts are identical, which proves "no allocation and no expiry" without hardcoding storage internals.
+
+**2. D's "HEAD no handle" expectation is not observable from the 27 responses**
+- Plan: `plan-v2.md:50` — row 2–3 expected column "200; GET gives one real retained manifest, **HEAD no handle**".
+- Source: the HEAD branch (`transaction-http.ts:456-463`) returns `{kind:"eligible"}` with no identity, and `transaction-snapshot.ts:806-808` runs `capture(now, context, false)`. Nothing on the wire enumerates handles, and D does no offline/db inspection; an allocating HEAD would be invisible to all 27 responses.
+- Impact: an unsupported oracle; an author will either invent an assertion or silently drop a listed expectation, and the plan's "no count is an observed result yet" discipline is broken by a claim that cannot be observed at all.
+- Correction: drop "HEAD no handle" from D's expectation column and state which callback actually owns it (the owner-level `preflight` → `eligible` cases in `transaction-snapshot.test.ts`, and the installed eight-handle capacity callback at `transactional-snapshot-installed.test.ts:590`). D can honestly assert only: HEAD 200, required context/cache fields, empty body, and that rows 22–23 still return the *original* `first.id` bytes (which does rule out replacement/extension).
+
+**3. E's "one executor … maximum dispatch3" contradicts the shared helper and is not an executor option**
+- Plan: `plan-v2.md:79` — "Exactly3 raw exchanges using one executor with only POST canonical operations/batch and GET/HEAD canonical no-query snapshot routes, maximum dispatch3".
+- Source: `packages/conformance/src/http-executor.ts:125-131` — `RawHttpExchangeExecutorOptions` has only `exactMode`, `authorize`, `maximumBodyBytes`, `requestTimeoutMs`, `maximumHeaderBytes`. There is no dispatch bound. Separately, the shared helper builds a **new** executor per call with a single-entry `routes` array (`transactional-snapshot-installed.test.ts:270-295`), so reusing `start()`/`exchange` yields three executors, not one.
+- Impact: the plan simultaneously says E reuses shared helpers and that E uses one executor with a nonexistent knob. Either reading produces a different file than reviewed.
+- Correction: state that E constructs **one callback-local** `createRawHttpExchangeExecutor` whose `exactMode.routes` is exactly `[{POST, ${scope}operations/batch}, {GET, ${scope}snapshot}, {HEAD, ${scope}snapshot}]` (route membership is enforced at `http-executor.ts:565`), and that "3 dispatches" is a local counter assertion, not configuration. Also state that because E is not using `exchange()`, it must restate that helper's invariants itself: `exactRequest.writeState === "complete"`, `host: reference.invalid`, non-empty `wireResponseBytes`, defined `bodyOctets`, and `x-bdp-development: non-attesting`.
+
+---
+
+## Should fix before authoring
+
+**4. "Specific unsupported-tuple TypeError" is not discriminable; the catch must be pinned exactly**
+- Plan: `plan-v2.md:19` (service) and `:21` (owner) — "If its **specific** unsupported-tuple TypeError occurs, validate via snapshotCurrentReadMinimum".
+- Source: `transaction-consistency.ts:35, 42, 54, 60` — the lexical shape failure and the strict position failure throw the *identical* `TypeError("unsupported minimum tuple")`. No type or message distinguishes them, and `snapshotTransactionMinimum` is `snapshotCurrentReadMinimum` + a position check (`:57-62`).
+- Impact: as written the instruction is unimplementable; an author may match on `error.message` (fragile) or widen to a bare `catch` (explicitly forbidden by review item 1).
+- Correction: specify literally — wrap only `snapshotTransactionMinimum(supplied)`; in the handler `if (!(error instanceof TypeError)) throw error;` then `const lexical = snapshotCurrentReadMinimum(supplied)` (its own throw replaces nothing — rethrow the *original* strict error instead), then read `kind` once, then accept only `create`/`preflight`, else `throw error`. Also disclose that this re-reads `supplied` a second time, which is side-effect-free only because `snapshotCurrentReadMinimum` rejects proxies and accessor descriptors before touching any trap or getter (`:34-41`); the plan's "capture exactly once" claim refers to per-attempt reuse, not to this single synchronous revalidation.
+
+**5. HTTP: the `minimum === undefined` fence for fresh create is left unstated**
+- Plan: `plan-v2.md:17` — "On fresh create only, use existing `currentReadMinimumHeaders` … Retained requests with any minimum controls keep their pre-service private minimum-position refusal." Nothing is said about the existing `minimum === undefined` arm.
+- Source: `transaction-http.ts:423-427`. After the change that arm becomes unreachable, because `malformedTransactionMinimumHeaders` at `:404` already 400s any header set that `snapshotCurrentReadMinimum` would reject (all three present and all token-valid ⇒ lexical capture always succeeds).
+- Impact: if an author "simplifies" the condition to `target.kind !== "create"`, a future capture change silently serves an **unconditioned** Snapshot to a minimum-bearing request, and `service.snapshot(target, undefined, …)` takes the no-minimum branch at `transaction-service.ts:429`.
+- Correction: state explicitly that only the capture function changes and the guard stays `hasMinimumControls(request) && (target.kind !== "create" || minimum === undefined)`.
+
+**6. A must be a synchronous callback or the background sweep can invalidate its expiry oracle**
+- Plan: `plan-v2.md:39` — A advances the clock past the handle lifetime and then asserts "original expiry/disposition unchanged (not expired)".
+- Source: `transaction-store.ts:1451` starts `setInterval(maintain, 1000)` by default, and `maintain()` (`:574-575`) sweeps with `instant()` = the *fixture* clock, which A has advanced past `limits.lifetimeMs`.
+- Impact: any `await` inside A yields the event loop and lets maintenance expire the handle, turning a correct implementation into an intermittent failure. The precedent at `transaction-snapshot.test.ts:1264-1283` is safe only because it is fully synchronous.
+- Correction: state that A's callback body contains no `await` (all of `fixture`, `observeSnapshot`, `setTime`, `offline` are synchronous), and do not add a `maintenanceIntervalMs` override (that would alter the shared fixture).
+
+**7. Missing control: no near-miss lexical position anywhere in the selection**
+- Plan: every opaque case in A/B/C/D/E/F uses a plainly non-numeric token; F's malformed row deliberately uses an "invalid position alphabet".
+- Source: the new predicate is purely lexical — `snapshotCurrentReadMinimum` accepts any `/^[A-Za-z0-9_-]{1,256}$/` position, so `pos-01` and `pos-9007199254740992` become opaque and waitable (`transaction-consistency.ts:26-31, 33-56, 115-132`). The already-shipped current-Resource/collection behavior pins exactly those tokens (`transaction-http.test.ts:4886-4897`; `transaction-consistency.test.ts:118-134, 137-162`).
+- Impact: a mutant that selected the lexical path only for tokens not matching `/^pos-/` would pass all 22 selected callbacks. The Snapshot *wiring* of the predicate is unpinned on the side that matters most (the shared predicate itself is covered, but `transaction-consistency.test.ts` is not in the selection and will not re-execute).
+- Correction: add one `pos-01` (or `pos-9007199254740992`) case — cheapest in A's matched-opaque row (A: 13 → 14 owner calls) or as a fourth value in the amended handler loop (15 → 20 handler requests). Declare the resulting count change explicitly rather than leaving the boundary unproved.
+
+**8. E's "schema-valid completed receipt" has no validator to reuse**
+- Plan: `plan-v2.md:79` — "schema-valid completed receipt/currentpos1", reusing "json/validateSnapshotProblem/snapshotTimeout".
+- Source: `transactional-snapshot-installed.test.ts:85-90` compiles only `snapshotManifest` and `transactionalProblem`; the shared `write()` helper (`:340-353`) checks only `receipt.status === "completed"`. The `$defs/mutationReceipt` ref exists (used at `transaction-http.test.ts:29`) but is not compiled in the installed file.
+- Correction: either compile `mutationReceipt` locally in the same owned file and say so, or drop "schema-valid" for the receipt and keep the literal body/octet/digest/result assertions the plan already lists.
+
+---
+
+## Optional precision
+
+**9. C: name the object that receives the post-close probe.** `plan-v2.md:43` says "5 delegated owner calls before one separate post-close direct owner refusal" while `selection-v2.json` records `delegatedOwnerCallsBeforePostCloseProbe: 5` / `postCloseOwnerRefusals: 1`. Those are only unambiguous if the probe targets the real `f.owner`, not the counting delegate (otherwise the counter reads 6). State `f.owner.observeSnapshot(...)` explicitly; it throws "transaction store closed or reentrant" from `enter()` (`transaction-store.ts:398-402`) after `service.close()` → `owner.close()` (`transaction-service.ts:723-724`).
+
+**10. Owner kind capture: say that the single read serves the known path too.** `plan-v2.md:21` says "Use captured fresh kind for the new opaque path rather than repeatedly reading it". `observeSnapshot` reads `request.kind` five times today (`:1560` twice, `:1568`, `:1572`, `:1581`). If the capture is introduced only inside the fallback branch, the file ends up with two kind-read regimes. State that `kind` is captured once immediately after a successful tuple capture and is used by the guard and every branch test; the service already passes a frozen `{kind}` copy, so this is observable only to exotic accessors the plan already declines to preserve.
+
+**11. Two unselected existing emitted HTTP rows touch the changed route.** `transaction-http.test.ts:2749-2803` (`["snapshot","GET"]`, `["snapshot","HEAD"]` of "stops %s %s retries after synchronized actual Node disconnect") are the only existing coverage of client-disconnect abort on the fresh Snapshot minimum path. They use a strict `pos-2` minimum, so behaviour is preserved by construction and omission is defensible — but if added they change totals (24 source callbacks, +2 stores/listeners, +2 emitted HTTP), which the plan's own stop conditions require to be declared.
+
+**12. E: name the shared helpers reused for lifecycle.** `withDeadline` (`:174-190`, default 45000 ms) and `finishObservation` (`:136-168`, dual deadline check + failure aggregation) are already generic and can be reused byte-identical while E supplies its own start/close. Saying so removes the apparent tension between "shared owned45000ms" and "fresh callback owns cleanup", and makes the one real exclusion concrete: do **not** copy `start().close()`'s unconditional `rmSync` (`:363-370`) — remove the directory only after `child.close()` resolves with `child.exitCode === 0`, `child.signalCode === null`, and an unaborted deadline signal.
+
+---
+
+## Verified as correct — do not churn
+
+So the author does not "repair" sound numbers: the existing owner callback is exactly **35** `observeSnapshot` calls (`transaction-snapshot.test.ts:1221,1228-1240,1245,1252-1257`), with the two amended oracles at `:1237-1239`; the handler loop is **10 → 15** by adding one value at `transaction-service.test.ts:1208`, and its existing `minimumPosition === "genesis" ? status : 503` ternary already yields 503 for the new value; the existing emitted HTTP callback is exactly **18** requests (`:2810-2876`); installed exchange **19** is indeed `{...current, "bdp-minimum-scope-position":"unknown"}` at `:893-913`, inside a callback that self-asserts `exchangeCount === 31` at `:953` with two children via `reopen()` at `:937` and a 60000 ms bound at `:955`. D's 27 requests and the 5/8/8/4/2 status split are arithmetically consistent and match the actual routing precedence (`:403` 401 → `:404` 400 → `:414-420` 400 invalid-parameter → `:426` retained 500 → service), and `applyReadHttpSemantics` (`read-http.ts:10-48`) cannot convert a 503 problem into 304/412/406, so "no shortcut wins" holds. B's 3 attempts / 2 waits / 4 delegated calls, C's 3 attempts+2 waits plus 1 attempt+1 wait, and all seven F rows (including sync-throw for rows 1–6, rejected `ScopeServerOperationAbortedError` with exactly 1 clock read for row 7) match `waitForTransactionMinimum` (`transaction-consistency.ts:139-179`) and `run`/`check` (`transaction-service.ts:133-155`). The seven-file cap is feasible: `transaction-store.ts:43-49`, `transaction-service.ts:6-13` and `transaction-http.ts:14-20` already import every helper the change needs, so no eighth file is implied. Spec grounding is accurate — `bdp.md:5850-5851` names Snapshots as outside the Resource MUST, `:5841-5843` permits the wait/503 choice, `:5876-5878` orders minimum before conditional, and `:5901-5911` supplies the HEAD parity/metadata rule.

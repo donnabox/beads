@@ -1,0 +1,2849 @@
+Complete standalone findings-first CODE REVIEW of the supplied exact six-path patch and tests. Do not write or modify any files. Output findings only in stdout. No tools, no model override, no execution. Give a concise COMPLETE numbered list with severity/file/issue/impact/fix, or explicitly no actionable findings. Prefer <=4000 words. Do not emit a partial tail or refer to findings not included in your answer.
+
+This is a separately authorized focused supplement: the prior actual review exited0 but stdout began mid-sentence and omitted its referenced findings1–13. Its entire retained output is included for transparency, NOT findings to invent/reconstruct. Reassess changed behavior/tests independently using this source. Distinguish real defects from supplied-context gaps. New tests and emitted control HAVE since passed; actual root acceptances are included, but passing tests do not excuse defects.
+
+Accepted scope: optional current immutable context on TransactionChangefeedParameterError, propagated from the SAME entered owner read through selected checkpoint grammar/future-head errors and HTTP400; no second read, parser/auth/epoch/view/minimum/conditional-order change. Pre-owner malformed URL/repeated reconnect/anonymous refusals stay contextless. No new retained Snapshot/incident-Link metadata ruling, discovery/profile activation or qualification. Exact9source/1control/1installed cases:19+12+10HTTP,5owners/dirs,4listeners,1child. Only34new response bodies capped32768B; old7regression reads keep existing limits. The emitted control changed only HTTP context forwarding to Event-only and actually completed12responses/0hardfailures/7namedsoftfailures (:3,4,5,6,7,8,12). Installed10HTTP remains separately gated. Final candidate/head chronology will be supplied in launch header; historical source/control attribution remains9a42.
+
+===== /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/draft.patch =====
+diff --git a/docs/design/transaction-implementation-progress.md b/docs/design/transaction-implementation-progress.md
+index 4d09f11..f852a5c 100644
+--- a/docs/design/transaction-implementation-progress.md
++++ b/docs/design/transaction-implementation-progress.md
+@@ -1879,3 +1879,24 @@ proposed emitted HTTP control omits only the two context projections. Earlier
+ Event and receipt evidence retains its original source attribution. Visible
+ unsupported minimum handling remains a private limitation; this draft adds no
+ public profile qualification, discovery activation or pending product ruling.
++
++
++### Context for observed changefeed parameter refusals
++
++This draft retains the immutable current Scope context when an entered changefeed
++read rejects a malformed selected reconnect value or a same-context checkpoint
++ahead of the observed head. The existing400 invalid-parameter response carries
++that same observation; no second owner read or fabricated checkpoint is added.
++URL grammar, authentication, repeated reconnect fields, epoch/view checks and
++minimum/conditional ordering retain their existing behavior. Refusals before an
++owner observation remain contextless.
++
++The bounded draft strengthens existing owner/parser assertions, adds a twelve-
++request source witness and a ten-request private installed witness, and proposes
++one copied-emitted HTTP context-omission control. No tests, builds, controls or
++installed execution have run at this draft checkpoint. Thirty-four new witness
++exchanges enforce a response-body cap; the seven selected historical regression
++exchanges retain their existing reader/deadlines without a new aggregate byte-cap
++claim. Earlier evidence remains attributed to its original source. This is not
++public discovery activation, profile qualification or a ruling on retained
++Snapshot minimums or metadata-only incident-Link Event membership.
+diff --git a/packages/server/src/transaction-changefeed.test.ts b/packages/server/src/transaction-changefeed.test.ts
+index a255a85..970d6f5 100644
+--- a/packages/server/src/transaction-changefeed.test.ts
++++ b/packages/server/src/transaction-changefeed.test.ts
+@@ -1,6 +1,6 @@
+ import { replica as createReplica } from "../test-support/transaction-replica.js";
+ import { constants } from "node:buffer";
+-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
++import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+ import { DatabaseSync } from "node:sqlite";
+@@ -280,8 +280,27 @@ it("uses bounded context-fenced checkpoints, never Event IDs/raw positions/futur
+   const token = transactionCheckpoint(scope, context, Number.MAX_SAFE_INTEGER);
+   expect(token.length).toBeLessThanOrEqual(256);
+   expect(checkpointPosition(scope, context, token)).toBe(Number.MAX_SAFE_INTEGER);
+-  for (const bad of ["", "pos-1", "ev_invalid", token, `${token}=`, token.toUpperCase()])
+-    expect(() => f.owner.readChanges(bad)).toThrow(TransactionChangefeedParameterError);
++  function refusal(after: string): TransactionChangefeedParameterError {
++    try {
++      f.owner.readChanges(after);
++    } catch (error) {
++      expect(error).toBeInstanceOf(TransactionChangefeedParameterError);
++      if (!(error instanceof TransactionChangefeedParameterError)) throw error;
++      return error;
++    }
++    throw new Error("expected changefeed parameter refusal");
++  }
++  let retained: TransactionReadContext | undefined;
++  for (const bad of ["", "pos-1", "ev_invalid", token, `${token}=`, token.toUpperCase()]) {
++    const error = refusal(bad);
++    expect(error.context).toStrictEqual({
++      scopeEpoch: context.scopeEpoch,
++      authorizationView: context.authorizationView,
++      scopePosition: "pos-1",
++    });
++    expect(Object.isFrozen(error.context)).toBe(true);
++    if (bad === token) retained = error.context;
++  }
+   expect(() =>
+     f.owner.readChanges(transactionCheckpoint(scope, { ...context, scopeEpoch: "old" }, 1)),
+   ).toThrowError(expect.objectContaining({ reason: "cursor-expired" }));
+@@ -293,6 +312,17 @@ it("uses bounded context-fenced checkpoints, never Event IDs/raw positions/futur
+   expect(() =>
+     f.owner.readChanges(transactionCheckpoint("https://other.test/", context, 1)),
+   ).toThrow(TransactionMinimumFailure);
++  f.run([create("b")]);
++  expect(refusal(token).context).toStrictEqual({
++    scopeEpoch: context.scopeEpoch,
++    authorizationView: context.authorizationView,
++    scopePosition: "pos-2",
++  });
++  expect(retained).toStrictEqual({
++    scopeEpoch: context.scopeEpoch,
++    authorizationView: context.authorizationView,
++    scopePosition: "pos-1",
++  });
+ });
+ it.each([
+   "",
+@@ -302,9 +332,15 @@ it.each([
+   "?after=genesis&after=genesis",
+   "?start=now&limit=1",
+ ])("rejects invalid feed intent %s with the local parameter convention", (query) => {
+-  expect(() => transactionChangefeedRequest(new URL(`${scope}changes/${query}`), scope)).toThrow(
+-    TransactionChangefeedParameterError,
+-  );
++  let failure: unknown;
++  try {
++    transactionChangefeedRequest(new URL(`${scope}changes/${query}`), scope);
++  } catch (error) {
++    failure = error;
++  }
++  expect(failure).toBeInstanceOf(TransactionChangefeedParameterError);
++  if (!(failure instanceof TransactionChangefeedParameterError)) throw failure;
++  expect(failure.context).toBeUndefined();
+ });
+ it("fails closed on corrupt stored framing without renumbering or changing graph state", () => {
+   const f = fixture();
+@@ -695,3 +731,278 @@ it("decides actual HTTP minimum refusal before conditional shortcuts with final
+   expect(satisfied.status).toBe(304);
+   expect(satisfied.headers.get("bdp-scope-position")).toBe("pos-0");
+ });
++
++it("preserves current context on owner-observed changefeed parameter refusals over HTTP", async () => {
++  const controller = new AbortController();
++  const deadlineReason = new Error("changefeed context cohort deadline");
++  let deadlineExceeded = false;
++  const timer = setTimeout(() => {
++    deadlineExceeded = true;
++    controller.abort(deadlineReason);
++  }, 45000);
++  const failures: unknown[] = [];
++  const contextFailures: string[] = [];
++  const names = ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"] as const;
++  const records: {
++    ordinal: number;
++    method: string;
++    url: string;
++    accept: string;
++    reconnect: string | null;
++    status: number;
++    bodyOctets: number;
++    context: (string | null)[];
++    contentType: string | null;
++    contentLength: string | null;
++  }[] = [];
++  let directory: string | undefined;
++  let runtime: Awaited<ReturnType<typeof startTransactionRuntime>> | undefined;
++  let closed = false;
++  let attempted = 0;
++  const token = "c".repeat(32);
++  const problem = {
++    type: "https://github.com/gastownhall/bdp/problems/request",
++    code: "invalid-parameter",
++    retry: "never",
++    status: 400,
++  };
++  const problemLength = String(Buffer.byteLength(JSON.stringify(problem)));
++  try {
++    directory = mkdtempSync(path.join(tmpdir(), "bdp-feed-http-"));
++    runtime = await startTransactionRuntime({
++      scope,
++      directory,
++      create: true,
++      port: 0,
++      types,
++      credentials: [{ token, principal: "p", canMutate: true }],
++    });
++    const listenUrl = runtime.listenUrl;
++    async function exchange(
++      target: string,
++      method: "GET" | "HEAD" | "POST" = "GET",
++      accept = "application/json",
++      extra: Record<string, string> = {},
++      body?: string,
++    ) {
++      controller.signal.throwIfAborted();
++      expect(++attempted, "changefeed context dispatch bound").toBeLessThanOrEqual(12);
++      const url = new URL(target, scope);
++      expect(url.origin).toBe(new URL(scope).origin);
++      expect(Buffer.byteLength(url.href)).toBeLessThanOrEqual(8192);
++      const headers = new Headers({ authorization: `Bearer ${token}`, accept, ...extra });
++      expect(
++        [...headers].reduce((n, [k, v]) => n + Buffer.byteLength(k + v) + 4, 0),
++      ).toBeLessThanOrEqual(16384);
++      expect(Buffer.byteLength(body ?? "")).toBeLessThanOrEqual(65536);
++      const requestController = new AbortController();
++      const requestTimer = setTimeout(
++        () => requestController.abort(new Error("changefeed exchange deadline")),
++        5000,
++      );
++      try {
++        const response = await fetch(new URL(url.pathname + url.search, listenUrl), {
++          method,
++          headers,
++          redirect: "error",
++          signal: AbortSignal.any([controller.signal, requestController.signal]),
++          ...(body === undefined ? {} : { body }),
++        });
++        const chunks: Uint8Array[] = [];
++        let bytes = 0;
++        const reader = response.body?.getReader();
++        if (reader) {
++          try {
++            for (;;) {
++              const chunk = await reader.read();
++              if (chunk.done) break;
++              bytes += chunk.value.byteLength;
++              if (bytes > 32768) throw new Error("changefeed response body bound");
++              chunks.push(chunk.value);
++            }
++          } catch (error) {
++            requestController.abort(error);
++            try {
++              await reader.cancel(error);
++            } catch (cleanupError) {
++              throw new AggregateError([error, cleanupError], "changefeed reader cleanup failed");
++            }
++            throw error;
++          } finally {
++            reader.releaseLock();
++          }
++        }
++        const text = new TextDecoder("utf-8", { fatal: true }).decode(Buffer.concat(chunks));
++        records.push({
++          ordinal: attempted,
++          method,
++          url: url.href,
++          accept,
++          reconnect: headers.get("last-event-id"),
++          status: response.status,
++          bodyOctets: bytes,
++          context: names.map((name) => response.headers.get(name)),
++          contentType: response.headers.get("content-type"),
++          contentLength: response.headers.get("content-length"),
++        });
++        return { status: response.status, headers: response.headers, text, bytes };
++      } finally {
++        clearTimeout(requestTimer);
++      }
++    }
++    const receiptValidator = ajv.compile({ $ref: `${schema.$id}#/$defs/mutationReceipt` });
++    async function seed(id: string, position: string) {
++      const body = JSON.stringify({ operations: [create(id)] });
++      expect(Buffer.byteLength(body)).toBe(125);
++      const response = await exchange(
++        "operations/batch",
++        "POST",
++        "application/json",
++        {
++          "content-type": "application/json",
++          "idempotency-key": `changefeed-context-${id}`,
++        },
++        body,
++      );
++      expect(response.status).toBe(200);
++      const receipt = JSON.parse(response.text);
++      expect(receiptValidator(receipt), JSON.stringify(receiptValidator.errors)).toBe(true);
++      expect(receipt).toMatchObject({
++        status: "completed",
++        idempotencyKey: `changefeed-context-${id}`,
++        requiredPosition: position,
++        effectPosition: position,
++      });
++    }
++    await seed("a", "pos-1");
++    const initial = await exchange("changes/?after=genesis");
++    expect(initial.status).toBe(200);
++    const page = JSON.parse(initial.text) as TransactionChangefeedPage;
++    expect(validPage(page), JSON.stringify(validPage.errors)).toBe(true);
++    expect(page.scope).toBe(scope);
++    expect(page.after).toBe("genesis");
++    expect(page.observedHeadPosition).toBe("pos-1");
++    expect(page.next).toBeNull();
++    expect(page.groups).toHaveLength(1);
++    const group = page.groups[0];
++    if (!group) throw new Error("missing initial change group");
++    expect(group.position).toBe("pos-1");
++    expect(group.previousPosition).toBe("pos-0");
++    expect(group.changes).toHaveLength(1);
++    expect(group.changes[0]).toMatchObject({
++      operation: "upsert",
++      resourceKind: "bead",
++      resource: { id: `${scope}beads/a`, type: beadType, properties: { n: 0 } },
++    });
++    expect(group.events).toHaveLength(1);
++    expect(group.events[0]).toMatchObject({ type: "created", subject: `${scope}beads/a` });
++    const expected = [page.scopeEpoch, page.authorizationView, "pos-1"];
++    expect(expected[0]).toBeTruthy();
++    expect(expected[1]).toBeTruthy();
++    expect(names.map((name) => initial.headers.get(name))).toStrictEqual(expected);
++    const match = /^(cg_[A-Za-z0-9_-]{43}_[A-Za-z0-9_-]{43}_)1$/.exec(group.checkpoint);
++    if (!match) throw new Error("unexpected issued checkpoint encoding");
++    // Deliberately invalid private input; not an issued/durable replay checkpoint.
++    const future = `changes/?after=${match[1]}3`;
++    async function contextual(
++      method: "GET" | "HEAD",
++      accept: string,
++      target: string,
++      extra: Record<string, string> = {},
++      tuple = expected,
++    ) {
++      const response = await exchange(target, method, accept, extra);
++      const label = `changefeed-context:${attempted}`;
++      // A200 here requires transport/media/server diagnosis; it is not a context failure.
++      expect(response.status, `${label}:prerequisite:${JSON.stringify(records.at(-1))}`).toBe(400);
++      expect(response.headers.get("x-bdp-development-limit")).toBeNull();
++      expect(response.headers.get("content-type")).toBe("application/problem+json");
++      expect(response.headers.get("cache-control")).toBe("private, no-store");
++      expect(response.headers.get("retry-after")).toBeNull();
++      expect(response.headers.get("www-authenticate")).toBeNull();
++      expect(response.headers.get("content-length")).toBe(problemLength);
++      if (method === "GET") {
++        const actual = JSON.parse(response.text);
++        expect(validProblem(actual), JSON.stringify(validProblem.errors)).toBe(true);
++        expect(actual).toStrictEqual(problem);
++        expect(String(response.bytes)).toBe(problemLength);
++      } else {
++        expect(response.text).toBe("");
++        expect(response.bytes).toBe(0);
++      }
++      const actualContext = names.map((name) => response.headers.get(name));
++      if (JSON.stringify(actualContext) !== JSON.stringify(tuple)) contextFailures.push(label);
++      expect.soft(actualContext, label).toStrictEqual(tuple);
++    }
++    for (const accept of ["application/json", "text/event-stream"])
++      for (const method of ["GET", "HEAD"] as const) await contextual(method, accept, future);
++    for (const method of ["GET", "HEAD"] as const)
++      await contextual(method, "text/event-stream", "changes/?after=genesis", {
++        "last-event-id": "malformed",
++      });
++    const anonymous = await exchange(future, "GET", "application/json", { authorization: "" });
++    expect(anonymous.status).toBe(401);
++    const unauthenticated = JSON.parse(anonymous.text);
++    expect(validProblem(unauthenticated), JSON.stringify(validProblem.errors)).toBe(true);
++    expect(unauthenticated).toStrictEqual({
++      type: "https://github.com/gastownhall/bdp/problems/authentication",
++      code: "unauthenticated",
++      retry: "after-state-change",
++      status: 401,
++    });
++    expect(names.map((name) => anonymous.headers.get(name))).toStrictEqual([null, null, null]);
++    const malformed = await exchange("changes/?after=genesis&start=now");
++    expect(malformed.status).toBe(400);
++    expect(JSON.parse(malformed.text)).toStrictEqual(problem);
++    expect(names.map((name) => malformed.headers.get(name))).toStrictEqual([null, null, null]);
++    await seed("b", "pos-2");
++    await contextual("GET", "application/json", future, { "if-none-match": "*" }, [
++      page.scopeEpoch,
++      page.authorizationView,
++      "pos-2",
++    ]);
++    expect(attempted).toBe(12);
++    expect(records).toHaveLength(12);
++    expect(records.map((r) => r.ordinal)).toStrictEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
++    controller.signal.throwIfAborted();
++  } catch (error) {
++    failures.push(error);
++  } finally {
++    controller.abort();
++    try {
++      if (runtime) {
++        await runtime.close();
++        closed = true;
++      }
++    } catch (error) {
++      failures.push(error);
++    }
++    try {
++      if (directory) rmSync(directory, { recursive: true, force: true });
++    } catch (error) {
++      failures.push(error);
++    }
++    clearTimeout(timer);
++    if (deadlineExceeded && !failures.includes(deadlineReason)) failures.push(deadlineReason);
++    console.log(
++      JSON.stringify({
++        observation: "private-source-changefeed-parameter-context",
++        outcome: failures.length || contextFailures.length ? "failed" : "passed",
++        attempted,
++        completedResponses: records,
++        exchanges: records.length,
++        contextFailures,
++        hardFailureCount: failures.length,
++        deadlineExceeded,
++        startupCompleted: runtime !== undefined,
++        closed,
++        directory: directory ?? null,
++        directoryAbsent: directory === undefined || !existsSync(directory),
++        claimEligible: false,
++      }),
++    );
++  }
++  if (failures.length === 1) throw failures[0];
++  if (failures.length > 1)
++    throw new AggregateError(failures, "changefeed context observation and cleanup failed");
++}, 60000);
+diff --git a/packages/server/src/transaction-changefeed.ts b/packages/server/src/transaction-changefeed.ts
+index d2aa3f5..d811a14 100644
+--- a/packages/server/src/transaction-changefeed.ts
++++ b/packages/server/src/transaction-changefeed.ts
+@@ -26,7 +26,14 @@ export const TRANSACTION_CHANGEFEED_BYTES =
+ if (TRANSACTION_CHANGEFEED_BYTES >= constants.MAX_STRING_LENGTH)
+   throw new Error("transaction tuple cannot support whole-group serialization");
+ 
+-export class TransactionChangefeedParameterError extends Error {}
++export class TransactionChangefeedParameterError extends Error {
++  constructor(
++    message?: string,
++    readonly context?: TransactionReadContext,
++  ) {
++    super(message);
++  }
++}
+ export type TransactionChangefeedIntent = { readonly after: string } | { readonly start: "now" };
+ export interface TransactionChangeGroup {
+   readonly scopeEpoch: string;
+@@ -53,12 +60,12 @@ export interface TransactionChangefeedPage {
+ const checkpoint = /^cg_([A-Za-z0-9_-]{43})_([A-Za-z0-9_-]{43})_([1-9][0-9]*)$/;
+ const tag = (...values: string[]) =>
+   createHash("sha256").update(JSON.stringify(values)).digest("base64url");
+-function parseCheckpoint(value: string) {
++function parseCheckpoint(value: string, context?: TransactionReadContext) {
+   if (value === "genesis") return { position: 0 } as const;
+   const match = value.length <= 256 ? checkpoint.exec(value) : null;
+   const position = Number(match?.[3]);
+   if (!match || !Number.isSafeInteger(position) || position < 1)
+-    throw new TransactionChangefeedParameterError();
++    throw new TransactionChangefeedParameterError(undefined, context);
+   return { position, epoch: match[1], view: match[2] } as const;
+ }
+ export function transactionCheckpoint(
+@@ -76,7 +83,7 @@ export function checkpointPosition(
+   context: TransactionReadContext,
+   value: string,
+ ): number {
+-  const parsed = parseCheckpoint(value);
++  const parsed = parseCheckpoint(value, context);
+   if (parsed.position === 0) return 0;
+   if (parsed.epoch !== tag("epoch", scope, context.scopeEpoch))
+     throw new TransactionMinimumFailure("cursor-expired", context);
+diff --git a/packages/server/src/transaction-http.ts b/packages/server/src/transaction-http.ts
+index 7e2c98f..f0acc66 100644
+--- a/packages/server/src/transaction-http.ts
++++ b/packages/server/src/transaction-http.ts
+@@ -609,10 +609,7 @@ export function createTransactionHttpHandler(
+           error instanceof TransactionEventParameterError ||
+           error instanceof TransactionChangefeedParameterError
+         )
+-          response = transactionHttpProblem(
+-            "invalid-parameter",
+-            error instanceof TransactionEventParameterError ? error.context : undefined,
+-          );
++          response = transactionHttpProblem("invalid-parameter", error.context);
+         else if (error instanceof TransactionEventProjectionGap)
+           response = developmentGap(error.message);
+         else if (error instanceof TransactionMinimumVisibilityGap)
+diff --git a/packages/server/src/transaction-store.ts b/packages/server/src/transaction-store.ts
+index 5ea8cb3..91fdb85 100644
+--- a/packages/server/src/transaction-store.ts
++++ b/packages/server/src/transaction-store.ts
+@@ -1713,7 +1713,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+         const context = readContext(),
+           head = Number(context.scopePosition.slice(4)),
+           start = checkpointPosition(scope, context, after);
+-        if (start > head) throw new TransactionChangefeedParameterError();
++        if (start > head) throw new TransactionChangefeedParameterError(undefined, context);
+         // Under this no-pruning owner every positive position through head was
+         // committed. Its absent row is corruption, not a never-issued cursor.
+         if (start > 0 && !db.prepare("SELECT position FROM groups WHERE position=?").get(start))
+diff --git a/apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts b/apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts
+new file mode 100644
+index 0000000..4f170f6
+--- /dev/null
++++ b/apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts
+@@ -0,0 +1,439 @@
++/** Private installed changefeed refusal observations; no profile qualification. */
++import { execFileSync, type ChildProcess } from "node:child_process";
++import { createHash, randomBytes } from "node:crypto";
++import { existsSync, mkdtempSync, readFileSync, realpathSync, rmSync } from "node:fs";
++import { tmpdir } from "node:os";
++import path from "node:path";
++import { fileURLToPath } from "node:url";
++import { expect, it } from "vitest";
++import { Ajv2020 } from "ajv/dist/2020.js";
++import { isJsonSchemaDateTime, isJsonSchemaUri } from "@bdp/protocol";
++import { createRawHttpExchangeExecutor, type HttpMethod } from "@bdp/conformance";
++import { installedTransactionBinding } from "../test-support/transactional-execution-binding.js";
++
++const root = fileURLToPath(new URL("../../../", import.meta.url));
++const { launchInstalledTransaction } = (await import(
++  new URL("../../../scripts/transaction-installed-observation.mjs", import.meta.url).href
++)) as {
++  launchInstalledTransaction(
++    entry: string,
++    configuration: unknown,
++    signal?: AbortSignal,
++  ): Promise<{
++    child: ChildProcess;
++    ready: Record<string, unknown>;
++    close(): Promise<void>;
++  }>;
++};
++const scope = "https://reference.invalid/acme/";
++const beadType = `${scope}types/task`;
++const schemaUri = `${scope}schemas/properties`;
++const artifacts = {
++  descriptors: [
++    {
++      retrievalUri: beadType,
++      utf8: JSON.stringify({
++        id: beadType,
++        name: "Task",
++        describes: "bead",
++        conformsTo: [],
++        propertiesSchema: schemaUri,
++      }),
++    },
++  ],
++  schemas: [
++    {
++      retrievalUri: schemaUri,
++      utf8: JSON.stringify({
++        $id: schemaUri,
++        type: "object",
++        properties: { title: { type: "string" } },
++        required: ["title"],
++        additionalProperties: false,
++      }),
++    },
++  ],
++};
++const entry =
++  process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY ??
++  path.join(root, "packages/server/dist/transaction-installed-process.js");
++if (process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY && !process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT)
++  throw new Error("installed changefeed entry override requires declared source commit");
++const resolvedEntry = realpathSync(entry);
++const digest = (value: string | Uint8Array) => createHash("sha256").update(value).digest("hex");
++const entrySha256 = digest(readFileSync(resolvedEntry));
++const workspaceDirty =
++  execFileSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8" }).length > 0;
++const sourceCommit =
++  process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT ??
++  execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
++const fixture = {
++  bytes: readFileSync(
++    path.join(root, "packages/conformance/test-support/transactional/fixture-v1.json"),
++  ),
++};
++const ajv = new Ajv2020({ allErrors: true, strict: true });
++ajv.addFormat("uri", { type: "string", validate: isJsonSchemaUri });
++ajv.addFormat("date-time", { type: "string", validate: isJsonSchemaDateTime });
++const bundle = JSON.parse(readFileSync(path.join(root, "schemas/bdp-v0.schema.json"), "utf8"));
++ajv.addSchema(bundle);
++const validReceipt = ajv.compile({ $ref: `${bundle.$id}#/$defs/mutationReceipt` });
++const validPage = ajv.compile({ $ref: `${bundle.$id}#/$defs/changefeedPage` });
++const validProblem = ajv.compile({ $ref: `${bundle.$id}#/$defs/transactionalProblem` });
++const contextNames = ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"] as const;
++const retainedHeaders = [
++  ...contextNames,
++  "content-type",
++  "content-length",
++  "cache-control",
++  "retry-after",
++  "www-authenticate",
++  "x-bdp-development",
++  "x-bdp-development-limit",
++];
++
++it("observes genuine installed current context on changefeed parameter refusals", async () => {
++  const controller = new AbortController();
++  const deadlineReason = new Error("installed changefeed context deadline");
++  let deadlineExceeded = false;
++  const deadline = setTimeout(() => {
++    deadlineExceeded = true;
++    controller.abort(deadlineReason);
++  }, 45000);
++  const failures: unknown[] = [];
++  let directory: string | undefined;
++  let child: Awaited<ReturnType<typeof launchInstalledTransaction>> | undefined;
++  let binding: ReturnType<typeof installedTransactionBinding> | undefined;
++  let closed = false;
++  let attempted = 0;
++  const responses: {
++    ordinal: number;
++    method: HttpMethod;
++    url: string;
++    accept: string;
++    lastEventId: string | null;
++    status: number;
++    bodyOctets: number | undefined;
++    wireSha256: string | null;
++    bodySha256: string;
++    headers: Record<string, string | null>;
++  }[] = [];
++  const operator = randomBytes(32).toString("base64url");
++  const body = JSON.stringify({
++    operations: [
++      {
++        operation: "createBead",
++        id: "beads/a",
++        type: beadType,
++        properties: { title: "changefeed-context" },
++      },
++    ],
++  });
++  try {
++    directory = mkdtempSync(path.join(tmpdir(), "bdp-changefeed-context-installed-"));
++    controller.signal.throwIfAborted();
++    child = await launchInstalledTransaction(
++      entry,
++      {
++        scope,
++        directory,
++        create: true,
++        artifacts,
++        credentials: [{ token: operator, principal: "writer", canMutate: true }],
++      },
++      controller.signal,
++    );
++    binding = installedTransactionBinding(child.ready, sourceCommit, fixture);
++    expect(child.ready.scope).toBe(scope);
++    expect(child.ready.claimEligible).toBe(false);
++    expect(child.ready.history).toBe(false);
++    expect(binding.operationTargets.batch).toBe(`${scope}operations/batch`);
++    const address = new URL(child.ready.listenUrl as string);
++    const initialUrl = `${scope}changes/?after=genesis`;
++    const invalidUrl = `${scope}changes/?after=genesis&start=now`;
++    const routes: { method: HttpMethod; url: string }[] = [
++      { method: "POST", url: `${scope}operations/batch` },
++      { method: "GET", url: initialUrl },
++      { method: "HEAD", url: initialUrl },
++      { method: "GET", url: invalidUrl },
++    ];
++    function executor(grants: readonly { method: HttpMethod; url: string }[]) {
++      return createRawHttpExchangeExecutor(
++        { transport: "plain", host: address.hostname, port: Number(address.port) },
++        {
++          requestTimeoutMs: 5000,
++          maximumBodyBytes: 32768,
++          exactMode: {
++            scope,
++            profile: "transactional",
++            routes: grants,
++            maximumRequestHeaderBytes: 16384,
++            maximumRequestBodyBytes: 65536,
++            defaultCredentialRef: "operator",
++            credentialHandles: [
++              { id: "operator", headerNames: ["authorization"] },
++              { id: "anonymous", headerNames: [] },
++            ],
++            resolveCredentials: ({ credentialRef }) =>
++              credentialRef === "anonymous" ? {} : { authorization: `Bearer ${operator}` },
++          },
++        },
++      );
++    }
++    let execute = executor(routes);
++    async function exchange(
++      url: string,
++      method: HttpMethod,
++      accept: string,
++      requestBody?: string,
++      anonymous = false,
++      lastEventId?: string,
++    ) {
++      controller.signal.throwIfAborted();
++      expect(++attempted, "installed changefeed dispatch bound").toBeLessThanOrEqual(10);
++      expect(Buffer.byteLength(url)).toBeLessThanOrEqual(8192);
++      const response = await execute({
++        method,
++        url,
++        signal: controller.signal,
++        credentialRef: anonymous ? "anonymous" : "operator",
++        raw: {
++          headerLines: [
++            { name: "accept", value: accept },
++            ...(lastEventId === undefined ? [] : [{ name: "last-event-id", value: lastEventId }]),
++            ...(requestBody === undefined
++              ? []
++              : [
++                  { name: "content-type", value: "application/json" },
++                  { name: "idempotency-key", value: "changefeed-context-a" },
++                ]),
++          ],
++          ...(requestBody === undefined ? {} : { bodyBytes: Buffer.from(requestBody) }),
++        },
++      });
++      responses.push({
++        ordinal: attempted,
++        method,
++        url,
++        accept,
++        lastEventId: lastEventId ?? null,
++        status: response.status,
++        bodyOctets: response.bodyOctets,
++        wireSha256: response.wireResponseBytes ? digest(response.wireResponseBytes) : null,
++        bodySha256: digest(response.bodyText),
++        headers: Object.fromEntries(
++          retainedHeaders.map((name) => [name, response.headers[name] ?? null]),
++        ),
++      });
++      expect(response.exactRequest?.source).toBe("raw-http1-serializer");
++      expect(response.exactRequest?.writeState).toBe("complete");
++      expect(response.url).toBe(url);
++      expect(response.exactRequest?.bodyPresent).toBe(requestBody !== undefined);
++      expect(response.exactRequest?.bodyOctets).toBe(
++        requestBody === undefined ? 0 : Buffer.byteLength(requestBody),
++      );
++      expect(response.exactRequest?.bodyDigest).toBe(
++        requestBody === undefined ? undefined : digest(requestBody),
++      );
++      const headers = response.exactRequest?.headerLines ?? [];
++      const values = (name: string) =>
++        headers.filter((h) => h.name.toLowerCase() === name).map((h) => h.value);
++      expect(values("host")).toStrictEqual(["reference.invalid"]);
++      expect(values("accept")).toStrictEqual([accept]);
++      expect(values("last-event-id")).toStrictEqual(lastEventId === undefined ? [] : [lastEventId]);
++      expect(values("idempotency-key")).toStrictEqual(
++        requestBody === undefined ? [] : ["changefeed-context-a"],
++      );
++      if (requestBody !== undefined)
++        expect(values("content-type")).toStrictEqual(["application/json"]);
++      expect(response.wireResponseBytes?.length).toBeGreaterThan(0);
++      expect(Number.isSafeInteger(response.bodyOctets)).toBe(true);
++      expect(response.bodyOctets).toBeGreaterThanOrEqual(0);
++      expect(response.bodyOctets).toBeLessThanOrEqual(32768);
++      expect(response.headers["x-bdp-development"]).toBe("non-attesting");
++      return response;
++    }
++    expect(Buffer.byteLength(body)).toBe(153);
++    const seed = await exchange(`${scope}operations/batch`, "POST", "application/json", body);
++    expect(seed.status).toBe(200);
++    const receipt = JSON.parse(seed.bodyText);
++    expect(validReceipt(receipt), JSON.stringify(validReceipt.errors)).toBe(true);
++    expect(receipt).toMatchObject({
++      status: "completed",
++      idempotencyKey: "changefeed-context-a",
++      requiredPosition: "pos-1",
++      effectPosition: "pos-1",
++    });
++    const initial = await exchange(initialUrl, "GET", "application/json");
++    expect(initial.status).toBe(200);
++    const page = JSON.parse(initial.bodyText);
++    expect(validPage(page), JSON.stringify(validPage.errors)).toBe(true);
++    expect(page.scope).toBe(scope);
++    expect(page.after).toBe("genesis");
++    expect(page.observedHeadPosition).toBe("pos-1");
++    expect(page.next).toBeNull();
++    expect(page.groups).toHaveLength(1);
++    const group = page.groups[0];
++    expect(group).toMatchObject({ position: "pos-1", previousPosition: "pos-0" });
++    expect(group.changes).toHaveLength(1);
++    expect(group.changes[0]).toMatchObject({
++      operation: "upsert",
++      resourceKind: "bead",
++      resource: {
++        id: `${scope}beads/a`,
++        type: beadType,
++        properties: { title: "changefeed-context" },
++      },
++    });
++    expect(group.events).toHaveLength(1);
++    expect(group.events[0]).toMatchObject({ type: "created", subject: `${scope}beads/a` });
++    const expected = [page.scopeEpoch, page.authorizationView, "pos-1"];
++    expect(expected[0]).toBeTruthy();
++    expect(expected[1]).toBeTruthy();
++    expect(contextNames.map((name) => initial.headers[name])).toStrictEqual(expected);
++    const match = /^(cg_[A-Za-z0-9_-]{43}_[A-Za-z0-9_-]{43}_)1$/.exec(group.checkpoint);
++    if (!match) throw new Error("unexpected issued checkpoint encoding");
++    // Invalid private input derived from a real token; never a valid durable checkpoint.
++    const futureUrl = `${scope}changes/?after=${match[1]}2`;
++    execute = executor([
++      ...routes,
++      { method: "GET", url: futureUrl },
++      { method: "HEAD", url: futureUrl },
++    ]);
++    const problem = {
++      type: "https://github.com/gastownhall/bdp/problems/request",
++      code: "invalid-parameter",
++      retry: "never",
++      status: 400,
++    };
++    const problemLength = String(Buffer.byteLength(JSON.stringify(problem)));
++    async function contextual(
++      url: string,
++      method: "GET" | "HEAD",
++      accept: string,
++      lastEventId?: string,
++    ) {
++      const response = await exchange(url, method, accept, undefined, false, lastEventId);
++      const label = `installed-changefeed-context:${attempted}`;
++      expect(response.status, `${label}:prerequisite:${JSON.stringify(responses.at(-1))}`).toBe(
++        400,
++      );
++      expect(response.headers["content-type"]).toBe("application/problem+json");
++      expect(response.headers["cache-control"]).toBe("private, no-store");
++      for (const name of ["retry-after", "www-authenticate", "x-bdp-development-limit"])
++        expect(response.headers[name]).toBeUndefined();
++      expect(response.headers["content-length"]).toBe(problemLength);
++      if (method === "GET") {
++        const actual = JSON.parse(response.bodyText);
++        expect(validProblem(actual), JSON.stringify(validProblem.errors)).toBe(true);
++        expect(actual).toStrictEqual(problem);
++        expect(String(response.bodyOctets)).toBe(problemLength);
++      } else {
++        expect(response.bodyText).toBe("");
++        expect(response.bodyOctets).toBe(0);
++      }
++      expect(
++        contextNames.map((name) => response.headers[name]),
++        label,
++      ).toStrictEqual(expected);
++    }
++    for (const accept of ["application/json", "text/event-stream"])
++      for (const method of ["GET", "HEAD"] as const) await contextual(futureUrl, method, accept);
++    for (const method of ["GET", "HEAD"] as const)
++      await contextual(initialUrl, method, "text/event-stream", "malformed");
++    const anonymous = await exchange(futureUrl, "GET", "application/json", undefined, true);
++    expect(anonymous.status).toBe(401);
++    const unauthenticated = JSON.parse(anonymous.bodyText);
++    expect(validProblem(unauthenticated), JSON.stringify(validProblem.errors)).toBe(true);
++    expect(unauthenticated).toStrictEqual({
++      type: "https://github.com/gastownhall/bdp/problems/authentication",
++      code: "unauthenticated",
++      retry: "after-state-change",
++      status: 401,
++    });
++    expect(anonymous.headers["www-authenticate"]).toBe(
++      'Bearer realm="bdp-transaction-development"',
++    );
++    expect(contextNames.map((name) => anonymous.headers[name])).toStrictEqual([
++      undefined,
++      undefined,
++      undefined,
++    ]);
++    const malformed = await exchange(invalidUrl, "GET", "application/json");
++    expect(malformed.status).toBe(400);
++    expect(JSON.parse(malformed.bodyText)).toStrictEqual(problem);
++    expect(contextNames.map((name) => malformed.headers[name])).toStrictEqual([
++      undefined,
++      undefined,
++      undefined,
++    ]);
++    expect(attempted).toBe(10);
++    expect(responses).toHaveLength(10);
++    expect(responses.map(({ method, url, accept }) => ({ method, url, accept }))).toStrictEqual([
++      { method: "POST", url: `${scope}operations/batch`, accept: "application/json" },
++      { method: "GET", url: initialUrl, accept: "application/json" },
++      ...["application/json", "text/event-stream"].flatMap((accept) =>
++        ["GET", "HEAD"].map((method) => ({ method, url: futureUrl, accept })),
++      ),
++      ...["GET", "HEAD"].map((method) => ({
++        method,
++        url: initialUrl,
++        accept: "text/event-stream",
++      })),
++      { method: "GET", url: futureUrl, accept: "application/json" },
++      { method: "GET", url: invalidUrl, accept: "application/json" },
++    ]);
++    controller.signal.throwIfAborted();
++  } catch (error) {
++    failures.push(error);
++  } finally {
++    controller.abort();
++    try {
++      if (child) {
++        await child.close();
++        closed = true;
++      }
++    } catch (error) {
++      failures.push(error);
++    }
++    try {
++      if (directory) rmSync(directory, { recursive: true, force: true });
++    } catch (error) {
++      failures.push(error);
++    }
++    clearTimeout(deadline);
++    if (deadlineExceeded && !failures.includes(deadlineReason)) failures.push(deadlineReason);
++    console.log(
++      JSON.stringify({
++        observation: "private-installed-changefeed-parameter-context",
++        outcome: failures.length === 0 ? "passed" : "failed",
++        // Caller attribution verified separately against archives/consumer; not child-attested.
++        declaredSourceCommit: sourceCommit,
++        workspaceDirty,
++        entry: resolvedEntry,
++        entrySha256,
++        binding: binding ?? null,
++        artifactBytes:
++          artifacts.descriptors.reduce((n, d) => n + Buffer.byteLength(d.utf8), 0) +
++          artifacts.schemas.reduce((n, s) => n + Buffer.byteLength(s.utf8), 0),
++        deadlineExceeded,
++        attempted,
++        exchanges: responses.length,
++        completedResponses: responses,
++        closed,
++        startupCompleted: child !== undefined,
++        childPid: child?.child.pid ?? null,
++        childExitCode: child?.child.exitCode ?? null,
++        childSignalCode: child?.child.signalCode ?? null,
++        directory: directory ?? null,
++        directoryAbsent: directory === undefined || !existsSync(directory),
++        failureCount: failures.length,
++        claimEligible: false,
++        retention: "response fingerprints and selected headers; full body assertions ran in memory",
++      }),
++    );
++  }
++  if (failures.length === 1) throw failures[0];
++  if (failures.length > 1)
++    throw new AggregateError(failures, "installed changefeed observation and cleanup failed");
++}, 60000);
+
+===== /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/root-source-acceptance.json (selected fields, actual JSON) =====
+{"status":"accepted-source-positive","sourceBindingSha256":"0abed77764ff7763e5e5a6f9b5a767090423fed01b21ea01b162a17b3b743e70","nativeReviewSha256":"7184936efc82f646a1670121135a85294fe0661780975c003404d5d760b0bb62","selectedPassedNames":["uses bounded context-fenced checkpoints, never Event IDs/raw positions/future rows","rejects invalid feed intent  with the local parameter convention","rejects invalid feed intent ?after=genesis&start=now with the local parameter convention","rejects invalid feed intent ?start=then with the local parameter convention","rejects invalid feed intent ?after= with the local parameter convention","rejects invalid feed intent ?after=genesis&after=genesis with the local parameter convention","rejects invalid feed intent ?start=now&limit=1 with the local parameter convention","decides actual HTTP minimum refusal before conditional shortcuts with final context","preserves current context on owner-observed changefeed parameter refusals over HTTP"],"sourceHTTPStaticTotal":19,"observedBodyBytes":3534,"claudeCodeReview":"pending","control":"not-run","installed":"not-run","qualification":false,"omittedForPromptSize":["observedNewHTTP twelve-response trace (full original artifact hash is bound)","per-stage hashes/timings and sampled PID list; eight stages accepted by root, no failures"]}
+
+===== /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/root-control-acceptance.json =====
+{
+  "accepted": true,
+  "attribution": "Exact frozen draft0abed777; emitted-only isolated HTTP forwarding omission",
+  "actualTestExit": 1,
+  "namedFailures": [
+    "changefeed-context:3",
+    "changefeed-context:4",
+    "changefeed-context:5",
+    "changefeed-context:6",
+    "changefeed-context:7",
+    "changefeed-context:8",
+    "changefeed-context:12"
+  ],
+  "responseCount": 12,
+  "rootReadCompleteResponses": true,
+  "rootCheckedActualFailureMessages": true,
+  "sampledPidsIndependentlyAbsent": [
+    46492,
+    46494,
+    46499,
+    46507
+  ],
+  "sourceBindingSha256": "0abed77764ff7763e5e5a6f9b5a767090423fed01b21ea01b162a17b3b743e70",
+  "controlAdjudicationSha256": "f7feeb40f134d27c281e5d07f00ac8031be09a4088587b78c06d7ca8490c731f",
+  "resultSha256": "28034c17a71f9c4b7e82323f25a75062d9832f2357baba5b98d989effa3485c6",
+  "rootReleaseSha256": "f79690ca74fca9577bfbd4edd65cf1852caa5aee5018cfcb64f2d8b759d377de",
+  "claimEligible": false,
+  "claudeReview": "pending",
+  "installed": "not-run"
+}
+
+===== /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/claude-code-review/stdout.txt =====
+at `:452`, so rows 9 and 10 correctly observe `[null, null, null]`.
+- **Fanout and labels.** 12 dispatches in order: seed a, genesis page, future×{json,sse}×{GET,HEAD} (3–6), malformed reconnect GET/HEAD (7–8), anonymous (9), malformed URL (10), seed b (11), future + `If-None-Match: *` (12). Labels derive from `attempted` → exactly `changefeed-context:3,4,5,6,7,8,12`, matching `control-proposal.expectedFailures` and `ledger.control.expectedFailures`.
+- **Soft/hard split behaves as the control requires.** `expect.soft` (`:935`) does not throw, so all 12 responses complete; `failures` stays empty → `hardFailureCount: 0`; the initial 200 page's context headers (`transaction-http.ts:468`) are untouched by the emitted mutation, so the hard tuple at `:902` still passes in the control. Expected control shape (12 responses / 0 hard / 7 soft / exit 1) is internally consistent.
+- **Control mutation string occurs exactly once.** `transactionHttpProblem("invalid-parameter", error.context)` appears only at `transaction-http.ts:612`; the snapshot-branch uses (`:399,404`) take no second argument, so `exactOccurrenceCountRequired: 1` holds.
+- **HEAD representation semantics.** 400 problems carry a body, so `read-http.ts:42–45` computes `content-length` and strips the body; `transaction-runtime.ts:89–94` leaves that header intact and sends no body. Empty body + GET-equivalent `Content-Length` is therefore the correct oracle, and the null-`response.body` guard (`:813–834`) is right.
+- **Conditional ordering.** Request 12 throws inside the owner before any conditional evaluation; `applyReadHttpSemantics` only applies the conditional/406 path to 200-JSON or 204 (`read-http.ts:12–15`), so `If-None-Match: *` cannot produce 304/412. No new ruling on minima or retained anchors.
+- **No stream or frames on any 400.** The error is raised in `service.changes` before `streamResponse` (`transaction-http.ts:466–477`), so `kind` is never `changefeed-stream`.
+- **No type-identity hazard from the mixed graph.** The `instanceof` callbacks use the Vitest-aliased source graph; the HTTP callbacks use the emitted `../dist/transaction-runtime.js` graph, and never cross-check classes. The emitted catch and the emitted thrower share one module instance.
+- **Narrowing after the simplification.** In the `else if` (`:608–612`) `error` narrows to `TransactionEventParameterError | TransactionChangefeedParameterError`; both now declare `context?`, so `error.context` is well-typed and Event behaviour is byte-identical.
+- **Parameter properties are house-legal.** Identical shape already compiles in `transaction-events.ts:44–51` and `transaction-consistency.ts:56–63`, so `erasableSyntaxOnly` is not in force.
+- **Installed route grants cover all ten requests.** Initial four grants plus the two post-response-2 future grants satisfy `validateExactRunConfiguration` (`http-executor.ts:552–571`) for every dispatch; re-constructing the executor adds no request, owner or connection (`Connection: close`, per-exchange dial).
+- **Installed raw-request representation.** `Host: reference.invalid` matches the canonical-authority check (`transaction-runtime.ts:131–132`, `transaction-installed-configuration.ts:63`); the executor appends default `Accept` only when absent (`http-executor.ts:716–723`), so `values("accept")` is exactly the authored value; anonymous handle with `headerNames: []` passes the `seen.size === headerNames.length` check (`:715`) and skips the credential-target test (`:683–687`); `bodyDigest` agrees because both sides hash the same UTF-8 bytes.
+- **Installed final sequence oracle matches execution order** position-for-position across all ten triples.
+- **Cleanup.** Both callbacks abort the cohort, close the runtime/child, remove the directory, and collect primary plus each cleanup error independently; the launcher's `close` is memoised (`transaction-installed-observation.mjs:48–60`) so the abort-triggered and explicit calls await one promise; the deadline reason is pushed exactly once.
+- **Arithmetic.** Patch stats reconcile exactly: 21 + 317 + 11 + 1 + 1 = **351** insertions, 0 + 6 + 4 + 4 + 1 = **15** deletions, **439** new installed lines, and the old 697-line test file becomes 1008 lines. Counts: 9/19, 1/12, 1/10 → 11 callbacks, 41 HTTP, 5 owners+directories, 4 listeners, 1 child; 34 capped exchanges × 32768 = **1114112**; bodies 125 + 125 + 250 (control) + 153 = **653**; installed artifacts 170 + 166 = **336**. I recomputed the 125 B and 153 B seed bodies and both descriptor/schema lengths byte-by-byte — all match. The empty `%s` row's two-space title and its `\ \ ` argv escape are correct.
+- **No new disclosure surface.** The three fields are already returned on every successful read to the same authenticated principal, and the refusal is post-authentication; `authorizationView` is installation-fixed in this owner.
+
+## Missing context — findings not reachable from supplied material
+
+These are gaps in the review inputs, not defects:
+
+1. `read-http-routing.ts` (`jsonResponse`, `scopeDataResponse`) — the base header set for every 400 (drives finding 1).
+2. `packages/conformance/src/index.ts` — whether `createRawHttpExchangeExecutor` and `HttpMethod` are root exports, and the factory's required option surface (drives finding 6). `isSecretHeaderName`/`RESERVED_FIELDS` (`http-executor.ts` ~`:337–358`) are outside the excerpt; `last-event-id` eligibility rests on the F5 disposition.
+3. `transaction-installed-process.js` and the `qualification.ready` message shape — `installedTransactionBinding`'s required `payloadIdentity`/`artifactIdentity`/`policyIdentity`/`authenticationIdentity`/`runtimeConfigurationIdentity` members, and `bindServedProfileConfiguration`'s validation.
+4. `captureTransactionRuntimeConfiguration` — the default `authorityMode` and `liveStreamsAvailable`. The new source callback's host match depends on the default being listener-mode, as the pre-existing `httpFixture` already assumes.
+5. `stringifyJsonValue` whitespace/escaping. Byte length is order-invariant and the payload is pure ASCII, so `problemLength` is safe either way; the assertion is nonetheless a new absolute coupling where the pre-existing test only compared HEAD to GET (`:635`).
+6. No typecheck, build, lint, boundary check, test, control or installed execution has occurred — only pinned Biome formatting of the five TypeScript paths (exit 0, 3 reformatted) and `git diff --check` (exit 0). Every type-level claim above is a reading of the supplied text, not a compiler result.
+
+## Already-accepted evidence limitations (restated, not re-litigated)
+
+- Curated dependency pinning is explicitly not an import/package closure; build, consumer and copy closure remain later gates.
+- The seven historical minimum-regression fetches keep their existing readers and deadlines and carry no new byte cap; the draft and the progress-doc amendment both disclose this and the `41 × 32768` claim is correctly withdrawn.
+- Unexpected 200 on the reconnect rows is a hard prerequisite failure requiring diagnosis and proves nothing about field omission (finding 5 refines the artifact, not the rule).
+- Control copy/emitted spelling, tool-graph hashes, archive/consumer/eight-package closure, external entry and source attribution are all later gates; source attribution is supervisor-verified, not child-attested.
+- `fixture-v1.json` is a served-configuration identity input only; this witness exercises one of its five bindings and claims no capability or profile coverage. `claimEligible: false` and `x-bdp-development: non-attesting` are asserted throughout.
+
+## Suggested gating order
+
+1. Findings 1 and 7 (pin `read-http-routing.ts`; settle `requiredPosition`) — both are hard prerequisites that would otherwise consume the first positive run.
+2. Finding 2 (regression search) and finding 4 (caller enumeration) — cheap, read-only, and they close the two unverified claims.
+3. Findings 5, 6, 10, 11, 12 and optionally 13 — small edits to the two new callbacks; re-run Biome on the five TypeScript paths afterwards.
+4. Finding 9 — one-line Markdown edit; re-run `git diff --check`.
+5. Finding 3 — fold into the control copy inventory before the control is prepared; it does not block the positive source run.
+
+No files were written or modified.
+
+===== CURRENT SOURCE packages/server/src/transaction-store.ts:335-365 =====
+335:       id: string;
+336:       sequence: PreparedTransactionSequence;
+337:       owned: Map<number, TransactionClaim>;
+338:       next: number;
+339:       cancelled: boolean;
+340:       busy: boolean;
+341:     }
+342:   >();
+343:   function ownedClaim(claim: TransactionClaim | undefined) {
+344:     const value = claim && claims.get(claim);
+345:     if (!value) throw new Error("lost transaction owner");
+346:     return value;
+347:   }
+348:   function enter<T>(run: () => T): T {
+349:     if (ownerFailure) throw ownerFailure;
+350:     if (maintenanceFailure)
+351:       throw new Error("transaction maintenance failed; owner fenced", maintenanceFailure);
+352:     if (closed || busy) throw new Error("transaction store closed or reentrant");
+353:     busy = true;
+354:     try {
+355:       return run();
+356:     } finally {
+357:       busy = false;
+358:     }
+359:   }
+360:   function fence(cause: unknown): Error {
+361:     clearInterval(maintenanceTimer);
+362:     // Cleanup can add the original application error to an earlier storage
+363:     // failure. Replace the wrapper; mutating its cause would create a cycle.
+364:     ownerFailure = new Error("transaction storage failure; owner fenced; reopen before use", {
+365:       cause,
+
+===== CURRENT SOURCE packages/server/src/transaction-store.ts:580-605 =====
+580:       limits: TRANSACTION_SNAPSHOT_LIMITS,
+581:       tokenPolicy: TRANSACTION_SNAPSHOT_TOKEN_POLICY,
+582:     }),
+583:     installedTypes: Object.freeze(descriptors),
+584:     scopeConfiguration: Object.freeze({
+585:       policyIdentity: view,
+586:       configurationIdentity: configuration,
+587:       maximumEndpointMultiplicity: Object.freeze([]),
+588:     }),
+589:   });
+590:   function readContext(): TransactionReadContext {
+591:     const position = metadata("position");
+592:     if (!/^(0|[1-9][0-9]*)$/.test(position) || !Number.isSafeInteger(Number(position)))
+593:       throw new Error("invalid transaction read position");
+594:     return Object.freeze({
+595:       scopeEpoch: epoch,
+596:       authorizationView: view,
+597:       scopePosition: `pos-${position}`,
+598:     });
+599:   }
+600:   /** Prepare once per owner observation, not once per scanned group. The
+601:    * reader remains inside its synchronous entry; no SQLite capability escapes. */
+602:   function retainedGroupReader() {
+603:     const rowAt = db.prepare(
+604:       "SELECT position,length(CAST(body AS BLOB)) AS bytes FROM groups WHERE position>=? AND position<=? ORDER BY position LIMIT 1",
+605:     );
+
+===== CURRENT SOURCE packages/server/src/transaction-store.ts:1260-1315 =====
+1260:             db.exec("ROLLBACK TO effects; RELEASE effects");
+1261:             receipt = {
+1262:               ...core,
+1263:               status: "failed",
+1264:               detail: "available",
+1265:               requiredPosition: `pos-${previous}`,
+1266:               problem: result.problem,
+1267:               expiresAt,
+1268:             };
+1269:           } else {
+1270:             db.exec("RELEASE effects");
+1271:             const group = {
+1272:               scopeEpoch: epoch,
+1273:               authorizationView: view,
+1274:               checkpoint: position,
+1275:               position,
+1276:               previousPosition: `pos-${previous}`,
+1277:               projectionAdvance: false,
+1278:               transaction: core.transaction,
+1279:               changes: result.changes,
+1280:               erasures: [],
+1281:               eventCount: result.events.length,
+1282:               events: result.events,
+1283:             };
+1284:             const effective = result.events.length > 0;
+1285:             if (effective) {
+1286:               db.prepare("INSERT INTO groups VALUES(?,?)").run(previous + 1, json(group));
+1287:               db.prepare("UPDATE metadata SET value=? WHERE name='position'").run(
+1288:                 String(previous + 1),
+1289:               );
+1290:             }
+1291:             receipt = {
+1292:               ...core,
+1293:               status: "completed",
+1294:               detail: "available",
+1295:               requiredPosition: effective ? position : `pos-${previous}`,
+1296:               ...(effective ? { effectPosition: position } : {}),
+1297:               results: result.results,
+1298:               next: null,
+1299:               expiresAt,
+1300:             };
+1301:           }
+1302:           const changed = db
+1303:             .prepare(
+1304:               "UPDATE receipts SET receipt=?,owner=NULL WHERE principal=? AND key=? AND owner=?",
+1305:             )
+1306:             .run(json(receipt), owned.principal, owned.key, owned.owner);
+1307:           if (changed.changes !== 1) throw new Error("terminal ownership lost");
+1308:           if (owned.creator)
+1309:             writeFact(
+1310:               owned.creator.attempt,
+1311:               owned.creator.member,
+1312:               creatorFact(owned.creator.operation, receipt),
+1313:             );
+1314:           if (receipt.status === "completed") createPagePlan(owned.principal, owned.key, receipt);
+1315:           options.fault?.("after-terminal");
+
+===== CURRENT SOURCE packages/server/src/transaction-store.ts:1685-1766 =====
+1685:           throw new Error("Event scan context changed or head regressed");
+1686:         return eventPacket(state, context);
+1687:       });
+1688:     },
+1689:     /** Request intent anchor only; the eventual page captures its own current context. */
+1690:     captureChangesStart(): string {
+1691:       return enter(() => {
+1692:         const context = readContext();
+1693:         return transactionCheckpoint(scope, context, Number(context.scopePosition.slice(4)));
+1694:       });
+1695:     },
+1696:     readChanges(
+1697:       after: string,
+1698:       supplied?: TransactionMinimum | "unsupported",
+1699:     ):
+1700:       | {
+1701:           readonly kind: "page";
+1702:           readonly page: TransactionChangefeedPage;
+1703:           readonly context: TransactionReadContext;
+1704:         }
+1705:       | { readonly kind: "unsupported" } {
+1706:       if (typeof after !== "string") throw new TypeError("changefeed checkpoint must be a string");
+1707:       const minimum =
+1708:         supplied === undefined || supplied === "unsupported"
+1709:           ? supplied
+1710:           : snapshotTransactionMinimum(supplied);
+1711:       return enter(() => {
+1712:         if (minimum === "unsupported") return Object.freeze({ kind: "unsupported" as const });
+1713:         const context = readContext(),
+1714:           head = Number(context.scopePosition.slice(4)),
+1715:           start = checkpointPosition(scope, context, after);
+1716:         if (start > head) throw new TransactionChangefeedParameterError(undefined, context);
+1717:         // Under this no-pruning owner every positive position through head was
+1718:         // committed. Its absent row is corruption, not a never-issued cursor.
+1719:         if (start > 0 && !db.prepare("SELECT position FROM groups WHERE position=?").get(start))
+1720:           throw new Error("missing retained change group");
+1721:         if (minimum !== undefined) checkTransactionMinimum(minimum, context);
+1722:         const row = retainedGroupReader()(start + 1, head);
+1723:         if ((!row && start < head) || (row && row.position !== start + 1))
+1724:           throw new Error("missing retained change group");
+1725:         const group = row
+1726:           ? projectTransactionChangeGroup(row.value, scope, context, row.position)
+1727:           : undefined;
+1728:         let next: string | null = null;
+1729:         if (group && row && row.position < head) {
+1730:           if (!db.prepare("SELECT position FROM groups WHERE position=?").get(row.position + 1))
+1731:             throw new Error("missing retained change group");
+1732:           const url = new URL("changes/", scope);
+1733:           url.searchParams.set("after", group.checkpoint);
+1734:           next = url.href;
+1735:         }
+1736:         return Object.freeze({
+1737:           kind: "page" as const,
+1738:           context,
+1739:           page: freezeChangefeedPage({
+1740:             scope,
+1741:             scopeEpoch: context.scopeEpoch,
+1742:             authorizationView: context.authorizationView,
+1743:             after,
+1744:             observedHeadPosition: context.scopePosition,
+1745:             groups: group ? [group] : [],
+1746:             next,
+1747:           }),
+1748:         });
+1749:       });
+1750:     },
+1751:     readConfiguration: () => enter(() => readConfiguration),
+1752:     comparisonEpoch: () => {
+1753:       if (closed && !ownerFailure && !maintenanceFailure) return undefined;
+1754:       return enter(() => metadata("epoch"));
+1755:     },
+1756:     /** Private deadline observation: one owner entry and one atomic metadata read. */
+1757:     observeComparisonDeadline(
+1758:       expectedEpoch: string,
+1759:     ):
+1760:       | { readonly kind: "observed"; readonly context: TransactionReadContext }
+1761:       | { readonly kind: "owner-stopped" } {
+1762:       if (closed && !ownerFailure && !maintenanceFailure)
+1763:         return Object.freeze({ kind: "owner-stopped" });
+1764:       return enter(() =>
+1765:         atomic(() => {
+1766:           if (metadata("epoch") !== expectedEpoch)
+
+===== CURRENT SOURCE packages/server/src/transaction-service.ts:145-205 =====
+145:       task.resolve(start());
+146:     } catch (error) {
+147:       task.reject(error);
+148:     }
+149:     return task.promise;
+150:   }
+151:   function nextTurn(): Promise<void> {
+152:     return new Promise((resolve, reject) => {
+153:       let scheduling = true,
+154:         inline = false,
+155:         live = true;
+156:       let cancel: (() => void) | undefined;
+157:       try {
+158:         cancel = turn(() => {
+159:           if (!live) return;
+160:           if (scheduling) {
+161:             inline = true;
+162:             return;
+163:           }
+164:           live = false;
+165:           resolve();
+166:         });
+167:         scheduling = false;
+168:         if (typeof cancel !== "function") throw new TypeError("scheduler must return cancellation");
+169:         if (inline) throw new TypeError("scheduler invoked callback inline");
+170:       } catch (error) {
+171:         live = false;
+172:         try {
+173:           if (typeof cancel === "function") cancel();
+174:         } catch (cleanup) {
+175:           reject(
+176:             new AggregateError([error, cleanup], "transaction scheduling and cancellation failed"),
+177:           );
+178:           return;
+179:         }
+180:         reject(error);
+181:       }
+182:     });
+183:   }
+184:   function checked(observed: {
+185:     readonly receipt: TransactionReceipt;
+186:     readonly context: TransactionReadContext;
+187:   }): ReceiptObservation {
+188:     const results = observed.receipt.results;
+189:     // URL prefixes are construction-guaranteed by this store; retain these
+190:     // checks as defense in depth alongside the independent result bounds.
+191:     if (
+192:       observed.receipt.status === "completed" &&
+193:       observed.receipt.detail === "available" &&
+194:       (!Array.isArray(results) ||
+195:         results.length === 0 ||
+196:         results.length > capturedRead.advertisedLimits.page.maximumItems ||
+197:         (observed.receipt.next !== null &&
+198:           (typeof observed.receipt.next !== "string" ||
+199:             !observed.receipt.next.startsWith(`${observed.receipt.id}/pages/`) ||
+200:             results.length !== maximum)))
+201:     )
+202:       throw new Error("transaction receipt exceeds supported inline result bound", {
+203:         cause: { id: observed.receipt.id, key: observed.receipt.idempotencyKey },
+204:       });
+205:     return Object.freeze({ kind: "receipt", ...observed });
+
+===== CURRENT SOURCE packages/server/src/transaction-service.ts:372-410 =====
+372:           signal,
+373:         ),
+374:       );
+375:     },
+376:     changes(
+377:       intent: TransactionChangefeedIntent,
+378:       supplied?: TransactionMinimum | "unsupported",
+379:       signal?: AbortSignal,
+380:     ) {
+381:       // Capture controls before asynchronous retries. start=now observes admission
+382:       // head once; advancing it at every attempt would skip intervening commits.
+383:       const copied =
+384:         "after" in intent
+385:           ? Object.freeze({ after: intent.after })
+386:           : Object.freeze({ start: intent.start });
+387:       const minimum =
+388:         supplied === undefined || supplied === "unsupported"
+389:           ? supplied
+390:           : snapshotTransactionMinimum(supplied);
+391:       return run(() => {
+392:         const after = "after" in copied ? copied.after : owner.captureChangesStart();
+393:         return waitForTransactionMinimum(
+394:           () => owner.readChanges(after, minimum),
+395:           minimumReads,
+396:           signal,
+397:         );
+398:       });
+399:     },
+400:     events(
+401:       source: string,
+402:       after?: string,
+403:       supplied?: TransactionMinimum | "unsupported",
+404:       signal?: AbortSignal,
+405:     ) {
+406:       return run(() =>
+407:         waitForTransactionMinimum(
+408:           () => owner.readEvents(source, after, supplied),
+409:           minimumReads,
+410:           signal,
+
+===== CURRENT SOURCE packages/server/src/transaction-http.ts:70-125 =====
+70:   readonly kind: "event-stream";
+71:   readonly packet: TransactionEventPacket;
+72:   readonly context: TransactionReadContext;
+73: };
+74: export type TransactionHttpResult =
+75:   | (HttpResponse & { readonly kind: "finite" })
+76:   | ChangefeedStream
+77:   | EventStream;
+78: type Service = ReturnType<typeof createTransactionService>;
+79: function empty(status: number, allow?: string): HttpResponse {
+80:   return {
+81:     status,
+82:     headers: new Headers({
+83:       "cache-control": "private, no-store",
+84:       "content-length": "0",
+85:       ...(allow ? { allow } : {}),
+86:     }),
+87:   };
+88: }
+89: function problem(
+90:   value:
+91:     | ReadProblem
+92:     | ReturnType<typeof parseReadUpdateProblem>
+93:     | {
+94:         readonly type: string;
+95:         readonly code: "catch-up-timeout";
+96:         readonly status: 503;
+97:         readonly retry: "after-delay";
+98:       },
+99: ): HttpResponse {
+100:   const response = jsonResponse(value);
+101:   response.headers.set("content-type", "application/problem+json");
+102:   if (value.code === "unauthenticated")
+103:     response.headers.set("www-authenticate", 'Bearer realm="bdp-transaction-development"');
+104:   if (value.retry === "after-delay") response.headers.set("retry-after", "1");
+105:   return { ...response, status: value.status ?? 500 };
+106: }
+107: export function transactionHttpProblem(
+108:   code: ReadProblemCode,
+109:   observation?: TransactionReadContext,
+110: ): HttpResponse {
+111:   const response = problem(readProblem(code));
+112:   return observation ? context(response, observation) : response;
+113: }
+114: function context(response: HttpResponse, observation: TransactionReadContext): HttpResponse {
+115:   response.headers.set("bdp-scope-epoch", observation.scopeEpoch);
+116:   response.headers.set("bdp-authorization-view", observation.authorizationView);
+117:   response.headers.set("bdp-scope-position", observation.scopePosition);
+118:   return response;
+119: }
+120: function streamResponse(request: Request, observation: TransactionReadContext): HttpResponse {
+121:   const response = context(
+122:     {
+123:       status: 200,
+124:       headers: new Headers({
+125:         "content-type": "text/event-stream",
+
+===== CURRENT SOURCE packages/server/src/transaction-http.ts:380-484 =====
+380:           result.context,
+381:         );
+382:       }
+383:       return problem({
+384:         ...readProblem(result.code),
+385:         ...(result.limit ? { limit: result.limit } : {}),
+386:         ...(result.pointer ? { pointer: result.pointer } : {}),
+387:       });
+388:     }
+389:     if (authorization.kind === "unauthenticated") return transactionHttpProblem("unauthenticated");
+390:     if (url.pathname === new URL("snapshot", scope).pathname) {
+391:       const fields = [...url.searchParams.keys()];
+392:       const id = url.searchParams.get("snapshot"),
+393:         stream = url.searchParams.get("stream"),
+394:         token = url.searchParams.get("page");
+395:       let target: TransactionSnapshotRequest;
+396:       // These closed query shapes are local route conventions. Unknown well-
+397:       // shaped identities go to the owner; they are never guessed as expired.
+398:       if (new Set(fields).size !== fields.length)
+399:         return transactionHttpProblem("invalid-parameter");
+400:       if (fields.length === 0) target = { kind: "create" };
+401:       else if (fields.length === 1 && id !== null && id !== "") target = { kind: "manifest", id };
+402:       else if (fields.length === 3 && id && token && (stream === "beads" || stream === "links"))
+403:         target = { kind: "page", id, token, stream: stream === "beads" ? "bead" : "link" };
+404:       else return transactionHttpProblem("invalid-parameter");
+405:       // Only fresh creation has an unambiguous current observation. Retained
+406:       // anchors and unsupported tuple shapes keep their explicit private gap.
+407:       const minimum = hasMinimumControls(request)
+408:         ? transactionMinimumHeaders(request.headers)
+409:         : undefined;
+410:       if (hasMinimumControls(request) && (target.kind !== "create" || minimum === undefined))
+411:         return developmentGap("minimum-position");
+412:       function snapshotResponse(result: Awaited<ReturnType<Service["snapshot"]>>): HttpResponse {
+413:         if (result.kind === "problem") {
+414:           const response = context(transactionHttpProblem(result.code), result.context);
+415:           if (result.retryAfter !== undefined)
+416:             response.headers.set("retry-after", String(result.retryAfter));
+417:           return response;
+418:         }
+419:         if (result.kind === "eligible")
+420:           return context(
+421:             {
+422:               status: 200,
+423:               headers: new Headers({
+424:                 "content-type": "application/json",
+425:                 "cache-control": "private, no-store",
+426:               }),
+427:             },
+428:             result.context,
+429:           );
+430:         return context(jsonResponse(result.body), result.context);
+431:       }
+432:       if (target.kind === "create") {
+433:         // A pure successful-JSON candidate may select direct capture, but never
+434:         // authorizes an owner-free response. Nonallocating decisions still need
+435:         // authoritative capacity/integrity checks and same-entry context.
+436:         const candidate = applyReadHttpSemantics(request, {
+437:           status: 200,
+438:           headers: new Headers({ "content-type": "application/json" }),
+439:         });
+440:         if (request.method === "HEAD" || candidate.status !== 200) {
+441:           const eligible = snapshotResponse(
+442:             await service.snapshot({ kind: "preflight" }, minimum, request.signal),
+443:           );
+444:           // Candidate and eligible share successful JSON with no validator;
+445:           // their media/conditional decisions agree. This branch is terminal:
+446:           // never start a second capture or renew the minimum wait deadline.
+447:           return applyReadHttpSemantics(request, eligible);
+448:         }
+449:       }
+450:       return snapshotResponse(await service.snapshot(target, minimum, request.signal));
+451:     }
+452:     const changefeed = transactionChangefeedRequest(url, scope);
+453:     if (changefeed) {
+454:       const minimum = hasMinimumControls(request)
+455:         ? (transactionMinimumHeaders(request.headers) ?? "unsupported")
+456:         : undefined;
+457:       const media = selectChangefeedMedia(request.headers.get("accept"));
+458:       // URL grammar is always required. Only selected SSE consults the raw
+459:       // reconnect field; JSON ignores it, including repeated/malformed values.
+460:       const fields =
+461:         lastEventIds ??
+462:         (request.headers.has("last-event-id") ? [request.headers.get("last-event-id")!] : []);
+463:       if (media === "sse" && fields.length > 1)
+464:         throw new TransactionChangefeedParameterError("repeated Last-Event-ID");
+465:       const effective = media === "sse" && fields.length === 1 ? { after: fields[0]! } : changefeed;
+466:       const observed = await service.changes(effective, minimum, request.signal);
+467:       if (observed.kind === "unsupported") return developmentGap("minimum-position");
+468:       if (media !== "sse") return context(jsonResponse(observed.page), observed.context);
+469:       const response = streamResponse(request, observed.context);
+470:       return response.status !== 200 || request.method === "HEAD"
+471:         ? response
+472:         : {
+473:             ...response,
+474:             kind: "changefeed-stream",
+475:             page: observed.page,
+476:             context: observed.context,
+477:           };
+478:     }
+479:     // Alias query refusals and receipt identity checks own these routes, even
+480:     // when a query happens to spell view=events. Do not reclassify them as Events.
+481:     const alias = classifyAliasPath(url, scope);
+482:     if (alias !== undefined && typeof alias !== "string") return problem(alias);
+483:     const receiptRoute =
+484:       url.pathname.startsWith(`${scopeUrl.pathname}receipts/`) ||
+
+===== CURRENT SOURCE packages/server/src/transaction-http.ts:580-625 =====
+580:   return Object.freeze({
+581:     targets,
+582:     methodResponse,
+583:     async handle(
+584:       request: Request,
+585:       authorization: TransactionHttpAuthorization,
+586:       received: TransactionReceivedBody = { text: "" },
+587:       lastEventIds?: readonly string[],
+588:     ): Promise<TransactionHttpResult> {
+589:       let response: HttpResponse | ChangefeedStream | EventStream;
+590:       try {
+591:         response = await route(request, authorization, received, lastEventIds);
+592:       } catch (error) {
+593:         if (error instanceof ScopeServerOperationAbortedError) throw error;
+594:         if (error instanceof TransactionMinimumFailure && error.reason !== "behind") {
+595:           response = context(
+596:             problem(
+597:               error.reason === "catch-up-timeout"
+598:                 ? {
+599:                     ...readProblem("temporarily-unavailable"),
+600:                     code: "catch-up-timeout",
+601:                     status: 503,
+602:                     retry: "after-delay",
+603:                   }
+604:                 : readProblem(error.reason),
+605:             ),
+606:             error.context,
+607:           );
+608:         } else if (
+609:           error instanceof TransactionEventParameterError ||
+610:           error instanceof TransactionChangefeedParameterError
+611:         )
+612:           response = transactionHttpProblem("invalid-parameter", error.context);
+613:         else if (error instanceof TransactionEventProjectionGap)
+614:           response = developmentGap(error.message);
+615:         else if (error instanceof TransactionMinimumVisibilityGap)
+616:           response = developmentGap("minimum-position-visibility");
+617:         else response = empty(500);
+618:       }
+619:       response.headers.set("x-bdp-development", "non-attesting");
+620:       if (request.method === "POST") response.headers.set("vary", "Accept");
+621:       if (
+622:         "kind" in response &&
+623:         (response.kind === "changefeed-stream" || response.kind === "event-stream")
+624:       )
+625:         return response;
+
+===== CURRENT SOURCE packages/server/src/transaction-changefeed.test.ts:567-614 =====
+567: async function httpFixture(seams: TransactionRuntimeTestSeams = {}) {
+568:   const directory = mkdtempSync(path.join(tmpdir(), "bdp-feed-http-")),
+569:     token = "a".repeat(32);
+570:   let runtime = await startTransactionRuntime(
+571:     {
+572:       scope,
+573:       directory,
+574:       create: true,
+575:       port: 0,
+576:       types,
+577:       credentials: [{ token, principal: "p", canMutate: true }],
+578:     },
+579:     seams,
+580:   );
+581:   cleanup.push(async () => {
+582:     await runtime.close();
+583:     rmSync(directory, { recursive: true, force: true });
+584:   });
+585:   return {
+586:     request(target: string, init: RequestInit = {}) {
+587:       const canonical = new URL(target, scope);
+588:       return fetch(new URL(canonical.pathname + canonical.search, runtime.listenUrl), {
+589:         ...init,
+590:         headers: { authorization: `Bearer ${token}`, ...init.headers },
+591:       });
+592:     },
+593:     async reopen() {
+594:       await runtime.close();
+595:       runtime = await startTransactionRuntime(
+596:         {
+597:           scope,
+598:           directory,
+599:           create: false,
+600:           port: 0,
+601:           types,
+602:           credentials: [{ token, principal: "p", canMutate: true }],
+603:         },
+604:         seams,
+605:       );
+606:     },
+607:   };
+608: }
+609: it("serves actual HTTP finite GET/HEAD, absolute navigation, native conditions and restart", async () => {
+610:   const f = await httpFixture();
+611:   for (const id of ["a", "b"])
+612:     expect(
+613:       (
+614:         await f.request("operations/batch", {
+
+===== CURRENT SOURCE packages/server/src/read-http.ts:1-47 =====
+1: import { stringifyJsonValue } from "@bdp/protocol";
+2: import type { HttpResponse } from "./index.js";
+3: 
+4: /** Apply shared HTTP rules only after routing, authorization and result validation.
+5:  * This Read server selects parameter-free application/json on its 200 routes.
+6:  * Its Scope port supplies no representation modification date, so neither date
+7:  * precondition can be evaluated; Resource timestamps are not HTTP validators.
+8:  * RFC 9110 sections 12.5.1, 13.1 and 13.2 govern negotiation and ordering.
+9:  */
+10: export function applyReadHttpSemantics(request: Request, response: HttpResponse): HttpResponse {
+11:   let selected = response;
+12:   const json =
+13:     response.status === 200 && response.headers.get("content-type") === "application/json";
+14:   if (json || response.status === 204) {
+15:     const headers = new Headers(response.headers);
+16:     if (json) {
+17:       const vary = headers.get("vary");
+18:       if (
+19:         vary !== "*" &&
+20:         !vary?.split(",").some((field) => field.trim().toLowerCase() === "accept")
+21:       )
+22:         headers.set("vary", vary ? `${vary}, Accept` : "Accept");
+23:     }
+24:     // The Scope probe is an existing zero-length representation with no media
+25:     // type to negotiate; it still evaluates entity-tag preconditions.
+26:     const status =
+27:       json && !acceptsJson(request.headers.get("accept"))
+28:         ? 406
+29:         : conditionalReadStatus(request.headers, headers.get("etag"));
+30:     if (status !== 200) {
+31:       headers.delete("content-type");
+32:       if (status === 406) headers.delete("etag");
+33:       // A 304 Content-Length may describe only the corresponding 200 body,
+34:       // never an invented zero-length representation (RFC 9110 section 8.6).
+35:       headers.delete("content-length");
+36:       if (status !== 304) headers.set("content-length", "0");
+37:       selected = { status, headers };
+38:     } else selected = { ...response, headers };
+39:   }
+40:   // Keep the Fetch-level contract honest as well as the Node transport's final
+41:   // defensive strip. HEAD has GET metadata, including the serialized length.
+42:   if (request.method === "HEAD" && selected.body !== undefined) {
+43:     const headers = new Headers(selected.headers);
+44:     headers.set("content-length", String(Buffer.byteLength(stringifyJsonValue(selected.body))));
+45:     return { status: selected.status, headers };
+46:   }
+47:   return selected;
+
+===== CURRENT SOURCE packages/server/src/read-http-routing.ts:44-76 =====
+44: export function jsonResponse(body: unknown): HttpResponse {
+45:   return {
+46:     status: 200,
+47:     headers: new Headers({
+48:       "content-type": "application/json",
+49:       "cache-control": "private, no-store",
+50:     }),
+51:     body,
+52:   };
+53: }
+54: 
+55: export function scopeDataResponse(
+56:   operation: ReadRequest,
+57:   body: unknown,
+58:   observedResourceRevision?: string,
+59: ): HttpResponse {
+60:   const response = jsonResponse(body);
+61:   // Properties carry no revision in their body. Owner-backed adapters can supply
+62:   // the revision captured atomically with that value, never a later fresh read.
+63:   if (operation.kind === "properties" && observedResourceRevision !== undefined)
+64:     response.headers.set("etag", resourceRevisionEtag(observedResourceRevision));
+65:   if (
+66:     operation.kind === "resource" &&
+67:     operation.resource !== "type" &&
+68:     typeof body === "object" &&
+69:     body !== null &&
+70:     "revision" in body &&
+71:     typeof body.revision === "string"
+72:   ) {
+73:     response.headers.set("etag", resourceRevisionEtag(body.revision));
+74:   }
+75:   return response;
+76: }
+
+===== CURRENT SOURCE packages/server/src/transaction-runtime.ts:75-100 =====
+75:   for await (const chunk of request.iterator({ destroyOnReturn: false })) {
+76:     total += chunk.length;
+77:     if (total > TRANSACTION_RUNTIME_LIMITS.requestBodyBytes)
+78:       return { failure: "request-too-large" };
+79:     chunks.push(chunk);
+80:   }
+81:   try {
+82:     return { text: new TextDecoder("utf-8", { fatal: true }).decode(Buffer.concat(chunks)) };
+83:   } catch {
+84:     return { failure: "malformed-request" };
+85:   }
+86: }
+87: function deliver(response: ServerResponse, selected: HttpResponse, raw?: string): void {
+88:   if (response.destroyed) return;
+89:   const bytes =
+90:     raw ?? (selected.body === undefined ? undefined : stringifyJsonValue(selected.body));
+91:   selected.headers.set("x-bdp-development", "non-attesting");
+92:   if (bytes !== undefined) selected.headers.set("content-length", String(Buffer.byteLength(bytes)));
+93:   response.writeHead(selected.status, Object.fromEntries(selected.headers));
+94:   response.end(response.req.method === "HEAD" ? undefined : bytes);
+95: }
+96: export async function startTransactionRuntime(
+97:   options: TransactionRuntimeOptions,
+98:   seams: TransactionRuntimeTestSeams = {},
+99: ) {
+100:   const captured = captureTransactionRuntimeConfiguration(options, seams);
+
+===== CURRENT SOURCE packages/server/src/transaction-runtime.ts:114-175 =====
+114:   const handle = async (request: IncomingMessage, response: ServerResponse): Promise<void> => {
+115:     let signal: AbortSignal | undefined;
+116:     let streamContext: TransactionReadContext | undefined;
+117:     try {
+118:       if (closing || !handler) {
+119:         deliver(response, transactionHttpProblem("temporarily-unavailable"));
+120:         return;
+121:       }
+122:       const raw = request.url ?? "";
+123:       if (request.method === "POST" && Buffer.byteLength(raw) > TRANSACTION_HTTP_TARGET_BYTES) {
+124:         deliver(response, transactionHttpProblem("request-too-large"));
+125:         return;
+126:       }
+127:       if (
+128:         normalizationSafeRawRequestPath(raw) === undefined ||
+129:         !raw.startsWith("/") ||
+130:         raw.startsWith("//") ||
+131:         request.headers.host !==
+132:           new URL(captured.authorityMode === "canonical" ? scope : listenUrl).host
+133:       ) {
+134:         deliver(response, transactionHttpProblem("malformed-request"));
+135:         return;
+136:       }
+137:       const url = new URL(raw, scope);
+138:       const methodFailure = handler.methodResponse(url, request.method ?? "GET");
+139:       if (methodFailure) {
+140:         // Refused bodies are not consumed and cannot keep this connection alive.
+141:         methodFailure.headers.set("connection", "close");
+142:         deliver(response, methodFailure);
+143:         return;
+144:       }
+145:       const headers = new Headers();
+146:       for (let i = 0; i < request.rawHeaders.length; i += 2)
+147:         headers.append(request.rawHeaders[i] ?? "", request.rawHeaders[i + 1] ?? "");
+148:       const supplied = Buffer.from(headers.get("authorization") ?? "");
+149:       const authorization = captured.authenticate(supplied);
+150:       signal = createNodeHttpDisconnectSignal(request, response);
+151:       const input = new Request(url, { method: request.method ?? "GET", headers, signal });
+152:       const lastEventIds: string[] = [];
+153:       for (let i = 0; i < request.rawHeaders.length; i += 2)
+154:         if (request.rawHeaders[i]?.toLowerCase() === "last-event-id")
+155:           lastEventIds.push(request.rawHeaders[i + 1] ?? "");
+156:       const body = request.method === "POST" ? await receive(request) : { text: "" };
+157:       if (closing || response.destroyed) {
+158:         deliver(response, transactionHttpProblem("temporarily-unavailable"));
+159:         return;
+160:       }
+161:       // This fixture has no CORS policy. Origin is a transport refusal, not a
+162:       // mutation permission synthesized from carried provenance.
+163:       if (headers.has("origin")) {
+164:         deliver(response, transactionHttpProblem("forbidden"));
+165:         return;
+166:       }
+167:       if ("failure" in body) response.setHeader("connection", "close");
+168:       const schema = await schemas?.(input, authorization);
+169:       if (schema) {
+170:         deliver(response, schema.response, schema.raw);
+171:         return;
+172:       }
+173:       let selected: TransactionHttpResult | undefined = await handler.handle(
+174:         input,
+175:         authorization,
+
+===== CURRENT SOURCE packages/server/src/transaction-runtime-configuration.ts:195-242 =====
+195:   return {
+196:     supplied: Object.keys(own).length > 0,
+197:     value: Object.freeze(result) as TransactionRuntimeTestSeams,
+198:   };
+199: }
+200: 
+201: export function captureTransactionRuntimeConfiguration(
+202:   input: TransactionRuntimeOptions,
+203:   rawSeams: TransactionRuntimeTestSeams = {},
+204: ) {
+205:   const own = fields(
+206:     input,
+207:     ["scope", "directory", "create", "port", "types", "artifacts", "credentials", "authorityMode"],
+208:     ["directory", "create", "port", "credentials"],
+209:   );
+210:   const seamCapture = captureSeams(rawSeams),
+211:     seams = seamCapture.value;
+212:   const directory = boundedString(own.directory, 16384);
+213:   if (!path.isAbsolute(directory) || typeof own.create !== "boolean")
+214:     throw new TypeError("explicit absolute store directory/provisioning required");
+215:   if (!Number.isSafeInteger(own.port) || (own.port as number) < 0 || (own.port as number) > 65535)
+216:     throw new TypeError("invalid private transaction port");
+217:   const configuredScope =
+218:     own.scope === undefined
+219:       ? undefined
+220:       : parseCanonicalScope(boundedString(own.scope, TRANSACTION_RUNTIME_LIMITS.scopeSourceBytes));
+221:   const authorityMode = own.authorityMode === undefined ? "listener" : own.authorityMode;
+222:   if (authorityMode !== "listener" && authorityMode !== "canonical")
+223:     throw new TypeError("invalid runtime authority mode");
+224:   if (authorityMode === "canonical" && configuredScope === undefined)
+225:     throw new TypeError("canonical authority requires explicit Scope");
+226:   const credentials = administrativeArray(own.credentials, 32).map((value) => {
+227:     const entry = administrativeData(value, ["token", "principal", "canMutate"]);
+228:     const token = boundedString(entry.token, 256),
+229:       principal = boundedString(entry.principal, 16384);
+230:     if (!/^[A-Za-z0-9_-]{32,256}$/.test(token) || typeof entry.canMutate !== "boolean")
+231:       throw new TypeError("invalid private transaction credential");
+232:     return { token, principal, canMutate: entry.canMutate };
+233:   });
+234:   if (!credentials.length || new Set(credentials.map((c) => c.token)).size !== credentials.length)
+235:     throw new TypeError("unique private transaction credentials required");
+236:   const secrets = credentials.map(({ token, ...rest }) => ({
+237:     ...rest,
+238:     credential: Buffer.from(`Bearer ${token}`),
+239:   }));
+240:   const associations = freeze(
+241:     credentials
+242:       .map(({ token, ...rest }) => ({
+
+===== CURRENT SOURCE packages/server/src/transaction-runtime-configuration.ts:300-325 =====
+300:   // Installed defaults must support live idle delivery. Short transport test
+301:   // seams preserve finite deadline tests but never acquire a live stream slot.
+302:   validateTransactionStreamTimers(
+303:     TRANSACTION_RUNTIME_DEFAULTS.changefeedStream,
+304:     TRANSACTION_RUNTIME_DEFAULTS.transport.timeout,
+305:   );
+306:   validateTransactionStreamTimers(settings.changefeedStream);
+307:   const liveStreamsAvailable =
+308:     settings.changefeedStream.heartbeatMilliseconds < settings.transport.timeout;
+309:   const clock = seams.clock ?? Date.now;
+310:   return Object.freeze({
+311:     directory,
+312:     create: own.create,
+313:     port: own.port as number,
+314:     configuredScope,
+315:     authorityMode,
+316:     contracts,
+317:     types,
+318:     seams,
+319:     settings,
+320:     liveStreamsAvailable,
+321:     authenticate(supplied: Buffer): TransactionHttpAuthorization {
+322:       const credential = secrets.find(
+323:         (c) => c.credential.length === supplied.length && timingSafeEqual(c.credential, supplied),
+324:       );
+325:       return credential
+
+===== CURRENT SOURCE packages/server/src/transaction-runtime-configuration.ts:358-404 =====
+358:         throw new Error("live transaction Scope mismatch");
+359:       if (!isDeepStrictEqual(actual.scopeSnapshot, settings.scopeSnapshot))
+360:         throw new Error("live transaction Snapshot configuration mismatch");
+361:       if (
+362:         actual.authorizationView !== "development-all-visible" ||
+363:         actual.scopeConfiguration.policyIdentity !== actual.authorizationView ||
+364:         actual.scopeConfiguration.maximumEndpointMultiplicity.length !== 0
+365:       )
+366:         throw new Error("unexpected live transaction policy");
+367:       const sorted = (values: readonly unknown[]) =>
+368:         values.map((v) => stringifyJsonValue(v)).sort();
+369:       if (JSON.stringify(sorted(actual.installedTypes)) !== JSON.stringify(sorted(types)))
+370:         throw new Error("live transaction descriptor closure mismatch");
+371:       if (seamCapture.supplied || configuredScope === undefined || contracts === undefined)
+372:         return undefined;
+373:       const policyIdentity = transactionRuntimeDigest({
+374:         revision: "transaction-policy-1",
+375:         view: actual.authorizationView,
+376:         read: "all-visible",
+377:         aggregate: actual.scopeConfiguration.maximumEndpointMultiplicity,
+378:         associations,
+379:       });
+380:       const runtimeConfigurationIdentity = transactionRuntimeDigest({
+381:         revision: "transaction-runtime-1",
+382:         scope,
+383:         artifactIdentity: contracts.identity,
+384:         settings,
+385:         authorityMode,
+386:         policyIdentity,
+387:         authenticationIdentity,
+388:         profile: "transactional",
+389:         history: false,
+390:       });
+391:       return Object.freeze({
+392:         authorityMode,
+393:         runtimeConfigurationIdentity,
+394:         artifactIdentity: contracts.identity,
+395:         policyIdentity,
+396:         authenticationIdentity,
+397:         scope,
+398:         profile: "transactional" as const,
+399:         history: false as const,
+400:         claimEligible: false as const,
+401:       });
+402:     },
+403:   });
+404: }
+
+===== CURRENT SOURCE packages/server/src/transaction-installed-process.ts:1-77 =====
+1: /** Private installed qualification bootstrap. No package export, bin or CLI flag.
+2:  * No clock/store/outcome control. Configuration arrives only through inherited IPC.
+3:  */
+4: import process from "node:process";
+5: import { realpathSync } from "node:fs";
+6: import { fileURLToPath } from "node:url";
+7: import { administrativeData } from "./development-contracts.js";
+8: import { startInstalledTransactionCandidate } from "./transaction-installed.js";
+9: 
+10: async function main() {
+11:   if (!process.send || process.argv.length !== 2) throw new TypeError("inherited IPC required");
+12:   const send = process.send.bind(process);
+13:   const input = await new Promise<unknown>((resolve, reject) => {
+14:     const timer = setTimeout(() => reject(new Error("configuration deadline")), 10000);
+15:     process.once("disconnect", () => {
+16:       clearTimeout(timer);
+17:       reject(new Error("configuration disconnected"));
+18:     });
+19:     process.once("message", (message) => {
+20:       clearTimeout(timer);
+21:       resolve(message);
+22:     });
+23:   });
+24:   const { configuration } = administrativeData(input, ["configuration"]);
+25:   let stop!: () => void;
+26:   let stopping = false;
+27:   const stopped = new Promise<void>((resolve) => {
+28:     stop = () => {
+29:       stopping = true;
+30:       resolve();
+31:     };
+32:   });
+33:   process.once("SIGTERM", () => stop());
+34:   process.once("SIGINT", () => stop());
+35:   process.once("disconnect", () => stop());
+36:   process.on("message", (message) => {
+37:     try {
+38:       const value = administrativeData(message, ["command"]);
+39:       if (value.command !== "close") throw new TypeError("unsupported control");
+40:     } catch {
+41:       process.exitCode = 2;
+42:     }
+43:     stop();
+44:   });
+45:   if (!process.connected) stop();
+46:   const runtime = await startInstalledTransactionCandidate(configuration);
+47:   try {
+48:     if (process.connected && !stopping)
+49:       send({
+50:         event: "qualification.ready",
+51:         ...runtime.configurationMetadata,
+52:         listenUrl: runtime.listenUrl,
+53:         targets: runtime.targets,
+54:         payloadIdentity: runtime.payloadIdentity,
+55:       });
+56:     await stopped;
+57:   } finally {
+58:     await runtime.close();
+59:     if (process.connected) process.disconnect();
+60:   }
+61: }
+62: function isEntrypoint(): boolean {
+63:   const entry = process.argv[1];
+64:   if (entry === undefined) return false;
+65:   try {
+66:     return realpathSync(entry) === realpathSync(fileURLToPath(import.meta.url));
+67:   } catch {
+68:     return false;
+69:   }
+70: }
+71: if (isEntrypoint())
+72:   void main().catch(() => {
+73:     // Never echo credentials, input configuration or callback exceptions.
+74:     process.stderr.write("installed transaction qualification failed\n");
+75:     process.exitCode = 2;
+76:     if (process.connected) process.disconnect();
+77:   });
+
+===== CURRENT SOURCE packages/server/src/transaction-installed-configuration.ts:1-67 =====
+1: /** Private bounded launch data; compilation remains in the one runtime factory. */
+2: import path from "node:path";
+3: import { parseCanonicalScope } from "@bdp/protocol";
+4: import { administrativeArray, administrativeData } from "./development-contracts.js";
+5: import { CONTRACT_ARTIFACT_CEILINGS } from "./installed-contract-artifact.js";
+6: import type { TransactionRuntimeOptions } from "./transaction-runtime.js";
+7: function text(value: unknown, maximum: number): string {
+8:   if (
+9:     typeof value !== "string" ||
+10:     !value.length ||
+11:     !value.isWellFormed() ||
+12:     Buffer.byteLength(value) > maximum
+13:   )
+14:     throw new TypeError("bounded installed transaction string required");
+15:   return value;
+16: }
+17: export function captureInstalledTransactionConfiguration(
+18:   input: unknown,
+19: ): TransactionRuntimeOptions {
+20:   const own = administrativeData(input, [
+21:     "scope",
+22:     "directory",
+23:     "create",
+24:     "credentials",
+25:     "artifacts",
+26:   ]);
+27:   const scope = parseCanonicalScope(text(own.scope, 8192));
+28:   const directory = text(own.directory, 16384);
+29:   if (!path.isAbsolute(directory) || typeof own.create !== "boolean")
+30:     throw new TypeError("explicit provisioning required");
+31:   const credentials = administrativeArray(own.credentials, 32).map((v) => {
+32:     const c = administrativeData(v, ["token", "principal", "canMutate"]);
+33:     const token = text(c.token, 256),
+34:       principal = text(c.principal, 16384);
+35:     if (!/^[A-Za-z0-9_-]{32,256}$/.test(token) || typeof c.canMutate !== "boolean")
+36:       throw new TypeError("invalid installed credential");
+37:     return Object.freeze({ token, principal, canMutate: c.canMutate });
+38:   });
+39:   if (!credentials.length || new Set(credentials.map((c) => c.token)).size !== credentials.length)
+40:     throw new TypeError("unique credentials required");
+41:   const supplied = administrativeData(own.artifacts, ["descriptors", "schemas"]);
+42:   let total = 0;
+43:   const artifacts = (value: unknown) =>
+44:     Object.freeze(
+45:       administrativeArray(value, CONTRACT_ARTIFACT_CEILINGS.submittedArtifacts).map((v) => {
+46:         const a = administrativeData(v, ["retrievalUri", "utf8"]);
+47:         const retrievalUri = text(a.retrievalUri, 16384),
+48:           utf8 = text(a.utf8, CONTRACT_ARTIFACT_CEILINGS.artifactBytes);
+49:         total += Buffer.byteLength(retrievalUri) + Buffer.byteLength(utf8);
+50:         if (total > CONTRACT_ARTIFACT_CEILINGS.totalBytes)
+51:           throw new TypeError("installed artifact capture bound");
+52:         return Object.freeze({ retrievalUri, utf8 });
+53:       }),
+54:     );
+55:   const descriptors = artifacts(supplied.descriptors),
+56:     schemas = artifacts(supplied.schemas);
+57:   if (!descriptors.length) throw new TypeError("compiled descriptor closure required");
+58:   return Object.freeze({
+59:     scope,
+60:     directory,
+61:     create: own.create,
+62:     port: 0,
+63:     authorityMode: "canonical",
+64:     credentials: Object.freeze(credentials),
+65:     artifacts: Object.freeze({ descriptors, schemas, limits: CONTRACT_ARTIFACT_CEILINGS }),
+66:   });
+67: }
+
+===== CURRENT SOURCE packages/server/src/transaction-installed.ts:1-22 =====
+1: /** Private installed Transactional candidate; never a profile admission API. */
+2: import { captureInstalledTransactionConfiguration } from "./transaction-installed-configuration.js";
+3: import { installedPayloadIdentity } from "./installed-payload.js";
+4: import { startTransactionRuntime } from "./transaction-runtime.js";
+5: export async function startInstalledTransactionCandidate(input: unknown) {
+6:   const captured = captureInstalledTransactionConfiguration(input);
+7:   const payloadIdentity = await installedPayloadIdentity();
+8:   const runtime = await startTransactionRuntime(captured);
+9:   try {
+10:     const metadata = runtime.configurationMetadata;
+11:     if (!metadata || metadata.authorityMode !== "canonical" || metadata.scope !== captured.scope)
+12:       throw new TypeError("installed transaction metadata unavailable");
+13:     return Object.freeze({ ...runtime, configurationMetadata: metadata, payloadIdentity });
+14:   } catch (error) {
+15:     try {
+16:       await runtime.close();
+17:     } catch (cleanup) {
+18:       throw new AggregateError([error, cleanup], "installed transaction startup cleanup failed");
+19:     }
+20:     throw error;
+21:   }
+22: }
+
+===== CURRENT SOURCE scripts/transaction-installed-observation.mjs:1-97 =====
+1: /** Bounded inherited-IPC launcher. No request or observation emulation. */
+2: import { spawn } from "node:child_process";
+3: import { mkdir } from "node:fs/promises";
+4: export async function launchInstalledTransaction(entry, configuration, signal) {
+5:   signal?.throwIfAborted();
+6:   // Explicit launcher-owned provisioning; reopen keeps the directory/create:false.
+7:   if (configuration.create) await mkdir(configuration.directory, { recursive: true, mode: 0o700 });
+8:   signal?.throwIfAborted();
+9:   const child = spawn(process.execPath, [entry], {
+10:     cwd: "/tmp",
+11:     stdio: ["ignore", "pipe", "pipe", "ipc"],
+12:   });
+13:   let bytes = 0;
+14:   for (const stream of [child.stdout, child.stderr])
+15:     stream.on("data", (chunk) => {
+16:       bytes += chunk.length;
+17:       if (bytes > 65536) child.kill("SIGKILL");
+18:     });
+19:   const exited = new Promise((resolve) =>
+20:     child.once("exit", (code, signal) => resolve({ code, signal })),
+21:   );
+22:   async function bounded(promise) {
+23:     let timer;
+24:     try {
+25:       return await Promise.race([
+26:         promise,
+27:         new Promise((_, reject) => {
+28:           timer = setTimeout(() => {
+29:             child.kill("SIGKILL");
+30:             reject(new Error("installed transaction process deadline"));
+31:           }, 10000);
+32:         }),
+33:       ]);
+34:     } finally {
+35:       clearTimeout(timer);
+36:     }
+37:   }
+38:   async function drainFailure(error) {
+39:     child.kill("SIGKILL");
+40:     try {
+41:       await bounded(exited);
+42:     } catch (cleanup) {
+43:       throw new AggregateError([error, cleanup], "installed transaction cleanup failed");
+44:     }
+45:     throw error;
+46:   }
+47:   let closing;
+48:   const close = () =>
+49:     (closing ??= (async () => {
+50:       try {
+51:         if (child.connected) child.send({ command: "close" });
+52:         const result = await bounded(exited);
+53:         if (result.code !== 0 || result.signal !== null)
+54:           throw new Error("installed transaction child did not close cleanly");
+55:       } catch (error) {
+56:         await drainFailure(error);
+57:       } finally {
+58:         signal?.removeEventListener("abort", onAbort);
+59:       }
+60:     })());
+61:   const onAbort = () => {
+62:     void close().catch(() => {});
+63:   };
+64:   signal?.addEventListener("abort", onAbort, { once: true });
+65:   if (signal?.aborted) onAbort();
+66:   let detachReadyAbort = () => {};
+67:   try {
+68:     const ready = await bounded(
+69:       new Promise((resolve, reject) => {
+70:         const abort = () => reject(signal.reason);
+71:         signal?.addEventListener("abort", abort, { once: true });
+72:         detachReadyAbort = () => signal?.removeEventListener("abort", abort);
+73:         if (signal?.aborted) {
+74:           abort();
+75:           return;
+76:         }
+77:         child.once("error", reject);
+78:         child.once("message", resolve);
+79:         void exited.then(() => reject(new Error("installed transaction exited before ready")));
+80:         child.send({ configuration });
+81:       }),
+82:     );
+83:     signal?.throwIfAborted();
+84:     if (!ready || ready.event !== "qualification.ready" || JSON.stringify(ready).length > 65536)
+85:       throw new Error("invalid installed ready message");
+86:     return { child, ready, close };
+87:   } catch (error) {
+88:     try {
+89:       await close();
+90:     } catch (cleanup) {
+91:       throw new AggregateError([error, cleanup], "installed transaction startup cleanup failed");
+92:     }
+93:     throw error;
+94:   } finally {
+95:     detachReadyAbort();
+96:   }
+97: }
+
+===== CURRENT SOURCE packages/conformance/src/index.ts:118-140 =====
+118:   ScenarioProgrammaticAction,
+119: } from "./scenario-action.js";
+120: export {
+121:   createFetchHttpExchangeExecutor,
+122:   createRawHttpExchangeExecutor,
+123:   type HttpExchangeExecutor,
+124:   type HttpMethod,
+125:   type ExactHttpExchangeRequest,
+126:   type ExactHttpModeOptions,
+127:   type ExactRequestObservation,
+128:   type RawHeaderLine,
+129:   type RawHttpExchangeExecutor,
+130:   type RequestWriteState,
+131:   snapshotExactHttpMode,
+132:   validateExactRunConfiguration,
+133:   type HttpExchangeRequest,
+134:   type HttpExchangeResponse,
+135:   HttpTransportError,
+136:   type HttpTransportErrorCategory,
+137:   type RawHttpDialRoute,
+138:   type RawHttpExchangeExecutorOptions,
+139: } from "./http-executor.js";
+140: export {
+
+===== CURRENT SOURCE packages/conformance/src/http-executor.ts:150-225 =====
+150:     super(message, options);
+151:     this.name = "HttpTransportError";
+152:   }
+153: }
+154: 
+155: const MAX_TIMER_DELAY_MS = 2_147_483_647;
+156: const DEFAULT_MAXIMUM_HEADER_BYTES = 65_536;
+157: const MAXIMUM_RAW_REQUEST_TARGET_BYTES = 8_192;
+158: 
+159: /**
+160:  * Socket-level executor for evidence that a method-aware Fetch/HTTP client would erase.
+161:  * The semantic request URL remains canonical while the explicit route selects only the
+162:  * network peer used to observe it.
+163:  */
+164: export function createRawHttpExchangeExecutor(
+165:   dialRoute: RawHttpDialRoute,
+166:   options: RawHttpExchangeExecutorOptions = {},
+167: ): RawHttpExchangeExecutor {
+168:   const route = snapshotDialRoute(dialRoute);
+169:   const exactMode =
+170:     options.exactMode === undefined ? undefined : snapshotExactHttpMode(options.exactMode);
+171:   const {
+172:     authorize,
+173:     maximumBodyBytes = 1_048_576,
+174:     requestTimeoutMs = 30_000,
+175:     maximumHeaderBytes = DEFAULT_MAXIMUM_HEADER_BYTES,
+176:   } = Object.freeze({ ...options });
+177:   if (authorize !== undefined && typeof authorize !== "function")
+178:     throw new TypeError("authorize must be a function when present");
+179:   requirePositiveBound(maximumBodyBytes, "maximumBodyBytes");
+180:   requireTimerBound(requestTimeoutMs);
+181:   requirePositiveBound(maximumHeaderBytes, "maximumHeaderBytes");
+182:   return async (request) => {
+183:     if (isExactRequest(request))
+184:       return executeExact(
+185:         request,
+186:         route,
+187:         exactMode,
+188:         requestTimeoutMs,
+189:         maximumHeaderBytes,
+190:         maximumBodyBytes,
+191:       );
+192:     if (request.headers === undefined || request.credentialRef !== undefined)
+193:       throw new HttpTransportError("configuration", "ordinary HTTP request headers are required");
+194:     const ordinary = request;
+195:     const url = parseExecutorUrl(request.url);
+196:     const requestTarget = encodeRequestTarget(request.rawRequestTarget, url);
+197:     const headers = effectiveHeaders(ordinary, authorize);
+198:     headers.set("host", url.host);
+199:     headers.set("connection", "close");
+200:     const requestHead = Buffer.concat([
+201:       Buffer.from(`${request.method} `, "ascii"),
+202:       requestTarget,
+203:       Buffer.from(
+204:         ` HTTP/1.1\r\n${[...headers.entries()]
+205:           .map(([name, value]) => `${canonicalHeaderName(name)}: ${value}`)
+206:           .join("\r\n")}\r\n\r\n`,
+207:         "latin1",
+208:       ),
+209:     ]);
+210:     const rawResponse = await exchangeRawBytes(
+211:       route,
+212:       requestHead,
+213:       request.method,
+214:       request.signal,
+215:       requestTimeoutMs,
+216:       maximumHeaderBytes,
+217:       maximumBodyBytes,
+218:     );
+219:     const parsed = parseRawResponse(
+220:       rawResponse.bytes,
+221:       request.method,
+222:       maximumHeaderBytes,
+223:       maximumBodyBytes,
+224:     );
+225:     return {
+
+===== CURRENT SOURCE packages/conformance/src/http-executor.ts:338-365 =====
+338: const HTTP_FIELD_VALUE = /^[\t\x20-\x7e\x80-\xff]*$/;
+339: const HANDLE_ID = /^[a-z0-9]+(?:[.-][a-z0-9]+)*$/;
+340: const SECRET_FIELD =
+341:   /^(?:authorization|cookie|proxy-authorization|set-cookie|x-api-key|x-auth-token)$|(?:token|secret|password|credential|auth)/i;
+342: // Keep authored admission and credential-handle eligibility complementary.
+343: function isSecretHeaderName(name: string): boolean {
+344:   return name.toLowerCase() !== "bdp-authorization-view" && SECRET_FIELD.test(name);
+345: }
+346: const RESERVED_FIELDS = new Set([
+347:   "host",
+348:   "connection",
+349:   "content-length",
+350:   "transfer-encoding",
+351:   "trailer",
+352:   "expect",
+353:   "upgrade",
+354:   "proxy-connection",
+355:   "proxy-authorization",
+356:   "forwarded",
+357:   "via",
+358: ]);
+359: const METHODS: readonly string[] = ["GET", "HEAD", "OPTIONS", "POST", "PUT", "PATCH", "DELETE"];
+360: const TYPED_ARRAY = Object.getPrototypeOf(Uint8Array.prototype);
+361: const BYTE_LENGTH = Object.getOwnPropertyDescriptor(TYPED_ARRAY, "byteLength")?.get;
+362: const BYTE_BUFFER = Object.getOwnPropertyDescriptor(TYPED_ARRAY, "buffer")?.get;
+363: const SET_BYTES = Uint8Array.prototype.set;
+364: 
+365: function configuration(): never {
+
+===== CURRENT SOURCE packages/conformance/src/http-executor.ts:650-747 =====
+650:             url,
+651:           );
+652:     const body =
+653:       raw.bodyBytes === undefined
+654:         ? undefined
+655:         : copyBoundedBytes(raw.bodyBytes, mode.maximumRequestBodyBytes);
+656:     if (mode.profile === "read" && body !== undefined) return configuration();
+657:     const lines: RawHeaderLine[] = [];
+658:     let headBytes = Buffer.byteLength(`${request.method} `) + target.length + 13;
+659:     const append = (name: string, value: string): void => {
+660:       headBytes += name.length + value.length + 4;
+661:       if (headBytes > mode.maximumRequestHeaderBytes) configuration();
+662:       lines.push(Object.freeze({ name, value }));
+663:     };
+664:     const sourceLines = arrayItems(raw.headerLines);
+665:     for (let i = 0; i < sourceLines.length; i++) {
+666:       const entry = dataRecord(arrayItem(sourceLines, i), ["name", "value"]);
+667:       if (
+668:         typeof entry.name !== "string" ||
+669:         typeof entry.value !== "string" ||
+670:         !HTTP_FIELD_NAME.test(entry.name) ||
+671:         !HTTP_FIELD_VALUE.test(entry.value)
+672:       )
+673:         return configuration();
+674:       const name = entry.name.toLowerCase();
+675:       if (isSecretHeaderName(name) || RESERVED_FIELDS.has(name)) return configuration();
+676:       append(entry.name, entry.value);
+677:     }
+678:     if (headBytes > mode.maximumRequestHeaderBytes) return configuration();
+679:     validateExactRunConfiguration(mode, url.href, request.method);
+680:     const ref = request.credentialRef ?? mode.defaultCredentialRef;
+681:     if (typeof ref !== "string" || !HANDLE_ID.test(ref) || ref.length > 128) return configuration();
+682:     const handle = mode.credentialHandles.find(({ id }) => id === ref);
+683:     if (
+684:       handle === undefined ||
+685:       (handle.headerNames.length > 0 && !safeCredentialTarget(target, url))
+686:     )
+687:       return configuration();
+688:     requestDeadline(signal, deadline);
+689:     const credentials = dataRecord(
+690:       mode.resolveCredentials(
+691:         Object.freeze({
+692:           scope: mode.scope,
+693:           url: url.href,
+694:           method: request.method,
+695:           credentialRef: ref,
+696:           signal,
+697:         }),
+698:       ),
+699:     );
+700:     requestDeadline(signal, deadline);
+701:     const seen = new Set<string>();
+702:     for (const [name, value] of Object.entries(credentials)) {
+703:       const normalized = name.toLowerCase();
+704:       if (
+705:         !handle.headerNames.includes(normalized) ||
+706:         seen.has(normalized) ||
+707:         typeof value !== "string" ||
+708:         !HTTP_FIELD_VALUE.test(value) ||
+709:         !HTTP_FIELD_NAME.test(name)
+710:       )
+711:         return configuration();
+712:       seen.add(normalized);
+713:       append(name, value);
+714:     }
+715:     if (seen.size !== handle.headerNames.length) return configuration();
+716:     for (const [name, value] of [
+717:       ["Accept", "*/*"],
+718:       ["Accept-Language", "*"],
+719:       ["Accept-Encoding", "identity"],
+720:       ["User-Agent", "bdp-conformance/0"],
+721:     ] as const)
+722:       if (!lines.some((line) => line.name.toLowerCase() === name.toLowerCase()))
+723:         append(name, value);
+724:     append("Host", url.host);
+725:     append("Connection", "close");
+726:     if (body !== undefined) append("Content-Length", String(body.length));
+727:     const head = Buffer.concat([
+728:       Buffer.from(`${request.method} `, "ascii"),
+729:       target,
+730:       Buffer.from(
+731:         ` HTTP/1.1\r\n${lines.map(({ name, value }) => `${name}: ${value}`).join("\r\n")}\r\n\r\n`,
+732:         "latin1",
+733:       ),
+734:     ]);
+735:     const exchanged = await exchangeRawBytes(
+736:       route,
+737:       head,
+738:       request.method,
+739:       signal,
+740:       requestDeadline(signal, deadline),
+741:       maximumHeaderBytes,
+742:       maximumBodyBytes,
+743:       body,
+744:       (next) => {
+745:         state = next;
+746:       },
+747:     );
+
+===== CURRENT SOURCE packages/conformance/src/http-executor.ts:1170-1240 =====
+1170: 
+1171: function parseRawResponse(
+1172:   raw: Buffer,
+1173:   method: HttpExchangeRequest["method"],
+1174:   maximumHeaderBytes: number,
+1175:   maximumBodyBytes: number,
+1176: ): {
+1177:   readonly status: number;
+1178:   readonly headers: Readonly<Record<string, string>>;
+1179:   readonly bodyText: string;
+1180:   readonly bodyOctets: number;
+1181: } {
+1182:   const head = locateFinalResponseHead(raw, maximumHeaderBytes);
+1183:   if (head === undefined)
+1184:     throw new HttpTransportError(
+1185:       "disconnect",
+1186:       "HTTP response disconnected before a final response",
+1187:     );
+1188:   const { headerEnd, status, headers } = head;
+1189:   const framed = raw.subarray(headerEnd + 4);
+1190:   const body =
+1191:     method === "HEAD" || status === 204 || status === 304
+1192:       ? framed
+1193:       : decodeResponseBody(framed, headers, maximumBodyBytes);
+1194:   if (body.byteLength > maximumBodyBytes)
+1195:     throw new HttpTransportError("body-limit", "HTTP response exceeded the configured body limit");
+1196:   let bodyText: string;
+1197:   try {
+1198:     bodyText = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(body);
+1199:   } catch (error) {
+1200:     throw new HttpTransportError("invalid-body", "HTTP response was not valid UTF-8", {
+1201:       cause: error,
+1202:     });
+1203:   }
+1204:   return { status, headers, bodyText, bodyOctets: body.byteLength };
+1205: }
+1206: 
+1207: function decodeResponseBody(
+1208:   framed: Buffer,
+1209:   headers: Readonly<Record<string, string>>,
+1210:   maximumBodyBytes: number,
+1211: ): Buffer {
+1212:   const transferEncoding = headers["transfer-encoding"]?.toLowerCase();
+1213:   const contentLength = headers["content-length"];
+1214:   if (transferEncoding !== undefined && contentLength !== undefined)
+1215:     throw new HttpTransportError("invalid-body", "HTTP response framing was ambiguous");
+1216:   if (transferEncoding !== undefined) {
+1217:     if (transferEncoding !== "chunked")
+1218:       throw new HttpTransportError("invalid-body", "HTTP response transfer coding was unsupported");
+1219:     return decodeChunkedBody(framed, maximumBodyBytes);
+1220:   }
+1221:   if (contentLength === undefined) return framed;
+1222:   if (!/^(?:0|[1-9][0-9]*)$/.test(contentLength))
+1223:     throw new HttpTransportError("invalid-body", "HTTP response Content-Length was malformed");
+1224:   const expected = Number(contentLength);
+1225:   if (!Number.isSafeInteger(expected))
+1226:     throw new HttpTransportError("body-limit", "HTTP response Content-Length exceeded safe bounds");
+1227:   if (expected > maximumBodyBytes)
+1228:     throw new HttpTransportError("body-limit", "HTTP response exceeded the configured body limit");
+1229:   if (framed.byteLength < expected)
+1230:     throw new HttpTransportError(
+1231:       "disconnect",
+1232:       "HTTP response disconnected before its body was read",
+1233:     );
+1234:   if (framed.byteLength > expected)
+1235:     throw new HttpTransportError(
+1236:       "invalid-body",
+1237:       "HTTP response contained bytes beyond Content-Length",
+1238:     );
+1239:   return framed;
+1240: }
+
+===== CURRENT SOURCE packages/protocol/src/index.ts:1-9 =====
+1: export type {
+2:   PropertyValidationDiagnostic,
+3:   PropertyDiagnosticEmitter,
+4:   PropertyValidationResult,
+5:   PropertyValidator,
+6: } from "./property-validation.js";
+7: export { snapshotJsonValue, stringifyJsonValue } from "./json-values.js";
+8: import { parseHistoryMissing } from "./history-values.js";
+9: import type { RevisionProvenance, HistoryCapability, HistoryMissing } from "./history-values.js";
+
+===== CURRENT SOURCE packages/protocol/src/json-values.ts:95-142 =====
+95:  * This is NOT a canonical identity/hash serializer: it does not sort keys or
+96:  * choose a revision scheme. Primitive escaping/number formatting is exactly
+97:  * JSON.stringify's; containers are handled iteratively after a checked single
+98:  * immutable snapshot, so accessors/toJSON cannot swap data after validation.
+99:  * No implicit output bound is imposed: the caller owns its advertised limits.
+100:  */
+101: export function stringifyJsonValue(value: unknown, label = "JSON value"): string {
+102:   type Task = string | { readonly value: AdmittedJsonValue };
+103:   const pending: Task[] = [{ value: snapshotJsonValue(value, label) }];
+104:   const chunks: string[] = [];
+105:   while (pending.length) {
+106:     const task = pending.pop();
+107:     if (task === undefined) break;
+108:     if (typeof task === "string") {
+109:       chunks.push(task);
+110:       continue;
+111:     }
+112:     const item = task.value;
+113:     if (item === null || typeof item !== "object") {
+114:       chunks.push(JSON.stringify(item));
+115:       continue;
+116:     }
+117:     if (Array.isArray(item)) {
+118:       chunks.push("[");
+119:       pending.push("]");
+120:       for (let i = item.length - 1; i >= 0; i--) {
+121:         const child = item[i];
+122:         if (child === undefined) throw new Error("snapshot contains a missing array value");
+123:         pending.push({ value: child });
+124:         if (i > 0) pending.push(",");
+125:       }
+126:     } else {
+127:       chunks.push("{");
+128:       pending.push("}");
+129:       const record = item as Readonly<Record<string, AdmittedJsonValue>>;
+130:       const keys = Object.keys(record);
+131:       for (let i = keys.length - 1; i >= 0; i--) {
+132:         const key = keys[i];
+133:         const child = key === undefined ? undefined : record[key];
+134:         if (key === undefined || child === undefined)
+135:           throw new Error("snapshot lost an object member");
+136:         pending.push({ value: child }, ":", JSON.stringify(key));
+137:         if (i > 0) pending.push(",");
+138:       }
+139:     }
+140:   }
+141:   return chunks.join("");
+142: }
+
+===== CURRENT SOURCE docs/specs/bdp.md:5796-5805 =====
+5796: ### Transactional HTTP consistency
+5797: 
+5798: Transactional Scope-bounded responses carry:
+5799: 
+5800: ```http
+5801: BDP-Scope-Epoch: opaque-scope-epoch
+5802: BDP-Authorization-View: opaque-authorization-view
+5803: BDP-Scope-Position: opaque-position-42
+5804: ```
+5805: 
+
+===== CURRENT SOURCE docs/specs/bdp.md:5828-5850 =====
+5828: 
+5829: Every Transactional Scope-bounded read reports the Scope epoch, Authorization
+5830: View token, and position of the transaction-consistent projected prefix it
+5831: observed. It reports them through the fields defined under
+5832: [Transactional HTTP consistency](#transactional-http-consistency). Read and Read+Update use Resource
+5833: revisions, entity tags, and snapshot-preserving pagination without exposing
+5834: Scope-history tokens.
+5835: 
+5836: ### Transactional conditional reads
+5837: 
+5838: A `304` is not delivery or application of a change group or erasure record
+5839: and MUST NOT advance a client's durable checkpoint.
+5840: 
+5841: Scope epoch/view, minimum-position and erasure/expiry checks MUST precede any
+5842: conditional shortcut. Required current Scope context remains required on
+5843: 304 and 412 responses.
+5844: 
+5845: The inherited HEAD rules also cover `changes/`, Scope `events/`, Resource
+5846: `view=events`, snapshot handles/streams and receipt/page URLs. For acceptable
+5847: SSE, HEAD returns the response metadata and ends without frames; it MUST NOT
+5848: remain open merely to stream events. HEAD acknowledges neither delivery nor
+5849: application and creates no mutation transaction.
+5850: 
+
+===== SELECTED ACTUAL SCHEMA DEFINITIONS =====
+{"$id":"https://github.com/gastownhall/bdp/schemas/bdp-v0.schema.json","$defs":{"changefeedPage":{"title":"BDP changefeed page","type":"object","required":["scope","scopeEpoch","authorizationView","after","observedHeadPosition","groups","next"],"properties":{"scope":{"$ref":"#/$defs/absoluteHttpUrl"},"scopeEpoch":{"$ref":"#/$defs/wireToken"},"authorizationView":{"$ref":"#/$defs/wireToken"},"after":{"$ref":"#/$defs/wireToken"},"observedHeadPosition":{"$ref":"#/$defs/wireToken"},"groups":{"type":"array","items":{"$ref":"#/$defs/changeGroup"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]}},"additionalProperties":false},"transactionalProblem":{"title":"BDP Transactional Problem Details","type":"object","required":["type","code","retry"],"properties":{"type":{"$ref":"#/$defs/absoluteHttpUrl"},"title":{"type":"string"},"status":{"type":"integer","enum":[400,401,403,404,409,410,413,415,422,429,503]},"detail":{"type":"string"},"instance":{"$ref":"#/$defs/absoluteUri"},"code":{"$ref":"#/$defs/directProblemCode"},"retry":{"$ref":"#/$defs/retryDisposition"},"retryAfter":{"type":"integer","minimum":0},"pointer":{"$ref":"#/$defs/jsonPointer"},"limit":{"type":"string","pattern":"^[a-z]+\\.[A-Za-z]+$"},"archivedAt":{"$ref":"#/$defs/reference"}},"allOf":[{"if":{"properties":{"code":{"$ref":"#/$defs/readUpdateProblemCode"}},"required":["code"]},"then":{"$ref":"#/$defs/readUpdateProblem"}},{"if":{"properties":{"code":{"const":"event-history-expired"}},"required":["code"]},"then":{"properties":{"diagnostics":false,"diagnosticsTruncated":false,"type":{"const":"https://github.com/gastownhall/bdp/problems/gone"},"status":{"const":410},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"catch-up-timeout"}},"required":["code"]},"then":{"properties":{"diagnostics":false,"diagnosticsTruncated":false,"type":{"const":"https://github.com/gastownhall/bdp/problems/unavailable"},"status":{"const":503},"retry":{"const":"after-delay"}}}},{"if":{"properties":{"code":{"const":"resource-erased"}},"required":["code"]},"then":{"properties":{"pointer":false}}},{"if":{"not":{"properties":{"code":{"const":"limit-exceeded"}},"required":["code"]}},"then":{"properties":{"limit":false}}},{"if":{"properties":{"retry":{"const":"after-delay"}},"required":["retry"]},"else":{"properties":{"retryAfter":false}}},{"if":{"not":{"properties":{"code":{"const":"revision-unretained"}},"required":["code"]}},"then":{"properties":{"missing":false}}}]},"mutationReceipt":{"title":"BDP Mutation Receipt","type":"object","allOf":[{"$ref":"#/$defs/receiptCore"}],"oneOf":[{"type":"object","required":["id","status","idempotencyKey","scopeEpoch","authorizationView","transaction"],"properties":{"id":true,"status":{"const":"pending"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"detail":false,"requiredPosition":false,"effectPosition":false,"results":false,"next":false,"allocated":false,"problem":false,"expiresAt":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","results","next","expiresAt"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"available"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"results":true,"next":true,"expiresAt":true,"allocated":false,"problem":false},"allOf":[{"if":{"properties":{"next":{"type":"null"}},"required":["next"]},"then":{"properties":{"results":{"type":"array","minItems":1}}}}]},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","problem","expiresAt"],"properties":{"id":true,"status":{"const":"failed"},"detail":{"const":"available"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"problem":true,"expiresAt":true,"effectPosition":false,"results":false,"next":false,"allocated":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","allocated"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"expired"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"allocated":true,"results":false,"next":false,"problem":false,"expiresAt":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"withheld"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"results":false,"next":false,"allocated":false,"problem":false,"expiresAt":false}}]},"receiptCore":{"type":"object","properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"status":{"$ref":"#/$defs/receiptStatus"},"detail":{"$ref":"#/$defs/receiptDetail"},"idempotencyKey":{"$ref":"#/$defs/idempotencyKey"},"scopeEpoch":{"$ref":"#/$defs/wireToken"},"authorizationView":{"$ref":"#/$defs/wireToken"},"transaction":{"$ref":"#/$defs/wireToken"},"requiredPosition":{"$ref":"#/$defs/wireToken"},"effectPosition":{"$ref":"#/$defs/wireToken"},"results":{"type":"array","items":{"$ref":"#/$defs/receiptResult"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]},"allocated":{"type":"array","items":{"$ref":"#/$defs/allocatedIdentity"}},"problem":{"$ref":"#/$defs/receiptProblem"},"expiresAt":{"$ref":"#/$defs/dateTime"}},"allOf":[{"if":{"properties":{"status":{"const":"failed"}},"required":["status"]},"then":{"properties":{"effectPosition":false,"detail":{"const":"available"}}}}],"additionalProperties":false}}}
+
+The full NEW installed file is contained without omission in draft.patch above; it is not duplicated a second time. Whole changed source HTTP callback is likewise in the patch. The copied tool/product graph and runtime path were separately verified and the exact seven-error control actually ran; no new alias behavior was authored.
+
+===== ACTUAL SOURCE packages/server/src/transaction-changefeed.ts:53-115 =====
+53:   readonly scopeEpoch: string;
+54:   readonly authorizationView: string;
+55:   readonly after: string;
+56:   readonly observedHeadPosition: string;
+57:   readonly groups: readonly TransactionChangeGroup[];
+58:   readonly next: string | null;
+59: }
+60: const checkpoint = /^cg_([A-Za-z0-9_-]{43})_([A-Za-z0-9_-]{43})_([1-9][0-9]*)$/;
+61: const tag = (...values: string[]) =>
+62:   createHash("sha256").update(JSON.stringify(values)).digest("base64url");
+63: function parseCheckpoint(value: string, context?: TransactionReadContext) {
+64:   if (value === "genesis") return { position: 0 } as const;
+65:   const match = value.length <= 256 ? checkpoint.exec(value) : null;
+66:   const position = Number(match?.[3]);
+67:   if (!match || !Number.isSafeInteger(position) || position < 1)
+68:     throw new TransactionChangefeedParameterError(undefined, context);
+69:   return { position, epoch: match[1], view: match[2] } as const;
+70: }
+71: export function transactionCheckpoint(
+72:   scope: string,
+73:   context: TransactionReadContext,
+74:   position: number,
+75: ): string {
+76:   if (!Number.isSafeInteger(position) || position < 0) throw new Error("invalid group position");
+77:   return position === 0
+78:     ? "genesis"
+79:     : `cg_${tag("epoch", scope, context.scopeEpoch)}_${tag("view", scope, context.scopeEpoch, context.authorizationView)}_${position}`;
+80: }
+81: export function checkpointPosition(
+82:   scope: string,
+83:   context: TransactionReadContext,
+84:   value: string,
+85: ): number {
+86:   const parsed = parseCheckpoint(value, context);
+87:   if (parsed.position === 0) return 0;
+88:   if (parsed.epoch !== tag("epoch", scope, context.scopeEpoch))
+89:     throw new TransactionMinimumFailure("cursor-expired", context);
+90:   if (parsed.view !== tag("view", scope, context.scopeEpoch, context.authorizationView))
+91:     throw new TransactionMinimumFailure("foreign-view", context);
+92:   return parsed.position;
+93: }
+94: export function transactionChangefeedRequest(
+95:   url: URL,
+96:   canonicalScope: string,
+97: ): TransactionChangefeedIntent | undefined {
+98:   const scope = parseCanonicalScope(canonicalScope);
+99:   if (url.origin + url.pathname !== `${scope}changes/`) return undefined;
+100:   if (url.hash) throw new TransactionChangefeedParameterError();
+101:   for (const key of url.searchParams.keys())
+102:     if (!["after", "start"].includes(key) || url.searchParams.getAll(key).length !== 1)
+103:       throw new TransactionChangefeedParameterError();
+104:   const after = url.searchParams.get("after"),
+105:     start = url.searchParams.get("start");
+106:   if ((after === null) === (start === null)) throw new TransactionChangefeedParameterError();
+107:   if (after !== null) {
+108:     parseCheckpoint(after);
+109:     return Object.freeze({ after });
+110:   }
+111:   if (start !== "now") throw new TransactionChangefeedParameterError();
+112:   return Object.freeze({ start: "now" });
+113: }
+114: export function projectTransactionChangeGroup(
+115:   value: unknown,
+
+===== ACTUAL SOURCE packages/server/src/transaction-changefeed.test.ts:69-78 =====
+69:   type: linkType,
+70:   source: `beads/${source}`,
+71:   target: `beads/${target}`,
+72:   properties: { n: 0 },
+73: });
+74: const update = (id: string, n: number) => ({
+75:   operation: "updateLink",
+76:   link: `links/${id}`,
+77:   propertiesChange: [{ op: "replace", path: "/n", value: n }],
+78: });
+
+===== ACTUAL SOURCE apps/bdptest/test-support/transactional-execution-binding.ts:1-92 =====
+1: import { isDeepStrictEqual } from "node:util";
+2: import { installedContractsDigest } from "./installed-contract-identity.js";
+3: /** Source-only installed binding. Runner retains sole receipt observation authority. */
+4: import { createHash } from "node:crypto";
+5: import {
+6:   createRawHttpScenarioTarget,
+7:   type ExactHttpModeOptions,
+8:   type ConformanceFixture,
+9:   type ExecutableScenario,
+10: } from "@bdp/conformance";
+11: import {
+12:   bindServedProfileConfiguration,
+13:   assertSameServedProfileConfiguration,
+14:   type TransactionalRunContext,
+15:   type TransactionalSession,
+16: } from "@bdp/conformance/testing";
+17: export interface InstalledTransactionChild {
+18:   readonly ready: Record<string, unknown>;
+19:   close(): Promise<unknown>;
+20: }
+21: export function installedTransactionBinding(
+22:   ready: Record<string, unknown>,
+23:   sourceCommit: string,
+24:   fixture: { bytes: Uint8Array },
+25: ) {
+26:   if (
+27:     ready.profile !== "transactional" ||
+28:     ready.history !== false ||
+29:     ready.claimEligible !== false ||
+30:     ready.authorityMode !== "canonical" ||
+31:     typeof ready.scope !== "string" ||
+32:     typeof ready.runtimeConfigurationIdentity !== "string" ||
+33:     !/^[a-f0-9]{64}$/.test(ready.runtimeConfigurationIdentity)
+34:   )
+35:     throw new Error("installed Transactional metadata unavailable");
+36:   if (typeof ready.listenUrl !== "string")
+37:     throw new Error("installed physical session unavailable");
+38:   const url = new URL(ready.listenUrl);
+39:   if (
+40:     url.protocol !== "http:" ||
+41:     url.hostname !== "127.0.0.1" ||
+42:     !url.port ||
+43:     url.username ||
+44:     url.password ||
+45:     url.pathname !== "/" ||
+46:     url.search ||
+47:     url.hash
+48:   )
+49:     throw new Error("invalid installed dial binding");
+50:   const targetNames = {
+51:     createBead: "create-bead",
+52:     updateBead: "update-bead",
+53:     deleteBead: "delete-bead",
+54:     createLink: "create-link",
+55:     updateLink: "update-link",
+56:     deleteLink: "delete-link",
+57:     putAlias: "put-alias",
+58:     deleteAlias: "delete-alias",
+59:     updateWhere: "update-where",
+60:     deleteWhere: "delete-where",
+61:     batch: "batch",
+62:     sequence: "sequence",
+63:   };
+64:   const operationTargets = Object.freeze(
+65:     Object.fromEntries(
+66:       Object.entries(targetNames).map(([name, suffix]) => [
+67:         name,
+68:         `${ready.scope}operations/${suffix}`,
+69:       ]),
+70:     ),
+71:   );
+72:   if (!isDeepStrictEqual(ready.targets, operationTargets))
+73:     throw new Error("installed operation target inventory mismatch");
+74:   const served = bindServedProfileConfiguration({
+75:     scope: ready.scope,
+76:     profile: "transactional",
+77:     history: false,
+78:     sourceCommit,
+79:     installedPayloadDigest: ready.payloadIdentity as string,
+80:     installedContractsDigest: installedContractsDigest(ready.artifactIdentity),
+81:     policyDigest: ready.policyIdentity as string,
+82:     authenticationDigest: ready.authenticationIdentity as string,
+83:     fixture,
+84:   });
+85:   return Object.freeze({
+86:     served,
+87:     operationTargets,
+88:     runtimeConfigurationIdentity: ready.runtimeConfigurationIdentity,
+89:     authorityMode: "canonical" as const,
+90:   });
+91: }
+92: export function createTransactionalExecutionBinding(options: {
+
+===== ACTUAL SOURCE packages/conformance/src/http-executor.ts:55-80 =====
+55: export interface ExactHttpModeOptions {
+56:   readonly scope: string;
+57:   readonly profile: "read" | "read-update" | "transactional";
+58:   readonly routes: readonly { readonly method: HttpMethod; readonly url: string }[];
+59:   readonly maximumRequestHeaderBytes: number;
+60:   readonly maximumRequestBodyBytes: number;
+61:   readonly defaultCredentialRef: string;
+62:   readonly credentialHandles: readonly {
+63:     readonly id: string;
+64:     /** Empty means a deliberately anonymous handle; names are lower-case. */
+65:     readonly headerNames: readonly string[];
+66:   }[];
+67:   /** Synchronous, trusted nonblocking lookup. Promises/thenables are rejected. */
+68:   readonly resolveCredentials: (
+69:     context: Readonly<{
+70:       scope: string;
+71:       url: string;
+72:       method: HttpMethod;
+73:       credentialRef: string;
+74:       signal: AbortSignal;
+75:     }>,
+76:   ) => Readonly<Record<string, string>>;
+77: }
+78: 
+79: export type RawHttpExchangeExecutor = (
+80:   request: HttpExchangeRequest | ExactHttpExchangeRequest,
+
+===== ACTUAL SOURCE packages/protocol/src/index.ts:493-499 =====
+493:   readonly [Code in ReadProblemCode]: Omit<ReadProblemDefinition, "code" | "type">;
+494: } = {
+495:   "malformed-request": { family: "request", status: 400, retry: "never" },
+496:   "invalid-parameter": { family: "request", status: 400, retry: "never" },
+497:   unauthenticated: { family: "authentication", status: 401, retry: "after-state-change" },
+498:   forbidden: { family: "authorization", status: 403, retry: "after-state-change" },
+499:   "resource-not-found": { family: "not-found", status: 404, retry: "after-state-change" },
+
+===== ACTUAL SOURCE packages/protocol/src/index.ts:527-540 =====
+527:   return {
+528:     code,
+529:     ...row,
+530:     type: `${BDP_PROBLEM_FAMILY_PREFIX}${row.family}`,
+531:   };
+532: }
+533: 
+534: export function readProblem(code: ReadProblemCode, detail?: string): ReadProblem {
+535:   const definition = readProblemDefinitionFor(code);
+536:   return {
+537:     type: definition.type,
+538:     code,
+539:     retry: definition.retry,
+540:     status: definition.status,
+
+===== ACTUAL SOURCE packages/conformance/test-support/profile-contract-plan.ts:95-170 =====
+95: }
+96: 
+97: function primitiveString(value: unknown, field: string): string {
+98:   if (typeof value !== "string") throw new Error(`invalid ${field}: primitive string required`);
+99:   return value;
+100: }
+101: 
+102: function snapshotSource(input: unknown, kind: "fixture" | "manifest", maximumBytes?: number) {
+103:   const source = ownData(input, ["bytes", "label"], ["bytes"]);
+104:   const label =
+105:     source.label === undefined ? undefined : primitiveString(source.label, "source label");
+106:   const bytes = copySourceBytes({ bytes: source.bytes as Uint8Array }, kind, maximumBytes);
+107:   return { bytes, label };
+108: }
+109: 
+110: export function bindServedProfileConfiguration(
+111:   input: ServedProfileConfigurationInput,
+112: ): ServedProfileConfiguration {
+113:   const captured = ownData(input, configurationKeys);
+114:   const scope = primitiveString(captured.scope, "scope");
+115:   const profile = captured.profile;
+116:   const history = captured.history;
+117:   const sourceCommit = primitiveString(captured.sourceCommit, "source commit");
+118:   const installedPayloadDigest = primitiveString(
+119:     captured.installedPayloadDigest,
+120:     "installedPayloadDigest",
+121:   );
+122:   const installedContractsDigest = primitiveString(
+123:     captured.installedContractsDigest,
+124:     "installedContractsDigest",
+125:   );
+126:   const policyDigest = primitiveString(captured.policyDigest, "policyDigest");
+127:   const authenticationDigest = primitiveString(
+128:     captured.authenticationDigest,
+129:     "authenticationDigest",
+130:   );
+131:   if (!isCanonicalScope(scope))
+132:     throw new Error("served configuration requires a canonical HTTP Scope");
+133:   if (!isProtocolProfile(profile) || typeof history !== "boolean")
+134:     throw new Error("served configuration requires profile and History selection");
+135:   if (!/^[0-9a-f]{40}$/.test(sourceCommit)) throw new Error("invalid source commit");
+136:   for (const [key, value] of Object.entries({
+137:     installedPayloadDigest,
+138:     installedContractsDigest,
+139:     policyDigest,
+140:     authenticationDigest,
+141:   }))
+142:     if (!/^[0-9a-f]{64}$/.test(value)) throw new Error(`invalid ${key}`);
+143:   const source = snapshotSource(captured.fixture, "fixture");
+144:   const fixture = parseFixtureJson(
+145:     parseBoundedJson(source.bytes, "fixture", source.label),
+146:     source.label,
+147:   );
+148:   const bound = freeze({
+149:     scope,
+150:     profile,
+151:     history,
+152:     sourceCommit,
+153:     installedPayloadDigest,
+154:     installedContractsDigest,
+155:     policyDigest,
+156:     authenticationDigest,
+157:     fixtureDigest: digest(source.bytes),
+158:     fixtureId: fixture.id,
+159:     capabilities: [...fixture.capabilities].sort(),
+160:   });
+161:   configurations.set(bound, fixture);
+162:   return bound;
+163: }
+164: 
+165: function assertBoundConfiguration(value: ServedProfileConfiguration): ConformanceFixture {
+166:   const fixture = configurations.get(value);
+167:   if (!fixture) throw new Error("factory-bound served configuration required");
+168:   return fixture;
+169: }
+170: 

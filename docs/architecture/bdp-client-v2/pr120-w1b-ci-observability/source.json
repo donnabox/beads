@@ -1,0 +1,24 @@
+{
+  "head": "427cfef6decbb422b393024e36218affc26007fa",
+  "tree": "9075897867d88344a8477e1f4a8e1a00a50f1228",
+  "parent": "70ac666002708202d2f93195eed90dfe8541300d",
+  "parentTree": "1353e8f4fb0b1149b3f4ff158335804bf3f1cecc",
+  "branch": "codex/vickie-w1b-ci-observability",
+  "worktree": "/Users/dbox/repos/wt/vickie/vickie-w1b-ci-observability",
+  "clean": true,
+  "changedFiles": [
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "sha256": "25559baca1589865de4cde257de028b80385a502da543e754de19b899b7c2941",
+      "baseBlob": "100644 blob 19dda9494704a8808f14ab69a2ddb2a78448d5a6",
+      "headBlob": "100644 blob a222d20b56ce270a7d8ac1db6a18cb38a9512763"
+    }
+  ],
+  "otherTrackedFilesIdentical": 662,
+  "diffStat": "apps/bdptest/src/read-update-matrix.test.ts | 6 ++++--\n 1 file changed, 4 insertions(+), 2 deletions(-)",
+  "diffSha256": "cee92317f11bfdf242255251826a2404dc2614f1966739685aca0a031c6fc0fa",
+  "testsRanOn": "same reviewed source bytes in ordinary 70ac checkout before commit",
+  "entrySha256": "3eb9a6bc8df1237d78ba4aae7e95589df6fb7f4781f572e04adda583f359c71d",
+  "entryHashIsWholePayload": false,
+  "commitMessage": "Retain safe diagnostics for W1b assertion failures\n\nAgent-Signature: Vickie; Codex; unknown-model; unknown-reasoning"
+}

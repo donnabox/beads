@@ -1,0 +1,93 @@
+Plan-only council review. Read-only; no files written or modified. Verified against `2c5fe9e04250ae036e681f46c60d3592e5f1cdf1` in `/Users/dbox/repos/wt/vickie/vickie-update-contracts`.
+
+**Verdict: the private-factory + emitted-IPC-entry direction is right and the native refinements are accurate as far as they go. Three concrete gaps block the stated "Done when" list, and none of the three is named in either document.**
+
+---
+
+## HIGH
+
+### H1 — Startup cleanup drops the original cause and leaks the authority when listener close fails
+**Root's explicit requirement; unaddressed in both documents.**
+
+- **Location:** `packages/server/src/development-runtime.ts:420-424`; same shape in `close()` at `:428-437`.
+- **Evidence:** the catch is sequential — `if (server.listening) await closeListener(); await authority?.close(); throw error;`. If `closeListener()` rejects (`server.close` callback error), the throw escapes the catch block: `authority?.close()` never runs and the original `error` is replaced by the cleanup error. The public listener already implements exactly what root asks for — `packages/server/src/index.ts:640-653` does `Promise.allSettled([closeNodeHttpServer(listener), server.close()])`, filters rejections, and throws `new AggregateError([primaryError, ...cleanupFailures])`. `close()` additionally caches the rejected promise in `completion`, so a failed shutdown can never be retried.
+- **Impact:** a teardown race on startup failure leaves the recovery store/owner open and its lock held, which is precisely the state the "second owner/refused reopen cannot corrupt the store" and "startup failure closes listener/owner" tests probe — they become flaky and, worse, the qualification report attributes the failure to the cleanup rather than the real cause. For a candidate whose whole value is honest observation, losing the primary cause is a reporting defect, not just a leak.
+- **Fix:** in both the startup catch and `close()`, use `Promise.allSettled([closeListener(), authority?.close()])`, collect rejections, rethrow `AggregateError([original, ...cleanupFailures])`. Do not cache a rejected `completion`, or cache it only after the authority close is guaranteed to have run. Add a test that injects a listener-close failure and asserts both that the owner closed and that both causes are present.
+
+### H2 — The Host-equality gate is the single blocking line for "stable configured Scope on a separate listener"
+- **Location:** `development-runtime.ts:237` (`header(request,"host") !== new URL(scope).host`), with `:240-248` and `:388`.
+- **Evidence:** `recovery-store.ts:548-594` persists `scope`/`installation`/`lineage` and refuses `store-mismatch` on any difference — which is why today's reopen tests must re-bind the exact prior ephemeral port (`apps/bdptest/src/development-contracts.test.ts:363`, `apps/bdptest/src/development-disconnect.test.ts:96,125`). The plan correctly diagnoses that a captured Scope is required. But line 237 makes the request's `Host` identity-bearing, and `:248` rejects any absolute-form authority that is not the Scope origin. The public listener deliberately does the opposite: `index.ts:412-431` keeps only validated path/query and rebases onto the canonical origin, ignoring `Host` entirely.
+- **Impact:** with a captured Scope authority separate from the listener authority (plan step 2), every cold-client request is refused 400 at line 237 *before routing* — "Scope Link → descriptor → directory → nine targets against the packed process" is unreachable. Keep Scope equal to the listener authority instead and the port becomes part of Scope, so "survives listener restart/reopen" is unreachable. The native review cites `index.ts:419-431` as prior art for rebasing but stops at "explicitly choose/test which ingress Host/absolute authorities are accepted", never concluding that line 237 must be redefined.
+- **Fix:** extract `createCanonicalHttpRequest` (`index.ts:417`, currently unexported) into `node-http-target.ts` beside `normalizationSafeRawRequestPath`, and route the private receiver through it so identity derives only from validated path/query. Replace the identity-bearing Host equality with an explicit *ingress* check (accept `Host` == listener authority **or** == captured Scope authority; refuse others) and say in the plan that Host is ingress-only. This delivers native item 1 for all routes as a side effect and removes any need for a DNS/dispatcher routing shim in the cold client — note `createReadUpdateFetchTransport` does accept `fetchImplementation` (`packages/client/src/read-update-transport.ts:22,130`), so a shim is *possible*, but it would make the "cold client" non-stock and weaken the observation.
+
+### H3 — The listener serves credentialed traffic before the canonical composition exists, and silently falls back to the legacy projection
+- **Location:** `development-runtime.ts:221-236`, `:263`, `:283-292`, `:389-419`.
+- **Evidence:** `authority` is published at `:389`; `composedReads.set(principal, route)` only at `:418`, after a per-credential `await view.discover()`. In that window `authority` is truthy and `composedRead` is `undefined`, so `if (composedRead && !mutationTarget)` is false: `GET /` returns the legacy `{development:true, claimEligible:false, scope, operations:[`${scope}development/<name>`]}` document, other GETs go through `principalAuthority.read(url)` with different problem shaping and a forced `cache-control: private, no-store` and no 204 service-desc probe, and `POST` mutations are admitted outright (the mutation branch never consults `composedRead`). With more than one trusted credential, principal B is still on the legacy path while A is already canonical.
+- **Impact:** P1a is what makes this reachable: today the port is ephemeral so no client can find the window, but a *configured* listener port plus restart/reopen tests and a retrying cold client will hit it. The observed surface advertises `/development/*` operation URLs that do not exist under the installed composition. Native review item 2 constrains only when readiness is *announced*, not when the socket starts serving — announcement ordering does not close this.
+- **Fix:** one `let serving = false`, published after the composition loop completes; `if (closing || !serving) throw new ReceivingError("temporarily-unavailable")`. Assert 503 — not a legacy 200 — for `GET /` and for a mutation POST issued against the configured port during startup.
+
+---
+
+## MEDIUM
+
+### M1 — The Origin relaxation contradicts "keep development behavior unchanged" and two shipped assertions
+- **Location:** `development-runtime.ts:239` (unconditional `Origin` → 403); assertions at `apps/bdptest/src/development-discovery.test.ts:314` and `apps/bdptest/src/development-server.test.ts:211,234`.
+- **Evidence:** plan step 2 asks for "CORS-disabled requests carrying Origin are processed normally without grant headers" in the same paragraph as "Keep development behavior unchanged"; the gate is unconditional and shared. The native review lists the Origin behavior as an audited obligation without noting it changes tested behavior.
+- **Impact:** the implementer either breaks two existing tests or diverges the installed and development receivers on a security-relevant gate while the plan claims receiving is shared.
+- **Fix:** pin it as one conditional keyed on the presence of the captured transport configuration, hold the development branch at 403, require both branches asserted, and record the rationale in the plan (Bearer is not ambient, no cookie auth, no grant headers emitted either way) so it is not re-litigated at implementation time.
+
+### M2 — The configuration identity cannot be *derived* for the owner limits the plan promises to record
+- **Location:** `development-authority.ts:189-239` — `patchOperations:128`, `patchPathBytes:4096`, `patchPathDepth:32`, `representationBytes:256*1024`, `retentionMs`/`minimumRetentionMs: day`, `maintenanceIntervalMs:60_000`, `readLimits` and the pagination retention capacities are all inline literals inside `openDevelopmentAuthority`. Only `DEVELOPMENT_LIMITS` (`:39`) is exported.
+- **Evidence:** the canonical composition can only project `authority.limits` plus discovery page/selector (`apps/bdptest/test-support/development-discovery.ts:43-52`). Nothing exposes patch/representation/retention/pagination-retention.
+- **Impact:** the native review's "include existing read/pagination/patch/representation and retention assumptions in the configuration identity" forces the factory to re-declare the same literals — exactly the "P1a hidden hardcodes" the plan forbids — and they drift from the owner silently. "Factory-derived actual config identity" is then partly a fiction.
+- **Fix:** export one frozen `DEVELOPMENT_OWNER_LIMITS` from `development-authority.ts`, have `openDevelopmentAuthority` read every one of those values from it, and have the installed factory hash that object. No configurability, no limits framework.
+
+### M3 — Extending `DevelopmentDeployment` in place breaks the exact-field capture and every call site
+- **Location:** `development-runtime.ts:56-59`, `:189-192`; `administrativeData` exact-key check at `development-contracts.ts:26-32`; existing literals at `development-contracts.test.ts:381-387,426-430`.
+- **Evidence:** `Reflect.ownKeys(descriptors).length !== keys.length` throws, so adding `"scope"`/`"listener"` to `administrativeData(deployment, ["configuration","credentials"])` rejects today's two-field deployments.
+- **Impact:** the "narrow `development-runtime.ts` private transport capture" is not narrow as written — it either churns every deployment literal and test, or tempts loosening a deliberately strict security helper.
+- **Fix:** pass the transport capture as its own parameter with its own `administrativeData(transport, ["scope","host","port"])` group. `DevelopmentDeployment` and all existing tests stay untouched.
+
+### M4 — The packed entry ships a side-effecting module in `dist`; the plan never requires it to be inert
+- **Location:** `packages/server/package.json:7-19` (`files:["dist"]`, exports only `.` and `./development`); plan's "Packaging/bootstrap decision" paragraph.
+- **Evidence:** the existing harness proves file-path import of any `dist/*.js` succeeds regardless of `exports` (`test-support/development-discovery.ts:14-19`, `test-support/development-process.ts:7-9,18-21`). The entry also needs its own SIGTERM handling, since the runtime has none — `apps/bdptest/src/development-main.ts:30-33` is where signals are handled today.
+- **Impact:** `node .../dist/installed-qualification-entry.js <config>` becomes an unreviewed startup path — the bin/CLI the plan forbids — and importing the module into any other process hijacks its signal handlers.
+- **Fix:** require that the entry refuses unless it is the process entry point **and** `process.channel`/`process.send` exist; on bare import it must only register a `message` listener. Assert the no-IPC spawn refusal and the import-without-start inertness in the installed inventory test, alongside the bare deep-import denial already planned.
+
+---
+
+## LOW
+
+### L1 — Absolute-form coverage must include the probe, service-desc and directory, not only the nine operation targets
+- **Location:** `test-support/development-discovery.ts:26-27,94` (`request.url === operations`); `read-http-routing.ts:31-38` (`url.pathname === scopeUrl.pathname`, `url.href === probe.serviceDescription`).
+- **Evidence:** both routes are exact-equality matches on the constructed `Request`. If absolute-form is merely *permitted* at `:244` while the raw target still flows into `new URL(rawUrl, scope)`, a default-port or alternate authority spelling misses these routes and degrades to a Read 404 instead of a refusal.
+- **Impact:** a green "absolute-form supported" assertion on `/operations/create-bead` can coexist with a broken absolute-form probe and directory.
+- **Fix:** add absolute-form variants of the Scope probe, the service-desc URL and `operations/` to the matrix.
+
+### L2 — Pin the per-request authority gate as a requirement of the extraction, not an incidental
+- **Location:** `test-support/development-discovery.ts:91-96`.
+- **Evidence:** `const gate = await authority.discover()` runs before the directory branch; `routing.jsonResponse(directory)` is otherwise entirely static.
+- **Impact:** a natural "optimization" during extraction — hoisting the static directory above the gate or caching it per principal — silently creates exactly the pre-authorization disclosure the native review's final obligation forbids.
+- **Fix:** state that the gate precedes every composed route including directory and any schema-manifest route; test that a principal whose policy capture fails gets a problem on `operations/` and on a schema URL.
+
+---
+
+## Verified non-gaps (checked because they looked like blockers)
+
+- `REFERENCE_TYPE_DESCRIPTORS` is exported from `@bdp/protocol` (`packages/protocol/src/reference-domain.ts:29`), already a `@bdp/server` dependency — plan step 4 needs no new dependency and no layering inversion (`adapter-in-memory` depends on `server`, so the reverse would have been a cycle).
+- Scope-local `http://host:port/types/<name>` ids are legal: `parseCanonicalTypeId` is just `parseCanonicalHttpUrl` (`read-values.ts:291-313`), which permits http with a port. `/types/` is already a reserved canonical collection root (`read-request.ts:148,202,218`).
+- `checkDependencies` (`installed-contract-artifact.ts:265-283`) enforces precisely the consistent remap closure both documents demand — `conformsTo`, link `source`/`target.conformsTo`, and non-`*` `ownsOutgoing` keys must all resolve in-bundle with the right category.
+- `digest()` (`:250-264`) folds `retrievalUri` into the contract identity, and `openRecoveryStore` persists `scope` separately, so a Scope change already yields both a different contract identity and a `store-mismatch` — "mismatched installation refuses without rebinding identity" is structurally supported.
+- Store metadata binds scope + installation + lineage but **not** policy identity (`recovery-store.ts:548-550,585-594`; `development-authority.ts:141-148`), confirming the persistent-install vs live-policy split the native review asserts.
+- `admitReadServerProfile` (`index.ts:296-318`) is untouched by the private path — the IPC entry calls the development runtime, not `createReadServer`, so there is genuinely no public admission bypass.
+
+---
+
+## Simpler viable architecture (no new protocol mechanisms)
+
+1. **One shared canonical-request seam.** Move `createCanonicalHttpRequest` into `node-http-target.ts` and have both listeners use it. This is the single change that delivers native item 1 for every route, eliminates Host-as-identity (H2), and makes "bind address, Host, absolute-target authority and forwarding headers never redefine Resource identities" structurally true instead of check-enforced.
+2. **Reuse the shipped cleanup shape.** `serveNodeHttpServer`'s `allSettled` + `AggregateError` is already root's requirement; copy it into the private runtime rather than inventing a lifetime protocol for the entry.
+3. **Two emitted modules suffice.** `installed-reference.ts` (captured configuration + factory + the composition extracted verbatim from `test-support/development-discovery.ts`) and `installed-qualification-entry.ts` (IPC lifetime only). The plan's four modules are acceptable, but pin that the process module is the only one with top-level effects, and that it is inert without IPC (M4).
+4. **One exported limits object, not a limits seam.** M2's `DEVELOPMENT_OWNER_LIMITS` read by both the owner and the factory.
+5. **Transport capture as its own parameter.** Leaves `administrativeData` and every existing deployment literal alone (M3).
+6. **Reuse the existing process harness shape.** `test-support/development-process.ts` already spawns with `stdio:[...,"ipc"]`, drives `close`/`release` over `process.send`, and waits on a `development.ready` message. The only real delta for P1a is that the entry module must live inside the tarball instead of being generated into a temp file from the source workspace — worth saying so in the plan, because it bounds the new work considerably.

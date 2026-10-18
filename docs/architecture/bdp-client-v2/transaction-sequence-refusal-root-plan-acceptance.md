@@ -1,0 +1,9 @@
+# Sequence refusal context: root plan acceptance and draft release
+
+Root accepts plan v2 ea8f0a3b, dispositions10327a99 and independent native closure7720d010 after fully reading them. External Claude261b978d and native0efa1c50 are complete; all ten external and two native findings have explicit disposition. No new product ruling inferred. Discovery refactoring remains deferred as justified; unexpected bodyless500 remains explicitly possible when current observation fails.
+
+Assigned parent is verified main d50f554cf6418ba036072ebf6795cb272cd6cbc1, tree7544b53aa8aa6d7edae94bd6bf0a4d157ee55985, the actual ordinary PR117 merge of f76bf119 plused359. Exact successor CI38594947505 passed all gates; main tree was independently verified identical. Preserve direct refusal fixes, all evidence and ordinary ancestry.
+
+Worker update_implementation exclusively owns the six v2 files in a new isolated codex/vickie-sequence-refusal-context branch/worktree. Other authors must not edit service/HTTP surfaces. Initial release is source/test/doc draft plus measured preflight only. Static authoring, dependency setup and formatting may proceed; no tests/build/installed services/source controls before root accepts the measured preflight. Proposed author installed budget30 expected requests/three children, max40/three is not yet execution authorization. Report actual carrier bytes, footprint, exact tests, controls, archive/negative identity strategy and expected response/target bounds before release. Preserve originals and failures.
+
+No store/evaluator/parser/schema/catalog/runtime/config/export/discovery edit, public profile claim, release, Preview2, or external mutation is assigned. Root owns outward actions. Independent next-slice analysis may continue read-only. No test/installed success is claimed by this acceptance.

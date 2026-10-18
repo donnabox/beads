@@ -1,0 +1,9 @@
+# Closed two-scope sequence code review preparation
+
+No review was launched. Root must read both prompts and create a separate root-release.json for each scope before any invocation. Examples remain released:false. Each independent runner permits one attempt, uses safe-mode -p --tools '' --no-session-persistence without a model override, TERM at895s/KILL at900s, retains actual stdout/stderr/exit/source before-after/process and temporary inventory. Guard the eventual runner invocation with L/guarded-action.py. No automatic retries.
+
+Both scopes bind clean82f60, ordinary18104 parent, exact four files/full108093-byte patch, all quoted source hashes and common union-inventory. Source snapshot is clean candidate; historical source validation remains dirty18104 exact bytes, not a new candidate test. Original two empty timeout143 results remain unchanged and inconclusive.
+
+wire contains complete app diff (30001bytes), complete ten-action manifest row, actual receipt helper, observe lifecycle, prior sentinels and runner boundaries. manifest contains complete cumulative diff (14451bytes), complete new manifest+coverage objects, vocabulary evaluation and cross-interface code. Complete changed TS is the untruncated diff; reproducing the131746-byte unchanged app file would violate the110KB aim. JSON values are complete; only pretty-print layout is omitted from prompts and remains in bound fullpatch. The union inventory maps every changed path. Root aggregates both actual reviews; no single scope stands in for the full council.
+
+Large unchanged fixtures,68-definition schema closure,41full derivative specimens and historical full review logs are omitted. Prior independent data-only audit facts are expressly attributed, not asserted as reviewer execution or public qualification. No tests/build/services/product changes/CLI/auth probe occurred during this preparation.

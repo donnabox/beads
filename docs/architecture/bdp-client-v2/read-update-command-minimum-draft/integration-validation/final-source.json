@@ -1,0 +1,42 @@
+{
+  "head": "3bb2f2449ce345e118d04c07eadd777363add544",
+  "tree": "69497d4ffc2089ce56790a9a257ecdff2eb0b47b",
+  "parents": [
+    "e35708f8c534a47d82f95e4abb5f1d3f0f6f0954",
+    "df80f8cb86b7763bc7bb005492e43d8840527045"
+  ],
+  "sourceFiles": {
+    "apps/bdptest/src/read-update-matrix.test.ts": "376709ecdcf356a98c5bf7770e6b0a637ab6e06cf9a9f7ed68c2e5c15da9dd36",
+    "packages/conformance/matrices/read-update-v1.json": "10a7c6f97a280cf88e58d3aa2039fe580904b74bfffcebda4747fc3c1a34b583",
+    "packages/conformance/src/cumulative-artifact.test.ts": "d3e8a462694174cf34db94700df51f3de6943aa1072dbf4bd04de7560db9b523",
+    "packages/conformance/src/profile-contract-plan.test.ts": "3fec4ca8c6eee7a20bbcdd1aa53ef2a015989087ba2f8d6b37fd997dcae7dd64",
+    "packages/conformance/src/read-update-artifact-set.test.ts": "e5c8903119b7c336dcc1e1479378e22029aa4d36978817557e461ea723991379",
+    "packages/conformance/test-support/read-update-coverage-v1.json": "287c2a258afd04a95417f5de416c81bd8159c95762d71d568a64f0b402159f0f"
+  },
+  "sourceBindingSha256": "b308da4f7b4a62d53fe57a11acd26ab359427a20ce0fb1ba5e5da47372764fa1",
+  "diffSha256": "bdd01ec258c5955c6fbc14507c6bf59a409dbca7cab12554109066214e5ef4ef",
+  "clean": true,
+  "wholeTreeVerifiedAsMainPlusFiveAuthorBlobs": true,
+  "all18MainPathsPreserved": [
+    "packages/server/src/transaction-authorization.test.ts",
+    "packages/server/src/transaction-authorization.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "packages/server/src/transaction-changefeed.ts",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "packages/server/src/transaction-events.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-read.test.ts",
+    "packages/server/src/transaction-read.ts",
+    "packages/server/src/transaction-runtime-configuration.ts",
+    "packages/server/src/transaction-runtime.test.ts",
+    "packages/server/src/transaction-runtime.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-snapshot.test.ts",
+    "packages/server/src/transaction-snapshot.ts",
+    "packages/server/src/transaction-store.ts",
+    "scripts/smoke-executables.mjs"
+  ],
+  "verificationBy": "delegated worker, not independent root verification",
+  "rootReleaseSha256": "fb0c01631971c8203b9463667534f6490881529743ec2cc94c5a0ebebb447705"
+}

@@ -1,0 +1,13 @@
+# Root disposition of reference evidence reviews
+
+Frozen579019b676568345f93bb424b2fa6f5774211df2 remains unchanged. Native acceptance and Claude static findings are both retained. Two new whole flags stay false; no integration or promotion of this slice yet. Original author evidence remains bound to579, not its repair successor.
+
+- F1 accepted: include admitted absolute canonical in-Scope Bead alias-target evidence inside B. It must distinguish rejection by Resource category from blanket rejection of absolute spelling, with real alias readback.
+- F2 accepted: include a valid pinned Bead endpoint inside B, preserving opaque pin provenance and actual resulting Link state. Cross-row positives remain useful corroboration but do not substitute for this discriminator.
+- F3 does not require a new product ruling. The actual diagnostic identifies that the supplied alias target is not an admitted canonical in-Scope Bead reference and names the disallowed categories. The selected clause requires a diagnostic naming the cause; it does not prescribe separate wording or a category tag for every invalid input. This is a concrete target-rule explanation, not a generic unexplained validation failure. Keep exact Problem assertions, one diagnostic and normative schema; do not silently add protocol fields or rewrite runtime behavior to satisfy a stronger interpretation.
+- F4 accepted as durable regression protection. Native579 already ran independent actual raw-state and stale-record probes. Preserve at least one corresponding named collection assertion control in the successor so enforcement is exercised by future test runs.
+- F5 declined for this slice: the current complete-Problem pointer shape correctly handles every authored failed member. A future unsupported shape causes a loud ledger mismatch. Do not expand the helper speculatively before such a case exists.
+- Cosmetic doubled rb prefixes remain stable. Renaming valid identities adds no correctness value and changes bound fixtures unnecessarily.
+- The earlier1500-node comparator reserve was an estimate; exact6f3 delta is662. Record both honestly in the new report; do not rewrite historical failed draft accounting. Recount the successor combined capacity, preserving existing caps and old47 scenario bytes.
+
+Original author update_implementation owns an isolated ordinary successor, focused/static checks and fresh installed execution. Root will inspect exact fixes and obtain independent closure before whole promotion. Segmentation remains a separate reviewed engineering plan; its C scenario is not borrowed for this slice.

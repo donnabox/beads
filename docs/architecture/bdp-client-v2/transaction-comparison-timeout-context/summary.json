@@ -1,0 +1,1409 @@
+{
+  "source": "30035b88380b7cbb3abd5359787db236b70345c7",
+  "tree": "cdee4bc7e31511cde094d17c045ea618163b6d7a",
+  "claimEligible": false,
+  "sourceCases": [
+    {
+      "file": "packages/server/src/transaction-store.test.ts",
+      "passed": 6,
+      "filtered": 133,
+      "resultSha256": "bf1c15bd929d6cf6581a622a946e90ad2ce72eb274033b1070acc23f01577845",
+      "exit": {
+        "name": "source-1",
+        "exit": 0,
+        "elapsed": 2.0139298748690635,
+        "started": "2026-10-14T17:54:02Z",
+        "ended": "2026-10-14T17:54:04Z",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context",
+        "args": [
+          "node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "exec",
+          "vitest",
+          "run",
+          "packages/server/src/transaction-store.test.ts",
+          "-t",
+          "captures\\ comparison\\ deadline\\ context\\ in\\ one\\ metadata\\-only\\ atomic\\ entry|rejects\\ a\\ defensive\\ final\\ comparison\\ epoch\\ mismatch\\ without\\ a\\ tuple|returns\\ a\\ stopped\\ comparison\\ observation\\ for\\ a\\ normally\\ closed\\ owner|rejects\\ reentrant\\ comparison\\ observation\\ without\\ entering\\ an\\ atomic\\ read|preserves\\ a\\ fenced\\ owner's\\ comparison\\ observation\\ failure|propagates\\ comparison\\ metadata\\ failure\\ and\\ releases\\ the\\ atomic\\ owner",
+          "--maxWorkers=2",
+          "--reporter=verbose",
+          "--reporter=json",
+          "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/source-1.json"
+        ]
+      }
+    },
+    {
+      "file": "packages/server/src/transaction-submission.test.ts",
+      "passed": 5,
+      "filtered": 31,
+      "resultSha256": "4b9de1b2f90f925318b35460dad1a1221fb0521b2b55a2efac2c7079db630f9f",
+      "exit": {
+        "name": "source-2",
+        "exit": 0,
+        "elapsed": 1.0049082499463111,
+        "started": "2026-10-14T17:54:04Z",
+        "ended": "2026-10-14T17:54:06Z",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context",
+        "args": [
+          "node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "exec",
+          "vitest",
+          "run",
+          "packages/server/src/transaction-submission.test.ts",
+          "-t",
+          "captures\\ current\\ comparison\\ context\\ only\\ at\\ the\\ observed\\ deadline|distinguishes\\ defensive\\ comparison\\ epoch\\ stop\\ before\\ deadline\\ observation|keeps\\ full\\-owner\\ unobserved\\ comparison\\ exact\\ and\\ excludes\\ a\\ caller\\ callback|returns\\ a\\ provable\\ unresolved\\ conflict\\ immediately\\ and\\ times\\ out\\ possible\\ equality\\ without\\ disclosing\\ a\\ receipt|keeps\\ a\\ single\\ comparison\\ deadline\\ across\\ repeated\\ owner\\ replacement\\ and\\ stops\\ at\\ epoch\\ change",
+          "--maxWorkers=2",
+          "--reporter=verbose",
+          "--reporter=json",
+          "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/source-2.json"
+        ]
+      }
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "passed": 2,
+      "filtered": 68,
+      "resultSha256": "d1a12e22d92fa340e394c793fe979609c221eca429ec9ab5174b17c0900bbc65",
+      "exit": {
+        "name": "source-3",
+        "exit": 0,
+        "elapsed": 1.0065652499906719,
+        "started": "2026-10-14T17:54:06Z",
+        "ended": "2026-10-14T17:54:07Z",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context",
+        "args": [
+          "node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "exec",
+          "vitest",
+          "run",
+          "packages/server/src/transaction-http.test.ts",
+          "-t",
+          "serves\\ current\\ comparison\\ deadline\\ context\\ without\\ timeout\\ effects\\ or\\ receipt\\ disclosure|maps\\ a\\ finite\\ unresolved\\ comparison\\ to\\ temporary\\ refusal\\ without\\ disclosing\\ or\\ executing\\ it",
+          "--maxWorkers=2",
+          "--reporter=verbose",
+          "--reporter=json",
+          "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/source-3.json"
+        ]
+      }
+    },
+    {
+      "file": "packages/server/src/transaction-dependencies.test.ts",
+      "passed": 3,
+      "filtered": 22,
+      "resultSha256": "a1196ceca88070654757aed7878e24e4ccaf87fec91a958c549314f696704e0b",
+      "exit": {
+        "name": "source-4",
+        "exit": 0,
+        "elapsed": 1.0155473751947284,
+        "started": "2026-10-14T17:54:07Z",
+        "ended": "2026-10-14T17:54:08Z",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context",
+        "args": [
+          "node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "exec",
+          "vitest",
+          "run",
+          "packages/server/src/transaction-dependencies.test.ts",
+          "-t",
+          "waits\\ without\\ a\\ DB\\ lock\\ then\\ joins\\ the\\ canonical\\ direct/batch\\ identity|proves\\ static\\ mismatch\\ immediately,\\ retains\\ no\\ timeout\\ outcome\\ and\\ keeps\\ the\\ owner|competes\\ freshly\\ after\\ retraction\\ with\\ the\\ same\\ comparison\\ deadline",
+          "--maxWorkers=2",
+          "--reporter=verbose",
+          "--reporter=json",
+          "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/source-4.json"
+        ]
+      }
+    },
+    {
+      "file": "packages/server/src/transaction-sequence-alias.test.ts",
+      "passed": 2,
+      "filtered": 33,
+      "resultSha256": "f0382a2be8cd75ae409532eb185442a92deed7dc5e3a7bcbd535189f66910af2",
+      "exit": {
+        "name": "source-5",
+        "exit": 0,
+        "elapsed": 1.0116123328916728,
+        "started": "2026-10-14T17:54:08Z",
+        "ended": "2026-10-14T17:54:09Z",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context",
+        "args": [
+          "node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "exec",
+          "vitest",
+          "run",
+          "packages/server/src/transaction-sequence-alias.test.ts",
+          "-t",
+          "uses\\ one\\ bounded\\ comparison\\ deadline\\ and\\ leaves\\ the\\ owner's\\ reservation\\ intact|waits\\ for\\ a\\ fixed\\ A\\ candidate\\ then\\ conflicts\\ with\\ the\\ owner's\\ actual\\ B\\ witness",
+          "--maxWorkers=2",
+          "--reporter=verbose",
+          "--reporter=json",
+          "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/source-5.json"
+        ]
+      }
+    }
+  ],
+  "totalSourcePassed": 18,
+  "totalSourceFiltered": 287,
+  "sourceHttp": {
+    "requests": 16,
+    "listeners": 2,
+    "newScenarioCountersAsserted": 12,
+    "preservedBasicPathCount": 4
+  },
+  "controls": [
+    {
+      "name": "remove-deadline-wrapper",
+      "path": "packages/server/src/transaction-http.ts",
+      "patchSha256": "c532c1d89135425b7449d9fbbb997daa4cf76f5a1368c30e87caace28ea48c52",
+      "mutantSha256": "79b0386ba503e1ee2148ba5cf4b2ca4605065319ee7c85a1c6c48cb818610885",
+      "testFile": "packages/server/src/transaction-http.test.ts",
+      "title": "serves current comparison deadline context without timeout effects or receipt disclosure",
+      "expectedFailure": "deadline context presence bdp-scope-epoch",
+      "plannedHttpUntilFailure": 4,
+      "plannedMaxHttp": 12,
+      "installedChildren": 0,
+      "executed": true,
+      "actualBuildExit": 0,
+      "actualTestExit": 1,
+      "adjudication": {
+        "expectedFailure": "deadline context presence bdp-scope-epoch",
+        "actualFailure": [
+          "AssertionError: deadline context presence bdp-scope-epoch: expected false to be true // Object.is equality\n    at /Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls/packages/server/src/transaction-http.test.ts:2755:79\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ],
+        "passed": true
+      },
+      "actualHttpPathCount": 4,
+      "countBasis": "Exact selected path to retained named assertion, not separately instrumented wire log"
+    },
+    {
+      "name": "stale-deadline-position",
+      "path": "packages/server/src/transaction-comparison.ts",
+      "patchSha256": "5bf95a4eaf1b20b656d6e0a2164a5986fd99e151dc0cbe30e5dfef120993957f",
+      "mutantSha256": "73de3b7925b77180a3fa1ece068564a2488e316dfc215bd1690e002f39a56101",
+      "testFile": "packages/server/src/transaction-http.test.ts",
+      "title": "serves current comparison deadline context without timeout effects or receipt disclosure",
+      "expectedFailure": "deadline current position",
+      "plannedHttpUntilFailure": 4,
+      "plannedMaxHttp": 12,
+      "installedChildren": 0,
+      "executed": true,
+      "actualBuildExit": 0,
+      "actualTestExit": 1,
+      "adjudication": {
+        "expectedFailure": "deadline current position",
+        "actualFailure": [
+          "AssertionError: deadline current position: expected 'pos-0' to be 'pos-1' // Object.is equality\n    at /Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls/packages/server/src/transaction-http.test.ts:2760:85\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ],
+        "passed": true
+      },
+      "actualHttpPathCount": 4,
+      "countBasis": "Exact selected path to retained named assertion, not separately instrumented wire log"
+    },
+    {
+      "name": "lose-required-tuple",
+      "path": "packages/server/src/transaction-comparison.ts",
+      "patchSha256": "abf1e309e2a81971716a62e03d9a89dc6ed305934e796e2bdac38bdf65cc1f06",
+      "mutantSha256": "526ef2d4ddbb4a29ff708968c70c9a230bda1d71df55c21c12878c645ead5eb3",
+      "testFile": "packages/server/src/transaction-http.test.ts",
+      "title": "serves current comparison deadline context without timeout effects or receipt disclosure",
+      "expectedFailure": "healthy deadline response",
+      "plannedHttpUntilFailure": 4,
+      "plannedMaxHttp": 12,
+      "installedChildren": 0,
+      "executed": true,
+      "actualBuildExit": 0,
+      "actualTestExit": 1,
+      "adjudication": {
+        "expectedFailure": "healthy deadline response",
+        "actualFailure": [
+          "AssertionError: healthy deadline response: expected 500 to be 503 // Object.is equality\n    at /Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls/packages/server/src/transaction-http.test.ts:2745:58\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ],
+        "passed": true
+      },
+      "actualHttpPathCount": 4,
+      "countBasis": "Exact selected path to retained named assertion, not separately instrumented wire log"
+    },
+    {
+      "name": "leak-unobserved-fields",
+      "path": "packages/server/src/transaction-submission.ts",
+      "patchSha256": "9d1eea2669f64ff0b60a0b0da4308bbfb47b5806d769d59d9eb01455083dca9e",
+      "mutantSha256": "b5099cb2039751ff785adf16fde5adc3fcb717eaaaad2a3817be88927a823f86",
+      "testFile": "packages/server/src/transaction-submission.test.ts",
+      "title": "keeps full-owner unobserved comparison exact and excludes a caller callback",
+      "expectedFailure": "legacy comparison result exact",
+      "plannedHttpUntilFailure": 0,
+      "plannedMaxHttp": 0,
+      "installedChildren": 0,
+      "executed": true,
+      "actualBuildExit": 0,
+      "actualTestExit": 1,
+      "adjudication": {
+        "expectedFailure": "legacy comparison result exact",
+        "actualFailure": [
+          "AssertionError: legacy comparison result exact: expected { kind: 'refused', status: 503, \u2026(3) } to strictly equal { kind: 'refused', status: 503, \u2026(2) }\n    at /Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls/packages/server/src/transaction-submission.test.ts:1129:7\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ],
+        "passed": true
+      },
+      "actualHttpPathCount": 0,
+      "countBasis": "Exact selected path to retained named assertion, not separately instrumented wire log"
+    },
+    {
+      "name": "omit-final-epoch-check",
+      "path": "packages/server/src/transaction-store.ts",
+      "patchSha256": "17e9ddc44241b334d337f3672c75053c7da9b9035acb4bf891887eed730af5f9",
+      "mutantSha256": "a904d11d3ad076ba22360a0f1b64a0955995a5d8b767a61505ab4428f00d1de3",
+      "testFile": "packages/server/src/transaction-store.test.ts",
+      "title": "rejects a defensive final comparison epoch mismatch without a tuple",
+      "expectedFailure": "final deadline epoch check",
+      "plannedHttpUntilFailure": 0,
+      "plannedMaxHttp": 0,
+      "installedChildren": 0,
+      "executed": true,
+      "actualBuildExit": 0,
+      "actualTestExit": 1,
+      "adjudication": {
+        "expectedFailure": "final deadline epoch check",
+        "actualFailure": [
+          "AssertionError: final deadline epoch check: expected { kind: 'observed', context: { \u2026(3) } } to strictly equal { kind: 'owner-stopped' }\n    at /Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls/packages/server/src/transaction-store.test.ts:3264:7\n    at file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)\n    at file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:2272:10)\n    at file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:2955:64"
+        ],
+        "passed": true
+      },
+      "actualHttpPathCount": 0,
+      "countBasis": "Exact selected path to retained named assertion, not separately instrumented wire log"
+    }
+  ],
+  "controlHttpRequests": 12,
+  "controlCountBasis": "Retained intended assertion locations and deterministic request paths; no separately retained raw response transcript.",
+  "checks": {
+    "boundaries.exit.json": {
+      "name": "boundaries",
+      "exit": 0,
+      "elapsed": 1.007573208073154,
+      "started": "2026-10-14T17:54:35Z",
+      "ended": "2026-10-14T17:54:36Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ]
+    },
+    "build.exit.json": {
+      "name": "build",
+      "exit": 0,
+      "elapsed": 1.0032789579126984,
+      "started": "2026-10-14T17:53:55Z",
+      "ended": "2026-10-14T17:53:56Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "control-install.exit.json": {
+      "name": "control-install",
+      "exit": 0,
+      "elapsed": 1.0115513750351965,
+      "started": "2026-10-14T17:54:25Z",
+      "ended": "2026-10-14T17:54:26Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ]
+    },
+    "control-leak-unobserved-fields-build.exit.json": {
+      "name": "control-leak-unobserved-fields-build",
+      "exit": 0,
+      "elapsed": 1.0086754579097033,
+      "started": "2026-10-14T17:54:35Z",
+      "ended": "2026-10-14T17:54:36Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "control-leak-unobserved-fields-test.exit.json": {
+      "name": "control-leak-unobserved-fields-test",
+      "exit": 1,
+      "elapsed": 1.011817832943052,
+      "started": "2026-10-14T17:54:36Z",
+      "ended": "2026-10-14T17:54:37Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-submission.test.ts",
+        "-t",
+        "keeps full-owner unobserved comparison exact and excludes a caller callback",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/controls/leak-unobserved-fields/result.json"
+      ]
+    },
+    "control-lose-required-tuple-build.exit.json": {
+      "name": "control-lose-required-tuple-build",
+      "exit": 0,
+      "elapsed": 1.0024985829368234,
+      "started": "2026-10-14T17:54:32Z",
+      "ended": "2026-10-14T17:54:33Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "control-lose-required-tuple-test.exit.json": {
+      "name": "control-lose-required-tuple-test",
+      "exit": 1,
+      "elapsed": 1.0129814590327442,
+      "started": "2026-10-14T17:54:33Z",
+      "ended": "2026-10-14T17:54:34Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-http.test.ts",
+        "-t",
+        "serves current comparison deadline context without timeout effects or receipt disclosure",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/controls/lose-required-tuple/result.json"
+      ]
+    },
+    "control-omit-final-epoch-check-build.exit.json": {
+      "name": "control-omit-final-epoch-check-build",
+      "exit": 0,
+      "elapsed": 1.00657600001432,
+      "started": "2026-10-14T17:54:37Z",
+      "ended": "2026-10-14T17:54:38Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "control-omit-final-epoch-check-test.exit.json": {
+      "name": "control-omit-final-epoch-check-test",
+      "exit": 1,
+      "elapsed": 1.0117217919323593,
+      "started": "2026-10-14T17:54:38Z",
+      "ended": "2026-10-14T17:54:39Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-store.test.ts",
+        "-t",
+        "rejects a defensive final comparison epoch mismatch without a tuple",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/controls/omit-final-epoch-check/result.json"
+      ]
+    },
+    "control-remove-deadline-wrapper-build.exit.json": {
+      "name": "control-remove-deadline-wrapper-build",
+      "exit": 0,
+      "elapsed": 2.0185947499703616,
+      "started": "2026-10-14T17:54:26Z",
+      "ended": "2026-10-14T17:54:28Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "control-remove-deadline-wrapper-test.exit.json": {
+      "name": "control-remove-deadline-wrapper-test",
+      "exit": 1,
+      "elapsed": 2.013367583975196,
+      "started": "2026-10-14T17:54:28Z",
+      "ended": "2026-10-14T17:54:30Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-http.test.ts",
+        "-t",
+        "serves current comparison deadline context without timeout effects or receipt disclosure",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/controls/remove-deadline-wrapper/result.json"
+      ]
+    },
+    "control-stale-deadline-position-build.exit.json": {
+      "name": "control-stale-deadline-position-build",
+      "exit": 0,
+      "elapsed": 1.0146824580151588,
+      "started": "2026-10-14T17:54:30Z",
+      "ended": "2026-10-14T17:54:31Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "control-stale-deadline-position-test.exit.json": {
+      "name": "control-stale-deadline-position-test",
+      "exit": 1,
+      "elapsed": 1.0157080001663417,
+      "started": "2026-10-14T17:54:31Z",
+      "ended": "2026-10-14T17:54:32Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-controls",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-http.test.ts",
+        "-t",
+        "serves current comparison deadline context without timeout effects or receipt disclosure",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/controls/stale-deadline-position/result.json"
+      ]
+    },
+    "format-final.exit.json": {
+      "name": "format-final",
+      "exit": 0,
+      "elapsed": 1.0116459999699146,
+      "started": "2026-10-14T17:55:10Z",
+      "ended": "2026-10-14T17:55:11Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "format:check"
+      ]
+    },
+    "format.exit.json": {
+      "name": "format",
+      "exit": 0,
+      "elapsed": 2.0132638751529157,
+      "started": "2026-10-14T17:54:32Z",
+      "ended": "2026-10-14T17:54:34Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "format:check"
+      ]
+    },
+    "install.exit.json": {
+      "name": "install",
+      "exit": 0,
+      "elapsed": 1.0080763751175255,
+      "started": "2026-10-14T17:53:46Z",
+      "ended": "2026-10-14T17:53:47Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ]
+    },
+    "lint.exit.json": {
+      "name": "lint",
+      "exit": 0,
+      "elapsed": 1.012446666136384,
+      "started": "2026-10-14T17:54:34Z",
+      "ended": "2026-10-14T17:54:35Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ]
+    },
+    "read-seal.exit.json": {
+      "name": "read-seal",
+      "exit": 0,
+      "elapsed": 1.0035982090048492,
+      "started": "2026-10-14T17:54:36Z",
+      "ended": "2026-10-14T17:54:37Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ]
+    },
+    "source-1.exit.json": {
+      "name": "source-1",
+      "exit": 0,
+      "elapsed": 2.0139298748690635,
+      "started": "2026-10-14T17:54:02Z",
+      "ended": "2026-10-14T17:54:04Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-store.test.ts",
+        "-t",
+        "captures\\ comparison\\ deadline\\ context\\ in\\ one\\ metadata\\-only\\ atomic\\ entry|rejects\\ a\\ defensive\\ final\\ comparison\\ epoch\\ mismatch\\ without\\ a\\ tuple|returns\\ a\\ stopped\\ comparison\\ observation\\ for\\ a\\ normally\\ closed\\ owner|rejects\\ reentrant\\ comparison\\ observation\\ without\\ entering\\ an\\ atomic\\ read|preserves\\ a\\ fenced\\ owner's\\ comparison\\ observation\\ failure|propagates\\ comparison\\ metadata\\ failure\\ and\\ releases\\ the\\ atomic\\ owner",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/source-1.json"
+      ]
+    },
+    "source-2.exit.json": {
+      "name": "source-2",
+      "exit": 0,
+      "elapsed": 1.0049082499463111,
+      "started": "2026-10-14T17:54:04Z",
+      "ended": "2026-10-14T17:54:06Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-submission.test.ts",
+        "-t",
+        "captures\\ current\\ comparison\\ context\\ only\\ at\\ the\\ observed\\ deadline|distinguishes\\ defensive\\ comparison\\ epoch\\ stop\\ before\\ deadline\\ observation|keeps\\ full\\-owner\\ unobserved\\ comparison\\ exact\\ and\\ excludes\\ a\\ caller\\ callback|returns\\ a\\ provable\\ unresolved\\ conflict\\ immediately\\ and\\ times\\ out\\ possible\\ equality\\ without\\ disclosing\\ a\\ receipt|keeps\\ a\\ single\\ comparison\\ deadline\\ across\\ repeated\\ owner\\ replacement\\ and\\ stops\\ at\\ epoch\\ change",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/source-2.json"
+      ]
+    },
+    "source-3.exit.json": {
+      "name": "source-3",
+      "exit": 0,
+      "elapsed": 1.0065652499906719,
+      "started": "2026-10-14T17:54:06Z",
+      "ended": "2026-10-14T17:54:07Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-http.test.ts",
+        "-t",
+        "serves\\ current\\ comparison\\ deadline\\ context\\ without\\ timeout\\ effects\\ or\\ receipt\\ disclosure|maps\\ a\\ finite\\ unresolved\\ comparison\\ to\\ temporary\\ refusal\\ without\\ disclosing\\ or\\ executing\\ it",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/source-3.json"
+      ]
+    },
+    "source-4.exit.json": {
+      "name": "source-4",
+      "exit": 0,
+      "elapsed": 1.0155473751947284,
+      "started": "2026-10-14T17:54:07Z",
+      "ended": "2026-10-14T17:54:08Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-dependencies.test.ts",
+        "-t",
+        "waits\\ without\\ a\\ DB\\ lock\\ then\\ joins\\ the\\ canonical\\ direct/batch\\ identity|proves\\ static\\ mismatch\\ immediately,\\ retains\\ no\\ timeout\\ outcome\\ and\\ keeps\\ the\\ owner|competes\\ freshly\\ after\\ retraction\\ with\\ the\\ same\\ comparison\\ deadline",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/source-4.json"
+      ]
+    },
+    "source-5.exit.json": {
+      "name": "source-5",
+      "exit": 0,
+      "elapsed": 1.0116123328916728,
+      "started": "2026-10-14T17:54:08Z",
+      "ended": "2026-10-14T17:54:09Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-sequence-alias.test.ts",
+        "-t",
+        "uses\\ one\\ bounded\\ comparison\\ deadline\\ and\\ leaves\\ the\\ owner's\\ reservation\\ intact|waits\\ for\\ a\\ fixed\\ A\\ candidate\\ then\\ conflicts\\ with\\ the\\ owner's\\ actual\\ B\\ witness",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/source-5.json"
+      ]
+    },
+    "typecheck.exit.json": {
+      "name": "typecheck",
+      "exit": 0,
+      "elapsed": 2.0092822501901537,
+      "started": "2026-10-14T17:53:48Z",
+      "ended": "2026-10-14T17:53:50Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ]
+    }
+  },
+  "packed": {
+    "source": "30035b88380b7cbb3abd5359787db236b70345c7",
+    "tree": "cdee4bc7e31511cde094d17c045ea618163b6d7a",
+    "clean": true,
+    "packs": {
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/packed/packs/protocol.tgz": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/packed/packs/server.tgz": "b9ebfae7b6fd2f5602688fadf0110da3749d5af012fdf4599867c6af2f84bf35"
+    },
+    "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/packed/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+    "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+    "observations": {
+      "direct": {
+        "observation": "private-installed-direct-refusal-context",
+        "declaredSourceCommit": "30035b88380b7cbb3abd5359787db236b70345c7",
+        "workspaceDirty": false,
+        "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/packed/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+        "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+        "directoryAbsent": true,
+        "evidenceRetention": "Response fingerprints and context only; complete wire and body bytes are not retained",
+        "binding": {
+          "served": {
+            "scope": "https://reference.invalid/acme/",
+            "profile": "transactional",
+            "history": false,
+            "sourceCommit": "30035b88380b7cbb3abd5359787db236b70345c7",
+            "installedPayloadDigest": "2c62c66724c2c48fcd1de19360abbb90a3d5bb7c37257a095af752ba9e0b322d",
+            "installedContractsDigest": "1f369030c8696ff445c235b24637cc1ac41f0ab724a1b2402511347f74da344f",
+            "policyDigest": "65a71a7685a90efefcc0a5a74e7bdab2cae9b9a9fd126a07058825d32a130d59",
+            "authenticationDigest": "cf992c18f6155da28e049b46ccbd2c99c39b0b8c9fe9f9473d6618486c940ee5",
+            "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+            "fixtureId": "reference-transactional-v1",
+            "capabilities": [
+              "installed-transactional-http",
+              "transactional-receipt-observation"
+            ]
+          },
+          "operationTargets": {
+            "createBead": "https://reference.invalid/acme/operations/create-bead",
+            "updateBead": "https://reference.invalid/acme/operations/update-bead",
+            "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+            "createLink": "https://reference.invalid/acme/operations/create-link",
+            "updateLink": "https://reference.invalid/acme/operations/update-link",
+            "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+            "putAlias": "https://reference.invalid/acme/operations/put-alias",
+            "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+            "updateWhere": "https://reference.invalid/acme/operations/update-where",
+            "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+            "batch": "https://reference.invalid/acme/operations/batch",
+            "sequence": "https://reference.invalid/acme/operations/sequence"
+          },
+          "runtimeConfigurationIdentity": "6fc8e98500180438f54bd0197b095ed5bb4fc09475ad770c658428bf0893b8b4",
+          "authorityMode": "canonical"
+        },
+        "routes": [
+          {
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/create-bead"
+          },
+          {
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/batch"
+          },
+          {
+            "method": "GET",
+            "url": "https://reference.invalid/acme/beads/?limit=32"
+          },
+          {
+            "method": "GET",
+            "url": "https://reference.invalid/acme/events/"
+          }
+        ],
+        "sessions": [
+          {
+            "pid": 82412,
+            "exit": 0,
+            "signal": null
+          }
+        ],
+        "attemptedRequests": 14,
+        "completedResponses": [
+          {
+            "label": "seed-a",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/create-bead",
+            "status": 200,
+            "requestBodyBytes": 94,
+            "requestBodySha256": "8730ee46597d5173aa5f13593fd8282ada4fecc1729fd568974cbcdee7275ee8",
+            "responseBodyBytes": 663,
+            "responseBodySha256": "20c38a57a76548bb1f5d85b27c5ad60edaa072d450e0ea22f6e5a2ca785eb7bd",
+            "wireSha256": "43e4fe5bb249eb8b29db409aa1cb6b118c905a985e6b30a5fbe1e6d400aad1bd",
+            "context": {
+              "epoch": "5b7554dc-7c49-4d1a-8583-866bb26ee851",
+              "view": "development-all-visible",
+              "position": "pos-1"
+            }
+          },
+          {
+            "label": "seed-b",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/batch",
+            "status": 200,
+            "requestBodyBytes": 136,
+            "requestBodySha256": "bdec7df3b90efd349ee33374fe1cb8911aa7b7adbf06ca8d31e920e8115e166d",
+            "responseBodyBytes": 662,
+            "responseBodySha256": "9589f5aaad6fd79f5c88b58e2206771d373274466adf9dde8a4eccac53e68423",
+            "wireSha256": "80e4f4ee36a5518af8cb7a30b68626da3193968df4b851ee4009b73003473ea3",
+            "context": {
+              "epoch": "5b7554dc-7c49-4d1a-8583-866bb26ee851",
+              "view": "development-all-visible",
+              "position": "pos-2"
+            }
+          },
+          {
+            "label": "singleton-conflict",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/create-bead",
+            "status": 409,
+            "requestBodyBytes": 106,
+            "requestBodySha256": "89cc71bbe2d8fdfd7cbec72887b165d25755fd848af915de005436361fe94c8b",
+            "responseBodyBytes": 122,
+            "responseBodySha256": "6659f511cbef9350ede5c7ed10ed8d17f0a713a0c938e35ff4ab844e06b42b96",
+            "wireSha256": "ba57f0512ec1e12b7b07dfebbdefb1855593e8ce412a47dbbb38f7772c88615f",
+            "context": {
+              "epoch": "5b7554dc-7c49-4d1a-8583-866bb26ee851",
+              "view": "development-all-visible",
+              "position": "pos-2"
+            }
+          },
+          {
+            "label": "batch-conflict",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/batch",
+            "status": 409,
+            "requestBodyBytes": 148,
+            "requestBodySha256": "626c3acb09d848f40a2a97f0e87ef4225cc2a59e864334245a6b7925f98b4951",
+            "responseBodyBytes": 122,
+            "responseBodySha256": "6659f511cbef9350ede5c7ed10ed8d17f0a713a0c938e35ff4ab844e06b42b96",
+            "wireSha256": "ba57f0512ec1e12b7b07dfebbdefb1855593e8ce412a47dbbb38f7772c88615f",
+            "context": {
+              "epoch": "5b7554dc-7c49-4d1a-8583-866bb26ee851",
+              "view": "development-all-visible",
+              "position": "pos-2"
+            }
+          },
+          {
+            "label": "retained-negotiation",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/create-bead",
+            "status": 406,
+            "requestBodyBytes": 94,
+            "requestBodySha256": "8730ee46597d5173aa5f13593fd8282ada4fecc1729fd568974cbcdee7275ee8",
+            "responseBodyBytes": 0,
+            "responseBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "wireSha256": "91193d65eaca88b66c257eeb06a26791c50b441e04133ddbab639c35dc82cd8e",
+            "context": {
+              "epoch": "5b7554dc-7c49-4d1a-8583-866bb26ee851",
+              "view": "development-all-visible",
+              "position": "pos-2"
+            }
+          },
+          {
+            "label": "fresh-negotiation",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/create-bead",
+            "status": 406,
+            "requestBodyBytes": 94,
+            "requestBodySha256": "c54e2350ba3d0f5514cbef8dafcb231213608964c7e68a4e77cc6ada18127681",
+            "responseBodyBytes": 0,
+            "responseBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "wireSha256": "91193d65eaca88b66c257eeb06a26791c50b441e04133ddbab639c35dc82cd8e",
+            "context": {
+              "epoch": "5b7554dc-7c49-4d1a-8583-866bb26ee851",
+              "view": "development-all-visible",
+              "position": "pos-2"
+            }
+          },
+          {
+            "label": "fresh-capacity",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/batch",
+            "status": 413,
+            "requestBodyBytes": 4616,
+            "requestBodySha256": "fe8750234527a921024115c489b435f0fb66758d17019062e50428f4cc679304",
+            "responseBodyBytes": 145,
+            "responseBodySha256": "97c5bc0ad96786188599c531d4a06db8ee460ada44a2a5b807f3b4d62756d06f",
+            "wireSha256": "6f84b8f8c12ebf7a5db2f2679ae40d2e681104f8cb6f35f7c19d815f59d12751",
+            "context": {
+              "epoch": "5b7554dc-7c49-4d1a-8583-866bb26ee851",
+              "view": "development-all-visible",
+              "position": "pos-2"
+            }
+          },
+          {
+            "label": "retained-root",
+            "method": "GET",
+            "url": "https://reference.invalid/acme/receipts/ada7dcca-679b-46cc-a488-33c6017f4f52",
+            "status": 200,
+            "requestBodyBytes": 0,
+            "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "responseBodyBytes": 663,
+            "responseBodySha256": "20c38a57a76548bb1f5d85b27c5ad60edaa072d450e0ea22f6e5a2ca785eb7bd",
+            "wireSha256": "3a4adb40f30425d9d257f188cd29a67d6adbe62526a146e36faf1b4283a707a0",
+            "context": {
+              "epoch": "5b7554dc-7c49-4d1a-8583-866bb26ee851",
+              "view": "development-all-visible",
+              "position": "pos-2"
+            }
+          },
+          {
+            "label": "unchanged-beads",
+            "method": "GET",
+            "url": "https://reference.invalid/acme/beads/?limit=32",
+            "status": 200,
+            "requestBodyBytes": 0,
+            "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "responseBodyBytes": 403,
+            "responseBodySha256": "9657f89797addde879266e41e76e49935532d57a99024960303403304780a748",
+            "wireSha256": "bc3896e6425478cd4c9cff0862aaf9aab89f4c3e96e67f7b3d1a3c633e5d401c",
+            "context": {
+              "epoch": "5b7554dc-7c49-4d1a-8583-866bb26ee851",
+              "view": "development-all-visible",
+              "position": "pos-2"
+            }
+          },
+          {
+            "label": "unchanged-events",
+            "method": "GET",
+            "url": "https://reference.invalid/acme/events/",
+            "status": 200,
+            "requestBodyBytes": 0,
+            "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "responseBodyBytes": 1128,
+            "responseBodySha256": "4c609662f308f89710742c61753743c1d7fadcb6afb343cf09fae135353217a0",
+            "wireSha256": "33eaadca9d1a1c897989e08856c043f53fc76d2f5a20da35fe30a462d776a93f",
+            "context": {
+              "epoch": "5b7554dc-7c49-4d1a-8583-866bb26ee851",
+              "view": "development-all-visible",
+              "position": "pos-2"
+            }
+          },
+          {
+            "label": "retry-negotiation-key",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/create-bead",
+            "status": 200,
+            "requestBodyBytes": 94,
+            "requestBodySha256": "c54e2350ba3d0f5514cbef8dafcb231213608964c7e68a4e77cc6ada18127681",
+            "responseBodyBytes": 672,
+            "responseBodySha256": "4ada250404836cc72918bd839777a3d8ef4ba69d9056d018a259d31412396fc5",
+            "wireSha256": "6e46eeb31529be8a95e84d7e763861eb403dd17f6142db7006b2cd51a2712658",
+            "context": {
+              "epoch": "5b7554dc-7c49-4d1a-8583-866bb26ee851",
+              "view": "development-all-visible",
+              "position": "pos-3"
+            }
+          },
+          {
+            "label": "retry-capacity-key",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/batch",
+            "status": 200,
+            "requestBodyBytes": 136,
+            "requestBodySha256": "c39c944cd13c464b4d886d0d1968296ad43f72c153532c49ce687153b9e36819",
+            "responseBodyBytes": 669,
+            "responseBodySha256": "3ac5f09d1c986cf60d2ac5f20183e1d2d9cf977076ed4c2ff5bb76fe56fa9aa2",
+            "wireSha256": "b7817491f8b91ff5ab7c9ee4d07d12d96ba15b65f6d05c462299eff14f407373",
+            "context": {
+              "epoch": "5b7554dc-7c49-4d1a-8583-866bb26ee851",
+              "view": "development-all-visible",
+              "position": "pos-4"
+            }
+          },
+          {
+            "label": "final-beads",
+            "method": "GET",
+            "url": "https://reference.invalid/acme/beads/?limit=32",
+            "status": 200,
+            "requestBodyBytes": 0,
+            "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "responseBodyBytes": 783,
+            "responseBodySha256": "3d1e9c500685a25675689eca3521fd11ce011f4c65fdf1967b4cb4f669ed0d46",
+            "wireSha256": "23ab7d1652b4f19f626de3ee4ffb189cb5143ec7a878d7bc58e26309013acddf",
+            "context": {
+              "epoch": "5b7554dc-7c49-4d1a-8583-866bb26ee851",
+              "view": "development-all-visible",
+              "position": "pos-4"
+            }
+          },
+          {
+            "label": "final-events",
+            "method": "GET",
+            "url": "https://reference.invalid/acme/events/",
+            "status": 200,
+            "requestBodyBytes": 0,
+            "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "responseBodyBytes": 2182,
+            "responseBodySha256": "0061f05dc5c1277ecd0339cb79277469162336a57a835bbae643022b3ca66c74",
+            "wireSha256": "59c9dca3f9e1732d693b42a10a06019d8b3bc2f8be4aa46b4c7e70e53b1836b4",
+            "context": {
+              "epoch": "5b7554dc-7c49-4d1a-8583-866bb26ee851",
+              "view": "development-all-visible",
+              "position": "pos-4"
+            }
+          }
+        ],
+        "outcome": "passed",
+        "claimEligible": false
+      },
+      "sequence": {
+        "observation": "private-installed-sequence-refusal-context",
+        "declaredSourceCommit": "30035b88380b7cbb3abd5359787db236b70345c7",
+        "workspaceDirty": false,
+        "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/packed/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+        "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+        "directoryAbsent": true,
+        "evidenceRetention": "Response fingerprints and context only; complete wire and body bytes are not retained",
+        "binding": {
+          "served": {
+            "scope": "https://reference.invalid/acme/",
+            "profile": "transactional",
+            "history": false,
+            "sourceCommit": "30035b88380b7cbb3abd5359787db236b70345c7",
+            "installedPayloadDigest": "2c62c66724c2c48fcd1de19360abbb90a3d5bb7c37257a095af752ba9e0b322d",
+            "installedContractsDigest": "1f369030c8696ff445c235b24637cc1ac41f0ab724a1b2402511347f74da344f",
+            "policyDigest": "94dba9ef336c10df981db6f2c24c2e02eec3e0df6184db1eeac3764cdcc93d5b",
+            "authenticationDigest": "40fb12bfbf230d90ca19f18edb22427f96d2ac28334c0010df75d7e3c68cac6a",
+            "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+            "fixtureId": "reference-transactional-v1",
+            "capabilities": [
+              "installed-transactional-http",
+              "transactional-receipt-observation"
+            ]
+          },
+          "operationTargets": {
+            "createBead": "https://reference.invalid/acme/operations/create-bead",
+            "updateBead": "https://reference.invalid/acme/operations/update-bead",
+            "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+            "createLink": "https://reference.invalid/acme/operations/create-link",
+            "updateLink": "https://reference.invalid/acme/operations/update-link",
+            "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+            "putAlias": "https://reference.invalid/acme/operations/put-alias",
+            "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+            "updateWhere": "https://reference.invalid/acme/operations/update-where",
+            "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+            "batch": "https://reference.invalid/acme/operations/batch",
+            "sequence": "https://reference.invalid/acme/operations/sequence"
+          },
+          "runtimeConfigurationIdentity": "d1718dcaff57ee0b51474b894f13e52ebd868e99416439f00f75553eac92bc2d",
+          "authorityMode": "canonical"
+        },
+        "routes": [
+          {
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/create-bead"
+          },
+          {
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/sequence"
+          },
+          {
+            "method": "GET",
+            "url": "https://reference.invalid/acme/beads/?limit=32"
+          },
+          {
+            "method": "GET",
+            "url": "https://reference.invalid/acme/events/"
+          }
+        ],
+        "sessions": [
+          {
+            "pid": 82445,
+            "exit": 0,
+            "signal": null
+          }
+        ],
+        "attemptedRequests": 13,
+        "completedResponses": [
+          {
+            "label": "seed-a",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/create-bead",
+            "status": 200,
+            "requestBodyBytes": 94,
+            "requestBodySha256": "8730ee46597d5173aa5f13593fd8282ada4fecc1729fd568974cbcdee7275ee8",
+            "responseBodyBytes": 661,
+            "responseBodySha256": "221af3bff3fc9fdf25039a78901442e9b132e7e3766b098a90976cad62a33da9",
+            "wireSha256": "16572e28681556c207ff5d7ed8a2ff654c4c4c1c39c4f50e771984ec7ec77cbe",
+            "context": {
+              "epoch": "79dd3f4d-d6ee-400a-a808-de5b37f070fc",
+              "view": "development-all-visible",
+              "position": "pos-1"
+            }
+          },
+          {
+            "label": "seed-b",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/create-bead",
+            "status": 200,
+            "requestBodyBytes": 94,
+            "requestBodySha256": "ac92c80dc5ff82b89fc4c498a045cf1ce85d062c1ee66bbc50e8b749db1c0ef5",
+            "responseBodyBytes": 661,
+            "responseBodySha256": "ca31c97382bbfdbb4d31d5254e57ea52b00d56eeb3cf22d86dcfc46a27c7b0bf",
+            "wireSha256": "2fc3f2d17cec7d8a0ac878009e06fb0b6a5e97f88de5b5a7bab2e9e9c2ec3ccf",
+            "context": {
+              "epoch": "79dd3f4d-d6ee-400a-a808-de5b37f070fc",
+              "view": "development-all-visible",
+              "position": "pos-2"
+            }
+          },
+          {
+            "label": "initial-capacity",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/sequence",
+            "status": 413,
+            "requestBodyBytes": 5497,
+            "requestBodySha256": "c16ffbfa6d67f6a752cc9de8eb0bec03767e7335b5cc92742c20121fa9c4e779",
+            "responseBodyBytes": 142,
+            "responseBodySha256": "c9762128cff7ea113307e0c0e1a8ec5ea8229e17c211b000be73ba8b3b5ad612",
+            "wireSha256": "4f83d15c0813cbcb95859b90c9218d5d05c3aefa5a1217e249bbf9c6853b243c",
+            "context": {
+              "epoch": "79dd3f4d-d6ee-400a-a808-de5b37f070fc",
+              "view": "development-all-visible",
+              "position": "pos-2"
+            }
+          },
+          {
+            "label": "initial-negotiation",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/sequence",
+            "status": 406,
+            "requestBodyBytes": 176,
+            "requestBodySha256": "ce725f9f700da4f94349fceb5dea7ca16a07cff88abc8986a0d6e84d3cf8b894",
+            "responseBodyBytes": 0,
+            "responseBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "wireSha256": "29ba8352d7c329e78eb96d3879e842beb9928e6257f7d704f25ee1bc62469376",
+            "context": {
+              "epoch": "79dd3f4d-d6ee-400a-a808-de5b37f070fc",
+              "view": "development-all-visible",
+              "position": "pos-2"
+            }
+          },
+          {
+            "label": "retained-root",
+            "method": "GET",
+            "url": "https://reference.invalid/acme/receipts/7fc59d73-bbe8-4aed-9bb9-b924c553b455",
+            "status": 200,
+            "requestBodyBytes": 0,
+            "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "responseBodyBytes": 661,
+            "responseBodySha256": "221af3bff3fc9fdf25039a78901442e9b132e7e3766b098a90976cad62a33da9",
+            "wireSha256": "0d090c86d2686d7bf80c8a70c82aaec41515392831f472d07ea731c25f457c80",
+            "context": {
+              "epoch": "79dd3f4d-d6ee-400a-a808-de5b37f070fc",
+              "view": "development-all-visible",
+              "position": "pos-2"
+            }
+          },
+          {
+            "label": "unchanged-beads",
+            "method": "GET",
+            "url": "https://reference.invalid/acme/beads/?limit=32",
+            "status": 200,
+            "requestBodyBytes": 0,
+            "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "responseBodyBytes": 403,
+            "responseBodySha256": "8049c7d163e5f302ccb0201f4080ceb92c867bef3001da66027a23933b95985b",
+            "wireSha256": "b29435a99f076f3d774dcc7d9b37ee2257e34a0ee5827d3ff6e65738c6101a23",
+            "context": {
+              "epoch": "79dd3f4d-d6ee-400a-a808-de5b37f070fc",
+              "view": "development-all-visible",
+              "position": "pos-2"
+            }
+          },
+          {
+            "label": "unchanged-events",
+            "method": "GET",
+            "url": "https://reference.invalid/acme/events/",
+            "status": 200,
+            "requestBodyBytes": 0,
+            "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "responseBodyBytes": 1128,
+            "responseBodySha256": "0036ea8f8d24be0580c9931e1161dfd7da052cbd6fa123a41218ef3d49b7a2e1",
+            "wireSha256": "dbc6a0837b45324b694acafe637ea9a03e189b7554c61a3bd6d8c448cce5c356",
+            "context": {
+              "epoch": "79dd3f4d-d6ee-400a-a808-de5b37f070fc",
+              "view": "development-all-visible",
+              "position": "pos-2"
+            }
+          },
+          {
+            "label": "reuse-negotiation-key",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/create-bead",
+            "status": 200,
+            "requestBodyBytes": 104,
+            "requestBodySha256": "b02bd25db8ff6950caeccc03dfea81bdafd9a91849c25bc215625b42474df8ab",
+            "responseBodyBytes": 676,
+            "responseBodySha256": "690e9ac9324cc34fac98f9f1e124acbb3033d49c2ead0a58411712f39ff678a2",
+            "wireSha256": "e7f112510380e119a7820073c373b5202389322b7a89165b8eaa53a686d42977",
+            "context": {
+              "epoch": "79dd3f4d-d6ee-400a-a808-de5b37f070fc",
+              "view": "development-all-visible",
+              "position": "pos-3"
+            }
+          },
+          {
+            "label": "reuse-capacity-key",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/create-bead",
+            "status": 200,
+            "requestBodyBytes": 94,
+            "requestBodySha256": "ddd8e5218882483f61a09a7a2e4f5cbe2374c7f6c9452ff4e7e256b345fdc36c",
+            "responseBodyBytes": 661,
+            "responseBodySha256": "3c8b3c51457753c3dda5a6d9b47a1cc9351b524921679efedbc2bf5aa7f4d0a5",
+            "wireSha256": "1e50b91af906070d18844f3a4dd4daa6b5ba76b8f9bbe5c30baa79da07fb4db6",
+            "context": {
+              "epoch": "79dd3f4d-d6ee-400a-a808-de5b37f070fc",
+              "view": "development-all-visible",
+              "position": "pos-4"
+            }
+          },
+          {
+            "label": "repeat-capacity",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/sequence",
+            "status": 413,
+            "requestBodyBytes": 5728,
+            "requestBodySha256": "ccb7a982d39bb5a7749745888c5ecb205d0298cbfccc9bede9b4fb2adcfd9612",
+            "responseBodyBytes": 142,
+            "responseBodySha256": "c9762128cff7ea113307e0c0e1a8ec5ea8229e17c211b000be73ba8b3b5ad612",
+            "wireSha256": "7c1861c8e565feb8521c8d97740406b70fdfc747eacf652b315ca1729e840c20",
+            "context": {
+              "epoch": "79dd3f4d-d6ee-400a-a808-de5b37f070fc",
+              "view": "development-all-visible",
+              "position": "pos-4"
+            }
+          },
+          {
+            "label": "repeat-negotiation",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/sequence",
+            "status": 406,
+            "requestBodyBytes": 183,
+            "requestBodySha256": "6f25a491b3ec613bd39283231b858e831e2999cafff9ac06ea5aa7c6703c2f86",
+            "responseBodyBytes": 0,
+            "responseBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "wireSha256": "1508fff5f3c7c17af96d67a689ea97f1911c6f4e39b7a1dbf46098e803942a23",
+            "context": {
+              "epoch": "79dd3f4d-d6ee-400a-a808-de5b37f070fc",
+              "view": "development-all-visible",
+              "position": "pos-4"
+            }
+          },
+          {
+            "label": "final-beads",
+            "method": "GET",
+            "url": "https://reference.invalid/acme/beads/?limit=32",
+            "status": 200,
+            "requestBodyBytes": 0,
+            "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "responseBodyBytes": 793,
+            "responseBodySha256": "2a74d4fa5c4f26571b4b97d95bc782cd5d3102f59e691336717d9ef257e2cd73",
+            "wireSha256": "f72495b3d88b022e0612bec95f3a419b339d960d023d130b683f31e7536b584b",
+            "context": {
+              "epoch": "79dd3f4d-d6ee-400a-a808-de5b37f070fc",
+              "view": "development-all-visible",
+              "position": "pos-4"
+            }
+          },
+          {
+            "label": "final-events",
+            "method": "GET",
+            "url": "https://reference.invalid/acme/events/",
+            "status": 200,
+            "requestBodyBytes": 0,
+            "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "responseBodyBytes": 2192,
+            "responseBodySha256": "3b4e766aef0fb510feccb330223a0a0a9ae067f05fd3bdb38a207331dbcc4113",
+            "wireSha256": "34a8b013173d1e5133a940db2d6a9a945c48f026b32eec7d4192e700b0055874",
+            "context": {
+              "epoch": "79dd3f4d-d6ee-400a-a808-de5b37f070fc",
+              "view": "development-all-visible",
+              "position": "pos-4"
+            }
+          }
+        ],
+        "outcome": "passed",
+        "claimEligible": false
+      }
+    },
+    "exits": {
+      "build": {
+        "exit": 0,
+        "seconds": 0.9512872500345111,
+        "started": "2026-10-14T17:56:06Z",
+        "ended": "2026-10-14T17:56:07Z",
+        "command": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "build"
+        ],
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context",
+        "pid": 82288
+      },
+      "pack-protocol": {
+        "exit": 0,
+        "seconds": 0.19105350016616285,
+        "started": "2026-10-14T17:56:07Z",
+        "ended": "2026-10-14T17:56:07Z",
+        "command": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "pack",
+          "--out",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/packed/packs/protocol.tgz"
+        ],
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context/packages/protocol",
+        "pid": 82357
+      },
+      "pack-server": {
+        "exit": 0,
+        "seconds": 0.24666387494653463,
+        "started": "2026-10-14T17:56:07Z",
+        "ended": "2026-10-14T17:56:07Z",
+        "command": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "pack",
+          "--out",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/packed/packs/server.tgz"
+        ],
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context/packages/server",
+        "pid": 82363
+      },
+      "install": {
+        "exit": 0,
+        "seconds": 0.5126261659897864,
+        "started": "2026-10-14T17:56:07Z",
+        "ended": "2026-10-14T17:56:08Z",
+        "command": [
+          "npm",
+          "install",
+          "--offline",
+          "--ignore-scripts",
+          "--no-audit",
+          "--no-fund"
+        ],
+        "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/packed/install",
+        "pid": 82365
+      },
+      "direct": {
+        "exit": 0,
+        "seconds": 1.0496882498264313,
+        "started": "2026-10-14T17:56:08Z",
+        "ended": "2026-10-14T17:56:09Z",
+        "command": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "exec",
+          "vitest",
+          "run",
+          "apps/bdptest/src/transactional-direct-refusal-installed.test.ts",
+          "--maxWorkers=1",
+          "--reporter=verbose",
+          "--reporter=json",
+          "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/packed/direct.json"
+        ],
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context",
+        "pid": 82381
+      },
+      "sequence": {
+        "exit": 0,
+        "seconds": 0.9549725831020623,
+        "started": "2026-10-14T17:56:09Z",
+        "ended": "2026-10-14T17:56:10Z",
+        "command": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "exec",
+          "vitest",
+          "run",
+          "apps/bdptest/src/transactional-sequence-refusal-installed.test.ts",
+          "--maxWorkers=1",
+          "--reporter=verbose",
+          "--reporter=json",
+          "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/packed/sequence.json"
+        ],
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-context",
+        "pid": 82419
+      }
+    },
+    "totalRequests": 27,
+    "totalChildren": 2,
+    "claimEligible": false
+  },
+  "cleanup": [
+    {
+      "cohort": "direct",
+      "pid": 82412,
+      "exit": 0,
+      "signal": null,
+      "pidAbsentIndependentlyChecked": true,
+      "directoryAbsentReported": true
+    },
+    {
+      "cohort": "sequence",
+      "pid": 82445,
+      "exit": 0,
+      "signal": null,
+      "pidAbsentIndependentlyChecked": true,
+      "directoryAbsentReported": true
+    }
+  ],
+  "limitations": [
+    "Default installed timeout sensitivity unobserved",
+    "Maintenance-failure earlier closed shortcut not repaired",
+    "Defensive epoch mismatch is synthetic, not a live owner transition",
+    "Events proof is not change-group pagination",
+    "Installed evidence retains fingerprints/context, not full wire/body transcripts",
+    "Source response estimate is not measured heap or enforced source transport cap",
+    "No public activation or cumulative qualification"
+  ]
+}

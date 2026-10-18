@@ -1,0 +1,254 @@
+{
+  "at": "2026-10-16T03:11:54.911858+00:00",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/report-ceiling-repair/source-binding.json",
+    "sha256": "855e81418b223d62f19b0b5d9ce38a6ea2bb56b8612b6f6e81e4285141632d0f"
+  },
+  "authorOverlap": "Source and supervisor author performed this data audit; not extra independent code review.",
+  "head": "1647c5df37a82e1364d281ac46beb60a94ab6c76",
+  "attribution": "Unmerged reviewed1647 candidate, dirty authoring build. Final actual authorization main integration and installed proof pending.",
+  "stages": {
+    "setup": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.7981420420110226,
+      "sourceUnchanged": true,
+      "resultSha256": "27e071885038563325e5e0f84cca8445b6d936d6a1976e35c47695f752d3e56c",
+      "logSha256": "8feed4d643236f0fe7950e5f350c73ce58439fb1d2aaffc349a111db78cfc63b",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    "typecheck": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.5497950001154095,
+      "sourceUnchanged": true,
+      "resultSha256": "6e4f1eab7d76aa29fec85ccf55a5239c7d71defd6ffb7a6188353fc2360cf12f",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    "build": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.555910374969244,
+      "sourceUnchanged": true,
+      "resultSha256": "177980a6795bdd66e70ce9a7ea1c5016176dfccf46ab6b01681b1d1845297ae1",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderrSha256": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    "format-check": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.9396068330388516,
+      "sourceUnchanged": true,
+      "resultSha256": "02f0a0b4dc4916fd95fe9d4755c2f7178cd57375aa8016859f722fa7ead89c7a",
+      "logSha256": "18eab88e4cf712ddef7f3aac5e584d07adb86b5a53946d65bd67fded33bd8372",
+      "stderrSha256": "27d4a8f9f57ffa2ed1a62044be304d354ca11792394fc73b595fd300491885e9",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    "lint": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.1342841249424964,
+      "sourceUnchanged": true,
+      "resultSha256": "eb19bb283c7ca8578b241b75cc03e38e02e00f5aa11c181e54d8e986543f1917",
+      "logSha256": "ece7cd89c8918517e1e10605d38639decd73d3f60a36ba9615b456210dbf9768",
+      "stderrSha256": "c9497dce407f442e96ffe33ce2d9fee1de9978d2c8a3a561c0ef457f1321681f",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    "boundaries": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.1975833750329912,
+      "sourceUnchanged": true,
+      "resultSha256": "674b00faad2f7ee739a2e6b5312d3bc0baacc38a42449dc626d81c0baa60ad6c",
+      "logSha256": "25f2896a4960c5d83a2204d5d35f52d3e1a6f7e77d5f53a88ddc9d70b9ebe696",
+      "stderrSha256": "d260441eb2539a76bd20c55dd70475eb60928b9473eb9ca28381db489a642c51",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    "read-seal": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.9123999578878284,
+      "sourceUnchanged": true,
+      "resultSha256": "e836facbbd68fc8908efa6e9e2f4e1abefe4b9f76f5ad7f2d9d0a025522b839e",
+      "logSha256": "18a58981597b6d29981cfc6a9587156d7b37a5fc7ead823c32dc08cf350020b3",
+      "stderrSha256": "dd750dcee9bf2c0c1be7ded137d7691e5cbad5444a22f6abc980bf6a9b724308",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    },
+    "consistency": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.4627832910045981,
+      "sourceUnchanged": true,
+      "resultSha256": "6bf3793c545f3e83872111264ee4535574daec8e6cbe1d47d388995b5da9f230",
+      "logSha256": "acc220d67a5344653a90188fe0deadf3bbec21e28d2c4043e6a3ef138d1cb9c5",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "adjudication": {
+        "kind": "exact-source-selection",
+        "passedFullNames": [
+          "private minimum-read subset snapshots canonical supported tuples without getters or opaque-token guesses",
+          "private minimum-read subset only turns actual behind observations into timeout after the original finite deadline",
+          "distinguishes closed minimum receiving syntax from supported position identities",
+          "captures lexical current minimums without widening strict consumers or invoking accessors",
+          "waits for unproved current eligibility with one deadline and preserves terminal failures"
+        ],
+        "skipped": 0,
+        "jsonSha256": "720ae304daa0ece229c73132a938be8d822f9350a4f96f7957db92995292f05f",
+        "limitation": "Static HTTP/owner model is not an independently observed network quota; raw logs and reported cleanup remain separately reviewed."
+      }
+    },
+    "owner-read": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.4931431249715388,
+      "sourceUnchanged": true,
+      "resultSha256": "e2efb35b36411deb1da9e0eb00f3c7b5e550aab48172c9d11436d10bd42f5d78",
+      "logSha256": "ab33064f2251dae8d174fed9e297c847e25b59c750c0a7a82ed9a75e82576b31",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "adjudication": {
+        "kind": "exact-source-selection",
+        "passedFullNames": [
+          "compatible missing Resource minimum returns observed missing Resources before behind and foreign minimum collisions",
+          "current Type and incident-Link minimums keeps compatible missing Types and absent/deleted incident anchors separate from collisions",
+          "current alias minimum subset keeps live alias context failures and compatible absent/deleted/dangling observations distinct",
+          "uses actual current policy for missing-first and unproved Resource attempts",
+          "drains an admitted unknown minimum to timeout and rejects new reads while closing"
+        ],
+        "skipped": 62,
+        "jsonSha256": "74fc4296f9bd7af234393f9f06866f48bf9f59f23fe5369fed187706f0f1bc92",
+        "limitation": "Static HTTP/owner model is not an independently observed network quota; raw logs and reported cleanup remain separately reviewed."
+      }
+    },
+    "http": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.6800402498338372,
+      "sourceUnchanged": true,
+      "resultSha256": "f89d619c4b37dac52322d3a39178d25851c1c76583d7624b9e8fff61357c4570",
+      "logSha256": "aa9c9de1710321051b885bbb36795408d4890c32262ad0d697b2bcded69798fa",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "adjudication": {
+        "kind": "exact-source-selection",
+        "passedFullNames": [
+          "uses actual epoch/view decisions and an exhausted wait before conditional or timeout responses",
+          "serves missing Resource404 with current context before semantic minimum comparisons",
+          "serves canonical current Type and incident minimums with truthful context and parser boundaries",
+          "serves conditioned live aliases and preserves bodyless redirects, refusal context and receiving boundaries",
+          "waits only for existing current Resource unknown minima and keeps unsupported route labels"
+        ],
+        "skipped": 77,
+        "jsonSha256": "603c7ceed9f9e355ddbfdae252368c87e03b241cd740571b67f3e4f0dfd24520",
+        "limitation": "Static HTTP/owner model is not an independently observed network quota; raw logs and reported cleanup remain separately reviewed."
+      }
+    },
+    "build-inventory": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.7650119580794126,
+      "sourceUnchanged": true,
+      "resultSha256": "74b4fac305b27753779e1508be5de6bcd87c7b4d7e089284bfb45ebe41947977",
+      "logSha256": "ff4ecbb651917e66acdbaf5c148143bf6074449309e3af03995df03d2e1edd97",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "adjudication": {
+        "kind": "command-only",
+        "testVerdict": "not-applicable"
+      }
+    }
+  },
+  "selectedPassed": 15,
+  "notSelected": 139,
+  "sourceHTTP": 172,
+  "sourceHTTPBasis": "Authored fixed-case arithmetic, not separate wire capture",
+  "sampledPids": [
+    51898,
+    51903,
+    51938,
+    52092,
+    52095,
+    52139,
+    52213,
+    52265,
+    52267,
+    52272,
+    52297,
+    52298,
+    52334,
+    52393,
+    52395,
+    52399,
+    52423,
+    52429,
+    52456,
+    52458,
+    52462,
+    52488,
+    52494,
+    52523,
+    52525,
+    52544,
+    52571,
+    52606,
+    52608,
+    52623,
+    52678,
+    52769,
+    52771,
+    52779,
+    52792,
+    52870,
+    52874,
+    52892,
+    52905,
+    53003,
+    53005,
+    53025,
+    53038,
+    53098,
+    53104,
+    53115
+  ],
+  "independentSampledPidsPresent": [],
+  "warningTruth": {
+    "formatWarnings": 1,
+    "lintWarnings": 936,
+    "lintInfos": 76,
+    "lintErrors": 0
+  },
+  "readSealRows": 89,
+  "build": {
+    "inputFiles": 676,
+    "packageFiles": 316,
+    "emittedFiles": 444,
+    "sha256": "35ba8b6fe5d9bddce74fe6137768487cd6666a02664a88ccedad565d07fe87ce"
+  },
+  "installedExecuted": false,
+  "controlsExecuted": false,
+  "priorFailuresPreserved": [
+    "source-validation typecheck missing ownerLifetime",
+    "source-validation-v2 lint noUnsafeFinally"
+  ]
+}

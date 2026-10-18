@@ -1,0 +1,36 @@
+{
+  "pr": {
+    "baseRefOid": "8d6671ed19b0c0406428ccc2d2161768d01e8b9b",
+    "headRefOid": "d7197e97a29bff8f075028419afad05388e2e655",
+    "isDraft": true,
+    "state": "OPEN",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "detailsUrl": "https://github.com/gastownhall/bdp/actions/runs/39030713743/job/117390430291",
+        "name": "verify",
+        "startedAt": "2026-10-17T11:58:35Z",
+        "status": "IN_PROGRESS",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "detailsUrl": "https://github.com/gastownhall/bdp/actions/runs/39030688462/job/117390356808",
+        "name": "verify",
+        "startedAt": "2026-10-17T11:58:11Z",
+        "status": "IN_PROGRESS",
+        "workflowName": "CI"
+      }
+    ],
+    "url": "https://github.com/gastownhall/bdp/pull/159"
+  },
+  "remoteHeadVerified": true,
+  "candidateClean": true,
+  "codexAttached": true,
+  "nativeFinalAuditSha256": "7f44078ec346114fd87e0d245c67313a4862b9d2461348a04d54f5c314272263",
+  "status": "Draft published; exact CI pending; main landing held"
+}

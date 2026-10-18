@@ -1,0 +1,10 @@
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -4480,6 +4480,7 @@
+           maxOpaqueTokenLength: 64,
+           tokenGenerationAttempts: 3,
+           idleCleanup: "on-demand",
++          clock: Date.now,
+           generateOpaqueToken: () => `minimum_${++opaque}`,
+         },
+       },

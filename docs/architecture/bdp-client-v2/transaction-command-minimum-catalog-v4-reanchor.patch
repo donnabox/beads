@@ -1,0 +1,45 @@
+--- plan-v3.md
++++ plan-v4.md
+@@ -1,14 +1,14 @@
+-# Command-minimum cumulative mapping implementation plan v3
++# Command-minimum cumulative mapping implementation plan v4
+ 
+ Preserves original plan SHA d0e30e37003a96ac922090e8d90dccdd1dc439cbb16f17e77440bff46cd6221d. Preserves v2 SHA0cdac339a6d75805d1d141fb8b0f58dae1826bc6eb645851a25a2699ff3218b2 and its native dispositions. Required Claude F1–F3 and optional precision4–8 from actual review810369d4 are accepted. This is an eleven-path/twelve-case correction, not Claude's erroneous ten-path total. No source or test was changed while revising this plan.
+ 
+-**Plan only.** No product edits or execution are authorized here. Implement after the active Selector author releases the shared spec path; this prerequisite does not displace that serving fix.
++**Plan only; pending root draft-authoring release.** PR124 is merged and the shared spec path is no longer being edited by Selector. This mechanical reanchor grants no product edits or execution. Preserved accepted v3 SHA256 `49e8c68db78dc4fb422f73adf951d609262e69606ecccecc5fdee03525281b1e`; its native closure64b24cc1 and actual Claude review810369d4 remain historical review authorities.
+ 
+ ## Source and authority
+ 
+-Inspected clean `vickie-command-minimum` at `727e919c2893bd34d5e72ea4659302a999bc4a6f`, tree `734bf9daf40fd17d0fe2bf86b085598589122f2f`, equal to root's verified merged PR123 tree at `757aedc8008386745d59d5005498a9256d6ea76e`. Runtime evidence remains attributed to f2ac; repaired spec/CI evidence belongs to 727e. The older follow-up audit's 5792 authority placement is historical.
++Inspected clean `/Users/dbox/repos/wt/vickie/vickie-command-minimum-catalog`, branch `codex/vickie-command-minimum-catalog`, at verified merged PR124 main `bd2178dd6f4b9f7c2d239624d7edaa3d961c3e26`, tree `062c32778217aeb702b2f7798dc82b0d985e9c67`, ordered parents `757aedc8008386745d59d5005498a9256d6ea76e` and `00d7fff3320eb10d4165718d23d86519cd3b7c5e`. All eleven owned paths equal the native-reviewed22777ec source; ten non-spec paths also remain byte-identical to727e. Selector moved the spec anchors without changing the shared command rule or either TX reference. Runtime and prior spec/CI evidence retain their original source attribution; this reanchor claims no new execution. The older follow-up audit's5792 placement and v3's727e parent are historical.
+ 
+-Current authority is `docs/specs/bdp.md:3579–3586`, `#mutation-command-preconditions`: mutation POSTs ignore BDP-Minimum-Scope-Position, BDP-Scope-Epoch and BDP-Authorization-View irrespective of presence/completeness/value, without a barrier or command-identity effect; normal syntax/bounds, authorization, idempotency, carrier validation and expectedRevision still apply. Transactional inherits this through `#transactional-http-consistency`, at 5797–5801, explicitly preserving receipt GET/HEAD minimum behavior. The inherited reference also appears under Transactional HTTP field support at5832–5834, covering shared command preconditions without a second normative authority.
++Current authority is `docs/specs/bdp.md:3581–3588`, `#mutation-command-preconditions`: mutation POSTs ignore BDP-Minimum-Scope-Position, BDP-Scope-Epoch and BDP-Authorization-View irrespective of presence/completeness/value, without a barrier or command-identity effect; normal syntax/bounds, authorization, idempotency, carrier validation and expectedRevision still apply. Transactional inherits this through `#transactional-http-consistency`, at 5818–5822, explicitly preserving receipt GET/HEAD minimum behavior. The inherited reference also appears under Transactional HTTP field support at5853–5855, covering shared command preconditions without a second normative authority.
+ 
+ Use one new normative ID, **`read-update.http.command-minimum-fields`**, with requiredProfile read-update, inherited by TX. This is a proposed new ID, not existing coverage. Cite the current shared paragraph exactly; do not point backward to its superseded location, repurpose the read-side `transactional.changefeed.consistency-fields`, duplicate a TX authority row, or introduce a retirement. The rule covers all mutation POSTs, not only requests a client describes as “copied.”
+ 
+@@ -19,7 +19,7 @@
+ | Path | Exact bounded change |
+ |---|---|
+ | `packages/conformance/catalog/read-update-v1.json` | Add the one normative row with exact shared-authority citation and a title stating that the three read-consistency fields neither gate mutation POSTs nor affect identity. Keep the preserved admission/read boundary in its requirements. |
+-| `docs/specs/bdp.md` | Add the matching ID/title in the Read+Update conformance table only; no operative prose or TX table change. This path is actively owned by Selector, so sequence the slice after handoff/rebase. |
++| `docs/specs/bdp.md` | Add the matching ID/title in the Read+Update conformance table only; no operative prose or TX table change. Selector ownership has ended at the verified merge; this path remains held pending root release for this slice. |
+ | `docs/design/profile-contract-planning.md` | Add the row in catalog order as Inherited, explaining RU singleton/sequence versus TX singleton/batch/sequence observations and preservation of read minima. Update the explicitly explanatory source snapshot at line11 from129RU/250TX to130RU/251TX; preserve44Read and the historical basis in the change record. Also change the current inheritance-audit lead-in at line61 from81 to82 audited RU catalog rows and document this new row's shared RU→TX authority. Counts remain non-authoritative. |
+ | `packages/conformance/test-support/read-update-coverage-v1.json` | Insert the same row in canonical required order with status omitted, wholeContract false, bindings [], and a reason distinguishing existing private implementation tests from absent cumulative executable evidence. |
+ | `packages/conformance/src/profile-contract-plan.test.ts` | Add one focused static test, proposed title “inherits the command minimum-field exception without executable credit”: exact ID/clause presence, RU and TX selected, Read excluded, no retirement/duplicate, and omission in current executable artifacts. Preserve the complete inheritance audit. |
+@@ -32,7 +32,7 @@
+ 
+ Why the coverage edit is mandatory: `test-support/read-update-artifact-set.ts:217–244` requires the complete canonical inventory and explicitly requires unplanned rows to be omitted/false/empty. TX private coverage instead mirrors only implemented manifest rows (`transactional-cumulative.test.ts:96–113`), so **do not** invent a TX coverage binding or append an omitted row to its differently shaped inventory. The canonical selector already inherits preserved RU requirements (`profile-contract-selection.ts`); no production selector/runner/factory change is needed.
+ 
+-These eleven paths do not touch any active Selector server/test/installed path. The only ownership intersection is docs/specs/bdp.md, deliberately sequenced rather than concurrently authored. Before drafting, reanchor to the actual post-Selector parent and recheck counts/citations; stop if unrelated catalog changes invalidate these exact deltas.
++These eleven paths do not touch Selector server/test/installed paths. The spec ownership intersection has been sequenced after the verified Selector merge. This v4 reanchor checked the actual post-Selector parent, eleven path hashes, counts and citations; they preserve the reviewed deltas. Stop if source changes after this binding invalidate those deltas.
+ 
+ ## Bounded verification for the mapping slice
+ 
+@@ -85,4 +85,4 @@
+ 
+ Existing private f2ac evidence proves its authored cases only. A new catalog digest or manifest is not retroactively bound by that run. Fresh exact-source archive/consumer/runtime dependency and installed-session binding is needed for new executable claims. Declare unobserved field/operation partitions and keep wholeContract:false until a reviewed clause-level partition is actually covered; claimEligible remains false. Public qualification still requires every applicable cumulative Read/RU/TX obligation and the ordinary admission path, independently of this row.
+ 
+-**Blockers:** no semantic blocker. Active spec-file ownership is the scheduling constraint; exact draft growth measurement and approval of any exceeded source-authoring allowances are explicit pre-execution gates, not assumed permission. Executable proof remains a later measured prerequisite, not a reason to expand this metadata slice or interrupt Selector work. Root owns prioritization, release, CI and merge.
++**Blockers:** no semantic blocker or reanchor mismatch found. Root draft-authoring release remains pending; exact draft growth measurement and approval of any exceeded source-authoring allowances are explicit pre-execution gates, not assumed permission. Executable proof remains a later measured prerequisite, not a reason to expand this metadata slice. Root owns prioritization, release, CI and merge.

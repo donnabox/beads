@@ -1,0 +1,90 @@
+{
+  "released": true,
+  "authorizationKind": "measured-later-execution",
+  "approvedCommandIds": [
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed",
+    "fresh-tx",
+    "fresh-tx-review"
+  ],
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-final-draft/root-package-acceptance.md",
+    "sha256": "b12ea351f690e74be07889bcdb8b09599b7586d0a3357db54666e2f577f15955"
+  },
+  "sourceChecksAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-execution-preparation-v3/run/root-source-summary.json",
+    "sha256": "0d5ecc3dbf994af29e1eaab39018f0cac1c7f21f391803c1ef78d14dceb797a2"
+  },
+  "controlsAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-final-draft/root-controls-summary.json",
+    "sha256": "8d762ff434d78cba18e5dc2c7f5f8a0e613cad51a03da491e235f71f64a06266"
+  },
+  "preparationSha256": {
+    "gate.py": "ecf57bcac335df5c4de4e4b9c57e8ea6809a0842451bcb14d67a87cf391bc734",
+    "supervise.py": "7f0d08b5a1c819131c2efd7f5c258b565414cbe70c65cd8b8b0ffe9ec3ba0065",
+    "controls.py": "2dd31382f00abc02f19ab570764c1fb217b097355d0c4580e6d6e290335309d7",
+    "packages.py": "99762fa2898e4e7ed1f17d8feb7ae22bd80ba29269dff1e9d4969d0bff8d4a9b",
+    "adjudicate.py": "57e70b22bc1b38822ae571dab555c86b62d57ccaba76266399a0c4c50e320ee8",
+    "commands.json": "460d4ef22fc11789e9f651561e56811208dc2892e589ca66a29fc366fb3cf3a5"
+  },
+  "sourceHead": "f2ac3f980fc8d35a3b485db04b813ad1b569d94d",
+  "sourceTree": "74327f052cef6026b3ea10e186523ace9c87a128",
+  "sourceSha256": {
+    "apps/bdptest/src/installed-reference.test.ts": "2c87160890b1c8aed2ada117a1aa293fe7fcfa85db794a3d9ef6514a39d199d1",
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": "a3f772525ee1c87f3c488e37914af8114421dff5cc003d81640182d6f7a05903",
+    "docs/design/transaction-implementation-progress.md": "e4f474baf6808aa110dea0ac53df2560c8f7a9be9298928908acca2ba45e9be5",
+    "docs/specs/bdp.md": "c2bee88f7a29349f7e420f711d10f3acff1fb0559d012b0d111fd7ac21bd175d",
+    "packages/server/src/transaction-http.test.ts": "8f66df9f9cf891383a19a67fb50c85708eaae055c59a661777b7110060b0c56f",
+    "packages/server/src/transaction-http.ts": "1339f32e0818aee5a44fc01a2034366a73e72c40027d6cde7041f26525aba366",
+    "packages/server/src/transaction-service.test.ts": "5e8dc095dcbe9c8fdfb28a5dea4db024ddc65e7e4f51175edeae5a90ea7125be"
+  },
+  "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "controls": {
+    "restore-command": {
+      "patchPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-draft/restore-command-refusal.patch",
+      "patchSha256": "a161069337888b3605f453ed67af8c1eb50abb6b6f3f9d3758c8787668d1bb58",
+      "afterSha256": "f262e3cc623e3557758cfed39e929404e3d96d77f4cc80f394b5c3fcbbcf440b",
+      "snapshotSha256": null
+    },
+    "bypass-receipt": {
+      "patchPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-draft/bypass-receipt-root-minimum-v2.patch",
+      "patchSha256": "dca316bf79495061823fb12ed9ffd0c369e51ac2ca32858451c7301b8a691fff",
+      "afterSha256": "9da034938dc1a48dd48b961a0ec9fa518dc954d1bddcb2ab38f321a3da13a131",
+      "snapshotSha256": "8ba653a56573a9937d65dfe0ad9a17e6852e19dc00d75464c1bb2a2d6cc9de47"
+    }
+  },
+  "finalHead": "f2ac3f980fc8d35a3b485db04b813ad1b569d94d",
+  "finalTree": "74327f052cef6026b3ea10e186523ace9c87a128",
+  "buildEvidence": {
+    "startedPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-execution-preparation-v3/run/build.started.json",
+    "startedSha256": "adb99dc0f6c2fc3ac3107edd44af6bd863587cf0dd73e62972ac7786fc173322",
+    "exitPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-execution-preparation-v3/run/build.exit.json",
+    "exitSha256": "bb428285b52816d3860ee772039d258e94fcbb93a2e0a45a6be5014dfaeb9f6b"
+  },
+  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+  "consumerLockSha256": "e2f06f00b66267bd743d831b269363d4aada6eb7b0804b448495b5a5dbf4f542",
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-later-preparation-v4/run/installed-provenance.json",
+    "sha256": "c8b26871b4ddfc899065eae5553965892434e30af6d11f911837a7585093d0b9"
+  },
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "actualSourceManifest": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-final-draft/source-binding.json",
+    "sha256": "ff9c63417fbb348bf8ad9863483096ccc0329beb5c05b532333cf75cd0726a38"
+  }
+}

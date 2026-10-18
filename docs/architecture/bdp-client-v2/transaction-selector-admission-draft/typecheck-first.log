@@ -1,0 +1,24 @@
+Scope: all 12 workspace projects
+✓ Lockfile passes supply-chain policies (verified 2d ago)
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +61
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Packages are cloned from the content-addressable store to the virtual store.
+  Content-addressable store is at: /Users/dbox/Library/pnpm/store/v11
+  Virtual store is at:             node_modules/.pnpm
+Progress: resolved 61, reused 61, downloaded 0, added 61, done
+
+devDependencies:
++ @babel/parser 8.0.4
++ @biomejs/biome 2.5.7
++ @types/node 24.13.3
++ ajv 8.17.1
++ typescript 7.0.2
++ vitest 4.1.10
+
+Done in 713ms using pnpm v11.20.0
+$ tsc -p tsconfig.check.json
+packages/server/src/transaction-submission.test.ts(1321,41): error TS2352: Conversion of type 'Mock<(principal: string, key: string, batch: PreparedTransaction, controls: TransactionReceivingControls | undefined, observed: true) => TransactionReceivingAdmission>' to type '{ (principal: string, key: string, batch: PreparedTransaction): TransactionAdmission; (principal: string, key: string, batch: PreparedTransaction, controls: TransactionReceivingControls): TransactionReceivingAdmission; (principal: string, key: string, batch: PreparedTransaction, controls: TransactionReceivingControl...' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Target signature provides too few arguments. Expected 5 or more, but got 3.
+[ELIFECYCLE] Command failed with exit code 1.

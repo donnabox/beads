@@ -1,0 +1,286 @@
+{
+  "passed": true,
+  "pidAbsenceIndependentlyChecked": true,
+  "requests": 13,
+  "observation": {
+    "observation": "private-installed-sequence-refusal-context",
+    "declaredSourceCommit": "30035b88380b7cbb3abd5359787db236b70345c7",
+    "workspaceDirty": false,
+    "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-context/packed/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+    "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+    "directoryAbsent": true,
+    "evidenceRetention": "Response fingerprints and context only; complete wire and body bytes are not retained",
+    "binding": {
+      "served": {
+        "scope": "https://reference.invalid/acme/",
+        "profile": "transactional",
+        "history": false,
+        "sourceCommit": "30035b88380b7cbb3abd5359787db236b70345c7",
+        "installedPayloadDigest": "2c62c66724c2c48fcd1de19360abbb90a3d5bb7c37257a095af752ba9e0b322d",
+        "installedContractsDigest": "1f369030c8696ff445c235b24637cc1ac41f0ab724a1b2402511347f74da344f",
+        "policyDigest": "94dba9ef336c10df981db6f2c24c2e02eec3e0df6184db1eeac3764cdcc93d5b",
+        "authenticationDigest": "40fb12bfbf230d90ca19f18edb22427f96d2ac28334c0010df75d7e3c68cac6a",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+        "fixtureId": "reference-transactional-v1",
+        "capabilities": [
+          "installed-transactional-http",
+          "transactional-receipt-observation"
+        ]
+      },
+      "operationTargets": {
+        "createBead": "https://reference.invalid/acme/operations/create-bead",
+        "updateBead": "https://reference.invalid/acme/operations/update-bead",
+        "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+        "createLink": "https://reference.invalid/acme/operations/create-link",
+        "updateLink": "https://reference.invalid/acme/operations/update-link",
+        "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+        "putAlias": "https://reference.invalid/acme/operations/put-alias",
+        "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+        "updateWhere": "https://reference.invalid/acme/operations/update-where",
+        "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+        "batch": "https://reference.invalid/acme/operations/batch",
+        "sequence": "https://reference.invalid/acme/operations/sequence"
+      },
+      "runtimeConfigurationIdentity": "d1718dcaff57ee0b51474b894f13e52ebd868e99416439f00f75553eac92bc2d",
+      "authorityMode": "canonical"
+    },
+    "routes": [
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/create-bead"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/sequence"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/?limit=32"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/events/"
+      }
+    ],
+    "sessions": [
+      {
+        "pid": 82445,
+        "exit": 0,
+        "signal": null
+      }
+    ],
+    "attemptedRequests": 13,
+    "completedResponses": [
+      {
+        "label": "seed-a",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/create-bead",
+        "status": 200,
+        "requestBodyBytes": 94,
+        "requestBodySha256": "8730ee46597d5173aa5f13593fd8282ada4fecc1729fd568974cbcdee7275ee8",
+        "responseBodyBytes": 661,
+        "responseBodySha256": "221af3bff3fc9fdf25039a78901442e9b132e7e3766b098a90976cad62a33da9",
+        "wireSha256": "16572e28681556c207ff5d7ed8a2ff654c4c4c1c39c4f50e771984ec7ec77cbe",
+        "context": {
+          "epoch": "79dd3f4d-d6ee-400a-a808-de5b37f070fc",
+          "view": "development-all-visible",
+          "position": "pos-1"
+        }
+      },
+      {
+        "label": "seed-b",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/create-bead",
+        "status": 200,
+        "requestBodyBytes": 94,
+        "requestBodySha256": "ac92c80dc5ff82b89fc4c498a045cf1ce85d062c1ee66bbc50e8b749db1c0ef5",
+        "responseBodyBytes": 661,
+        "responseBodySha256": "ca31c97382bbfdbb4d31d5254e57ea52b00d56eeb3cf22d86dcfc46a27c7b0bf",
+        "wireSha256": "2fc3f2d17cec7d8a0ac878009e06fb0b6a5e97f88de5b5a7bab2e9e9c2ec3ccf",
+        "context": {
+          "epoch": "79dd3f4d-d6ee-400a-a808-de5b37f070fc",
+          "view": "development-all-visible",
+          "position": "pos-2"
+        }
+      },
+      {
+        "label": "initial-capacity",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/sequence",
+        "status": 413,
+        "requestBodyBytes": 5497,
+        "requestBodySha256": "c16ffbfa6d67f6a752cc9de8eb0bec03767e7335b5cc92742c20121fa9c4e779",
+        "responseBodyBytes": 142,
+        "responseBodySha256": "c9762128cff7ea113307e0c0e1a8ec5ea8229e17c211b000be73ba8b3b5ad612",
+        "wireSha256": "4f83d15c0813cbcb95859b90c9218d5d05c3aefa5a1217e249bbf9c6853b243c",
+        "context": {
+          "epoch": "79dd3f4d-d6ee-400a-a808-de5b37f070fc",
+          "view": "development-all-visible",
+          "position": "pos-2"
+        }
+      },
+      {
+        "label": "initial-negotiation",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/sequence",
+        "status": 406,
+        "requestBodyBytes": 176,
+        "requestBodySha256": "ce725f9f700da4f94349fceb5dea7ca16a07cff88abc8986a0d6e84d3cf8b894",
+        "responseBodyBytes": 0,
+        "responseBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "wireSha256": "29ba8352d7c329e78eb96d3879e842beb9928e6257f7d704f25ee1bc62469376",
+        "context": {
+          "epoch": "79dd3f4d-d6ee-400a-a808-de5b37f070fc",
+          "view": "development-all-visible",
+          "position": "pos-2"
+        }
+      },
+      {
+        "label": "retained-root",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/receipts/7fc59d73-bbe8-4aed-9bb9-b924c553b455",
+        "status": 200,
+        "requestBodyBytes": 0,
+        "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "responseBodyBytes": 661,
+        "responseBodySha256": "221af3bff3fc9fdf25039a78901442e9b132e7e3766b098a90976cad62a33da9",
+        "wireSha256": "0d090c86d2686d7bf80c8a70c82aaec41515392831f472d07ea731c25f457c80",
+        "context": {
+          "epoch": "79dd3f4d-d6ee-400a-a808-de5b37f070fc",
+          "view": "development-all-visible",
+          "position": "pos-2"
+        }
+      },
+      {
+        "label": "unchanged-beads",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/?limit=32",
+        "status": 200,
+        "requestBodyBytes": 0,
+        "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "responseBodyBytes": 403,
+        "responseBodySha256": "8049c7d163e5f302ccb0201f4080ceb92c867bef3001da66027a23933b95985b",
+        "wireSha256": "b29435a99f076f3d774dcc7d9b37ee2257e34a0ee5827d3ff6e65738c6101a23",
+        "context": {
+          "epoch": "79dd3f4d-d6ee-400a-a808-de5b37f070fc",
+          "view": "development-all-visible",
+          "position": "pos-2"
+        }
+      },
+      {
+        "label": "unchanged-events",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/events/",
+        "status": 200,
+        "requestBodyBytes": 0,
+        "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "responseBodyBytes": 1128,
+        "responseBodySha256": "0036ea8f8d24be0580c9931e1161dfd7da052cbd6fa123a41218ef3d49b7a2e1",
+        "wireSha256": "dbc6a0837b45324b694acafe637ea9a03e189b7554c61a3bd6d8c448cce5c356",
+        "context": {
+          "epoch": "79dd3f4d-d6ee-400a-a808-de5b37f070fc",
+          "view": "development-all-visible",
+          "position": "pos-2"
+        }
+      },
+      {
+        "label": "reuse-negotiation-key",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/create-bead",
+        "status": 200,
+        "requestBodyBytes": 104,
+        "requestBodySha256": "b02bd25db8ff6950caeccc03dfea81bdafd9a91849c25bc215625b42474df8ab",
+        "responseBodyBytes": 676,
+        "responseBodySha256": "690e9ac9324cc34fac98f9f1e124acbb3033d49c2ead0a58411712f39ff678a2",
+        "wireSha256": "e7f112510380e119a7820073c373b5202389322b7a89165b8eaa53a686d42977",
+        "context": {
+          "epoch": "79dd3f4d-d6ee-400a-a808-de5b37f070fc",
+          "view": "development-all-visible",
+          "position": "pos-3"
+        }
+      },
+      {
+        "label": "reuse-capacity-key",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/create-bead",
+        "status": 200,
+        "requestBodyBytes": 94,
+        "requestBodySha256": "ddd8e5218882483f61a09a7a2e4f5cbe2374c7f6c9452ff4e7e256b345fdc36c",
+        "responseBodyBytes": 661,
+        "responseBodySha256": "3c8b3c51457753c3dda5a6d9b47a1cc9351b524921679efedbc2bf5aa7f4d0a5",
+        "wireSha256": "1e50b91af906070d18844f3a4dd4daa6b5ba76b8f9bbe5c30baa79da07fb4db6",
+        "context": {
+          "epoch": "79dd3f4d-d6ee-400a-a808-de5b37f070fc",
+          "view": "development-all-visible",
+          "position": "pos-4"
+        }
+      },
+      {
+        "label": "repeat-capacity",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/sequence",
+        "status": 413,
+        "requestBodyBytes": 5728,
+        "requestBodySha256": "ccb7a982d39bb5a7749745888c5ecb205d0298cbfccc9bede9b4fb2adcfd9612",
+        "responseBodyBytes": 142,
+        "responseBodySha256": "c9762128cff7ea113307e0c0e1a8ec5ea8229e17c211b000be73ba8b3b5ad612",
+        "wireSha256": "7c1861c8e565feb8521c8d97740406b70fdfc747eacf652b315ca1729e840c20",
+        "context": {
+          "epoch": "79dd3f4d-d6ee-400a-a808-de5b37f070fc",
+          "view": "development-all-visible",
+          "position": "pos-4"
+        }
+      },
+      {
+        "label": "repeat-negotiation",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/sequence",
+        "status": 406,
+        "requestBodyBytes": 183,
+        "requestBodySha256": "6f25a491b3ec613bd39283231b858e831e2999cafff9ac06ea5aa7c6703c2f86",
+        "responseBodyBytes": 0,
+        "responseBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "wireSha256": "1508fff5f3c7c17af96d67a689ea97f1911c6f4e39b7a1dbf46098e803942a23",
+        "context": {
+          "epoch": "79dd3f4d-d6ee-400a-a808-de5b37f070fc",
+          "view": "development-all-visible",
+          "position": "pos-4"
+        }
+      },
+      {
+        "label": "final-beads",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/?limit=32",
+        "status": 200,
+        "requestBodyBytes": 0,
+        "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "responseBodyBytes": 793,
+        "responseBodySha256": "2a74d4fa5c4f26571b4b97d95bc782cd5d3102f59e691336717d9ef257e2cd73",
+        "wireSha256": "f72495b3d88b022e0612bec95f3a419b339d960d023d130b683f31e7536b584b",
+        "context": {
+          "epoch": "79dd3f4d-d6ee-400a-a808-de5b37f070fc",
+          "view": "development-all-visible",
+          "position": "pos-4"
+        }
+      },
+      {
+        "label": "final-events",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/events/",
+        "status": 200,
+        "requestBodyBytes": 0,
+        "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "responseBodyBytes": 2192,
+        "responseBodySha256": "3b4e766aef0fb510feccb330223a0a0a9ae067f05fd3bdb38a207331dbcc4113",
+        "wireSha256": "34a8b013173d1e5133a940db2d6a9a945c48f026b32eec7d4192e700b0055874",
+        "context": {
+          "epoch": "79dd3f4d-d6ee-400a-a808-de5b37f070fc",
+          "view": "development-all-visible",
+          "position": "pos-4"
+        }
+      }
+    ],
+    "outcome": "passed",
+    "claimEligible": false
+  }
+}

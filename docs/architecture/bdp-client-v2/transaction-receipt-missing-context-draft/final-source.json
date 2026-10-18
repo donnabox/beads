@@ -1,0 +1,43 @@
+{
+  "head": "3968081f8231566908e69045424b067c3c36dc40",
+  "tree": "a597518b819941e3f579dd7838e247b010a072a1",
+  "parent": "015cac1aa4fa827cc4a2c647dff08454c6c8e6f8",
+  "sourceBindingSha256": "e96f012c8502285454eb3867f8b7b35c82c483ae3ceb3f7fc21eaa31127d0cf3",
+  "sourceBindingPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/stale-assertion-repair/source-binding.json",
+  "files": {
+    "packages/server/src/transaction-store.ts": {
+      "sha256": "eec0f4723c8fcfb2245d2e80d77b2de014235cdb208101d523c0ab83fde78eed",
+      "new": false
+    },
+    "packages/server/src/transaction-service.ts": {
+      "sha256": "53f655faf494209996aac2e0f93a4c2c785e471f66aac6af9ea41f92c9cfbe00",
+      "new": false
+    },
+    "packages/server/src/transaction-http.ts": {
+      "sha256": "0e42f034c3aada6fd0a7696897200b336d2b0c547d69497e46500f6da4c2267a",
+      "new": false
+    },
+    "packages/server/src/transaction-receipt-pages.test.ts": {
+      "sha256": "e944bd61590f78a510b427b0f5d6eb7856f6b3715f9f0e5dc590bf8d4724c6a1",
+      "new": false
+    },
+    "packages/server/src/transaction-service.test.ts": {
+      "sha256": "c61ba7254ab1cf39abf85e6020e4f846ffb684740076de39f43fe12d509093b9",
+      "new": false
+    },
+    "packages/server/src/transaction-http.test.ts": {
+      "sha256": "37084d256def9c1f1cec33fc2c6a0d6e793dba3d29699a57bf105bda0cde68db",
+      "new": false
+    },
+    "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts": {
+      "sha256": "eaf1289ed0a8318ce949704ba4cd983755c6f5fd20ffe9d61712869894cb5064",
+      "new": true
+    },
+    "docs/design/transaction-implementation-progress.md": {
+      "sha256": "28b30246931ccf39588a0dd654715aa7f00eda95893a9b5ed8ec10ffe7fdf6fc",
+      "new": false
+    }
+  },
+  "clean": true,
+  "attribution": "Ordinary commit of reviewed original draft plus one test assertion correction. Prior production build byte-preserved; no historical execution relabeled."
+}

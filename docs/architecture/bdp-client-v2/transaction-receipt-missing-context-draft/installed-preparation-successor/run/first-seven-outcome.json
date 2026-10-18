@@ -1,0 +1,103 @@
+{
+  "phase": "first-seven-package-stages-only",
+  "head": "3968081f8231566908e69045424b067c3c36dc40",
+  "tree": "a597518b819941e3f579dd7838e247b010a072a1",
+  "stages": {
+    "node-version": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.5400467498693615,
+      "exitSha256": "11f7ffca1f1b88698b81ce6c9256ab4a15391bbc8ad1421f63addf4e17a12189"
+    },
+    "package-directory": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.7343060839921236,
+      "exitSha256": "c654e57928208798d8116cbf8549d943d58ed564a77c080f3e2cca3a7b468768"
+    },
+    "pack-protocol": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.826886166119948,
+      "exitSha256": "2c32bad5f7f4425e39efb7e9eba8f9a1e6aa15d91ffe2adfdd3b91d3affde584"
+    },
+    "pack-server": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.8142712921835482,
+      "exitSha256": "8cd30ca97ba9657ada1147689ed1ccd1368de11cd7c2421a8de22519fb13ee34"
+    },
+    "verify-tar": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.7089170420076698,
+      "exitSha256": "22893a674cbcc2526e248a2e58bd486d1fa9a9b77d45a8aa297f53ccf3783858"
+    },
+    "prepare-consumer": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.6212032919283956,
+      "exitSha256": "b6d29bb45b23f5af608570de98d988eaa5f0f218d6304e6090a33d030eec9ab9"
+    },
+    "consumer-install": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.9359568329527974,
+      "exitSha256": "5b43950e2859bb9e17f7267a2232b7050370f9ef0b8b3eef628275aa428b5712"
+    }
+  },
+  "consumerLock": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/run/consumer/pnpm-lock.yaml",
+    "bytes": 3051,
+    "sha256": "3ce3073d51c2a053ae467867f0ec1840d89c2d6f5c56fec5d581c69a03b8b5e4"
+  },
+  "tarProvenanceSha256": "335051fdbbab4a4f7169fe39081297637df49618eb3acaca87bffb768f1f210c",
+  "sampledPids": [
+    18298,
+    18300,
+    18304,
+    18346,
+    18348,
+    18353,
+    18362,
+    18461,
+    18463,
+    18534,
+    18571,
+    18573,
+    18578,
+    18619,
+    18621,
+    18626,
+    18634,
+    18676,
+    18678,
+    18683,
+    18737,
+    18739,
+    18743
+  ],
+  "sampledPidsStillPresent": {},
+  "retainedTempEntries": {
+    "pack-protocol": [
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/run/pack-protocol.tmp/node-compile-cache"
+    ],
+    "pack-server": [
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/run/pack-server.tmp/node-compile-cache"
+    ],
+    "consumer-install": [
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor/run/consumer-install.tmp/node-compile-cache"
+    ]
+  },
+  "sourceUnchanged": true,
+  "cleanWorkingTree": true,
+  "notRun": [
+    "verify-installed",
+    "installed-positive",
+    "installed-review"
+  ],
+  "productChildren": 0,
+  "httpRequests": 0,
+  "setupLogDisclosure": "Explicit offline install logs resolved8/reused7/downloaded1/added8. Counter retained verbatim; no inference of network fetch or zero-download count.",
+  "samplingLimit": "Final absence covers observed PIDs; short-lived/detached descendants can evade sampling."
+}

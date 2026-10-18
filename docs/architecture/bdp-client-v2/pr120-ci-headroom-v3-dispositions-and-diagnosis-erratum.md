@@ -1,0 +1,24 @@
+# Headroom v3 dispositions and preserved-diagnosis erratum
+
+**All F1–F6 are closed in the coherent v3.** Root's saved `pr120-ci-headroom-authoring-acceptance.md` authorizes exactly the workflow scalar15→20 on an ordinary427 successor. The corrected evidence supports that scope. No new acceptance loop is requested; actual frozen-diff verification and successful exact-head CI remain the existing root-owned gates. Root reports the literal-only successor40806dd3 is frozen; this factual-plan closure is not an independent review of that source.
+
+The original `pr120-ci-headroom-plan-v2.md` remains SHA256 `42c4ea113a49ea07522d53717675c2bdd0162f429131f9b5dfc1076d6964a2c9`. Original `pr120-427-ci-diagnosis.md` remains `4e711aac26b2d15f5f2e3768a356e3d3e22b2cca7824272b72b7e1fb5259da14`. Neither was overwritten. Their historical231s maximum claim is incorrect and is superseded below; preserve them as reviewed historical records, not current sizing authority.
+
+| Finding | Accepted correction and evidence |
+| --- | --- |
+| F1 Medium | Successful ed3597d job115959137774 records249s setup (16:04:40→16:08:49) and204s Go install (16:05:12→16:08:36). The workflow is identical to427. A deduplicated scan of18 completed retained verify jobs gives setup142–249s and Go103–204s. At249s+30s reserve,1200s leaves921s tests,218s above the interrupted703s; tolerance921/410=2.246×;900s leaves621s,1.515×. Former707.4s extrapolation now leaves213.6s, not231.6s. |
+| F2 Medium | Same-head/tree c555 slow job115999221459 has successful696s test step and complete172-file/9245-pass/1-skip summary,695.33s Vitest. Green retry116007773987 reports409.53s, ratio1.698×. Slow preflight printed7 pass/1.50s but its step was cancelled; smoke/Read skipped. This is the primary whole-suite variance evidence. Five retained deadline incidents are identified; the corpus is descriptive, not a probabilistic failure rate. |
+| F3 Low | Aggregate wording is explicit. Current56/PR115-green same56 is658.206/358.064=1.838×. Individual-case2.315× from the earlier review exceeds the2.246× aggregate sizing tolerance; no claim that every case or future episode lies within it. |
+| F4 Low | Preserve cancel-in-progress. On any next cancelled run inspect annotations and actual supersession/run history. Explicit20m deadline means stop/diagnose; missing annotation alone does not prove concurrency. Verified supersession allows root to follow/revalidate the replacement head without treating it as deadline exhaustion. No automatic retry or cap growth. |
+| F5 Low | Retain the October19 Ubuntu26 migration notice and actual ubuntu-24.04/image20261004.327.1 baseline. Check actual next-run image; post-change timings form a new baseline. No new deadline, expiry, runner pin or acceptance loop. |
+| F6 Low | Name installed `/usr/bin/ruby`/Psych3.1.0, whose availability and parse were verified by the external reviewer. Author uses before/after YAML parsing and full normalized structure equality, plus exact one-literal textual/object confinement. No dependency fetch, product test/build/install, or silent text-only fallback. No parser was executed during this revision. |
+
+## Diagnosis erratum
+
+The diagnosis's phrase “historical worst231s setup” and resulting939s/236s allowance are superseded by249s and921s/218s. Its cross-run968.4s total/231.6s margin becomes986.4s/213.6s using the same707.4s estimate. Original current-run facts remain intact: explicit15m deadline, W1b passed2630ms,9255 completed pass rows/1skip, no failed row or terminal summary, downstream gates skipped, final-case outcome/cleanup unobserved. The unknown70ac W1b counter0 cause is still unresolved.
+
+Add the stronger c555 same-head full-suite pair and completed slow-suite observation to the diagnosis's basis. Do not call its approximately908s hypothetical completed job an actual observation: the slow job's downstream gates did not finish. V3 uses a stated30s reserve consistently. The conservative current-inventory720s sensitivity gives249+720+30=999s,201s margin under1200 and39s excess over960;720s itself is estimated and is not proof of remaining teardown/cleanup completion. No CPU/I/O/specific host cause is established.
+
+The earlier plan's required1–3 and optional4–7 remain closed: unchanged-work baseline, aggregate variance, both partition regimes, explicit reserve accounting, deliberate repeated seven-case preflight, named build-dependent skip and required-check preservation. Go caching remains excluded because it changes source-build/provenance behavior beyond the one-literal scope.
+
+Full external report read: `pr120-ci-headroom-v2-claude-review.txt`. Primary new records and hashes are in v3. Local work here was read-only source/metadata/log analysis plus these two Markdown writes; no source/workflow edits, tests, builds, services, installs, CI action, network call or coordination write.

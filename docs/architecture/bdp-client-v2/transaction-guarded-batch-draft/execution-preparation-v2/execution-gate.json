@@ -1,0 +1,99 @@
+{
+  "released": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "approvedCommandIds": [
+    "setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "build-inventory",
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed",
+    "installed-positive",
+    "review-positive",
+    "installed-unguarded-contenders",
+    "review-unguarded-contenders"
+  ],
+  "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+  "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+  "guardSha256": "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/review-repair/source-binding.json",
+    "sha256": "77c27b159f545a82738c8acf50a3e0a741f41d0168d8da435c95900443b9217b"
+  },
+  "sourceHead": "8833c9242b7788e843e9eb97a2c99b2277fe75ef",
+  "sourceTree": "057f879132074166f2c0f643a8b45bbd9dd47c6f",
+  "sourceStatus": "",
+  "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/root-package-release.json",
+    "sha256": "4ee28be158a0f6b02a391b92164c45a4730a13b9de049eeca271e8aaa6a00f66"
+  },
+  "finalHead": "8833c9242b7788e843e9eb97a2c99b2277fe75ef",
+  "finalTree": "057f879132074166f2c0f643a8b45bbd9dd47c6f",
+  "finalBase": "9e5f040edab88be364f683098ead72f595f0ab55",
+  "finalSource": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/review-repair/final-source.json",
+    "sha256": "9c0487ff4855b7903ac53600b795a8697919697a638fdb98c75403fdeefb51d3"
+  },
+  "finalIntegrationAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/review-repair/root-integration-acceptance.json",
+    "sha256": "6244f90f6aeaec3bcc8fcd2bb153dd093b80e834a3dd5d244850d3004d052787"
+  },
+  "councilAcceptance": null,
+  "buildOutputInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/run/build-output-inventory.json",
+    "sha256": "91a24714ede735900ccdccf786595e8c0cfa7ac75716c6f431f84addc519b6d1"
+  },
+  "buildBridge": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/run/root-build-bridge.json",
+    "sha256": "919272c2041a6bbe15018353ad3271820e6ff39c4386bd9f23cbd588c6809838"
+  },
+  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+  "consumerLockSha256": "470cb34c798d8ab60453bd5a693d90bf4be31da5f0932793bdc7b6333fb26094",
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/run/installed-provenance.json",
+    "sha256": "a4d083cbef8d2de5192526e9a4ba9cf7e100457e19e91ef7e1fbb1c8e59c4b20"
+  },
+  "reportContract": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation-v2/report-adapter-binding.json",
+    "sha256": "eab3496d5852b5175d4f91538c4201ae700fbbbb33764b53d423a9af71959d39"
+  },
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "preparationSha256": {
+    "gate.py": "3ba4f1ec1e27035edd47ba96a17a79c63c84322ae5c150d9e5985f8ccbcc626b",
+    "supervise.py": "da74971257c3cc804b404dbc2d72759e301431e04d2474c692a658ed43b18f9a",
+    "packages.py": "933f924ba37a686257f251aef1a6ae1af09307f6a80562524882aa5325698ba3",
+    "inventory.py": "f01a170801c8e259ea52696eb3c53402cc0e92ade8da797d5cec9e3f4c78127d",
+    "review-cohort.py": "f64f54196300a1479854b6d0ee2d985fa788dac84dd3e5d86681fee93fb43c88",
+    "commands.json": "afd02c125f9675e0af26740b7fd032a3f7c50c52b0703d51f60d2993baa8e653"
+  },
+  "note": "CLOSED example only. Root may release initial8 static stages on exact dirty9e5. Later stages require actual clean ordinary child9e5, feature footprint9bf, new actual inventory/bridge/fresh package consumer and actual review validation acceptance. No inherited execution or evidence credit.",
+  "installedTestTool": {
+    "path": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+    "sha256": "39db22f579acf5639bbb17a261408debbde03f4692c0c439e77e7f13aeba74d6"
+  },
+  "footprintBase": "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
+  "codeReviewState": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/review-repair/code-review-state.json",
+    "sha256": "907a877b3f598f82823de688b181f81fc8fb9383129d1753db98431b13db29f6"
+  }
+}

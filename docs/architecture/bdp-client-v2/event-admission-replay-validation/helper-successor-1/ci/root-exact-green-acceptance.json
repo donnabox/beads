@@ -1,0 +1,32 @@
+{
+  "createdUtc": "2026-10-18T00:41:20.799623+00:00",
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "disposition": "Exact-head CI accepted; PR ready transition authorized. Clean candidate eligible for final CLOSED next PLAN packet preparation, not launch or source authoring.",
+  "head": "a56254d682cf4623cab22a552e3d2f695f691795",
+  "tree": "144f278c7f5a08516c4ac99ba553d4cc25bcf560",
+  "parent": "9f89271e2563a105410789ca8ca1e77dfb4d0b9f",
+  "run": 39082528652,
+  "captureIndexSha256": "2119758ef5191f1827b1f119e971a07099dee48ee3fc91bb8c7ab582aac218fe",
+  "nativeAuditSha256": "2d87ce4d8f394c592176bcdcb53a3fea413952f10fc75b9b4f1abd94a5c664fe",
+  "nativeJsonSha256": "b46bc3663e525b8a5d0a7c3c9703a62faf66a72c2fe52ecc1eee3d4af1d63e79",
+  "sourceFiles": 679,
+  "steps": 27,
+  "testsPassed": 9464,
+  "testFiles": 186,
+  "optionalSkipped": 1,
+  "preflight": 7,
+  "rawBytes": 3886658,
+  "rawSha256": "7b00eabdbd0527b97a8545f31d280c57c6bfb452bcde33a24678f865b15d0ea7",
+  "intactNewSourceReports": 12,
+  "intactHistoricalAndNewCiExchanges": [
+    5,
+    10
+  ],
+  "maskedUnparsedReports": 8,
+  "limitations": [
+    "CI workspace-dist/development-local payload495fa differs from local external consumer da80.",
+    "Remote exit/drain/removal are callback reports, not independently inspected remote PID/filesystem absence.",
+    "Historical Read seal remains historical; no full profile or release claim."
+  ],
+  "rootDiagnosticCorrections": "Initial data-only display used len on source requests numeric37; corrected and all14 raw JSON bindings verified. Initial source-map lookup used files instead of actual trackedSourceFiles; stopped before record/mutation and corrected. No product/runtime operation affected."
+}

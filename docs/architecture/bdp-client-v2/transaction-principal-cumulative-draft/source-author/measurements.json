@@ -1,0 +1,881 @@
+{
+  "status": "DATA_ONLY_DRAFT_UNEXECUTED",
+  "base": "5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854",
+  "actual": {
+    "normalBytes": 837765,
+    "normalSha256": "7a7db6b1654655db8c245da68cb9d98e3bc2ca0bb592922fdafd9a84f9043990",
+    "compactBytes": 409725,
+    "compactSha256": "5deb96a0f511d1b5a180eaa9ce7e9c1e85365ed5db8752f98a7e537093fef784",
+    "nodes": 21908,
+    "diskBytes": 825049,
+    "diskSha256": "cd90592e76cace65b115dbfedf5f604c9c4011ed2e1a0fad954c1edb12aca6cd",
+    "coverageBytes": 124537,
+    "coverageSha256": "0c991feb128a50625397e337464badcb17d22a0c31e1d57a6b66fa1032a92a51",
+    "actions": 227,
+    "assertions": 2642
+  },
+  "growth": {
+    "diskBytes": 35040,
+    "normalBytes": 35404,
+    "nodes": 952,
+    "coverageBytes": 6835,
+    "assertions": 139
+  },
+  "simultaneousStops": {
+    "diskBytes": 40000,
+    "normalBytes": 40000,
+    "nodes": 1100,
+    "coverageBytes": 8000,
+    "assertions": 160
+  },
+  "preservation": [
+    {
+      "path": "packages/conformance/test-support/transactional/manifest-v1.json",
+      "parentSha256": "a11a79f6d0f9ffa5933a680a3e4fed87987789c3deca50a38cda8563132d242e",
+      "parentBytes": 790009,
+      "reconstructionSha256": "a11a79f6d0f9ffa5933a680a3e4fed87987789c3deca50a38cda8563132d242e",
+      "rawObjects": [
+        {
+          "id": "read-update.http.command-minimum-fields",
+          "bytes": 54412,
+          "sha256": "f04c001617ccad14ef67a82586ea5f61ec918bc2545bb041fafc21dee07b5d7e"
+        },
+        {
+          "id": "transactional.batch.atomic-commit",
+          "bytes": 14936,
+          "sha256": "0dfd3b9ed02d01f76ecac08c00b009b4bb9f03e57f7e15a2266eed82fc144747"
+        },
+        {
+          "id": "transactional.batch.rollback",
+          "bytes": 16319,
+          "sha256": "be24067358af7b5acf7bc1beae2eb6534cbc0effa6f65406ab61b139310bfc37"
+        },
+        {
+          "id": "transactional.batch.deletion-safety",
+          "bytes": 131808,
+          "sha256": "3e66e7c95aec963cc80e076249a5870b952765b2e98c1023ea148f8f628e6aeb"
+        },
+        {
+          "id": "transactional.batch.no-op-entries",
+          "bytes": 81047,
+          "sha256": "9307b230eb053131e9127cbbb5e6285305b79d6794edd22f5432a07fc74d9faa"
+        },
+        {
+          "id": "transactional.set.mutation",
+          "bytes": 71739,
+          "sha256": "6e7280a9ebbbc3faa1da989015cc802f82cd51b17a9cea11e7cc91392bef49d6"
+        },
+        {
+          "id": "transactional.set.zero-match",
+          "bytes": 36055,
+          "sha256": "35aa23bd32539869ea3db41e1c9f3e81a3217e2eb983e764e860a6e00c9eb2c9"
+        },
+        {
+          "id": "transactional.set.cardinality",
+          "bytes": 28546,
+          "sha256": "205af1c54d62efb09c9eadf20147a1730909e788c0d4763ce9718b8648f24ede"
+        },
+        {
+          "id": "transactional.set.singleton-targets",
+          "bytes": 40018,
+          "sha256": "561b8ebc21106628918111332a9ab7b47be7350935925ed1e76a6cb5bed576b9"
+        },
+        {
+          "id": "transactional.receipt.readable",
+          "bytes": 12545,
+          "sha256": "ddb97e450e233b941f7d905d49f48648d9965ed1b361dcdc5dee6f810038a1e0"
+        },
+        {
+          "id": "transactional.receipt.pagination",
+          "bytes": 138750,
+          "sha256": "c531c260349347cdc3e54ba68282f1a266a5fa207d3775660615f836a4768782"
+        },
+        {
+          "id": "transactional.idempotency.conflict",
+          "bytes": 29772,
+          "sha256": "ba93aea884ae462533d02695642f03a2ca854f5adabeb41867254216dabb2106"
+        },
+        {
+          "id": "transactional.idempotency.cross-carrier",
+          "bytes": 64106,
+          "sha256": "4ad8c05fe5fbb4682809d4481c93e2684fe30fbbb8962b4da498590637f8f35b"
+        },
+        {
+          "id": "transactional.idempotency.failed-retained",
+          "bytes": 18404,
+          "sha256": "a867694406dde07da71ac70197c60c478dd0fb3344cf2c8160795d1aa62d3378"
+        },
+        {
+          "id": "transactional.sequence.member-transactions",
+          "bytes": 51379,
+          "sha256": "c46b34914118dd34ea1e5f12304124550b9d3c4bfcd9671b99995d6af44a2e1b"
+        }
+      ]
+    },
+    {
+      "path": "packages/conformance/test-support/transactional/coverage-v1.json",
+      "parentSha256": "346e1edaa22af789f89017fdc2fef6bb01b7564ed72a65344e9fe5635887c74f",
+      "parentBytes": 117702,
+      "reconstructionSha256": "346e1edaa22af789f89017fdc2fef6bb01b7564ed72a65344e9fe5635887c74f",
+      "rawObjects": [
+        {
+          "id": "read-update.http.command-minimum-fields",
+          "bytes": 8888,
+          "sha256": "47914ed67c7b06e721e74134e0c633f3e1a7d461cb50ea200ff1874686885c2a"
+        },
+        {
+          "id": "transactional.batch.atomic-commit",
+          "bytes": 2383,
+          "sha256": "ffd77a9d34ac41a6e1f960671bea6880eb5b2ab7b11b3af4ccf0177363d7f4d7"
+        },
+        {
+          "id": "transactional.batch.rollback",
+          "bytes": 2857,
+          "sha256": "9e4f5cdb45f0133f1c6d23caa402701981db2e6f4198e23c667579622ace6769"
+        },
+        {
+          "id": "transactional.batch.deletion-safety",
+          "bytes": 17375,
+          "sha256": "ac27a329a1cc013e6a0e24e0f5cad6b5b4af6c128ad65302d030422a3c7e3c0a"
+        },
+        {
+          "id": "transactional.batch.no-op-entries",
+          "bytes": 10587,
+          "sha256": "383de4e0cb9b3bad310b9db7ff9009cb59fac55966f0309bc71c5d007bea6c1c"
+        },
+        {
+          "id": "transactional.set.mutation",
+          "bytes": 11676,
+          "sha256": "058147f8194f091ee5a7ef3d4fd378f0324f6570049df777f993acb5f967d540"
+        },
+        {
+          "id": "transactional.set.zero-match",
+          "bytes": 6520,
+          "sha256": "4e79e18a5e4c2735b5c686b9ad610dedc890386bfb06584f98268a421bbb832b"
+        },
+        {
+          "id": "transactional.set.cardinality",
+          "bytes": 5800,
+          "sha256": "2a255ed4d364c435c9f985d7a770386bc7b20b2865887b9c8cc2d6cc5f0dd116"
+        },
+        {
+          "id": "transactional.set.singleton-targets",
+          "bytes": 7314,
+          "sha256": "0c9008bac3e2c047d9aa8d47d343b7ed936c9c9352bb140c6422127c71b156b1"
+        },
+        {
+          "id": "transactional.receipt.readable",
+          "bytes": 2142,
+          "sha256": "684eba200912ccb0932c0a8286e350a6e545262a205b3ea3df47a12fc6dd18ec"
+        },
+        {
+          "id": "transactional.receipt.pagination",
+          "bytes": 13057,
+          "sha256": "0735edbca2fbf384f9f8147140a353dc084d9ad85facaddf2f5073f56a7256ee"
+        },
+        {
+          "id": "transactional.idempotency.conflict",
+          "bytes": 5188,
+          "sha256": "de9b758f8ac4df7db5597b1eb2b402a116720becc30a41e7198f78f244358ec0"
+        },
+        {
+          "id": "transactional.idempotency.cross-carrier",
+          "bytes": 11196,
+          "sha256": "c5e6076a2104c06f88fac88c77214522cab457faf925fe03881dff9778c35245"
+        },
+        {
+          "id": "transactional.idempotency.failed-retained",
+          "bytes": 2917,
+          "sha256": "63918cbb495a504fd2043f52b60e7cd8ef1518b8022a96edb0d02660c7df1a8e"
+        },
+        {
+          "id": "transactional.sequence.member-transactions",
+          "bytes": 9557,
+          "sha256": "aea606d1456549f6dd9dc1903e42568282154a61a9fbef50dab3526202eb4045"
+        }
+      ]
+    }
+  ],
+  "mutatorPreservation": {
+    "functions": [
+      {
+        "name": "applyDeletionControl",
+        "sha256": "b6f008b64e3df838b8f3d462289823273578a4b3e35c4d4582bb6396de2673b5",
+        "unchanged": true
+      },
+      {
+        "name": "applyCrossCarrierControl",
+        "sha256": "e320cb1d6ef755e38940669bd5fdc40c09a53185550384416644d9f1eb83b7ca",
+        "unchanged": true
+      },
+      {
+        "name": "applyCommandMinimumControl",
+        "sha256": "7e538bce0ab307a91112db2d2d2ffaebfa7f1736cf0043da1ffcaf78c2db4f92",
+        "unchanged": true
+      },
+      {
+        "name": "applyMemberControl",
+        "sha256": "0e54b54a82d6e153e33a14d8666f8bdf9e290bd4ce383be68973e60c39893bd4",
+        "unchanged": true
+      },
+      {
+        "name": "crossCarrierRequests",
+        "sha256": "5a96fe3e9f84256943cdd3a0a5052f43b2f7ddf70d5298b6ac8dc211a5da3bda",
+        "unchanged": true
+      },
+      {
+        "name": "minimumRequests",
+        "sha256": "7a62cd985b2879efef0f98b5b984f386dd43a3b7472a0ffac8c31102fd7e0397",
+        "unchanged": true
+      },
+      {
+        "name": "memberRequests",
+        "sha256": "e7dcde0b13c9050a54d455a7457c0c43b72f452226e192099d3d4e3c801ec278",
+        "unchanged": true
+      }
+    ],
+    "inline": [
+      {
+        "index": 0,
+        "sha256": "b2249b84044151649b1056e28f3a079d15ab5585a5460391e7e8b8e0facf30a9"
+      },
+      {
+        "index": 1,
+        "sha256": "fe2d229f37cf0c4c35cebc1517b18f8e613f301af06aafdf642cdf59e940f1e1"
+      },
+      {
+        "index": 2,
+        "sha256": "566e85cb79884156959ff598d157b6e50e2f66b9d409644aa279390dca1c3343"
+      },
+      {
+        "index": 3,
+        "sha256": "26ccb9652e95553b13ff8736801fd404809852cb58eddbf52889dfa9432f13d6"
+      },
+      {
+        "index": 4,
+        "sha256": "979326a366944cf36b463c2cfa96e197bcb8f148fd6e11b6222ea9a786aae53c"
+      },
+      {
+        "index": 5,
+        "sha256": "80675c74fb9a82cbcd5c380cbf67bc0685dfb2a2659f37f16649ed8d59e1eeb7"
+      },
+      {
+        "index": 6,
+        "sha256": "9761be78ec2763cd6abaf8db2ef79053c089e1bf848c2a52d83a2efbffceb85b"
+      },
+      {
+        "index": 7,
+        "sha256": "dc80636c4a345329ea846aad68d73d1301e637cffc956414708581660ad405d6"
+      },
+      {
+        "index": 8,
+        "sha256": "c4ce9a70f5b28f35279196fc853cc571cf1a14fbb0e8c43f7aca90fd68ad5880"
+      },
+      {
+        "index": 9,
+        "sha256": "268cda7a4875d9e98805c395c142611059737e21ed98f64e1c011fa2ee2cd160"
+      },
+      {
+        "index": 10,
+        "sha256": "98b95eeb2d10bfb887a37fc46cf025fbd6038f52617eda9172ebeb148a5d2272"
+      },
+      {
+        "index": 11,
+        "sha256": "8ba5eb987476c594968f720c969b17f6025e816793ef1d7e154ffcfd9ce781d7"
+      }
+    ],
+    "allUnchanged": true
+  },
+  "derivatives": [
+    {
+      "name": "effects-zero-results.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/effects-zero-results.json",
+      "historicalSha256": "81cd0cf578282a50afe53b29eaa75ca2dc88b826a7e7c36979b0840de56819b7",
+      "sha256": "cc09c29b33135c16abead1ec991b4d4a938efa12db9c8a10c118dfc74f733687",
+      "normalBytes": 837765,
+      "normalSha256": "cc09c29b33135c16abead1ec991b4d4a938efa12db9c8a10c118dfc74f733687",
+      "compactBytes": 409725,
+      "compactSha256": "99b395706c9ebfe2a20753dc816ba755f43e1c75b7a0abd4ea94bedfe7a83fbb",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "duplicate-receipt-binding.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/duplicate-receipt-binding.json",
+      "historicalSha256": "d82bc2ef71ffb6a895febc2b8175481280e3d8aff5000bcb672b1fb83fcb3504",
+      "sha256": "0a24b5e21ddf74ec26488e42a2f091a37913f6024ebc967bd7c6990d915cf290",
+      "normalBytes": 837960,
+      "normalSha256": "0a24b5e21ddf74ec26488e42a2f091a37913f6024ebc967bd7c6990d915cf290",
+      "compactBytes": 409800,
+      "compactSha256": "700c2a73a5793ee5757952af7e61c09a2b288d84d6238706ec309e2c3956e89c",
+      "nodes": 21913,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "set-order.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/set-order.json",
+      "historicalSha256": "fe34d689ab979444c589f8e931eb6595a5845b74d9f3af98e8846a43ac4893b6",
+      "sha256": "da30bbadae2edf1aba7749db7848de59cd688ad13b3b47db21f67bc8e8eae3c4",
+      "normalBytes": 837765,
+      "normalSha256": "da30bbadae2edf1aba7749db7848de59cd688ad13b3b47db21f67bc8e8eae3c4",
+      "compactBytes": 409725,
+      "compactSha256": "220b90016cbe2d9905a09f22755055a2e1fbb722aa08f75df4999f8d93c5f91c",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "conflict-event.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/conflict-event.json",
+      "historicalSha256": "23144ab8efcc1bbae65a16265d562ecab42b4b9b225bc53648191d65a230a104",
+      "sha256": "9a60b038aa8b2bce2a170bb3c98fbb053a6831ed815a4b74583b7ed9dbcea4a1",
+      "normalBytes": 837765,
+      "normalSha256": "9a60b038aa8b2bce2a170bb3c98fbb053a6831ed815a4b74583b7ed9dbcea4a1",
+      "compactBytes": 409725,
+      "compactSha256": "33d85ac59af7a188761c24c1fb4b975f1675be93fd51c0726779c63100a04999",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "cross-wired-receipt.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/cross-wired-receipt.json",
+      "historicalSha256": "79e05ba3c9c56855f901774529e583e18a81f5c9635555e05b9f81af13d0e34a",
+      "sha256": "f1b7484b4df5a40a6f4f665952bc1c223051fe1eae39309dc74040550826a2c6",
+      "normalBytes": 837043,
+      "normalSha256": "f1b7484b4df5a40a6f4f665952bc1c223051fe1eae39309dc74040550826a2c6",
+      "compactBytes": 409379,
+      "compactSha256": "0045ba7f85cd5dd96ef5f0f40cbf80069579eb618f59fba8bf49ad38bafb837a",
+      "nodes": 21887,
+      "actions": 227,
+      "assertions": 2638,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "ordinary-capture.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/ordinary-capture.json",
+      "historicalSha256": "aaabfdd28a1d10a69f090aa5c23ee3d60c5c1f2ed33998aa1376271453ab74a2",
+      "sha256": "9a0f18e24d63578a9e7ba8e5c37c0295a7cb5c8bf0f078bfecdcb394948e34bc",
+      "normalBytes": 837966,
+      "normalSha256": "9a0f18e24d63578a9e7ba8e5c37c0295a7cb5c8bf0f078bfecdcb394948e34bc",
+      "compactBytes": 409806,
+      "compactSha256": "bb786eb545f89cecd0bc32743456140d64ae99792f4fef83a68e952d8bd24908",
+      "nodes": 21913,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "cross-sequence-fresh-key.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/cross-sequence-fresh-key.json",
+      "historicalSha256": "7c4f9cf24c3e8cfdb07c7d6784ab16df81a6b43aceaadd402bb6bec54ae00c76",
+      "sha256": "1d503a8da250404ce498851d2c1d52a0647c7863d0e545becb2f1eb73da2fd23",
+      "normalBytes": 839119,
+      "normalSha256": "1d503a8da250404ce498851d2c1d52a0647c7863d0e545becb2f1eb73da2fd23",
+      "compactBytes": 410275,
+      "compactSha256": "d6b9b40f997719ef0ec8e8834e7808af7712bdb940ac4077442f875897b7131b",
+      "nodes": 21944,
+      "actions": 227,
+      "assertions": 2645,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "pagination-page-parent.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/pagination-page-parent.json",
+      "historicalSha256": "f2eaba3c4847b23a6659f6f0e40a943a5fdccd742174288b32c84b7c77abe238",
+      "sha256": "27ba380da694b2b2c293059ca09f5c8b8e684a53202cfd21f70ee557dd3a63ec",
+      "normalBytes": 837797,
+      "normalSha256": "27ba380da694b2b2c293059ca09f5c8b8e684a53202cfd21f70ee557dd3a63ec",
+      "compactBytes": 409757,
+      "compactSha256": "5939ac702094d2dc8a8d02b90242104344cdb3b6d41b45429c0d18fcef5a62ba",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "pagination-root-next.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/pagination-root-next.json",
+      "historicalSha256": "1d542536f49b3a23d27ad73fb7505aefb64a4b0d7b07066482c2985f0aabb519",
+      "sha256": "8e4d572f1af4f602329bfcd14b0a04418d16d66d818a7bb6b29ba47209d5f53a",
+      "normalBytes": 837754,
+      "normalSha256": "8e4d572f1af4f602329bfcd14b0a04418d16d66d818a7bb6b29ba47209d5f53a",
+      "compactBytes": 409714,
+      "compactSha256": "324a9a321c0dd4e54c2a1e815779ab4d7a5ba124924e207d0529fa5d73dda5fd",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "pagination-historical-title.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/pagination-historical-title.json",
+      "historicalSha256": "f3a15fc6bbe217ba172bba26f878f4ffa4ae1bb78b5548abab4654553f0b934e",
+      "sha256": "74b7e71df46dce22f68a42641307e9bc78e393e0521201383cfe73bbd851be4a",
+      "normalBytes": 837763,
+      "normalSha256": "74b7e71df46dce22f68a42641307e9bc78e393e0521201383cfe73bbd851be4a",
+      "compactBytes": 409723,
+      "compactSha256": "f084d186536f0cea523931ec5c57de8ea5c40c3c25597f44c5628322464800bb",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "receipt-body-assertion.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/receipt-body-assertion.json",
+      "historicalSha256": "58e25b190091d3014aefabdb5073b1301aa2cfa7c588a23b3d9783de2a96a321",
+      "sha256": "3aa2598eb1c2627556b1bdde40f2caf5f240c22a7e66cbe37c7646c27531b236",
+      "normalBytes": 837082,
+      "normalSha256": "3aa2598eb1c2627556b1bdde40f2caf5f240c22a7e66cbe37c7646c27531b236",
+      "compactBytes": 409418,
+      "compactSha256": "bf329dc564bcb06a397c299634d5d924567ab58e137db9cfca31e7864f3b496f",
+      "nodes": 21887,
+      "actions": 227,
+      "assertions": 2638,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "receipt-credential.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/receipt-credential.json",
+      "historicalSha256": "47f9aff67e0c6cdfd40592d8af5f29b0d20eefd94908a6d703cb912d01ffde22",
+      "sha256": "44f284b2329f315258be355fff3cc642ddd96684528e481e878c5dcbdb4d4043",
+      "normalBytes": 837804,
+      "normalSha256": "44f284b2329f315258be355fff3cc642ddd96684528e481e878c5dcbdb4d4043",
+      "compactBytes": 409750,
+      "compactSha256": "de68207d7b1be8ba6f945203a0dcdf8413990ea7410aa79cbeb78b85f3cdfc02",
+      "nodes": 21909,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "deletion-incoming-order.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/deletion-incoming-order.json",
+      "historicalSha256": "1294e1050a79f9b71080fbf163032ee502c7f4e34a1dd9ab22ab354fd50021c8",
+      "sha256": "25725122b8f664a8e3947550ccd8c0827e81504f581bbf9c4ab56eabb86a7c5c",
+      "normalBytes": 843883,
+      "normalSha256": "25725122b8f664a8e3947550ccd8c0827e81504f581bbf9c4ab56eabb86a7c5c",
+      "compactBytes": 412913,
+      "compactSha256": "400762237eb61eecfad57d5e71c4ce380820cbf669b4417bbf61d00ee8024637",
+      "nodes": 22064,
+      "actions": 227,
+      "assertions": 2665,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "effects-event-order.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/effects-event-order.json",
+      "historicalSha256": "2a2708832dea3e44c673efd038f4109811cd605ec4a9c5603f7f72e1186f5de4",
+      "sha256": "2eb06f653d246694e9b2ddafa7754e5bd62d807f37f6dcbb691cdd26f359a04e",
+      "normalBytes": 837765,
+      "normalSha256": "2eb06f653d246694e9b2ddafa7754e5bd62d807f37f6dcbb691cdd26f359a04e",
+      "compactBytes": 409725,
+      "compactSha256": "b5fe253adeaae642e275f8eea00df1e2b5ac425e87b366485f49e7f7dffe5167",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "conflict-reopened-status.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/conflict-reopened-status.json",
+      "historicalSha256": "3ebdc2b606a45e2e921c146422ee1d326ff57d5312223e81354b62db41e0114f",
+      "sha256": "567b56aa5c32d74d1ea5cce2e77b2196501e9694847d500b85985316b786f26e",
+      "normalBytes": 837765,
+      "normalSha256": "567b56aa5c32d74d1ea5cce2e77b2196501e9694847d500b85985316b786f26e",
+      "compactBytes": 409725,
+      "compactSha256": "9d59f3a73852d2468b2126c7c95abbc7811dbd38ec617f0e107cb639c96f81cb",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "effects-rollback-metadata.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/effects-rollback-metadata.json",
+      "historicalSha256": "e538e6a74b6345f1fd2b3e0c89ffe6ada64f3a42419180765af10f1f77a3d41c",
+      "sha256": "16217291c7172b36647dd086d380c5f54ffa3568935246625a826a6ddfcb4913",
+      "normalBytes": 837778,
+      "normalSha256": "16217291c7172b36647dd086d380c5f54ffa3568935246625a826a6ddfcb4913",
+      "compactBytes": 409738,
+      "compactSha256": "083549007fb788292b2474d2e181628ede4d17edee903f1e89b040812a5ee380",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "set-index.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/set-index.json",
+      "historicalSha256": "dedf47d4867a9d4c19ebafb93e04571e58ba7650117d089bed9b54b849dafb87",
+      "sha256": "5a67037432b4adfae005d4bf7ea9d1ed4298fdc5bec5ebe5345d88ffeccb5865",
+      "normalBytes": 837765,
+      "normalSha256": "5a67037432b4adfae005d4bf7ea9d1ed4298fdc5bec5ebe5345d88ffeccb5865",
+      "compactBytes": 409725,
+      "compactSha256": "7ae0596599bd42b314b6dcaf28c6aba6c76b6dc211691ab11a6b1f9b3b3c026c",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "noop-bead-property.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/noop-bead-property.json",
+      "historicalSha256": "08b2d8db247f152f1345ded4efe5e8878b874966871a86e6d165a7e5287eaa8c",
+      "sha256": "eb8189e361f575dade470e05af39d9989e7b93b5ef2c302864378425da6d3a3f",
+      "normalBytes": 837773,
+      "normalSha256": "eb8189e361f575dade470e05af39d9989e7b93b5ef2c302864378425da6d3a3f",
+      "compactBytes": 409733,
+      "compactSha256": "a29e80a70049df37b94523b96a299f118f261971c8fb1a40082d7e0be8efe151",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "conflict-code.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/conflict-code.json",
+      "historicalSha256": "6aa1fcc94f308992e416092367d73dd5f4b51257b010dfece0eeac1fc7ce9d07",
+      "sha256": "e604792fb99301217921af6213599f2ee6bf627ba726ae6759c93eb310467a56",
+      "normalBytes": 837762,
+      "normalSha256": "e604792fb99301217921af6213599f2ee6bf627ba726ae6759c93eb310467a56",
+      "compactBytes": 409722,
+      "compactSha256": "cdb5bcff84c364a37c29e5160bd7170bf66a375f92a7d185dafd4081d10aa36a",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "set-poststate.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/set-poststate.json",
+      "historicalSha256": "d55f96844b175d0f0ec0b84fea2dbe17e3ea825c42dd1618fcfddca68c105a34",
+      "sha256": "568da932a04adab90dd07fdb1b338eeb4a09448d8709ab1f314a96ffac7bab46",
+      "normalBytes": 837772,
+      "normalSha256": "568da932a04adab90dd07fdb1b338eeb4a09448d8709ab1f314a96ffac7bab46",
+      "compactBytes": 409732,
+      "compactSha256": "28b7e6ce376701acb88f1a826e0d525912f0f8dcd6574eecc3b6a78e70c0f99e",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "conflict-current-record.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/conflict-current-record.json",
+      "historicalSha256": "49e35ae7ffc965bca96baceaaae2b13f68058cb889271e99ae47c0f04de208e9",
+      "sha256": "dd1066412e3950df70f9567c2b58bbf15cbb44d081b350ea5733c4f1d145823b",
+      "normalBytes": 837765,
+      "normalSha256": "dd1066412e3950df70f9567c2b58bbf15cbb44d081b350ea5733c4f1d145823b",
+      "compactBytes": 409725,
+      "compactSha256": "ece2a69fc0c1e4b07461ade1d8f34992b64be444f7cc99f0138f2e009c648db3",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "effects-no-effect.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/effects-no-effect.json",
+      "historicalSha256": "a79517b9f4908d82d542f42ba17c356a634afd5a582292c97f4be7b4f9070a9c",
+      "sha256": "b788be26cc026925be9ed8676c68bff51f8b9882eaa51ec349ebd410957aa35f",
+      "normalBytes": 837764,
+      "normalSha256": "b788be26cc026925be9ed8676c68bff51f8b9882eaa51ec349ebd410957aa35f",
+      "compactBytes": 409724,
+      "compactSha256": "1ddd5fe954f31ebc081856747c34b0bb14395ac852de974336a01c3983753907",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "deletion-outgoing-order.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/deletion-outgoing-order.json",
+      "historicalSha256": "e8fcc1b38dab26e4ce38fe48c6f94de7a7f3466afb2632c3048c6ed7d9a5c987",
+      "sha256": "92fc9d5b2c01789fc546c12ed2f3a9eeb9cb86b78143f6b321aee0a4d40b1b56",
+      "normalBytes": 843883,
+      "normalSha256": "92fc9d5b2c01789fc546c12ed2f3a9eeb9cb86b78143f6b321aee0a4d40b1b56",
+      "compactBytes": 412913,
+      "compactSha256": "a6e16775250bf5caeff0b527f77c2597de592013e8e17a4eee157cfa3cf88b9c",
+      "nodes": 22064,
+      "actions": 227,
+      "assertions": 2665,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "forbidden-receipt-use.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/forbidden-receipt-use.json",
+      "historicalSha256": "94a99cff0702569fe53f444c037fde9f1905f85c4f30d0abd3f0586569237593",
+      "sha256": "d027d4393e14fcf2341c2ac8d51bcee234996c39b9b862811cda9a3e32977fc1",
+      "normalBytes": 838475,
+      "normalSha256": "d027d4393e14fcf2341c2ac8d51bcee234996c39b9b862811cda9a3e32977fc1",
+      "compactBytes": 410069,
+      "compactSha256": "a244370eeb9fff03137a603c5625cc5a2227afbd103afd29bb94118b78bd5e7b",
+      "nodes": 21928,
+      "actions": 228,
+      "assertions": 2643,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "pagination-terminal-next.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/pagination-terminal-next.json",
+      "historicalSha256": "e1a41e31c7934869771dceff5007f630ee50b1cd66130bcd2b46aecf392daa8e",
+      "sha256": "f145e8f8f3ff25ebcda91adf98801f07d218c92795c8a2a940fd5fdaecad2a5c",
+      "normalBytes": 837819,
+      "normalSha256": "f145e8f8f3ff25ebcda91adf98801f07d218c92795c8a2a940fd5fdaecad2a5c",
+      "compactBytes": 409779,
+      "compactSha256": "3abe50905013257ea09722fe4bc6059410a848c8245e8aa94a15292c663d0722",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "deletion-committed-prefix-state.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/deletion-committed-prefix-state.json",
+      "historicalSha256": "c9f7cd1e9711b3b576da8cef0134852b3aeebad701d7ef1f240cb3f8b025608a",
+      "sha256": "0f33c0244113d8a384b347a095f4e6597c51c99919e33c29f6318d6fe4031538",
+      "normalBytes": 840869,
+      "normalSha256": "0f33c0244113d8a384b347a095f4e6597c51c99919e33c29f6318d6fe4031538",
+      "compactBytes": 411350,
+      "compactSha256": "c9b2e0e69825c2667a00413d26fb28e124622ff70978ff25a6b95641bd9569e5",
+      "nodes": 21985,
+      "actions": 227,
+      "assertions": 2653,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "cross-batch-semantic-conflict.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/cross-batch-semantic-conflict.json",
+      "historicalSha256": "df2aefb78617b82efb62a4b6e7d7023ac58f4369766cb92083a360700c01b110",
+      "sha256": "160fee8489631aa20b90ea376a6a6b758e6b28c8086c465d38c954a8ad20c6ab",
+      "normalBytes": 839106,
+      "normalSha256": "160fee8489631aa20b90ea376a6a6b758e6b28c8086c465d38c954a8ad20c6ab",
+      "compactBytes": 410404,
+      "compactSha256": "21f0ffbd8bcd3d561e2daa32373048c779c21473fa9726b6036663a22b855b24",
+      "nodes": 21945,
+      "actions": 227,
+      "assertions": 2649,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "pagination-page-member.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/pagination-page-member.json",
+      "historicalSha256": "7cdfed1e93fe18786be50e1cc4a74c5f556e367838c8083a2822781c110aedd3",
+      "sha256": "a1a0d7487185fd823a42aba81a4f5c9886d8f1ec513a6b9112dec8854eec0ee5",
+      "normalBytes": 837765,
+      "normalSha256": "a1a0d7487185fd823a42aba81a4f5c9886d8f1ec513a6b9112dec8854eec0ee5",
+      "compactBytes": 409725,
+      "compactSha256": "698f724c5c0bf2ca8ae7d5764206b23c47e21933b918277b0a126a0011fdcf81",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "receipt-binding.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/receipt-binding.json",
+      "historicalSha256": "a80168007e4503f3861e44e30e2b8bc03c345b018ac8e2432478d6c6e8352dc4",
+      "sha256": "3a85d784b9d858cc5a4434c927a91c61fe4b5033b9828e66c008b033f4face9c",
+      "normalBytes": 837758,
+      "normalSha256": "3a85d784b9d858cc5a4434c927a91c61fe4b5033b9828e66c008b033f4face9c",
+      "compactBytes": 409718,
+      "compactSha256": "ad1962efb6caf425204d71e8b837de638fa8aa2c9840e2aaff670eed48b22dc2",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "minimum-batch-body-conflict.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/minimum-batch-body-conflict.json",
+      "historicalSha256": "200e683194cb5171534c78effa7f653972f14ae22693986be544984daf234036",
+      "sha256": "2a6a6dc6641aa0fa4023f6b09e0169293ba50d53dd42899715caa1bce16c0f6e",
+      "normalBytes": 837772,
+      "normalSha256": "2a6a6dc6641aa0fa4023f6b09e0169293ba50d53dd42899715caa1bce16c0f6e",
+      "compactBytes": 409732,
+      "compactSha256": "12dce0695e3e4600e52d016b1fa8a8472d5d98887c7c4e1336a33560f4d19230",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "effects-changed-poststate.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/effects-changed-poststate.json",
+      "historicalSha256": "ef355f96e1e71827a1bb2df72dd3a88e563dcc56ff7196b79a0fe29fcc06d651",
+      "sha256": "c09b461f405b080bdc1e324a935aa168355562b7cead773ebac91a21fe383b09",
+      "normalBytes": 837772,
+      "normalSha256": "c09b461f405b080bdc1e324a935aa168355562b7cead773ebac91a21fe383b09",
+      "compactBytes": 409732,
+      "compactSha256": "3cdd43aa0101aaa422a41e88debc399be4d223f49895208603c7cff3caec0eee",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "set-matched.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/set-matched.json",
+      "historicalSha256": "605040335164135afea00d0d97b655287f9150871d1e1c98b5e2c722950923b2",
+      "sha256": "23809caa2e590f2c7ca05fb2b265a4f4a4a37ea4f1e6ee172d850d4c91582226",
+      "normalBytes": 837765,
+      "normalSha256": "23809caa2e590f2c7ca05fb2b265a4f4a4a37ea4f1e6ee172d850d4c91582226",
+      "compactBytes": 409725,
+      "compactSha256": "3bb8eb2f1c0c0d3767afe88e234f5cafa5aad3ec8d9a9e19044b05f6dc8beb2c",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "noop-link-metadata.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/noop-link-metadata.json",
+      "historicalSha256": "482b44cd064cc40c57967d474973c74ffdde2fef74bef321279d67c26ae2a405",
+      "sha256": "0bcf309dd7adc35ac74feee69ccc1ebb790516561ad8eaab87c35409466ddd89",
+      "normalBytes": 837786,
+      "normalSha256": "0bcf309dd7adc35ac74feee69ccc1ebb790516561ad8eaab87c35409466ddd89",
+      "compactBytes": 409746,
+      "compactSha256": "272735ec3bbb14c2e18d942c1eb819b817f3a1c710760beb813ee4c8517eb037",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "effects-zero-events.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/effects-zero-events.json",
+      "historicalSha256": "29bd93582eb0fad85b9ca5d26f2e73f1a36f4d05eeb2f32da6b246f87dacd51e",
+      "sha256": "2de54fe76f21817df3c874ebbcc216ed2c83e08ce0335e8aa810b411c263cd4f",
+      "normalBytes": 837911,
+      "normalSha256": "2de54fe76f21817df3c874ebbcc216ed2c83e08ce0335e8aa810b411c263cd4f",
+      "compactBytes": 409780,
+      "compactSha256": "45523cd5fc839b6bcc0fd29dd6e8809cebc4a2febfd92449881fb2b32ea2d383",
+      "nodes": 21912,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "conflict-retained-body.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/conflict-retained-body.json",
+      "historicalSha256": "4cebdad83cd5907dcc96ad9140e779aa6cd1998ec5d07cc39caed8fab2151874",
+      "sha256": "7984ff8dd6952d11de6dfc93084a4a5b7d7d6f141e07edf257096bc8714403de",
+      "normalBytes": 837752,
+      "normalSha256": "7984ff8dd6952d11de6dfc93084a4a5b7d7d6f141e07edf257096bc8714403de",
+      "compactBytes": 409712,
+      "compactSha256": "91a498c57e0773c998878935fc5ce024426b66ce8b6fd2d8b576c996ae5a7cd0",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "minimum-readonly-credential.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/minimum-readonly-credential.json",
+      "historicalSha256": "638a7183f7d3c0edd4483525cf2ecd8a6ce6509cb825a2050350d5e7c4832f5a",
+      "sha256": "055596aa93abcb8186c0fbeac8230017b44ef480f2826e47f072243737a8529b",
+      "normalBytes": 837763,
+      "normalSha256": "055596aa93abcb8186c0fbeac8230017b44ef480f2826e47f072243737a8529b",
+      "compactBytes": 409723,
+      "compactSha256": "d0138d2defeb1ce7b21240c83f020de7df237a26ce489bf3ed94262dfb7c8c60",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "effects-receipt-order.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/effects-receipt-order.json",
+      "historicalSha256": "bcb55fc08e3f38cf8d2fe74a6f467f07b550c44f4db2dfd8ba1002f736ef0ee4",
+      "sha256": "bff6d493c2f5472c3447d3ac796a5dccd692c8ac7a285b34f85fdb673f192b43",
+      "normalBytes": 837765,
+      "normalSha256": "bff6d493c2f5472c3447d3ac796a5dccd692c8ac7a285b34f85fdb673f192b43",
+      "compactBytes": 409725,
+      "compactSha256": "e7cb43db908579d455ac58fc99a7f1827350a265c98eb7e7024a7a83dcafdeaf",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "noop-group-inventory-and-head.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/noop-group-inventory-and-head.json",
+      "historicalSha256": "1ffa8871fc349a3f15e1badbb91fce3956aff749c797024fdd3b2a1c82239be6",
+      "sha256": "210e85e9a05026f0e328a25c7e797c5687676a24a80f16c28b58bbf242d61cba",
+      "normalBytes": 837828,
+      "normalSha256": "210e85e9a05026f0e328a25c7e797c5687676a24a80f16c28b58bbf242d61cba",
+      "compactBytes": 409735,
+      "compactSha256": "7816b634539b66efbabb3f111b83c4f038c2ef0aae514a776c06e47e2e82905a",
+      "nodes": 21910,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "pagination-inline-boundary.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/pagination-inline-boundary.json",
+      "historicalSha256": "1df1d71d1c6a9f85830432b6f19f0a7501a0bf32aa87e26be3533074bf254c0b",
+      "sha256": "4f67d52e23020d79831862fc16d7ff8389acdb67f0ca0a8e53bddd4ddf2a291f",
+      "normalBytes": 837765,
+      "normalSha256": "4f67d52e23020d79831862fc16d7ff8389acdb67f0ca0a8e53bddd4ddf2a291f",
+      "compactBytes": 409725,
+      "compactSha256": "d6e3c967cf9cb818d6c99e7e812051bc108f8e904261f7d7867b961fac15c7f0",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "receipt-method.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/receipt-method.json",
+      "historicalSha256": "edc9f0d6fd65fa3dd7be1aaa62364350accbfc228332a2e4b39e362613cdc476",
+      "sha256": "dec0cbb99ff51f22c0bf821fdf27e85f5406cbefcecf16201b1bd37a2c02a202",
+      "normalBytes": 837766,
+      "normalSha256": "dec0cbb99ff51f22c0bf821fdf27e85f5406cbefcecf16201b1bd37a2c02a202",
+      "compactBytes": 409726,
+      "compactSha256": "e14e14b857cf92a5091fd527eb0fd4642d399b21e73a700409a5b22563b716a2",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    },
+    {
+      "name": "sequence-member-successful-delete.json",
+      "historicalPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-author/derivatives/sequence-member-successful-delete.json",
+      "historicalSha256": "db01d1e393d45f9b3441a39b05984b9cd0a21af9994a31d22241fa5ec5b5b54c",
+      "sha256": "9ddd6b3bc305546ac4cd1d6dda4aeabf28f0c6c177d14c0495b92228aac7d690",
+      "normalBytes": 837759,
+      "normalSha256": "9ddd6b3bc305546ac4cd1d6dda4aeabf28f0c6c177d14c0495b92228aac7d690",
+      "compactBytes": 409719,
+      "compactSha256": "fd8ebf6584d2dd42a1132a873b7a0892b35adeb45e4aa663d388a6423d761120",
+      "nodes": 21908,
+      "actions": 227,
+      "assertions": 2642,
+      "originalTransformPreserved": true
+    }
+  ],
+  "maxDerivativeNormalBytes": 843883,
+  "maxDerivativeNodes": 22064,
+  "proposedGuards": {
+    "disk": 829145,
+    "diskDelta": 340865,
+    "normal": 841861,
+    "nodes": 21972,
+    "nodeDelta": 8953,
+    "coverage": 125561,
+    "coverageDelta": 54899,
+    "derivativeNormal": 847979,
+    "derivativeNodes": 22128
+  },
+  "guardsAmended": false,
+  "executed": false,
+  "formatted": true
+}

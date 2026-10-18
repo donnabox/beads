@@ -1,0 +1,41 @@
+{
+  "recordedAt": "2026-10-15T09:55:23.190997+00:00",
+  "status": "A findings dispositioned; B independent and sequence authoring withheld",
+  "actualClaude": {
+    "path": "transaction-sequence-member-plan-v4-split-review/A/stdout.txt",
+    "sha256": "0b5a1ba0b62ba57893865a301f5f841cdeecf748862b71091e15264f77cb2533"
+  },
+  "nativeSourceAudit": {
+    "path": "transaction-sequence-member-plan-v4-claude-A-source-audit.md",
+    "sha256": "79aa548af10b7436b2ca443f76045c4a7f5e408da45eb340a8f6254c67e6bb3e"
+  },
+  "rootRead": "Complete actual output, all19 native dispositions and all cross-boundary dependencies; independently inspected batch key rejection/header extraction and sequence outer-key rejection. Terminal hash/group absence verified.",
+  "acceptedDispositions": "All19 numbered findings and crossdependencies as detailed in native audit79aa548af10b7436b2ca443f76045c4a7f5e408da45eb340a8f6254c67e6bb3e. Recommendations become explicit successor wording before source authoring, not silently applied to frozenv4.",
+  "requiredPrecision": [
+    "Exact recovery POST idempotency-key headers member-a/member-fail/member-b; both sequence outer keys absent. Preserve five body literals and hashes.",
+    "Fresh per-observation/per-scenario isolation and private pos-N baseline.",
+    "Actual validated receipt context/volatile values and Event correlation; finite32item/4MiB bounds.",
+    "Full ten-action negative retained; runner first-action assertion failure stops before later actions; exact seven named failures remain.",
+    "Recovery observes retained data, never claims a second mutation."
+  ],
+  "rejectedChanges": [
+    "Per-member batch body idempotencyKey (parser expressly rejects it).",
+    "Truncating negative row or weakening exact Problem/whole-body/collection/Event assertions.",
+    "New baseline/cursor requests, new runtime/token semantics or historical evidence relabeling."
+  ],
+  "priorityDecision": {
+    "next": "Observed unknown Resource Event-view404 Scope-context repair, before another evidence-only increment",
+    "audit": "transaction-after-sequence-serving-next-audit.md",
+    "auditSha256": "f56f5cdfe285c5adc6ed4e12a737c520c6ed0177200918222e3f3fcc502ea8be",
+    "rootVerified": "Spec5661\u20135668/5800/5830 and actual owner/HTTP missing branches; planning/council pending.",
+    "reason": "Concrete existing-law serving gap has priority under operator instructions."
+  },
+  "notGranted": [
+    "Product authoring",
+    "Tests/build/service launch",
+    "Sequence growth allowance",
+    "Public profile or release claim"
+  ],
+  "sourceTree": "b2d9f2c18502e0778c51123be8b4564af052d803",
+  "actualMain": "88c9408e908590ab1a4c64c9b9dee1a8b705999c"
+}

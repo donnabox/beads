@@ -1,0 +1,19 @@
+Scope: all 12 workspace projects
+Recreating /Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules
+✓ Lockfile passes supply-chain policies (verified 3d ago)
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +61
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 61, reused 61, downloaded 0, added 61, done
+
+devDependencies:
++ @babel/parser 8.0.4
++ @biomejs/biome 2.5.7
++ @types/node 24.13.3
++ ajv 8.17.1
++ typescript 7.0.2
++ vitest 4.1.10
+
+Done in 577ms using pnpm v11.20.0
+$ tsc -p tsconfig.check.json

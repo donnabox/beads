@@ -1,0 +1,81 @@
+--- a/apps/bdptest/src/transactional-depth-key-order-installed.test.ts
++++ b/apps/bdptest/src/transactional-depth-key-order-installed.test.ts
+@@ -345,10 +345,12 @@
+     expect(requests).toHaveLength(13);
+     expect(requests.reduce((sum, row) => sum + row.bodyBytes, 0)).toBe(3270);
+     expect(Math.max(...requests.map((row) => row.bodyBytes))).toBe(621);
++    let deepChecked = 0;
+     for (const row of requests) {
+       expect(Buffer.byteLength(row.body ?? ""), row.label).toBe(row.bodyBytes);
+       expect(digest(row.body ?? ""), row.label).toBe(row.bodySha256);
+       if (row.label.includes("deep") || row.label.endsWith("fresh-depth")) {
++        deepChecked++;
+         const parsed = record(JSON.parse(row.body!));
+         const input = "operations" in parsed ? records(parsed.operations)[0]! : parsed;
+         let value: unknown = input.metadata;
+@@ -360,6 +362,7 @@
+         expect(value, row.label).toBe("leaf");
+       }
+     }
++    expect(deepChecked).toBe(4);
+     directory = mkdtempSync(path.join(tmpdir(), "bdp-depth-key-installed-"));
+     controller.signal.throwIfAborted();
+     launchAttempted = true;
+@@ -578,6 +581,8 @@
+       context(changed, advancedPosition);
+       expect(changed.headers["x-bdp-development-limit"]).toBeUndefined();
+       expect(changed.headers["content-type"]).toBe("application/problem+json");
++      expect(changed.headers["retry-after"]).toBeUndefined();
++      expect(changed.headers["www-authenticate"]).toBeUndefined();
+       expect(checked(changed.bodyText, "transactionalProblem")).toStrictEqual({
+         type: "https://github.com/gastownhall/bdp/problems/conflict",
+         code: "idempotency-conflict",
+@@ -604,6 +609,9 @@
+       `${scope}beads/depth-s-b`,
+     ]);
+     expect(items).toStrictEqual(savedResources);
++    expect(responses.map(({ headers }) => headers["bdp-scope-position"])).toStrictEqual(
++      requests.map(({ contextPosition }) => contextPosition),
++    );
+     expect(attempted).toBe(13);
+     expect(responses).toHaveLength(13);
+     expect(
+--- a/apps/bdptest/src/transactional-sequence-depth-installed.test.ts
++++ b/apps/bdptest/src/transactional-sequence-depth-installed.test.ts
+@@ -262,10 +262,12 @@
+     expect(requests).toHaveLength(8);
+     expect(requests.reduce((sum, row) => sum + row.bodyBytes, 0)).toBe(3179);
+     expect(Math.max(...requests.map((row) => row.bodyBytes))).toBe(680);
++    let deepChecked = 0;
+     for (const row of requests) {
+       expect(Buffer.byteLength(row.body ?? ""), row.label).toBe(row.bodyBytes);
+       expect(digest(row.body ?? ""), row.label).toBe(row.bodySha256);
+       if (row.label.includes("deep") || row.label.endsWith("fresh-depth")) {
++        deepChecked++;
+         const parsed = record(JSON.parse(row.body!));
+         const input = "operations" in parsed ? records(parsed.operations)[0]! : parsed;
+         let value: unknown = input.metadata;
+@@ -277,6 +279,7 @@
+         expect(value, row.label).toBe("leaf");
+       }
+     }
++    expect(deepChecked).toBe(4);
+     directory = mkdtempSync(path.join(tmpdir(), "bdp-sequence-depth-installed-"));
+     controller.signal.throwIfAborted();
+     launchAttempted = true;
+@@ -470,6 +473,7 @@
+     context(point, "pos-1");
+     const fresh = await exchange(5);
+     status(fresh, 200, "sequence-depth:fresh-completed");
++    expect(fresh.headers["content-type"]).toBe("application/json");
+     context(fresh, "pos-2");
+     expect(fresh.headers["x-bdp-development-limit"]).toBeUndefined();
+     const created = checked(fresh.bodyText, "transactionalSequenceResponse");
+@@ -488,6 +492,7 @@
+     });
+     const reuse = await exchange(6);
+     status(reuse, 200, "sequence-depth:fresh-retained-conflict");
++    expect(reuse.headers["content-type"]).toBe("application/json");
+     context(reuse, "pos-2");
+     expect(reuse.headers["x-bdp-development-limit"]).toBeUndefined();
+     expect(checked(reuse.bodyText, "transactionalSequenceResponse")).toStrictEqual({

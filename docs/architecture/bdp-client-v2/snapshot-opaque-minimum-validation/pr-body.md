@@ -1,0 +1,9 @@
+Fresh Snapshot GET/HEAD requests with a syntactically valid opaque minimum currently fail before bounded consistency waiting. This change preserves the lexical minimum through HTTP, service capture and the owner so an unsatisfied current minimum returns contextual 503 with Retry-After. Retained Snapshot/page minima keep their existing behavior.
+
+This is a separate successor to PR156, outside frozen PR150. It changes three production files and four test files; no specification, schema, discovery advertisement, public profile admission or main integration change.
+
+Validation: native Codex and actual Claude plan/code review completed, with findings explicitly dispositioned. All 21 fresh local stages passed: typecheck, format, lint (existing warnings retained), build, 22 selected source callbacks, fresh package/external-consumer verification, and installed cohorts of 31 and 3 exchanges across three cleanly exited children. The new packed GET/HEAD requests returned 503 after about one second; HEAD was bodyless. All 679 tested source files map byte-for-byte to this commit. Exact-head CI39012707852 passed on 08812c6: 9,410 tests across 186 files, one skip; seven preflight tests and all 27 steps including build, package smoke and the historical Read evidence gate.
+
+Limitations: retained Snapshot/continuation decisions S1 and incident-Link G2 remain unresolved. Cancellation scheduling and aggregate waiter-count evidence retain their documented limits. No complete Update or Transactional support claim follows.
+
+[Validation and source mapping](https://github.com/donnabox/beads/blob/codex/vickie-bdp-client-design/docs/architecture/bdp-client-v2/snapshot-opaque-minimum-validation/root-final-validation.json) · [Independent final audit](https://github.com/donnabox/beads/blob/codex/vickie-bdp-client-design/docs/architecture/bdp-client-v2/snapshot-opaque-minimum-validation/native-final-installed-audit.md)

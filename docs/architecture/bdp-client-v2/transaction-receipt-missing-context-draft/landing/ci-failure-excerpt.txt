@@ -1,0 +1,25 @@
+11094: 2026-10-15T13:21:13.2387368Z  FAIL  apps/bdptest/src/transactional-matrix.test.ts > aborts the actual cohort budget after real wire and drains all installed children
+11095: 2026-10-15T13:21:13.2395578Z AssertionError: expected false to be true // Object.is equality
+11096: 2026-10-15T13:21:13.2396128Z 
+11097: 2026-10-15T13:21:13.2396562Z - Expected
+11098: 2026-10-15T13:21:13.2397118Z + Received
+11099: 2026-10-15T13:21:13.2397434Z 
+11100: 2026-10-15T13:21:13.2397904Z - true
+11101: 2026-10-15T13:21:13.2398423Z + false
+11102: 2026-10-15T13:21:13.2398630Z 
+11103: 2026-10-15T13:21:13.2399322Z  ❯ apps/bdptest/src/transactional-matrix.test.ts:902:16
+11104: 2026-10-15T13:21:13.2412679Z     900|     ),
+11105: 2026-10-15T13:21:13.2413580Z     901|   ).toBe(true);
+11106: 2026-10-15T13:21:13.2414743Z     902|   expect(seen).toBe(true);
+11107: 2026-10-15T13:21:13.2415466Z        |                ^
+11108: 2026-10-15T13:21:13.2416140Z     903|   expect(published).toBe(false);
+11109: 2026-10-15T13:21:13.2416993Z     904|   expect(performance.now() - started).toBeLessThan(15000);
+11110: 2026-10-15T13:21:13.2417506Z 
+11111: 2026-10-15T13:21:13.2417929Z ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+11112: 2026-10-15T13:21:13.2418302Z 
+11113: 2026-10-15T13:21:13.2420022Z 
+11114: 2026-10-15T13:21:13.2443690Z  Test Files  1 failed | 174 passed (175)
+11115: 2026-10-15T13:21:13.2486056Z       Tests  1 failed | 9299 passed | 1 skipped (9301)
+11116: 2026-10-15T13:21:13.2487105Z    Start at  13:08:10
+11117: 2026-10-15T13:21:13.2494171Z    Duration  783.14s (transform 8.26s, setup 3.17s, import 43.75s, tests 1755.79s, environment 31ms)
+11118: 2026-10-15T13:21:13.2505326Z 

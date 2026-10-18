@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-18T00:02:50.697053+00:00",
+  "decision": "ACCEPT_CONSUMER_RELEASE_FOUR_EXTERNAL_STAGES",
+  "rootReadcheck": "85f9d9bdc7b87f55a4a69214eef497b7a7b7658d3b2a07f01131c1179c96af1d",
+  "nativeAudit": "f93e5aedc23366516a69ee08b3713abfc4a9d8ed1d2ff1bdac611278e9f37abf",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/format-successor-1/source-binding.json",
+    "sha256": "07c407cf0a676e2f53d4e4b2ce7948d9df8a4cc8a4f1ad0bc6e4d9e89f370218"
+  },
+  "proof": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/format-successor-1/run/installed-provenance.json",
+    "sha256": "5c66eda2626055af7d66e5481d436759f25c2c8842be114024d35c7c1e595dc4"
+  },
+  "inventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/format-successor-1/run/installed-consumer-inventory.json",
+    "sha256": "54d5f75e22278bf57890cdb1fc90bc1b4ec4a82abed6b4eef9207905ac4a96bb"
+  },
+  "held": [
+    "four-required-checks",
+    "commit",
+    "push"
+  ],
+  "noRetries": true
+}

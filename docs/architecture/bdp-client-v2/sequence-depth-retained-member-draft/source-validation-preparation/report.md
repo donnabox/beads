@@ -1,0 +1,3 @@
+Closed ten-stage source command plan: offline setup, typecheck, build, format-check, lint, boundaries, historical Read seal, then precisely2 preparation/13 sequence/3 HTTP callbacks. No new executable supervisor or live gate; root can reuse existing reviewed120s runner once actual integrated source is pinned. Source hash/selection and exact argv are reviewable now. Package/installed and emitted control remain separate closed gates.
+
+The source owner count in the accepted aggregate is16, all13 sequence fixtures plus3 HTTP fixtures. Neither selected preparation case opens a store. Test registration/selection was checked from source text, not a Vitest collection run. Full actual selected names, output paths and expected workload are in commands.json. No commands executed.

@@ -1,0 +1,81 @@
+## Findings
+
+### 1. MEDIUM — Stale command-minimum claims left in the progress record
+**Location:** `docs/design/transaction-implementation-progress.md:600–601` (and, ambiguously, `580–582`)
+
+**Issue:** Plan item 6 required superseding the current command-minimum descriptions. The draft updated two sites (`657–663`, `1725–1737`) and left a third, unambiguous one:
+
+> 600: Unsupported minimum-context fields on commands also fail before any key binding
+> 601: or effect; no command barrier semantics are inferred.
+
+After the `transaction-http.ts:294–302` deletion this is exactly false: those fields now admit the key and execute effects. `580–582` ("Minimum context controls likewise cannot yield success or a conditional shortcut") sits inside a paragraph about command carriers (set/depth/alias-sequence requests) and reads the same way.
+
+**Impact:** The published design record asserts the opposite of both the shipped code and the new normative paragraph at `docs/specs/bdp.md:5792–5800`. No test reads this document (`grep` for `transaction-implementation-progress` in `*.ts`/`*.mjs` → no hits), so the measured gate cannot catch it. The next slice reanchors on this file.
+
+**Smallest correction:** Mirror the 660/1730 edits — replace 600–601's first sentence with a superseding one (e.g. "Copied read minimum fields on commands are ignored under the later command-minimum amendment; no command barrier semantics are inferred."), and scope 580–582's sentence to reads ("Read-side minimum context controls …").
+
+---
+
+### 2. MEDIUM — 13 added TypeScript lines exceed the configured formatter width, so the required format gate fails
+**Location:** `biome.json` sets `formatter.lineWidth: 100`; `pnpm format:check` = `biome format .`
+
+Added lines over 100 columns (length → file):
+
+| len | file |
+|---|---|
+| 101 | `apps/bdptest/src/installed-reference.test.ts` (`await helpers.requestInstalled(config, token, url, …)`) |
+| 101 | `apps/bdptest/src/installed-reference.test.ts` (`const replay = await wire(target, "POST", …, {`) |
+| 105, 105 | `apps/bdptest/src/transactional-collection-minimum-installed.test.ts` (route `.map(...)`; `ajv.compile({ $ref: … })`) |
+| 102 ×2, 104, 103, 102, 105, 103, 102, 107, 104 | `packages/server/src/transaction-http.test.ts` (tests A–E and D) |
+
+Evidence this is a real gate failure rather than an accepted style: on `HEAD`, the only committed lines over 100 in these three files are `it("…", async () => {` heads (which Biome/Prettier keep intact) and one unbreakable template literal. There are no committed breakable >100 lines. The draft's own report concedes "Manual source formatting only; formatter … have not run."
+
+**Impact:** `format/lint` is an explicit pre-execution gate in the plan. Reformatting changes the bytes of three of the seven files, so `source-binding.json` SHA256s, `source-footprint.txt`, `draft.patch` hash and `artifact-hashes.json` all become stale — i.e. the frozen measured packet must be re-frozen and re-measured before execution, not after.
+
+**Smallest correction:** `pnpm format` on the three test files, then re-emit `source-binding.json`, `source-footprint.txt`, `draft.patch` and the report hashes. No logic change. Note `transaction-http.test.ts:1753` (109 cols, the renamed D title) is *not* a violation.
+
+---
+
+### 3. LOW — The "empty copied field value" cell in source test A may not be observable on the wire
+**Location:** `packages/server/src/transaction-http.test.ts:1143` (`["batch", ""]`)
+
+**Issue:** Test A assigns the empty value to the `batch` column and sends it via `fetch`. Nothing in the test asserts the field reached the server. If undici elides an empty field value, those three cells silently degrade to "no copied field present" — and the test still passes, so the gap is invisible. No existing repo test establishes undici's behaviour here (`transaction-schema-http.test.ts:219–221` exercises empty values but through `node:http`, not `fetch`).
+
+**Impact:** The report's claim "Distribute empty, invalid-token and comma-joined values across the three carrier columns" would be unproven for 3 of 9 A cells. Coverage is not actually lost: the installed TX scenario sends `{"bdp-scope-epoch": ""}` through the exact raw serializer (step 7), where `HTTP_FIELD_VALUE = /^[\t\x20-\x7e\x80-\xff]*$/` accepts empty and the byte is written literally.
+
+**Smallest correction:** Either attribute the empty-value evidence to the installed raw-serializer cell in the report, or move A's batch column to a non-empty invalid token so the source cohort claims only what `fetch` demonstrably sends.
+
+---
+
+### 4. Optional — new normative MUST with no conformance-catalog row
+`docs/specs/bdp.md:5792–5800` adds an authority MUST with no row in `packages/conformance/catalog/transactional-v1.json`. The mirror test still passes (`transactional-catalog.test.ts:207` compares the spec table to the catalog, and neither changed), and the plan explicitly rules out catalog changes for this slice — so this is a scope boundary, not a defect. Worth recording as a follow-up so the obligation isn't orphaned.
+
+### 5. Optional — prose rewrap and a latent splice guard
+- `docs/design/transaction-implementation-progress.md:1730–1737`: the inserted sentences leave ragged wrapping ("These are retained / behaviors…", "…must disclose context. Discovery,"). Cosmetic; Biome does not format Markdown.
+- `apps/bdptest/src/installed-reference.test.ts`: `children.splice(children.indexOf(running), 1)` / `dirs.splice(dirs.indexOf(dir), 1)` are correct here (both indices are 0 because `afterEach` drains the arrays), but a `-1` would silently remove the last element. A guard would harden it.
+
+---
+
+## What I verified as correct
+
+**Production change.** The only production delta is the 9-line deletion at `transaction-http.ts:294–302`. `hasMinimumControls` and its export survive and are still used on every read path (lines 402/405, 449/450, 483/484, 494, 508, 515/523, 526, 534/540, 543/546) plus `transaction-schema-http.ts:45`. No bound, limit, parser, store, evaluator, schema, catalog, matrix, Selector or CORS source changed; `git ls-files` = 663 = 656 unchanged + 7 edited, matching the report.
+
+**Admission ordering.** Deleting the block restores the carrier-native order (415 → body failure → sequence prohibited-header 400 → parse 400 → auth 401/403 → count 413 → composition 500 → Accept 406 → execute), which is what the plan asked for ("Do not preserve the special block's accidental precedence"). The old block's precedence is not relied on by any surviving test.
+
+**Spec amendment.** The catalog's one citation into this section — `transactional-v1.json:1179–1181`, `"It never reports success with an older position."` — is byte-preserved at `bdp.md:5790`, and `validateCatalogCitations` (`catalog.ts:175`) does a whitespace-normalized `includes` against the anchored section, so Q passes. The `#transactional-http-consistency` anchor exists (5770); the RU cross-reference lands inside the Read+Update block (3557–3583), so "under this profile as well" resolves correctly.
+
+**Regression inventory.** I swept every `minimum-position` / `bdp-minimum-scope-position` reference in `packages/`, `apps/`, `scripts/`. Every remaining expectation is a GET/HEAD read path (`transaction-http.test.ts:372, 1742, 1866, 1876, 2004, 2135, 2809, 2980, 3057–3065`; snapshot-http 426; changefeed 691; schema-http 251–257; service.test 1130; snapshot-installed 483/638/904). The plan's claim that `service.test.ts:2040` was the only additional stale row holds; S now retains exactly the six rows the plan names, with `observed` zero-call and final position `"0"` intact.
+
+**Oracles.** I traced each new assertion to source: receipt/sequence shapes against `$defs/mutationReceipt` and `$defs/transactionalSequenceResponse`; `requiredPosition`/`effectPosition` against `transaction-store.ts:1245/1275` (so `pos-1`/`pos-2` for effective commands and `pos-3` with no `effectPosition` for the failed one are right); set results against `transaction-batch.ts:886` and `resource-evaluator.ts:1073–1090` (and the source fixture's bead type has no `ownsOutgoing`, so the unowned-victim delete rows correctly omit `source`/`sourceRevision`); `metadata: {}` against `resource-evaluator.ts:359`; problem bodies against `readProblem` (`protocol/index.ts:534`) — `cursor-expired` → gone/410/after-state-change, `foreign-view` → conflict/409, catch-up-timeout → unavailable/503/after-delay with `retry-after: 1` from `transaction-http.ts:104`; minimum-failure context from the `handle()` catch at 579–592 (not the context-less `refused` branch at 537); epoch-before-view ordering from `transaction-consistency.ts:69–72`; receipts carry no ETag (`receiptResponse`, 176–190), which is what `context()` asserts; `$[?@.id]` is an established in-subset selector. The singleton-fixture fix (destructuring `operation` out) is correct — `prepareReadUpdateSingleton` would have rejected the old bodies, which the deleted refusal masked.
+
+**Counts.** A=27, B=16, C=13, D=18, E=6 → 80; 54 POST / 25 GET / 1 HEAD; 11 owner opens and 11 listeners across A–E, 13 with controls, 15 with RU+S; 9 directories; 6 read-only SQLite handles in D. Installed TX = 18 calls over exactly 9 URLs with the counter and route-set assertions in place, and `start()` performs no HTTP so nothing is hidden before request 1. Every figure matches the report. I independently recomputed the v2 RU body correction: `124/124/199/199`, total 646, largest 199 — exact.
+
+**Selectors.** All nine titles exist exactly once. Vitest 4.1.10's `getTaskFullName` (`@vitest/runner/dist/chunk-artifact.js:1006`) joins suite and test with a single space and excludes the file, and top-level tasks get `suite: undefined` — so the module-scope anchors and the describe-prefixed S/Q anchors both resolve. A–E, D, RU and TX18 are all genuinely module-scope (the `describe` closes at line 779).
+
+**Controls.** `restore-command-refusal.patch` reconstructs the parent file exactly and fails A's first accepted-command oracle (1 HTTP, max 27). `bypass-receipt-root-minimum.patch` touches only the receipt-root dispatch, leaves `minimum` in use by the pages branch (so no unused-local), stays type-correct on the synchronous `service.receipt`, and fails E's named 503 oracle on the second exchange (2 HTTP, max 6). Both diagnostics retain actual response facts rather than relying on a generic exit 1.
+
+**Credential firewall.** The installed wrapper correctly routes `bdp-authorization-view` through `resolveCredentials` because `SECRET_FIELD` (`http-executor.ts:340`) matches any name containing `auth`; raw header lines are filtered accordingly and `seen.size === handle.headerNames.length` stays satisfied. The firewall is not weakened.
+
+**Cleanup.** Source tests rely on the file's existing `afterEach` (mock restore + reverse cleanup). Installed TX uses `withInstalled`/`finishObservation`, which attempts child close and directory removal separately and aggregates original-plus-cleanup errors. The RU test adds `{code: 0, signal: null}` (the established expectation at `installed-reference.test.ts:144`), `childPid`/`childExitCode`/`childClosed`, `directoryAbsent: !existsSync(dir)` and an `AggregateError`. The installed TX scenario does *not* add an independent PID/directory-absence check of its own — it inherits the shared helper's `closed`/`childExitCode` report. That is consistent with "do not refactor other scenarios", but it means the plan's independent-absence requirement is satisfied only by the RU cohort; the measured run should get that adjudication from the external supervisor.
+
+No product code, test, build, service, install, network call or git mutation was run, and no file was written.

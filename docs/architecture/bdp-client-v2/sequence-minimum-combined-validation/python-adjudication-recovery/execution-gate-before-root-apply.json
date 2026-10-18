@@ -1,0 +1,95 @@
+{
+  "released": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "finalHead": "11742645bc591b3e5affa9fcc2f36c551c6fa803",
+  "finalTree": "66b0cc09393fdbddf32d7ee19a2d74b961c7fdbb",
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-minimum-combined-validation/root-release.json",
+    "sha256": "656e200acdadc4d4d854c3b3a240c831cb1da07e6d65ef9a616a6dccd14175f9"
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-minimum-combined-validation/final-source.json",
+    "sha256": "3ff3bdd8c165f14e7aef72aeafb9fa33d3dde0a6818aab53205ab627e5b00523"
+  },
+  "inputBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-minimum-combined-validation/input-binding.json",
+    "sha256": "717331c56677c46946eba6b22731f10f15aea4adaa155a6878143547049a3459"
+  },
+  "approvedCommandIds": [
+    "typecheck",
+    "fresh-build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "preparation-positive",
+    "sequence-positive",
+    "http-positive",
+    "minimum-http",
+    "build-inventory",
+    "prepare-control",
+    "strict-control",
+    "review-control",
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed",
+    "sequence-installed",
+    "review-sequence-installed",
+    "minimum-installed",
+    "review-minimum-installed"
+  ],
+  "phaseRelease": {
+    "source": true,
+    "control": true,
+    "package": true,
+    "installed": true,
+    "adjudication": true
+  },
+  "preparationSha256": {
+    "adaptation.patch": "e60c3392cdc08922209c716e62e2bb768cd2b042e83cc577178a8b50ff5b79d9",
+    "review-sequence.py": "61a08b7ca7b5be5e4186273e243616d2c2740f9e0141f56cd0ee9b3c7430805f",
+    "report.md": "993f36b39e31bfe16f080b1badad21dec8b28148efd7df0c3d3b99ddca18c8f3",
+    "control.py": "b61402f368d17962b474e6f7d8c4b100bc28d03272603639bc33b0095b65b6d4",
+    "packages.py": "4dbbead34c2d43a3902d77b062791787eeed0d75cfd6a9f4ac46dec22ab6c414",
+    "execution-gate.example.json": "9eb7ff35d92e098d474044d486319051241f706b208865403afd6a346f4b37b1",
+    "commands.json": "c21793c3bdd46ad59854382bf141ca08d15fdfc5c14b177a11973d03b6721490",
+    "review-minimum.py": "d03f0f91e95a5be8f6fb62708e54ac1a3dff490cc4fb7ae0a2ffb10eb167cdf2",
+    "gate.py": "3825c0c456ee31ba602a215e7165cb35c6f455e09232193ec7870db317da55c6",
+    "sequence-requests.json": "21e2827907a4d6df1c74f323af9d5beec6076b054624b0bb9bedefdd85349576",
+    "minimum-requests.json": "1747a0132f3a656768454cc01a5b4bd4e05334b4369da62ae62ddd8510dfb350",
+    "final-source.example.json": "9abc15deb623519652f2ce3eb6d547895f82cfbe662650de2cd74cbcf172128f",
+    "supervise.py": "c9b524743c8b71c4487e55f5719713985a1665b6e61ec32d2d99534796ff9194",
+    "prepared-inputs.json": "048709bc86320b47146f243910845156233fe2c0fcb9eea120ae4607b528302b",
+    "inventory.py": "b9ac353ee250d66552e96bc67bc0d22c9168d1c8fc563d6da5517c6bd765486d",
+    "binding-preparation/bind-source.py": "222ddd909663c21fe2a55e8342a5367b6331a26389dd2423fb22e19f0b4a43a5",
+    "binding-preparation/inputs.json": "c53ca7dc4b18b826dd0cd11306ad59c3adc3918ecffaaedc35f6cc05e9230648"
+  },
+  "guardSha256": "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84",
+  "toolHashes": {
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node": "1ee75375e33b94fc34b3b19aede049e11dae90efb63b374dc96d6bdace70c4b8",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs": "67b035e322203961795e8e34ca63a08c37a4386eda94107fb3d28f3246d882ad",
+    "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained/node_modules/vitest/vitest.mjs": "39db22f579acf5639bbb17a261408debbde03f4692c0c439e77e7f13aeba74d6",
+    "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained/node_modules/@biomejs/biome/bin/biome": "7ffb4d217e5ddefcc19ca6afe76bb982f5eb36c9a124448105195fbcfc84bd77"
+  },
+  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+  "consumerLockSha256": "86d1261ca4559f887eb0c8b5519fcfa4c30f57cb50a1ed8dda3496bedfecf5e4",
+  "installedProvenanceSha256": "48f1fc2fed5995ddf43a62c69b1a9d806011bf059a2dd437abc46806ba24198a",
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "requestsPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-minimum-combined-validation/minimum-requests.json",
+  "note": "Example only. Root must bind actual clean combined head/tree/ordered parents/all20union hashes/alltracked input inventory and tools, then explicitly authorize a prefix. No release is inferred from preparation or earlier branch validations.",
+  "consumerInventorySha256": "7b68df8547da510ce1529afd401b0aa943ece6edb214205de0f3bd66518dc719"
+}

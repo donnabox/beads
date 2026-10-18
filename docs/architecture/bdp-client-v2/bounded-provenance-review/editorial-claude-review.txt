@@ -1,0 +1,54 @@
+## Verdict
+
+**No blockers.** The patch does what it claims: a prose-only, four-part reorganization with no runtime, schema, catalog, or fixture change. I independently reproduced every structural count the author cited. Six findings below are all non-blocking; #1–#3 are worth fixing before this becomes the base for later work, #4–#7 are optional polish.
+
+## Independent validation of the author's claims
+
+| Claim | Result |
+|---|---|
+| 137 section bodies unchanged | **Confirmed.** 142 sections before and after; 137 bodies identical after stripping inserted standalone anchor lines. Only `Conformance profiles and reading guide` body is substantively revised; `### Bead Data Model` is replaced by the `## Part I — Data Model` intro. |
+| 144 old anchors preserved | **Confirmed.** 144 base anchors → 0 missing; 148 now (4 new Part headings). |
+| 171 links | **Confirmed.** 171 internal links, 0 broken — identical count to base, which also had 0 broken. |
+| 744 citations | **Confirmed.** 744 `docs/specs/bdp.md` citations (768 total) across 7 catalogs, 95 distinct anchors. |
+| 1,661 tests pass | **Count confirmed** (43 files / 1,661 tests). 1,660 passed here; `packages/protocol/src/json-values.test.ts:23` failed because `JSON.stringify` no longer throws `RangeError` at 20,000 levels on my runtime (Node v26.0.0) — the repo pins 24.16.0 (`.node-version`, `engines`). That file is untouched by the commit and reads nothing from the spec, so this is an environment artifact, not a regression. Targeted run of `profile-catalog-boundaries` + `catalog`: 60/60 pass. |
+
+Additional checks I ran that the author did not claim: `MUST`/`MUST NOT`/`SHOULD`/`SHOULD NOT`/`MAY`/`SHALL`/`REQUIRED` counts are byte-identical to base; Part I span (30,058 B) + Part II span (60,490 B) = 90,548 B against base Part I's 90,375 B, so Read material was conserved and no write/transaction material entered the model; of 95 cited anchors only two spans moved (`#carried-attribution` +27 B from the alias line; `#types-and-type-descriptors` −4,905 B, i.e. **tightened**, and its 8 citations still validate); no file outside the spec and the editorial map references the old part titles or old anchors. Working tree stayed clean — I wrote nothing.
+
+## Findings
+
+**1. Medium — `docs/specs/bdp.md:212` — `bead-data-model` alias silently widens the citation gate 93×**
+`<a id="bead-data-model"></a>` sits immediately before `## Part I — Data Model`, so `markdownAnchors` classifies it as a heading alias (`level: 2`, `end: next.end`). `markdownSection("#bead-data-model")` therefore grew from 324 B (the base `### Bead Data Model` subsection) to 30,058 B — all of Part I. `validateCatalogCitations` (`packages/conformance/src/catalog.ts:164`) only requires `selectedText` to appear somewhere inside the anchored section, and `#bead-data-model` is not in `sharedAnchors`, so it has no excerpt bound.
+*Impact:* a future catalog citation anchored at `#bead-data-model` can excerpt anything in the model — Types, aggregate constraints, revisions, attribution — and still pass. No live failure: no catalog cites it today.
+*Fix:* move the anchor line to immediately **after** the `## Part I — Data Model` heading, ahead of the intro paragraph. The intervening prose makes `aliasesHeading` false → `level: 0`, `end` at `### Scopes and identity`, restoring a base-sized span. `headingOwners` still records profile 1 (the Part I owner is set before the sorted anchor is visited), so `profile-catalog-boundaries.test.ts:118` keeps passing.
+
+**2. Medium — `packages/conformance/src/profile-catalog-boundaries.test.ts:76` (with `:18-19`) — the new link test cannot see the boundary this commit creates**
+`assertProfileLinks` gates on profile rank, and `sections` assigns both `Part I — Data Model` and `Part II — Read` rank 1. The Data Model → Read boundary is therefore entirely unchecked. Evidence: the patch introduces exactly one new cross-part forward reference — `docs/specs/bdp.md:740`, in Part I / `Actor attribution`, links to `#immutable-change-context`, an L4 under Part II / `Historical resolution` (the *optional* History capability) — and `assertProfileLinks(spec)` passes.
+*Impact:* the invariant the reorganization exists to express is unguarded; later edits can add model→Read dependencies freely. The editorial map's wording ("lower-profile forward dependencies") is technically accurate, which makes the gap easy to miss.
+*Fix:* index each L2 part to an ordinal alongside the profile rank and assert no Part I-sourced link targets a Part II+ section; either relocate the `#immutable-change-context` sentence or record it as one explicit allow-list entry.
+
+**3. Medium — `docs/specs/bdp.md:214` (Part I intro), with `:94-95` — Part I is not the minimal shared model it is introduced as**
+Because no bodies were edited, Part I retains Read-profile wire statements and dependencies: `:266` "Serving alias resolution is Read surface, advertised through the `aliases` discovery member"; `:469` "The `ownedLinks` member defined below" (defined at `:1274`, Part II / `Resource records`); `:673` "Discovery MAY contain `maximumEndpointMultiplicity`" plus a discovery JSON example; `:727` "An advertised History resolver **MUST** serve the requested token unchanged"; and the `:740` forward link. Relatedly, the reading-guide invariant at `:94-95` was reworded from "A lower **part** does not depend on a later **part's** definitions" to "A lower **profile** does not depend on a higher **profile's** definitions" — that rewording is what makes the above legal, since the Data Model is declared not to be a profile.
+*Impact:* a reader may treat Part I as self-contained and a reviewer can't tell whether the rewording is deliberate scope relief or incidental.
+*Fix:* one sentence in the Part I intro — the shared model names Read-profile wire members where it constrains them, their definitions appear in Part II — and a line in the editorial map disclosing the rewording. No body edits needed, so the 137-body audit survives.
+
+**4. Low — `docs/specs/bdp.md:629` — stale "data-model section" cross-reference**
+Part I / `Link endpoint constraints` says "The data-model section defines its semantics and the optional discovery representation." The `### Bead Data Model` heading no longer exists, and the referent (`Scope aggregate constraints`) is now a sibling section in the same part. `:15` has the same mismatch — "Its Bead Data Model, ..." is now the document's only use of that phrase and matches no heading.
+*Impact:* dangling prose reference; cosmetic only.
+*Fix:* `[Scope aggregate constraints](#scope-aggregate-constraints) defines its semantics…`. This is a body edit, so either accept the audit delta or defer to the PR 65 pass.
+
+**5. Low — `docs/specs/bdp.md:2001` (91 cols) and `:3613` (94 cols), plus `:95` (81 cols) — new prose breaks the file's hand-wrap**
+The document wraps at ~77 columns; `biome format` does not touch Markdown prose, so nothing catches this. `:2001` also reads awkwardly ("inherits the Data Model and Read and adds").
+*Fix:* rewrap; e.g. "Part III inherits the Data Model and the Read profile, adding single-operation atomic writes, aliases, …".
+
+**6. Low — `docs/design/profile-editorial-map.md:366` and `:374` — two provenance imprecisions**
+(a) "preserves all 137 operative section bodies byte-for-byte after removing added standalone anchor lines" is exact only if the blank line each insertion added is also removed. Removing just the anchor lines, 133 bodies are identical; the other 4 (`The uniformity principle`, `Carried attribution`, `Read conformance`, `Read+Update conformance`) differ by the inserted blank line alone.
+(b) Verification evidence points at `/tmp/bdp-four-part-*`, including `bdp-four-part-audit.mjs` — the only means to re-run the body audit. Those paths exist on this machine but are unavailable to any other reviewer or to CI.
+*Fix:* tighten the sentence; land the audit script under `scripts/` if it is meant to be re-runnable, or drop the reproducibility claim.
+
+**7. Low — `docs/specs/bdp.md:289` (`### Types`) — same gate-widening class as #1, smaller blast radius**
+`Effective Type contracts` and `Link endpoint constraints` were L4 children of `### Types and Type Descriptors`; they are now children of `### Types`. `#types` therefore widened 2,554 → 7,459 B, so a citation at `#types` may now excerpt effective-contract and endpoint-constraint text. Not cited by any catalog today. The map's "remain **beside** `Types`" also describes them as siblings when they are nested.
+*Fix:* if tighter bounds matter, promote both to L3 inside Part I; otherwise correct the map's wording.
+
+## Scope notes
+
+PR 65's territory is untouched: `Carried attribution` and `Historical resolution` bodies are unchanged apart from the trailing alias line, so the provenance bodies remain available for that migration. No draft-history narration was added to the spec — the amendment record lives only in the design map, as requested. The relocation of `Types and Type Descriptors` after `Advertised limits` in Part II also reads better than the base ordering, since discovery now precedes the inventory that depends on it.

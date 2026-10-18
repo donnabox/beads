@@ -1,0 +1,75 @@
+{
+  "kind": "development-write-integration-verification",
+  "claimEligible": false,
+  "candidateHead": "0ccdc9bd8acd808cbddd103119c679a3f2dd42ae",
+  "includes": "Runtime through PR79, raw Update diagnostics PR78; editorial PR67 excluded",
+  "profilesAdvertised": false,
+  "testFiles": 113,
+  "passedTests": 7700,
+  "optionalSkippedTests": 1,
+  "checks": [
+    {
+      "command": [
+        "build"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.92
+    },
+    {
+      "command": [
+        "typecheck"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.86
+    },
+    {
+      "command": [
+        "check:boundaries"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.69
+    },
+    {
+      "command": [
+        "exec",
+        "vitest",
+        "run",
+        "--maxWorkers=2",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-round6/tests.json"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 67.14
+    },
+    {
+      "command": [
+        "smoke:development"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.62
+    },
+    {
+      "command": [
+        "smoke"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 3.68
+    }
+  ],
+  "limits": [
+    "Development runtime validation only, no complete write-profile qualification.",
+    "Read seal historical; no fresh observation relabeling or CLI parity claim.",
+    "No main merges or Preview2 promotion."
+  ],
+  "logDigests": {
+    "boundaries.log": "53f4cd856bde25513486a59799c5a05e0650fbb756bf1580fb07e56c2fdeeef3",
+    "build.log": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208",
+    "checks.json": "a73924230e13a5a3f28f181929759caf82626e52e417d34ba928bec2eb7b49f0",
+    "development-smoke.log": "a2f021ad718a3fd77ea7b397a060df12d0b2ca58277342b9c66a2d20af77e1ee",
+    "package-smoke.log": "904f59ddeebb3a9634906c612fcf033b23f125be94c2adc5cd035f1d3278147d",
+    "tests.json": "e016438da64836563c9170601601443f705808ca150a0a6b44b7830769f5c5d4",
+    "tests.log": "b78b5eb66ef86ec3ace3e7058c7d4efcb5fe75df57c65d441d57f27f96ec0de2",
+    "typecheck.log": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a"
+  }
+}

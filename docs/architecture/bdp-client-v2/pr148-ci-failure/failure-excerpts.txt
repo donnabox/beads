@@ -1,0 +1,43 @@
+3638: 2026-10-16T21:05:27.7113161Z  × apps/bdptest/src/read-update-matrix.test.ts > detects incorrect independent Read properties expectations 3263ms
+3639: 2026-10-16T21:05:27.7115719Z    → expected 'harness-error' to be 'fail' // Object.is equality
+11223: 2026-10-16T21:17:59.5313563Z  ✓ apps/bdptest/src/transactional-matrix.test.ts > discriminates sequence member transactions against a successful middle delete 1246ms
+11224: 2026-10-16T21:18:00.7626305Z stdout | apps/bdptest/src/transactional-matrix.test.ts > observes authenticated principal isolation and rotation through selected cumulative HTTP
+11226: 2026-10-16T21:18:00.7679161Z 
+11227: 2026-10-16T21:18:00.7680147Z  ✓ apps/bdptest/src/transactional-matrix.test.ts > observes authenticated principal isolation and rotation through selected cumulative HTTP 1232ms
+11228: 2026-10-16T21:18:01.9883795Z stdout | apps/bdptest/src/transactional-matrix.test.ts > discriminates principal isolation against a separately bound collapsed namespace
+11230: 2026-10-16T21:18:01.9907291Z 
+11231: 2026-10-16T21:18:01.9908242Z  ✓ apps/bdptest/src/transactional-matrix.test.ts > discriminates principal isolation against a separately bound collapsed namespace 1226ms
+11232: 2026-10-16T21:18:02.0897563Z  ✓ apps/bdptest/src/transactional-matrix.test.ts > pins conditional raw literals, request order and the sole header control 18ms
+11233: 2026-10-16T21:18:03.2926596Z stdout | apps/bdptest/src/transactional-matrix.test.ts > observes partial Transactional conditional reads and HEAD after mutation (control false)
+11235: 2026-10-16T21:18:03.3003406Z 
+11236: 2026-10-16T21:18:03.3004708Z  ✓ apps/bdptest/src/transactional-matrix.test.ts > observes partial Transactional conditional reads and HEAD after mutation (control false) 1286ms
+11237: 2026-10-16T21:18:04.5265511Z stdout | apps/bdptest/src/transactional-matrix.test.ts > observes partial Transactional conditional reads and HEAD after mutation (control true)
+11239: 2026-10-16T21:18:04.5298947Z 
+11240: 2026-10-16T21:18:04.5299979Z  ✓ apps/bdptest/src/transactional-matrix.test.ts > observes partial Transactional conditional reads and HEAD after mutation (control true) 1234ms
+11241: 2026-10-16T21:18:04.5405447Z 
+11242: 2026-10-16T21:18:04.5406568Z ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+11243: 2026-10-16T21:18:04.5407034Z 
+11244: 2026-10-16T21:18:04.5409655Z  FAIL  apps/bdptest/src/read-update-matrix.test.ts > detects incorrect independent Read properties expectations
+11245: 2026-10-16T21:18:04.5416397Z AssertionError: expected 'harness-error' to be 'fail' // Object.is equality
+11246: 2026-10-16T21:18:04.5417146Z 
+11247: 2026-10-16T21:18:04.5417682Z Expected: "fail"
+11248: 2026-10-16T21:18:04.5418254Z Received: "harness-error"
+11249: 2026-10-16T21:18:04.5418566Z 
+11250: 2026-10-16T21:18:04.5419341Z  ❯ apps/bdptest/src/read-update-matrix.test.ts:2987:29
+11251: 2026-10-16T21:18:04.5447286Z     2985|     const report = await run(manifest, ["read.discovery.scope-service-…
+11252: 2026-10-16T21:18:04.5447962Z 
+11253: 2026-10-16T21:18:04.5449103Z     2986|     const observed = report.result.scenarios.find((row) => row.id === …
+11254: 2026-10-16T21:18:04.5450172Z     2987|     expect(observed?.state).toBe("fail");
+11255: 2026-10-16T21:18:04.5450951Z        |                             ^
+11256: 2026-10-16T21:18:04.5451572Z     2988|     expect(
+11257: 2026-10-16T21:18:04.5452169Z     2989|       observed?.exchanges
+11258: 2026-10-16T21:18:04.5452478Z 
+11259: 2026-10-16T21:18:04.5452868Z ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+11260: 2026-10-16T21:18:04.5453219Z 
+11261: 2026-10-16T21:18:04.5485839Z  Test Files  1 failed | 185 passed (186)
+11262: 2026-10-16T21:18:04.5507561Z       Tests  1 failed | 9358 passed | 1 skipped (9360)
+11263: 2026-10-16T21:18:04.5508793Z    Start at  21:03:19
+11264: 2026-10-16T21:18:04.5511691Z    Duration  884.82s (transform 9.23s, setup 3.35s, import 49.74s, tests 1936.21s, environment 31ms)
+11265: 2026-10-16T21:18:04.5512940Z 
+11266: 2026-10-16T21:18:04.6185134Z [ELIFECYCLE] Test failed. See above for more details.
+11267: 2026-10-16T21:18:04.6396402Z ##[error]Process completed with exit code 1.

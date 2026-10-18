@@ -1,0 +1,80 @@
+{
+  "name": "omit-context-control",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "exec",
+    "vitest",
+    "run",
+    "packages/server/src/transaction-http.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/omit-context-control.json",
+    "-t",
+    "^(?:serves\\ current\\ missing\\ receipt\\ root\\ and\\ page\\ context\\ without\\ changing\\ nondisclosure\\ or\\ HEAD)$"
+  ],
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "exec",
+    "vitest",
+    "run",
+    "packages/server/src/transaction-http.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/omit-context-control.json",
+    "-t",
+    "^(?:serves\\ current\\ missing\\ receipt\\ root\\ and\\ page\\ context\\ without\\ changing\\ nondisclosure\\ or\\ HEAD)$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy",
+  "started": "2026-10-15T12:39:42.572908+00:00",
+  "adjudication": null,
+  "elapsedSeconds": 2.0771550838835537,
+  "exit": 1,
+  "supervisorExit": 1,
+  "timeout": false,
+  "forcedCleanup": false,
+  "errors": [
+    "source-postcheck:RuntimeError"
+  ],
+  "processGroup": 8882,
+  "remainingBeforeCleanup": [],
+  "remainingAfterCleanup": [],
+  "sampledPids": [
+    8882,
+    8884,
+    8888,
+    8893,
+    8898,
+    8908
+  ],
+  "sampledPidsStillPresent": {},
+  "sampledTempEntries": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/omit-context-control.tmp/bdp-tx-http-wP5osF",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/omit-context-control.tmp/fCcHR_H94FSpBW72Gp6q5",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/omit-context-control.tmp/node-compile-cache"
+  ],
+  "tempEntriesAfter": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/omit-context-control.tmp/node-compile-cache"
+  ],
+  "remainingTempEntriesForClassification": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/omit-context-control.tmp/node-compile-cache"
+  ],
+  "runtimeDirectoriesStillPresent": [],
+  "unclassifiedTempEntriesStillPresent": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/omit-context-control.tmp/node-compile-cache"
+  ],
+  "sourceUnchanged": false,
+  "sourceSha256After": {},
+  "samplingSeconds": 0.05,
+  "commandWindowSeconds": 115,
+  "groupHardDeadlineSeconds": 120,
+  "cleanupBound": "TERM at115s, KILL no later than120s; wait/reap after kill adds no product execution allowance",
+  "samplingLimitation": "Short-lived or detached descendants may evade group sampling; helper counts and independent final checks remain separate.",
+  "tempClassification": "Only the selected fixture prefixes under this attempt TMPDIR are owned runtime roots; all other entries are preserved for review, not deleted or called leaks.",
+  "resultLimitation": "Exit0 is command completion, not independent oracle/claim/provenance adjudication."
+}

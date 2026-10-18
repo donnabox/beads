@@ -1,0 +1,97 @@
+$ biome format .
+packages/conformance/matrices/read-update-v1.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! The size of the file is 3.5 MiB, which exceeds the configured maximum of 1.0 MiB for this project.
+    Use the `files.maxSize` configuration to change the maximum size of files processed, or `files.includes` to ignore the file.
+  
+
+packages/conformance/test-support/transactional/manifest-v1.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    24354 24354 │         "setup": {
+    24355 24355 │           "fixture": "reference-transactional-v1",
+    24356       │ - ········"requires":·[
+    24357       │ - ··········"installed-transactional-http",
+    24358       │ - ··········"transactional-receipt-observation"
+    24359       │ - ········]
+          24356 │ + ········"requires":·["installed-transactional-http",·"transactional-receipt-observation"]
+    24360 24357 │         },
+    24361 24358 │         "applicability": {
+    ··········· │ 
+    24451 24448 │                   }
+    24452 24449 │                 ],
+    24453       │ - ··············"equals":·[
+    24454       │ - ················[
+    24455       │ - ··················0
+    24456       │ - ················],
+    24457       │ - ················[
+    24458       │ - ··················1
+    24459       │ - ················],
+    24460       │ - ················[
+    24461       │ - ··················2
+    24462       │ - ················]
+    24463       │ - ··············]
+          24450 │ + ··············"equals":·[[0],·[1],·[2]]
+    24464 24451 │               },
+    24465 24452 │               {
+    ··········· │ 
+    24804 24791 │                   }
+    24805 24792 │                 ],
+    24806       │ - ··············"equals":·[
+    24807       │ - ················[
+    24808       │ - ··················0,
+    24809       │ - ··················"created"
+    24810       │ - ················]
+    24811       │ - ··············]
+          24793 │ + ··············"equals":·[[0,·"created"]]
+    24812 24794 │               },
+    24813 24795 │               {
+    ··········· │ 
+    25390 25372 │                   }
+    25391 25373 │                 ],
+    25392       │ - ··············"equals":·[
+    25393       │ - ················[
+    25394       │ - ··················0,
+    25395       │ - ··················"created"
+    25396       │ - ················]
+    25397       │ - ··············]
+          25374 │ + ··············"equals":·[[0,·"created"]]
+    25398 25375 │               },
+    25399 25376 │               {
+    ··········· │ 
+    25632 25609 │                   }
+    25633 25610 │                 ],
+    25634       │ - ··············"equals":·[
+    25635       │ - ················[
+    25636       │ - ··················0
+    25637       │ - ················],
+    25638       │ - ················[
+    25639       │ - ··················1
+    25640       │ - ················],
+    25641       │ - ················[
+    25642       │ - ··················2
+    25643       │ - ················]
+    25644       │ - ··············]
+          25611 │ + ··············"equals":·[[0],·[1],·[2]]
+    25645 25612 │               },
+    25646 25613 │               {
+  
+
+Checked 444 files in 76ms. No fixes applied.
+Found 1 error.
+Found 1 warning.
+format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+  
+
+[ELIFECYCLE] Command failed with exit code 1.
+Traceback (most recent call last):
+  File "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py", line 5, in <module>
+    subprocess.run(sys.argv[1:],check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['/Users/dbox/.nvm/versions/node/v24.16.0/bin/node', '/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs', 'format:check']' returned non-zero exit status 1.

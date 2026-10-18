@@ -1,0 +1,300 @@
+Review only this exact code correction. Do not write or modify files. Output findings only in stdout, <=600 words. No tools/tests/build/import/service. Return concrete introduced defects with severity/location/impact/fix, or no findings with short limits.
+Clean repair a18fa993, parent18f5428; test SHA b13688d6 unchanged from reviewed working bytes. Only second-overflow fallback gains flag/error/braces. All changed code and complete failure/report flow below. Determine whether F3 is fixed without masking existing failures or weakening privacy/bounds. Do not require identical file/stdout snapshots. This is private evidence; prior full council exists, no whole-profile claim. Positive6/control2,45s work/10s cleanup/60s test/120s supervisor unchanged. No ordinary fixture overflow was demonstrated.
+## Complete exact diff
+diff --git a/apps/bdptest/src/transactional-same-key-overlap-installed.test.ts b/apps/bdptest/src/transactional-same-key-overlap-installed.test.ts
+index e77f310..526b28d 100644
+--- a/apps/bdptest/src/transactional-same-key-overlap-installed.test.ts
++++ b/apps/bdptest/src/transactional-same-key-overlap-installed.test.ts
+@@ -941,7 +941,9 @@ it("preserves one allocated effect and receipt across same-key singleton and bat
+     }
+     serialized = JSON.stringify(observation());
+     if (Buffer.byteLength(serialized) + 1 <= 65536) console.log(serialized);
+-    else
++    else {
++      reportOverflow = true;
++      addFailure(new Error("same-key report ceiling"));
+       console.log(
+         JSON.stringify({
+           label: "private-installed-same-key-overlap",
+@@ -952,6 +954,7 @@ it("preserves one allocated effect and receipt across same-key singleton and bat
+           claimEligible: false,
+         }),
+       );
++    }
+   }
+   if (failures.length === 1) throw failures[0];
+   if (failures.length) throw new AggregateError(failures, "same-key installed observation failed");
+
+
+## Actual original F3
+### 3. stdout fallback hardcodes `outcome:"failed"` / `reportOverflow:true` without recording either — Low-Medium
+**Lines 942–954.** The ceiling decision at 943 is made on a *different* serialization than the one measured at 931, and three fields are variable-length between the two calls: `elapsedMs` (916, recomputed), `failureCount` (896, can gain a digit via `addFailure` at 933/939), `reportWriteFailed` (894). Concretely: if call 930 fits (file written, `reportOverflow` stays `false`, no failure added) and call 942 does not, stdout prints `outcome: "failed", reportOverflow: true, failureCount: 0` while the on-disk report says `outcome: "passed", reportOverflow: false` **and the test does not throw** (956–957 see `failures.length === 0`). The only machine-readable surface available to a supervisor without the file asserts a failure that did not occur. Symmetric case: call 930 overflows and call 942 fits → a `report ceiling` failure and no file, but a full report on stdout.
+
+Minimal correction — before building the fallback:
+```ts
+reportOverflow = true;
+addFailure(new Error("same-key report ceiling"));
+```
+and derive `outcome` from `failures.length` instead of hardcoding, so both sinks agree and the overflow genuinely fails the run.
+
+
+
+## Current callback state declarations/deadline/destroyActive:174-231
+it("preserves one allocated effect and receipt across same-key singleton and batch requests dispatched without awaiting", async () => {
+  const started = performance.now(),
+    work = new AbortController();
+  const failures: unknown[] = [],
+    active = new Set<ClientRequest>();
+  const pending: Promise<Wire>[] = [],
+    closing: Promise<void>[] = [];
+  const responses: ResponseObservation[] = [],
+    milestones: Milestone[] = [];
+  const receiptObservations: {
+    index: number;
+    id: string;
+    transaction: string;
+    key: string;
+    pending: boolean;
+    resourceId: string | null;
+    revision: string | null;
+    effectPosition: string | null;
+    requiredPosition: string | null;
+  }[] = [];
+  const performed: string[] = [];
+  const requestSockets = new Map<number, number>();
+  const sockets = new Map<object, number>();
+  const liveSockets = new Set<Socket>();
+  let maximumLiveSockets = 0;
+  let milestoneOverflow = false,
+    deadlineExceeded = false,
+    cleanupExceeded = false,
+    drainExceeded = false;
+  let directory: string | undefined, temporaryRoot: string | undefined;
+  let child: Awaited<ReturnType<typeof launchInstalledTransaction>> | undefined;
+  let binding: ReturnType<typeof installedTransactionBinding> | undefined;
+  let projectionSha256: string | null = null;
+  let launchAttempted = false,
+    closed = false,
+    attempted = 0;
+  let currentAssertion = "same-key-overlap:setup",
+    failedAssertion: string | null = null;
+  type Phase = "setup" | "launch" | "transport" | "oracle" | "inconclusive";
+  let phase: Phase = "setup",
+    failedPhase: Phase | null = null;
+  let reportWriteFailed = false,
+    reportOverflow = false;
+  let inconclusiveBothPending = false,
+    pendingObserved = false,
+    controlPrerequisites = false;
+  let receiptIdsDiffer: boolean | null = null,
+    bothConnectedBeforeFirstResponse = false,
+    bothWritesPrecededFirstResponse = false;
+  const deadline = setTimeout(() => {
+    deadlineExceeded = true;
+    work.abort(new Error("same-key work deadline"));
+  }, 45000);
+  function destroyActive() {
+    for (const req of active) req.destroy();
+    for (const socket of liveSockets) socket.destroy();
+  }
+  work.signal.addEventListener("abort", destroyActive);
+
+
+## Complete addFailure:252-254
+  function addFailure(error: unknown) {
+    if (!failures.includes(error)) failures.push(error);
+  }
+
+
+## Complete catch, cleanup, observation, serializers and final throws:784-961
+  } catch (error) {
+    failedAssertion = currentAssertion;
+    failedPhase = phase;
+    addFailure(error);
+  } finally {
+    const primaryFailureCount = failures.length;
+    clearTimeout(deadline);
+    work.abort();
+    destroyActive();
+    let cleanupTimer: ReturnType<typeof setTimeout> | undefined;
+    let drainTimer: ReturnType<typeof setTimeout> | undefined;
+    const drain = Promise.race([
+      Promise.allSettled([...pending, ...closing]).then((results) => {
+        for (const result of results) if (result.status === "rejected") addFailure(result.reason);
+      }),
+      new Promise<void>((resolve) => {
+        drainTimer = setTimeout(() => {
+          drainExceeded = true;
+          addFailure(new Error("same-key request cleanup deadline"));
+          resolve();
+        }, 5000);
+      }),
+    ]).finally(() => clearTimeout(drainTimer));
+    const stop =
+      child === undefined
+        ? Promise.resolve()
+        : child.close().then(() => {
+            closed = true;
+          }, addFailure);
+    await Promise.race([
+      Promise.allSettled([drain, stop]).then((results) => {
+        for (const result of results) if (result.status === "rejected") addFailure(result.reason);
+      }),
+      new Promise<void>((resolve) => {
+        cleanupTimer = setTimeout(() => {
+          cleanupExceeded = true;
+          addFailure(new Error("same-key cleanup deadline"));
+          child?.child.kill("SIGKILL");
+          resolve();
+        }, 10000);
+      }),
+    ]);
+    clearTimeout(cleanupTimer);
+    work.signal.removeEventListener("abort", destroyActive);
+    const stopped =
+      !launchAttempted ||
+      (child !== undefined && (child.child.exitCode !== null || child.child.signalCode !== null));
+    if (child !== undefined && (child.child.exitCode !== 0 || child.child.signalCode !== null))
+      addFailure(new Error("same-key child did not exit cleanly"));
+    if (launchAttempted && child === undefined)
+      addFailure(new Error("same-key pre-ready child stop unknown"));
+    if (directory !== undefined && stopped) {
+      try {
+        rmSync(directory, { recursive: true, force: true });
+      } catch (error) {
+        addFailure(error);
+      }
+    }
+    if (directory !== undefined && existsSync(directory))
+      addFailure(new Error("same-key owned directory retained"));
+    if (deadlineExceeded) addFailure(new Error("same-key work deadline exceeded"));
+    if (milestoneOverflow) addFailure(new Error("same-key milestone ceiling"));
+    if (liveSockets.size) addFailure(new Error("same-key owned sockets remain"));
+    const cleanupFailureCount = failures.length - primaryFailureCount;
+    const ready = child?.ready;
+    // Explicit allowlist: never retain credentials, runtime configuration, arbitrary errors or raw requests.
+    const observation = () => ({
+      label: "private-installed-same-key-overlap",
+      mode,
+      declaredSourceCommit,
+      sourceAttribution: "caller label; supervisor must verify source/package equality",
+      workspaceDirty,
+      entry,
+      entrySha256,
+      executionMode: entryOverride ? "external-installed" : "workspace-emitted",
+      binding: binding ?? null,
+      servedIdentities:
+        ready === undefined
+          ? null
+          : {
+              runtimeConfigurationIdentity: ready.runtimeConfigurationIdentity,
+              artifactIdentity: ready.artifactIdentity,
+              policyIdentity: ready.policyIdentity,
+              authenticationIdentity: ready.authenticationIdentity,
+              payloadIdentity: ready.payloadIdentity,
+            },
+      credentialFreeConfigurationProjectionSha256: projectionSha256,
+      artifacts,
+      attempts: attempted,
+      completedResponses: responses.length,
+      responses,
+      receiptObservations,
+      milestones,
+      milestoneOverflow,
+      socketCount: sockets.size,
+      maximumLiveSockets,
+      liveSocketsAfterCleanup: liveSockets.size,
+      requestSockets: [...requestSockets].map(([index, socket]) => ({ index, socket })),
+      clientDispatchDisciplinePassed: performed.includes("dispatch-discipline"),
+      bothConnectedBeforeFirstResponse,
+      bothWritesPrecededFirstResponse,
+      pendingObserved,
+      inconclusiveBothPending,
+      controlPrerequisites,
+      receiptIdsDiffer,
+      performed,
+      failedAssertion,
+      failedPhase,
+      primaryFailureCount,
+      cleanupFailureCount,
+      reportWriteFailed,
+      reportOverflow,
+      failureCount: failures.length,
+      outcome: inconclusiveBothPending
+        ? "inconclusive-both-pending"
+        : failures.length
+          ? "failed"
+          : "passed",
+      retention:
+        "Full parsed receipt/Resource/Event comparisons occur in memory; response fingerprints are not retained full-wire evidence.",
+      launchAttempted,
+      childPid: child?.child.pid ?? null,
+      childExitCode: child?.child.exitCode ?? null,
+      childSignalCode: child?.child.signalCode ?? null,
+      stopKnowledge: stopped ? "known-stopped-or-never-launched" : "unknown",
+      closed,
+      temporaryRoot: temporaryRoot ?? null,
+      directory: directory ?? null,
+      directoryAbsent: directory === undefined ? null : !existsSync(directory),
+      deadlineExceeded,
+      cleanupExceeded,
+      drainExceeded,
+      elapsedMs: performance.now() - started,
+      bounds: {
+        workMs: 45000,
+        requestMs: 5000,
+        cleanupMs: 10000,
+        requestDrainMs: 5000,
+        testMs: 60000,
+        maximumRequests: 6,
+        responseBodyBytes: 32768,
+        responseHeaderBytes: 16384,
+        reportBytes: 65536,
+      },
+      claimEligible: false,
+    });
+    let serialized = JSON.stringify(observation());
+    if (Buffer.byteLength(serialized) + 1 > 65536) {
+      reportOverflow = true;
+      addFailure(new Error("same-key report ceiling"));
+    } else if (reportPath !== undefined) {
+      try {
+        writeFileSync(reportPath, serialized + "\n", { flag: "wx", mode: 0o600 });
+      } catch (error) {
+        reportWriteFailed = true;
+        addFailure(error);
+      }
+    }
+    serialized = JSON.stringify(observation());
+    if (Buffer.byteLength(serialized) + 1 <= 65536) console.log(serialized);
+    else {
+      reportOverflow = true;
+      addFailure(new Error("same-key report ceiling"));
+      console.log(
+        JSON.stringify({
+          label: "private-installed-same-key-overlap",
+          mode,
+          outcome: "failed",
+          reportOverflow: true,
+          failureCount: failures.length,
+          claimEligible: false,
+        }),
+      );
+    }
+  }
+  if (failures.length === 1) throw failures[0];
+  if (failures.length) throw new AggregateError(failures, "same-key installed observation failed");
+}, 60000);
+
+
+## Used external/local declaration semantics
+Remaining unchanged state semantics: started=performance.now(); work is AbortController. deadline is45s timer setting deadlineExceeded then aborting. destroyActive destroys every active request/liveSocket. check sets phase/currentAssertion and adds a performed label only after its callback succeeds.
+reportPath is absent or an exclusive absolute real-parent-resolved path outside workspace/store (wx/0600 writer shown). mode is positive or second-key-distinct. entry/digest/source are strings, workspaceDirty boolean. artifacts are fixed nonsecret descriptor/schema literals336B.
+binding is plain frozen authorityMode/runtimeConfigurationIdentity/operationTargets/served. served contains scope/profile/history/sourceCommit/digests/fixtureId and string capabilities; fixture bytes live separately in WeakMap. child.ready is IPC JSON; report picks only listed digests. No BigInt/cycles/arbitrary Errors enter observation.
+responses are bounded safe status/header/length/hash records; receiptObservations validated primitive identity/position fields. milestones/performed/socket maps are bounded local data. child.close is memoized, success means clean exit; it can reject/exceed cleanup race. Node child fields are primitives.
+Omitted HTTP/oracle middle is unchanged, catches into the supplied catch. No new requests or timing limits. Prior unrelated findings are separately dispositioned. An earlier file can remain a prior snapshot; actual test exit is required for acceptance.
+
+
+## Root synthetic check, narrowly attributed
+Root ran the actual extracted reporting suffix with injected small-first/oversized-second observations and no reportPath: old source returned with failures0 while printing failed/overflow; repaired source set overflow, added one failure and threw same-key report ceiling. This is synthetic branch evidence, not ordinary fixture near-cap reachability or installed runtime evidence. Full check-overflow.mjs/overflow-check.json are retained and hashed; this reviewer did not execute them.
+

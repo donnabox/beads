@@ -1,0 +1,207 @@
+{
+  "released": false,
+  "commands": [
+    {
+      "id": "typecheck",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "build",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "build"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "format-check",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "format:check"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "lint",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "lint"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "boundaries",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "check:boundaries"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "read-seal",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "evidence:verify"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "transport",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-authorization-transition/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-runtime.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^(?:narrows\\ current\\ Transactional\\ visibility\\ and\\ fences\\ issued\\ handles\\ after\\ policy\\ publication|cancels\\ an\\ active\\ Event\\ stream\\ after\\ policy\\ publication)$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation/run/transport.results.json"
+      ],
+      "selectedFullNames": [
+        "narrows current Transactional visibility and fences issued handles after policy publication",
+        "cancels an active Event stream after policy publication"
+      ],
+      "http": 21,
+      "owners": 2,
+      "directories": 2,
+      "listeners": 2,
+      "productChildren": 0,
+      "testTimeoutMs": 30000,
+      "supervisorSeconds": 120,
+      "cases": 2,
+      "ownedTempPrefixes": [
+        "bdp-authorization-http-"
+      ]
+    },
+    {
+      "id": "queued-frame",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-authorization-transition/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-event-sse.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^(?:publication\\ cancels\\ a\\ queued\\ Event\\ frame\\ before\\ its\\ drain\\ permits\\ another\\ write)$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation/run/queued-frame.results.json"
+      ],
+      "selectedFullNames": [
+        "publication cancels a queued Event frame before its drain permits another write"
+      ],
+      "http": 0,
+      "owners": 1,
+      "directories": 1,
+      "listeners": 0,
+      "productChildren": 0,
+      "testTimeoutMs": 5000,
+      "supervisorSeconds": 120,
+      "cases": 1,
+      "ownedTempPrefixes": [
+        "bdp-event-stream-"
+      ]
+    },
+    {
+      "id": "stale-lease",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-authorization-transition/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-service.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^(?:rejects\\ an\\ old\\ selected\\ Event\\ packet\\ before\\ stream\\ registration\\ and\\ accepts\\ a\\ current\\ lease)$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation/run/stale-lease.results.json"
+      ],
+      "selectedFullNames": [
+        "rejects an old selected Event packet before stream registration and accepts a current lease"
+      ],
+      "http": 0,
+      "owners": 1,
+      "directories": 1,
+      "listeners": 0,
+      "productChildren": 0,
+      "testTimeoutMs": 5000,
+      "supervisorSeconds": 120,
+      "cases": 1,
+      "ownedTempPrefixes": [
+        "bdp-tx-service-"
+      ]
+    },
+    {
+      "id": "authorization-owner",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-authorization-transition/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-authorization.test.ts",
+        "--maxWorkers=1",
+        "--testNamePattern",
+        "^(?:migrates\\ exact\\ legacy\\ authorization\\ facts\\ and\\ preserves\\ a\\ no\\-op\\ policy\\ across\\ reopen|preserves\\ policy\\ and\\ delivery\\ leases\\ after\\ confirmed\\ policy\\ rollback|fences\\ publication\\ failure\\ and\\ recovers\\ the\\ committed\\ empty\\ policy|separates\\ Snapshot\\ view\\ fences\\ from\\ durable\\ maintenance\\ and\\ actual\\ expiry|projects\\ receipt\\ records\\ and\\ allocations\\ without\\ changing\\ non\\-record\\ execution\\ facts|bounds\\ administrative\\ drain\\ without\\ cancelling\\ admitted\\ sequence\\ work|captures\\ one\\ Scope\\ policy\\ for\\ distinct\\ principals\\ and\\ renders\\ empty\\ historical\\ advances)$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation/run/authorization-owner.results.json"
+      ],
+      "selectedFullNames": [
+        "migrates exact legacy authorization facts and preserves a no-op policy across reopen",
+        "preserves policy and delivery leases after confirmed policy rollback",
+        "fences publication failure and recovers the committed empty policy",
+        "separates Snapshot view fences from durable maintenance and actual expiry",
+        "projects receipt records and allocations without changing non-record execution facts",
+        "bounds administrative drain without cancelling admitted sequence work",
+        "captures one Scope policy for distinct principals and renders empty historical advances"
+      ],
+      "cases": 7,
+      "http": 0,
+      "owners": 10,
+      "directories": 7,
+      "rejectedOpenDirectories": 4,
+      "listeners": 0,
+      "productChildren": 0,
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": [
+        "bdp-tx-authorization-",
+        "bdp-tx-authorization-rejected-"
+      ]
+    }
+  ],
+  "controlGate": "closed",
+  "installedGate": "closed"
+}

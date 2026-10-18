@@ -1,0 +1,115 @@
+I read the plan, the frozen source at `0ff180a` (HEAD is exactly that commit, tree clean, `docs/specs/bdp.md` byte-identical between them), and the normative bundle at `schemas/bdp-v0.schema.json`. No files written, no tests run, no network.
+
+## What the plan gets right (verified against explicit law, not restated below)
+
+Spot-checked every source anchor in §"Settled contracts": Selection 825–889, Set mutation 4215–4285, Admission 4490–4539, Receipt expansion 5141–5187, Failure framing 5246–5268/5287–5337, Event expansion ~5577–5595. All accurate. Also independently confirmed four claims that carry real weight:
+
+- **"No set name field is admitted by the schemas"** — `updateWhereOperation`/`deleteWhereOperation` are `Members + {operation: const}` with `unevaluatedProperties: false`; no `name`. True.
+- **"Sets are not sequence members"** — `$defs.sequenceMember` is a `oneOf` over exactly the eight RU records. This is explicit bundle law, not inference.
+- **The receipt union already carries sets** — `$defs.receiptResult` has a `matched` branch requiring `count` and forbidding `operationName`. No widening is needed or proposed. Good.
+- **cardinality `min > max` needs no new rule** — `$defs.cardinality` is min/max `integer ≥ 0`, `minProperties: 1`, `additionalProperties: false`, with no `min ≤ max` constraint. The plan's reading (lines 193–194) is correct.
+
+`read-request.ts:954–964` is cited exactly. Node 24.16.0 / pnpm 11.20.0 pins confirmed (note: ambient `node` here is v26.0.0, so predicate 12's "pinned build first" is a real step). Real-HTTP harness with listener close/reopen and distinct loopback ports already exists (`transaction-http.test.ts:449,614`), so predicates #1 and #9 are implementable as written.
+
+---
+
+## Findings
+
+### F1 — HIGH · correctness · `transaction-store.ts:827`
+**The `transaction.operations` admission control would undercount once sets exist.**
+
+Line 827 computes the limit against `batch.carrier.operations.length`. `prepareTransaction` (`transaction-batch.ts:93–109`) builds that carrier by handing the whole `{operations}` text to `prepareReadUpdateSequence`. Plan item 1 correctly forbids admitting sets into the RU carrier — but then `carrier.operations.length` is no longer the submitted `operations` count. A 40-member batch of 20 sets + 20 Resource operations passes a 32-operation control.
+
+This is in the admission path (spec step 5, 4517–4519), so it is a protocol violation, not a private bug. The plan does not mention it.
+
+**Action:** add `operationCount` (outer `operations.length`) to `PreparedTransaction`; compare against it at line 827. Test that a batch pushed past `maximumOperations` *by its set members* is refused 413 pre-admission with no receipt and no bound key.
+
+### F2 — HIGH · normative gap · spec 4275–4278 vs 5317–5319
+**The genuine unavoidable ruling is narrower and different from how the plan frames it.**
+
+The plan's argument is that `invalid-parameter` is excluded from the receipt code list, so Read's mapping can't be copied post-admission. Correct. But the gloss on receipt `limit-exceeded` is *also* closed:
+
+> 5317–5319: "`limit-exceeded`, an advertised or enforced transaction limit — examined, matched, or mutated Resources, induced Events, or duration — was crossed after admission."
+
+Five limits. `selector.bytes/depth/nodes` are a separate advertised group (1065–1066; `transactionalAdvertisedLimits.selector` in the bundle) and are **not** among them. Meanwhile 4275–4278 explicitly lists "Selector size and depth" as limits a service may advertise *for set mutations*, and 1052–1053 forbids treating an unadvertised bound as infinite or failing non-normatively.
+
+So the plan's recommendation at lines 185–187 — "execution work bounds follow key comparison and yield the existing permanent failed receipt where applicable" — has no legal code behind it for selector limits. The hedge "where applicable" conceals that. `receiptProblem.limit`'s pattern `^[a-z]+\.[A-Za-z]+$` *lexically* admits `"selector.bytes"`, so schema validation will not catch the mistake; only the prose does.
+
+Two further points the plan doesn't surface: Read's own `syntax → invalid-parameter` mapping has **no spec anchor** either (1550–1553 scopes `invalid-parameter` to unsupported/repeated query parameters; 1675–1677 to History queries) — so there is no inherited ruling to stay consistent with. And 1596–1598 only forbids silently interpreting a truncated Selector; it names no code.
+
+**Action:** put *this* conflict to root — 4275–4278 versus the closed 5317–5319 enumeration — as the ruling. Do not let the slice depend on the answer; take F3.
+
+### F3 — HIGH · safe independent core · `transaction-batch.ts:93` / `transaction-submission.ts:67–87`
+**Parse and bound the Selector in `prepareTransaction`. This implements the plan's own recommended reading with zero new codes and unblocks everything.**
+
+`submitTransaction` already maps every `TypeError`/`JsonSyntaxError`/`ReadUpdateCarrierError` escaping `prepareTransaction` to a pre-admission 400 `malformed-request` — before authorization (88–92) and before `compareAndAdmitTransaction` (106). Parsing the Selector there lands grammar-invalid *and* over-complex Selectors as step-2 carrier-syntax refusals with no receipt and no key, exactly as plan lines 185–187 propose.
+
+Two corrections the plan needs:
+
+1. **The plan silently decides the admission phase twice, in opposite directions.** Line 68 says reuse `selectReadResources`; item 3 (121–128) places Selector evaluation inside the staged selection. Evaluating only at selection time puts the parse failure *post*-admission, where F2 says no code exists. Make the placement explicit.
+2. **`selectReadResources` checks bytes before parsing** (`read-selector.ts:172–182`), so a Selector that is both oversized and grammar-invalid reports `source-bytes-limit-exceeded`, never `syntax`. Under the plan's split, the observable phase would depend on the Selector's *length*: a short invalid Selector refused pre-admission, a long invalid one admitted and failing in a receipt. Collapsing both into the pre-admission parse removes that.
+
+**Action:** in `prepareTransaction`, validate each set record's Selector with `selectReadResources(selector, privateLimits, [])` — that runs bytes, parse, depth and nodes, then evaluates over zero candidates and returns a frozen `[]`. **No edit to `read-selector.ts`, no new public export**, honoring plan line 167. Set the private `bytes` bound strictly above `TRANSACTION_RUNTIME_LIMITS.requestBodyBytes` (64 KiB, `transaction-batch.ts:44`, already enforced pre-admission as 413 `request-too-large`) so `selector.bytes` can never bind and F2 never gates this slice. Advertise no `limits.selector` group — consistent with plan line 160, since the directory stays gated at `transaction-http.ts:365–366`. Re-parse at selection time; one redundant bounded parse per set operation. (Cleaner alternative — export `parseReadSelector`/`evaluate` separately — needs root scope for a shared-module edit per plan lines 167–168.)
+
+### F4 — HIGH · latent silent admission · `read-update-values.ts:203–215`
+**The RU carrier path replaces every number literal with `0` before schema validation, so routing set records through it silently admits negative and fractional cardinality bounds.**
+
+`carrier()` does `const structural = mapLosslessJson(root, () => 0)` and validates the placeholder document. `$defs.cardinality` constrains `min`/`max` to `{type: "integer", minimum: 0}`. So `{"min": -1}` and `{"max": 3.5}` both validate *as `0`* and pass. The original literal then survives to comparison — so `{max: -1}` would be admitted, bind a key, and fail with a retained `cardinality-violated` 409 instead of a pre-admission `malformed-request`.
+
+The plan flags the hazard (196–200) but names neither the mechanism nor the fix. The existing guard, `read-update-numeric-schema.test.ts`, lists only the eight RU singletons plus `sequenceRequest` as roots — not `batchRequest` — so it would not catch this.
+
+**Action:** do not route set records through `carrier()`/`validator()`. Hand-validate the two records in the new `transaction-set.ts`, reading `cardinality.min`/`max` from the `JsonNumberLiteral` and requiring an exact nonnegative integer value (accept exponent spellings only when integral — the coefficient/exponent decomposition at `semantic-identity.ts:27–41` already does this exactly). Refuse otherwise as pre-admission `malformed-request` with `pointer` `/operations/{i}/cardinality/{min|max}`. Keep the original literal for identity and comparison. Add a corpus test cross-checking the hand validator against `updateWhereOperation`/`deleteWhereOperation` on safe-integer cases, asserting the hand check is strictly stronger on numerics.
+
+### F5 — MEDIUM-HIGH · under-specified load-bearing edit · `transaction-batch.ts`
+**"Widen the operation union" understates four index-aligned structures.**
+
+`PreparedTransaction` is today a one-field wrapper `{carrier}` (53–55, frozen at 216–220). Four places index positionally into `carrier.operations`: `normalizeTransaction` (315, with `prior?.[index]` at 327), the witness array it emits (356–359, 371), `evaluateTransaction` (444) with `state.aliases[operationIndex]` (505), and `parseWitnesses` (247–280). Spec 5145 and 5249 require the **original outer** `operationIndex` on every result entry and on a failed receipt's problem. Plan item 1 says "original outer indices" but never says which index the parallel arrays are keyed on.
+
+**Action:** give `PreparedTransaction` one ordered `operations` array of `{kind:"resource", carrierIndex, op} | {kind:"set", record}`, plus `operationCount` (F1). Key the witness and alias arrays to the **outer** index, padding set positions with `{operation, aliases: []}` so `prior?.[index]` keeps aligning across a retry. Widen the local `OperationWitnesses.operation` type (230–233) and `parseWitnesses`' `assertResourceOperation` branch (262–263) to admit exactly the two set kinds — `aliasFields` (225–229) already returns `[]` for anything else, so the `aliases.length` bound at 265 then correctly forces zero alias slots, matching plan line 117. Keep synthetic keys as `internal-${outerIndex}` (108) so `carrier.keys[j]` still encodes the outer index.
+
+### F6 — MEDIUM · compatibility · `transaction-store.ts:136,191–231`
+**The plan's compatibility disjunction offers a first branch that is already falsified.**
+
+Lines 170–174 offer "either prove old-format readers safely refuse new state **or** use the existing private-format/policy refusal mechanism." Branch one is unavailable. The only compatibility gate is a read-only preflight comparing the stored `configuration` JSON byte-exactly before the writable connection opens (215–231, built at 191–197), and `format` is a constant inside it (136, `…receipt-pages-6`).
+
+An owner left at `-6` **opens a set-containing database without complaint**. It fails only later, per key, when `parseWitnesses` reaches a set witness and `assertResourceOperation` (`transaction-batch.ts:57–69`) throws `TransactionDevelopmentLimitError`. That throw escapes `submitTransaction`'s try/catch — which wraps only 70–87, not `compareAndAdmitTransaction` at 106 — so it surfaces as a 500 for that one retry while every other key keeps writing. That is exactly the "silently open a new set-containing database in an old owner" outcome the plan forbids.
+
+**Action:** treat the `format` bump to `-7` as required, not optional, and make predicate 11's compatibility clause unconditional rather than "If compatibility changes". The byte-exact preflight then refuses in both directions before recovery, pragmas or maintenance, satisfying line 174 with no migration.
+
+### F7 — MEDIUM · scope honesty · plan lines 94–96, predicates #6 and #10
+**Two listed obligations are unreachable in this installation; the done-when section doesn't say so.**
+
+- `transactional.set.attribution-fanout` (6852) requires attribution "on every version it mints, **owned sources included**", and 4250–4255 requires fanout onto each selected owned Link's fresh source-Bead version. The owner refuses owned Types at provisioning (`transaction-store.ts:182–188`) and `evaluateTransaction` hard-throws on any owned-Link transition (`transaction-batch.ts:555`). The plan concedes this in prose (line 96) but predicate #6 does not.
+- The receipt `forbidden` branch for "a selected Resource that is not writable" (5312–5314, 4914) cannot be constructed: the policy is uniformly permissive (`transaction-store.ts:956` — `canRead`/`canCreate`/`canWrite` all `() => true`). Plan line 79–80 records the law; predicate #10's "read-only/unauthenticated requests" tests a different gate.
+
+Everything else listed (`.mutation`, `.zero-match`, `.cardinality`, `.singleton-targets`, `event.set-expansion-order`, `receipt.pagination`) is reachable.
+
+**Action:** state both exclusions in the done-when section, so the slice's report cannot be read as satisfying `.attribution-fanout` or the nonwritable-match branch.
+
+### F8 — MEDIUM · uncosted consequence of the unsettled edge · `transaction-submission.ts:51`
+`TransactionSubmissionResult.refused.limit` is typed to the single literal `"transaction.operations"`, forwarded verbatim by `transaction-http.ts:306–309`. Plan item 6 mentions widening only the singleton carrier union. If root rules that selector bounds are a *pre-admission direct* `limit-exceeded`, this union must widen too. Under F3 it never arises.
+
+**Action:** note the dependency; prefer F3 so the union stays closed.
+
+### F9 — LOW-MEDIUM · citation precision · plan line 78
+The cited range "Set wire objects, 4837–4918" opens inside a passage the spec itself marks non-normative: 4643–4648 says the schema sketch "is a non-normative preview of it and carries no independent `$id`". The names differ accordingly — the sketch's `#/$defs/updateWhere`/`deleteWhere` (4659–4660, 4837, 4850) **do not exist** in `schemas/bdp-v0.schema.json`, which defines `updateWhereOperation`/`deleteWhereOperation` (batch members), `updateWhereRequest`/`deleteWhereRequest` (singleton bodies, `unevaluatedProperties: false`) and `updateWhereMembers`/`deleteWhereMembers`. Only 4904–4918 in that range is normative prose.
+
+**Action:** have the schema-valid-receipt and negative-shape tests of predicates #1 and #10 validate against the bundle definitions by those names; cite 4904–4918 for the prose anchor.
+
+### F10 — LOW · forward-compat of the Event cap's storage home · plan item 5
+The store's installation identity is the byte-exact `configuration` JSON, which already contains `receiptMaximumItems` (191–197) and is compared on every non-create open (227). If the induced-Event cap is added there as a provisioning option, every later tuning of the cap permanently refuses existing stores. A retained failed receipt already stores its own problem, so the cap value is not needed to reinterpret durable state.
+
+**Action:** implement the cap as a module constant with an explicit test-only override (item 6's "minimal runtime test seam"), not as a `configuration` member. Emit `limit: "transaction.inducedEvents"` with **no** `operationIndex` (5252–5257). `ReadProblem`'s index signature (`packages/protocol/src/index.ts:329`) already admits `limit`, so only `BatchEvaluation`'s problem type needs the local widening item 4 describes — that part of the plan is exactly right.
+
+### F11 — LOW · `transaction-http.ts:31–42`
+`TRANSACTION_HTTP_OPERATIONS` orders `batch` before `sequence`; the spec's `GET operations/` body (4336–4352) is `… putAlias, deleteAlias, sequence, updateWhere, deleteWhere, batch`. The route is still gated at 365–366, so nothing is advertised today. Insert the two set keys in spec order now to avoid a reorder later.
+
+---
+
+## Bottom line
+
+The plan is substantially sound and its source anchors hold up. The structural proposals (items 3, 4, 5, 6) fit the existing seams well — one `tx` construction site with a `scoped()` lifetime guard, one `SAVEPOINT effects` region, an entry-count-agnostic page planner that already counts `matched` as one slot, and a `changes ⟺ events` invariant that the shared-helper refactor preserves for free.
+
+Three things need fixing before implementation, independent of any ruling: **F1** (an actual admission-path violation), **F4** (a silent-admission bug the plan half-saw), and **F5** (the load-bearing index alignment the plan leaves unsaid). **F6** collapses a stated choice into a requirement.
+
+On the edge you asked me to press hardest: the plan under-identifies the gap. The real conflict is 4275–4278 (Selector size/depth advertisable for set mutations) against the closed 5317–5319 gloss (receipt `limit-exceeded` means one of five *transaction* limits) — and the schema's permissive `limit` pattern won't catch a wrong choice. That is a genuine normative gap and root's call. But **F3 lets the entire core land without waiting for it**: parse and bound the Selector pre-key in `prepareTransaction`, keep `selector.bytes` under the existing 64 KiB body bound so it can never bind, advertise no `limits.selector`. Zero new error codes, zero receipt-union widening, zero shared-module edits.

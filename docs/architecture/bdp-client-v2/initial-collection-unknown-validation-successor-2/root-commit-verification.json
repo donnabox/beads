@@ -1,0 +1,28 @@
+{
+  "head": "1aeed4dec5dc7563c59b136d4461a6091da052ee",
+  "tree": "db8734e233346f1f175d0faf5521387e2d263aad",
+  "parent": "2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96",
+  "testedSourceIdentity": "897300116c07b9fcaf55ccc6755572b94973d0ce26b0198736108bb0410cbd77",
+  "allTrackedBytesMatch": true,
+  "ownedFiles": {
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": {
+      "beforeSha256": "615caab0e5a846c546e718f65c4041c5ca41bef59df1d56a6dea0e42638b0174",
+      "afterSha256": "f5924a853e5cf8a2748c2a4067e9425772b26061832968f60a0618d998f153a7"
+    },
+    "packages/server/src/transaction-http.test.ts": {
+      "beforeSha256": "9eb452b8e9d80b53f28cd61b40385886c3a61a992aadb1c9c201d9a188081cce",
+      "afterSha256": "b0aaddb7e8b0d42bc2bc4f83478088c03978c12e04ec36cc897c32bbcb716a4f"
+    },
+    "packages/server/src/transaction-read.test.ts": {
+      "beforeSha256": "58e745c2ade0804bf0ab0230c34ff5e522c28725fa77ecb9303dbe972162e0f2",
+      "afterSha256": "c5f444fac8ffcf3c37ba73adc91abde5c7c5c2e3349886b78539d2fd22b2e291"
+    },
+    "packages/server/src/transaction-read.ts": {
+      "beforeSha256": "7e2cc29b668bb80a3ba2948e90511518a98a7ff798b1dbfb8c6f51f0c0bd2a6f",
+      "afterSha256": "e76595b1da4530c4178a668b72e8bdf91ded7cdea5a6052219a2b10ebffedcb2"
+    }
+  },
+  "nativeFinalAuditSha256": "0711a6b59af47d92eda23fdd4b0359601a306b2c0d16dc1255b6f44fa7f88635",
+  "scope": "four-file collection fix; no documentation changes needed for internal bug fix; no untracked/staged junk",
+  "clean": true
+}

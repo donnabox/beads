@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum/node_modules/vitest/vitest.mjs",
+    "run",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation-successor-1/run/focused-source.results.json",
+    "--testNamePattern",
+    "^(?:captures\\ opaque\\ receipt\\ root\\ minima\\ through\\ real\\ owner\\ retries|drains\\ an\\ opaque\\ receipt\\ root\\ wait\\ before\\ closing\\ its\\ owner|private\\ minimum\\-read\\ owner/lifecycle\\ checks\\ minimum\\ before\\ read\\-triggered\\ expiry\\ but\\ honors\\ independently\\ forgotten\\ receipts\\ \\(false\\)|private\\ minimum\\-read\\ owner/lifecycle\\ checks\\ minimum\\ before\\ read\\-triggered\\ expiry\\ but\\ honors\\ independently\\ forgotten\\ receipts\\ \\(true\\)|private\\ minimum\\-read\\ owner/lifecycle\\ checks\\ minimum\\ before\\ read\\-triggered\\ expiry\\ but\\ honors\\ independently\\ forgotten\\ receipts\\ \\(opaque\\ false\\)|private\\ minimum\\-read\\ owner/lifecycle\\ checks\\ minimum\\ before\\ read\\-triggered\\ expiry\\ but\\ honors\\ independently\\ forgotten\\ receipts\\ \\(opaque\\ true\\)|preserves\\ current\\ receipt\\ absence\\ context\\ across\\ ordinary\\ and\\ minimum\\ service\\ entrypoints|source\\-private\\ actual\\ Transactional\\ HTTP\\ authenticates\\ and\\ hides\\ receipts\\ before\\ minimum\\-control\\ refusal\\ or\\ conditional\\ shortcuts|keeps\\ receipt\\ minimum\\ enforcement\\ after\\ commands\\ ignore\\ copied\\ controls|checks\\ a\\ stored\\ failed\\ receipt\\ minimum\\ before\\ read\\-triggered\\ retention\\ disposal\\ over\\ HTTP|refuses\\ unsupported\\ root\\ controls\\ after\\ nondisclosure\\ but\\ before\\ read\\-triggered\\ retention|serves\\ opaque\\ receipt\\ root\\ minima\\ before\\ HTTP\\ shortcuts\\ with\\ private\\ fences)$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum",
+  "head": "08812c6c752c06cd0edf1af2878b2367692e5b32",
+  "tree": "9b6f50b9a6b9eea953a6407599090c259cf97331",
+  "sourceIdentity": "10489259dc7c06650b596eba32513acc3e31cdde0cd615b83b1a4b32fcf86da9",
+  "rootGateSha256": "c3f4bac083201a6f093b960de58f0ee67811fb64545ad348b6203249f7724d43",
+  "outerSeconds": 120,
+  "automaticRetries": 0,
+  "overrides": {}
+}

@@ -1,0 +1,181 @@
+{
+  "at": "2026-10-17T20:48:02.756983+00:00",
+  "kind": "completed-changed-successor-code-review-provenance-only",
+  "reviewComplete": true,
+  "approvalInferred": false,
+  "findingsDisposition": "Not performed by this audit; root/native evaluate findings separately. Completion is not approval.",
+  "classification": "review_complete",
+  "exitCode": 0,
+  "elapsedSeconds": 1228.6283176667057,
+  "pid": 19586,
+  "pgid": 19586,
+  "started": "2026-10-17T20:21:43.652036+00:00",
+  "raw": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/stream.jsonl",
+    "sha256": "3c6261d692f1b26e34e7adaf980a620c44b7e0d27d6fc04b91bc9851364102d3",
+    "records": 5344,
+    "bytes": 3114257,
+    "parseErrors": 0
+  },
+  "terminal": {
+    "count": 1,
+    "subtype": "success",
+    "is_error": false,
+    "permissionDenials": [],
+    "arrayEqualsRaw": true,
+    "finalBytesEqualResult": true,
+    "matchingAssistantFinalRecords": [
+      5340
+    ]
+  },
+  "finalReview": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/final-review.txt",
+    "sha256": "961041fd918ddb781d8fca9fd3cf735627b17aa525b71371901ca1bae737ef15",
+    "bytes": 9880
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "sourceBeforeAfterEqual": true,
+  "verifiedCurrentPins": {
+    "index": 38,
+    "source": 679,
+    "contexts": 25,
+    "artifacts": 9
+  },
+  "head": "d9c3eb9e61b1982b9bd56aa77e4cdc114384e886",
+  "patchSha256": "ca59dc9f280ed0ac281f5b6ec00ed6d0fab1197fae7ef3b6a281bf817476eb55",
+  "authorizedBindingTransition": [
+    "rootLaunchReleased"
+  ],
+  "closedBindingSha256": "58eaf70a89f44cbc01b2e175dfa5d61436977e6fd3b39188817a038e97e20edd",
+  "releasedBindingSha256": "fe7faf8b482b3cab42782a74bf1e410966f6e9ad4ac0706cf9e3dd1cd643215d",
+  "originalTimeoutPreserved": true,
+  "originalTimeoutRawSha256": "404f6ec351b974fc9a962068652727fedbdb6d7db4dfd5eda71ba87b22c0d25c",
+  "originalPartialAndRecoveryPinsPreserved": true,
+  "actualToolUseCounts": {
+    "Read": 45,
+    "Grep": 61
+  },
+  "toolResults": 106,
+  "unresolvedToolUses": [],
+  "errorMarkedToolResults": [
+    {
+      "use": {
+        "record": 1750,
+        "name": "Grep",
+        "input": {
+          "pattern": "function ingestContractArtifacts|sort",
+          "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/contract-artifacts.ts",
+          "output_mode": "content",
+          "-n": true,
+          "-C": 6,
+          "head_limit": 60
+        }
+      },
+      "result": {
+        "record": 1752,
+        "is_error": true,
+        "errorContent": "Path does not exist: /Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/contract-artifacts.ts. Note: your current working directory is /Users/dbox/repos/wt/vickie/vickie-current-observation-minimum."
+      }
+    },
+    {
+      "use": {
+        "record": 4040,
+        "name": "Grep",
+        "input": {
+          "pattern": "maximumOperations|maximumMatched|TRANSACTION_RUNTIME_LIMITS = ",
+          "path": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-limits.ts",
+          "output_mode": "content",
+          "-n": true,
+          "-C": 6
+        }
+      },
+      "result": {
+        "record": 4044,
+        "is_error": true,
+        "errorContent": "Path does not exist: /Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-limits.ts. Note: your current working directory is /Users/dbox/repos/wt/vickie/vickie-current-observation-minimum."
+      }
+    }
+  ],
+  "successfulReadPaths": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/accepted-plan.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/correction-plan.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/correction.patch",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/draft.patch",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/authority-read.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-consistency.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-consistency.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-events.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-http.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-http.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-read.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-read.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-receipt-pages.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-runtime-configuration.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-service.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-service.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-snapshot-http.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-snapshot.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-store.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/schemas/bdp-v0.schema.json"
+  ],
+  "successfulSourceReadPathCount": 18,
+  "ownedSourcePathsWithSuccessfulRead": [
+    "packages/server/src/transaction-consistency.ts",
+    "packages/server/src/transaction-read.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-consistency.test.ts",
+    "packages/server/src/transaction-read.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-receipt-pages.test.ts",
+    "packages/server/src/transaction-snapshot.test.ts",
+    "packages/server/src/transaction-events.test.ts",
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts"
+  ],
+  "successfulCopiedContextReads": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/accepted-plan.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/correction-plan.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/correction.patch",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-code-review-successor-1/context/draft.patch"
+  ],
+  "successfulGrepPaths": [
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/authority-read.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/development-contracts.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/installed-contract-artifact.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/read-pagination.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/read-request.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-batch.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-changefeed.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-events.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-http.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-http.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-runtime-configuration.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-runtime.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-service.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-service.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-set.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-snapshot-http.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/packages/server/src/transaction-store.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum/schemas/bdp-v0.schema.json"
+  ],
+  "accessLimit": "Successful Read paths/ranges and successful Grep paths are measured; they do not imply every byte or copied context was read. Other supplied context was available by explicit absolute path. No hidden reasoning reproduced or treated as findings.",
+  "sampledPids": [
+    19586
+  ],
+  "currentMatchingProcesses": [],
+  "residualCleanupRequired": false,
+  "wrapperError": null,
+  "newExecutionOrRetryByAuditor": false
+}

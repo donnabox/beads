@@ -1,0 +1,54 @@
+{
+  "status": "FROZEN_UNEXECUTED_DRAFT",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "branch": "codex/vickie-event-missing-context",
+  "head": "88c9408e908590ab1a4c64c9b9dee1a8b705999c",
+  "tree": "b2d9f2c18502e0778c51123be8b4564af052d803",
+  "dirty": true,
+  "files": {
+    "packages/server/src/transaction-store.ts": {
+      "sha256": "b2a444f7997ba4e2b34bd57ed2a8119f0999e6146305b5aae4fc8735ff78bc7c",
+      "bytes": 86537,
+      "new": false,
+      "snapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/redirect-repair/source/packages/server/src/transaction-store.ts"
+    },
+    "packages/server/src/transaction-http.ts": {
+      "sha256": "9db33008a4c3a66214e2bf523b0b90f79c216c1f3f304c6df0491a0d1904439a",
+      "bytes": 27038,
+      "new": false,
+      "snapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/redirect-repair/source/packages/server/src/transaction-http.ts"
+    },
+    "packages/server/src/transaction-events.test.ts": {
+      "sha256": "0152561cdf096a48b0b01ec0e0d8bc81208a905bb5bf71dad411694387b58b27",
+      "bytes": 50813,
+      "new": false,
+      "snapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/redirect-repair/source/packages/server/src/transaction-events.test.ts"
+    },
+    "apps/bdptest/src/transactional-event-missing-context-installed.test.ts": {
+      "sha256": "828c05f358ae5863c992f93194da15a31df9a200e073e5e3525531ba39fe7d0d",
+      "bytes": 15956,
+      "new": true,
+      "snapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/redirect-repair/source/apps/bdptest/src/transactional-event-missing-context-installed.test.ts"
+    },
+    "docs/design/transaction-implementation-progress.md": {
+      "sha256": "c31d464b9d7928639c54acf827844d3ae62691d026ee9557ed6f7b921643b278",
+      "bytes": 124863,
+      "new": false,
+      "snapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/redirect-repair/source/docs/design/transaction-implementation-progress.md"
+    },
+    "packages/server/src/transaction-event-sse.test.ts": {
+      "sha256": "69f58153b93947f028c37aebce2f57b0a25f725aacb9a1891c7b276b1c9e44c0",
+      "bytes": 33197,
+      "new": false,
+      "snapshot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/redirect-repair/source/packages/server/src/transaction-event-sse.test.ts"
+    }
+  },
+  "diffSha256": "e0c25b193ef1191d10916728c54eb6a894c5f29992e0da768bd585ef089e98e3",
+  "rootAcceptanceSha256": "f83567b98879240d3784023a4dea5d789ae61f281bab04b581f11319b7685830",
+  "addendumSha256": "684d3c05b331417a71cbd14044e734e878a6ddffabfaeccd97e4a3ad10be1c39",
+  "ledgerSha256": "ff4ffa5e46bbd0fc20d6f23d1043816178433259a5f2b2950cc18862f7bf1d22",
+  "predecessorBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/source-binding.json",
+    "sha256": "83e5b7b63785abbb7986a14447a3ee21cc29d301e26ee85bb6fae9ff595b0f3a"
+  }
+}

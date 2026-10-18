@@ -1,0 +1,169 @@
+{
+  "base": "30035b88380b7cbb3abd5359787db236b70345c7",
+  "baseTree": "cdee4bc7e31511cde094d17c045ea618163b6d7a",
+  "branch": "codex/vickie-comparison-timeout-review-repair",
+  "executed": false,
+  "changedFiles": [
+    {
+      "path": "docs/design/transaction-implementation-progress.md",
+      "bytes": 120586,
+      "sha256": "6d567b086dfb4597e1e19776331eb233e4fae3b90b613cb64b952e906d978966"
+    },
+    {
+      "path": "packages/server/src/transaction-service.test.ts",
+      "bytes": 85504,
+      "sha256": "03f4e5c53cc8717a9818de97dd7a4c606cb1db6018844481e7cd43a18d55dd20"
+    },
+    {
+      "path": "packages/server/src/transaction-store.test.ts",
+      "bytes": 137784,
+      "sha256": "c8f1e06de60689597494cff89240103693e46b0f979519f3a3be46315ead7003"
+    },
+    {
+      "path": "packages/server/src/transaction-submission.test.ts",
+      "bytes": 43202,
+      "sha256": "92864076bc4788f8852c23a204beab45d953072fe2a3a47ff24e40ce5ea4d596"
+    }
+  ],
+  "sourceDiffSha256": "17eab65f6c95fa6e49f848de23dd7d342682c8b1dfaadb39c7f3bd402aa913a4",
+  "sourceSelection": [
+    {
+      "file": "packages/server/src/transaction-store.test.ts",
+      "titles": [
+        "preserves a fenced owner's comparison observation failure",
+        "preserves background maintenance failure in a closed comparison owner"
+      ],
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-store.test.ts",
+        "-t",
+        "preserves\\ a\\ fenced\\ owner's\\ comparison\\ observation\\ failure|preserves\\ background\\ maintenance\\ failure\\ in\\ a\\ closed\\ comparison\\ owner",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json"
+      ]
+    },
+    {
+      "file": "packages/server/src/transaction-submission.test.ts",
+      "titles": [
+        "distinguishes a stopped final observation at the reached comparison deadline"
+      ],
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-submission.test.ts",
+        "-t",
+        "distinguishes\\ a\\ stopped\\ final\\ observation\\ at\\ the\\ reached\\ comparison\\ deadline",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json"
+      ]
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "titles": [
+        "uses the original finite comparison budget while an earlier sequence dependency is unresolved"
+      ],
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-service.test.ts",
+        "-t",
+        "uses\\ the\\ original\\ finite\\ comparison\\ budget\\ while\\ an\\ earlier\\ sequence\\ dependency\\ is\\ unresolved",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json"
+      ]
+    }
+  ],
+  "positiveCases": 4,
+  "newCases": 2,
+  "extendedCases": 2,
+  "bounds": {
+    "httpRequests": 0,
+    "listeners": 0,
+    "installedChildren": 0,
+    "services": {
+      "positive": 1,
+      "control": 1,
+      "external": 0
+    },
+    "positiveTemporaryStores": 4,
+    "controlTemporaryStores": 3,
+    "maintenanceFakeTimersPerCase": 1,
+    "fakeTimeAdvanceMs": 25,
+    "maxWorkers": 1,
+    "proposedPerCommandSupervisorSeconds": 120,
+    "existingVitestTestTimeoutUnchanged": true,
+    "sourceCaseExecutions": 7,
+    "inProcessServiceInstances": 2
+  },
+  "preservationSha256": "7a47c3c3c0af523e2286b976d614f6759bdbfa98a5eca3e08101427ed3ee7b9e",
+  "productionChanges": false,
+  "installedScenarioChanges": false,
+  "controls": [
+    {
+      "kind": "isolated derivative, one mutant with two independently selected case executions",
+      "path": "packages/server/src/transaction-store.ts",
+      "patchSha256": "4dea38875ef699137a64719f8b99a4772af53fb8a86fff95481d9404acb375d8",
+      "originalSha256": "ff25fdb35772b48c230bfbe65f1f3cb7805df4a585965fdc6bd150a432c7e8ed",
+      "mutantSha256": "2339f33d046afa57923a93dac804332d039a0c73745f1c16b784a29f52f0a097",
+      "expectedFailingCases": 2,
+      "requiredFailureLabels": [
+        "closed fenced deadline preserves failure",
+        "closed maintenance deadline preserves failure"
+      ],
+      "selectedTests": [
+        "preserves a fenced owner's comparison observation failure",
+        "preserves background maintenance failure in a closed comparison owner"
+      ],
+      "executed": false
+    },
+    {
+      "kind": "isolated old expected-shape assertion, cleanup remains repaired",
+      "path": "packages/server/src/transaction-service.test.ts",
+      "patchSha256": "be09970db8718cdf4d6bf6fd0c31c857ad7a8e25d7f7735c7508724a7addc63a",
+      "originalSha256": "03f4e5c53cc8717a9818de97dd7a4c606cb1db6018844481e7cd43a18d55dd20",
+      "mutantSha256": "1193c43ed5fec1f7937be7d1cdfb4fb5833246f349a35a7bdf7fb101cb6fa631",
+      "expectedFailingCases": 1,
+      "requiredFailureLabels": [
+        "observed service comparison deadline shape"
+      ],
+      "requiredCleanup": {
+        "kind": "comparison-service-deadline-cleanup",
+        "drained": true,
+        "closed": true,
+        "cleanupTurns": 2,
+        "pendingCallbacks": 0
+      },
+      "forbiddenFailure": "Hook timed out",
+      "selectedTests": [
+        "uses the original finite comparison budget while an earlier sequence dependency is unresolved"
+      ],
+      "executed": false
+    }
+  ],
+  "historicalCiFailure": {
+    "path": "../transaction-comparison-timeout-ci-first-full.log",
+    "sha256": "e6850dab246f2bd6708f0b2f31000041a1ff5bf47346fe67fff17e973c0c00a7",
+    "outcome": "real stale observed-service expectation plus blocked afterEach cleanup; not retried or relabeled"
+  },
+  "positiveServiceCleanup": {
+    "kind": "comparison-service-deadline-cleanup",
+    "drained": true,
+    "closed": true,
+    "cleanupTurns": 0,
+    "pendingCallbacks": 0,
+    "adjudication": "Require exactly one matching parsed actual-output record; absence of hook timeout alone is insufficient."
+  }
+}

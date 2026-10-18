@@ -1,0 +1,34 @@
+{
+  "before": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/format-successor-1/audit.py",
+    "sha256": "05bc4007e04bce0a438eee2f88f714c2a952c7a0f3b2f8d0a5704d6775018c03"
+  },
+  "after": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/audit.py",
+    "sha256": "ba76c85abd490c4927eabb96f4fc77e143a1b2d0d76e9a5461b6ad307d4e8bf9"
+  },
+  "forwardPatch": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/audit-correction.patch",
+    "sha256": "b828bbefbb98035b2481c357f3448c3420fabfe1e13be26c77da4e20926ba024"
+  },
+  "reversePatch": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/audit-correction.reverse.patch",
+    "sha256": "2f44d161f512da28b5daba0818547990a9be023c3197ed06facdb58b07406402"
+  },
+  "forwardExactReplacement": true,
+  "reverseReconstructsEntireOriginal": true,
+  "onlyBehavioralChange": "entryLiteral required only for nonhistory; resolved entry/hash/payload remain common",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/helper-successor-1/source-binding.json",
+    "sha256": "07c407cf0a676e2f53d4e4b2ce7948d9df8a4cc8a4f1ad0bc6e4d9e89f370218"
+  },
+  "sourceFilesUnchanged": 679,
+  "bootstrapOrigin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1/run",
+  "bootstrapOnly": [
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "freshMainStages": 19,
+  "freshRequiredStages": 4,
+  "executed": false
+}

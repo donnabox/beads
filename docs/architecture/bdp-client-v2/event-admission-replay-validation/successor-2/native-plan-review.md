@@ -1,0 +1,7 @@
+# Native validation successor2 plan closure
+
+The dependent N1 precision is closed. The validation paragraph now limits synchronous strict fallback to beginEvents and separately preserves finite failed-classification supplied pass-through/no current-event intent/owner source-before-tuple validation. Only that qualification and the successor reference change in plan prose; the prior reviewed stage sequence, counters, lifecycle, consumer gates, deadlines and unresolved actual-source/report/tool bindings remain unchanged.
+
+Verified final9-entry indexfc71e90a4bbc4417e8c7f51a9744b6b23a8bd23b9609e102a48f776524b20968 and full plan SHA ae6c10ff60e68dc236e2b207a793b2eb273f34c32a2a6d6b26c7f38efb302b93, basisb132f4994901f4ed6fbe6a3501eccd5e774b5f06ca1c258411257091eef1bd96. All4 predecessor indexed entries remain unchanged; initial metadata versions and root correction are preserved in the new index. Selection81383952 equals implementation successor2 and prior selection byte-for-byte.
+
+No remaining actionable validation-plan blocker. Fresh bootstrap2+19 main stages plus4 required checks, fresh build before collection, exact source17/12new+4legacy and installed historical5/new10 isolated selectors/audits remain requirements. Actual author checkout/source freeze, schemas/expanded names, executable adaptation, measured tool/build/archive/consumer pins and root stage release still must be supplied later. Supporting plan accepted; no helper execution, product edits, runtime authorization or passing result is implied.

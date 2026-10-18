@@ -1,0 +1,45 @@
+{
+  "head": "c872f035ed16222711ef1736c031024cc5c3d309",
+  "tree": "badd8e8cb7b8bc975b211d60a04ddf63c7e68335",
+  "parents": [
+    "b14b91b762f9d2e5f9eb3102fec70e02a0879d45",
+    "f5e935b59b1c091bd79a57e122b016739bdf6980"
+  ],
+  "branch": "codex/vickie-receipt-numeric-integration",
+  "clean": true,
+  "txFiles": [
+    "apps/bdptest/src/transactional-matrix.test.ts",
+    "packages/conformance/src/runner.test.ts",
+    "packages/conformance/src/runner.ts",
+    "packages/conformance/src/transactional-cumulative.test.ts",
+    "packages/conformance/src/transactional-observation.test.ts",
+    "packages/conformance/src/transactional-observation.ts",
+    "packages/conformance/test-support/transactional/coverage-v1.json",
+    "packages/conformance/test-support/transactional/manifest-v1.json"
+  ],
+  "ruFiles": [
+    "apps/bdptest/src/read-update-matrix.test.ts",
+    "packages/conformance/matrices/read-update-reference-continuation-v1.json",
+    "packages/conformance/src/cumulative-artifact.test.ts",
+    "packages/conformance/test-support/read-update-coverage-v1.json"
+  ],
+  "bothDonorDeltasPreserved": true,
+  "txFilesByteEqualF5": true,
+  "ruFilesByteEqualB14": true,
+  "txPatchId": "07088f237db9ae3ec325a27d3d16a8675eeaf8f5",
+  "ruPatchId": "0fe49f25f5983db4da111ac7528ab8ed51efcf26",
+  "hashes": {
+    "apps/bdptest/src/read-update-matrix.test.ts": "6e340fbff5150b7e7601926e5648d145e8f55cd5b053e42dc0cc3bc510edcd1c",
+    "apps/bdptest/src/transactional-matrix.test.ts": "1b09c3fef22a4344b6b568049cc5074b3a06d7310593c6b3bc8a0806990e03e0",
+    "packages/conformance/matrices/read-update-reference-continuation-v1.json": "ab0eb34f3b815819c6f288ff6169aa1238f00ae395313761fee6bd919e994565",
+    "packages/conformance/src/cumulative-artifact.test.ts": "863535a75697ce5cb8fbf07c8096a0e00ae88bc42549be117e74e776490dff5c",
+    "packages/conformance/src/runner.test.ts": "778a818e99330b5cd41a99d9389b39f5f2918c5292482394073e39b16633e810",
+    "packages/conformance/src/runner.ts": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+    "packages/conformance/src/transactional-cumulative.test.ts": "53e71d029535b0ca23e68a7839c194af266ee945b72e9eb6ac9dd329a0646551",
+    "packages/conformance/src/transactional-observation.test.ts": "1ea8b91421f8677756b1344288209fa1b2d673dd90f9f24dda2e498325eaed4a",
+    "packages/conformance/src/transactional-observation.ts": "6248b4db23243832c144e70635916cff23b483189e5ffba70d2e35a449b11b7e",
+    "packages/conformance/test-support/read-update-coverage-v1.json": "57dcd3ae173992c8c9b70e11cb37c73d179ee977a208d2a3cb02ec3a1d496c27",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "f21d2822b789ff3e03c633b89c2412ee3bb2e7b38ece62e8eed0923d930f9172",
+    "packages/conformance/test-support/transactional/manifest-v1.json": "fb0a71cb5f568a3c65bbae35f2f0946710e5906088dc11dd31fe88c6bbdbcc29"
+  }
+}

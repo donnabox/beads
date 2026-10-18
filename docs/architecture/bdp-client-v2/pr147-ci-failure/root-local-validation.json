@@ -1,0 +1,48 @@
+{
+  "head": "b0213805e4b15bb7bac4e09da5fdddb236cf6ea5",
+  "twoTestRepairOnly": true,
+  "checks": {
+    "typecheck": {
+      "exit": 0,
+      "accepted": true,
+      "elapsedSeconds": 1.1636009169742465,
+      "logSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+      "cases": 0,
+      "skipped": null
+    },
+    "format-check": {
+      "exit": 0,
+      "accepted": true,
+      "elapsedSeconds": 0.1609060000628233,
+      "logSha256": "cfc44eee29bc0c3e74191c4443141ef74fcc5cdf5d6335942c98d2d05ab84aa1",
+      "cases": 0,
+      "skipped": null
+    },
+    "lint": {
+      "exit": 0,
+      "accepted": true,
+      "elapsedSeconds": 0.2645531671587378,
+      "logSha256": "1d2d1e8114a34de69bebbecb62a8c32231488d0bc5427daaa6f3b64d1422ba87",
+      "cases": 0,
+      "skipped": null
+    },
+    "focused-three": {
+      "exit": 0,
+      "accepted": true,
+      "elapsedSeconds": 2.0799805829301476,
+      "logSha256": "a4b1118a405f2c3ac9dd846d66e2b2de50f0245065985c335ef89455c251f274",
+      "cases": 3,
+      "skipped": 102
+    },
+    "full-two-files": {
+      "exit": 0,
+      "accepted": true,
+      "elapsedSeconds": 2.5777709160465747,
+      "logSha256": "ecb2a68892b245a8c39cdfefc37322b30c894c04ed46f267e84a6ed0b471700b",
+      "cases": 105,
+      "skipped": 0
+    }
+  },
+  "installedEvidence": "Prior b021 production payload evidence retained; no new installed run claimed.",
+  "integrationGate": "Exact successor CI and council disposition remain required."
+}

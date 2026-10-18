@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-10-17T11:09:44.296845+00:00",
+  "candidate": "d7197e97a29bff8f075028419afad05388e2e655",
+  "diagnosis": "Validation temp root placed the CLI workspace under /Users/dbox, allowing ancestor .beads metadata discovery. Exact init probe exits 1 there and 0 under /private/tmp with the same binary, args, isolated HOME and git config. No product source repair is justified by this evidence.",
+  "originalFullSuiteStatus": "failed; immutable",
+  "scope": "Existing metadata/proxied-root existence was inspected by CLI before abort; no requested initialization performed there. Successful initialization was confined to task-owned /private/tmp probe.",
+  "probePid": 42815,
+  "probeGroupRemaining": [],
+  "preservedProbeDirectory": "/private/tmp/vickie-bdp-reconciliation-probe-8nx995vh",
+  "files": {
+    "stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "result.json": "1a8e90b3c6f3f3877221c251031aeef812318291cc7eaf57f319fc5916a980a8",
+    "private-tmp.stderr.txt": "33a4f8d5dcaabbddf5f3cc1af5b05b11eec4d305096ca0f9facf93219d41ee74",
+    "private-tmp.result.json": "f9606761525b0ff252cd744d4f9869375c3660a6a8d7d1c85798295c2ba7058e",
+    "stderr.txt": "c8db32880b374c95534167a7704ed14a550d176e13fa31b17012499e9c66834c",
+    "private-tmp.stdout.txt": "ee5dbe12abe2cafe1a14fff43a3baceb647544f3aa28ac0062098fe351f19590"
+  },
+  "next": "Review separate validation successor using task-owned /private/tmp runtime roots. Preserve original failure; rerun required matrix and full suite without weakened tests or deadlines."
+}

@@ -1,0 +1,1 @@
+Closed clock-repair successor. Read ../type-repair/report.md. Same thirteen commands/selection/bounds; only source binding and run-v2 output paths changed. No live gate, command execution or retry performed.

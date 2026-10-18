@@ -1,0 +1,9 @@
+# Native closure of cache-inventory correction
+
+C1 is closed in preparation, not executed. I independently compared the full before/after control.py; the only code change prunes real .vite/.vite-temp directories directly beneath a node_modules directory during traversal. Other names, locations and symlinks remain in the inventories. Both positiveFiles and copyFiles are formed from that same filtered set. The complete method mutation, copied source/emitted/tool bytes, link confinement, selected command, named two-response failure and lifecycle checks are unchanged.
+
+Actual successor control SHA b61402f368d17962b474e6f7d8c4b100bc28d03272603639bc33b0095b65b6d4; correction SHA 7e21130c870191e098bb7d7362ad23c602c588832b828ab1fd45b5abab01876b; preparation inventory SHA df132a5dc9b6f11515c2db73a735a9a289d28efba4a1778046d4d4daea460d40. All15 inventory file hashes reproduce. Relative to preserved inventory164f6b60, only control.py and its execution-gate.example.json pin differ; commands and every other frozen script remain identical. Python was AST-parsed as data only. Live execution gate remains absent.
+
+The concrete fixed failure is copied results.json changing when the control runs. Later installed phases do not themselves call verify_mirror; the initial report's qualification controls that wording. No separate later-stage defect is claimed. No further concrete blocker found in my assigned control/package/installed scope. Root still supplies actual combined source/build/consumer identities and phase releases. Source phase was not part of this audit.
+
+Reviewer overlap: I authored the original sequence scenario and reviewed this separately authored execution packet. This closure is neither independent production code council nor runtime evidence. No product import, mirror generation, test, package or source change was performed.

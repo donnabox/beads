@@ -1,0 +1,7 @@
+# Formatting-only changefeed source successor
+
+Applied exactly the five reported layout sites from the preserved raw1 format-check log: remove two extra blank lines, compact the observed Promise union declaration, wrap the changes(...).then(...) chain, and expand the installed fail(...) call including Biome's trailing comma. Only transaction-changefeed.test.ts and transactional-changefeed-refusal-context-installed.test.ts changed. All other677 tracked files, including three production files and the progress document, remain byte-identical to the reviewed draft. Six total files still differ from base5ceb.
+
+The data-only replacements were checked in reverse to recover both exact predecessor file bytes. Existing source historical transformed prefix, the full installed historical prefix and full progress-document prefix remain matched. Selection/workload/preservation records are copied byte-for-byte;17 source cases, nine new plus one historical report,44 source HTTP and installed10+4 remain unchanged. No assertion, title, counter, condition, timeout, cleanup operation or error value changed.
+
+Original bootstrap, typecheck and failed format-check evidence remains in implementation/run, attributed to predecessor source. This successor has no validation evidence yet. No formatter, import, build, test, install, service, commit or push ran for this correction. Root and native closure are required before successor execution.

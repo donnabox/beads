@@ -1,0 +1,31 @@
+{
+  "name": "verify-installed",
+  "argv": [
+    "python3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/packages.py",
+    "installed"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+  "started": "2026-10-15T19:54:05.520569+00:00",
+  "head": "18f5428686dd84fb139c9dbbcbe39d5958012323",
+  "workspaceDirty": false,
+  "sourceSha256": {
+    "apps/bdptest/src/transactional-same-key-overlap-installed.test.ts": "e6a52fa4d645ffef04e4b6e8ccd9bbcb7495624ae0e3f46536e0e9ac6b707974",
+    "docs/design/transaction-implementation-progress.md": "21069d8d8eb5d5048a1dbcb38871ea0f8e72b463e9456633b12b4860e024a728"
+  },
+  "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "rootAcceptanceSha256": "81ee776371f924f500553ca49cc304d439d6ae2fa67226089c48004fa7bf28a3",
+  "preparationSha256": "da74971257c3cc804b404dbc2d72759e301431e04d2474c692a658ed43b18f9a",
+  "bdpOverrides": {},
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "python3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/packages.py",
+    "installed"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {},
+  "derivativeBinding": null
+}

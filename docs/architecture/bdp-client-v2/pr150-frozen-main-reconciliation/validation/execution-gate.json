@@ -1,0 +1,31 @@
+{
+  "rootExecutionReleased": true,
+  "approvedStages": [
+    "dependencies",
+    "format-check",
+    "lint",
+    "check-boundaries",
+    "typecheck",
+    "build",
+    "bind-build",
+    "full-test"
+  ],
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/candidate-source.json",
+    "sha256": "27b75c94374685505b3503f9a321767831350b25906cae37364ca95bc556fc5f"
+  },
+  "finalHead": "d7197e97a29bff8f075028419afad05388e2e655",
+  "finalTree": "630a94d0ca1545f898cb8a8b614d4b7d2dd6d454",
+  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+  "workspaceTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr150-frozen-main-reconciliation/validation/workspace-tools.json",
+    "sha256": "87fa39f281cfbad1666fc2a332be09708cd5c6ff20c3b19b4f26d2d4427bf7e2"
+  },
+  "rootResultsAccepted": [],
+  "consumerLockSha256": null,
+  "installedProvenance": null,
+  "consumerInventory": null,
+  "preparationIndexSha256": "be10d7342a150dda502bba130eb7e999fb82f6c2850657e4f8c1770adb535c4f",
+  "note": "Root binds actual reviewed clean two-parent candidate and measured dependency tools; no invented commit/build/archive/consumer hashes. Only root can release stages.",
+  "expectedParentEvidenceExit": 0
+}

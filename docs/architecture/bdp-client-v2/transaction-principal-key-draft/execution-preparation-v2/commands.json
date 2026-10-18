@@ -1,0 +1,593 @@
+{
+  "status": "CLOSED_REVIEW_REPAIR_SOURCE_BOUND_FINAL_CANDIDATE_PENDING",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+  "ownedPaths": [
+    "apps/bdptest/src/transactional-principal-key-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "executionOrder": [
+    "setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "build-inventory",
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed",
+    "installed-positive",
+    "review-positive",
+    "installed-principal-collapse",
+    "review-principal-collapse"
+  ],
+  "staticCommandCount": 7,
+  "commands": {
+    "setup": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile",
+        "--ignore-scripts"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [],
+      "workload": {
+        "productChildren": 0,
+        "http": 0,
+        "sourceCases": 0
+      }
+    },
+    "typecheck": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "setup",
+          "exit": 0
+        }
+      ],
+      "workload": {
+        "productChildren": 0,
+        "http": 0,
+        "sourceCases": 0
+      }
+    },
+    "build": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "build"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "typecheck",
+          "exit": 0
+        }
+      ],
+      "workload": {
+        "productChildren": 0,
+        "http": 0,
+        "sourceCases": 0
+      }
+    },
+    "format-check": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "format:check"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "build",
+          "exit": 0
+        }
+      ],
+      "workload": {
+        "productChildren": 0,
+        "http": 0,
+        "sourceCases": 0
+      }
+    },
+    "lint": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "lint"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "format-check",
+          "exit": 0
+        }
+      ],
+      "workload": {
+        "productChildren": 0,
+        "http": 0,
+        "sourceCases": 0
+      }
+    },
+    "boundaries": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "check:boundaries"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "lint",
+          "exit": 0
+        }
+      ],
+      "workload": {
+        "productChildren": 0,
+        "http": 0,
+        "sourceCases": 0
+      }
+    },
+    "read-seal": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "evidence:verify"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "boundaries",
+          "exit": 0
+        }
+      ],
+      "workload": {
+        "productChildren": 0,
+        "http": 0,
+        "sourceCases": 0
+      }
+    },
+    "build-inventory": {
+      "phase": "inventory",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/inventory.py"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "read-seal",
+          "exit": 0
+        }
+      ]
+    },
+    "node-version": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "build-inventory",
+          "exit": 0
+        }
+      ]
+    },
+    "package-directory": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/packages.py",
+        "directory"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "node-version",
+          "exit": 0
+        }
+      ]
+    },
+    "pack-protocol": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/packages"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "package-directory",
+          "exit": 0
+        }
+      ]
+    },
+    "pack-server": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/packages"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "pack-protocol",
+          "exit": 0
+        }
+      ]
+    },
+    "verify-tar": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/packages.py",
+        "tar"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "pack-server",
+          "exit": 0
+        }
+      ]
+    },
+    "prepare-consumer": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/packages.py",
+        "consumer"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "verify-tar",
+          "exit": 0
+        }
+      ]
+    },
+    "consumer-install": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/consumer",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "prepare-consumer",
+          "exit": 0
+        }
+      ]
+    },
+    "verify-installed": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/packages.py",
+        "installed"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "consumer-install",
+          "exit": 0
+        }
+      ]
+    },
+    "installed-positive": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-principal-key-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=../bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/installed-positive.results.json",
+        "-t",
+        "^observes independent principal keys and same-principal credential rotation through installed HTTP$"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [
+        "bdp-principal-key-installed-"
+      ],
+      "requires": [
+        {
+          "id": "verify-installed",
+          "exit": 0
+        }
+      ],
+      "selectedFullNames": [
+        "observes independent principal keys and same-principal credential rotation through installed HTTP"
+      ],
+      "mode": "positive",
+      "workload": {
+        "id": "positive",
+        "mode": "positive",
+        "expectedExit": 0,
+        "expectedHttp": 7,
+        "maxHttp": 7,
+        "children": 1,
+        "owners": 1,
+        "listeners": 1,
+        "directories": 1,
+        "limits": {
+          "workMs": 45000,
+          "launcherReadyMs": 10000,
+          "cleanupMs": 10000,
+          "testMs": 60000,
+          "supervisorMs": 120000,
+          "requestMs": 5000,
+          "responseBodyBytes": 32768,
+          "responseHeaderBytes": 65536,
+          "requestHeaderBytes": 16384,
+          "requestBodyBytes": 65536,
+          "urlBytes": 8192,
+          "maximumPositiveResponseBodyOctets": 229376,
+          "maximumTwoCohortResponseBodyOctets": 458752,
+          "responseBodyInterpretation": "accepted decoded body limit, not receive or peak heap",
+          "receivedFramedBodyGuardBytes": 98304,
+          "wireBufferMaximumBytes": 163840,
+          "sevenExchangeFramedBodyGuardBytes": 688128,
+          "fourteenExchangeFramedBodyGuardBytes": 1376256,
+          "sevenExchangeWireBufferBytes": 1146880,
+          "fourteenExchangeWireBufferBytes": 2293760,
+          "heapPeakBound": null,
+          "deadlineInterpretation": "aggregate work ceiling; no sum-of-individual-maxima completion guarantee"
+        }
+      }
+    },
+    "review-positive": {
+      "phase": "review",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/review-cohort.py",
+        "positive"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "installed-positive",
+          "exit": 0
+        }
+      ]
+    },
+    "installed-principal-collapse": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-principal-key-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/installed-principal-collapse.results.json",
+        "-t",
+        "^observes independent principal keys and same-principal credential rotation through installed HTTP$"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 1,
+      "ownedTempPrefixes": [
+        "bdp-principal-key-installed-"
+      ],
+      "requires": [
+        {
+          "id": "review-positive",
+          "exit": 0
+        }
+      ],
+      "selectedFullNames": [
+        "observes independent principal keys and same-principal credential rotation through installed HTTP"
+      ],
+      "mode": "collapse-b-to-a",
+      "workload": {
+        "id": "principal-collapse",
+        "mode": "collapse-b-to-a",
+        "expectedExit": 1,
+        "expectedHttp": 2,
+        "maxHttp": 7,
+        "children": 1,
+        "owners": 1,
+        "listeners": 1,
+        "directories": 1,
+        "expectedFailure": "principal-key:b-independent-create:completed",
+        "actualExpectedStatus": 409,
+        "actualExpectedProblem": {
+          "type": "https://github.com/gastownhall/bdp/problems/conflict",
+          "code": "idempotency-conflict",
+          "status": 409,
+          "retry": "never"
+        },
+        "actualExpectedCurrentPosition": "pos-1",
+        "limits": {
+          "workMs": 45000,
+          "launcherReadyMs": 10000,
+          "cleanupMs": 10000,
+          "testMs": 60000,
+          "supervisorMs": 120000,
+          "requestMs": 5000,
+          "responseBodyBytes": 32768,
+          "responseHeaderBytes": 65536,
+          "requestHeaderBytes": 16384,
+          "requestBodyBytes": 65536,
+          "urlBytes": 8192,
+          "maximumPositiveResponseBodyOctets": 229376,
+          "maximumTwoCohortResponseBodyOctets": 458752,
+          "responseBodyInterpretation": "accepted decoded body limit, not receive or peak heap",
+          "receivedFramedBodyGuardBytes": 98304,
+          "wireBufferMaximumBytes": 163840,
+          "sevenExchangeFramedBodyGuardBytes": 688128,
+          "fourteenExchangeFramedBodyGuardBytes": 1376256,
+          "sevenExchangeWireBufferBytes": 1146880,
+          "fourteenExchangeWireBufferBytes": 2293760,
+          "heapPeakBound": null,
+          "deadlineInterpretation": "aggregate work ceiling; no sum-of-individual-maxima completion guarantee"
+        }
+      }
+    },
+    "review-principal-collapse": {
+      "phase": "review",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/review-cohort.py",
+        "principal-collapse"
+      ],
+      "supervisorSeconds": 120,
+      "expectedExit": 0,
+      "ownedTempPrefixes": [],
+      "requires": [
+        {
+          "id": "installed-principal-collapse",
+          "exit": 1
+        }
+      ]
+    }
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/review-repair/source-binding.json",
+    "sha256": "fce5c0dfb33221f9cc29fd6420eab607722d88d0d9b6076b64a57f763f5f9406"
+  },
+  "finalParent": "f5511718371a6935614eae6756e796cef71570c2",
+  "finalCommit": null,
+  "limits": {
+    "expectedHttp": 9,
+    "maximumHttp": 14,
+    "children": 2,
+    "owners": 2,
+    "listeners": 2,
+    "directories": 2,
+    "reopens": 0,
+    "bootstrapHttp": 0,
+    "readonlyDatabaseHandles": 0
+  },
+  "runtimeLimits": {
+    "workMs": 45000,
+    "launcherReadyMs": 10000,
+    "cleanupMs": 10000,
+    "testMs": 60000,
+    "supervisorMs": 120000,
+    "requestMs": 5000,
+    "responseBodyBytes": 32768,
+    "responseHeaderBytes": 65536,
+    "requestHeaderBytes": 16384,
+    "requestBodyBytes": 65536,
+    "urlBytes": 8192,
+    "maximumPositiveResponseBodyOctets": 229376,
+    "maximumTwoCohortResponseBodyOctets": 458752,
+    "responseBodyInterpretation": "accepted decoded body limit, not receive or peak heap",
+    "receivedFramedBodyGuardBytes": 98304,
+    "wireBufferMaximumBytes": 163840,
+    "sevenExchangeFramedBodyGuardBytes": 688128,
+    "fourteenExchangeFramedBodyGuardBytes": 1376256,
+    "sevenExchangeWireBufferBytes": 1146880,
+    "fourteenExchangeWireBufferBytes": 2293760,
+    "heapPeakBound": null,
+    "deadlineInterpretation": "aggregate work ceiling; no sum-of-individual-maxima completion guarantee"
+  },
+  "ledger": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-plan/proposed-successor/ledger.json",
+    "sha256": "aa556158f879892795b62ba984ffd1226f4b09344d1a28d2b9bd486cb9532d79"
+  },
+  "plannedOnly": true
+}

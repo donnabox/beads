@@ -1,0 +1,3 @@
+# CLOSED required checks
+
+Fresh four-stage boundaries/preflight/package-smoke/historical-read-evidence adaptation for the frozen current-observation draft. No execution, reused result or public qualification. Source/built artifacts must resolve to the fresh implementation chain; actual base/workspace tool and build pins remain null. Each command keeps120s outer/TERM115/no retries and exact raw0 acceptance. Smoke's complete package/install/executable workload is preserved; no tiny-workload claim. Historical Read artifact and sealed runHead remain predecessor evidence, never a new Transactional cohort. All release flags are false and approvedStages empty.

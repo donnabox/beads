@@ -1,0 +1,261 @@
+packages/server/src/transaction-submission.test.ts:1850:18 lint/style/useTemplate  FIXABLE  ━━━━━━━━━━
+
+  i Template literals are preferred over string concatenation.
+  
+    1848 │     };
+    1849 │     store = openTransactionStore(options);
+  > 1850 │     const deep = "[".repeat(12000) + "1" + "]".repeat(12000);
+         │                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    1851 │     const measured: { label: string; bodyBytes: number; identityBytes: number }[] = [];
+    1852 │     const execute = (key: string, body: string, singleton = false) => {
+  
+  i Unsafe fix: Use a template literal.
+  
+    1848 1848 │       };
+    1849 1849 │       store = openTransactionStore(options);
+    1850      │ - ····const·deep·=·"[".repeat(12000)·+·"1"·+·"]".repeat(12000);
+         1850 │ + ····const·deep·=·`${"[".repeat(12000)}1${"]".repeat(12000)}`;
+    1851 1851 │       const measured: { label: string; bodyBytes: number; identityBytes: number }[] = [];
+    1852 1852 │       const execute = (key: string, body: string, singleton = false) => {
+  
+
+packages/server/src/transaction-submission.test.ts:1940:25 lint/style/useTemplate  FIXABLE  ━━━━━━━━━━
+
+  i Template literals are preferred over string concatenation.
+  
+    1938 │     const patchedResource = (patched.results as { resource: Record<string, unknown> }[])[0]!
+    1939 │       .resource;
+  > 1940 │     const changedDeep = "[" + "[".repeat(11999) + "1" + "]".repeat(11999) + ",2]";
+         │                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    1941 │     const expectedProperties = `{"deep":${changedDeep},"copy":${deep}}`;
+    1942 │     assertDeepSubmissionValue(
+  
+  i Unsafe fix: Use a template literal.
+  
+    1938 1938 │       const patchedResource = (patched.results as { resource: Record<string, unknown> }[])[0]!
+    1939 1939 │         .resource;
+    1940      │ - ····const·changedDeep·=·"["·+·"[".repeat(11999)·+·"1"·+·"]".repeat(11999)·+·",2]";
+         1940 │ + ····const·changedDeep·=·`[${"[".repeat(11999)}1${"]".repeat(11999)},2]`;
+    1941 1941 │       const expectedProperties = `{"deep":${changedDeep},"copy":${deep}}`;
+    1942 1942 │       assertDeepSubmissionValue(
+  
+
+packages/server/src/transaction-set.test.ts:1030:120 lint/suspicious/noUselessEscapeInString  FIXABLE  ━━━━━━━━━━
+
+  ! The character doesn't need to be escaped.
+  
+    1029 │ it("serializes byte-bounded deep syntax iteratively without changing number lexemes or key order", () => {
+  > 1030 │   const text = `{"z":[${"[".repeat(20000)}1e+30${"]".repeat(20000)}],"a":{"n":9007199254740993,"zero":-0,"escaped":"\\\""}}`;
+         │                                                                                                                        ^
+    1031 │   expect(Buffer.byteLength(text)).toBeLessThan(65536);
+    1032 │   const value = decodeJsonDocument(text);
+  
+  i Only quotes that enclose the string and special characters need to be escaped.
+  
+  i Safe fix: Unescape the character.
+  
+    1030 │ ··const·text·=·`{"z":[${"[".repeat(20000)}1e+30${"]".repeat(20000)}],"a":{"n":9007199254740993,"zero":-0,"escaped":"\\\""}}`;
+         │                                                                                                                       -      
+
+packages/server/src/transaction-set.test.ts:1060:22 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1058 │   expect(prepared.carrier.operations[1]?.input.selector).toBe(literal);
+    1059 │   expect(Object.isFrozen(prepared.carrier.operations[1])).toBe(true);
+  > 1060 │   expect(Object.keys(prepared.carrier.operations[1]!)).toEqual(["operation", "input"]);
+         │                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    1061 │   expect(
+    1062 │     batch.normalizeTransaction(batch.prepareTransaction(scope, original), () => undefined),
+  
+
+packages/server/src/transaction-set.test.ts:1114:23 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1112 │   );
+    1113 │   expect(preparedDeep.carrier.operations).toHaveLength(2);
+  > 1114 │   const preparedSet = preparedDeep.carrier.operations[1]!;
+         │                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    1115 │   if (preparedSet.operation !== "updateWhere") throw new Error("expected prepared updateWhere");
+    1116 │   expect(preparedSet.input.selector).toBe(update().selector);
+  
+
+packages/server/src/transaction-set.test.ts:1212:20 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1210 │     const sequence = JSON.stringify({ operations: [{ ...operation, idempotencyKey: "deep" }] });
+    1211 │     const received = batch.prepareTransactionSequenceForReceiving(scope, sequence);
+  > 1212 │     const member = received.members[0]!;
+         │                    ^^^^^^^^^^^^^^^^^^^^
+    1213 │     const directReceived = batch.prepareTransactionForReceiving(scope, { kind: "batch" }, direct);
+    1214 │     expect(batch.normalizeTransaction(member.request, () => undefined).identity).toBe(
+  
+
+packages/server/src/transaction-submission.test.ts:1750:20 lint/style/noNonNullAssertion ━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1748 │   const stack: [unknown, unknown][] = [[actual, expected]];
+    1749 │   while (stack.length) {
+  > 1750 │     const [a, b] = stack.pop()!;
+         │                    ^^^^^^^^^^^^
+    1751 │     if (a === b) continue;
+    1752 │     if (a === null || b === null || typeof a !== "object" || typeof b !== "object")
+  
+
+packages/server/src/transaction-submission.test.ts:1862:24 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1860 │         identityBytes: Buffer.byteLength(normalizeTransaction(prepared, () => undefined).identity),
+    1861 │       });
+  > 1862 │       const admitted = store!.admit("p", key, prepared);
+         │                        ^^^^^^
+    1863 │       if (admitted.kind === "existing") return admitted.receipt;
+    1864 │       if (admitted.kind !== "owned") throw new Error("deep submission admission");
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1860 1860 │           identityBytes: Buffer.byteLength(normalizeTransaction(prepared, () => undefined).identity),
+    1861 1861 │         });
+    1862      │ - ······const·admitted·=·store!.admit("p",·key,·prepared);
+         1862 │ + ······const·admitted·=·store?.admit("p",·key,·prepared);
+    1863 1863 │         if (admitted.kind === "existing") return admitted.receipt;
+    1864 1864 │         if (admitted.kind !== "owned") throw new Error("deep submission admission");
+  
+
+packages/server/src/transaction-submission.test.ts:1865:14 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1863 │       if (admitted.kind === "existing") return admitted.receipt;
+    1864 │       if (admitted.kind !== "owned") throw new Error("deep submission admission");
+  > 1865 │       return store!.execute(admitted.claim);
+         │              ^^^^^^
+    1866 │     };
+    1867 │     const single = execute(
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1863 1863 │         if (admitted.kind === "existing") return admitted.receipt;
+    1864 1864 │         if (admitted.kind !== "owned") throw new Error("deep submission admission");
+    1865      │ - ······return·store!.execute(admitted.claim);
+         1865 │ + ······return·store?.execute(admitted.claim);
+    1866 1866 │       };
+    1867 1867 │       const single = execute(
+  
+
+packages/server/src/transaction-submission.test.ts:1880:22 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1878 │     expect(seed.status).toBe("completed");
+    1879 │     const seedResults = seed.results as { resource: Record<string, unknown> }[];
+  > 1880 │     const original = seedResults[2]!.resource;
+         │                      ^^^^^^^^^^^^^^^
+    1881 │     assertDeepSubmissionValue(
+    1882 │       original,
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1878 1878 │       expect(seed.status).toBe("completed");
+    1879 1879 │       const seedResults = seed.results as { resource: Record<string, unknown> }[];
+    1880      │ - ····const·original·=·seedResults[2]!.resource;
+         1880 │ + ····const·original·=·seedResults[2]?.resource;
+    1881 1881 │       assertDeepSubmissionValue(
+    1882 1882 │         original,
+  
+
+packages/server/src/transaction-submission.test.ts:1892:18 lint/style/noNonNullAssertion ━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1890 │     const expectedSeedResults = seedResults.map((r, operationIndex) => {
+    1891 │       expect(typeof r.resource.revision).toBe("string");
+  > 1892 │       const id = ["a", "b", "c"][operationIndex]!;
+         │                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    1893 │       return {
+    1894 │         operationIndex,
+  
+
+packages/server/src/transaction-submission.test.ts:1938:29 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1936 │     );
+    1937 │     expect(patched.status).toBe("completed");
+  > 1938 │     const patchedResource = (patched.results as { resource: Record<string, unknown> }[])[0]!
+         │                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    1939 │       .resource;
+    1940 │     const changedDeep = "[" + "[".repeat(11999) + "1" + "]".repeat(11999) + ",2]";
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1936 1936 │       );
+    1937 1937 │       expect(patched.status).toBe("completed");
+    1938      │ - ····const·patchedResource·=·(patched.results·as·{·resource:·Record<string,·unknown>·}[])[0]!
+    1939      │ - ······.resource;
+         1938 │ + ····const·patchedResource·=·(patched.results·as·{·resource:·Record<string,·unknown>·}[])[0]?.resource;
+    1940 1939 │       const changedDeep = "[" + "[".repeat(11999) + "1" + "]".repeat(11999) + ",2]";
+    1941 1940 │       const expectedProperties = `{"deep":${changedDeep},"copy":${deep}}`;
+  
+
+packages/server/src/transaction-submission.test.ts:1955:7 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1953 │     expect(noop.status).toBe("completed");
+    1954 │     assertDeepSubmissionValue(
+  > 1955 │       (noop.results as { resource: unknown }[])[0]!.resource,
+         │       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    1956 │       patchedResource,
+    1957 │     );
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1953 1953 │       expect(noop.status).toBe("completed");
+    1954 1954 │       assertDeepSubmissionValue(
+    1955      │ - ······(noop.results·as·{·resource:·unknown·}[])[0]!.resource,
+         1955 │ + ······(noop.results·as·{·resource:·unknown·}[])[0]?.resource,
+    1956 1956 │         patchedResource,
+    1957 1957 │       );
+  
+
+packages/server/src/transaction-submission.test.ts:1973:12 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1971 │     );
+    1972 │     expect(selected.status).toBe("completed");
+  > 1973 │     expect((selected.results as { count: number }[])[0]!.count).toBe(4);
+         │            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    1974 │     const sequenceBody = `{"operations":[{"operation":"createBead","name":"made","idempotencyKey":"made","type":"${bead}","properties":{"deep":${deep}}},{"operation":"createLink","idempotencyKey":"linked","type":"${link}","source":"@made","target":"@made","properties":{"deep":${deep}}}]}`;
+    1975 │     expect(Buffer.byteLength(sequenceBody)).toBeLessThanOrEqual(65536);
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1971 1971 │       );
+    1972 1972 │       expect(selected.status).toBe("completed");
+    1973      │ - ····expect((selected.results·as·{·count:·number·}[])[0]!.count).toBe(4);
+         1973 │ + ····expect((selected.results·as·{·count:·number·}[])[0]?.count).toBe(4);
+    1974 1974 │       const sequenceBody = `{"operations":[{"operation":"createBead","name":"made","idempotencyKey":"made","type":"${bead}","properties":{"deep":${deep}}},{"operation":"createLink","idempotencyKey":"linked","type":"${link}","source":"@made","target":"@made","properties":{"deep":${deep}}}]}`;
+    1975 1975 │       expect(Buffer.byteLength(sequenceBody)).toBeLessThanOrEqual(65536);
+  
+
+packages/server/src/transaction-submission.test.ts:1990:28 lint/style/noNonNullAssertion ━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1988 │     const first = stepper.step();
+    1989 │     const createdId = String((first.entry.resource as { id: string }).id);
+  > 1990 │     const deferredMember = preparedSequence.members[1]!;
+         │                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    1991 │     measured.push({
+    1992 │       label: "linked-resolved",
+  
+
+Checked 2 files in 25ms. No fixes applied.
+Found 13 warnings.
+Found 2 infos.

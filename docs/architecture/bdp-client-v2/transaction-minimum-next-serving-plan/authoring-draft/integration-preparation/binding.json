@@ -1,0 +1,32 @@
+{
+  "status": "CLOSED; read-only preparation, no Git/source mutation",
+  "draftBase": "1647c5df37a82e1364d281ac46beb60a94ab6c76",
+  "actualAuthorizationMain": "df80f8cb86b7763bc7bb005492e43d8840527045",
+  "actualMainTree": "25e9d4aa926ea728f5e356365cb1ffadba269221",
+  "actualMainParents": [
+    "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+    "27b4f963c88067419a95f677fa8d7bea1e368d5a"
+  ],
+  "draftBinding": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/report-ceiling-repair/source-binding.json",
+  "draftBindingSha256": "855e81418b223d62f19b0b5d9ce38a6ea2bb56b8612b6f6e81e4285141632d0f",
+  "mainDeltaSha256": "172e3e4b7ddbb779de49168f45f3c4abbb27b8c7f7d4d982d81467fd7dfbb89f",
+  "mainChanges": {
+    "packages/server/src/transaction-read.test.ts": {
+      "baseSha256": "9345c091e7ad31a94d5726dcb1ac525347dfe59204d2043203d29833ef1cd7b6",
+      "mainSha256": "f60c5a4e98813d806466eb3b105f3a83c38b59465ce041ff7240dfe80dce2500"
+    },
+    "packages/server/src/transaction-snapshot.test.ts": {
+      "baseSha256": "20daa4de0c36ca1df97941aaeb66847980381741d32fc8e8fe3e26bee10e1803",
+      "mainSha256": "0fbdd2594147041689d81ddb7734532d01c1f4956ea0a975d10ef8c0f3458f2d"
+    },
+    "scripts/smoke-executables.mjs": {
+      "baseSha256": "cc355728bc5774e8e074bcb00fb1ba8a84f13e0dd56c40a9c3060156d24b74df",
+      "mainSha256": "96701a2e4a7535e44ad4490a109d8e4c93925b4702b5453f3c55abe689a88060"
+    }
+  },
+  "authorCommit": null,
+  "integrationCommit": null,
+  "integrationTree": null,
+  "combinedCouncilAcceptance": null,
+  "rootMutationRelease": null
+}

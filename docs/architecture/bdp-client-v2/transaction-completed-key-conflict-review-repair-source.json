@@ -1,0 +1,35 @@
+{
+  "head": "b3b9327c262ba16eb6b8f994303f3a08f098c7a6",
+  "tree": "b7c42f6fc27e19db0d25b20c356f6ed458505e33",
+  "parents": [
+    "b13055049ed7c1bd09ad2d7af29e0a38a81001ea"
+  ],
+  "branch": "codex/vickie-completed-key-conflict-review-repair",
+  "checkout": "/Users/dbox/repos/wt/vickie/vickie-completed-key-conflict-review-repair",
+  "clean": true,
+  "changed": {
+    "packages/conformance/src/transactional-cumulative.test.ts": "5d5485edf2bcfcb554240d8ab974e426bd194e02edf3aed30712ab31d884ab59"
+  },
+  "artifacts": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": {
+      "bytes": 407227,
+      "sha256": "7f55695401b815534f17fc69dc924ee0c0920fb6c9175529709a8e60afda5786",
+      "byteIdenticalToParent": true
+    },
+    "packages/conformance/test-support/transactional/coverage-v1.json": {
+      "bytes": 60059,
+      "sha256": "c9b1583965cdf9289eea5ac933a39c06fc378c720678e2453aec2e7c8c5438da",
+      "byteIdenticalToParent": true
+    },
+    "packages/conformance/test-support/transactional/fixture-v1.json": {
+      "bytes": 716,
+      "sha256": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+      "byteIdenticalToParent": true
+    }
+  },
+  "allOtherTrackedFilesUnchanged": true,
+  "newRowActions": 12,
+  "newRowAssertions": 99,
+  "totalActions": 151,
+  "oldNineObjectsUnchanged": "entire manifest and coverage byte equality implies exact preservation"
+}

@@ -1,0 +1,39 @@
+{
+  "name": "pack-protocol",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "--filter",
+    "@bdp/protocol",
+    "pack",
+    "--pack-destination",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/packages"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "started": "2026-10-15T14:18:05.702690+00:00",
+  "head": "be0cc70d8a3174760c4877e8969728dbdec4ead5",
+  "workspaceDirty": false,
+  "sourceSha256": {
+    "apps/bdptest/src/read-update-guarded-overlap-installed.test.ts": "767ed468ac29347100203dbb9ff5f435ca2dfaebcad98c61158e5ed59d63a1ed",
+    "docs/design/update-implementation-progress.md": "8c6caae7f8ba4ccb2a2492596cc09dee6fbbfd630a9595ac04f5446f4b150cde"
+  },
+  "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "rootAcceptanceSha256": "f96c99a0a0e38100c4f4d03fbecbad4b2f1c3a8a7b3f50b05cb17500d8251078",
+  "preparationSha256": "6a67e588e01e319467ddc82fd2e84a2ae99441948dff1997f50dcaed65c94c4c",
+  "bdpOverrides": {},
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "--filter",
+    "@bdp/protocol",
+    "pack",
+    "--pack-destination",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/packages"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {},
+  "derivativeBinding": null
+}

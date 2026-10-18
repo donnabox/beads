@@ -1,0 +1,257 @@
+{
+  "at": "2026-10-15T11:00:24.553160+00:00",
+  "source": "acf190e7",
+  "actualResponses": 11,
+  "statuses": [
+    200,
+    200,
+    404,
+    404,
+    404,
+    404,
+    404,
+    404,
+    404,
+    404,
+    401
+  ],
+  "context": [
+    "d2005b19-e1c4-442b-94ec-914de4f0f8e8",
+    "development-all-visible",
+    "pos-1"
+  ],
+  "sourceHttpCase": "passed in actual Vitest JSON",
+  "originalSupervisorExit": 1,
+  "originalFailure": "Exact selected count mismatch; four owner cases skipped, not runtime failure.",
+  "observations": {
+    "observation": "source-missing-event-context",
+    "verdict": "see-final-vitest-result",
+    "deadlineExceeded": false,
+    "attempts": 11,
+    "completedResponses": [
+      {
+        "method": "POST",
+        "url": "https://example.test/events/operations/batch",
+        "accept": "application/json",
+        "status": 200,
+        "headers": {
+          "content-type": "application/json",
+          "content-length": "670",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "bdp-scope-epoch": "d2005b19-e1c4-442b-94ec-914de4f0f8e8",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1"
+        },
+        "bodySha256": "695da6a416927204c3e28873acbc72f99c25ade2eb0ba4a1eb45e681aff71345"
+      },
+      {
+        "method": "GET",
+        "url": "https://example.test/events/events/",
+        "accept": "application/json",
+        "status": 200,
+        "headers": {
+          "content-type": "application/json",
+          "content-length": "587",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "bdp-scope-epoch": "d2005b19-e1c4-442b-94ec-914de4f0f8e8",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1"
+        },
+        "bodySha256": "afad46df77c3ce4ba38d8251215a34c6dc5ea5a485012d9dd1aaba1216ada6d3"
+      },
+      {
+        "method": "GET",
+        "url": "https://example.test/events/beads/missing?view=events",
+        "accept": "application/json",
+        "status": 404,
+        "headers": {
+          "content-type": "application/problem+json",
+          "content-length": "134",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "bdp-scope-epoch": "d2005b19-e1c4-442b-94ec-914de4f0f8e8",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1"
+        },
+        "bodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1"
+      },
+      {
+        "method": "HEAD",
+        "url": "https://example.test/events/beads/missing?view=events",
+        "accept": "application/json",
+        "status": 404,
+        "headers": {
+          "content-type": "application/problem+json",
+          "content-length": "134",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "bdp-scope-epoch": "d2005b19-e1c4-442b-94ec-914de4f0f8e8",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1"
+        },
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "method": "GET",
+        "url": "https://example.test/events/beads/missing?view=events",
+        "accept": "text/event-stream",
+        "status": 404,
+        "headers": {
+          "content-type": "application/problem+json",
+          "content-length": "134",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "bdp-scope-epoch": "d2005b19-e1c4-442b-94ec-914de4f0f8e8",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1"
+        },
+        "bodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1"
+      },
+      {
+        "method": "HEAD",
+        "url": "https://example.test/events/beads/missing?view=events",
+        "accept": "text/event-stream",
+        "status": 404,
+        "headers": {
+          "content-type": "application/problem+json",
+          "content-length": "134",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "bdp-scope-epoch": "d2005b19-e1c4-442b-94ec-914de4f0f8e8",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1"
+        },
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "method": "GET",
+        "url": "https://example.test/events/links/missing?view=events",
+        "accept": "application/json",
+        "status": 404,
+        "headers": {
+          "content-type": "application/problem+json",
+          "content-length": "134",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "bdp-scope-epoch": "d2005b19-e1c4-442b-94ec-914de4f0f8e8",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1"
+        },
+        "bodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1"
+      },
+      {
+        "method": "HEAD",
+        "url": "https://example.test/events/links/missing?view=events",
+        "accept": "application/json",
+        "status": 404,
+        "headers": {
+          "content-type": "application/problem+json",
+          "content-length": "134",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "bdp-scope-epoch": "d2005b19-e1c4-442b-94ec-914de4f0f8e8",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1"
+        },
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "method": "GET",
+        "url": "https://example.test/events/links/missing?view=events",
+        "accept": "text/event-stream",
+        "status": 404,
+        "headers": {
+          "content-type": "application/problem+json",
+          "content-length": "134",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "bdp-scope-epoch": "d2005b19-e1c4-442b-94ec-914de4f0f8e8",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1"
+        },
+        "bodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1"
+      },
+      {
+        "method": "HEAD",
+        "url": "https://example.test/events/links/missing?view=events",
+        "accept": "text/event-stream",
+        "status": 404,
+        "headers": {
+          "content-type": "application/problem+json",
+          "content-length": "134",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "bdp-scope-epoch": "d2005b19-e1c4-442b-94ec-914de4f0f8e8",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-1"
+        },
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "method": "GET",
+        "url": "https://example.test/events/beads/missing?view=events",
+        "accept": "text/event-stream",
+        "status": 401,
+        "headers": {
+          "content-type": "application/problem+json",
+          "content-length": "136",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": "Bearer realm=\"bdp-transaction-development\"",
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "bdp-scope-epoch": null,
+          "bdp-authorization-view": null,
+          "bdp-scope-position": null
+        },
+        "bodySha256": "9d3ea90197aca7525a1eb9d6c0f2845d5ad3656852c3d5ca1f4fd2df55b346c3"
+      }
+    ],
+    "closed": true,
+    "startupCompleted": true,
+    "directory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/events-positive.tmp/bdp-events-http-9YarrD",
+    "directoryAbsent": true,
+    "failureCount": 0,
+    "responseDigest": "476cb6f2fd757d896ba70a182ad41be4c5a2cb085e119df60582e52b3ef54739"
+  },
+  "sampledPidsNowAbsent": [
+    80818,
+    80820,
+    80825,
+    80828,
+    80844
+  ],
+  "limitations": "Fetch observation hashes and whitelisted headers, not raw wire/full bodies; full bodies asserted by test. No broader qualification."
+}

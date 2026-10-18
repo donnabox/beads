@@ -1,0 +1,37 @@
+{
+  "status": "final three-path repair frozen; no runtime execution",
+  "originalSourceBinding": "2928d83d55f2496bb3687ac0c3e87b1a536bea45fa511cd0a7ff4f2aceb5bcac",
+  "twoPathRepair": "c3471ed8963747e9a873f28308ecc067b2f4578e36ec49fd99177e8b69870e6a",
+  "sourceBindingSha256": "106e81dac3a936b395a7d1b28c34b0ca1da9f463ff0ec7bdf2c07b6dc0b1f307",
+  "fullPatchSha256": "d26986f7d3174240b8de7760ba2fdb65d33d67b18f18df0d0399c637eda11ff4",
+  "changedFromOriginal": [
+    "packages/server/src/transaction-authorization.test.ts",
+    "packages/server/src/transaction-authorization.ts",
+    "packages/server/src/transaction-service.test.ts"
+  ],
+  "unchangedFromOriginal": [
+    "packages/server/src/transaction-changefeed.test.ts",
+    "packages/server/src/transaction-changefeed.ts",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "packages/server/src/transaction-events.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-read.ts",
+    "packages/server/src/transaction-runtime-configuration.ts",
+    "packages/server/src/transaction-runtime.test.ts",
+    "packages/server/src/transaction-runtime.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-snapshot.ts",
+    "packages/server/src/transaction-store.ts"
+  ],
+  "latestStatic": "review-repair static format/typecheck/build/lint0 before T4 one-word literal correction; original static failures retained",
+  "workload": {
+    "callbacks": 11,
+    "http": 21,
+    "successfulOwnerOpens": 14,
+    "directories": 11,
+    "rejectedOpenCopyDirectories": 5,
+    "listeners": 2,
+    "productChildren": 0
+  },
+  "productionBuildBytesUnchangedAfterT4": true
+}

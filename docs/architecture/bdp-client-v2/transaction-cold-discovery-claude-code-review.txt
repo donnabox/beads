@@ -1,0 +1,44 @@
+## Verification performed
+
+- Diff reviewed at exact `b20c929` vs parent `aebf656` (14 files), plus surrounding seams: `read-values.ts`/`read-update-values.ts`/`json-values.ts`, `authority-read.ts` `prepare()`, `transaction-store.ts` (`enter`/`withRead`/`readConfiguration`/`close`), `read-request.ts`, `transaction-changefeed.ts`, `transaction-events.ts`, `transaction-runtime.ts`, `scripts/smoke-executables.mjs`, `vitest.config.ts`, `.github/workflows/ci.yml`. No files written, no tests/builds run.
+- **Packed-proof question answered: yes, real.** `pack.py` asserts clean frozen `HEAD==b20c929` before and after, builds, packs, offline-installs, and sets both `BDP_TRANSACTIONAL_INSTALLED_ENTRY` (retained `…/transaction-cold-discovery-implementation/install/…`, *not* the smoke's temp root) and `BDP_TRANSACTIONAL_SOURCE_COMMIT`. I independently re-verified: retained entry SHA256 = `bcf1531…` matches the recorded value; `transaction-discovery.js` and `transaction-discovery-values.js` are present in the packed server/protocol dists; all 14 `source.json` per-file SHA256/byte bindings reproduce; both tarball SHA256s reproduce; `exits.json` matches `report.md` (including the 5 preserved exit-1 preparation failures); `cleanup.json` shows all 4 installed PIDs absent; 12 exchanges / one child / `pos-1` at all three success positions.
+- Within accepted C3 scope I confirmed correct: one synchronous `owner.withRead` capturing exactly the 3 context fields with parsing after release (the `readConfiguration()` probe inside the mocked assembler is a genuine gate discriminator, since `readConfiguration` goes through `enter`); `entry-refused` vs `ProtocolArtifactValidationError` vs closed-service `check()` all distinct; nested five-scalar capture consumed by both enforcement and projection with no residual `options.read` reads; 16 required + `limits` = 17 keys derived from the schema; `cursorTtlMilliseconds` captured and excluded (and would be rejected by `additionalProperties:false` if it leaked); `pos-0` floor vs `genesis` checkpoint kept separate with genesis replay surviving receipt-detail expiry and reopen; single shared 12-operation map with no remaining `transaction-http.ts` export; scope guard at `transaction-http.ts:160` precedes target construction at `:167`; lazy AJV is a private instance that retries cleanly on partial init; `snapshotJsonValue` already enforces the Unicode-scalar checks the RU parser duplicates, so their omission here is not a gap; deep-import denial is covered automatically by the existing `transaction-*.js` loop in the smoke.
+
+---
+
+## Findings
+
+### 1. HIGH — regression: frozen HEAD fails the full test suite / CI (stale interpretation-policy pin)
+
+**File/line:** `packages/server/test-support/schema-graph-policy.json:17` (pin for `packages/protocol/src/index.ts`); triggered by `packages/protocol/src/index.ts:636-641`; asserted at `packages/server/src/installed-schema-graph.policy.test.ts:32-38`.
+
+**Defect:** `installed-schema-graph.policy.test.ts` is a review tripwire that pins SHA256s of 14 files, one of which is `packages/protocol/src/index.ts`. This commit adds the two parser/type reexports to that file but does not refresh the pin.
+
+**Verified failure:**
+- pinned: `c14d73d16d998ac18b1532e6603c36916493995a342340893761d64286735291`
+- actual at `b20c929`: `92e547e807ec2d23223c47dbc4e04867d55db89ac9aab5fbd55f33349f92bdc6`
+- at parent `aebf656` the pinned value and the file hash agree, so this is introduced by `b20c929`, not inherited.
+
+**Impact:** `pnpm test` (`vitest.config.ts` `include: ["packages/**/*.test.ts", …]`) collects this file, and `.github/workflows/ci.yml:66` runs `pnpm test`. The branch fails CI. It was not caught because `combined.py` ran only the 7 hand-selected files and `read-ru-regressions` the other 4; `installed-schema-graph.policy.test.ts` was in no selection. The plan's "meaningful affected tests, no automatic full workspace" policy permitted the narrow selection, but the selection omitted a tripwire that directly keys on a file in the accepted change inventory.
+
+**Bounded fix:** perform the review the test's own comment requires (confirm the two additive reexports change no schema-interpretation semantics — they do not), then update that single entry to `92e547e807ec2d23223c47dbc4e04867d55db89ac9aab5fbd55f33349f92bdc6` and run `vitest run packages/server/src/installed-schema-graph.policy.test.ts`. Note this touches a 15th file outside the v3 accepted inventory (`transaction-cold-discovery-next-plan-v3.md:84-89`), so it should be surfaced to root as an inventory amendment rather than quietly added. Also worth adding a selection rule: any change to a file listed in `schema-graph-policy.json` pulls that policy test into the affected set.
+
+---
+
+### 2. MEDIUM — missing test: `receipts` and `snapshot` discovery members are checked only against a hand-copied literal, not the real routing seams
+
+**File/line:** `packages/server/src/transaction-discovery.ts:36` (`receipts`) and `:37` (`snapshot`); oracle at `packages/server/src/transaction-discovery.test.ts:39-62`, route checks at `:76-92`.
+
+**Defect:** Seven of the nine navigation members are cross-checked against independent existing classifiers — `beads`/`links`/`types` via `requestFromUrl`, `aliases` via `classifyAliasPath`, `changes` via `transactionChangefeedRequest`, `events` via `transactionEventRequest` (`transaction-discovery.test.ts:78-89`), and `operations` via directory→`handler.targets` resolution (`transaction-read.test.ts:832-836`). `receipts` and `snapshot` have no such check. Their only assertion is `expected()` in `transaction-discovery.test.ts:49-50`, which is a second copy of the builder's own string literals written in the same commit — precisely what the accepted plan rules out ("Tests check the real routing/materialization seams, not a second copy of the builder's constants alone", v3 plan:43; per-row requirements at :52-53).
+
+**Failure scenario:** change `transaction-discovery.ts:36` to `` `${scope}receipt/` `` and `:37` to `` `${scope}snapshots` ``. Both remain schema-valid (`absoluteHttpUrl`) and pass `parseCanonicalHttpUrl`, so `parseTransactionalDiscovery` accepts them; every runtime/emitted/packed test still passes; only the literal duplicate in `expected()` objects, and it must be edited in lockstep with the builder anyway. The real seams would disagree — `transaction-http.ts:457-458` routes `receipts/` or bare `receipts`, and `:361` matches `url.pathname === new URL("snapshot", scope).pathname` exactly — so the wrong value becomes a live wire lie the moment C4 serves the candidate. (No C3 serving impact; this is a pre-activation coverage gap, not a current defect.)
+
+**Bounded fix (two assertions, no new fixtures):**
+- In the existing `transaction-service.test.ts` floor/replay test, which already holds a real receipt: assert `first.receipt.id.startsWith(observed.discovery.receipts)`, and refetch the same-principal receipt through the source handler at that URL to confirm it reaches the receipt branch.
+- In `transaction-read.test.ts`'s new source-handler test, which already has both handler and service: assert `new URL(observed.discovery.snapshot).pathname === new URL("snapshot", scope).pathname` and issue one handler request at `observed.discovery.snapshot` confirming it reaches the Snapshot creation branch (not a 404/unknown route).
+
+Relatedly, `transaction-discovery.test.ts:104` labels `expected()` an "independent owner oracle"; for the frozen-literal members it is a literal oracle, and the owner binding lives in `transaction-service.test.ts`. Renaming the case would keep the evidence description accurate.
+
+---
+
+No other concrete bugs, regressions, or missing-contract tests found within the accepted C3 scope. The "not wire-ready" framing in `docs/design/transaction-implementation-progress.md` and `report.md` matches the code (page/selector only; diagnostics deferred to C4), and no refusal proof is represented as qualification.

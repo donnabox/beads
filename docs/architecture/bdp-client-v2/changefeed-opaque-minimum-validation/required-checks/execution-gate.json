@@ -1,0 +1,34 @@
+{
+  "released": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "approvedStages": [
+    "boundaries",
+    "preflight",
+    "package-smoke",
+    "historical-read-evidence"
+  ],
+  "freshBuild": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/run/build-artifacts.json",
+    "sha256": "a7019ca46d484f5ec3b5df34db0d0d15aec356e0c844feb442c8750d6b09cf5c"
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/source-binding.json",
+    "sha256": "71a70bf7150f43fbcc4b0a29ea7647eb5c17347132e59bc710d6833312790d3b"
+  },
+  "baseTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/base-tools.json",
+    "sha256": "f93adde88fcfa337e0c0133563cb9c7bbd5ab6478f4eed211486de35cda16cb0"
+  },
+  "workspaceTools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/implementation/run/workspace-tools.json",
+    "sha256": "9c63f40ec5410f1969c577b31ad664c268b4e9fcdf11eed6c6a03265bebadf76"
+  },
+  "preparedArtifacts": {
+    "run.py": "284b66a86c14c708bf2089ebe11e9738b7efad4ad3991a2b2616ea87b033e2dc",
+    "references.json": "9fe1af0274b24e08b7bb6b733d64c1f9709ad39aef26e4367cfc5b33a393cdce",
+    "commands.json": "28ebe52e1e53c215a09f00f12e6bc238a31f9a7844e99af289956ecdcf9eb353",
+    "gate.py": "5117e157fc5dffc37606f831dacbb1c87614ac2cbbf9267d0d95650939c62e72",
+    "preparation-report.md": "926405a1f8b5f7bce7fc9271d07a4124162837f60afffaae8843b4205ebd463f",
+    "runner-adaptation.patch": "5c70f346d598216efaaee17e143e1955303735efd7c9859a6a3dfe820af6cc29"
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "name": "offline-setup",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "install",
+    "--offline",
+    "--frozen-lockfile"
+  ],
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "install",
+    "--offline",
+    "--frozen-lockfile"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "started": "2026-10-15T17:07:45.582799+00:00",
+  "adjudication": {
+    "kind": "command-only",
+    "testVerdict": "not-applicable"
+  },
+  "elapsedSeconds": 0.8298108750022948,
+  "exit": 0,
+  "supervisorExit": 0,
+  "timeout": false,
+  "forcedCleanup": false,
+  "errors": [],
+  "processGroup": 95103,
+  "remainingBeforeCleanup": [],
+  "remainingAfterCleanup": [],
+  "sampledPids": [
+    95103,
+    95105,
+    95110
+  ],
+  "sampledPidsStillPresent": {},
+  "sampledTempEntries": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/execution-preparation/run/offline-setup.tmp/node-compile-cache"
+  ],
+  "tempEntriesAfter": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/execution-preparation/run/offline-setup.tmp/node-compile-cache"
+  ],
+  "remainingTempEntriesForClassification": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/execution-preparation/run/offline-setup.tmp/node-compile-cache"
+  ],
+  "runtimeDirectoriesStillPresent": [],
+  "unclassifiedTempEntriesStillPresent": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/execution-preparation/run/offline-setup.tmp/node-compile-cache"
+  ],
+  "sourceUnchanged": true,
+  "sourceSha256After": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "be0c229bec3441118eba469cda0c9d50ff9c9d919fcb2efbe1d79401269286cd",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "346e1edaa22af789f89017fdc2fef6bb01b7564ed72a65344e9fe5635887c74f",
+    "packages/conformance/src/transactional-cumulative.test.ts": "424ff6e05e3e86c9484522e7c8f70565995560ec98b06a88e7945f46c30f179e",
+    "apps/bdptest/src/transactional-matrix.test.ts": "dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de"
+  },
+  "samplingSeconds": 0.05,
+  "commandWindowSeconds": 115,
+  "groupHardDeadlineSeconds": 120,
+  "cleanupBound": "TERM at115s, KILL no later than120s; wait/reap after kill adds no product execution allowance",
+  "samplingLimitation": "Short-lived or detached descendants may evade group sampling; helper counts and independent final checks remain separate.",
+  "tempClassification": "Only the selected fixture prefixes under this attempt TMPDIR are owned runtime roots; all other entries are preserved for review, not deleted or called leaks.",
+  "resultLimitation": "Exit0 is command completion, not independent oracle/claim/provenance adjudication."
+}

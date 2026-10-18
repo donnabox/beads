@@ -1,0 +1,151 @@
+{
+  "executed": false,
+  "authorSelection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-author/successor-2/selection.json",
+    "sha256": "2465fcdc4c318d43a792f603be827b4ac7f01e4087ab4fd4342a2bd7768cba9b"
+  },
+  "sourceCallbacks": [
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "name": "gates initial Scope Event unknown minima before retained scans",
+      "anchoredNamePattern": "^gates\\ initial\\ Scope\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "captures an initial Scope Event opaque tuple across one bounded wait",
+      "anchoredNamePattern": "^captures\\ an\\ initial\\ Scope\\ Event\\ opaque\\ tuple\\ across\\ one\\ bounded\\ wait$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "cancels and drains initial Scope Event opaque waits",
+      "anchoredNamePattern": "^cancels\\ and\\ drains\\ initial\\ Scope\\ Event\\ opaque\\ waits$"
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "name": "serves only initial finite Scope Event opaque minima through bounded waiting",
+      "anchoredNamePattern": "^serves\\ only\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minima\\ through\\ bounded\\ waiting$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves initial Scope Event preflight before malformed capture: already-aborted",
+      "anchoredNamePattern": "^preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ already\\-aborted$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves initial Scope Event preflight before malformed capture: invalid-policy",
+      "anchoredNamePattern": "^preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ invalid\\-policy$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves initial Scope Event preflight before malformed capture: throwing-clock",
+      "anchoredNamePattern": "^preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ throwing\\-clock$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves initial Scope Event preflight before malformed capture: nonfinite-clock",
+      "anchoredNamePattern": "^preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ nonfinite\\-clock$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "preserves initial Scope Event preflight before malformed capture: malformed-after-valid-preflight",
+      "anchoredNamePattern": "^preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ malformed\\-after\\-valid\\-preflight$"
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "name": "pages within groups, continues exclusively after end and rejects unrelated/fabricated cursors",
+      "anchoredNamePattern": "^pages\\ within\\ groups,\\ continues\\ exclusively\\ after\\ end\\ and\\ rejects\\ unrelated/fabricated\\ cursors$"
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "name": "checks minimum position before any retained group scan or body materialization",
+      "anchoredNamePattern": "^checks\\ minimum\\ position\\ before\\ any\\ retained\\ group\\ scan\\ or\\ body\\ materialization$"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "name": "cancels finite Event waits through the facet and drains uncancelled waits before owner close",
+      "anchoredNamePattern": "^cancels\\ finite\\ Event\\ waits\\ through\\ the\\ facet\\ and\\ drains\\ uncancelled\\ waits\\ before\\ owner\\ close$"
+    },
+    {
+      "file": "packages/server/src/transaction-events.test.ts",
+      "name": "serves finite Event HTTP with current context, conditionals, HEAD and bounded minimum waits",
+      "anchoredNamePattern": "^serves\\ finite\\ Event\\ HTTP\\ with\\ current\\ context,\\ conditionals,\\ HEAD\\ and\\ bounded\\ minimum\\ waits$"
+    }
+  ],
+  "installedCallbacks": [
+    {
+      "label": "event-minimum-external",
+      "file": "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+      "name": "observes installed initial finite Scope Event opaque minimum timeout",
+      "expectedObservation": "private-installed-finite-event-minimum",
+      "expectedExchanges": 3,
+      "anchoredNamePattern": "^observes\\ installed\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minimum\\ timeout$"
+    },
+    {
+      "label": "event-missing-context-external",
+      "file": "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+      "name": "observes genuine installed missing Event context across Bead and Link JSON and SSE GET and HEAD",
+      "expectedObservation": "private-installed-event-missing-context",
+      "expectedExchanges": 11,
+      "anchoredNamePattern": "^observes\\ genuine\\ installed\\ missing\\ Event\\ context\\ across\\ Bead\\ and\\ Link\\ JSON\\ and\\ SSE\\ GET\\ and\\ HEAD$"
+    }
+  ],
+  "sourceWorkload": {
+    "callbacks": 13,
+    "newSourceCallbacks": 9,
+    "existingSourceCallbacks": 4,
+    "stores": 13,
+    "inProcessListeners": 2,
+    "productChildren": 0,
+    "httpExchanges": 91,
+    "newHttpExchanges": 32,
+    "existingHttpExchanges": 59,
+    "newOwnerDirectReads": 8,
+    "newWaitServiceCalls": 6,
+    "newWaitDelegatedReads": 9,
+    "newWaits": 5,
+    "newWithReadProbes": 5,
+    "newPostCloseDirectRefusal": 1,
+    "additionalPreflightCallbacks": 5,
+    "additionalPreflightStores": 5,
+    "additionalPreflightServiceCalls": 5,
+    "additionalPreflightInitialClockCalls": 4,
+    "additionalPreflightOwnerReads": 0,
+    "additionalPreflightWaits": 0,
+    "additionalPreflightHttp": 0,
+    "existingOwnerDirectReads": 19,
+    "existingServiceCalls": 4,
+    "existingPostCloseDirectRefusal": 1,
+    "existingServiceRetryAttempts": null,
+    "countAttribution": "Frozen-source prospective workload; exact runtime callback names and new instrumented reports separately checked. Existing retry counts depend on real clock."
+  },
+  "combinedProspective": {
+    "callbacks": 15,
+    "stores": 15,
+    "inProcessListeners": 2,
+    "installedChildren": 2,
+    "maximumConcurrentInstalledChildren": 1,
+    "emittedHttp": 91,
+    "installedHttp": 14
+  },
+  "preflightLabels": [
+    "already-aborted",
+    "invalid-policy",
+    "throwing-clock",
+    "nonfinite-clock",
+    "malformed-after-valid-preflight"
+  ],
+  "preflightClockCalls": [
+    1,
+    0,
+    1,
+    1,
+    1
+  ],
+  "actualSourceInspection": "All eight logged formatting regions reverse to the predecessor three files; other676 tracked files unchanged;13 exact source names and2 installed names/workload unchanged.",
+  "state": "Frozen author successor2; not executed",
+  "finalized": true,
+  "finalSourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/finite-event-minimum-validation/successor-1/source-binding.json",
+    "sha256": "4def9fb98f465144795f47363178d5a892b5d2de0494b6c9941d3153026ad701"
+  }
+}

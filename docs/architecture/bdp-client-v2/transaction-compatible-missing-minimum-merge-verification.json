@@ -1,0 +1,52 @@
+{
+  "pr": {
+    "headRefOid": "dfafd82290fb6f06db1e01522a3684a21d9813a7",
+    "mergeCommit": {
+      "oid": "8d83e49a073130bf711e144e95e97687cda8edd4"
+    },
+    "mergedAt": "2026-10-14T10:45:37Z",
+    "state": "MERGED"
+  },
+  "commit": {
+    "sha": "8d83e49a073130bf711e144e95e97687cda8edd4",
+    "node_id": "C_kwDOUHbQ5toAKDhkODNlNDlhMDczMTMwYmY3MTFlMTQ0ZTk1ZTk3Njg3Y2RhOGVkZDQ",
+    "url": "https://api.github.com/repos/gastownhall/bdp/git/commits/8d83e49a073130bf711e144e95e97687cda8edd4",
+    "html_url": "https://github.com/gastownhall/bdp/commit/8d83e49a073130bf711e144e95e97687cda8edd4",
+    "author": {
+      "name": "Donna Box",
+      "email": "dbox@boxenllc.com",
+      "date": "2026-10-14T10:45:36Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-10-14T10:45:36Z"
+    },
+    "tree": {
+      "sha": "cfd5313612249cb48211cbea7d3fe46e2edb5daf",
+      "url": "https://api.github.com/repos/gastownhall/bdp/git/trees/cfd5313612249cb48211cbea7d3fe46e2edb5daf"
+    },
+    "message": "Merge pull request #108 from gastownhall/codex/vickie-missing-minimum-integration\n\nReturn observed missing resources when the requested minimum is satisfied",
+    "parents": [
+      {
+        "sha": "2172092de12752867b43858ebcbdd2c37d4c727f",
+        "url": "https://api.github.com/repos/gastownhall/bdp/git/commits/2172092de12752867b43858ebcbdd2c37d4c727f",
+        "html_url": "https://github.com/gastownhall/bdp/commit/2172092de12752867b43858ebcbdd2c37d4c727f"
+      },
+      {
+        "sha": "dfafd82290fb6f06db1e01522a3684a21d9813a7",
+        "url": "https://api.github.com/repos/gastownhall/bdp/git/commits/dfafd82290fb6f06db1e01522a3684a21d9813a7",
+        "html_url": "https://github.com/gastownhall/bdp/commit/dfafd82290fb6f06db1e01522a3684a21d9813a7"
+      }
+    ],
+    "verification": {
+      "verified": true,
+      "reason": "valid",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJqz11QCRC1aQ7uu5UhlAAANUsQAKfJzIM8le/O11opiM5qvvUG\nNLLH1umlLb4/vbZr8vRv7/QbD96QCg5qCGVnu3ChYbEB41PaH3IJoYvYiIMFJPHf\nVR+1udt7ub2Y4TQL5IqBURET23kbmd8Tc4vSttYcpN8ghT/h9YKvGRaOFMQrMYOa\nR6fInTRAadaI2ETIN+x+X4eiWsyXogsAsRx2/a5veAm32eWRZe5t65FTUxkXYN6d\nfhKExGZj0Ev7c5ur7lJ7kx0/hdfj1SdAV7PsRZ3mT0nLW32+hcWXX5AsOIr7g6+e\nreAe85gJLwZnIOYnsDUQwcJZLaWiENgrcv1wDwVpnyb8KznEJKJoghiJFhxGABOe\nCxXGoSasqdy92TSyKBKamoxWwEyQmH38bLuLorQkoZKsQqUAUINd02mARqJscoIj\n1iPbKcvMajR60MT9NeaAJp6C9LGkg5C4rNEtwD3gnWAnl9eVXZqDwud/5nBbP/y4\n+7wVZUlRf6B6sgzFLiXohBvp3mKPwwXH2xpZre/WTwAj921oOTmJCrx3F6SSpg9S\nSRCddN33Cd/lq83WhFscBY85s9ZzuyXELu+Q4ssxA64jPQp8lQ7k092AV4O+NiNf\nieL/8YEUSN79bV3aM8zksroh0E5XLomWJenDv7gKPPRY8IMuAeUwcUvkr2xbWFnY\nMKJLhc+mZ/lkXO3yFam/\n=8eUE\n-----END PGP SIGNATURE-----\n",
+      "payload": "tree cfd5313612249cb48211cbea7d3fe46e2edb5daf\nparent 2172092de12752867b43858ebcbdd2c37d4c727f\nparent dfafd82290fb6f06db1e01522a3684a21d9813a7\nauthor Donna Box <dbox@boxenllc.com> 1791974736 -0700\ncommitter GitHub <noreply@github.com> 1791974736 -0700\n\nMerge pull request #108 from gastownhall/codex/vickie-missing-minimum-integration\n\nReturn observed missing resources when the requested minimum is satisfied",
+      "verified_at": "2026-10-14T10:45:37Z"
+    }
+  },
+  "expectedTree": "cfd5313612249cb48211cbea7d3fe46e2edb5daf",
+  "verified": true
+}

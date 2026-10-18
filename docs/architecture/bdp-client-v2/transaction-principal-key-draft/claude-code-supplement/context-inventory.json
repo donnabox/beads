@@ -1,0 +1,41 @@
+{
+  "promptBytes": 18485,
+  "testSlices": [
+    [
+      1,
+      27
+    ],
+    [
+      82,
+      90
+    ],
+    [
+      267,
+      284
+    ],
+    [
+      340,
+      365
+    ],
+    [
+      400,
+      423
+    ]
+  ],
+  "configs": [
+    "tsconfig.base.json",
+    "tsconfig.check.json",
+    "apps/bdptest/tsconfig.json",
+    "biome.json"
+  ],
+  "actualFindings": [
+    1,
+    7,
+    9
+  ],
+  "rootDispositionSha256": "2e84a5f0125c886b17d2f4e154907667b4849e4237775a7e9fe9b9c3793ba7b4",
+  "sourceBindingSha256": "fce5c0dfb33221f9cc29fd6420eab607722d88d0d9b6076b64a57f763f5f9406",
+  "omissions": "Unchanged HTTP/runtime/request/schema bodies; full current source hashes retained. Other findings source-dispositioned by root. No claim that supplement independently reviews omitted unchanged implementation.",
+  "historicalPacket": "initial-preparation; never launched",
+  "preparationAttempt": "First compaction exceeded20KB and stopped before prompt replacement. Final narrowed excerpts below20KB; no review launch."
+}

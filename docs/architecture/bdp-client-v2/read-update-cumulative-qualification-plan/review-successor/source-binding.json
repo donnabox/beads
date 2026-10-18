@@ -1,0 +1,49 @@
+{
+  "reviewHead": "67a2842e3f1918e70978f745587cf11eaf0df5a8",
+  "reviewTree": "596abe870220fb61ce606f8382a9da52d554d063",
+  "sourceHashes": {
+    "packages/conformance/matrices/read-update-v1.json": "c86b33535f25a1d117ce021a3bb70164f5635bdaee50758e3428c130ccc3227f",
+    "packages/conformance/matrices/read-update-reference-continuation-v1.json": "24d754618b51f255b5885d83c53ccf9a06593031e1812739a4f2b504c4a1df8d",
+    "packages/conformance/test-support/read-update-coverage-v1.json": "f8f0b001928f8488292403b57c973bd918cba224ef9e00fe0691482bf5cfac0c",
+    "packages/conformance/fixtures/read-update-reference-v1.json": "f89932d68e3bf5867d79eb3de680af4bc67b761b3c3bce5da127f6ca75e27765",
+    "packages/conformance/test-support/read-update-artifact-set-v1.json": "7277980894dd0955a8fcd22ba5d2845b0a6801b7e7e13a937018e11d3a65de37",
+    "packages/conformance/src/read-update-artifact-set.test.ts": "d5ed7006af35a59db371a6e59d103cec9a4c3ce32e1354715639cf281b9d5ed1",
+    "packages/conformance/src/cumulative-artifact.test.ts": "863535a75697ce5cb8fbf07c8096a0e00ae88bc42549be117e74e776490dff5c",
+    "packages/conformance/src/profile-contract-plan.test.ts": "e5be4864e456431db74bd325ec64d785bf3c5301a6be5b230bfcc7351ade4fc4",
+    "apps/bdptest/src/read-update-matrix.test.ts": "3ba256dbcee025836eac04ec1122a484734748c0eb22ad203c49a0d95debb3e5",
+    "apps/bdptest/test-support/read-update-exact-client.ts": "fe7568b3fe7e443873f29c4d38b2115d3763190092f0b084671e39d0e97dbf8d",
+    "apps/bdptest/test-support/read-update-artifact-execution.ts": "764ff0a4e5310ec35e59d6042e579b7e1f003772a7c09777e3f4d5675a3156d1",
+    "apps/bdptest/test-support/installed-body-schema.ts": "f06b0a8d041cc125dad92821dae9c5aab133c686ef224ff8e16c7dc101ef1cdb",
+    "packages/conformance/src/runner.ts": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+    "packages/conformance/src/http-executor.ts": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+    "packages/conformance/src/executable-manifest.ts": "65af0451cd046d57c10b0666e54efbaaecc2225551d3accc5cc1d032322913fa",
+    "packages/conformance/test-support/read-update-artifact-set.ts": "8c1e3d17d7bc5823ab69ddaac6ee0a443800f0348d4f14d969c22f1384aea2a3",
+    "packages/conformance/test-support/profile-contract-plan.ts": "18c953443e6695cfa48f89677231fecffc349df02bd080f107a5c739db10b728",
+    "packages/protocol/schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+    "packages/server/src/installed-reference.ts": "c311a724d5d81710264b443da6800e960f49402f10383889de59714949b9eec7",
+    "packages/server/src/development-composition.ts": "a7113a8a3164dc6f4b1f6b5bdcbf74cee811e5b8a0474d241ac30706997ee54f",
+    "packages/server/src/index.ts": "34f9d9de8b48852c64919e69ce93f149e9cdae5142c15c75e4c35f08f15efc44",
+    "packages/server/src/read-conformance-capability.ts": "58d4529dc40bbf646f02bda4c7fa3fad9b83d21f3080152cc04867dbe3fa6f60",
+    "docs/specs/bdp.md": "63e93be562334c84c1e967da2fce212e8ef515aa3c9448924c5f9a272ea7b80b",
+    "packages/conformance/catalog/read-update-v1.json": "73d215813df034a2be0cd15d0caff7cf2c8823a067f271b9140c9cbb90e859c3",
+    "packages/server/src/development-runtime.ts": "37e222682645e9d8f2d5fcf62de208640fb6216c9e9f2f279ab6017e8b9d6ca9",
+    "packages/server/src/authority-read.ts": "fd6554c4ee0d08b997fb3622c2f21697f02d58b838f4ae0de10aca4707f67734",
+    "packages/server/src/resource-evaluator.ts": "89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
+    "packages/protocol/src/reference-domain.ts": "6058ba5b9880e93b3c0522ecae597df4d0f34623a334acdba83bff2780b4bbb1"
+  },
+  "authoringReleased": false,
+  "sourceReadMode": "git show committed object; current dirty checkout not authoritative",
+  "originalReviewHead": "73fc0daed2e5fa6843e581de9bf7a46e519562ab",
+  "originalReviewTree": "22176e75848cfd6f0a54f799aeb1e62998206edb",
+  "reanchorChanges": [
+    {
+      "path": "docs/specs/bdp.md",
+      "before": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+      "after": "63e93be562334c84c1e967da2fce212e8ef515aa3c9448924c5f9a272ea7b80b"
+    }
+  ],
+  "reanchorEvidence": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cumulative-qualification-plan/main-reanchor-audit.json",
+    "sha256": "1472b702972da0718a7c1b42dac3bfdb4babe11232b36052ac842be08d223c47"
+  }
+}

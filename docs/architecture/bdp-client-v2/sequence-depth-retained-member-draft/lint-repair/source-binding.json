@@ -1,0 +1,66 @@
+{
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained",
+  "branch": "codex/vickie-sequence-depth-retained",
+  "head": "df80f8cb86b7763bc7bb005492e43d8840527045",
+  "tree": "25e9d4aa926ea728f5e356365cb1ffadba269221",
+  "files": {
+    "packages/server/src/transaction-batch.ts": {
+      "sha256": "95f3ce3957503cba240f18e911fe3d2c8027b4accbba8f1128ea47e3d2b0c362",
+      "new": false,
+      "bytes": 47026,
+      "baseSha256": "70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014"
+    },
+    "packages/server/src/transaction-http.ts": {
+      "sha256": "0a616e27da60c746be738821008e7dab6511e31325e9442418b4bbece9be40f8",
+      "new": false,
+      "bytes": 28178,
+      "baseSha256": "c6bac496033781306d1c63e570e1c65b5786d41ebb8dc565c5a8be44e91ccfa9"
+    },
+    "packages/server/src/transaction-set.test.ts": {
+      "sha256": "a8a7d5b127866c2b1a60012e6c1f864b8e58bd524f6c520604e2b860b58d491e",
+      "new": false,
+      "bytes": 49955,
+      "baseSha256": "fdd29d8e8064ddc12848946fabf8347e2939e963294912c139bc8d8f5617f2e8"
+    },
+    "packages/server/src/transaction-sequence.test.ts": {
+      "sha256": "687f1a9c10277d178db187b2c8efefe07d099755c473db4c2e7d87e4d7be6a4b",
+      "new": false,
+      "bytes": 26670,
+      "baseSha256": "3ef64177d73b2ac5776258db2a73ffa168c6b2ab4d2a60e80e7fb746d0377d1c"
+    },
+    "packages/server/src/transaction-http.test.ts": {
+      "sha256": "5e094d09beaba41dbf5b0f56799f5d9b91d24c38684ef78a47f8a11e0880ad2f",
+      "new": false,
+      "bytes": 197254,
+      "baseSha256": "ca2e4e7663a93060ba2a0788c5ef349a3de4991e3108f81507f37a723d964781"
+    },
+    "apps/bdptest/src/transactional-sequence-depth-installed.test.ts": {
+      "sha256": "d451340062915a31f79c1d02371bdbff13fb404967fe563e0484c43f218dbcf9",
+      "new": true,
+      "bytes": 27205,
+      "baseSha256": null
+    },
+    "docs/design/transaction-implementation-progress.md": {
+      "sha256": "d5c93b26773d8661d91b5d1a4f9950bfdbe6ae6d89fb5d10df3d445073bfd7d1",
+      "new": false,
+      "bytes": 133903,
+      "baseSha256": "9aa001e2da6e37f0e12aa15fd124a489bc951519064370afbb76c9aee9aad185"
+    }
+  },
+  "diffSha256": "7b9e25c8e907a91e3813011468158c5b1256c8dc9e00da069a7a639383c0bcd3",
+  "authoringBase": "df80f8cb86b7763bc7bb005492e43d8840527045",
+  "integration": "NOT integrated with pending minimum main; ordinary actual-main integration and final validation required",
+  "status": "Frozen cleanup-only successor; original preliminary lint failed; successor unvalidated; original Claude CODE review inconclusive timeout/empty output; no CODE approval.",
+  "plan": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-plan/review-successor/plan.md",
+    "sha256": "07827411c1b243f5ab4cc91188f453a22d365c3bbb9d03c2cd814c3f4617c8e0"
+  },
+  "ledger": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-plan/review-successor/ledger.json",
+    "sha256": "4ffbc5aaf6ee3f59008a65e5899679d2dd5383872cb1574ff34391839e3399f3"
+  },
+  "supersedesSourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-binding.json",
+    "sha256": "987f61764ca09df676f77ab5b99a8886809f4ce7908342bc8c27fd462fddcc81"
+  }
+}

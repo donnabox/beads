@@ -1,0 +1,203 @@
+{
+  "state": "prospective source authoring plan; no executable selection/result yet",
+  "source": [
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "title": "captures opaque receipt root minima through real owner retries",
+      "new": true,
+      "label": "A",
+      "stores": 1,
+      "rootAttempts": 10,
+      "pageAttempts": 0,
+      "waits": 4,
+      "clockCalls": 11,
+      "mutations": 2,
+      "separatePostCloseOwnerProbes": 0
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "title": "drains an opaque receipt root wait before closing its owner",
+      "new": true,
+      "label": "B",
+      "stores": 1,
+      "rootAttempts": 2,
+      "pageAttempts": 0,
+      "waits": 1,
+      "clockCalls": 3,
+      "mutations": 1,
+      "separatePostCloseOwnerProbes": 1
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "private minimum-read owner/lifecycle",
+      "title": "checks minimum before read-triggered expiry but honors independently forgotten receipts (false)",
+      "new": false,
+      "label": "R-false",
+      "stores": 1,
+      "rootAttempts": 3,
+      "pageAttempts": 0,
+      "waits": 1,
+      "clockCalls": 4,
+      "mutations": 1,
+      "forget": false,
+      "minimumPosition": "pos-1"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "private minimum-read owner/lifecycle",
+      "title": "checks minimum before read-triggered expiry but honors independently forgotten receipts (true)",
+      "new": false,
+      "label": "R-true",
+      "stores": 1,
+      "rootAttempts": 3,
+      "pageAttempts": 0,
+      "waits": 1,
+      "clockCalls": 3,
+      "mutations": 1,
+      "forget": true,
+      "minimumPosition": "pos-1"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "private minimum-read owner/lifecycle",
+      "title": "checks minimum before read-triggered expiry but honors independently forgotten receipts (opaque false)",
+      "new": true,
+      "label": "R-opaque false",
+      "stores": 1,
+      "rootAttempts": 3,
+      "pageAttempts": 0,
+      "waits": 1,
+      "clockCalls": 4,
+      "mutations": 1,
+      "forget": false,
+      "minimumPosition": "unknown"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "suite": "private minimum-read owner/lifecycle",
+      "title": "checks minimum before read-triggered expiry but honors independently forgotten receipts (opaque true)",
+      "new": true,
+      "label": "R-opaque true",
+      "stores": 1,
+      "rootAttempts": 3,
+      "pageAttempts": 0,
+      "waits": 1,
+      "clockCalls": 3,
+      "mutations": 1,
+      "forget": true,
+      "minimumPosition": "unknown"
+    },
+    {
+      "file": "packages/server/src/transaction-service.test.ts",
+      "title": "preserves current receipt absence context across ordinary and minimum service entrypoints",
+      "new": false,
+      "stores": 1,
+      "rootAttempts": 4,
+      "pageAttempts": 4,
+      "waits": 0,
+      "clockCalls": 5,
+      "mutations": 2
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "title": "authenticates and hides receipts before minimum-control refusal or conditional shortcuts",
+      "new": false,
+      "stores": 1,
+      "httpMethods": {
+        "POST": 1,
+        "GET": 5,
+        "HEAD": 1
+      },
+      "httpRequests": 7,
+      "suite": "source-private actual Transactional HTTP"
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "title": "keeps receipt minimum enforcement after commands ignore copied controls",
+      "new": false,
+      "stores": 1,
+      "httpMethods": {
+        "POST": 1,
+        "GET": 4,
+        "HEAD": 1
+      },
+      "httpRequests": 6
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "title": "checks a stored failed receipt minimum before read-triggered retention disposal over HTTP",
+      "new": false,
+      "stores": 1,
+      "httpMethods": {
+        "POST": 1,
+        "GET": 2,
+        "HEAD": 0
+      },
+      "httpRequests": 3
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "title": "refuses unsupported root controls after nondisclosure but before read-triggered retention",
+      "new": false,
+      "stores": 1,
+      "httpMethods": {
+        "POST": 2,
+        "GET": 4,
+        "HEAD": 4
+      },
+      "httpRequests": 10
+    },
+    {
+      "file": "packages/server/src/transaction-http.test.ts",
+      "title": "serves opaque receipt root minima before HTTP shortcuts with private fences",
+      "new": true,
+      "stores": 1,
+      "httpMethods": {
+        "POST": 1,
+        "GET": 6,
+        "HEAD": 3
+      },
+      "httpRequests": 10
+    }
+  ],
+  "installed": [
+    {
+      "file": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "title": "rejects malformed read minimum tuples before observation while preserving receipt nondisclosure",
+      "new": false,
+      "httpRequests": 22,
+      "children": 1,
+      "stores": 1
+    },
+    {
+      "file": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "title": "observes installed opaque receipt root timeout with principal nondisclosure",
+      "new": true,
+      "label": "E",
+      "httpRequests": 5,
+      "children": 1,
+      "stores": 1
+    }
+  ],
+  "totals": {
+    "sourceCallbacks": 12,
+    "sourceStores": 12,
+    "sourceNetworkRequests": 36,
+    "sourceNetworkMethods": {
+      "POST": 6,
+      "GET": 21,
+      "HEAD": 9
+    },
+    "sourceServiceLiveRootAttempts": 28,
+    "sourceServiceLivePageAttempts": 4,
+    "separatePostCloseOwnerProbes": 1,
+    "sourceServiceWaits": 9,
+    "sourceServiceClockCalls": 33,
+    "sourceServiceMutations": 9,
+    "installedCallbacks": 2,
+    "installedRequests": 27,
+    "installedChildrenSequential": 2,
+    "installedStores": 2,
+    "allSelectedStores": 14
+  }
+}

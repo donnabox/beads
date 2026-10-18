@@ -1,0 +1,47 @@
+{
+  "auditedAt": "2026-10-17T18:21:40.628068+00:00",
+  "kind": "single-read-only-initial-launch-observation",
+  "pid": 58666,
+  "pgid": 58666,
+  "started": "2026-10-17T18:20:36.544565+00:00",
+  "rootPtySession": 74669,
+  "rootReleaseSha256": "a87720c12393b20a05e31be1edd9d4eb1c8b69322491cb92abf6848fb9e22ede",
+  "authorizedBindingTransitionOnly": true,
+  "closedBindingSha256": "3e4505877503f596184cef2eafeb89ee4bd3d88fe5eada89837754c39b2290c5",
+  "releasedBindingSha256": "1981e1af80c454dc012eaf6a3b83671c04031107511411d2eb506c7a379a395b",
+  "indexedFilesVerified": 40,
+  "sourceFilesVerified": 679,
+  "contextVerified": 19,
+  "artifactPinsVerified": 13,
+  "head": "d9c3eb9e61b1982b9bd56aa77e4cdc114384e886",
+  "clean": true,
+  "sourceBeforeMatchesCurrent": true,
+  "processMembers": [
+    {
+      "pid": 58666,
+      "ppid": 58654,
+      "pgid": 58666,
+      "cpu": "0.2",
+      "time": "0:02.07",
+      "comm": "/opt/homebrew/bin/claude"
+    }
+  ],
+  "completePrefixRecords": 398,
+  "rawPrefixBytes": 345664,
+  "rawPrefixSha256": "bc2fa59af4210f39971f538a519dacac152ff4b0692cc4e58ac351306190b528",
+  "completePrefixParseErrors": 0,
+  "toolUsesByName": {
+    "Read": 12,
+    "Grep": 2
+  },
+  "toolResults": 14,
+  "errorMarkedToolResults": 0,
+  "successfulToolResults": 14,
+  "terminalRecordsObserved": 0,
+  "exitFileExists": false,
+  "stderrBytes": 0,
+  "reviewComplete": false,
+  "approvalInferred": false,
+  "limits": "Active prefix only. No terminal/completeness or no-survivor claim; process is expected alive. Access success counts reflect completed tool-result records, not all copied contexts.",
+  "terminalAudit": "On exit read raw complete stream/result/final/hash mapping and exact gate exception; rehash all679/19/13 and indexed closed binding; compare before/after, actual successful tool paths/error results; independently inspect sampled PIDs/group absence. No retry or partial-text verdict."
+}

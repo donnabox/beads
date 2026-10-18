@@ -1,0 +1,36 @@
+{
+  "state": "CURRENT finalized CLOSED formatting successor; actual source bound, no execution",
+  "configurationFinalized": true,
+  "preservedOriginal": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+  "predecessorMetadataClarification": "Original adaptations.json is historical skeleton metadata, superseded there by finalized-plan.md/source-binding/actual helpers. Original is not edited. This successor metadata describes its current state.",
+  "unchangedHelperBytes": [
+    "run.py",
+    "audit.py",
+    "packages.py"
+  ],
+  "changedHelper": "gate.py: proven explicit bootstrap reuse gate; removes fresh-install execution branch and adds old/new source/tool/evidence checks plus root reuse acceptance. Bead external modes retained.",
+  "commands": "21 fresh stages; no install/capture command; all test names/oracles/bounds retained. Output paths rebased.",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/source-binding.json",
+    "sha256": "ab7eb73718d4f1d00e53c8eee3308f5b218bf89312c0c7cfe7d3fc9b38950d5b"
+  },
+  "bootstrapReuse": "Mapped original377e7f source to actual successor 507d86e5dac586bee57543bcf6ade921a5d354dfd36f08dd05fc5c8230f3afaa; exact two-test source delta,677 unchanged files,17dependencies and11 actual tools verified. Original tool/install records retain original attribution.",
+  "pending": [
+    "Root/native final source/helper inspection",
+    "Explicit root bootstrap-reuse acceptance and fresh static release",
+    "Runtime root/council acceptance and actual build/consumer measurements"
+  ],
+  "noExecution": true,
+  "sourceReversal": {
+    "packages/server/src/transaction-events.test.ts": {
+      "currentSha256": "c627c3103b49af98df4c9d32e40456989da5deb7d5a3eec4ade539de7b24e44a",
+      "reversedSha256": "d6dd08a07355bca304c50909bce61b1744ae22cec8b1bba56c2638442439f36f"
+    },
+    "packages/server/src/transaction-service.test.ts": {
+      "currentSha256": "45f2444071c5cbbd3651449f878feb1e70d9e51c3c57cdcc243395b7735b25a7",
+      "reversedSha256": "1296229ecaad736390882d64b120b433fc8d84d40f022f46803a8574c99ac828"
+    }
+  },
+  "planBasisWorktree": "/Users/dbox/repos/wt/vickie/vickie-finite-event-minimum",
+  "actualAuthorValidationWorktree": "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum"
+}

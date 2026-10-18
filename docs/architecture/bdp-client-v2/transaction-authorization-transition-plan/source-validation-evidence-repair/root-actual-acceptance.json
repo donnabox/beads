@@ -1,0 +1,44 @@
+{
+  "accepted": true,
+  "stages": [
+    "typecheck",
+    "format-check",
+    "transport-targeted",
+    "owner-targeted"
+  ],
+  "fiveActualPassedCallbacks": [
+    "narrows current Transactional visibility and fences issued handles after policy publication",
+    "preserves policy and delivery leases after confirmed policy rollback",
+    "projects receipt records and allocations without changing non-record execution facts",
+    "bounds administrative drain without cancelling admitted sequence work",
+    "captures one Scope policy for distinct principals and renders empty historical advances"
+  ],
+  "actualHTTP": 18,
+  "sampledPidsIndependentlyAbsent": [
+    13072,
+    13074,
+    13078,
+    13102,
+    13262,
+    13264,
+    13551,
+    13553,
+    13558,
+    13561,
+    13616,
+    13618,
+    13622,
+    13625
+  ],
+  "retainedToolCaches": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/typecheck.tmp/node-compile-cache"
+  ],
+  "terminalHashes": {
+    "typecheck.exit.json": "3b32a81556fa102228d446fe3dc501b57a41497722d5a2e93faf51f2a9b1e117",
+    "format-check.exit.json": "fb2bb24a9b4b2405c0d73e7fae9632fcc9c7513f0010dd6f2af9709c0721e6fe",
+    "transport-targeted.exit.json": "12ea6b7a0379c8f49bd86d8cd3aeb7e22577346673b5145b1b9e7961e01fcfdf",
+    "owner-targeted.exit.json": "17d899e3419e26cdf2d8cc195914b29ac1de448807d9cfcef3f6563307876877"
+  },
+  "sourceBindingSha256": "ccbb687daccb69500faf10f1f768b33ffd1b0bc9ab449b84253cfd242ab7de39",
+  "limitations": "Five affected callbacks on test-only successor. Remaining six historical callbacks and C1 use explicitly unchanged-source bridges; no fresh complete eleven-case or installed run claimed. Initial root audit overstrictly required Node compile cache removal; corrected to retain classified tool cache, not runtime store."
+}

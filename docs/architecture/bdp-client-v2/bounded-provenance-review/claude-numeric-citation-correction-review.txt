@@ -1,0 +1,49 @@
+I reviewed frozen HEAD `e5f7d0c`, the delta `b0a6bca..HEAD` including the merge resolution, `4594d52`'s inline formatter against the shared one at HEAD, and both prose changes. Verification was read-only: targeted vitest runs (`profile-catalog-boundaries`, `member-identity`, `member-executor`, `transaction-store`, `development-server` — all green), a full `tsc -p tsconfig.check.json` (clean), `biome format` on the touched files (clean), and a few `node --experimental-strip-types` probes against the built `dist` to measure actual diagnostic byte behaviour. I did not treat the pending Read reseal as a defect.
+
+## Original defects — both close
+
+**1. Four clobbered distinct Read citations in `read.resource.external-endpoint` — CLOSED.** `packages/conformance/catalog/read-v1.json` is byte-identical to `cd22ac3` for that scenario (diffed the parsed scenario object). The new guard at `packages/conformance/src/profile-catalog-boundaries.test.ts:279-286` rejects duplicate `(source, anchor, whitespace-normalized selectedText)` triples per scenario, and its `catalogs` list (lines 119-127) covers every citation-bearing JSON in the repo — I confirmed the 7 files that contain `selectedText` are exactly the 6 under `catalog/` plus `development/read-update-catalog-v1.json`. Across all 333 scenarios / 769 citations: zero duplicates, and every citation still resolves under its anchor. The regressed state would have failed the guard (5 identical citations → set size 1).
+
+**2. Properties numeric UPDATE pointers contradicting document-relative `instanceLocation` — CLOSED.** `member-numeric-diagnostics.ts:42-50` now drops `instanceLocation` (and still drops a caller `document` mislabel) for unapplied `propertiesChange`, matching the already-correct `metadataChange` branch; create locations are untouched because the create branch derives them from `occurrence.pointer` (`:30`), confirmed by the unchanged `instanceLocation: "/nested/bad"` expectations. `docs/specs/bdp.md:3464-3467` now permits the omission for both documents and states that a request-body pointer is not a document position; the catalog row and the new `#readupdate-problem-details` citation resolve.
+
+**Merge resolution is clean.** No conflict markers; `4594d52`'s inline edit to `member-identity.ts` is correctly re-expressed through the single shared formatter (`member-identity.ts:431`), with no leftover duplicate; the re-anchoring from `#problem-details` to `#readupdate-problem-details` was required (`4594d52` descends from a much older spec tree where `#problem-details` was correct) and is right at HEAD — the edited paragraph sits at line 3461, inside §3403-3547.
+
+## Findings
+
+**1. Transactional unapplied-`metadataChange` diagnostics are now request-pointer-proportional against a budget equal to the request cap, so a legal in-cap request raises an internal error instead of `validation-failed`. Severity: medium.**
+
+Location: `packages/server/src/transaction-batch.ts:442-452` (`diagnosticBytes: 65536` + the new pointer-bearing message), with `packages/server/src/transaction-submission.ts:60` (65536-byte request cap) and `packages/protocol/src/json-admission.ts:350-354` (the throw).
+
+Impact: JSON Pointer escaping doubles `/` to `~1`, so a pointer can be ~2× the body bytes it came from. Measured against the built `dist`:
+
+| case | body bytes | first-entry outcome at HEAD | at `b0a6bca` |
+|---|---|---|---|
+| `metadataChange`, 32,727-char key | 32,808 | `JsonDiagnosticBudgetError` | 66-byte entry |
+| `propertiesChange`, 32,810-char key | 32,811 | `JsonDiagnosticBudgetError` | same throw |
+
+Nothing catches `JsonDiagnosticBudgetError` on this path, so it escapes `evaluateTransaction` → `executeClaim`. `cleanupThenThrow` (`transaction-store.ts:735-746`) does retract the pending reservation cleanly, so there is no state corruption and no poisoned idempotency key — but the request is permanently un-refusable: every retry yields the same internal error instead of the `validation-failed` Problem that `docs/specs/bdp.md:3442-3473` and the `read-update.numeric-model.round-trip-admission` row require. The repo already encodes the rule being broken: `read-update-runtime-limits.ts:36-42` requires `diagnosticBytes >= 2*(requestBodyBytes+propertiesBytes)+2 + 21760` precisely so the first diagnostic always fits, and the transactional path is the one budget that never passes through `snapshotReadUpdateRuntimeLimits`. (The development authority *is* safe: 512 KiB vs a 283,906-byte computed floor — I checked.) Secondary effect: metadata diagnostics went from a constant 66 bytes to pointer-sized, so metadata updates can now hit `diagnosticsTruncated` where they previously returned the complete list — legal, but a reporting regression.
+
+Scope honesty: the `propertiesChange` and both create paths had this exposure at `b0a6bca` (via the retained `instanceLocation`) at the same threshold. The delta newly extends it to `metadataChange`.
+
+Fix: route the transactional budget through `snapshotReadUpdateRuntimeLimits` (or size `diagnosticBytes` to its floor for a 65536-byte cap), or omit the pointer label when the resulting entry would not fit — an unlabelled message is strictly better than an internal error. Test gap: `transaction-store.test.ts:2670-2724` nails the truncation boundary exactly (2 entries at exactly 65536, 1 on overflow) but never covers first-entry-cannot-fit, which is the case this change makes reachable.
+
+**2. `instanceLocation: pointer` in both new default callbacks is dead on every reachable path, and reads as the defect under repair. Severity: low.**
+
+Location: `packages/server/src/development-authority.ts:130` and `packages/server/src/transaction-batch.ts:450`.
+
+Impact: for `createBead`/`createLink` the shared formatter recomputes the location from `occurrence.pointer` and ignores the caller's (`member-numeric-diagnostics.ts:24,30`); for `updateBead`/`updateLink` both branches discard it. Since the schema admits number literals only under `properties`/`metadata` and their `*Change` `value` subtrees (I checked `revisionProvenanceInput`/`revisionActor` — all string/null, and carrier validation runs with numbers replaced by `0`), there is no operation where that member survives. So both authorities still *look* like they emit request pointers as document locations, with the only protection living in a separate module. If a future operation kind is added that `memberNumericDiagnosticBudget` does not wrap, the raw `instanceLocation: pointer` reaches the wire and the closed defect returns silently. Related latent edge: the update branch's `!startsWith("/metadataChange/")` else-branch means any future numeric position outside the two change lists inherits the properties treatment and emits a bare `"unsupported number"` with no location at all.
+
+Fix: delete `instanceLocation` from both callbacks (the formatter supplies it where it is meaningful), or guard it with the same prefix test used for the message.
+
+**3. Numeric update diagnostics retain caller `type`/`schemaLocation`, which `bdp.md:3459` says must be absent — and the delta's new tests now enshrine that shape. Severity: low.**
+
+Location: `packages/server/src/member-numeric-diagnostics.ts:45-50`; codified by `packages/server/src/member-identity.test.ts:1439-1441` and `:1486`.
+
+Impact: `docs/specs/bdp.md:3451-3459` splits diagnostics into effective-Type-contract failures (which carry `type` + `schemaLocation`, plus `instanceLocation` when the failure lies within `properties`) and "every other cause", for which "`type` and `schemaLocation` are absent". A numeric admission refusal is always the latter — it happens before any Type contract is evaluated. The formatter strips `document` and `instanceLocation` mislabels but passes `type`/`schemaLocation` straight through, and the two new tests assert `expect(admission.diagnostics).toEqual([{ message, type, schemaLocation }])`, locking in an entry that is simultaneously Type-contract-shaped and missing the `instanceLocation` that shape requires. Not reachable through either shipped authority (neither callback supplies them), so the exposure is to embedders of `prepareMemberExecution`. The field retention itself predates the delta; the tests asserting it do not.
+
+Fix: drop `type`/`schemaLocation` in the update branch the way the metadata branch already does, and amend the two tests — or, if caller-supplied contract framing is intentional here, say so in the spec paragraph rather than leaving it contradicted.
+
+## Prose changes — both verified accurate
+
+- `packages/conformance/matrices/README.md:844-861`: `READ_SCHEMA_SEALED_DEFINITIONS.length === 47`; all four legacy `beadRecord`/`beadCollection`/`linkRecord`/`linkCollection` names remain in the seal while `deriveReadSchemaProjectionRoots` over `matrices/read-v1.json` yields exactly 16 roots, all four `current*` among them and no legacy name (the 20→16 claim is consistent with `READ_VALUE_SCHEMA_REFS` now pointing at `current*`); `revisionProvenance` carries `minProperties: 1` while `revisionProvenanceInput` has `required: []` and no `minProperties`, so `{}` is still accepted; `validationDiagnostic` is not in the Read seal, so the `document` discriminator is correctly described as outside the Read projection.
+- `docs/design/w1-transactional-packet.md:4601-4605`: the delta adds only the framing paragraph; all 7 vectors in §5.4 recompute — SHA-256 over each recorded JCS line matches its recorded digest, 7/7 — so "the recorded bytes and digests remain paired and unchanged" is true, and the vectors do use the former `attribution` envelope as the note says.

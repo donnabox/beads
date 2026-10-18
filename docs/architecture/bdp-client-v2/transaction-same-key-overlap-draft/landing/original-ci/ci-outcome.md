@@ -1,0 +1,13 @@
+# Original PR134 CI evidence only
+
+Run 38798151776 / job 116639895675 completed successfully for original head `18f5428686dd84fb139c9dbbcbe39d5958012323`, base `98c600767e8e91a79e109cb741beb91e23b9bebe`. All 27 actual job steps succeeded. Job duration 1040s; full suite 809.16s, 180 files passed, 9,311 tests passed and one skipped (9,312 total). Ready preflight passed seven cases; smoke passed all three executable lifecycle/help/diagnostic paths and public Read discovery; sealed Read evidence verified 89 rows with its historical evidence attribution retained.
+
+Raw checkout log lines 433–436 identifies synthetic `4ac569d715998d0609fb1ec08caa957c15ae93eb`. GitHub Git-commit API independently confirms ordered parents `[98c600767e8e91a79e109cb741beb91e23b9bebe, 18f5428686dd84fb139c9dbbcbe39d5958012323]` and tree `9c78087e1036dd26ca908e1d8feaa91263513717`, equal to the original candidate. No repository fetch or mutation occurred.
+
+The exact new callback, “preserves one allocated effect and receipt across same-key singleton and batch requests dispatched without awaiting”, passed in 1,159ms (raw log lines 4729–4732). Its JSON parses without value normalization: six 200 responses, 15 performed checks, one shared receipt/transaction/Resource, required/effect/serving position pos-1, matching body hashes for requests 1/2/3/6, no pending response observed. Both initial client writes preceded the first response; this is not evidence of server-side concurrent admission or pending join. Full structural comparisons occurred in memory; retained fingerprints are not full-wire evidence. Claim eligibility remains false.
+
+The CI witness identifies workspace-emitted execution at the synthetic checkout, not the independently packaged local candidate run. It reports child 18420 exit 0, known stop, absent temporary directory, zero live sockets, zero primary/cleanup failures, and no deadline, drain, cleanup, report-write or report-size failure. These are remote reported cleanup facts, not a new local PID inspection.
+
+Original full raw job log is preserved byte-for-byte as job.log: 3,405,934 bytes, SHA256 `d43ef60cdc7a5370d5540605def761ff837e1e465b6b90af0f45219d1465d72b`. run.json, job.json and pr.json preserve actual metadata at capture; synthetic-commit.json preserves the independent parent/tree response. same-key-observation.json is a JSON projection of the single raw log record after removal of timestamp/ANSI framing only. capture.json records original retrieval endpoints and hashes.
+
+**This original green run validates only 18f5428 and its tested tree. It cannot authorize the report-overflow repaired successor, readiness, merge, release or public profile activation.** Root owns subsequent exact-head validation and landing.

@@ -1,0 +1,38 @@
+{
+  "runId": 38683826258,
+  "jobId": 116254058291,
+  "head": "102e140fdd8ba27bcff7d80320c94ec7ace57dc3",
+  "base": "bd2178dd6f4b9f7c2d239624d7edaa3d961c3e26",
+  "testedSyntheticMerge": "d1ca6a89c8ee86f8745709b8b324c3c024c4b2ec",
+  "testedTree": "40782d97c9764bc19ae78c46d1d39475e3db317a",
+  "orderedParents": [
+    "bd2178dd6f4b9f7c2d239624d7edaa3d961c3e26",
+    "102e140fdd8ba27bcff7d80320c94ec7ace57dc3"
+  ],
+  "runConclusion": "success",
+  "all27StepsSuccess": true,
+  "fullSuite": {
+    "filesPassed": 173,
+    "testsPassed": 9280,
+    "testsSkipped": 1,
+    "seconds": 750.8
+  },
+  "preflight": {
+    "filesPassed": 1,
+    "testsPassed": 7,
+    "seconds": 1.44
+  },
+  "jobSeconds": 969,
+  "smoke": "success",
+  "readEvidenceGate": "success",
+  "ciLogSha256": "5c9ddc80014729b827810d2be39801f532f8f1eb326da85cf2eedb1d1874b2c5",
+  "sourceTreeEqualTestedTree": true,
+  "actualMergeNotYetPerformed": true,
+  "captureHashes": {
+    "ci-run.json": "3385ca982a15e28e31a27f3e40c5d64b4b01e47a25aa7bc0ee65dd50b7fe7f0e",
+    "ci-job.json": "cb2e6a6f493d6a81f968783a0ff69e929fb0fed4b940fb307b937864055ac774",
+    "pr-before-merge.json": "e58d931e2ce0e8bfc2e6a1dc7d8e6df4a9b52853155cb0262245788cdba7d81c",
+    "tested-merge.json": "c88d2bab1b2f3b33d6894cfcea7cba1f0084fb3125612f7150f29c8847b9eae8",
+    "native-publication-binding.json": "ef8986d8ec1728e75486774f70641316c021d326c5e6b741d192ee580188c38c"
+  }
+}

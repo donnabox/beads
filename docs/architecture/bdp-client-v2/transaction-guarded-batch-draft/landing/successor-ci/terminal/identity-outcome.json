@@ -1,0 +1,28 @@
+{
+  "candidate": "8833c9242b7788e843e9eb97a2c99b2277fe75ef",
+  "tree": "057f879132074166f2c0f643a8b45bbd9dd47c6f",
+  "base": "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
+  "candidateParent": "9e5f040edab88be364f683098ead72f595f0ab55",
+  "synthetic": "2e96758fcdcc0801522e60040bc229075963e680",
+  "syntheticParents": [
+    "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
+    "8833c9242b7788e843e9eb97a2c99b2277fe75ef"
+  ],
+  "actualSteps": 27,
+  "runConclusion": "success",
+  "jobConclusion": "success",
+  "rawLogSha256": "856d5c3259216e47714fbbc08d4de0037fcf82afd328ea2c63cca9829dc06e18",
+  "summaryLinesForHumanReview": [
+    "2026-10-15T21:28:52.6901192Z \u001b[90mstdout\u001b[2m | apps/bdptest/src/transactional-guarded-batch-installed.test.ts\u001b[2m > \u001b[22m\u001b[2mpreserves one guarded batch winner and rolls back the losing marker through installed HTTP",
+    "2026-10-15T21:28:52.7165984Z  \u001b[32m\u2713\u001b[39m apps/bdptest/src/transactional-guarded-batch-installed.test.ts\u001b[2m > \u001b[22mpreserves one guarded batch winner and rolls back the losing marker through installed HTTP\u001b[33m 1239\u001b[2mms\u001b[22m\u001b[39m",
+    "2026-10-15T21:39:21.8984122Z \u001b[2m Test Files \u001b[22m \u001b[1m\u001b[32m181 passed\u001b[39m\u001b[22m\u001b[90m (181)\u001b[39m",
+    "2026-10-15T21:39:21.9682230Z ##[group]Run pnpm e2e:ready:preflight",
+    "2026-10-15T21:39:21.9682628Z \u001b[36;1mpnpm e2e:ready:preflight\u001b[0m",
+    "2026-10-15T21:39:24.2068119Z \u001b[2m Test Files \u001b[22m \u001b[1m\u001b[32m1 passed\u001b[39m\u001b[22m\u001b[90m (1)\u001b[39m"
+  ],
+  "suiteTotals": null,
+  "humanRawLogReviewRequired": true,
+  "finalCouncilPending": true,
+  "ready": false,
+  "mergeAuthorized": false
+}

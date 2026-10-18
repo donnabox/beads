@@ -1,0 +1,88 @@
+{
+  "at": "2026-10-15T18:16:32.839589+00:00",
+  "decision": "accepted for exact-head landing checks",
+  "head": "82f60a25da8799334381f6ebd810f32a3574cd2d",
+  "tree": "3cd1da66ba3a6cbd0bbdaa2442d10002939d826b",
+  "base": "18104a03b850553641f24fe83e7318493fa102ca",
+  "evidence": {
+    "finalSourceBinding": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/final-source.json",
+      "sha256": "522627a955933cad325e08b7557ad45b7eacc399d926b1e2af9a07190867957f"
+    },
+    "native": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/native-code-review.md",
+      "sha256": "6a36c3cb150517fdc0fe2c3f215f06052ddbdcc94a85036aa5473a1b167bdb25"
+    },
+    "rootCouncil": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/root-final-council.json",
+      "sha256": "01d4f4281ba7dd60d4b0ab608f042ec998b4d1be1ae15090a3d36453a5346043"
+    },
+    "installedAcceptance": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/root-installed-acceptance.json",
+      "sha256": "9a7a53dd92fa153dfacf5c5e0629215cd96a2810494851d4d8b052552ad245b6"
+    },
+    "installedPositive": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/positive-fifteen.review-candidate.json",
+      "sha256": "ee76d6b00e17f35f47431aea7a9ceba307cb0fb0d3529c5c6a24550a5a8011eb"
+    },
+    "installedSequenceControl": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/selected-sequence-delete-control.review-candidate.json",
+      "sha256": "b3ccaf7b28428d6c2269cd5a37d8f2941eb882824539613a79d0a7888d66089e"
+    },
+    "installedCrossBatch": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/cross-batch-control.review-candidate.json",
+      "sha256": "cce4abba58f8ff5e59c8449cc66f5333f23414dd6d18ae731d298a498bcd11d9"
+    },
+    "installedCrossSequence": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/cross-sequence-control.review-candidate.json",
+      "sha256": "27d8b0d55121d562a7d6beb0b07b6c16b9738d353deef321312c00b4ccd71b66"
+    },
+    "sourceAcceptance": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/root-source-acceptance.json",
+      "sha256": "15e91b6ab40beda200189a569d9475eaedc6ffc09cb7d0154c4ca9bececbdf39"
+    },
+    "ciOutcome": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/landing-preparation/ci-outcome.json",
+      "sha256": "6195d09f0d19c8953a32855031a7e2d918ee022e4eeac85627bb48c171f244d2"
+    },
+    "claudeWireExit": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-split-review/wire/exit.json",
+      "sha256": "ee5d5eb1fb3389a01325aac8ecfab306aeeaf7ebf6dd5f51be9eaa4c1db29238"
+    },
+    "claudeWireStdout": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-split-review/wire/stdout.txt",
+      "sha256": "72996311f2cf4112c7fa3105c4e4b034e6010c180307e88a9e127e7d9885b7d4"
+    },
+    "claudeWireCleanup": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-split-review/wire/cleanup.json",
+      "sha256": "faafe4d7a57d946fa3925a10b6192f2c1e3155d57487330a67e3511aa00f20f1"
+    },
+    "claudeManifestExit": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-split-review/manifest/exit.json",
+      "sha256": "78278575d77e52e369368291572702d44121e694733253fb43f25625af0fc680"
+    },
+    "claudeManifestStdout": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-split-review/manifest/stdout.txt",
+      "sha256": "797e7cb90f042e68b7610951db1c1cb12ecfcc29765d0bcae0f6d1df682e6c98"
+    },
+    "claudeManifestCleanup": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-split-review/manifest/cleanup.json",
+      "sha256": "a42bbba5ee1ff4967a6c560f444d411109c9cc67f125e097fbc553cfbbd06065"
+    }
+  },
+  "additionalAudits": {
+    "ci": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/landing-preparation/native-ci-audit.md",
+      "sha256": "147a58d81f115795d124b54328b3942e9d5f0175cf7916e43129cd27201318bf"
+    },
+    "packages": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/native-package-audit.md",
+      "sha256": "8642537414f053603d1619fcc9659a663482fa7525fdd5a91cc9cd59a4bc67ea"
+    },
+    "buildBridge": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/root-build-acceptance.json",
+      "sha256": "baddc5a20910645ae8f28da736237986defda825d67418c7263e94d8bb6badac"
+    }
+  },
+  "limitations": "Partial installed evidence; no public profile claim, release or Preview2. Historical source attribution retained."
+}

@@ -1,0 +1,31 @@
+Scope: all 12 workspace projects
+✓ Lockfile passes supply-chain policies (verified 3d ago)
+Lockfile is up to date, resolution step is skipped
+Already up to date
+
+Done in 300ms using pnpm v11.20.0
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence
+
+ ↓ apps/bdptest/src/development-contracts.test.ts > installs pinned schema closure and applies inherited validation through actual HTTP with retained failures
+ ↓ apps/bdptest/src/development-contracts.test.ts > enforces owned source guards, aggregate constraints, revision/provenance fanout and no-op preservation
+ ↓ apps/bdptest/src/development-contracts.test.ts > uses transport principals rather than actor attribution and distinguishes hidden, forbidden and retained disclosure
+ ↓ apps/bdptest/src/development-contracts.test.ts > withholds a complete owned Resource and its retained postimage when an owned Link becomes hidden
+ ↓ apps/bdptest/src/development-contracts.test.ts > reopens the same pinned contracts and refuses a changed schema closure or aggregate installation
+ ↓ apps/bdptest/src/development-contracts.test.ts > refuses unpinned schemas, accessor policies and duplicate credential maps before service construction
+ ↓ apps/bdptest/src/development-contracts.test.ts > requires write permission on an owned Link's source and preserves state on refusal
+ ↓ apps/bdptest/src/development-contracts.test.ts > refuses to claim complete diagnostics when the receiver accepts the entire truncated compiler prefix
+ ↓ apps/bdptest/src/development-contracts.test.ts > emits a receiver-bounded 422 from a truncated compiler prefix, retains it and accepts a corrected fresh key
+ ↓ apps/bdptest/src/development-contracts.test.ts > rejects invalid aggregate and missing principal configuration before provisioning
+ ↓ apps/bdptest/src/development-contracts.test.ts > reopens after aggregate reordering and exact duplicates, and binds all compiler input limits
+ ↓ apps/bdptest/src/development-contracts.test.ts > supports actual canonical nested/dotted/encoded IDs in hidden and read-only policy
+ ✓ apps/bdptest/src/development-contracts.test.ts > keeps an actual evaluator work refusal local and permits correction using the same unclaimed key 813ms
+ ↓ apps/bdptest/src/development-contracts.test.ts > configured authorities expose only explicit principal facets and duplicate credential principals share one route
+ ↓ apps/bdptest/src/development-contracts.test.ts > retains detached immutable capture without changing the predecessor compiler identity
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 14 skipped (15)
+   Start at  04:52:04
+   Duration  1.15s (transform 176ms, setup 18ms, import 263ms, tests 814ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/ci-timeout-diagnosis/targeted.json

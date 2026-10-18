@@ -1,0 +1,31 @@
+{
+  "status": "accepted-single-early-depth-control",
+  "checkedAt": "2026-10-15T16:07:27.771949+00:00",
+  "sourceBindingSha256": "5fbe5c9b0c57f2c253fb16d114675ccb4929a9e4e18b21a1efbf1ca18385d778",
+  "actualResultSha256": "fe04ba048eb4db4b98d48b608ec0730c55c9a73b7028b59c9fc3b16f7faf07ad",
+  "rootReleaseSha256": "f9fee1106ed6763718198cde3f824753552eb99530da5957bccf04cf1cc7d67a",
+  "graphVerifiedAgain": {
+    "packetSha256": "2a5d92822153b08235f2dc8f246d6db96c942a1fed6b6f20373a29f16267a70c",
+    "sourceAndBuildMembers": 1133,
+    "toolFiles": 1932,
+    "links": 180
+  },
+  "actualTestExit": 1,
+  "actualSupervisorExit": 1,
+  "wrapperExit": 0,
+  "actualRequests": 2,
+  "failure": "AssertionError: depth-key:batch:conflict-before-depth: expected 500 to be 409 // Object.is equality\n    at /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/mirror/packages/server/src/transaction-http.test.ts:4311:74\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/mirror/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20",
+  "cleanup": {
+    "cleanupActions": 2,
+    "cleanupActionsCompleted": 2,
+    "cleanupCompleted": true,
+    "primaryOrCleanupFailureCount": 1
+  },
+  "independentlyAbsentPids": [
+    73364,
+    73366,
+    73371,
+    73378
+  ],
+  "limits": "No installed mutant or profile qualification. Same test/request source; one emitted store early-refusal insertion. Original selection rerun implies34 selected-source HTTP executions total across two runs, plus2 control; new H observed26 responses across both source runs, plus2 control."
+}

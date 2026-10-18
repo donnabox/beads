@@ -1,0 +1,642 @@
+{
+  "source": "84e6b67b2d322362f1d8e44e76873584d025071c",
+  "tree": "a5ded8cfb5fecf571f5f481866469071c194bab2",
+  "parents": [
+    "b3b9327c262ba16eb6b8f994303f3a08f098c7a6"
+  ],
+  "clean": true,
+  "files": {
+    "apps/bdptest/src/transactional-matrix.test.ts": {
+      "bytes": 44969,
+      "sha256": "9c4aba7167b3d944f39245c2c9e187b4a6f30c019deb4c679f78076a031fa847"
+    },
+    "packages/conformance/src/transactional-cumulative.test.ts": {
+      "bytes": 48895,
+      "sha256": "4483e011fc06a6d813bf969dcc6a9d3eeaace248fedcf8cd1bfa3f61e8366de3"
+    },
+    "packages/conformance/test-support/transactional/coverage-v1.json": {
+      "bytes": 60069,
+      "sha256": "4c84318e57c74a928edcaead5490bc647a67f2e3ba79872f1babe7ac3b6916ec"
+    }
+  },
+  "claimEligible": false,
+  "installRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-completed-key-conflict-external-repair/install",
+  "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-completed-key-conflict-external-repair/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+  "tarballs": {
+    "protocol.tgz": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+    "server.tgz": "502bb785fe3f54503440a7a3c9298c4c607a086470b1f5e5b00f73235ecdb222"
+  },
+  "exits": {
+    "install": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.478,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--frozen-lockfile"
+      ]
+    },
+    "format-write": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 1.358,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "biome",
+        "format",
+        "--write",
+        "packages/conformance/src/transactional-cumulative.test.ts",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "packages/conformance/test-support/transactional/coverage-v1.json"
+      ]
+    },
+    "clean": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 1.219,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "clean"
+      ]
+    },
+    "typecheck": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.816,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ]
+    },
+    "build": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.817,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "cumulative": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 1.988,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/conformance/src/transactional-cumulative.test.ts",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-completed-key-conflict-external-repair/cumulative.json"
+      ]
+    },
+    "format": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.353,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "format:check"
+      ]
+    },
+    "lint": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.425,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ]
+    },
+    "boundaries": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.591,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ]
+    },
+    "read-seal": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.311,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ]
+    },
+    "diff-check": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.012,
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ]
+    },
+    "frozen-clean": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.298,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "clean"
+      ]
+    },
+    "frozen-typecheck": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.822,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ]
+    },
+    "frozen-build": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.787,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "frozen-cumulative": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 1.142,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/conformance/src/transactional-cumulative.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-completed-key-conflict-external-repair/frozen-cumulative.json"
+      ]
+    },
+    "pack-protocol": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.198,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "pack",
+        "--out",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-completed-key-conflict-external-repair/packs/protocol.tgz"
+      ]
+    },
+    "pack-server": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.26,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "pack",
+        "--out",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-completed-key-conflict-external-repair/packs/server.tgz"
+      ]
+    },
+    "packed-install": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.354,
+      "command": [
+        "npm",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund"
+      ]
+    },
+    "packed-positive": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 4.272,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "-t",
+        "observes ten partial Transactional",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-completed-key-conflict-external-repair/packed-positive.json"
+      ]
+    },
+    "packed-five-controls": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 18.123,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "-t",
+        "discriminates completed-key conflict",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-completed-key-conflict-external-repair/packed-five-controls.json"
+      ]
+    }
+  },
+  "positive": {
+    "kind": "installed-tx-ten-partial-summary",
+    "sourceCommit": "84e6b67b2d322362f1d8e44e76873584d025071c",
+    "elapsedMs": 3636.5295419999998,
+    "actions": 151,
+    "sessions": 17,
+    "childLaunches": 18,
+    "closedChildren": 18,
+    "artifacts": {
+      "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+      "manifestDigest": "7f55695401b815534f17fc69dc924ee0c0920fb6c9175529709a8e60afda5786",
+      "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+    },
+    "baseline": {
+      "served": {
+        "scope": "https://reference.invalid/acme/",
+        "profile": "transactional",
+        "history": false,
+        "sourceCommit": "84e6b67b2d322362f1d8e44e76873584d025071c",
+        "installedPayloadDigest": "6945e90b33b51b1fc26cb92866399de58d36dee2da4fc09ebe126fe5ccba59ef",
+        "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+        "policyDigest": "1a627a4c4536bef2b6b74d7d9bb1dee65fa19c5de005f590aeb392a0efaa8ecb",
+        "authenticationDigest": "43a3c011dc330f0979a07cfccd9129b746f9f7d6529169f4d90cdfaa206d5311",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+        "fixtureId": "reference-transactional-v1",
+        "capabilities": [
+          "installed-transactional-http",
+          "transactional-receipt-observation"
+        ]
+      },
+      "operationTargets": {
+        "createBead": "https://reference.invalid/acme/operations/create-bead",
+        "updateBead": "https://reference.invalid/acme/operations/update-bead",
+        "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+        "createLink": "https://reference.invalid/acme/operations/create-link",
+        "updateLink": "https://reference.invalid/acme/operations/update-link",
+        "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+        "putAlias": "https://reference.invalid/acme/operations/put-alias",
+        "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+        "updateWhere": "https://reference.invalid/acme/operations/update-where",
+        "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+        "batch": "https://reference.invalid/acme/operations/batch",
+        "sequence": "https://reference.invalid/acme/operations/sequence"
+      },
+      "runtimeConfigurationIdentity": "69b5a99ffb54b29bd0b5c10a11e60310ad6921ac1e0193a62456caa22d3abfdf",
+      "authorityMode": "canonical"
+    },
+    "claimEligible": false
+  },
+  "controls": [
+    {
+      "kind": "installed-tx-completed-conflict-control",
+      "control": "conflict code",
+      "sourceCommit": "84e6b67b2d322362f1d8e44e76873584d025071c",
+      "actionId": "c-conflict",
+      "assertionId": "problem-code",
+      "observedStatus": 409,
+      "writeState": "complete",
+      "failures": [
+        "problem-code"
+      ],
+      "childLaunches": 17,
+      "closedChildren": 17,
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "6943cdef0499e90d9c0ddf7bb847a88d5e6167f33e37d5b6897335658aee78a3",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "declarations": {
+        "targetLabel": "private-installed-transactional-partial",
+        "exactConfigurationDigest": "634214546089490d235fa404166dc868a0feb5dc2a8af2a566a6ad33664b4b1a"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "84e6b67b2d322362f1d8e44e76873584d025071c",
+          "installedPayloadDigest": "6945e90b33b51b1fc26cb92866399de58d36dee2da4fc09ebe126fe5ccba59ef",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "e9ed28966a61805271cdabd2c78ffde809fb4f9df1db74f9b581ab86ff26c973",
+          "authenticationDigest": "b9e5f72c8ddcb6d1a1d7ebc04cb28eb58744e1ae44001b0a41dbee667499e7fc",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "37c720e18be4bf4d3040c6e49677f8d799fa787383a40623dbca35a23c73eb01",
+        "authorityMode": "canonical"
+      },
+      "claimEligible": false
+    },
+    {
+      "kind": "installed-tx-completed-conflict-control",
+      "control": "reopened conflict status",
+      "sourceCommit": "84e6b67b2d322362f1d8e44e76873584d025071c",
+      "actionId": "c-conflict-reopened",
+      "assertionId": "http-status",
+      "observedStatus": 409,
+      "writeState": "complete",
+      "failures": [
+        "http-status"
+      ],
+      "childLaunches": 18,
+      "closedChildren": 18,
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "49dc9dd83936316dca741b1fbc3e5f54a677be134ebb72ddef01deec8153c51a",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "declarations": {
+        "targetLabel": "private-installed-transactional-partial",
+        "exactConfigurationDigest": "634214546089490d235fa404166dc868a0feb5dc2a8af2a566a6ad33664b4b1a"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "84e6b67b2d322362f1d8e44e76873584d025071c",
+          "installedPayloadDigest": "6945e90b33b51b1fc26cb92866399de58d36dee2da4fc09ebe126fe5ccba59ef",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "7f5958ca24e26f5cb6c827351f31952d1d8911f48703b097c32ce464a2238cd1",
+          "authenticationDigest": "06d3e75914b5b3d27fd22abda8ff499f16a7dddf45a8ca2f122d3fdd161ca745",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "807f294444e0cac163d9ab052ce803f074a5a67174b020322a0879b9ab609b4e",
+        "authorityMode": "canonical"
+      },
+      "claimEligible": false
+    },
+    {
+      "kind": "installed-tx-completed-conflict-control",
+      "control": "current record",
+      "sourceCommit": "84e6b67b2d322362f1d8e44e76873584d025071c",
+      "actionId": "c-state",
+      "assertionId": "ordered-state",
+      "observedStatus": 200,
+      "writeState": "complete",
+      "failures": [
+        "ordered-state"
+      ],
+      "childLaunches": 17,
+      "closedChildren": 17,
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "a506a7b6eb2105324c6922ba10b61a99088ddfdd58ed850af7921f270c8ac8fd",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "declarations": {
+        "targetLabel": "private-installed-transactional-partial",
+        "exactConfigurationDigest": "634214546089490d235fa404166dc868a0feb5dc2a8af2a566a6ad33664b4b1a"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "84e6b67b2d322362f1d8e44e76873584d025071c",
+          "installedPayloadDigest": "6945e90b33b51b1fc26cb92866399de58d36dee2da4fc09ebe126fe5ccba59ef",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "b2dcf830ad5c03b4d2872ecbaacd58958db4c6fd7abd3f468481d6324bd6f5cf",
+          "authenticationDigest": "53bca8bd136871a05f5bc9139cdcac8d726f8d81bb88220dc7d9d844b7435187",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "cfe63dbee25b0739ada53850407754ca7092ce100a5351af23227ce9a73782d7",
+        "authorityMode": "canonical"
+      },
+      "claimEligible": false
+    },
+    {
+      "kind": "installed-tx-completed-conflict-control",
+      "control": "retained replay body",
+      "sourceCommit": "84e6b67b2d322362f1d8e44e76873584d025071c",
+      "actionId": "c-retry-reopened",
+      "assertionId": "retained-body",
+      "observedStatus": 200,
+      "writeState": "complete",
+      "failures": [
+        "retained-body"
+      ],
+      "childLaunches": 18,
+      "closedChildren": 18,
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "a74ccfe54598436b13c6232ac2f0b8ce5e40df9b33b24b743df8b7c64c283ad6",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "declarations": {
+        "targetLabel": "private-installed-transactional-partial",
+        "exactConfigurationDigest": "634214546089490d235fa404166dc868a0feb5dc2a8af2a566a6ad33664b4b1a"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "84e6b67b2d322362f1d8e44e76873584d025071c",
+          "installedPayloadDigest": "6945e90b33b51b1fc26cb92866399de58d36dee2da4fc09ebe126fe5ccba59ef",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "dbc6ac5a7f95185f7981c167b86d8cb0040acf0e7163c37829c8e2b010145ba0",
+          "authenticationDigest": "a0149aad45a87af73d17f01c36bc2ce2941668e342a1bb706762cb0b8cc67e0b",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "c1f5ffb171a5914db7de04de883128a755b45f338e55eb7253014996e74cd7da",
+        "authorityMode": "canonical"
+      },
+      "claimEligible": false
+    },
+    {
+      "kind": "installed-tx-completed-conflict-control",
+      "control": "unchanged Event",
+      "sourceCommit": "84e6b67b2d322362f1d8e44e76873584d025071c",
+      "actionId": "c-events-reopened",
+      "assertionId": "ordered-facts",
+      "observedStatus": 200,
+      "writeState": "complete",
+      "failures": [
+        "ordered-facts"
+      ],
+      "childLaunches": 18,
+      "closedChildren": 18,
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "7ac3d4b0f3436d2e73ac57f03431aeecbe639a9ab5339fe531c3a32fcb33a6a9",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "declarations": {
+        "targetLabel": "private-installed-transactional-partial",
+        "exactConfigurationDigest": "634214546089490d235fa404166dc868a0feb5dc2a8af2a566a6ad33664b4b1a"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "84e6b67b2d322362f1d8e44e76873584d025071c",
+          "installedPayloadDigest": "6945e90b33b51b1fc26cb92866399de58d36dee2da4fc09ebe126fe5ccba59ef",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "f9622ae4dc870cda710b25b60518db2543c7c1c228c0c9f133a7b68140f5b443",
+          "authenticationDigest": "160b1f44c33c03f6a007f61deca38b78b0b5fccf288abf740f12477acfc2474d",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "b29a85283ce79438f502c250bd696e8babe3fbffcdcdb51e3e06c5587d1c2443",
+        "authorityMode": "canonical"
+      },
+      "claimEligible": false
+    }
+  ],
+  "remainingInstalledChildren": 0,
+  "preservation": {
+    "manifestAndFixtureByteIdenticalTo": "b3b9327c262ba16eb6b8f994303f3a08f098c7a6",
+    "coverageOnlyNewRowReasonChanged": true,
+    "runtimeUnchanged": true,
+    "oldNineRawObjectsVerified": "final-source-audit.json"
+  },
+  "observedClaimEligibility": {
+    "positive": false,
+    "controls": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "reportDigests": {
+    "packed-positive-observation.json": "295d7c00f122fa692264ab679f7dcab20efc95dc8efc2272dad2232ff4132a4a",
+    "packed-positive.json": "ab2dc1904ec34f6fbb5f08cce637a1e9b80a8030602454366a979c60e9a286e0",
+    "packed-five-controls.json": "d8b3eabd579b27414be9ecc818c29414eed9ba34123ac88e02734633713a67f8",
+    "mapping-audit.json": "dae84f39004d6b76474eaf2f70f584f910917c06ea16a949c4b1bf291e529cdc",
+    "final-source-audit.json": "6be80878a7c12f9224f0b536445fec43679d4c79b1da4891a577f026dc56a9a7"
+  }
+}

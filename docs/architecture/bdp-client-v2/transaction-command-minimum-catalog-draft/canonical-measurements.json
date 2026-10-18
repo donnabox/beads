@@ -1,0 +1,92 @@
+{
+  "nodeVersion": "v24.16.0",
+  "productImports": false,
+  "measurements": [
+    {
+      "path": "packages/conformance/catalog/read-update-v1.json",
+      "before": {
+        "diskBytes": 84833,
+        "diskSha256": "0ad91810510dd7b688b291863d9b33949bba85fab69d6004ef1423b8c5e47039",
+        "jsonStringifyBytes": 69233,
+        "jsonStringifySha256": "5cc07a2b67364b9ea63adc9901d2d5111fd199ce4358ddc51c5ff877ab60b622",
+        "canonicalSortedBytes": 69233,
+        "canonicalSortedSha256": "79a6774a81ac2bbb82f1d279ff068a13dc9cdc2e9284e24449d26c676b887791"
+      },
+      "after": {
+        "diskBytes": 85899,
+        "diskSha256": "73d215813df034a2be0cd15d0caff7cf2c8823a067f271b9140c9cbb90e859c3",
+        "jsonStringifyBytes": 70188,
+        "jsonStringifySha256": "29e4a277bfafabffdad367916c9e137c09ac26a53fd50aa96bd586de98b198d0",
+        "canonicalSortedBytes": 70188,
+        "canonicalSortedSha256": "cebb3ebd24b9d80236a600817586d7cf7a8c4c52f2f7b79041e959ea1ec6ebf2"
+      }
+    },
+    {
+      "path": "packages/conformance/test-support/read-update-coverage-v1.json",
+      "before": {
+        "diskBytes": 712792,
+        "diskSha256": "ee39ca50dc8f48dd062fa8f2e1364c1842aa3bb2d1f732152dd42646ffa154b1",
+        "jsonStringifyBytes": 525167,
+        "jsonStringifySha256": "a9440349e6b1ddbeded09071f9637b355021e7d76e3d8c575b9294182701b5a0",
+        "canonicalSortedBytes": 525167,
+        "canonicalSortedSha256": "a61cebe3edf51c777efe2cec394bbad4b30a0be45f372ed97ac3e47d5c9633e3"
+      },
+      "after": {
+        "diskBytes": 713193,
+        "diskSha256": "f8f0b001928f8488292403b57c973bd918cba224ef9e00fe0691482bf5cfac0c",
+        "jsonStringifyBytes": 525518,
+        "jsonStringifySha256": "2abf87046938de9a3f24ff00d963a032f44187475bae1f8ed006ed17f335324d",
+        "canonicalSortedBytes": 525518,
+        "canonicalSortedSha256": "77b3654ba78a4b2c679eaec03cf688a942936c31a7a309f2b3f01077d9b1b683"
+      }
+    },
+    {
+      "path": "packages/conformance/development/read-update-coverage-v1.json",
+      "before": {
+        "diskBytes": 48952,
+        "diskSha256": "d4fdaf3411fbc358c92be6e0e1e148dca9c50c0f56a1d15c397821859348a6ce",
+        "jsonStringifyBytes": 35508,
+        "jsonStringifySha256": "ae2a28ef2d2b2383218f5a8b78c04d929484ec3e192e54b79b7a1d30f737a7a5",
+        "canonicalSortedBytes": 35508,
+        "canonicalSortedSha256": "38ca8978b430e2fe2f24eb25fb0c8fda884bd6d09a4e643d643f5812190be040"
+      },
+      "after": {
+        "diskBytes": 49322,
+        "diskSha256": "221c06dba56142db37194f51e41c2dc71edf7f9926d94f0f7d18e63b33d73baf",
+        "jsonStringifyBytes": 35828,
+        "jsonStringifySha256": "95dcd590fd20a8c7124835b92d1e4ff5266853be9a1cd7126f3140bc7d9f6ad1",
+        "canonicalSortedBytes": 35828,
+        "canonicalSortedSha256": "e4cfc3f373cde97a8a68163169997e2a7011c4545c94a4447a26637112d814f7"
+      }
+    }
+  ],
+  "rows": [
+    {
+      "path": "new-catalog-row.json",
+      "diskBytes": 1013,
+      "diskSha256": "aabec142b617af74ba61cac8b04a914f3f276da7e29e9f0521fc8215608fa22f",
+      "jsonStringifyBytes": 954,
+      "jsonStringifySha256": "8667de4ce35fe9cf6c42b35e916f24781f2c52264d6fc361ed15a5617ca45583",
+      "canonicalSortedBytes": 954,
+      "canonicalSortedSha256": "163d23a885b6028e4af969da82311035999b16a3c508d3e9d8606256bdce54f1"
+    },
+    {
+      "path": "new-coverage-row.json",
+      "diskBytes": 372,
+      "diskSha256": "d2f1ac1fb450e321b6197eba3b6ec021e05c924cc9540141a05a30ae2165f083",
+      "jsonStringifyBytes": 350,
+      "jsonStringifySha256": "03b3cf187aa0fe08981a884b2c6e846cad5ecfd2100cf3fe096bacf925032b8e",
+      "canonicalSortedBytes": 350,
+      "canonicalSortedSha256": "cad3faad4bd8cf619e55d65cfba4823615c95431dcaf7c351934ea45f57f53f0"
+    },
+    {
+      "path": "new-development-row.json",
+      "diskBytes": 341,
+      "diskSha256": "ef557d2a1f7f1128265629b880e7f3450312949be1243ff1f3e257c45ff33984",
+      "jsonStringifyBytes": 319,
+      "jsonStringifySha256": "e2220867eb29b300553aa3f57aeda35b82dd195e00acfcbfede93597f027a3d1",
+      "canonicalSortedBytes": 319,
+      "canonicalSortedSha256": "4f80e9dacc840355ff8d2829a00077db0c87aa3401640d9a603f99fd155ea9f7"
+    }
+  ]
+}

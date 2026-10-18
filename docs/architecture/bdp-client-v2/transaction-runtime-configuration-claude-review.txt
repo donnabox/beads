@@ -1,0 +1,88 @@
+Reviewed `b2d6eef` against `31aab4d`: all six files, plus `transaction-store.ts`, `transaction-service.ts`, `transaction-comparison.ts`, `transaction-consistency.ts`, `development-contracts.ts`, `installed-contract-artifact.ts`, `json-values.ts`, the excluded callers, and the freeze logs.
+
+# Findings
+
+## 1. MEDIUM — `tokenDigest` is an undomain-separated SHA-256 of the raw bearer token
+
+**File:** `packages/server/src/transaction-runtime-configuration.ts:214`
+
+**Issue:** `transactionRuntimeDigest(token)` hashes the bare token string, so the preimage is literally `"<token>"` (JSON-quoted, nothing else). Every *other* digest in the module carries a `revision` key — `transaction-authentication-1` (`:218`), `transaction-policy-1` (`:326`), `transaction-runtime-1` (`:333`) — and the plan's identity section requires "a versioned, domain-separated SHA-256". The per-credential digest is the one place that requirement was dropped.
+
+**Impact:** The token grammar admits any `[A-Za-z0-9_-]{32,256}` string with no entropy requirement, and the repo's own fixtures use `"a".repeat(32)`. For a runtime with one or two credentials, `authenticationIdentity` is an offline confirmation oracle: guess a token → `sha256("\"guess\"")` → rebuild the `associations` record (principal and `canMutate` are low-cardinality and often known) → `sha256` → compare. Plan line 73's claim that "including token digests binds the actual permission association without exposing tokens" holds only for high-entropy tokens, which nothing here requires. This matters precisely because H1b is designed to carry `runtimeConfigurationIdentity` and `authenticationIdentity` outward into its binding and evidence.
+
+**Concrete fix:** `tokenDigest: transactionRuntimeDigest({ revision: "transaction-credential-1", token })` — this removes the bare-token-hash reuse across contexts. Determinism rules out a random salt (the reopen-stability law needs reproducible digests), so additionally either require captured tokens to be `randomBytes`-derived at the capture boundary, or state explicitly in the report that metadata digests are token-equivalent secrets until H1b generates tokens from `randomBytes`. Right now neither the plan nor the report says this.
+
+## 2. MEDIUM — `comparison.receiving` type-checks but is refused at startup
+
+**File:** `packages/server/src/transaction-runtime-configuration.ts:146`
+
+**Issue:** `captureSeams` allows `["budgetMs", "now", "wait"]`, but `TransactionRuntimeTestSeams.comparison` (`transaction-runtime.ts:47`) is typed `TransactionServiceOptions["comparison"]` = `Parameters<typeof submitTransaction>[2]`, which has **four** fields — `receiving`, `budgetMs`, `now`, `wait` (`transaction-comparison.ts:27-31`). The parent commit forwarded `seams.comparison` verbatim to the service, so `receiving` worked.
+
+**Failure scenario:** `startTransactionRuntime(options, { comparison: { receiving: {...} } })` compiles clean, worked at `31aab4d`, and now throws `TypeError("closed own-data runtime configuration required")` before listen. No current caller uses it, so it is latent — and invisible to `typecheck`.
+
+**Concrete fix:** add `"receiving"` to the allowed list and snapshot it with the existing `snapshotTransactionReceivingControls`, **or** narrow the exported type to `Pick<Parameters<typeof submitTransaction>[2], "budgetMs" | "now" | "wait">` so the refusal is a compile error. Same mismatch inverted for `scheduler` (`:161`): `["turn", "delay"]` is accepted although the type is `Pick<LifecycleScheduler, "turn">` and the service only reads `turn` (`transaction-service.ts:64`), so a supplied `delay` is silently ignored rather than refused.
+
+## 3. LOW-MEDIUM — three `startTransactionRuntime` callers excluded from the final regression set
+
+**File:** `run-final.py` (freeze logs) vs. `packages/server/src/transaction-{owned,changefeed,events}.test.ts`
+
+**Issue:** This commit replaced the entire input-validation path of `startTransactionRuntime` with a strictly stricter closed-field capture: unknown/extra option keys now throw, `types` now run through `detached()` + `parseTypeDescriptor`, a new live descriptor-closure assertion runs on *every* startup, and `maintenanceIntervalMs`/`comparison`/`minimumReads` are now always passed. The final set ran 7 files; `transaction-owned.test.ts:843,883`, `transaction-changefeed.test.ts:586,611` and `transaction-events.test.ts:382` all call `startTransactionRuntime` and were not among them.
+
+**Impact:** I checked their option shapes statically and they look compatible (owned: `{directory,scope,create,port,credentials,artifacts}`; changefeed/events: `{scope,directory,create,port,types,credentials}`). But all three pass `types` that are already `parseTypeDescriptor` output, and the new closure check at `:321` depends on `parseTypeDescriptor` being idempotent through `detached()` for exactly that shape — which none of the 7 run files exercise. The new test covers raw literals (`:272-277`) and `structuredClone`d parsed output (`:405`), not frozen parser output passed directly. Report line 26 discloses "Full repository suite was not rerun", so this is disclosure-accurate but under-covered for the one surface the commit rewrote.
+
+**Concrete fix:** add those three files to the targeted set before integration — they are all fast dist-importing files and would add a second or two — or run the full suite.
+
+## 4. LOW — the live descriptor-closure check is self-comparing on create, redundant on reopen
+
+**File:** `packages/server/src/transaction-runtime-configuration.ts:319-322`
+
+**Issue:** `metadata()` compares `actual.installedTypes` against `types`, but the owner produced `installedTypes` by re-parsing that exact captured array (`transaction-store.ts:207` → `:522`). Inside `startTransactionRuntime` the check cannot fail; it is only falsifiable through the forged-input unit test at `transaction-runtime-configuration.test.ts:380`. The real persisted binding on reopen is the store's byte-exact `storedConfiguration !== configuration` check (`transaction-store.ts:486`), whose JSON already covers types, `receiptMaximumItems`, `contractIdentity`, `runtimeLimits` and scope.
+
+**Impact:** Report line 19 ("Actual owner descriptor closure and fixed view/empty aggregate are checked before metadata") reads as independent live validation; it is a tautology on create. Same for `read: "all-visible"` in the policy preimage (`:328`) — a hardcoded constant, not a live-derived policy value; the only live field is `authorizationView`, already present as `view`. Not a defect, but H1b should not treat these as cross-checks it can lean on.
+
+**Concrete fix:** no code change needed; restate the claim as "defensive invariant over the capture's own derivation, with the store's persisted-configuration byte comparison as the actual reopen binding", so H1b builds its mismatch tests against the store check rather than this one.
+
+## 5. LOW — `authorityMode` is hashed but never returned, and digest divergence is untested
+
+**File:** `packages/server/src/transaction-runtime.ts:251-255`, `transaction-runtime-configuration.ts:337`
+
+**Issue:** `authorityMode` is in the `runtimeConfigurationIdentity` preimage, so a listener-mode and a canonical-mode runtime with otherwise identical configuration get different identities — but no test asserts that, and the returned runtime exposes only `scope`, `listenUrl`, `targets`, `configurationMetadata`. Plan line 79 lists "selected canonical Scope/Host mode" as part of the per-start physical binding H1b must validate.
+
+**Impact:** H1b can only recover the mode from what it passed in, not from captured state — which defeats the point of a capture-derived binding, and leaves the one field distinguishing a canonical runtime from a listener runtime observable only as a digest difference nobody has tested.
+
+**Concrete fix:** add `authorityMode` to the frozen metadata record (non-secret, already in the preimage) and add one assertion that the same fixture under `listener` and `canonical` yields different `runtimeConfigurationIdentity` with identical `artifactIdentity`.
+
+## 6. LOW — canonical Host comparison is byte-exact and case-sensitive
+
+**File:** `packages/server/src/transaction-runtime.ts:111-112`
+
+**Issue:** `request.headers.host !== new URL(scope).host`. Under the old listener mode the expected host was always `127.0.0.1:<port>`, so case and trailing dots never arose. In canonical mode the expected value is a DNS name, and HTTP host names are case-insensitive. `Host: Canonical.Test` and `Host: canonical.test.` both now get `malformed-request` 400; the tests only ever send lowercase (`:138`, `:156`).
+
+**Impact:** Fail-closed, so not a vulnerability — but it is an undocumented strictness H1b's trusted dial map must satisfy byte-exactly, and it will be discovered at integration rather than here.
+
+**Concrete fix:** either lowercase both sides before comparing, or add a test sending mixed-case Host expecting 400 plus a comment pinning exact-match-only as the deliberate law.
+
+## 7. LOW — `freeze()` has no cycle guard or depth bound
+
+**File:** `packages/server/src/transaction-runtime-configuration.ts:52-58`
+
+**Issue:** Recurses `Object.values` with no visited set and no depth limit. A cyclic or very deep input stack-overflows with `RangeError` instead of a typed refusal.
+
+**Impact:** Unreachable today — the only caller-derived input is `types`, which passes `detached()` first (depth bound 64, `:60`), and the compiled path's descriptors are compiler output. Worth bounding anyway in a module whose entire job is hostile-input capture; `detached` got a bound and its sibling did not.
+
+**Concrete fix:** mirror `detached`'s signature — `freeze(value, depth = 0)` with the same 64 bound and the same `TypeError`.
+
+## 8. LOW — evidence-strength and duplication notes
+
+- The leaf-dependency test (`transaction-runtime-configuration.test.ts:385-400`) perturbs `transactionRuntimeDigest(TRANSACTION_RUNTIME_DEFAULTS)`, not `runtimeConfigurationIdentity`. It proves each leaf moves a digest *of the defaults object* and relies on `settings` being embedded wholesale for the transfer. That transfer is sound (`stringifyJsonValue` is total over the object and `settings` keeps the spread's key order), but it is weaker than plan acceptance #4's wording, and the report should say so rather than implying leaves were shown to move the runtime identity directly.
+- `2147483647` appears at `:140`, `:151` and `transaction-store.ts:247` — three copies of a bound in a commit whose stated law is "define each once and have its consumers reference that definition."
+
+# Verified sound on the axes you named
+
+- **Synchronous capture is complete.** Everything is detached before the first `await`: credentials rebuilt as fresh plain objects (`:198-205`), artifact `utf8` copied into Buffers and `limits` snapshotted by `snapshotLimits` → `Object.freeze(values)` (`installed-contract-artifact.ts:145-158`), `types` through `detached()` + `parseTypeDescriptor`, seams snapshotted including explicit-`undefined` key presence. I specifically checked `artifacts.limits` for a retained caller reference — it is copied. Test `:114-152` mutates after the call and the behavior holds.
+- **Resource ownership is correct.** The new `metadata()` throw sits between `createTransactionService` and `createTransactionHttpHandler`, and the catch closes the service (which owns the owner) and the listener (`transaction-runtime.ts:232-249`). The transport-readback throw (`:191`) precedes `listen()`, so no handle exists to leak. No failure path between service and handler creation is covered by a test — but per finding 4 that path is practically unreachable, so this is not a real gap.
+- **No behavior change from the now-unconditional options.** `maintenanceIntervalMs` (store default `?? 1000`, `transaction-store.ts:243`), `comparison.budgetMs` (`transaction-comparison.ts:38`) and `minimumReads.budgetMs` (`transaction-consistency.ts:90`) all default to exactly the extracted 1000. Passing them explicitly is value-identical.
+- **Identity labels are truthful, not decorative.** `monotonicClock: "performance.now"` is the real default (`transaction-comparison.ts:41`, `transaction-consistency.ts:91`). `receiptDetailMs` is the same binding as the store's `day`, so it cannot drift, and `transaction-store.test.ts:871` behaviorally pins `expiresAt === now + 86400000` inside the run set. The receipt-maximum invariant A8 credits is real: `transaction-service.ts:58-61` compares advertised page max and `maxPageItems` against the live owner.
+- **Store compatibility JSON is correctly never forwarded**, asserted distinct at `:363-366`. Port/directory/create are correctly excluded from the logical digest, with a genuine two-concurrent-listener control at `:189-191`. The `transaction-runtime.test.ts` port-reuse fix is a real de-flake, and A9's distinct-address obligation is discharged by that control rather than lost.
+- `server.maxHeaderSize` readback is safe — verified present and own on Node 26, and the repo pins 24.16.0.
+- No public surface change: `index.ts` and `development.ts` do not re-export `transaction-store.js`, the exports map has only `.` and `./development`, and the smoke denials cover both bare and `dist` spellings of the new module.

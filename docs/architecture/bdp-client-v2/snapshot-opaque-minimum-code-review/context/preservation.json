@@ -1,0 +1,41 @@
+{
+  "checks": {
+    "packages/server/src/transaction-http.test.ts": {
+      "historicalPrefixRestoredByOnlyDeclaredAmendments": true,
+      "baselineSha256": "88748d8473a9940187724a0328aad45a46ca56c0de035c61d746b9de7214267f",
+      "newCallbackStartLine": 5613
+    },
+    "packages/server/src/transaction-service.test.ts": {
+      "historicalPrefixRestoredByOnlyDeclaredAmendments": true,
+      "baselineSha256": "9513b097e7a1a1117d2d7c177f56a913d8bee25154672c1545c3dd5e76f9711f",
+      "newCallbackStartLine": 3207
+    },
+    "packages/server/src/transaction-snapshot.test.ts": {
+      "historicalPrefixRestoredByOnlyDeclaredAmendments": true,
+      "baselineSha256": "b6c31d8b66650ec0668c85d1fb803dda1072ef463989299ed377dd18dcbfee98",
+      "newCallbackStartLine": 1437
+    },
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts": {
+      "historicalPrefixRestoredByOnlyDeclaredAmendments": true,
+      "baselineSha256": "58f4ad828861ea332de7bf4413f48eb4646f32237b76d3a4db310e081b99ffe9",
+      "newCallbackStartLine": 972
+    },
+    "packages/server/src/transaction-store.ts": {
+      "outsideSnapshotRegionByteIdentical": true,
+      "baselineRegionSha256": "1d99a10e0c9aaa1e4ca38717e61b933b533f0e35539a070968b3e0b89bc90b2f",
+      "afterRegionSha256": "bb96966ab317ccd02be0d44c64f12b90f4dfd68200de54c18313e3745dc854cc"
+    },
+    "packages/server/src/transaction-service.ts": {
+      "outsideSnapshotRegionByteIdentical": true,
+      "baselineRegionSha256": "f4f5d8561e8208cabe5d1c86dc33fd5b2e403d5fcbdecae4d57a5a648808142e",
+      "afterRegionSha256": "bf6cd34c30e35debe86dd5973497a4f157df56d3e7e495016857dcbd67cd555a"
+    },
+    "packages/server/src/transaction-http.ts": {
+      "outsideSnapshotRegionByteIdentical": true,
+      "baselineRegionSha256": "fea84ae061b6853c90b8a50c1d60ce2f21fcdd5977e87fa5821c8935b85ae624",
+      "afterRegionSha256": "fc7b3d0f1eb04d9e2f18a7848f8ea6741981d6030bd3a56402793e68faa1bc75"
+    }
+  },
+  "allOtherTrackedFilesUnchanged": 672,
+  "noExecution": true
+}

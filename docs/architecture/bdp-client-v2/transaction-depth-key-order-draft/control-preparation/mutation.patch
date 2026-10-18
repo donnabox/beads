@@ -1,0 +1,15 @@
+--- a/packages/server/dist/transaction-store.js
++++ b/packages/server/dist/transaction-store.js
+@@ -735,6 +735,12 @@
+         return JSON.parse(stored.fact);
+     }
+     function admitKey(principal, key, batch, pendingWins = false, references, template, controls) {
++        const earlyDepthRefusal = transactionDepthRefusal(batch);
++        if (earlyDepthRefusal !== undefined) {
++            if (controls === undefined)
++                throw new TransactionDevelopmentLimitError(earlyDepthRefusal);
++            return { kind: "development-limit", message: earlyDepthRefusal };
++        }
+         const stored = row(principal, key);
+         const prior = stored ? expireRow(stored, instant()).row : undefined;
+         if (pendingWins && prior?.owner !== null && prior !== undefined)

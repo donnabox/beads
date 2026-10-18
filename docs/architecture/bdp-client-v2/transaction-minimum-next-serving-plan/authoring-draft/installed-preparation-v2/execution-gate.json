@@ -1,0 +1,69 @@
+{
+  "released": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "authorizationProvenance": "Explicit root delegation recorded by executing worker; not independent root verification.",
+  "approvedCommandIds": [
+    "typecheck",
+    "format-check",
+    "verify-installed",
+    "positive",
+    "review-positive-corrected",
+    "prepare-restore-missing-gap",
+    "restore-missing-gap",
+    "review-restore-missing-gap",
+    "prepare-restore-unknown-gap",
+    "restore-unknown-gap",
+    "review-restore-unknown-gap"
+  ],
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/delegated-validation-acceptance.json",
+    "sha256": "ee6f80c2687ccf60ee057af1fdddfce24298f5079a45543cc73a40479450b56c"
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/prepared-source.json",
+    "sha256": "801434e084288b932c224dfae1e2087157ad92cb022e026980039207f9750e85"
+  },
+  "buildOutputInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/build-output-inventory.json",
+    "sha256": "80be311894063715d84ac482790b8f104fefd6280dbfcc748de4406c11798969"
+  },
+  "finalHead": "733728cf40fc2f57407000251673bd5d3218acd4",
+  "finalTree": "ea0dccd68d91323887424cad9729e6593aef04f2",
+  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+  "guardSha256": "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84",
+  "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+  "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+  "consumerLockSha256": "2e60d37548b69ba694e64c771ba64481aab53235c9a9f01be26539e02400d44a",
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "preparationSha256": {
+    "gate.py": "714799f0dfd233c19493145260bfaa12a1d0e06ab8b438843d3ccdeda027d1b9",
+    "supervise.py": "c9b524743c8b71c4487e55f5719713985a1665b6e61ec32d2d99534796ff9194",
+    "packages.py": "4b59dcd074667293fce5fe8352e866ec19c2c1029776755ae19ddafbe78b8340",
+    "review-installed.py": "883b40e96881f8b4bfd6821a5dc25fe6744d9f164ca8cf7a699e7635370d8807",
+    "commands.json": "baf0af780504fde6b94854dc2f2e3d5129b04c0797228373a9c49ae24c344157",
+    "prepared-source.json": "801434e084288b932c224dfae1e2087157ad92cb022e026980039207f9750e85"
+  },
+  "buildSourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation/prepared-source.json",
+    "sha256": "8140843fc8450d28c419a243d9f95e57c0537eced684f52872d6d49c69445dad"
+  },
+  "currentInputBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/scope-type-repair/input-binding.json",
+    "sha256": "28f765328764c67aa9f7fdf5e4ee3716856bcf06182ef837b984a25601f108c8"
+  },
+  "changedInputPaths": [
+    "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "consumerRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation/run/consumer",
+  "requestsPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/scope-type-repair/requests.json"
+}

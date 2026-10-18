@@ -1,0 +1,987 @@
+You are reviewing exact newly committed test code, in one of TWO complementary scopes. Do not write or modify files. Output findings only in stdout. No tools are enabled; all review context is supplied. Give numbered concrete findings with severity, actual file/line, impact, and a minimal correction. Distinguish a demonstrated code defect from missing excerpt evidence; do not invent executions or weaken strong assertions. If no actionable findings, say so with limits.
+
+Candidate 18f5428686dd84fb139c9dbbcbe39d5958012323, tree 9c78087e1036dd26ca908e1d8feaa91263513717, ordinary sole parent 98c600767e8e91a79e109cb741beb91e23b9bebe. Exactly two changed files: the new 958-line installed test and a 21-line progress append. Production and all existing tests are unchanged. The previous whole-source actual Claude attempt timed out with zero output, inconclusive; neither split is a retry of that identical target. Native full-source review exists and its author disclosed prior plan authorship. These are actual code reviews, not requests to approve a plan. Source/setup/type/build/format/lint/boundaries/Read seal/inventory were checked under the historical dirty-parent source binding; the clean candidate contains identical two file bytes. No installed execution outcome is supplied or presumed. Eight-stage acceptance is source evidence only, with existing warnings retained. Main publication still requires both scope findings dispositions.
+
+Accepted contract: one installed real-child callback run independently as positive (6 requests) or second-key-distinct (2 requests then one named intended failure). Initial singleton and one-entry batch carry identical normalized create semantics and same key in positive; raw body strings intentionally differ. Requests 1 and 2 are sent without awaiting, their end calls precede first response settlement, and distinct sockets are observed. This demonstrates client lifetime/dispatch overlap, not simultaneous server/wire receipt or an internal pending-join path. Connected/write-finish-before-response booleans are supplementary observations only. One pending initial response is allowed using an actual terminal baseline and full retained GET equality; both pending is an inconclusive FAILED test after two responses, never accepted. There is no extra polling, barrier or server hook. A terminal same-key pair must share receipt/transaction/Resource identity and effect pos-1; later read serving position remains current pos-1. Two distinct keys must each be terminal, own-key correct, have different transactions/Resources and unordered own effects pos-1/pos-2; each current serving position is bounded by own effect through pos-2 BEFORE named shared-receipt-id failure. Receipt 3 and batch replay 6 compare whole terminal JSON; request4 checks complete one-resource collection, request5 complete one-created-Event linkage. Retained replay coverage is batch only; no singleton replay claim. Unexpected503 is a failed selected healthy witness, not a universal protocol assertion.
+
+Bounds remain six attempts maximum; first pair <=2 live sockets; five seconds per request; 45 seconds actual work and <=10 seconds child cleanup (five-second request drain runs concurrently), 60-second Vitest case; 64KiB request cap,32KiB response cap,16KiB response-header cap,32 pair milestones,64KiB report including newline. No automatic retries, redirects, shared store, qualification or public activation. Real served configuration/artifact/policy/auth identities stay bound; separately named credential-free projection is not their replacement. Raw Authorization/config/token/Error/child output never belongs in safe report. External supervisor independently verifies package/source/payload and post-run processes; caller sourceCommit is attribution, not child attestation. Review the actual implementation below against these limits.
+
+FOCUSED RESPONSIBILITY
+Own semantic oracles and documentation: complete lines531–787, shared types/validators/body fixtures, exact send routing/response-return excerpts and report dispatch fields are supplied. Lifecycle scope owns full networking event handlers, setup, drain/child cleanup and report-write mechanics. Review pending/terminal cases, full schema+literal equality, meaningful two-key counterfactual before named failure, receipt/Resource/Event identity/currentness and partial proof claims. Do not require production invariants outside the explicit fixed fixture, internal pending join or server concurrency. Do not treat absent literal extra-fields checks in isolation from the full schemas and whole-object equality actually invoked.
+
+CROSS-SCOPE COVERAGE
+{
+  "lifecycle": {
+    "testRanges": [
+      [
+        1,
+        530
+      ],
+      [
+        788,
+        958
+      ]
+    ],
+    "responsibility": "Configuration, entry/provenance labels, filesystem confinement, transport/event ordering machinery, request and response byte limits, all deadlines, failure/report retention and cleanup. Inspect shared call sequence as part of lifecycle safety."
+  },
+  "oracles": {
+    "testRanges": [
+      [
+        531,
+        787
+      ]
+    ],
+    "documentation": "Complete appended 21 lines; parent document prefix byte-identical",
+    "responsibility": "Receipt/schema/current-context acceptance, dispatch assertions, two-key negative sensitivity and prerequisite ordering, pending outcomes, replay/full Resource/Event equality and honest claim boundary. Inspect shared transport/report contracts for oracle visibility."
+  }
+}
+
+EXACT NEW TEST SOURCE (ranges intentionally overlap at cross-boundary contracts)
+
+### apps/bdptest/src/transactional-same-key-overlap-installed.test.ts:1–172 (18f5428686dd84fb139c9dbbcbe39d5958012323; full-file SHA256 e6a52fa4d645ffef04e4b6e8ccd9bbcb7495624ae0e3f46536e0e9ac6b707974)
+```
+/** Private installed dispatch witness; no profile qualification or server-join claim. */
+import { execFileSync, type ChildProcess } from "node:child_process";
+import { createHash, randomBytes } from "node:crypto";
+import {
+  existsSync,
+  mkdtempSync,
+  readFileSync,
+  realpathSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
+import { request, type ClientRequest, type IncomingHttpHeaders } from "node:http";
+import type { Socket } from "node:net";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { Ajv2020 } from "ajv/dist/2020.js";
+import { isJsonSchemaDateTime, isJsonSchemaUri } from "@bdp/protocol";
+import { expect, it } from "vitest";
+import { installedTransactionBinding } from "../test-support/transactional-execution-binding.js";
+
+const root = realpathSync(fileURLToPath(new URL("../../../", import.meta.url)));
+const { launchInstalledTransaction } = (await import(
+  new URL("../../../scripts/transaction-installed-observation.mjs", import.meta.url).href
+)) as {
+  launchInstalledTransaction(
+    entry: string,
+    configuration: unknown,
+    signal?: AbortSignal,
+  ): Promise<{
+    child: ChildProcess;
+    ready: Record<string, unknown>;
+    close(): Promise<void>;
+  }>;
+};
+const scope = "https://reference.invalid/acme/";
+const beadType = `${scope}types/task`;
+const schemaUri = `${scope}schemas/properties`;
+const key = "same-key-overlap";
+const singleton =
+  '{"type":"https://reference.invalid/acme/types/task","properties":{"title":"same-key-overlap"},"metadata":{}}';
+const batch =
+  '{"operations":[{"operation":"createBead","type":"https://reference.invalid/acme/types/task","properties":{"title":"same-key-overlap"},"metadata":{}}]}';
+const artifacts = {
+  descriptors: [
+    {
+      retrievalUri: beadType,
+      utf8: '{"id":"https://reference.invalid/acme/types/task","name":"Task","describes":"bead","conformsTo":[],"propertiesSchema":"https://reference.invalid/acme/schemas/properties"}',
+    },
+  ],
+  schemas: [
+    {
+      retrievalUri: schemaUri,
+      utf8: '{"$id":"https://reference.invalid/acme/schemas/properties","type":"object","properties":{"title":{"type":"string"}},"required":["title"],"additionalProperties":false}',
+    },
+  ],
+};
+const sha = (value: string | Uint8Array) => createHash("sha256").update(value).digest("hex");
+const entryOverride = process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY;
+if (entryOverride && !process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT)
+  throw new Error("same-key entry override requires declared source commit");
+const entry = realpathSync(
+  entryOverride ?? path.join(root, "packages/server/dist/transaction-installed-process.js"),
+);
+const entrySha256 = sha(readFileSync(entry));
+const declaredSourceCommit =
+  process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT ??
+  execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
+if (!/^[a-f0-9]{40}$/.test(declaredSourceCommit)) throw new Error("invalid declared source commit");
+const workspaceDirty =
+  execFileSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8" }).length > 0;
+const fixture = {
+  bytes: readFileSync(
+    path.join(root, "packages/conformance/test-support/transactional/fixture-v1.json"),
+  ),
+};
+const mode = process.env.BDP_TRANSACTIONAL_SAME_KEY_OVERLAP_MODE ?? "positive";
+if (mode !== "positive" && mode !== "second-key-distinct") throw new Error("invalid same-key mode");
+const output = process.env.BDP_TRANSACTIONAL_SAME_KEY_OVERLAP_OUTPUT;
+const safeHeaderNames = [
+  "content-type",
+  "content-length",
+  "cache-control",
+  "x-bdp-development",
+  "vary",
+  "location",
+  "retry-after",
+  "bdp-scope-epoch",
+  "bdp-authorization-view",
+  "bdp-scope-position",
+] as const;
+function outside(candidate: string, parent: string) {
+  const relative = path.relative(parent, candidate);
+  if (
+    !relative ||
+    (relative !== ".." && !relative.startsWith(`..${path.sep}`) && !path.isAbsolute(relative))
+  )
+    throw new Error("same-key evidence/store path must be outside protected directory");
+}
+function resolvedOutput(filename: string) {
+  if (!path.isAbsolute(filename)) throw new Error("same-key output must be absolute");
+  const resolved = path.join(realpathSync(path.dirname(filename)), path.basename(filename));
+  outside(resolved, root);
+  if (existsSync(resolved)) throw new Error("same-key output must be exclusive");
+  return resolved;
+}
+const reportPath = output === undefined ? undefined : resolvedOutput(output);
+function record(value: unknown): Record<string, unknown> {
+  if (typeof value !== "object" || value === null || Array.isArray(value))
+    throw new Error("same-key expected JSON object");
+  return value as Record<string, unknown>;
+}
+function text(value: unknown): string {
+  if (typeof value !== "string" || !value.length)
+    throw new Error("same-key expected nonempty string");
+  return value;
+}
+function ownedUrl(value: unknown, collection: "receipts" | "beads") {
+  const literal = text(value),
+    url = new URL(literal),
+    prefix = `${scope}${collection}/`;
+  if (
+    literal.length > 8192 ||
+    Buffer.byteLength(literal) > 8192 ||
+    url.href !== literal ||
+    !literal.startsWith(prefix) ||
+    !/^[A-Za-z0-9_-]+$/.test(literal.slice(prefix.length)) ||
+    url.search ||
+    url.hash ||
+    url.username ||
+    url.password
+  )
+    throw new Error("same-key invalid issued authority URL");
+  return literal;
+}
+function position(value: unknown) {
+  const literal = text(value);
+  if (!/^pos-(0|[1-9][0-9]*)$/.test(literal) || !Number.isSafeInteger(Number(literal.slice(4))))
+    throw new Error("same-key invalid position");
+  return Number(literal.slice(4));
+}
+type Wire = { index: number; status: number; headers: IncomingHttpHeaders; body: unknown };
+type Receipt = {
+  body: Record<string, unknown>;
+  id: string;
+  transaction: string;
+  epoch: string;
+  view: string;
+  key: string;
+  resource: Record<string, unknown> | null;
+  effect: number | null;
+  pending: boolean;
+};
+type Milestone = {
+  order: number;
+  request: number;
+  kind: string;
+  elapsedMs: number;
+  socket: number | null;
+};
+type ResponseObservation = {
+  index: number;
+  method: string;
+  url: string;
+  sentKey: string | null;
+  requestBodyBytes: number;
+  requestBodySha256: string | null;
+  status: number;
+  bodyBytes: number;
+  bodySha256: string;
+  headers: Record<string, string | null>;
+};
+```
+
+### apps/bdptest/src/transactional-same-key-overlap-installed.test.ts:232–287 (18f5428686dd84fb139c9dbbcbe39d5958012323; full-file SHA256 e6a52fa4d645ffef04e4b6e8ccd9bbcb7495624ae0e3f46536e0e9ac6b707974)
+```
+  function mark(index: number, kind: string) {
+    if (index > 2 || milestones.some((m) => m.request === index && m.kind === kind)) return;
+    if (milestones.length >= 32) {
+      milestoneOverflow = true;
+      return;
+    }
+    milestones.push({
+      order: milestones.length,
+      request: index,
+      kind,
+      elapsedMs: performance.now() - started,
+      socket: requestSockets.get(index) ?? null,
+    });
+  }
+  function check(name: string, assertion: () => void) {
+    phase = "oracle";
+    currentAssertion = `same-key-overlap:${name}`;
+    assertion();
+    performed.push(name);
+  }
+  function addFailure(error: unknown) {
+    if (!failures.includes(error)) failures.push(error);
+  }
+  try {
+    const ajv = new Ajv2020({ allErrors: true, strict: true });
+    ajv.addFormat("uri", { type: "string", validate: isJsonSchemaUri });
+    ajv.addFormat("date-time", { type: "string", validate: isJsonSchemaDateTime });
+    const bundle = JSON.parse(readFileSync(path.join(root, "schemas/bdp-v0.schema.json"), "utf8"));
+    ajv.addSchema(bundle);
+    const validators = Object.fromEntries(
+      ["mutationReceipt", "beadRecord", "currentBeadCollection", "eventPage"].map(
+        (name) => [name, ajv.compile({ $ref: `${bundle.$id}#/$defs/${name}` })] as const,
+      ),
+    );
+    function checked(value: unknown, name: string) {
+      const validate = validators[name];
+      if (!validate) throw new Error("same-key unbound schema");
+      expect(validate(value), `same-key-overlap:schema:${name}`).toBe(true);
+      return record(value);
+    }
+    check("literal-inputs", () => {
+      expect([Buffer.byteLength(singleton), sha(singleton)]).toStrictEqual([
+        108,
+        "387ed98ffa4e2603db3358ac9a41a1acd815f64bf8e2dc3f233ef5c132328649",
+      ]);
+      expect([Buffer.byteLength(batch), sha(batch)]).toStrictEqual([
+        150,
+        "278716c3e493fbdee5adb3ef532fc296bf929111200bf85bfedf56fc6f6d012b",
+      ]);
+      expect(
+        artifacts.descriptors.map((a) => [Buffer.byteLength(a.utf8), sha(a.utf8)]),
+      ).toStrictEqual([[170, "f448e126550b2809d01dc6b24811d1796e82b2599c35b438550ed3bec65a2a22"]]);
+      expect(artifacts.schemas.map((a) => [Buffer.byteLength(a.utf8), sha(a.utf8)])).toStrictEqual([
+        [166, "1ed8b24d90a8c278bc466fd48ba1e849afac01326c377e5c6985855e62373f95"],
+      ]);
+    });
+```
+
+### apps/bdptest/src/transactional-same-key-overlap-installed.test.ts:333–406 (18f5428686dd84fb139c9dbbcbe39d5958012323; full-file SHA256 e6a52fa4d645ffef04e4b6e8ccd9bbcb7495624ae0e3f46536e0e9ac6b707974)
+```
+    binding = installedTransactionBinding(child.ready, declaredSourceCommit, fixture);
+    check("ready-targets", () => {
+      expect(child?.ready.scope).toBe(scope);
+      expect(child?.ready.authorityMode).toBe("canonical");
+      expect(child?.ready.claimEligible).toBe(false);
+      expect(binding?.operationTargets.createBead).toBe(`${scope}operations/create-bead`);
+      expect(binding?.operationTargets.batch).toBe(`${scope}operations/batch`);
+    });
+    const address = new URL(text(child.ready.listenUrl));
+    // installedTransactionBinding independently checks the exact loopback URL and all targets.
+    let receiptUrl: string | undefined;
+    const secondKey = mode === "second-key-distinct" ? `${key}-other` : key;
+    function send(index: number): Promise<Wire> {
+      work.signal.throwIfAborted();
+      if (attempted >= 6 || index !== attempted + 1)
+        throw new Error("same-key dispatch ceiling/order");
+      const method = index <= 2 || index === 6 ? "POST" : "GET";
+      const literal =
+        index === 1
+          ? `${scope}operations/create-bead`
+          : index === 2 || index === 6
+            ? `${scope}operations/batch`
+            : index === 3
+              ? receiptUrl
+              : index === 4
+                ? `${scope}beads/?limit=32`
+                : `${scope}events/`;
+      if (!literal) throw new Error("same-key missing issued receipt root");
+      const url = new URL(literal);
+      if (
+        url.href !== literal ||
+        url.origin !== new URL(scope).origin ||
+        url.hash ||
+        url.username ||
+        url.password ||
+        (index === 4 ? url.search !== "?limit=32" : !!url.search)
+      )
+        throw new Error("same-key route grant");
+      if (index === 3) ownedUrl(literal, "receipts");
+      const body = index === 1 ? singleton : index === 2 || index === 6 ? batch : undefined;
+      const sentKey = index === 2 ? secondKey : method === "POST" ? key : undefined;
+      const headers: Record<string, string> = {
+        Host: url.host,
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+        Connection: "close",
+      };
+      if (body !== undefined) {
+        if (Buffer.byteLength(body) > 65536) throw new Error("same-key request body ceiling");
+        headers["Content-Type"] = "application/json";
+        headers["Content-Length"] = String(Buffer.byteLength(body));
+        headers["Idempotency-Key"] = sentKey!;
+      }
+      if (
+        Buffer.byteLength(
+          Object.entries(headers)
+            .map(([name, value]) => `${name}: ${value}\r\n`)
+            .join("") + "\r\n",
+        ) > 16384
+      )
+        throw new Error("same-key request header ceiling");
+      attempted++;
+      mark(index, "invoked");
+      const promise = new Promise<Wire>((resolve, reject) => {
+        let settled = false;
+        const req = request({
+          host: address.hostname,
+          port: Number(address.port),
+          method,
+          path: url.pathname + url.search,
+          headers,
+          agent: false,
+          maxHeaderSize: 16384,
+        });
+```
+
+### apps/bdptest/src/transactional-same-key-overlap-installed.test.ts:495–787 (18f5428686dd84fb139c9dbbcbe39d5958012323; full-file SHA256 e6a52fa4d645ffef04e4b6e8ccd9bbcb7495624ae0e3f46536e0e9ac6b707974)
+```
+              // Retain actual completed fingerprints before decoding or any oracle can fail.
+              responses.push({
+                index,
+                method,
+                url: literal,
+                sentKey: sentKey ?? null,
+                requestBodyBytes: body === undefined ? 0 : Buffer.byteLength(body),
+                requestBodySha256: body === undefined ? null : sha(body),
+                status: response.statusCode ?? 0,
+                bodyBytes: bytes,
+                bodySha256: sha(raw),
+                headers: safeHeaders,
+              });
+              const value: unknown = JSON.parse(
+                new TextDecoder("utf-8", { fatal: true }).decode(raw),
+              );
+              if (value === null) throw new Error("same-key null response body");
+              finish(undefined, {
+                index,
+                status: response.statusCode ?? 0,
+                headers: response.headers,
+                body: value,
+              });
+            } catch (error) {
+              fail(error);
+            }
+          });
+        });
+        mark(index, "end-called");
+        req.end(body);
+      });
+      // The second dispatch is synchronous; neither rejection waits for allSettled registration.
+      void promise.catch(() => undefined);
+      pending.push(promise);
+      return promise;
+    }
+    function header(wire: Wire, name: string) {
+      return text(wire.headers[name]);
+    }
+    function current(wire: Wire, epoch?: string, view?: string) {
+      const e = header(wire, "bdp-scope-epoch"),
+        v = header(wire, "bdp-authorization-view");
+      if (epoch !== undefined) expect(e).toBe(epoch);
+      if (view !== undefined) expect(v).toBe(view);
+      expect(header(wire, "content-type")).toBe("application/json");
+      expect(header(wire, "cache-control")).toBe("private, no-store");
+      expect(header(wire, "x-bdp-development")).toBe("non-attesting");
+      expect(Number(header(wire, "content-length"))).toBe(
+        responses.find((r) => r.index === wire.index)?.bodyBytes,
+      );
+      if (wire.index <= 2 || wire.index === 6)
+        expect(header(wire, "vary").toLowerCase()).toBe("accept");
+      return position(header(wire, "bdp-scope-position"));
+    }
+    function receipt(wire: Wire, sentKey: string): Receipt {
+      phase = "oracle";
+      currentAssertion = `same-key-overlap:receipt-${wire.index}`;
+      const body = checked(wire.body, "mutationReceipt");
+      const id = ownedUrl(body.id, "receipts"),
+        transaction = text(body.transaction),
+        epoch = text(body.scopeEpoch),
+        view = text(body.authorizationView);
+      expect(body.idempotencyKey).toBe(sentKey);
+      const serving = current(wire, epoch, view);
+      const isPending = body.status === "pending";
+      let resource: Record<string, unknown> | null = null,
+        effect: number | null = null;
+      if (isPending) {
+        expect(wire.status).toBe(202);
+        expect(mode).toBe("positive");
+        expect([0, 1]).toContain(serving);
+        expect(body).toStrictEqual({
+          id,
+          status: "pending",
+          idempotencyKey: sentKey,
+          scopeEpoch: epoch,
+          authorizationView: view,
+          transaction,
+        });
+        expect(header(wire, "location")).toBe(id);
+        expect(header(wire, "retry-after")).toBe("1");
+      } else {
+        expect(wire.status).toBe(200);
+        expect(body.status).toBe("completed");
+        expect(body.detail).toBe("available");
+        expect(Array.isArray(body.results)).toBe(true);
+        const results = body.results as unknown[];
+        expect(results).toHaveLength(1);
+        resource = checked(record(results[0]).resource, "beadRecord");
+        const resourceId = ownedUrl(resource.id, "beads"),
+          revision = text(resource.revision);
+        expect(resource).toStrictEqual({
+          id: resourceId,
+          type: beadType,
+          revision,
+          properties: { title: "same-key-overlap" },
+          metadata: {},
+        });
+        effect = position(body.effectPosition);
+        expect(position(body.requiredPosition)).toBe(effect);
+        expect(effect).toBeGreaterThanOrEqual(1);
+        expect(serving).toBeGreaterThanOrEqual(effect);
+        expect(serving).toBeLessThanOrEqual(mode === "positive" ? 1 : 2);
+        expect(body).toStrictEqual({
+          id,
+          status: "completed",
+          detail: "available",
+          idempotencyKey: sentKey,
+          scopeEpoch: epoch,
+          authorizationView: view,
+          transaction,
+          requiredPosition: body.requiredPosition,
+          effectPosition: body.effectPosition,
+          results: [{ operationIndex: 0, outcome: "created", resource }],
+          next: null,
+          expiresAt: body.expiresAt,
+        });
+      }
+      pendingObserved ||= isPending;
+      receiptObservations.push({
+        index: wire.index,
+        id,
+        transaction,
+        key: sentKey,
+        pending: isPending,
+        resourceId: resource === null ? null : text(resource.id),
+        revision: resource === null ? null : text(resource.revision),
+        effectPosition: effect === null ? null : text(body.effectPosition),
+        requiredPosition: effect === null ? null : text(body.requiredPosition),
+      });
+      performed.push(`receipt-${wire.index}-schema-and-literals`);
+      return {
+        body,
+        id,
+        transaction,
+        epoch,
+        view,
+        key: sentKey,
+        resource,
+        effect,
+        pending: isPending,
+      };
+    }
+    phase = "transport";
+    currentAssertion = "same-key-overlap:pair-transport";
+    const aPromise = send(1),
+      bPromise = send(2);
+    const pair = await Promise.allSettled([aPromise, bPromise]);
+    const pairErrors = pair.flatMap((result) =>
+      result.status === "rejected" ? [result.reason] : [],
+    );
+    if (pairErrors.length) throw new AggregateError(pairErrors, "same-key pair transport failed");
+    const aWire = (pair[0] as PromiseFulfilledResult<Wire>).value;
+    const bWire = (pair[1] as PromiseFulfilledResult<Wire>).value;
+    await Promise.all(closing);
+    check("dispatch-discipline", () => {
+      expect(milestoneOverflow).toBe(false);
+      const firstSettled = milestones.find((m) => m.kind === "settled")!.order;
+      for (const index of [1, 2])
+        for (const kind of ["invoked", "end-called"])
+          expect(
+            milestones.find((m) => m.request === index && m.kind === kind)?.order,
+          ).toBeLessThan(firstSettled);
+      expect(requestSockets.size).toBe(2);
+      expect(maximumLiveSockets).toBeLessThanOrEqual(2);
+      expect(requestSockets.get(1)).not.toBe(requestSockets.get(2));
+      expect(milestones.filter((m) => m.kind === "response-end")).toHaveLength(2);
+    });
+    const firstResponse = milestones.find((m) => m.kind === "response-start")!.order;
+    bothConnectedBeforeFirstResponse = [1, 2].every((i) =>
+      milestones.some((m) => m.request === i && m.kind === "connected" && m.order < firstResponse),
+    );
+    bothWritesPrecededFirstResponse = [1, 2].every((i) =>
+      milestones.some((m) => m.request === i && m.kind === "finish" && m.order < firstResponse),
+    );
+    const a = receipt(aWire, key),
+      b = receipt(bWire, secondKey);
+    pendingObserved = a.pending || b.pending;
+    receiptIdsDiffer = a.id !== b.id;
+    if (mode === "second-key-distinct")
+      check("control-prerequisites", () => {
+        expect([a.pending, b.pending]).toStrictEqual([false, false]);
+        expect([a.effect, b.effect].sort()).toStrictEqual([1, 2]);
+        expect(a.transaction).not.toBe(b.transaction);
+        expect(a.resource?.id).not.toBe(b.resource?.id);
+        expect(a.epoch).toBe(b.epoch);
+        expect(a.view).toBe(b.view);
+        controlPrerequisites = true;
+      });
+    // Distinct-key control must reach this exact oracle only after successful independent effects.
+    check("shared-receipt-id", () => expect(a.id, "same-key-overlap:shared-receipt-id").toBe(b.id));
+    check("shared-identity", () => {
+      expect([a.transaction, a.epoch, a.view, a.key]).toStrictEqual([
+        b.transaction,
+        b.epoch,
+        b.view,
+        b.key,
+      ]);
+      for (const r of [a, b]) if (!r.pending) expect(r.effect).toBe(1);
+    });
+    if (a.pending && b.pending) {
+      phase = "inconclusive";
+      inconclusiveBothPending = true;
+      currentAssertion = "same-key-overlap:inconclusive-both-pending";
+      throw new Error("same-key-overlap:inconclusive-both-pending");
+    }
+    const terminal = a.pending ? b : a;
+    if (!a.pending && !b.pending)
+      check("pair-full-terminal-equality", () => expect(a.body).toStrictEqual(b.body));
+    receiptUrl = terminal.id;
+    phase = "transport";
+    currentAssertion = "same-key-overlap:transport-3";
+    const r3 = await send(3);
+    await Promise.all(closing);
+    const recovered = receipt(r3, key);
+    check("issued-receipt-full-equality", () => {
+      expect(recovered.pending).toBe(false);
+      expect(recovered.body).toStrictEqual(terminal.body);
+      expect(current(r3, terminal.epoch, terminal.view)).toBe(1);
+    });
+    phase = "transport";
+    currentAssertion = "same-key-overlap:transport-4";
+    const r4 = await send(4);
+    await Promise.all(closing);
+    check("complete-resource-collection", () => {
+      expect(r4.status).toBe(200);
+      expect(current(r4, terminal.epoch, terminal.view)).toBe(1);
+      expect(checked(r4.body, "currentBeadCollection")).toStrictEqual({
+        items: [terminal.resource],
+        next: null,
+      });
+    });
+    phase = "transport";
+    currentAssertion = "same-key-overlap:transport-5";
+    const r5 = await send(5);
+    await Promise.all(closing);
+    check("complete-event-linkage", () => {
+      expect(r5.status).toBe(200);
+      expect(current(r5, terminal.epoch, terminal.view)).toBe(1);
+      const page = checked(r5.body, "eventPage");
+      expect(page.source).toBe(`${scope}events/`);
+      expect(Array.isArray(page.events)).toBe(true);
+      const events = page.events as unknown[];
+      expect(events).toHaveLength(1);
+      const event = record(events[0]),
+        resource = terminal.resource!;
+      const hash = (tag: string, value: string) =>
+        createHash("sha256")
+          .update(JSON.stringify([tag, value]))
+          .digest("base64url");
+      const id = `ev_${hash("epoch", header(r5, "bdp-scope-epoch"))}_${hash("view", header(r5, "bdp-authorization-view"))}_${hash("source", text(page.source))}_pos-1_0`;
+      expect(page).toStrictEqual({
+        source: `${scope}events/`,
+        events: [
+          {
+            id,
+            ordinal: 0,
+            type: "created",
+            source: `${scope}events/`,
+            subject: resource.id,
+            subjectType: resource.type,
+            transaction: terminal.transaction,
+            time: event.time,
+            data: {
+              revision: resource.revision,
+              properties: resource.properties,
+              metadata: resource.metadata,
+            },
+          },
+        ],
+        next: null,
+      });
+    });
+    phase = "transport";
+    currentAssertion = "same-key-overlap:transport-6";
+    const r6 = await send(6);
+    await Promise.all(closing);
+    const replayed = receipt(r6, key);
+    check("retained-batch-full-equality", () => {
+      expect(replayed.pending).toBe(false);
+      expect(replayed.body).toStrictEqual(terminal.body);
+      expect(current(r6, terminal.epoch, terminal.view)).toBe(1);
+    });
+    check("complete-fixed-schedule", () => {
+      expect(attempted).toBe(6);
+      expect(responses).toHaveLength(6);
+      expect(sockets.size).toBe(6);
+      expect(maximumLiveSockets).toBeLessThanOrEqual(2);
+    });
+  } catch (error) {
+    failedAssertion = currentAssertion;
+    failedPhase = phase;
+    addFailure(error);
+```
+
+### apps/bdptest/src/transactional-same-key-overlap-installed.test.ts:879–910 (18f5428686dd84fb139c9dbbcbe39d5958012323; full-file SHA256 e6a52fa4d645ffef04e4b6e8ccd9bbcb7495624ae0e3f46536e0e9ac6b707974)
+```
+      maximumLiveSockets,
+      liveSocketsAfterCleanup: liveSockets.size,
+      requestSockets: [...requestSockets].map(([index, socket]) => ({ index, socket })),
+      clientDispatchDisciplinePassed: performed.includes("dispatch-discipline"),
+      bothConnectedBeforeFirstResponse,
+      bothWritesPrecededFirstResponse,
+      pendingObserved,
+      inconclusiveBothPending,
+      controlPrerequisites,
+      receiptIdsDiffer,
+      performed,
+      failedAssertion,
+      failedPhase,
+      primaryFailureCount,
+      cleanupFailureCount,
+      reportWriteFailed,
+      reportOverflow,
+      failureCount: failures.length,
+      outcome: inconclusiveBothPending
+        ? "inconclusive-both-pending"
+        : failures.length
+          ? "failed"
+          : "passed",
+      retention:
+        "Full parsed receipt/Resource/Event comparisons occur in memory; response fingerprints are not retained full-wire evidence.",
+      launchAttempted,
+      childPid: child?.child.pid ?? null,
+      childExitCode: child?.child.exitCode ?? null,
+      childSignalCode: child?.child.signalCode ?? null,
+      stopKnowledge: stopped ? "known-stopped-or-never-launched" : "unknown",
+      closed,
+      temporaryRoot: temporaryRoot ?? null,
+```
+
+### Complete documentation delta; all earlier parent bytes unchanged
+```diff
+diff --git a/docs/design/transaction-implementation-progress.md b/docs/design/transaction-implementation-progress.md
+index f052300..bd02e4a 100644
+--- a/docs/design/transaction-implementation-progress.md
++++ b/docs/design/transaction-implementation-progress.md
+@@ -1937,3 +1937,24 @@ was integrated onto f5511718371a6935614eae6756e796cef71570c2; reviewed validatio
+ remains a gate before final publication/readiness. This draft
+ does not activate discovery, qualify a profile or settle the pending Snapshot or
+ incident-Link metadata decisions.
++
++### Private installed same-key dispatch witness draft
++
++This unexecuted draft adds one bounded installed callback that dispatches a
++singleton create and its equivalent one-operation batch without awaiting either
++response. Both omit the Resource id so the authority allocates it. The positive
++schedule has six HTTP requests: the pair, the issued receipt root, the complete
++Bead collection, the complete Scope Event page and one retained batch replay.
++Independent schema and literal checks precede full receipt, Resource and Event
++equality. A separate input control changes only the second key and is expected
++to stop after two successful responses at the named shared-receipt assertion.
++
++The witness records actual client lifetimes and socket milestones; it does not
++prove simultaneous server admission or an internal pending join. A pending
++observation is reported only for an actual pending response. If both initial
++responses are pending, the callback stops as inconclusive and fails rather than
++polling or passing. Safe reports retain fingerprints and selected facts, while
++full parsed comparisons occur in memory. Authoring is based on merged
++98c600767e8e91a79e109cb741beb91e23b9bebe. Validation and code council remain
++pending. This private draft does not qualify a profile, activate discovery or
++settle the pending Snapshot and incident-Link metadata decisions.
+```
+
+EXACT UNCHANGED DEPENDENCY/SPEC CONTEXT
+
+### packages/server/src/transaction-http.ts:111–116 (98c600767e8e91a79e109cb741beb91e23b9bebe; full-file SHA256 b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf)
+```
+  const response = problem(readProblem(code));
+  return observation ? context(response, observation) : response;
+}
+function context(response: HttpResponse, observation: TransactionReadContext): HttpResponse {
+  response.headers.set("bdp-scope-epoch", observation.scopeEpoch);
+  response.headers.set("bdp-authorization-view", observation.authorizationView);
+```
+
+### packages/server/src/transaction-http.ts:175–188 (98c600767e8e91a79e109cb741beb91e23b9bebe; full-file SHA256 b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf)
+```
+  const names = new Map(Object.entries(targets).map(([name, url]) => [url, name]));
+  function receiptResponse(
+    observed: {
+      readonly receipt: { readonly id: string; readonly status: string };
+      readonly context: TransactionReadContext;
+    },
+    mutation: boolean,
+  ): HttpResponse {
+    const response = context(jsonResponse(observed.receipt), observed.context);
+    if (mutation && observed.receipt.status === "pending") {
+      response.headers.set("location", observed.receipt.id);
+      response.headers.set("retry-after", "1");
+      return { ...response, status: 202 };
+    }
+```
+
+### packages/server/src/transaction-http.ts:613–634 (98c600767e8e91a79e109cb741beb91e23b9bebe; full-file SHA256 b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf)
+```
+        else if (error instanceof TransactionEventProjectionGap)
+          response = developmentGap(error.message);
+        else if (error instanceof TransactionMinimumVisibilityGap)
+          response = developmentGap("minimum-position-visibility");
+        else response = empty(500);
+      }
+      response.headers.set("x-bdp-development", "non-attesting");
+      if (request.method === "POST") response.headers.set("vary", "Accept");
+      if (
+        "kind" in response &&
+        (response.kind === "changefeed-stream" || response.kind === "event-stream")
+      )
+        return response;
+      return {
+        ...(request.method === "GET" || request.method === "HEAD"
+          ? applyReadHttpSemantics(request, response)
+          : response),
+        kind: "finite",
+      };
+    },
+  });
+}
+```
+
+### packages/server/src/read-http-routing.ts:44–54 (98c600767e8e91a79e109cb741beb91e23b9bebe; full-file SHA256 d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42)
+```
+export function jsonResponse(body: unknown): HttpResponse {
+  return {
+    status: 200,
+    headers: new Headers({
+      "content-type": "application/json",
+      "cache-control": "private, no-store",
+    }),
+    body,
+  };
+}
+
+```
+
+### packages/server/src/transaction-events.ts:75–101 (98c600767e8e91a79e109cb741beb91e23b9bebe; full-file SHA256 c6052433662fcb2d0a202ad4e408a24d4c43f980313fa89659501b4475790db5)
+```
+  /^ev_([A-Za-z0-9_-]{43})_([A-Za-z0-9_-]{43})_([A-Za-z0-9_-]{43})_(pos-(?:0|[1-9][0-9]*))_(0|[1-9][0-9]*)$/;
+const hash = (tag: string, value: string) =>
+  createHash("sha256")
+    .update(JSON.stringify([tag, value]))
+    .digest("base64url");
+
+/** Scope and Resource token spelling is deliberately private, not a fixture law. */
+export function renderTransactionEvent(
+  context: Pick<TransactionReadContext, "scopeEpoch" | "authorizationView">,
+  source: string,
+  checkpoint: string,
+  event: TransactionEvent,
+): TransactionEvent {
+  if (
+    !position.test(checkpoint) ||
+    !Number.isSafeInteger(Number(checkpoint.slice(4))) ||
+    Number(checkpoint.slice(4)) < 1 ||
+    !Number.isSafeInteger(event.ordinal) ||
+    event.ordinal < 0
+  )
+    throw new Error("invalid committed Event position");
+  return {
+    ...event,
+    source,
+    id: `ev_${hash("epoch", context.scopeEpoch)}_${hash("view", context.authorizationView)}_${hash("source", source)}_${checkpoint}_${event.ordinal}`,
+  };
+}
+```
+
+### packages/server/src/resource-evaluator.ts:805–811 (98c600767e8e91a79e109cb741beb91e23b9bebe; full-file SHA256 89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff)
+```
+  const commonMetadata = deleting
+    ? (before?.metadata ?? {})
+    : "metadataChange" in input && input.metadataChange !== undefined
+      ? patch(before?.metadata ?? {}, input.metadataChange, "metadata", options)
+      : "metadata" in input
+        ? (input.metadata ?? {})
+        : (before?.metadata ?? {});
+```
+
+### packages/server/src/resource-evaluator.ts:867–903 (98c600767e8e91a79e109cb741beb91e23b9bebe; full-file SHA256 89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff)
+```
+  const contextInput = "revisionProvenance" in input ? input.revisionProvenance : undefined;
+  // Protocol defaults: omitted and {} both carry only undetermined states.
+  const needsContext =
+    !noOp &&
+    (options.recordChangeContext ||
+      (contextInput !== undefined &&
+        (Object.hasOwn(contextInput, "agent") || Object.hasOwn(contextInput, "message"))));
+  const metadata = (prior: ResourceRecord | undefined): VersionRecipe["metadata"] => {
+    if (noOp && prior)
+      return {
+        context: { kind: "preserved", value: prior.revisionProvenance },
+      };
+    const actor = contextInput?.actor;
+    return {
+      ...(actor === undefined ? {} : { actor }),
+      context: needsContext ? { kind: "native" } : { kind: "preserved", value: undefined },
+    };
+  };
+  const revision = noOp ? before?.revision : deleting ? undefined : allocateRevision();
+  let subjectRecipe: VersionRecipe | undefined = deleting
+    ? undefined
+    : {
+        id: uri,
+        type,
+        revision: revision as string,
+        properties,
+        commonMetadata,
+        metadata: metadata(before),
+        endpoints,
+      };
+  const ownedLinks = (
+    owner: VersionRecipe,
+    descriptor: BeadTypeDescriptor,
+    replacement?: VersionRecipe,
+    removed?: string,
+  ): VersionRecipe => {
+    if (descriptor.ownsOutgoing === undefined) return owner;
+```
+
+### packages/server/src/resource-evaluator.ts:1135–1164 (98c600767e8e91a79e109cb741beb91e23b9bebe; full-file SHA256 89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff)
+```
+  const record = freeze({
+    id: recipe.id,
+    type: recipe.type,
+    revision: recipe.revision,
+    properties: recipe.properties,
+    metadata: recipe.commonMetadata,
+    ...(context === undefined && recipe.metadata.actor === undefined
+      ? {}
+      : {
+          revisionProvenance: {
+            ...context,
+            ...(recipe.metadata.actor === undefined ? {} : { actor: recipe.metadata.actor }),
+          },
+        }),
+    ...(recipe.endpoints ?? {}),
+    ...(recipe.ownedLinks === undefined
+      ? {}
+      : {
+          ownedLinks: Object.fromEntries(
+            Object.entries(recipe.ownedLinks).map(([type, links]) => [
+              type,
+              links.map((link) =>
+                link.kind === "existing"
+                  ? link.value
+                  : materializeVersion(link.value, nativeContext, materialized),
+              ),
+            ]),
+          ),
+        }),
+  }) as ResourceRecord;
+```
+
+### docs/specs/bdp.md:3894–3940 (98c600767e8e91a79e109cb741beb91e23b9bebe; full-file SHA256 f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e)
+```
+Concurrent requests with the same key and the same semantic request join one
+execution. A duplicate may wait for the terminal response or receive the same
+pending receipt. Either way, it never executes again. For direct carriers,
+handing a duplicate a receipt presupposes established semantic equality. A
+request that encounters an unresolved reservation follows the bounded
+comparison rules below. Reusing the key for a different semantic request is
+an idempotency conflict. Once a mutation is admitted, client disconnection
+does not decide the outcome. The authority commits or rolls back, and it
+records one terminal receipt. Retrying returns
+that same outcome, including authority-allocated IDs.
+
+An idempotency key is the token defined under
+[Idempotency keys](#idempotency-keys): the `Idempotency-Key` HTTP field of
+a batch or singleton request and the `idempotencyKey` member of a sequence
+member carry the same case-sensitive `[A-Za-z0-9_-]{1,256}` token, bare,
+compared byte-exactly; a request whose key is absent, repeated, or outside
+the grammar is malformed. On a Transactional Scope the key's namespace is
+the canonical Scope URL, the Scope epoch, and the authenticated principal —
+the Read+Update namespace with the epoch it lacks — and every mutation
+carrier feeds that one namespace: a singleton request, a `batch`, and each
+member of a `sequence` is a Mutation Transaction with its own durable
+Mutation Receipt, and the carrier is delivery metadata that the semantic
+comparison excludes.
+
+The semantic identity of a Mutation Transaction is the sequence, in
+declaration order, of its operations' semantic identities under [Idempotency
+keys](#idempotency-keys): each is the operation kind plus its normalized
+record — durable references canonicalized, protocol defaults expanded, array
+order preserved, member order ignored, `name` and the carrier excluded,
+`expectedRevision` and `revisionProvenance` included, opaque URIs and pins
+compared byte-exactly, and the records compared under RFC 6902 Section 4.6.
+In a batch, a `@label` reference is normalized to the creating operation's
+zero-based index when that operation supplies no `id`, and to the supplied
+identity's canonical URL when it does — never to the label's spelling, so
+renaming a label is not a semantic change, and never to an allocated
+identity, which does not exist before commit. In a sequence, a `@name`
+reference is normalized to the identity its creating member bound, as in
+Read+Update. A one-operation batch, the equivalent singleton request, and the
+equivalent sequence member therefore present one semantic request, and any of
+them retrieves the receipt the others created.
+
+Concurrent identical requests join one execution and receive the same
+receipt identity, pending or terminal. Read+Update refuses a concurrent
+duplicate with `idempotency-in-progress` because it has no durable receipt
+to hand the duplicate; the Transactional profile joins the duplicate to
+the one execution and hands it the pending receipt, which is the same
+exactly-once promise made with the profile's own vehicle. A later identical
+```
+
+### docs/specs/bdp.md:5263–5277 (98c600767e8e91a79e109cb741beb91e23b9bebe; full-file SHA256 f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e)
+```
+The three Transactional response fields on a receipt or page response are
+the serving request's own observation, never the body's history:
+`BDP-Scope-Epoch` and `BDP-Authorization-View` carry the current epoch and
+the caller's current view token, and `BDP-Scope-Position` carries the
+position the read observed — at or after `effectPosition` on a terminal
+receipt served synchronously, honoring `BDP-Minimum-Scope-Position` on a
+later read exactly as any read does, and the observed head on a `202`. The
+body's `scopeEpoch`, `authorizationView`, `requiredPosition`, and
+`effectPosition` are the execution's recorded facts and never change; after
+a view rotation the body still names the view under which the transaction
+executed, and the recorded `requiredPosition` remains evidence about that
+view rather than a checkpoint for the current one.
+
+A `failed` receipt's `problem` is a Problem Details object of the receipt
+form. It carries the code's `status` — the HTTP status the failure would
+```
+
+### Complete selected schema definitions (compact JSON; omitted reference names below)
+```json
+{"mutationReceipt":{"title":"BDP Mutation Receipt","type":"object","allOf":[{"$ref":"#/$defs/receiptCore"}],"oneOf":[{"type":"object","required":["id","status","idempotencyKey","scopeEpoch","authorizationView","transaction"],"properties":{"id":true,"status":{"const":"pending"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"detail":false,"requiredPosition":false,"effectPosition":false,"results":false,"next":false,"allocated":false,"problem":false,"expiresAt":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","results","next","expiresAt"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"available"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"results":true,"next":true,"expiresAt":true,"allocated":false,"problem":false},"allOf":[{"if":{"properties":{"next":{"type":"null"}},"required":["next"]},"then":{"properties":{"results":{"type":"array","minItems":1}}}}]},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","problem","expiresAt"],"properties":{"id":true,"status":{"const":"failed"},"detail":{"const":"available"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"problem":true,"expiresAt":true,"effectPosition":false,"results":false,"next":false,"allocated":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","allocated"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"expired"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"allocated":true,"results":false,"next":false,"problem":false,"expiresAt":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"withheld"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"results":false,"next":false,"allocated":false,"problem":false,"expiresAt":false}}]},"receiptCore":{"type":"object","properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"status":{"$ref":"#/$defs/receiptStatus"},"detail":{"$ref":"#/$defs/receiptDetail"},"idempotencyKey":{"$ref":"#/$defs/idempotencyKey"},"scopeEpoch":{"$ref":"#/$defs/wireToken"},"authorizationView":{"$ref":"#/$defs/wireToken"},"transaction":{"$ref":"#/$defs/wireToken"},"requiredPosition":{"$ref":"#/$defs/wireToken"},"effectPosition":{"$ref":"#/$defs/wireToken"},"results":{"type":"array","items":{"$ref":"#/$defs/receiptResult"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]},"allocated":{"type":"array","items":{"$ref":"#/$defs/allocatedIdentity"}},"problem":{"$ref":"#/$defs/receiptProblem"},"expiresAt":{"$ref":"#/$defs/dateTime"}},"allOf":[{"if":{"properties":{"status":{"const":"failed"}},"required":["status"]},"then":{"properties":{"effectPosition":false,"detail":{"const":"available"}}}}],"additionalProperties":false},"receiptResult":{"type":"object","required":["operationIndex","outcome"],"properties":{"operationIndex":{"type":"integer","minimum":0},"operationName":{"$ref":"#/$defs/localName"},"outcome":{"$ref":"#/$defs/receiptEntryOutcome"},"resource":{"oneOf":[{"allOf":[{"$ref":"#/$defs/beadRecord"},{"type":"object","properties":{"links":false}}]},{"$ref":"#/$defs/linkRecord"}]},"deleted":{"$ref":"#/$defs/deletedIdentity"},"erased":{"$ref":"#/$defs/resourceIdentity"},"source":{"$ref":"#/$defs/absoluteHttpUrl"},"sourceRevision":{"$ref":"#/$defs/revision"},"count":{"type":"integer","minimum":0},"alias":{"$ref":"#/$defs/absoluteHttpUrl"},"target":{"$ref":"#/$defs/absoluteHttpUrl"}},"allOf":[{"if":{"properties":{"outcome":{"enum":["created","updated"]}},"required":["outcome"],"not":{"properties":{"alias":true},"required":["alias"]}},"then":{"required":["resource"],"properties":{"resource":true,"deleted":false,"erased":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"deleted"}},"required":["outcome"],"not":{"properties":{"alias":true},"required":["alias"]}},"then":{"required":["deleted"],"properties":{"deleted":true,"resource":false,"erased":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"erased"}},"required":["outcome"]},"then":{"required":["erased"],"properties":{"erased":true,"resource":false,"deleted":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"matched"}},"required":["outcome"]},"then":{"required":["count"],"properties":{"count":true,"operationName":false,"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false}}},{"if":{"properties":{"outcome":{"const":"withheld"}},"required":["outcome"]},"then":{"properties":{"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false,"count":false}}},{"if":{"required":["resource"],"properties":{"resource":{"$ref":"#/$defs/beadRecord"}}},"then":{"properties":{"source":false,"sourceRevision":false}}},{"if":{"required":["deleted"],"properties":{"deleted":{"type":"object","required":["resourceKind"],"properties":{"resourceKind":{"const":"bead"}}}}},"then":{"properties":{"source":false,"sourceRevision":false}}},{"if":{"required":["alias"]},"then":{"allOf":[{"$ref":"#/$defs/aliasResultMembers"}],"properties":{"operationIndex":{"const":0},"operationName":false,"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false,"count":false}},"else":{"properties":{"target":false}}}],"dependentRequired":{"source":["sourceRevision"],"sourceRevision":["source"]},"additionalProperties":false},"beadRecord":{"type":"object","required":["id","type","revision","properties"],"properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"type":{"$ref":"#/$defs/absoluteHttpUrl"},"revision":{"type":"string","minLength":1},"properties":{"$ref":"#/$defs/properties"},"metadata":{"$ref":"#/$defs/metadata"},"links":{"$ref":"#/$defs/linkCollection"},"ownedLinks":{"type":"object","propertyNames":{"$ref":"#/$defs/absoluteHttpUrl"},"additionalProperties":{"type":"array","items":{"$ref":"#/$defs/linkRecord"}}},"revisionProvenance":{"$ref":"#/$defs/revisionProvenance"}},"additionalProperties":false},"currentBeadRecord":{"allOf":[{"$ref":"#/$defs/beadRecord"},{"type":"object","required":["metadata"],"properties":{"metadata":{"$ref":"#/$defs/metadata"},"links":{"$ref":"#/$defs/currentLinkCollection"},"ownedLinks":{"type":"object","additionalProperties":{"type":"array","items":{"$ref":"#/$defs/currentLinkRecord"}}}}}]},"beadCollection":{"type":"object","required":["items","next"],"properties":{"items":{"type":"array","items":{"$ref":"#/$defs/beadRecord"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]}},"additionalProperties":false},"currentBeadCollection":{"allOf":[{"$ref":"#/$defs/beadCollection"},{"type":"object","properties":{"items":{"type":"array","items":{"$ref":"#/$defs/currentBeadRecord"}}}}]},"eventPage":{"title":"BDP Event Source page","type":"object","required":["source","events","next"],"properties":{"source":{"$ref":"#/$defs/absoluteHttpUrl"},"events":{"type":"array","items":{"$ref":"#/$defs/event"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]}},"additionalProperties":false},"event":{"title":"BDP Event","type":"object","required":["id","ordinal","type","source","subject","subjectType","transaction","time","data"],"properties":{"id":{"$ref":"#/$defs/wireToken"},"ordinal":{"type":"integer","minimum":0},"type":{"$ref":"#/$defs/eventType"},"source":{"$ref":"#/$defs/absoluteHttpUrl"},"subject":{"$ref":"#/$defs/absoluteHttpUrl"},"subjectType":{"$ref":"#/$defs/absoluteHttpUrl"},"transaction":{"$ref":"#/$defs/wireToken"},"time":{"$ref":"#/$defs/dateTime"},"data":{"type":"object"}},"allOf":[{"if":{"properties":{"type":{"const":"created"}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/createdData"}}}},{"if":{"properties":{"type":{"const":"updated"}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/updatedData"}}}},{"if":{"properties":{"type":{"const":"deleted"}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/deletedData"}}}},{"if":{"properties":{"type":{"enum":["linked","unlinked"]}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/linkDeltaData"}}}}],"additionalProperties":false},"createdData":{"type":"object","required":["revision","properties"],"properties":{"revision":{"$ref":"#/$defs/revision"},"properties":{"$ref":"#/$defs/properties"},"metadata":{"$ref":"#/$defs/metadata"},"source":{"$ref":"#/$defs/reference"},"target":{"$ref":"#/$defs/reference"},"revisionProvenance":{"$ref":"#/$defs/revisionProvenance"}},"dependentRequired":{"source":["target"],"target":["source"]},"additionalProperties":false},"absoluteHttpUrl":{"type":"string","format":"uri","pattern":"^https?://.+"},"dateTime":{"type":"string","format":"date-time"},"wireToken":{"type":"string","pattern":"^[A-Za-z0-9_-]{1,256}$"},"properties":{"type":"object","additionalProperties":true},"metadata":{"type":"object","additionalProperties":true},"localName":{"type":"string","pattern":"^[A-Za-z][A-Za-z0-9_-]*$"}}
+```
+Omitted referenced definitions: aliasResultMembers, allocatedIdentity, currentLinkCollection, currentLinkRecord, deletedData, deletedIdentity, eventType, idempotencyKey, linkCollection, linkDeltaData, linkRecord, receiptDetail, receiptEntryOutcome, receiptProblem, receiptStatus, reference, resourceIdentity, revision, revisionProvenance, updatedData. Actual test loads the entire checked-in schema, not this excerpt.
+
+OMITTED CONTEXT
+Production modules outside supplied excerpts, full auxiliary schema-reference closure, unrelated tests/dependencies, package-install implementation, prior historical plans and runtime outcomes. Existing native full-source review is separate; no missing supplied context constitutes proof of a defect.
+The counterpart scope is separately accountable for its named source ranges; report a concrete needed boundary clarification rather than inventing its omitted implementation. No verdict on the counterpart or full-profile conformance is requested.

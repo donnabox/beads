@@ -1,0 +1,19 @@
+{
+  "accepted": true,
+  "sourceCommit": "c02ccc3706f2e258d380805162a8c47dbb73f4e1",
+  "attemptedHttp": 181,
+  "childLaunches": 21,
+  "closedChildren": 21,
+  "reportSha256": "78b9cb96b687edd7546fe055dfa42fd2cd242a67238fcdfc4584151b8fe5af2d",
+  "failures": [
+    "serving-context",
+    "required-position",
+    "no-effect",
+    "ordered-results",
+    "bead-retained-record"
+  ],
+  "otherAuthoredRowsPassed": 12,
+  "claimEligible": false,
+  "cleanup": "No owned processes/runtime roots; Node cache retained.",
+  "basis": "Root checked complete report against explicit control oracle, passed prefixes/client assertions, source/entry/payload/config identity and runtime cleanup. Log summaries agree. No runtime executed by adjudicator."
+}

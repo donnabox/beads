@@ -1,0 +1,8 @@
+PR64 source: 4594d526ebb3b1388c288733369afc00703e1eff
+Evidence commit: a57991fc24f1600613ad005f57a7d96900b88b24 (direct successor; artifact+constant only)
+Node v24.16.0; pnpm 11.20.0
+Fresh cohort generation PASS: 181.39 seconds, 38 packaged and 11 self-certified cases, 89 applicable rows verified.
+Full serial suite PASS: 108 files, 7621 passed, 1 skipped, 108.60 seconds.
+PASS: build, typecheck, dependency boundaries, full formatting, lint (three inherited warnings and one info), installed-package smoke, readiness preflight (7 tests).
+Evidence verify: see verify.log for full hashes.
+No semantic/test/document changes during qualification.

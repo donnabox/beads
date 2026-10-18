@@ -1,0 +1,136 @@
+{
+  "state": "draft only; no publication authorization",
+  "capturedAt": "2026-10-17T04:04:04.055432+00:00",
+  "repository": "https://github.com/gastownhall/bdp",
+  "basePr": {
+    "number": 154,
+    "url": "https://github.com/gastownhall/bdp/pull/154",
+    "stateObserved": "OPEN",
+    "isDraftObserved": true,
+    "headBranch": "codex/vickie-finite-event-minimum",
+    "head": "f6204255d53ef65d4aea56ff5ccc86d72e8cc7b0",
+    "baseBranch": "codex/vickie-parser-refusal",
+    "verifiedBy": "read-only local/origin refs and gh pr view154; no fetch or mutation"
+  },
+  "actualWorktree": "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum",
+  "actualBranch": "codex/vickie-bead-event-minimum",
+  "dirtyHead": "f6204255d53ef65d4aea56ff5ccc86d72e8cc7b0",
+  "dirtyBaseTree": "f5a20fe30562b11887d11a1100dbbd473843de7e",
+  "requiredOrdinaryParent": "f6204255d53ef65d4aea56ff5ccc86d72e8cc7b0",
+  "candidateCommit": null,
+  "candidateTree": null,
+  "candidatePr": null,
+  "exactHeadCi": {
+    "state": "pending",
+    "head": null,
+    "run": null
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-author/successor-1/source-binding.json",
+    "sha256": "bd234e411a82ac8686ba9c49700b1114eb6fa5b1458c86bfd862fa2ceaf35457",
+    "trackedFiles": 679
+  },
+  "fullPatch": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-author/successor-1/full.patch",
+    "sha256": "7df8d3111ba737d91f12811729b6db4af75637e67c01d3b1ad4e6ad7909edccb"
+  },
+  "sixFileScope": [
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-events.test.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "apps/bdptest/src/transactional-event-missing-context-installed.test.ts"
+  ],
+  "sourceValidation": {
+    "acceptedStages": {
+      "typecheck": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/typecheck.exit.json",
+        "sha256": "8d38412e9a14432c8b5e5fafd10972b5cb848c992e5783a93f957069598028dc",
+        "elapsedSeconds": 4.777265209006146,
+        "sourceIdentity": "507d86e5dac586bee57543bcf6ade921a5d354dfd36f08dd05fc5c8230f3afaa",
+        "accepted": true
+      },
+      "format-check": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/format-check.exit.json",
+        "sha256": "3d526dd59fa5f02ec3af45090f91c9a5516cf49294c1457c5f7e2ca9d7be2296",
+        "elapsedSeconds": 4.040298708016053,
+        "sourceIdentity": "507d86e5dac586bee57543bcf6ade921a5d354dfd36f08dd05fc5c8230f3afaa",
+        "accepted": true
+      },
+      "lint": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/lint.exit.json",
+        "sha256": "ec24c6d43d1065ef40e520e2c2786bf413c2d1993462f396a1344ba061ee57e5",
+        "elapsedSeconds": 4.164183875080198,
+        "sourceIdentity": "507d86e5dac586bee57543bcf6ade921a5d354dfd36f08dd05fc5c8230f3afaa",
+        "accepted": true
+      },
+      "fresh-build": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/fresh-build.exit.json",
+        "sha256": "1de4725bbdb6f634c734d20a4df94ef46680174c8475b7d5b14951dbb6a55844",
+        "elapsedSeconds": 4.898459499934688,
+        "sourceIdentity": "507d86e5dac586bee57543bcf6ade921a5d354dfd36f08dd05fc5c8230f3afaa",
+        "accepted": true
+      },
+      "bind-fresh-build": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/bind-fresh-build.exit.json",
+        "sha256": "f272f01625b935f05517d0da3458de7389f78a4974c10c5bfb8dcb45f0058946",
+        "elapsedSeconds": 8.476867082994431,
+        "sourceIdentity": "507d86e5dac586bee57543bcf6ade921a5d354dfd36f08dd05fc5c8230f3afaa",
+        "accepted": true
+      },
+      "focused-source": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/focused-source.exit.json",
+        "sha256": "35abc81867194ac8108cfa5c577c74b5e3323fe6a14f02d32c0a9d969fa9bca8",
+        "elapsedSeconds": 7.715643250150606,
+        "sourceIdentity": "507d86e5dac586bee57543bcf6ade921a5d354dfd36f08dd05fc5c8230f3afaa",
+        "accepted": true
+      },
+      "review-focused-source": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/review-focused-source.exit.json",
+        "sha256": "60c93c49e321dc9d25bcf473ed607d3ced37f17f8c083e112ebd22a7fa93b8e8",
+        "elapsedSeconds": 8.460233625024557,
+        "sourceIdentity": "507d86e5dac586bee57543bcf6ade921a5d354dfd36f08dd05fc5c8230f3afaa",
+        "accepted": true
+      }
+    },
+    "vitestPassedSelected": 25,
+    "vitestPendingUnselected": 96,
+    "vitestFailed": 0,
+    "sourceResultsSha256": "1369f2a10871033f3e59405f1d5fddc0386dc67ae485f438f3f84d8c7ad63e7b",
+    "sourceAuditSha256": "04e44fc288a305906913a646037658d4d529197aa69e77ef818bb0440381a67c",
+    "newHttpMeasuredCalls": 37,
+    "newHttpMeasuredElapsedMs": 686,
+    "nominalSelectedSourceHttp": 128,
+    "httpAttribution": "New37 and existing32 counters measured; historical59 is source-derived from its passing callback. Do not call128 a separately instrumented total."
+  },
+  "installedValidation": {
+    "state": "pending at checkpoint; no installed acceptance asserted",
+    "expectedCohorts": 3,
+    "expectedHttp": [
+      11,
+      3,
+      4
+    ],
+    "resultPins": null
+  },
+  "requiredBeforeCommit": [
+    "Root accepts all installed cohort results/immediate audits and actual archive/consumer entry/lock/provenance",
+    "Confirm all679 current dirty tracked bytes match frozen successor and source validation identity",
+    "Confirm all selected owned stores/children stopped with measured cleanup; no omitted failed attempts"
+  ],
+  "requiredAfterCommit": [
+    "Record actual ordinary commit SHA/tree and exact parent f620; never invent future object IDs",
+    "Read all679 committed files and SHA256-compare each with validated dirty successor map; compare full six-file patch and scope",
+    "Confirm clean tracked checkout; preserve actual precommit workspaceDirty:true and f620 provenance in raw observations",
+    "Reverify PR154 base ancestry and resulting tree; do not modify PR150 or newer main",
+    "Publish only root-authorized separate stacked PR and require exact-head green CI plus council dispositions before branch integration"
+  ],
+  "restrictions": [
+    "No full-profile qualification",
+    "No main merge or Preview2/release",
+    "PR150 checkpoint frozen",
+    "No relabeling historical evidence or omitted predecessor format failure"
+  ],
+  "authorActions": "Read-only source/ref/PR/evidence inspection plus session-guarded publication artifact writes only. No source/test/helper/runtime/commit/push/PR mutation."
+}

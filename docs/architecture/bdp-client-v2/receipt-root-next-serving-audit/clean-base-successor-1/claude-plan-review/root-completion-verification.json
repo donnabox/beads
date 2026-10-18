@@ -1,0 +1,62 @@
+{
+  "at": "2026-10-17T09:45:59.247944+00:00",
+  "exit": {
+    "classification": "review_complete",
+    "reviewComplete": true,
+    "approvalInferred": false,
+    "exitCode": 0,
+    "timeout": false,
+    "elapsedSeconds": 922.6385250422172,
+    "sourceInputsUnchanged": true,
+    "packetUnchanged": true,
+    "sampledPids": [
+      55727
+    ],
+    "remainingProcesses": [],
+    "cleanupRequired": false,
+    "wrapperErrorType": null,
+    "streamRecords": 4132,
+    "streamBytes": 2408411,
+    "parseErrors": 0,
+    "terminalResultCount": 1,
+    "lastEventElapsed": 922.1578044588678,
+    "streamSha256": "63b7a665ad0b0bcda9210e027acaf15deb5febfd44a31dc3fc4862268facb61e",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "finalReviewSha256": "b61aceac07471ad444992eaf7148d8ad8ca6c5cf117a1e87320d6011eb48b155",
+  "currentSourceVerified": 679,
+  "sampledPidsFreshAbsent": [
+    55727
+  ],
+  "callsByTool": {
+    "Read": 26,
+    "Grep": 32,
+    "Glob": 1
+  },
+  "readPaths": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-next-serving-audit/clean-base-successor-1/claude-plan-review/context/native-recommendation-review.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-next-serving-audit/clean-base-successor-1/claude-plan-review/context/rebind.json",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-next-serving-audit/clean-base-successor-1/plan-v2.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-next-serving-audit/clean-base-successor-1/selection-v2.json",
+    "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum/apps/bdptest/src/transactional-alias-installed.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum/apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum/apps/bdptest/test-support/transactional-execution-binding.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum/docs/specs/bdp.md",
+    "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum/packages/server/src/authority-read.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum/packages/server/src/transaction-consistency.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum/packages/server/src/transaction-http.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum/packages/server/src/transaction-http.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum/packages/server/src/transaction-read.test.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum/packages/server/src/transaction-read.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum/packages/server/src/transaction-service.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum/packages/server/src/transaction-store.ts",
+    "/Users/dbox/repos/wt/vickie/vickie-receipt-root-minimum/scripts/transaction-installed-observation.mjs"
+  ],
+  "copiedContextReadPaths": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-next-serving-audit/clean-base-successor-1/claude-plan-review/context/native-recommendation-review.md",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-next-serving-audit/clean-base-successor-1/claude-plan-review/context/rebind.json"
+  ],
+  "toolErrorIds": [],
+  "inputAttribution": "25 context paths supplied, not24. Existence via Glob is not contents read. Remaining contexts were not accessed; no full-context-review claim. Full plan/selection/workload inline.",
+  "reviewApprovalInferred": false
+}

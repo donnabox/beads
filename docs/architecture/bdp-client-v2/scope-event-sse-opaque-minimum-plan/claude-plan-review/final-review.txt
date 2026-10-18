@@ -1,0 +1,156 @@
+## Scope and method
+
+Read-only review of the authoritative plan (`.../claude-plan-review/context/plan.md`), `selection.json`, `workload.json`, `preservation.json`, `plan-binding.json`, `native-closure.md`, `correction-report.md`, `original-native-review.md`, `root-exact-ci-acceptance.json`, against the clean worktree at `bbfa5b2`. Spec text was verified against the repository's `docs/specs/bdp.md` (sha `67772742…`, identical to the pinned copy per `plan-binding.json:158`), not the copied `context/bdp.md`. Nothing was run, written, or modified.
+
+**Two blockers.** Both are new (neither appears in the native report, and one is a direct consequence of the native N1 correction being computed from a wrong event total).
+
+---
+
+## Numbered findings
+
+### 1. BLOCKER — D's baseline event count is wrong: the seeded group yields five Scope Events, not three
+
+**Plan location:** `plan.md` §"D — serves initial Scope Event SSE opaque minima before conditional admission" ("One actual batch creates a,b,l", "the first returns two Events … The second returns one Event and next:null", "concatenate exactly three Events"), D table rows 2–3 and 30, "Status totals:200x5", the §"Exact legacy selection and aggregate bounds" totals (`75`/`86`), report contract `baselinePages array2`, and `workload.json` `newHttp:30`, `source.http:75`, `combined.http:86`, `newHttpStatuses."200":5`, `corrections.N1`.
+
+**Source evidence:** `packages/server/src/transaction-batch.ts:771-804` — a `created` outcome emits one `created` scopeEvent, and then, for a Link whose `source`/`target` resolve in-scope, one `linked` scopeEvent **per endpoint** (`791-803`). `packages/server/src/transaction-store.ts` → `transaction-events.ts:250` sets `include = true` for every group event when `source.kind === "scope"`. Confirmed empirically in-repo: `packages/server/src/transaction-store.test.ts:125-130` shows `[create bead, create self-link]` → `created, created, linked, linked`; `transaction-store.test.ts:187` shows an external target drops one `linked`.
+
+So D's seed `[create("a"), create("b"), link() /* a→b, transaction-event-sse.test.ts:471-478 */]` produces **five** Scope Events (ordinals 0–4: `created a`, `created b`, `created l`, `linked source`, `linked target`). The `linkType` at `transaction-event-sse.test.ts:24-31` is not an owning link, so no sixth `updated` source event (consistent with `transaction-store.test.ts`).
+
+**Impact:** With `runtimeFixture`'s `receiptMaximumItems: 2` (`transaction-event-sse.test.ts:205`, cap applied at `transaction-store.ts:1745`), the canonical Scope `events/` baseline paginates **2 + 2 + 1 = three pages**, not two. D's row 3 would return 2 Events with a non-null `next`, so `expect(next).toBeNull()` and "exactly three Events" both fail; row 30 would receive five complete frames, not three; and the 30/75/86 and `200x5` totals are off by one request. The native N1 correction fixed the page count but inherited the same three-event premise, so successor-1 does not close this.
+
+**Smallest concrete correction (recommended, preserves every count):** change D's seed to `[create("a"), link-to-self]` i.e. one bead `a` plus `links/l` with `source: "beads/a", target: "beads/a"` → **four** Scope Events → exactly **two** baseline pages (2 Events + actual next, then 2 Events + `next:null`). D stays at 30 requests, `200x5`, source 75, combined 86, `baselinePages array2`, and rows 24 (`beads/a`) / 25 (`links/l`) / 26 (`beads/missing`) still resolve — `b` is referenced nowhere else in D. Update the three affected sentences to "two Events … two Events and next:null", "concatenate exactly four Events", and "await exactly the four complete id frames".
+
+**Alternative (if the a/b/l seed must be retained):** make the baseline three finite pages (2+2+1) and reindex D to **31** requests, `200x6`, source **76**, combined **87**, `baselinePages array3`, row 31 awaiting five frames, and update `workload.json` accordingly.
+
+**Also (same root cause, prose only):** §A says "their equality does not claim the entire three-Event group" — the group is five Events under A's stated seed (A seeds the same `a,b,l` batch). A's assertions are unaffected (at `ownerFixture` maximum 1 both packets hold one Event), so this is a factual-statement fix, not an assertion fix.
+
+---
+
+### 2. BLOCKER — an existing assertion outside the six-file scope contradicts the new behavior, and the plan's own validation run cannot detect it
+
+**Plan location:** §"Exactly six owned files, three production seams" ("no seventh file"), `preservation.json.productionChangedOnly`, `plan-binding.json:691-698` `ownedFiles`, and §"Review, validation and provenance sequence" (runs only `transaction-event-sse.test.ts` + `transactional-event-sse-installed.test.ts`).
+
+**Source evidence:** `packages/server/src/transaction-events.test.ts:1530`
+
+```
+await pair("events/", { ...opaque, accept: "text/event-stream" }, 500);
+```
+
+where `opaque` (`transaction-events.test.ts:1454-1458`) is the actual epoch + actual view + `bdp-minimum-scope-position: "opaque"`, the target is canonical Scope `events/` with no `after` and no `Last-Event-ID`, and `pair` (`1459-1512`) runs both GET and HEAD and, for status 500, asserts empty body, `x-bdp-development-limit: "minimum-position"`, and **absent** context headers (`observed = false`, line 1506).
+
+This is byte-for-byte the request the plan newly selects. Under the plan it becomes 503 `catch-up-timeout` with full context, `Retry-After: 1`, `application/problem+json` — so the status, body, limit-header, and context assertions all fail. (Verified path: `transaction-http.ts:514-529` new SSE predicate → `currentReadMinimumHeaders` parses `"opaque"` as a valid token (`transaction-consistency.ts:13,63`) → `checkCurrentReadMinimum(..., true)` (`transaction-consistency.ts:122-129`) → `TransactionMinimumUnproved` → `waitForTransactionMinimum` budget 80ms (`transaction-events.test.ts:1416`) → `catch-up-timeout` → `transaction-http.ts:650-663`.)
+
+I checked the neighbouring cases and they are **not** affected: `transaction-events.test.ts:1820` (Bead SSE) and `:2155` (Link SSE) stay 500 because the plan excludes Resource sources; `:1234`/`:1273` and the installed `transactional-event-missing-context-installed.test.ts` SSE rows use missing sources with no minimum; `transaction-http.test.ts:4654,4857` are 400 receiving cases; `transaction-runtime.test.ts` has no minimum headers; no conformance catalog/fixture encodes this pairing. The three selected legacy `transaction-event-sse.test.ts` callbacks are also unaffected (the only minimum-bearing SSE row, `transaction-event-sse.test.ts:792-796`, uses `pos-99`, which is a valid position and already waited on `behind`).
+
+**Impact:** The "exactly six owned files / no seventh file" boundary is not achievable; the change breaks a seventh file. Worse, the plan's prospective command set runs only the two owned test files with an anchored title regex, so the break would first surface in full CI, after the plan's own "independent native and actual Claude CODE review" gate.
+
+**Smallest concrete correction:** add `packages/server/src/transaction-events.test.ts` as a **seventh owned, test-only** file with a single-line change at `:1530` to
+`await pair("events/", { ...opaque, accept: "text/event-stream" }, 503, "catch-up-timeout", true);`
+plus the adjacent comment, and select the callback `serves initial finite Scope Event opaque minima through bounded waiting` (`transaction-events.test.ts:1398`) as a fourth legacy regression witness. `pair` issues 2 requests either way, so `expect(calls).toBe(32)` (`:1538`) and the `finite-event-minimum-http` report are unchanged; that callback's existing observation emits only `calls`, so no new report is invented. Then update `preservation.json` (add a prefix/whole-file hash entry or move it to a "changed" list), `plan-binding.json.ownedFiles`, `selection.json.legacySource` (+1 callback, +32 HTTP, +1 store/listener, +2 commits), and the aggregate totals. Alternatively, if the six-file boundary is hard, the plan must say explicitly that it leaves a known-failing test outside its scope — which would contradict "Known minimum, source identity/missing handling … retain their existing order" and should not be the chosen path.
+
+---
+
+### 3. MAJOR — A/B/C must pin the **src** module graph; a `../dist/*` import silently defeats the wait
+
+**Plan location:** §"Exactly six owned files" item 4 ("Local imports needed by new cases may be dynamic inside appended callbacks/helper code. A may load test modules asynchronously…"), §B ("handing the real owner to `createTransactionService`").
+
+**Source evidence:** `transaction-event-sse.test.ts:11` imports `openTransactionStore` from `./transaction-store.js` (src), while `:190`, `:611`, `:613`, `:754-757`, `:881-883` dynamically import from `../dist/*`. `waitForTransactionMinimum` (`transaction-consistency.ts:160-178`) retries **only** on `error instanceof TransactionMinimumUnproved` / `TransactionMinimumFailure`. Those classes are module-identity-scoped.
+
+**Impact:** If B/C obtain `createTransactionService` from `../dist/transaction-service.js` while `ownerFixture` builds a **src** store, the dist copy's `instanceof` checks fail against src-thrown `TransactionMinimumUnproved`, so the first attempt rethrows immediately: no held wait, no second attempt, no `catch-up-timeout` at pos-2. B's entire schedule (3 attempts / 1 wait / 4 clock calls) and C's abort-during-wait collapse. The same hazard applies to A's `instanceof TransactionMinimumUnproved | TransactionMinimumFailure | TransactionMinimumUnsupported` checks. The plan's existing-precedent language ("may be dynamic", and every current dynamic import in the file targets `dist`) actively invites the wrong choice.
+
+**Correction:** state explicitly in items 2/4 that A, B and C import `createTransactionService` from `./transaction-service.js` and the minimum error classes from `./transaction-consistency.js` — the same src graph as `ownerFixture`'s `openTransactionStore` — and that `../dist/*` must not be used for these three callbacks. (D and the legacy callbacks keep the dist runtime, which is correct and unaffected.)
+
+---
+
+### 4. MAJOR — C's `closed === false` check is not implementable as written
+
+**Plan location:** §C ("Start service.close() while wait is held and observe that promise immediately. A synchronous `closed === false` assertion merely records that instant"); report contract C `closed:true`.
+
+**Source evidence:** `transaction-service.ts:372` — `closed: completion.promise`. `service.closed` is a `Promise<void>`, not a boolean, so `service.closed === false` is vacuously `false` and asserts nothing. (`close()` itself is at `:737-758`; it sets `accepting = false` synchronously, then awaits `[...streams.values(), ...active]`, so the deferred-close instant the plan wants to record is real — only the expression is wrong.)
+
+**Correction:** specify a callback-local flag, e.g. `let settled = false; void service.closed.then(() => { settled = true; }, () => { settled = true; });` and assert `settled === false` at that instant, retaining the existing caveat that this records an instant rather than proving deferral.
+
+---
+
+### 5. MINOR — C's `ownerCloseCalls1` requires wrapping `close` on its delegate, which the plan never states
+
+**Plan location:** §B ("wrap only beginEventScan"), §C ("count actual delegate close once"), report contract C `ownerCloseCalls1`.
+
+**Source evidence:** `transaction-service.ts:750` calls `owner.close()` on the object passed to `createTransactionService`, so a counter must live on C's delegate. `ownerFixture`'s cleanup (`transaction-event-sse.test.ts:47-50`) closes the **real** owner directly and `transaction-store.ts:2347-2355` is idempotent, so the delegate counter will legitimately read exactly 1.
+
+**Correction:** add one clause to §C: "C's delegate additionally wraps `close` with a counter; all other methods are spread unchanged." (B's "wrap only beginEventScan" can stand, since B and C use separate delegates.)
+
+---
+
+### 6. MINOR — D row 3 must dial the returned `next` through the runtime listen URL, not its canonical origin
+
+**Plan location:** §D ("then follow that exact returned next once"), D table row 3 ("GET actual next from row2 JSON").
+
+**Source evidence:** `eventContinuation` (`transaction-events.ts:274-278`) returns an absolute canonical URL under `https://event-sse.invalid/acme/`, which is not reachable. The existing helper handles this by stripping the scope prefix before dialling (`transaction-event-sse.test.ts:275`, `f.request` at `:222-227`).
+
+**Correction:** add "assert the returned absolute canonical continuation, then dial its scope-relative suffix against the actual runtime listen URL (as `f.finite` does)" — one clause; no behavioural change.
+
+---
+
+### 7. MINOR — three line-range citations are slightly off against the clean HEAD
+
+- §item 2 cites `transaction-service.ts` "beginEvents540–557"; the declaration begins at **539** (`beginEvents(` at `:539`, body ends `:557`).
+- §item 3 cites `transaction-store.ts` "beginEventScan1766–1810"; the method is **1766–1808**, and `1809` is the first line of `advanceEventScan`, which the same paragraph forbids changing. Tighten to `1766–1808`.
+- §"Selected behavior" cites bdp.md "5820–5832 lexical receiving"; the governing sentence starts at **5819** ("If any of these three request fields is present on a read…"). Cite `5819–5832`.
+
+`transaction-http.ts` "Event branch509–559" is accurate.
+
+---
+
+### 8. MINOR — item 6 should name the exact predecessor statement it supersedes
+
+**Plan location:** §item 6 ("explicitly superseding only its prior unsupported-minimum limitation").
+
+**Source evidence:** `docs/design/transaction-implementation-progress.md:2060` (final paragraph) states: "Direct after/genesis, retained continuations, **SSE** and foreign-context opaque minima remain outside this extension". That is the single sentence the new paragraph supersedes, and only for the canonical Scope SSE subset. A second nearby statement, `:1880` ("Visible unsupported minimum handling remains a private limitation"), belongs to an unrelated receipt draft and must **not** be touched.
+
+**Correction:** name `:2060`'s SSE clause explicitly and state that `:1880` and the Bead/Link/reconnect/foreign exclusions are unchanged.
+
+---
+
+### 9. OPTIONAL — A row 1's unobserved count is self-consistent but loses a free sensitivity control
+
+`transaction-events.test.ts:829-846` shows the established `DatabaseSync.prototype.prepare` spy pattern, and `:666` confirms a successful packet prepares exactly **2** `/FROM groups/` statements (`retainedGroupReader`, `transaction-store.ts:674-678`, invoked from `eventPacket`, `:758`). `readContext()` (`:662-671`) and `eventSourceKnown` (`:693-703`) touch metadata/identities only, so rows 2–13 will genuinely read 0. The plan's `false`/`null` row-1 shape is honest and self-consistent; the native alternative (install the observer after seeding, before call 1) would measure 14/14 with the same workload. Either is acceptable — no change required.
+
+---
+
+### 10. OPTIONAL — `selection.sourceRegex` relies on non-unicode identity escapes
+
+The union uses `\ ` (escaped space) and `\-`. These are valid only when the pattern is compiled **without** the `u`/`v` flag; Vitest 4.1.10 (`package.json:36`) compiles `--testNamePattern` without it, and the titles contain no regex metacharacters that need escaping beyond the already-escaped `,` and `-`. Dropping the backslashes before spaces would remove the dependency. Not a defect today.
+
+---
+
+### 11. INFORMATIONAL — the preserved pending-CI sentence vs. `root-exact-ci-acceptance.json`
+
+`plan.md:5` preserves "PR161 exact CI39044573943 remains pending at the root preparation handoff", while `root-exact-ci-acceptance.json` records `accepted: true`, same HEAD `bbfa5b2`, 27 successful steps. This is the intended preserved-history framing (also stated in `correction-report.md:5` and `native-closure.md:13`); the plan's "Root must independently verify exact green basis before authoring" is satisfied by that separate artifact. No change.
+
+---
+
+## Areas verified with no finding
+
+- **Selection/default-strict/canonical Scope:** the new predicate's shape is implementable exactly where the plan places it — `transaction-http.ts:513-529` already computes `media`, raw `fields` and `eventRequest` before minimum selection; `transaction-service.ts:539-557` already snapshots **before** `run()`/`check()` (so B's "malformed throws synchronously before lifecycle check" holds — `run` → `check` throws synchronously at `:140-141`/`:133-139`); `transaction-store.ts:1766-1808` already parses controls and `eventSource` before capture and preserves missing→sentinel→context→minimum→invalidReconnect→cursor→`eventPacket` ordering. `events()`'s distinct in-attempt capture (`:501-537`) is correctly excluded.
+- **No URL `after` / no raw-or-Headers Last-Event-ID:** `transactionEventRequest` rejects `?after=` at parse time (`transaction-events.ts:176`) → contextless 400 (row 20); the raw-array-authoritative rule mirrors the existing finite predicate at `transaction-http.ts:524`.
+- **SSE media vs finite/unsupported Accept:** `selectChangefeedMedia` (`read-http.ts:95-99`) returns `undefined` for unsupported Accept, which falls into the existing `media !== "sse"` finite branch — correctly excluded by the plan.
+- **D rows 5–29 statuses:** all ten 503s, eight 500s (incl. foreign epoch/view via `TransactionMinimumUnsupported` → `developmentGap` at `transaction-http.ts:673-674,147-151`), 400/404/401/304/412 trace correctly through `applyReadHttpSemantics` (`read-http.ts:10-48`), `streamResponse` (`transaction-http.ts:128-146`) and `conditionalReadStatus` (`read-http.ts:50-56`). HEAD↔GET `Content-Length` parity holds (`read-http.ts:42-45` plus `transaction-runtime.ts:88-96`).
+- **No packet/slot before eligibility:** `service.stream` capacity is taken only after `beginEvents` returns (`transaction-service.ts:296-305`, default `maximumStreams` 1 at `:124`).
+- **Row 30 / E request 6 recorder contract:** `raw-sse-recorder.ts:113-157` exposes `ready/closed/status/headers/frames/wireBytes/elapsedMs/destroyed/until/close` and **no** signal — the plan's N2 wording and its "`close()` alone does not surface stored recorder failure" claim are both accurate (`:101-111,153-156`).
+- **Legacy counts:** 28 / 13 / 4 reconcile exactly (`transaction-event-sse.test.ts:349-442`, `443-469`, `787-803`), including the retained 3 ms delay; titles match `selection.json` byte-for-byte; all three are unaffected by the production change.
+- **A's group-preparation claim, B's clock/attempt schedule, C's abort/drain/close-once schedule:** all reconcile against the actual `waitForTransactionMinimum` loop, `enter`/`close` idempotence (`transaction-store.ts:398-409,2347-2355`), and receipt fields (`scopeEpoch`/`authorizationView`/`requiredPosition`) for B's "tuple from the real seed receipt".
+- **Installed E:** executor bounds (5 s / 131072 / 16384 / 65536) match the existing restart pattern (`transactional-event-sse-installed.test.ts:654-669`); HEAD is a supported method with method-aware framing (`http-executor.ts:5,924`); the 45 s/10 s/60 s/5 s deadlines and the `outerSupervisor: 120000` report field are already present (`:358,916,988-993,1054`); the both-or-neither override + outside-worktree realpath guard exists (`:323-339`); default minimum budget is 1000 ms (`transaction-consistency.ts:144`, no installed override).
+- **Provenance/preservation bookkeeping:** `preservation.json` and `plan-binding.json` agree on all three prefix hashes; the `files` map holds exactly 679 entries (lines 11–689); `pnpm build` = `pnpm clean && tsc -b` (`package.json:15`), and the top-level `../dist/transaction-runtime.js` import at `transaction-event-sse.test.ts:190` confirms build-before-collection is required.
+- **Spec grounding:** 5841–5851, 5876–5884, 6258–6263 and 6325–6356 read as the plan describes, including that the explicit MUST names "current Bead or Link Resource or properties view" and not Scope SSE — the plan's "general remaining-read law, bounded reference choice" framing is accurate, and it does not invent retained-continuation precedence (5850–5851).
+
+## Inaccessible / not inspected
+
+- `correction.patch`, `plan-index.json`, `design-original-checkpoint.md`, `design-current-checkpoint.md`, `required-contract-matrix.md`, `recommendation.md`, `native-exact-ci-audit.md`, `original-plan.md` and the copied `bdp.md` were **not** read; spec claims were verified against the repository file of identical sha instead.
+- I could not byte-verify the three preserved prefixes or re-hash any artifact (no shell/hashing permitted); I only confirmed that `preservation.json` and `plan-binding.json` state identical sha256 values.
+- The root-released `private/tmp` supervisor (120 s / TERM 115 s / KILL 120 s), the packaging/external-consumer helpers, lock acceptance, and any real external `BDP_TRANSACTIONAL_INSTALLED_ENTRY` target live outside this worktree and were not examined.
+- All counts discussed are **prospective workload** from the plan; nothing in this review is measured evidence.
+
+## Verdict
+
+**Two blockers (#1, #2) must be resolved before source authoring**, plus #3 and #4, which would otherwise produce tests that pass vacuously or fail for the wrong reason. The production approach, seam placement, ordering, strictness boundaries, legacy selection, installed-witness design and provenance discipline are otherwise sound and match the actual source. This is a plan review only; it does not approve authoring, release execution, or imply any profile-completion status.

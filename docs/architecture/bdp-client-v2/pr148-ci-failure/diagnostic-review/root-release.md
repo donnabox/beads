@@ -1,0 +1,1 @@
+Root inspected full diagnostic patch, native clean review and focused review prompt/runner. Source and context/artifact/tool pins independently verified. Release actual Claude read-only review only; no tests or product repair authorized by this release. Existing exact assertion, requests and deadlines remain unchanged.

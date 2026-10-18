@@ -1,0 +1,36 @@
+{
+  "sourceBindingFinalized": true,
+  "helperImplementationFinalized": true,
+  "executionAuthorized": false,
+  "predecessor": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1",
+  "sourceCandidate": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+  "authorSuccessor": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-author/lint-successor-1",
+  "bootstrapReusePrecedent": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/receipt-root-minimum-validation-successor-1/gate.py",
+    "sha256": "ba1ebedb59300ba40d89c44f28ba411a0f15f038e83d243b68f6c032d17c38aa"
+  },
+  "changes": [
+    "Exact one-block lint correction source map/fullpatch and separate output paths",
+    "Only source/disposition/reference metadata changes; main run/gate/packages/audit byte-identical",
+    "Required gate changes delegated validation path only; bootstrap verifier and all predicates unchanged"
+  ],
+  "unchanged": [
+    "Main run.py/packages.py/audit.py and all expected source/installed observation predicates",
+    "97 exact source cases,9new reports plus28 separately attributed legacy reports",
+    "Source37HTTP and separate historical22/new37 installed; sibling5 fullCI only",
+    "All19 post-bootstrap stages fresh, starting typecheck; required4 fresh",
+    "120s/TERM115/no retries, owned cleanup, fresh build before source collection",
+    "Consumer-install cwd run/consumer and root approval of actual consumer lock/proof",
+    "Original correction-successor-2 bootstrap2 identity remains original; no formatted typecheck/format/lint record reused"
+  ],
+  "reusedOnly": [
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "notReused": [
+    "typecheck",
+    "format-check",
+    "any lint/build/runtime/required stage"
+  ],
+  "actualFreshBuildConsumerPins": null
+}

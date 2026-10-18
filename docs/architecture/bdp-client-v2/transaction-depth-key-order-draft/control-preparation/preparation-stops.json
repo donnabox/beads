@@ -1,0 +1,15 @@
+{
+  "executedProductCode": false,
+  "stops": [
+    {
+      "stage": "prerequisite names",
+      "reason": "Template names setup/format differed from actual offline-setup/format-check; stopped before any copy or mutation.",
+      "resolution": "Bound actual existing seven successful stage names."
+    },
+    {
+      "stage": "resolution assertion",
+      "reason": "transaction-service has owner injected; no runtime import of transaction-store from service. Full copy and exact emitted mutation already prepared; assertion stopped before wrapper/gate.",
+      "resolution": "Verified actual runtime imports both transaction-service and transaction-store directly; corrected only recorded decisive edge. No recopy or remutation."
+    }
+  ]
+}

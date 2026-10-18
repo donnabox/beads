@@ -1,0 +1,29 @@
+{
+  "verifiedAt": "2026-10-14T16:41:00.557558+00:00",
+  "source": "90cc834c3672b02840c68dcd7abb35794f038887",
+  "tree": "97db367180fb49a20e831fba859e0ac09482966b",
+  "parent": "d50f554cf6418ba036072ebf6795cb272cd6cbc1",
+  "pr": {
+    "baseRefOid": "d50f554cf6418ba036072ebf6795cb272cd6cbc1",
+    "headRefOid": "90cc834c3672b02840c68dcd7abb35794f038887",
+    "isDraft": true,
+    "state": "OPEN",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "detailsUrl": "https://github.com/gastownhall/bdp/actions/runs/38600031523/job/115976594627",
+        "name": "verify",
+        "startedAt": "2026-10-14T16:40:12Z",
+        "status": "IN_PROGRESS",
+        "workflowName": "CI"
+      }
+    ],
+    "url": "https://github.com/gastownhall/bdp/pull/118"
+  },
+  "sourceFilesVerified": 6,
+  "rootReview": "full draft and tested test-only/doc correction read; source hashes, body/control preflight, archive hashes,30responses and3PID cleanup independently checked",
+  "reportSha256": "06ee8ce82888ac9c04d5170eeb51a72ac4ff219d3d34b683b5e7489bc07df6d2",
+  "codeCouncil": "native and Claude active; no ready/merge claim"
+}

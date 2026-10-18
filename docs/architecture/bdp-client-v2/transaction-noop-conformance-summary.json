@@ -1,0 +1,861 @@
+{
+  "source": "bec97a7a00b8df663a62004e1ee640303d8527fa",
+  "tree": "f173c70f0806b72fa75075b1cdb1ce35d0c14bf0",
+  "parents": [
+    "32711dc30598c3b30947fbb54dd229e110eb4f82"
+  ],
+  "clean": true,
+  "files": {
+    "apps/bdptest/src/transactional-matrix.test.ts": {
+      "bytes": 52273,
+      "sha256": "c524b3ce99400715d6fff0bb70bd0cd46e3e1996f5a8bf942b08af3d9f8f1b79"
+    },
+    "packages/conformance/src/transactional-cumulative.test.ts": {
+      "bytes": 64596,
+      "sha256": "c20afbe3995d4321630db7e706d84dacfe78d1b2b6b14ebe815b61a076233570"
+    },
+    "packages/conformance/test-support/transactional/coverage-v1.json": {
+      "bytes": 70662,
+      "sha256": "8a770b4371689a3d9d5f84ecfc7a1d9b72715c81e617cf0ea5ae04e55c66098e"
+    },
+    "packages/conformance/test-support/transactional/manifest-v1.json": {
+      "bytes": 488280,
+      "sha256": "0358cbf7416321bb911e990259236f89bc2720cbc29d037581f542080d9f32ab"
+    }
+  },
+  "claimEligible": false,
+  "installRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-noop-conformance/successor-validation/install",
+  "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-noop-conformance/successor-validation/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+  "tarballs": {
+    "protocol.tgz": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+    "server.tgz": "ebe17f4c52c685c29444252df996996d5e5683512c4599b9288946617d38fb3e"
+  },
+  "exits": {
+    "format-owned": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.229,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "biome",
+        "format",
+        "--write",
+        "packages/conformance/src/transactional-cumulative.test.ts",
+        "apps/bdptest/src/transactional-matrix.test.ts"
+      ]
+    },
+    "typecheck": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.772,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ]
+    },
+    "cumulative": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 1.052,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/conformance/src/transactional-cumulative.test.ts",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-noop-conformance/successor-validation/cumulative.json"
+      ]
+    },
+    "app-static": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.635,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "-t",
+        "pins the matching no-op installed route digest",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-noop-conformance/successor-validation/app-static.json"
+      ]
+    },
+    "format": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.318,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "format:check"
+      ]
+    },
+    "lint": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.423,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ]
+    },
+    "boundaries": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.532,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ]
+    },
+    "read-seal": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.308,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ]
+    },
+    "diff": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.01,
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ]
+    },
+    "frozen-clean": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.259,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "clean"
+      ]
+    },
+    "frozen-typecheck": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.776,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ]
+    },
+    "frozen-build": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.775,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "pack-protocol": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.243,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "pack",
+        "--out",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-noop-conformance/successor-validation/packs/protocol.tgz"
+      ]
+    },
+    "pack-server": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.251,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "pack",
+        "--out",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-noop-conformance/successor-validation/packs/server.tgz"
+      ]
+    },
+    "packed-install": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.298,
+      "command": [
+        "npm",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund"
+      ]
+    },
+    "packed-positive": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 4.557,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "-t",
+        "observes eleven partial Transactional",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-noop-conformance/successor-validation/packed-positive.json"
+      ]
+    },
+    "packed-three-controls": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 12.013,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "-t",
+        "discriminates matching no-op evidence",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-noop-conformance/successor-validation/packed-three-controls.json"
+      ]
+    }
+  },
+  "positive": {
+    "kind": "installed-tx-eleven-partial-summary",
+    "sourceCommit": "bec97a7a00b8df663a62004e1ee640303d8527fa",
+    "elapsedMs": 3933.6417909999996,
+    "actions": 166,
+    "sessions": 18,
+    "childLaunches": 19,
+    "closedChildren": 19,
+    "artifacts": {
+      "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+      "manifestDigest": "0358cbf7416321bb911e990259236f89bc2720cbc29d037581f542080d9f32ab",
+      "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+    },
+    "baseline": {
+      "served": {
+        "scope": "https://reference.invalid/acme/",
+        "profile": "transactional",
+        "history": false,
+        "sourceCommit": "bec97a7a00b8df663a62004e1ee640303d8527fa",
+        "installedPayloadDigest": "535612f787a2c3e855cab57801599c86faba1ed78e5952534d70c036e64f442a",
+        "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+        "policyDigest": "efcf4b3c74ba5bfebddf0e364ee46b64340e60bd98e1fc9bb21c067a2b2fcf7b",
+        "authenticationDigest": "ffdad75bd01f87b331fb43680f4e0e350f5c2fec6206be858affadf18786a51e",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+        "fixtureId": "reference-transactional-v1",
+        "capabilities": [
+          "installed-transactional-http",
+          "transactional-receipt-observation"
+        ]
+      },
+      "operationTargets": {
+        "createBead": "https://reference.invalid/acme/operations/create-bead",
+        "updateBead": "https://reference.invalid/acme/operations/update-bead",
+        "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+        "createLink": "https://reference.invalid/acme/operations/create-link",
+        "updateLink": "https://reference.invalid/acme/operations/update-link",
+        "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+        "putAlias": "https://reference.invalid/acme/operations/put-alias",
+        "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+        "updateWhere": "https://reference.invalid/acme/operations/update-where",
+        "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+        "batch": "https://reference.invalid/acme/operations/batch",
+        "sequence": "https://reference.invalid/acme/operations/sequence"
+      },
+      "runtimeConfigurationIdentity": "dc150cb57e44489518d5141ad4f6e7076064d5ecc78f7081c10025036fd9fe7c",
+      "authorityMode": "canonical"
+    },
+    "claimEligible": false
+  },
+  "controls": [
+    {
+      "kind": "installed-tx-matching-noop-control",
+      "control": "bead-property",
+      "sourceCommit": "bec97a7a00b8df663a62004e1ee640303d8527fa",
+      "actionId": "n-noop",
+      "observedStatus": 200,
+      "writeState": "complete",
+      "intended": [
+        "bead-retained-record"
+      ],
+      "failures": [
+        "serving-context",
+        "required-position",
+        "no-effect",
+        "ordered-results",
+        "bead-retained-record"
+      ],
+      "exchanges": 148,
+      "sessions": 18,
+      "childLaunches": 19,
+      "closedChildren": 19,
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "38c6a0797c68b3a5b534c806c01f27cc2b0d1cda8426463dddc985934bb94495",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "declarations": {
+        "targetLabel": "private-installed-transactional-partial",
+        "exactConfigurationDigest": "906199051adc043408d64c0879a3d3f2cce32b06faa08b9458f4a270ce31a6ce"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "bec97a7a00b8df663a62004e1ee640303d8527fa",
+          "installedPayloadDigest": "535612f787a2c3e855cab57801599c86faba1ed78e5952534d70c036e64f442a",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "9ca95e2c37eeb2a3e2464209f20706a5cb878a048d98ae594720ee24149a144e",
+          "authenticationDigest": "14058b92de9885df35df1c4c452baa60bd7813a6771e17425f9f6767b2d47fb8",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "767bba4b8d35a516901e8e292a98253977c054c801d418c8b5c576d7816d478b",
+        "authorityMode": "canonical"
+      },
+      "claimEligible": false
+    },
+    {
+      "kind": "installed-tx-matching-noop-control",
+      "control": "link-metadata",
+      "sourceCommit": "bec97a7a00b8df663a62004e1ee640303d8527fa",
+      "actionId": "n-noop",
+      "observedStatus": 200,
+      "writeState": "complete",
+      "intended": [
+        "link-retained-record"
+      ],
+      "failures": [
+        "serving-context",
+        "required-position",
+        "no-effect",
+        "ordered-results",
+        "link-retained-record"
+      ],
+      "exchanges": 148,
+      "sessions": 18,
+      "childLaunches": 19,
+      "closedChildren": 19,
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "e32b17833d758b1265e5d0f1835fa02ba4d37e54a2d68a9fa91c0c44ba22a80b",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "declarations": {
+        "targetLabel": "private-installed-transactional-partial",
+        "exactConfigurationDigest": "906199051adc043408d64c0879a3d3f2cce32b06faa08b9458f4a270ce31a6ce"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "bec97a7a00b8df663a62004e1ee640303d8527fa",
+          "installedPayloadDigest": "535612f787a2c3e855cab57801599c86faba1ed78e5952534d70c036e64f442a",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "a26794cb36356b8954eff48a44155035ddecbeaea07d65ba061122a1f8846aa3",
+          "authenticationDigest": "c7f5ca13e1998c01b6066f3ab7e8ca57a06e85e2933fbe84332276dcbf5b4b85",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "73e21ff2570b2aa587fcae7a34766a7341fa10e67841f70aea731a13a9e7301f",
+        "authorityMode": "canonical"
+      },
+      "claimEligible": false
+    },
+    {
+      "kind": "installed-tx-matching-noop-control",
+      "control": "group-inventory-and-head",
+      "sourceCommit": "bec97a7a00b8df663a62004e1ee640303d8527fa",
+      "actionId": "n-noop-groups",
+      "observedStatus": 200,
+      "writeState": "complete",
+      "intended": [
+        "group-inventory",
+        "observed-head"
+      ],
+      "failures": [
+        "observed-head",
+        "group-inventory"
+      ],
+      "exchanges": 153,
+      "sessions": 18,
+      "childLaunches": 19,
+      "closedChildren": 19,
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "33984616042f03c00a497c13e08ba798af64e2e80df94b6f05b6ae7890dcb0e3",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+      },
+      "declarations": {
+        "targetLabel": "private-installed-transactional-partial",
+        "exactConfigurationDigest": "906199051adc043408d64c0879a3d3f2cce32b06faa08b9458f4a270ce31a6ce"
+      },
+      "baseline": {
+        "served": {
+          "scope": "https://reference.invalid/acme/",
+          "profile": "transactional",
+          "history": false,
+          "sourceCommit": "bec97a7a00b8df663a62004e1ee640303d8527fa",
+          "installedPayloadDigest": "535612f787a2c3e855cab57801599c86faba1ed78e5952534d70c036e64f442a",
+          "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+          "policyDigest": "0f717b682c5251fdba8cd2bf0ea94123e76b3859c1e31445cf86d3736e4511e4",
+          "authenticationDigest": "7028765882f550d9416639f6b545ed94d0f29ca92ab3c4142c0f6bac50496259",
+          "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+          "fixtureId": "reference-transactional-v1",
+          "capabilities": [
+            "installed-transactional-http",
+            "transactional-receipt-observation"
+          ]
+        },
+        "operationTargets": {
+          "createBead": "https://reference.invalid/acme/operations/create-bead",
+          "updateBead": "https://reference.invalid/acme/operations/update-bead",
+          "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+          "createLink": "https://reference.invalid/acme/operations/create-link",
+          "updateLink": "https://reference.invalid/acme/operations/update-link",
+          "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+          "putAlias": "https://reference.invalid/acme/operations/put-alias",
+          "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+          "updateWhere": "https://reference.invalid/acme/operations/update-where",
+          "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+          "batch": "https://reference.invalid/acme/operations/batch",
+          "sequence": "https://reference.invalid/acme/operations/sequence"
+        },
+        "runtimeConfigurationIdentity": "067701c7b9018717ee357f344227c84ef57003189ea83881e9b76da2c656e5df",
+        "authorityMode": "canonical"
+      },
+      "claimEligible": false
+    }
+  ],
+  "remainingInstalledChildren": 0,
+  "artifactAudit": {
+    "manifest": {
+      "bytes": 488280,
+      "nodes": 13019,
+      "sha256": "0358cbf7416321bb911e990259236f89bc2720cbc29d037581f542080d9f32ab",
+      "growthBytes": 81053,
+      "oldRawObjects": [
+        {
+          "id": "transactional.batch.atomic-commit",
+          "bytes": 14936,
+          "sha256": "0dfd3b9ed02d01f76ecac08c00b009b4bb9f03e57f7e15a2266eed82fc144747"
+        },
+        {
+          "id": "transactional.batch.rollback",
+          "bytes": 16319,
+          "sha256": "be24067358af7b5acf7bc1beae2eb6534cbc0effa6f65406ab61b139310bfc37"
+        },
+        {
+          "id": "transactional.set.mutation",
+          "bytes": 71739,
+          "sha256": "6e7280a9ebbbc3faa1da989015cc802f82cd51b17a9cea11e7cc91392bef49d6"
+        },
+        {
+          "id": "transactional.set.zero-match",
+          "bytes": 36055,
+          "sha256": "35aa23bd32539869ea3db41e1c9f3e81a3217e2eb983e764e860a6e00c9eb2c9"
+        },
+        {
+          "id": "transactional.set.cardinality",
+          "bytes": 28546,
+          "sha256": "205af1c54d62efb09c9eadf20147a1730909e788c0d4763ce9718b8648f24ede"
+        },
+        {
+          "id": "transactional.set.singleton-targets",
+          "bytes": 40018,
+          "sha256": "561b8ebc21106628918111332a9ab7b47be7350935925ed1e76a6cb5bed576b9"
+        },
+        {
+          "id": "transactional.receipt.readable",
+          "bytes": 12545,
+          "sha256": "ddb97e450e233b941f7d905d49f48648d9965ed1b361dcdc5dee6f810038a1e0"
+        },
+        {
+          "id": "transactional.receipt.pagination",
+          "bytes": 138750,
+          "sha256": "c531c260349347cdc3e54ba68282f1a266a5fa207d3775660615f836a4768782"
+        },
+        {
+          "id": "transactional.idempotency.conflict",
+          "bytes": 29772,
+          "sha256": "ba93aea884ae462533d02695642f03a2ca854f5adabeb41867254216dabb2106"
+        },
+        {
+          "id": "transactional.idempotency.failed-retained",
+          "bytes": 18404,
+          "sha256": "a867694406dde07da71ac70197c60c478dd0fb3344cf2c8160795d1aa62d3378"
+        }
+      ]
+    },
+    "coverage": {
+      "bytes": 70662,
+      "nodes": 1633,
+      "sha256": "8a770b4371689a3d9d5f84ecfc7a1d9b72715c81e617cf0ea5ae04e55c66098e",
+      "growthBytes": 10593,
+      "oldRawObjects": [
+        {
+          "id": "transactional.batch.atomic-commit",
+          "bytes": 2383,
+          "sha256": "ffd77a9d34ac41a6e1f960671bea6880eb5b2ab7b11b3af4ccf0177363d7f4d7"
+        },
+        {
+          "id": "transactional.batch.rollback",
+          "bytes": 2857,
+          "sha256": "9e4f5cdb45f0133f1c6d23caa402701981db2e6f4198e23c667579622ace6769"
+        },
+        {
+          "id": "transactional.set.mutation",
+          "bytes": 11676,
+          "sha256": "058147f8194f091ee5a7ef3d4fd378f0324f6570049df777f993acb5f967d540"
+        },
+        {
+          "id": "transactional.set.zero-match",
+          "bytes": 6520,
+          "sha256": "4e79e18a5e4c2735b5c686b9ad610dedc890386bfb06584f98268a421bbb832b"
+        },
+        {
+          "id": "transactional.set.cardinality",
+          "bytes": 5800,
+          "sha256": "2a255ed4d364c435c9f985d7a770386bc7b20b2865887b9c8cc2d6cc5f0dd116"
+        },
+        {
+          "id": "transactional.set.singleton-targets",
+          "bytes": 7314,
+          "sha256": "0c9008bac3e2c047d9aa8d47d343b7ed936c9c9352bb140c6422127c71b156b1"
+        },
+        {
+          "id": "transactional.receipt.readable",
+          "bytes": 2142,
+          "sha256": "684eba200912ccb0932c0a8286e350a6e545262a205b3ea3df47a12fc6dd18ec"
+        },
+        {
+          "id": "transactional.receipt.pagination",
+          "bytes": 13057,
+          "sha256": "0735edbca2fbf384f9f8147140a353dc084d9ad85facaddf2f5073f56a7256ee"
+        },
+        {
+          "id": "transactional.idempotency.conflict",
+          "bytes": 5188,
+          "sha256": "de9b758f8ac4df7db5597b1eb2b402a116720becc30a41e7198f78f244358ec0"
+        },
+        {
+          "id": "transactional.idempotency.failed-retained",
+          "bytes": 2917,
+          "sha256": "63918cbb495a504fd2043f52b60e7cd8ef1518b8022a96edb0d02660c7df1a8e"
+        }
+      ]
+    }
+  },
+  "sourceAuditSha256": "b0ac8f12b0e961420172a6ca8093886e6a65c4dedd348d2335076b0e80116650",
+  "newRow": {
+    "id": "transactional.batch.no-op-entries",
+    "state": "pass",
+    "wholeContract": false,
+    "reason": "Bounded private installed observations are planned for matching unconditional Bead and unowned Link property/metadata updates with unchanged full records, completed no-effect receipt, unchanged Scope position, finite Events and change group; an effectful comparator checks the same routes advance. Whole contract remains unqualified: failed mutations and other no-effect categories, guards/races, owned-Link source revisions, mixed-effect transactions, policy/view changes, expiry and restart retention are not observed by this row. No public admission or full profile claim.",
+    "clientActionIds": [
+      {
+        "id": "n-seed-facts",
+        "family": "client",
+        "operation": "transactional.receipt-read"
+      },
+      {
+        "id": "n-noop-facts",
+        "family": "client",
+        "operation": "transactional.receipt-read"
+      },
+      {
+        "id": "n-changed-facts",
+        "family": "client",
+        "operation": "transactional.receipt-read"
+      }
+    ],
+    "wireLedger": [
+      {
+        "id": "n-seed",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/batch",
+        "status": 200,
+        "requestBodyOctets": 464,
+        "responseBodyOctets": 1256,
+        "exchangeAssertions": 16,
+        "allAssertionsPassed": true
+      },
+      {
+        "id": "n-seed-facts",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/receipts/6916eec0-2d92-4af6-9051-b45e8e36827f",
+        "status": 200,
+        "requestBodyOctets": 0,
+        "responseBodyOctets": 1256,
+        "exchangeAssertions": 3,
+        "allAssertionsPassed": true
+      },
+      {
+        "id": "n-seed-groups",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/changes/?<redacted>",
+        "status": 200,
+        "requestBodyOctets": 0,
+        "responseBodyOctets": 4487,
+        "exchangeAssertions": 20,
+        "allAssertionsPassed": true
+      },
+      {
+        "id": "n-noop",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/batch",
+        "status": 200,
+        "requestBodyOctets": 350,
+        "responseBodyOctets": 990,
+        "exchangeAssertions": 16,
+        "allAssertionsPassed": true
+      },
+      {
+        "id": "n-noop-facts",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/receipts/ad69e797-00b7-4508-9454-18ec84a6ac1b",
+        "status": 200,
+        "requestBodyOctets": 0,
+        "responseBodyOctets": 990,
+        "exchangeAssertions": 3,
+        "allAssertionsPassed": true
+      },
+      {
+        "id": "n-noop-beads",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/?<redacted>",
+        "status": 200,
+        "requestBodyOctets": 0,
+        "responseBodyOctets": 403,
+        "exchangeAssertions": 12,
+        "allAssertionsPassed": true
+      },
+      {
+        "id": "n-noop-link",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/links/l",
+        "status": 200,
+        "requestBodyOctets": 0,
+        "responseBodyOctets": 297,
+        "exchangeAssertions": 9,
+        "allAssertionsPassed": true
+      },
+      {
+        "id": "n-noop-events",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/events/",
+        "status": 200,
+        "requestBodyOctets": 0,
+        "responseBodyOctets": 3117,
+        "exchangeAssertions": 12,
+        "allAssertionsPassed": true
+      },
+      {
+        "id": "n-noop-groups",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/changes/?<redacted>",
+        "status": 200,
+        "requestBodyOctets": 0,
+        "responseBodyOctets": 4487,
+        "exchangeAssertions": 20,
+        "allAssertionsPassed": true
+      },
+      {
+        "id": "n-changed",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/batch",
+        "status": 200,
+        "requestBodyOctets": 396,
+        "responseBodyOctets": 1063,
+        "exchangeAssertions": 16,
+        "allAssertionsPassed": true
+      },
+      {
+        "id": "n-changed-facts",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/receipts/375a188c-3cea-4a64-bb7f-e4ff5b1ea266",
+        "status": 200,
+        "requestBodyOctets": 0,
+        "responseBodyOctets": 1063,
+        "exchangeAssertions": 3,
+        "allAssertionsPassed": true
+      },
+      {
+        "id": "n-changed-beads",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/?<redacted>",
+        "status": 200,
+        "requestBodyOctets": 0,
+        "responseBodyOctets": 426,
+        "exchangeAssertions": 12,
+        "allAssertionsPassed": true
+      },
+      {
+        "id": "n-changed-link",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/links/l",
+        "status": 200,
+        "requestBodyOctets": 0,
+        "responseBodyOctets": 320,
+        "exchangeAssertions": 9,
+        "allAssertionsPassed": true
+      },
+      {
+        "id": "n-changed-events",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/events/",
+        "status": 200,
+        "requestBodyOctets": 0,
+        "responseBodyOctets": 4485,
+        "exchangeAssertions": 22,
+        "allAssertionsPassed": true
+      },
+      {
+        "id": "n-changed-groups",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/changes/?<redacted>",
+        "status": 200,
+        "requestBodyOctets": 0,
+        "responseBodyOctets": 4623,
+        "exchangeAssertions": 20,
+        "allAssertionsPassed": true
+      }
+    ],
+    "exchangeAssertions": 193,
+    "clientAssertions": 39,
+    "authoredAssertions": 223,
+    "additionalBuiltInClientWireAssertions": 9
+  },
+  "reports": {
+    "successor-validation/packed-positive-observation.json": {
+      "bytes": 821340,
+      "sha256": "bf9e3cf7d2041cd15751888f123cdae2627d4dc1354ee8c0826b95c13eb8e762"
+    },
+    "successor-validation/packed-positive.json": {
+      "bytes": 14484,
+      "sha256": "aace7f5a7e0978a47c3c88ca18a35f43c908563c10cf0d80aa2250ddd4623824"
+    },
+    "successor-validation/packed-three-controls.json": {
+      "bytes": 14528,
+      "sha256": "3e05a19bd2a036fff781ec23faea420a67a2e476857802f8094f7ac81f718cf3"
+    },
+    "successor-validation/packed-noop-control-bead-property.json": {
+      "bytes": 774003,
+      "sha256": "9fcf40827069bb25b13394b06a000f312c9d144024c5aefe79b2b22f48321f95"
+    },
+    "successor-validation/packed-noop-control-link-metadata.json": {
+      "bytes": 774003,
+      "sha256": "8b2a3d688ed557e2de0c90a9c10147327bd3c0138629138409e22204d4d1ddc6"
+    },
+    "successor-validation/packed-noop-control-group-inventory-and-head.json": {
+      "bytes": 794913,
+      "sha256": "26ec27eda354436c41d37041ae849f9b365998db818a722231d28d567bb92e4f"
+    },
+    "successor-validation/exits.json": {
+      "bytes": 5962,
+      "sha256": "9c1aab376963f4866146e34420664e2726f1ce161f94bfc601dcc486adf08786"
+    },
+    "successor-validation/source.json": {
+      "bytes": 959,
+      "sha256": "852e58bc2c44b4462f98467513443835a5d378ab2abaac58d843815701c344b8"
+    },
+    "successor-validation/summary.json": {
+      "bytes": 20076,
+      "sha256": "9cb762bd6519f6cde0cc7885a19d9ac42f8dc55a9fd7e0717484865651890a90"
+    }
+  },
+  "counts": {
+    "newActions": 15,
+    "newAssertions": 223,
+    "totalActions": 166,
+    "totalAssertions": 1539,
+    "positiveRowsPassed": 11,
+    "unimplementedRequiredRows": 239,
+    "unimplementedOptionalRows": 5,
+    "positiveExchanges": 159,
+    "successfulCohortChildren": 76,
+    "successfulCohortExchanges": 608,
+    "historicalFailedAttemptChildren": 19,
+    "historicalFailedAttemptExchanges": 159,
+    "allAttemptsChildren": 95,
+    "allAttemptsExchanges": 767,
+    "approvedAllAttemptsChildrenCeiling": 95,
+    "approvedAllAttemptsExchangesCeiling": 795
+  },
+  "historicalFailures": [
+    "Original stage1 size/assertion hard stop; superseded by explicit measured amendment, never relabeled as passing original limits.",
+    "Initial static loader rejection from two uppercase assertion IDs (22 dependent test failures); fixed mechanically with approved remeasurement.",
+    "Initial packed positive at32711 failed app client-action bookkeeping after real row assertions; no controls ran.",
+    "First successor replacement script failed before writing; old-source static logs retained separately.",
+    "Report assembly initially assumed all223 authored assertions appear on exchanges; corrected to193 wire assertions plus39 client assertions (9 built-in wire assertions extra); no source/test changed."
+  ],
+  "scopeLimitations": "Bounded private installed observations are planned for matching unconditional Bead and unowned Link property/metadata updates with unchanged full records, completed no-effect receipt, unchanged Scope position, finite Events and change group; an effectful comparator checks the same routes advance. Whole contract remains unqualified: failed mutations and other no-effect categories, guards/races, owned-Link source revisions, mixed-effect transactions, policy/view changes, expiry and restart retention are not observed by this row. No public admission or full profile claim."
+}

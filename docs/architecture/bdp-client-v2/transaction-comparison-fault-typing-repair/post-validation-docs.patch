@@ -1,0 +1,66 @@
+--- tested-draft/docs/design/transaction-implementation-progress.md
++++ factual-outcomes/docs/design/transaction-implementation-progress.md
+@@ -1794,25 +1794,41 @@
+ qualification; their execution is recorded outside this source note. No public
+ admission or discovery claim changes.
+ 
+-### Maintenance-fault comparison guard successor (draft, 2026-10-14)
+-
+-A separate successor draft changes only the early comparison epoch guard so a
+-normally closed owner still returns stopped, while retained owner or maintenance
+-faults reach the existing owner-entry exception path. That path must produce the
+-existing sanitized bodyless500 through the HTTP handler, rather than the benign
+-retryable503. It adds no fault API, context synthesis, receiving policy or public
+-profile claim.
+-
+-This draft is based on unmerged427cfef, whose unrelated test diagnostics remain
+-CI-blocked; it does not claim that PR120 or this successor has landed. Planned
+-source checks extend the three owner cases, add four observed/unobserved
+-submission variants and one controlled emitted-runtime HTTP case, and select six
+-existing regressions. The proposed old-guard derivative must reach the named
+-503-versus500 failure with cleanup. No tests, builds, installed regressions or
+-fault-sensitivity outcomes are claimed for this draft. Measured preflight and
+-review precede execution; a later verified report must record exact source and
+-outcomes. Any separately accepted installed direct-refusal14/1 run is healthy
+-regression evidence, not default-installed maintenance-fault qualification.
+-
+-Earlier timeout-context evidence above and its historical reports remain bound
+-to their original snapshots; this repair is not retroactively part of PR120.
++### Maintenance-fault comparison guard successor (2026-10-14)
++
++This separate successor changes only the early comparison epoch guard. A normally
++closed owner still returns stopped; retained owner or maintenance faults reach
++the existing owner-entry exception path and the HTTP handler's sanitized
++bodyless500. No fault API, context synthesis, receiving policy or public profile
++claim is added.
++
++Validation used an ordinary dependent checkout of427cfef, with the exact tested
++source diff and command records retained in the external maintenance-fault
++repair evidence. The parent was unmerged at execution release; this note does
++not claim that PR120 or this successor has landed. Two test-adapter typing
++failures were preserved before the corrected source passed typecheck. Fresh
++build, format, lint, dependency boundaries and the unchanged Read evidence gate
++then passed.
++
++Exactly14 selected owner/submission/service/dependency/alias/HTTP cases passed
++once;363 other cases in those files were skipped. The new emitted-runtime case
++completed its seed200 under selective interval timers, triggered one actual
++maintenance callback failure, then observed500 with an empty body and the exact
++handler headers. It closed the runtime and verified the sole retained seed
++receipt against the actual parsed seed200 body.
++
++One separately built old-guard derivative ran only that HTTP case and failed at
++its named internal500 assertion with actual503. Its finally path still recorded
++one fault callback, timer cancellation, runtime closure and the sole seed receipt
++inventory. Source positives and control account for seven HTTP requests across
++four listener lifetimes, with15 store directories,16 owner opens and two separate
++readonly inventory connections by the selected fixture paths. Process-group and
++temporary-directory checks found no remaining owned test processes or store
++directories. Sampling did not independently count every short-lived directory.
++
++These are bounded source/runtime observations, not a full suite or installed
++fault qualification. No healthy installed direct-refusal14/1 cohort, packaging or
++profile qualification was run for this successor at this checkpoint; that fresh
++installed regression remains a separate gate. Earlier timeout-context evidence
++and its historical reports remain bound to their original snapshots; this
++repair is not retroactively part of PR120.

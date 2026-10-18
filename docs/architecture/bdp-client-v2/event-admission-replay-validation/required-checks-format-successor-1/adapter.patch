@@ -1,0 +1,132 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-metadata-successor-1/gate.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-format-successor-1/gate.py
+@@ -1,7 +1,7 @@
+ from pathlib import Path
+ import json,hashlib,subprocess,os,importlib.util
+ P=Path(__file__).resolve().parent
+-V=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/metadata-successor-1")
++V=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/format-successor-1")
+ W=Path("/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum")
+ E=P/'run';MODE='final'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+@@ -37,10 +37,11 @@
+  for f,h in g['preparedArtifacts'].items():require(sha((P/f).read_bytes())==h,'Prepared artifact changed '+f)
+  subprocess.run(['/opt/homebrew/opt/python@3.14/bin/python3.14','/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py','/usr/bin/true'],check=True,timeout=30)
+  b=document(g['sourceBinding']);g['_sourceBinding']=b;g['_sourceIdentity']=source_check(b);g['finalHead']=b['head'];g['finalTree']=b['tree']
+- base=document(g['baseTools']);_v.tools_check(base['tools']);tb=document(g['workspaceTools']);_v.tools_check(tb['tools'])
+- require(base['sourceLockSha256']==b['trackedSourceFiles']['pnpm-lock.yaml'] and tb['sourceIdentity']==g['_sourceIdentity'] and tb['head']==g['finalHead'] and tb['sourceLockSha256']==base['sourceLockSha256'],'Workspace tool source attribution differs')
+- require(tb['installExitSha256']==sha((V/'run/workspace-install.exit.json').read_bytes()) and tb['installLogSha256']==sha((V/'run/workspace-install.log').read_bytes()),'Actual bootstrap evidence changed')
+- for stage in ['workspace-install','bind-workspace-tools']:_v.complete(stage,g)
++ base=document(g['baseTools']);_v.tools_check(base['tools'])
++ g['_sourceBinding']=b;g['sourceLockSha256']=b['trackedSourceFiles']['pnpm-lock.yaml']
++ require(base['sourceLockSha256']==g['sourceLockSha256'],'Base lock differs')
++ require(g.get('bootstrapReuseAccepted') is True and g.get('bootstrapReuseBinding')=={'path':str(V/'bootstrap-reuse-binding.json'),'sha256':sha((V/'bootstrap-reuse-binding.json').read_bytes())},'Root bootstrap reuse acceptance absent')
++ _v.verify_bootstrap_reuse({**g,'sourceBinding':{'path':str(V/'source-binding.json'),'sha256':sha((V/'source-binding.json').read_bytes())}})
+  verify_build(g)
+  for prior in c['order'][:c['order'].index(name)]:
+   r=read(E/(prior+'.exit.json'));require(r['accepted'] and r['exit']==0 and r['sourceIdentity']==g['_sourceIdentity'] and r['sourceUnchanged'] and not r['remainingProcesses'] and not r['runtimeDirectoriesStillPresent'] and not r['forcedCleanup'] and not r['errors'],'Prior required check failed')
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-metadata-successor-1/commands.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-format-successor-1/commands.json
+@@ -28,7 +28,7 @@
+         "scripts/e2e-ready.test.mjs",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-metadata-successor-1/run/preflight.results.json"
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-format-successor-1/run/preflight.results.json"
+       ],
+       "outerSeconds": 120,
+       "termAfterSeconds": 115,
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-metadata-successor-1/source-binding.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-validation/required-checks-format-successor-1/source-binding.json
+@@ -57,7 +57,7 @@
+     "apps/bdptest/src/transactional-direct-refusal-installed.test.ts": "c817729792a8bd97473b4b7ebe06474d4a0c27bcd5122e58268b997aa03408b0",
+     "apps/bdptest/src/transactional-discovery-installed.test.ts": "7cf8822108489f3fb2f9c5ca1d97c6d7b832acca95a2f7d891c3413404d90c49",
+     "apps/bdptest/src/transactional-event-missing-context-installed.test.ts": "25f1738d78064670997c9b50aff503bf978e18eed0d7b02555d072165b02bf81",
+-    "apps/bdptest/src/transactional-event-sse-installed.test.ts": "1054a0b8151017faca5f02105b2d581d53e731bc579f9c98ca7062a9f39aa83d",
++    "apps/bdptest/src/transactional-event-sse-installed.test.ts": "5bc8fd664215c14de913e994b26a4792753d6b372317f21f028850021b9ac7c7",
+     "apps/bdptest/src/transactional-fresh-depth-installed.test.ts": "df4030346fc5ec402c0d77d5a5c9953542f341aa86e242d2a5e6cdcf9e09f991",
+     "apps/bdptest/src/transactional-guarded-batch-installed.test.ts": "01e3ec2bf5f5af19dcd497fce5a37c8a9394723bca5760ceca53f8b8128626ab",
+     "apps/bdptest/src/transactional-matrix.test.ts": "95e07ead41f9cb39087a155e87cad22998d92cd3967cb9c3c446568ff6139bc8",
+@@ -436,8 +436,8 @@
+     "packages/server/src/transaction-dependencies.ts": "ca79b4be097d221560157c5c4eaac4601dab343de54dda1be15d92c44b2b09ba",
+     "packages/server/src/transaction-discovery.test.ts": "977dfae7a1cba9ffe11bdd3633ee26fa15eb8579254c6304eea1d6ac10667356",
+     "packages/server/src/transaction-discovery.ts": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef",
+-    "packages/server/src/transaction-event-sse.test.ts": "7757be6ccda0bbb4d271d6432069a7161d1f06dea73de65925e8716fabb7d299",
+-    "packages/server/src/transaction-events.test.ts": "8defa654808f746b5202806a31c76a481773c3f187ff694b0984aa27e19ad729",
++    "packages/server/src/transaction-event-sse.test.ts": "6d7ec313c63d02ee157845ec8ab2e2cfab9107f137cdfc8a20d50c97f147fe64",
++    "packages/server/src/transaction-events.test.ts": "66d1995b35ba86265bcbf904d515aa52cf8a826273065ac46f32b381737a3a64",
+     "packages/server/src/transaction-events.ts": "6c5ab4482f0b00110a71a96b16d44ca5fe713cb5f397ff78778cc6646f632a3a",
+     "packages/server/src/transaction-http.test.ts": "f972c417409302e750f0936c80be5c261de21556d5ca8a883bbe0f713f2049df",
+     "packages/server/src/transaction-http.ts": "52a529218f3f999bbc1c86ec3b04b1198b22da7c5104e0d00e87761bb45f4967",
+@@ -462,7 +462,7 @@
+     "packages/server/src/transaction-sequence.test.ts": "31fba92ece191ad6be239b6c1edac8fe71ef63ce716597edc45d015e46730170",
+     "packages/server/src/transaction-sequence.ts": "019e02f2f392047d568d7464b1c5af0482d6d743ed09a6d0aa4edab151607cbe",
+     "packages/server/src/transaction-service.test.ts": "e66f4384e7e6f4fb10b2072e298093991fffcfae606d005b54dda97dbf250705",
+-    "packages/server/src/transaction-service.ts": "dd4534569ed7acad76f0389ef5fd0e6cea631b9602e7bf9e6b607b086269a1ad",
++    "packages/server/src/transaction-service.ts": "a382109d25d3c98ce9c38d33524ad71ba42190aff6a05eb4486cf01d7321a487",
+     "packages/server/src/transaction-set.test.ts": "86642f122eb0ab8d0ba1b5c454d4bd76fb31a7b1c485e6bbe05284c4ccd9b85f",
+     "packages/server/src/transaction-set.ts": "3085632e897481b048d563cf0ba3ea66dc96a0662cebfde9f978ee00675519e5",
+     "packages/server/src/transaction-snapshot-http.test.ts": "61023b5f24396fe484c7820c706b560cb87abd7a3e16670f5a0944fbefd44d8a",
+@@ -471,7 +471,7 @@
+     "packages/server/src/transaction-sse.test.ts": "7c8f45a2456c33a90b61b43388cf33d67784c47d0f63b95505f204b4ea1cd9b0",
+     "packages/server/src/transaction-sse.ts": "1a414cb252b1eb2b5c3695d16aecb59382cbd417876837351e1d80b91b45784c",
+     "packages/server/src/transaction-store.test.ts": "7cd155ddd959ec31a207adbe6f8eb0a26f0af968a144abb58915720436bf0774",
+-    "packages/server/src/transaction-store.ts": "14bb328f20e0980a14acfa88b5ec7e8daa4e7c83eb6b203a6afe3e048689a2c3",
++    "packages/server/src/transaction-store.ts": "3f04b440b3cf78f9d8d14650f27c6bdd5e47e6f1a8bd2fddba62407b37d08002",
+     "packages/server/src/transaction-submission.test.ts": "22a6f8da462658b13fd1e7bd40a75ab39ba60103e4268b5f29d17efbca69d6b8",
+     "packages/server/src/transaction-submission.ts": "580a5f56075c3f7e2c041354eab75529dd304f86588337f725f4cb33429b33bf",
+     "packages/server/test-support/raw-sse-recorder.ts": "09ff8343ac1a5dbad77eaf24fc2745cc28ea870ada6b05dc4ea1644c0ad5ef81",
+@@ -693,35 +693,35 @@
+     "packages/server/src/transaction-store.ts"
+   ],
+   "ownedFiles": {
++    "apps/bdptest/src/transactional-event-sse-installed.test.ts": {
++      "beforeSha256": "0d2c2ddf069a57e9a4533894da03589beb1645d7608537dac45c2995ee7c0a23",
++      "afterSha256": "5bc8fd664215c14de913e994b26a4792753d6b372317f21f028850021b9ac7c7"
++    },
++    "packages/server/src/transaction-event-sse.test.ts": {
++      "beforeSha256": "4345d1405e98820879fc84a5e88b4afee73bfe6ee07ae2bc01e084b225da73ad",
++      "afterSha256": "6d7ec313c63d02ee157845ec8ab2e2cfab9107f137cdfc8a20d50c97f147fe64"
++    },
++    "packages/server/src/transaction-events.test.ts": {
++      "beforeSha256": "eb9fa9c8138cf81d8071107bcdcabd168be6933de00e178b8c5ec40af444080e",
++      "afterSha256": "66d1995b35ba86265bcbf904d515aa52cf8a826273065ac46f32b381737a3a64"
++    },
+     "packages/server/src/transaction-http.ts": {
+       "beforeSha256": "6d570df85e21526c59ad84115d0bbf9fb7b1d1158efe68850fad84d9fa57ee42",
+       "afterSha256": "52a529218f3f999bbc1c86ec3b04b1198b22da7c5104e0d00e87761bb45f4967"
+     },
+     "packages/server/src/transaction-service.ts": {
+       "beforeSha256": "1eea06b33d70585de2bc1d9ffc05772f787d62616b50e119a574d145c344ac6c",
+-      "afterSha256": "dd4534569ed7acad76f0389ef5fd0e6cea631b9602e7bf9e6b607b086269a1ad"
++      "afterSha256": "a382109d25d3c98ce9c38d33524ad71ba42190aff6a05eb4486cf01d7321a487"
+     },
+     "packages/server/src/transaction-store.ts": {
+       "beforeSha256": "816f8c006cde78965e20fe765f06e02b1f0afd4de69d081209952ed836344baa",
+-      "afterSha256": "14bb328f20e0980a14acfa88b5ec7e8daa4e7c83eb6b203a6afe3e048689a2c3"
+-    },
+-    "packages/server/src/transaction-events.test.ts": {
+-      "beforeSha256": "eb9fa9c8138cf81d8071107bcdcabd168be6933de00e178b8c5ec40af444080e",
+-      "afterSha256": "8defa654808f746b5202806a31c76a481773c3f187ff694b0984aa27e19ad729"
+-    },
+-    "packages/server/src/transaction-event-sse.test.ts": {
+-      "beforeSha256": "4345d1405e98820879fc84a5e88b4afee73bfe6ee07ae2bc01e084b225da73ad",
+-      "afterSha256": "7757be6ccda0bbb4d271d6432069a7161d1f06dea73de65925e8716fabb7d299"
+-    },
+-    "apps/bdptest/src/transactional-event-sse-installed.test.ts": {
+-      "beforeSha256": "0d2c2ddf069a57e9a4533894da03589beb1645d7608537dac45c2995ee7c0a23",
+-      "afterSha256": "1054a0b8151017faca5f02105b2d581d53e731bc579f9c98ca7062a9f39aa83d"
++      "afterSha256": "3f04b440b3cf78f9d8d14650f27c6bdd5e47e6f1a8bd2fddba62407b37d08002"
+     }
+   },
+-  "binaryDiffSha256": "8bfd4de504851d43267296d0d1cacf02ac61f3a3aba5e2c7534fb7d59eafc1aa",
++  "binaryDiffSha256": "4d6388ddd3dde26188349e460d0565c1b49c03a23904e8a35a33ca1e75b18d30",
+   "authorBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-author/source-binding.json",
+-    "sha256": "cb403c8a0ed4f58cb60788d45ff06206e58f6320a58f23c03fecebc05da52e8d"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-author/format-successor-1/source-binding.json",
++    "sha256": "e772c4f57838a95a8e96804eaaf40beec9e468f461e787210e2d2336cee80233"
+   },
+-  "attribution": "Reviewed planning base plus actual frozen six-file dirty draft; no tests or package evidence yet."
++  "attribution": "Same reviewed Event draft with actual five-file formatter-only successor; base commit is not the dirty implementation. Original bootstrap identity preserved separately."
+ }

@@ -1,0 +1,25 @@
+--- a/gate.py
++++ b/gate.py
+@@ -41,7 +41,21 @@
+  return {p.relative_to(W).as_posix():sha(p.read_bytes()) for p in sorted(files)}
+ def emitted_files():return {p.relative_to(W).as_posix():sha(p.read_bytes()) for root in (W/'packages').iterdir() if root.is_dir() for p in (root/'dist').rglob('*') if p.is_file()}
+ def completed(name):
+- x=json.loads((E/(name+'.exit.json')).read_text());cfg=json.loads(COMMANDS.read_text())['commands'][name]
++ original=E/(name+'.exit.json');x=json.loads(original.read_text());cfg=json.loads(COMMANDS.read_text())['commands'][name]
++ successors=gate().get('stageSuccessors',{})
++ require(set(successors)<= {'review-sequence-installed'},'Unsupported stage successor')
++ if name in successors:
++  r=document(successors,name);base=P/'python-adjudication-recovery'
++  require(name=='review-sequence-installed' and r['accepted'] is True and r['head']==gate()['finalHead'],'Unapproved recovery')
++  require(x['exit']==1 and x['supervisorExit']==1 and x['sourceUnchanged'],'Original recovery predecessor differs')
++  require(r['originalExitSha256']==sha(original.read_bytes()),'Original failed exit changed')
++  for p,h in r['retainedFiles'].items():
++   q=Path(p);require(q.is_absolute() and q.is_relative_to(P) and not q.is_symlink() and sha(q.read_bytes())==h,'Recovery evidence changed')
++  v=document(r,'verification');require(Path(r['verification']['path'])==base/'verification.json','Wrong recovery verification')
++  require(v['accepted'] is True and v['originalInputsUnchanged'] is True and v['head']==r['head'] and v['stage']==name and v['newHTTP']==v['newProductChildren']==0,'Recovery not clean')
++  require(v['exitSha256']==r['exit']['sha256'] and v['adjudicationSha256']==sha((E/'sequence-installed.adjudication.json').read_bytes()),'Recovery outcome changed')
++  require(Path(r['exit']['path'])==base/'run'/(name+'.exit.json'),'Wrong recovery exit path')
++  x=document(r,'exit');require(x['name']==name and x['argv']==['/opt/homebrew/opt/python@3.14/bin/python3.14',str(P/'review-sequence.py')],'Wrong recovery command')
+  require(x['exit']==cfg.get('rawExpectedExit',0) and x['supervisorExit']==0 and x['sourceUnchanged'],'Prior stage failed '+name)
+  for k in ['timeout','forcedCleanup','errors','remainingAfterCleanup','sampledPidsStillPresent','runtimeDirectoriesStillPresent']:require(not x[k],'Unclean stage '+name+':'+k)
+  require(x['sourceSha256After']==source_hashes(),'Prior source mismatch '+name)

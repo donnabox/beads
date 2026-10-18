@@ -1,0 +1,125 @@
+## Findings
+
+### Proven defects / evidence gaps (verifiable from the supplied packet)
+
+---
+
+**1. HIGH — Repoint and delete preconditions are never observed, so the "across repointing and deletion" half of the reference-idempotency observation is not established**
+
+- **File/section:** `packages/conformance/development/read-update-manifest-v1.json`, scenario `development.read-update.alias-recorded-targets` actions `repoint` (snapshot L1896–1918), `delete-original` (L2019–2040), `original-reassigned` (L2400–2422); scenario `development.read-update.pinned-references` actions `repoint` (L3150–3172), `delete-alias` (L3238–3259). Also `read-update-coverage-v1.json` row `read-update.alias.reference-idempotency` (L526–586).
+- **Issue:** Every alias-mutating precondition step in these two scenarios asserts only `/status == 200`. No assertion — not an alias-result `outcome`/`target`, not a read-back, not a fresh-key resolution — establishes the alias's intermediate value. The retention assertions that follow (`recorded-after-repoint`, `cross-slot`, `retry-recorded`, `changed-external`) return `beads/a` whether the repoint happened or not.
+- **Reachable trigger:** A receiver whose `put-alias` repoint or `delete-alias` is a silent no-op passes **all** assertions in `alias-recorded-targets` and `pinned-references`. I walked both hypotheses action by action: under "repoint no-ops," `recorded-after-repoint`, `cross-slot`, `recorded-after-delete`, `original-still-recorded` and `new-request-current` all still pass (the later `original-reassigned` put re-establishes `beads/b` and its outcome is not asserted). Under "delete-alias no-ops," the same set passes.
+- **Impact:** The row that was flipped to `bounded-observation` claims "Recorded targets and transient fresh-locator comparison are observed across repoint/delete/reassignment"; the *reassignment* leg is genuinely discriminated (`original-still-recorded` vs `new-request-current`), the *repoint* and *deletion* legs are not. The prose in `README.md` L162–163 and `update-implementation-progress.md` L86 both assert the repoint/delete legs.
+- **Fix/next step:** Assert the alias result on `repoint`/`delete-original`/`fresh-repoint`/`delete-alias` (`outcome: updated`/`deleted`, absolute `target`), or insert a fresh-key probe of the new state before each retained replay. Both are already in the packet's vocabulary: `new-request` (L1645–1674) asserts a put-alias `/body/outcome`, and `alias-absent`/`still-absent` (L1552, L1626) show alias GET read-backs work.
+
+**1b. MEDIUM (same class, narrower trigger)** — `alias-recorded-misses` action `assign` (L2674–2696) and `unassign` (L2819–2840) likewise assert only `200`. Nothing establishes that `alias/missing` was live at `recorded-miss`/`absolute-miss`/`direct-is-different` time, which is precisely the clause under test ("An originally recorded miss remains a miss even if that alias is later assigned", spec L3208–3209). A universally broken `put-alias` *would* be caught by `current-resolution` (L2964–2996); a put that specifically fails or is dropped on a path carrying a recorded miss would not be. Same fix.
+
+---
+
+**2. MEDIUM — `read-update.alias.allocation-avoids-aliases` flipped `omitted` → `bounded-observation` with no assertion that can detect a violation of the row's obligation**
+
+- **File/section:** `read-update-coverage-v1.json` L435–458 (status flip and bindings); manifest scenario `development.read-update.alias-allocation` L626–857.
+- **Issue:** The row's obligation is "An authority never allocates a Bead id whose segment is a live alias path" (spec L2947–2948). The bound assertions observe allocation *shape* (`canonical`, `in-scope`, `root`, `single-segment`, `nonempty`), read-back of one property, `alias-path-taken` on an explicit create, and alias survival. **No assertion compares the allocated segment to the live alias path** (`alias/reserved`). The limits field says collision skipping "is NOT exercised or qualified," and the revised next-steps text (`README.md` L182–184) says "live-alias allocation sampling does not establish that behavior" — i.e., the packet itself states the binding does not bear on the row.
+- **Reachable trigger:** An allocator that minted segment `reserved` would produce an id colliding with the live alias path. Whether `reserved-bead` would then still return `alias-path-taken` is unspecified in the supplied excerpt (precedence between `identity-taken`, spec L2945, and `alias-path-taken`, L2946, is defined only for alias puts at L2951–2955, not for Bead creation), so detection is incidental at best.
+- **Impact:** The headline count moves to "48 rows have bounded observations" with one row whose status is carried by adjacent, non-probative evidence. A reader scanning statuses rather than `limits` strings draws the wrong conclusion.
+- **Fix/next step:** Add one cheap assertion that the allocated id is not `{scope}beads/reserved` (single-sample, but it makes the row's obligation at least falsifiable), and either revert the status to `omitted` with category `needs-controlled-fixture` or retitle the evidence as allocation-shape-only. Longer term, the controlled allocation fixture the README already schedules.
+
+---
+
+**3. MEDIUM — `allocate.canonical` observes WHATWG URL serialization idempotence, not BDP canonical-segment grammar; the limit does not say so**
+
+- **File/section:** `apps/bdptest/src/development-matrix.test.ts` L54 of the diff (`canonical: new URL(identity).href === identity`); manifest assertion `allocate.canonical` (L724–730); coverage limits L454–456.
+- **Issue:** `new URL(x).href === x` catches dot-segments and some malformations, but not percent-encoded octets, uppercase hex, or unsafe characters that the URL parser leaves untouched. An allocated segment such as `A%2Fb` satisfies `canonical`, `inScope`, `root == "beads"`, `childSegments == 1`, `emptySegments == 0`.
+- **Reachable trigger:** Any allocator emitting a percent-encoded or non-safe-segment local ID; the observation reports it as canonical.
+- **Impact:** The spec's canonicality rule (L2108–2111: "a noncanonical encoding — is rejected, never normalized") and the safe-segment grammar are not observed, while the assertion id reads as if they are. The assertion name is the only description a reader of the inventory gets.
+- **Fix/next step:** Add a safe-segment regex observation on the child segment, or rename/limit the assertion to "URL-serialization-stable" and state the grammar as an explicit limit on the row.
+
+---
+
+**4. MEDIUM — The packet encodes a normative reading of pin participation in semantic identity that the cited spec section arguably excludes, and omits the conflicting sentence from its citations**
+
+- **File/section:** `read-update-catalog-v1.json` row `development.read-update.pinned-references` L330–366 (cites §Sequence-local Resource references "The pin is provenance, not a constraint…" and §Idempotency keys "Opaque external URIs and Pinned References are compared byte-exactly as written"); manifest `changed-pin` (L3390–3427) and `removed-pin` (L3429–3463) assert `idempotency-conflict`.
+- **Issue:** The cited §Sequence-local block also contains (spec L2430–2431) "It does not participate in Link identity or Reference comparison." The catalog row quotes the surrounding sentences but not that one, while the manifest pins the behavior that changed/removed pin bytes produce `idempotency-conflict`. The reconciliation — that "Reference comparison" means denotation equality, distinct from a member's *semantic identity* under §Idempotency keys — is nowhere stated in the packet.
+- **Reachable trigger:** Any reviewer or implementer reading the row's citations concludes the opposite behavior is required.
+- **Impact:** A diagnostic-only packet is asserting an interpretation of a contested boundary. That is the "no new product decisions" risk, in the one place where two cited clauses pull apart.
+- **Fix/next step:** Either cite the excluding sentence and record the reconciliation in the row's `limits`, or treat this pair of assertions as a spec question before binding them. I am flagging the interpretation, not asserting the implementation is wrong — under §Idempotency keys alone the asserted behavior follows.
+
+---
+
+**5. MEDIUM — The asserted `validation-failed` diagnostic is byte-identical across five distinct causes, while the cited clause requires a diagnostic "that names the cause"**
+
+- **File/section:** manifest `alias-invalid-targets` actions `local-alias` (L946–956), `absolute-alias` (L1016–1026), `link` (L1084–1094), `external` (L1152–1162), `opaque` (L1220–1230), `retained-invalid` (L1312–1322) — all assert `/body/diagnostics` deep-equals the single message *"an alias put's target must be a canonical in-Scope Bead reference; an alias, a Link, or an external URI is not admitted"*. Catalog citation at L236 and spec L2961–2962.
+- **Issue:** The message restates the rule and enumerates all three rejected categories; it does not name which applies. Five materially different inputs (local alias, absolute alias URL, Link path, external `https` URI, opaque `urn:`) are pinned to the same string. The row's limit (L484–486) says only "One fixed development diagnostic message is asserted; no authority-specific wording is proposed for other implementations" — it does not disclose that cause-naming is unobserved.
+- **Reachable trigger:** Any of the five actions; the observation cannot distinguish a cause-naming receiver from a constant-string one.
+- **Impact:** The bounded observation for `read-update.alias.non-canonical-target` reads as covering the diagnostic obligation; it covers presence and shape only.
+- **Fix/next step:** Either have the development receiver name the specific category and assert per-case messages, or extend the limit: "diagnostic presence and shape only; cause-naming is not observed."
+
+---
+
+**6. LOW–MEDIUM — Revised next-steps list drops alias and pin from remaining work, while enumerable alias/pin obligations in this packet's own cited sections stay unbound**
+
+- **File/section:** `packages/conformance/development/README.md` L180–184 (removes "Extend feasible alias, pin, allocated-ID, conditional/no-op and semantic idempotency variants…", replaces with "Extend remaining conditional/no-op and semantic idempotency variants…").
+- **Unbound in this packet, from the supplied clauses:** alias-path `identity-taken` and the "identifier uniqueness first" check order (spec L2942–2955; `identity-taken` appears exactly once in the snapshot, in the spec excerpt only); `forbidden`/alias-mutation authorization (L2965–2974; `forbidden` appears only in the excerpt); alias-result shape — `updated` on repoint including repoint-to-same-target, `deleted`, and the absolute `alias`/`target` members (L2982–2998) — only `new-request.outcome == "created"` is ever asserted; pin structural validation ("`revision` is a nonempty JSON string, and that structural rule is the only validation", L2422–2423); pin independence from the Link's own `revision` and from `expectedRevision` (L2429–2431); an alias spelling as the `bead` subject of a deletion with a **live** alias (only the missing case is exercised).
+- **Impact:** Narrative and inventory may disagree about what remains.
+- **Fix/next step:** Restore alias/pin to the next-slice list with the specific variants above, or point at the inventory rows that still carry them as `omitted`. **Caveat:** 75 of 81 inventory rows are not in this packet, so I cannot verify whether some of these are tracked elsewhere.
+
+---
+
+**7. LOW — Catalog traceability gaps between asserted behavior and cited requirements**
+
+- `development.read-update.alias-allocation` (catalog L200–226) asserts `alias-path-taken` with status 409 (`reserved-bead`, manifest L802–817) but cites no clause for it; the defining sentence is spec L2946.
+- Same row cites §Mutation results "`created` and `updated` carry `resource`, the complete Resource record as a `GET` of its URL would now return it" (L220–224), but `allocated-live` reads back exactly one property (`/body/properties/allocated`, L780–785). Record-equality is not observed.
+- `development.read-update.alias-unknown-subjects` (catalog L266–292) asserts retained-failure replay (`retained-missing-target` L1595–1624, `retained-missing-alias` L1676–1704) but cites no retained-disposition clause, whereas `alias-invalid-targets` does cite §Duplicate keys and retained dispositions (L250–257).
+- **Fix:** add the missing citations, or drop the over-broad §Mutation results citation.
+
+---
+
+**8. LOW — `referenceBindings` added to the test action with zero users in this packet**
+
+`apps/bdptest/src/development-matrix.test.ts`, diff L22–24. `referenceBindings` occurs twice in the entire snapshot, both in the harness implementation; no manifest action uses it (contrast `targetBinding` 1 use, `observeIdentity` 1, `absoluteReferences` 5). Unexercised harness branch in a file whose purpose is bounded observation. **Fix:** drop it until a plan needs it.
+
+---
+
+**9. LOW — Dead, misleading `target` placeholder in `allocated-live`**
+
+Manifest L762–787: `"target": "beads/unused"` alongside `"targetBinding": "allocated-id"`. The harness ignores `target` whenever `targetBinding` is set (diff L12–19), so the literal reads as a real request target but is inert; removing `targetBinding` silently redirects the action to a nonexistent Bead rather than failing. **Fix:** use a self-evident placeholder or make `target` optional in the schema when `targetBinding` is present.
+
+---
+
+**10. LOW — Identity observation is coupled to the trailing-slash spelling of `execution.scope`**
+
+`development-matrix.test.ts` diff L48: `identity?.slice(execution.scope.length).split("/")`. With a scope lacking a trailing slash, `root` becomes `""` and `emptySegments` becomes 1. It fails loudly rather than silently, but `root`/`childSegments`/`emptySegments` are computed before `inScope` is known, so an out-of-Scope id yields meaningless values that are nonetheless reported. **Fix:** derive segments from `new URL(identity).pathname` relative to the scope path, or compute only when `inScope`.
+
+---
+
+### Questions requiring omitted context (not defects)
+
+1. **Assertion evaluator semantics are not in the packet.** 30 of the 190 new assertions depend on `normalize: "scope-relative-url"`, and 6 depend on deep `equals` against an object/array (the five `diagnostics` assertions and `pinned.external`/`retained-state.external`). I cannot verify that unknown assertion keys fail closed. If `normalize` were ignored, those 30 comparisons would compare an absolute URL to `"beads/a"` and fail loudly — so the reported pass count implies support — but a runner that skipped unrecognized assertion keys would silently pass them. Supply the evaluator to close this.
+2. **"Six additional SDK plans"** (`update-implementation-progress.md` L77): the transport-selection ternary in `developmentActions` is truncated in the diff context (snapshot L38–43), and all 89 new actions use `operation: "development.request"`. Whether these run on the SDK Fetch transport or the raw HTTP executor is not determinable from the packet.
+3. **Numeric claims only partly verifiable.** I independently confirmed: 6 new scenarios (17+6=23), 89 new actions (132+89=221), 190 new assertions, 4 status flips (44+4=48 bounded / 37−4=33 omitted / 48+33=81). The "705 passing assertions" figure implies a 515-assertion baseline that the packet does not state; "269 focused tests," "23 passing plans," and `claimEligible: false` come from a saved report not included here.
+4. **Four of the eight touched coverage rows are unidentifiable by id.** Hunks `@@ -39,8`, `@@ -119,8`, `@@ -271,8`, `@@ -733,8` add bindings to pre-existing `bounded-observation` rows whose `"id"` lines fall outside the hunk context. I inferred them from neighboring bindings (`bead-crud-guards` / allocated-ID; `links-delete` / Link endpoints; negotiation-refusal retained success; semantic-identity labels-and-properties). Row-level claims about those four are therefore unverified.
+5. **Problem-code → HTTP status bindings are not in the supplied excerpts.** I verified the *codes* (`validation-failed`, `resource-not-found`, `idempotency-conflict`, `alias-path-taken`) against spec §Alias targets / §Idempotency keys / §Duplicate keys. The asserted statuses (422 / 404 / 409 / 409) rest on a problem-details table that is not in the packet.
+6. **Receiver and fixture source are absent,** so "Runtime, shared stores, normative catalogs, public admission and exports are unchanged" (`update-implementation-progress.md` L98–99) is verifiable only to the extent that the diff touches exactly six files, none of them runtime. The six new catalog rows are all `kind: diagnostic` with `development.read-update.*` ids, consistent with the diagnostic-lane claim.
+7. **Baseline vs. regression:** every manifest/catalog change is additive; the only edits to pre-existing content in the shown hunks are the four `omitted → bounded-observation` status flips, four additive bindings, and prose. No pre-existing assertion, action, or `limits` string is deleted or weakened. The 17 prior scenarios and 75 untouched inventory rows are **not** in the packet, so I can make no statement about regressions there.
+
+### Checks that came back clean (stated so the gaps above are not read as the whole picture)
+
+- All 59 `scenario.assertion` references in the new coverage bindings resolve to assertion ids that exist in the corresponding manifest actions; no dangling references.
+- Action ids are unique within each new scenario; idempotency keys do not collide across different operations within a scenario (including the sequence-member keys `pin-creator`/`pin-dependent`, which share the namespace per spec L3168–3170).
+- The retention/conflict logic of `alias-recorded-targets`, `alias-recorded-misses` and `pinned-references` matches §Idempotency keys L3193–3212 clause by clause for the *fresh-locator* legs: `new-locator` (unrecorded locator resolved anew → equal → replay), `new-locator-rechecked` (repointed → conflict), `new-locator-missing` (deleted → locator-specific unresolved identity → conflict), `new-locator-restored` (resolved anew again → replay, proving retry-time witnesses did not mutate retained state), `cross-slot` (recorded locator in another reference slot, equivalent absolute spelling), `direct-canonical` (direct reference compares without alias resolution), `distinct-miss` (two misses not equal), `direct-is-different` (recorded miss ≠ live canonical). Each of these is discriminating against the plausible wrong implementation.
+- `changed-pin` isolates pin bytes with an NFC/NFD pair (`past:\u00e9/%2F` vs `past:e\u0301/%2F`); `changed-external` isolates external-URI case. `retained-state` establishes that the three conflicting retries left the Link untouched.
+- `renamed-local` cannot pass vacuously: re-execution of `createBead` on the existing `beads/made` would fail, so the retained replay plus `@renamed` → `beads/made` resolution is established, as is `operationName` repositioning per spec L3258–3260.
+
+### Bounded exclusions relevant to this packet (verified as declared, not as gaps)
+
+Write-profile conformance claims remain disabled; no public Transactional service is claimed and no new row carries a Transactional profile (all six are `requiredProfile: "read-update"`, `kind: diagnostic`). Hidden/non-visible subjects and `forbidden` are unobservable under the fixed all-visible principal. Retention expiry, tombstone contents (including the §Outcome retention requirement that tombstones retain original alias locators and their targets/misses), historical revision resolution, and external fetch are not observed and not claimed. Deterministic allocator collision skipping is explicitly unqualified — see finding 2 for the one place where that disclosure and the row *status* disagree. No durability or recovery observation is added: the allocated-identity read-back involves no restart, so §Durability and recovery L3340–3347 ("the identities it allocated … become durable together") is untouched by this packet.
+
+### Files and ranges actually read
+
+Single source: `/Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/04-alias-delta.txt`, 4209 lines / 157,657 bytes.
+
+- L1–700, L700–1500, L1500–2300, L2300–3099, L3099–3790, L3790–4209 — **the complete file, no gaps.**
+- Covering: the six-file diff (`apps/bdptest/src/development-matrix.test.ts` 2 hunks; `docs/design/update-implementation-progress.md` 1 hunk; `packages/conformance/development/README.md` 2 hunks; `read-update-catalog-v1.json` 1 hunk, 6 added rows; `read-update-coverage-v1.json` 6 hunks, 8 rows touched; `read-update-manifest-v1.json` 1 hunk, 6 added scenarios / 89 actions / 190 assertions) and the four appended spec excerpts (`docs/specs/bdp.md` L2099–2167, L2372–2439, L2902–3051, L3141–3375).
+- Verification commands run against the snapshot only: `wc`, and `grep -c` for feature/identifier counts (`referenceBindings`, `targetBinding`, `observeIdentity`, `absoluteReferences`, `normalize`, `scope-relative-url`, `"family": "client"`, `"kind": "json-pointer"`, `"status": "omitted"`, `"status": "bounded-observation"`, `alias-path-taken`, `identity-taken`, `malformed-request`, `forbidden`). No tests run, no files written or modified.
+
+**Not read / outside the packet:** the 17 pre-existing manifest scenarios and 75 untouched inventory rows; the conformance runner and assertion evaluator; the `development-read-update-v1` fixture and receiver; the problem-details status table; the saved conformance report; `docs/specs/bdp.md` outside the four excerpted ranges; everything else in `bdp-alias-qualified-integration`. No claim of whole-branch coverage.

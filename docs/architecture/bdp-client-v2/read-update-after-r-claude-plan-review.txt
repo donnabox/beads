@@ -1,0 +1,66 @@
+## Verdict
+
+Not clean. **One medium finding** (an undisclosed narrowing of the broad Catalog 61 conjunct) and **two low findings** (a mis-resolvable citation; an over-stated residual sentence). Everything else in the plan reproduces exactly against 4578be4 — all five clause mappings, every literal, every byte/node/count, both fences, the three-file scope, and the saved report.
+
+Checkout verified at `4578be4bfb107790079e7faf532029a5b13328c5`, clean tree. No tests run, no reviewers spawned, no files written.
+
+### Direct answers
+
+- **Row-local finite representative evidence for all five clauses?** Four of five: yes. The fifth (Catalog 61) is covered on the numeric/metadata half and on the Type/schema half **only for whole-document creates** — see Finding 1.
+- **Any obligation silently narrowed?** Yes, one — Catalog 61's "Type and properties-schema constraints" conjunct, in the operation-form dimension (Finding 1). No other narrowing: nothing from audit 2782cfe6 (nested, metadata, effective-schema) was dropped; all three are present.
+- **Raw mutation-result→GET revision residual outside this selection?** Confirmed outside. All 24 `*-rev` captures in the R row are dead (no `equalsBinding`, no `bodyBindings`, no `expectedRevision`, no `If-Match` anywhere in the row), and the raw `*-corrected` POSTs capture nothing. None of the five `selectedText` entries reaches mutation-result/current-GET version coherence. Residual is real and correctly non-blocking.
+- **Failed-update full before/after revision equality still observed?** Yes, and it is genuinely full-record. `nr-<kind>-<class>-patch-refused-read` and `nr-<kind>-integer-meta-unchanged` assert pointer `/body` with `equalsBinding` against the prior full-body capture, evaluated by `deepEqual` (`packages/conformance/src/runner.ts:2237`) — so `revision` and companion `metadata` are included. The mixed case is the strongest: `nr-bead-integer-meta-patch-refused` carries an *admissible* `propertiesChange` (…994) plus a valid `/phase` metadata change and only one bad metadata literal, and the following record still deep-equals the preimage.
+- **768-byte successor vs. earlier tighter fences?** Respected. Effective fence is `703415+7168=710583` (matrix test:4727); current 708995 leaves 1588; 768 → 709763, 820 spare. Sub-guard at :4846 (`coverage−703415−5460 ≤ 1708`) currently sits at 120; 120+768=888. Older absolute `698614+12288=710902` (leaves 1907) is correctly identified as looser. Continuation/nodes/fixture untouched (33997/826 of 57344/1400). No coverage or set digest is literal-pinned anywhere, and the R coverage `reason` string is not pinned, so the three named files really are sufficient.
+- **B/N borrowing?** None. `result.selectedScenarioIds` in the R report is exactly `["read-update.numeric-model.round-trip-admission"]`, one session, 41 raw + 47 client actions, 619/619 passed, 0 failed.
+
+---
+
+## Finding 1 — Medium: Catalog 61's Type/properties-schema conjunct has no Property-Change witness, and the plan does not disclose it
+
+**Location.** Plan §"All five selected obligations" Catalog 61 cell (line 24) and §"Why the Type/schema sample is sufficient for this row" (lines 27–33); proposed coverage reason, plan line 51. Evidence: `packages/conformance/matrices/read-update-reference-continuation-v1.json` R row — the only Type/schema witnesses are `nr-{bead,link}-schema-create-refused` / `-absent` / `-create-corrected` / `-read`. There is no `nr-*-schema-patch-*` action.
+
+**Impact.** The selected text is list item `bdp.md:2658–2659`, inside the list introduced at `2648–2649`: "When each operation is reached, the authority validates **its resulting state** before evaluating the next operation. It checks: …". R executes 24 effectful update operations, and none of them can exercise that check:
+
+- `nr-schema` (bead and link) is created and read, never updated.
+- Every resource R *does* update is typed `types/task` / `types/relates`, and `packages/conformance/fixtures/read-update-reference-v1.json` contains **zero** occurrences of `propertiesSchema` — the only schema-bearing Types in R's configuration are the four injected by `withSchemaCohort` (`apps/bdptest/test-support/installed-schema-cohort.ts:12–53`). R's own `task`/`relates` descriptor GETs assert only `/id`, `/describes` and (for relates) endpoint `conformsTo`, so the row does not even establish whether its update targets are under a schema contract.
+- The update-path numeric refusals cut the other way: their diagnostics name **request** locations (`/propertiesChange/0/value/items/0/a~1b~0c`, `/metadataChange/1/value`), which evidences input-time admission, not resulting-state validation.
+
+Net: a runtime that applies effective-Type/properties-schema validation on create and skips it entirely on update passes all 619 R assertions. The plan's exclusion list names only keywords, child/base combinations, descriptor graphs, installation, wrong-kind, endpoint policy, cycles and Type lifecycle — not operation form. Since the plan deliberately partitions whole vs. change for both the numeric and the metadata conjuncts, confining the schema conjunct to the whole/create form is an asymmetry in its own standard, not an exhaustiveness limit. The native review disposes of it with a single word ("every keyword, Type graph, **operation** and failure permutation"), bundling a partition the plan treats as material elsewhere with genuinely unbounded matrices.
+
+Context root should weigh: the discriminating behaviour does exist and is observed — `read-update.singleton.update-bead`'s coverage reason records "a row-local child-declared effective parent-schema refusal" — but that is another row's evidence, that row is itself `wholeContract:false`, and R's standard is explicitly row-local.
+
+**Fix (either, root's call).**
+1. *Keep zero-action.* Say so explicitly: add to plan §Why-sufficient and to the proposed coverage reason that the Type/properties-schema conjunct is represented by whole-document creates only, on the stated ground that the per-operation preamble (`bdp.md:2648–2649`) is not selected text — i.e. carry it as a second named residual beside the revision-linkage one. This fits the 768-byte cap only if the reason stays terse; measure before freezing.
+2. *Treat it as a distinct conjunct.* Then the zero-action premise fails. Minimum bounded closure is one row-local pair per kind: `nr-<kind>-schema-patch-refused` replacing `/n` with `-1` on the admitted `nr-schema` resource — expect 422 naming base Type `…/types/schema-<kind>-base`, `schemaLocation …/schemas/schema-<kind>-base#/properties/n/minimum`, then full-record `equalsBinding` against a captured `nr-<kind>-schema-read` body — plus an admitted one-leaf correction. This invalidates "zero manifest bytes/nodes/actions/assertions", the 768-byte coverage cap, the 18-entry refusal map count, the 88/619 pins at matrix test:4031/4847, and the `addedIds`/5460-byte ledger at :4839–4846, and needs its own action and byte budget.
+
+## Finding 2 — Low: `read-update-v1.json:1534–1569` resolves to the wrong file
+
+**Location.** Plan line 31.
+
+**Impact.** Two files share that basename. The cited lines land on unrelated `currentLinkCollection` assertions in `packages/conformance/matrices/read-update-v1.json`. The intended rows are in `packages/conformance/catalog/read-update-v1.json`: `read-update.validation.type-contract` (1532–1549) and `read-update.validation.diagnostics` (1550–1572). The span 1534–1569 also clips both ends. Everywhere else the plan uses full repo-relative paths, so a council member spot-checking this one exclusion claim lands in the wrong artifact. (The substance is right — both rows are `bounded-observation` / `wholeContract:false` and are untouched by the proposal.)
+
+**Fix.** Cite `packages/conformance/catalog/read-update-v1.json:1532–1572`.
+
+## Finding 3 — Low: "not hidden by full-record equality in other actions" overstates the residual
+
+**Location.** Plan line 41, second sentence; same ambiguity propagates into the proposed coverage reason ("Raw correction response-to-GET revision linkage unobserved").
+
+**Impact.** R *does* contain a mutation-result→subsequent-GET full-record equality that includes `revision`: `nr-create-source`/`nr-create-target` capture `/body/resource` and `nr-source-initial`/`nr-target-initial` deep-equal `/body` against it. Those creates are client-family `installed.exact-request` actions rather than raw authored-byte exchanges, so the plan's narrower first sentence ("a **raw** effectful correction's opaque response revision is not explicitly compared") is accurate — but the follow-on sentence denies evidence that exists, blurring precisely the seam boundary the plan is trying to draw, and it is the sentence a reader of Alternative B will act on.
+
+**Fix.** Reword to: the linkage is observed through the client-capture seam for the two Task-endpoint creates, and is unobserved only for the raw authored-byte corrections.
+
+---
+
+## Verified without exception
+
+Catalog row `numeric-model-v1.json:38–68`, five requirements at lines 46/51/56/61/66 — plan's labels are exact. All normative citations reproduce: `bdp.md:709–717`, `714–717`, `2522–2530`, `2658–2659` within `2648–2664`, `512–522`, `564–579`; `requirements.md:109–115`. R row at continuation `:18650`, 88 actions, 619 assertions, 41 raw + 47 client.
+
+Literals: refused `9007199254740993`, `0.12345678901234567891` (20 significant digits), `1e309`, metadata `1e-400`; corrections …992/…994, 0.125/0.25, 1e300/1e299; every body retains `one:1.0`, `zero:-0.0`, `large:1e300` and the 301-digit expansion, with results/GETs independently asserting `1`/`0`/`1e+300`. Nested escaped-key pointers exact in both forms, with the unapplied-patch `instanceLocation` correctly omitted. Metadata plane: whole + change, both kinds, `document:"metadata"` labels, 404/unchanged, admitted corrections. Schema plane: child-declared `{n:-1,enabled:true,detail:"ok"}` satisfies the child's own `enabled`/`detail`+`if/then` rules and violates only the inherited base `minimum:0`; diagnostic names base Type, base `#/properties/n/minimum`, `/n`; 404; one-leaf `n:0` correction with independent child Type/documents/Link endpoints.
+
+Controls: 18-entry map at `:4574–4656` (12 preserved pairs + 4 metadata sharing existing corrections + 2 schema), with same-target/non-idempotency-header equality, numbers-stripped body equality, one-contextual-leaf and ordering guards. The three response controls at `:4502–4527` do execute a real 422 first, then parse/mutate/reserialize and update `bodyOctets` (`:450–480`) — the plan's "oracle sensitivity, not octet transparency" wording is honest, and the `schema-location` control rewriting to the **child** schema is the right discriminator.
+
+Inventory and budgets: 129 rows / 54 authored / 33 whole / 96 not-whole / 75 omitted, `claimEligible:false`, 21 authored-partial → 20. Whole-ID allowlist at `cumulative-artifact.test.ts:156–190` ends `…same-value-no-op`, `…nested-refusal`; catalog order puts R between them. All `96`/`33` expectations live in `read-update-matrix.test.ts` (:1265, :1282, :1358, :2018, :2251, :2681) plus the explicit partial at `:4101` — the three-file scope holds. Continuation 878548 B / 22972 nodes, coverage 708995 B / 14558 nodes, fixture 29707 B; digests `ab0eb34f…`, `f89932d6…`, payload `1b12629f…` all reproduce.
+
+Report `packed/numeric-admission.round-trip.json`: 242549 bytes, recomputed SHA256 `d0f2c797a4a9a9812109a42715c30d3d3319fb7eb8b9df6df1d2e46f9d73e977`, source 4578, `sourceDirty:false`, `cleanupComplete:true`, `claimEligible:false`, scenario pass, 0 failed. 209 tests / 130.544 s supervisor and 17.699771 s / 72.300229 s aggregate match `report.md`.
+
+Minor wording note, not a finding: "changes only n:-1→0 **plus a fresh key**" (plan line 24) reads as an added property; the bodies differ only in `"n":-1`→`"n":0`, the "fresh key" being the Idempotency-Key header.

@@ -1,0 +1,45 @@
+$ biome format .
+packages/conformance/matrices/read-update-v1.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! The size of the file is 3.5 MiB, which exceeds the configured maximum of 1.0 MiB for this project.
+    Use the `files.maxSize` configuration to change the maximum size of files processed, or `files.includes` to ignore the file.
+  
+
+packages/conformance/src/profile-contract-plan.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    257 257 │       ).not.toContain(id);
+    258 258 │       const coverage = JSON.parse(
+    259     │ - ······readFileSync(new·URL("../test-support/read-update-coverage-v1.json",·import.meta.url),·"utf8"),
+        259 │ + ······readFileSync(
+        260 │ + ········new·URL("../test-support/read-update-coverage-v1.json",·import.meta.url),
+        261 │ + ········"utf8",
+        262 │ + ······),
+    260 263 │       ) as {
+    261 264 │         rows: {
+  
+
+packages/conformance/src/transactional-cumulative.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+      79   79 │     const actual = bundle();
+      80   80 │     expect(selected.required).toHaveLength(251);
+      81      │ - ··expect(selected.required.map((row)·=>·row.id)).toContain("read-update.http.command-minimum-fields");
+           81 │ + ··expect(selected.required.map((row)·=>·row.id)).toContain(
+           82 │ + ····"read-update.http.command-minimum-fields",
+           83 │ + ··);
+      82   84 │     expect(actual.manifest.scenarios.map((row) => row.id)).not.toContain(
+      83   85 │       "read-update.http.command-minimum-fields",
+  
+
+Checked 439 files in 67ms. No fixes applied.
+Found 2 errors.
+Found 1 warning.
+format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+  
+
+[ELIFECYCLE] Command failed with exit code 1.

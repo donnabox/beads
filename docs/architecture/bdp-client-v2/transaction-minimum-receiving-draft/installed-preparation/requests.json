@@ -1,0 +1,249 @@
+{
+  "status": "literal/data-only measurements, not observations",
+  "installed": [
+    {
+      "ordinal": 1,
+      "label": "seed-post-ignores-malformed-minimum",
+      "method": "POST",
+      "target": "operations/batch",
+      "expectedStatus": 200,
+      "bodyBytes": 3728,
+      "bodySha256": "aea2842b2d004b0483dd756a9e6f97c829883956b56e7f508295572392c9a3b6"
+    },
+    {
+      "ordinal": 2,
+      "label": "issue-real-page",
+      "method": "POST",
+      "target": "operations/update-where",
+      "expectedStatus": 200,
+      "bodyBytes": 179,
+      "bodySha256": "ba388a9fdbed4eae2e5221a425aa476720d2307d22553870faccf5403648cb2d"
+    },
+    {
+      "ordinal": 3,
+      "label": "all-absent",
+      "method": "GET",
+      "target": "beads/r00",
+      "expectedStatus": 200,
+      "bodyBytes": 0,
+      "bodySha256": null
+    },
+    {
+      "ordinal": 4,
+      "label": "missing-two",
+      "method": "GET",
+      "target": "beads/r00",
+      "expectedStatus": 400,
+      "bodyBytes": 0,
+      "bodySha256": null
+    },
+    {
+      "ordinal": 5,
+      "label": "head-missing-epoch",
+      "method": "HEAD",
+      "target": "beads/r00",
+      "expectedStatus": 400,
+      "bodyBytes": 0,
+      "bodySha256": null
+    },
+    {
+      "ordinal": 6,
+      "label": "raw-duplicate-0",
+      "method": "GET",
+      "target": "beads/r00",
+      "expectedStatus": 400,
+      "bodyBytes": 0,
+      "bodySha256": null
+    },
+    {
+      "ordinal": 7,
+      "label": "raw-duplicate-1",
+      "method": "GET",
+      "target": "beads/r00",
+      "expectedStatus": 400,
+      "bodyBytes": 0,
+      "bodySha256": null
+    },
+    {
+      "ordinal": 8,
+      "label": "raw-duplicate-2",
+      "method": "GET",
+      "target": "beads/r00",
+      "expectedStatus": 400,
+      "bodyBytes": 0,
+      "bodySha256": null
+    },
+    {
+      "ordinal": 9,
+      "label": "single-comma-value",
+      "method": "GET",
+      "target": "beads/r00",
+      "expectedStatus": 400,
+      "bodyBytes": 0,
+      "bodySha256": null
+    },
+    {
+      "ordinal": 10,
+      "label": "malformed-receipt-writer",
+      "method": "GET",
+      "target": "receipt",
+      "expectedStatus": 400,
+      "bodyBytes": 0,
+      "bodySha256": null
+    },
+    {
+      "ordinal": 11,
+      "label": "malformed-receipt-other",
+      "method": "GET",
+      "target": "receipt",
+      "expectedStatus": 400,
+      "bodyBytes": 0,
+      "bodySha256": null
+    },
+    {
+      "ordinal": 12,
+      "label": "malformed-page-writer",
+      "method": "GET",
+      "target": "page",
+      "expectedStatus": 400,
+      "bodyBytes": 0,
+      "bodySha256": null
+    },
+    {
+      "ordinal": 13,
+      "label": "malformed-page-other",
+      "method": "GET",
+      "target": "page",
+      "expectedStatus": 400,
+      "bodyBytes": 0,
+      "bodySha256": null
+    },
+    {
+      "ordinal": 14,
+      "label": "foreign-unknown-receipt",
+      "method": "GET",
+      "target": "receipt",
+      "expectedStatus": 404,
+      "bodyBytes": 0,
+      "bodySha256": null
+    },
+    {
+      "ordinal": 15,
+      "label": "foreign-unknown-page",
+      "method": "GET",
+      "target": "page",
+      "expectedStatus": 404,
+      "bodyBytes": 0,
+      "bodySha256": null
+    },
+    {
+      "ordinal": 16,
+      "label": "own-unknown-receipt",
+      "method": "GET",
+      "target": "receipt",
+      "expectedStatus": 500,
+      "bodyBytes": 0,
+      "bodySha256": null
+    },
+    {
+      "ordinal": 17,
+      "label": "own-unknown-page",
+      "method": "GET",
+      "target": "page",
+      "expectedStatus": 500,
+      "bodyBytes": 0,
+      "bodySha256": null
+    },
+    {
+      "ordinal": 18,
+      "label": "compatible-missing",
+      "method": "GET",
+      "target": "beads/missing",
+      "expectedStatus": 404,
+      "bodyBytes": 0,
+      "bodySha256": null
+    },
+    {
+      "ordinal": 19,
+      "label": "compatible-existing",
+      "method": "GET",
+      "target": "beads/r00",
+      "expectedStatus": 200,
+      "bodyBytes": 0,
+      "bodySha256": null
+    },
+    {
+      "ordinal": 20,
+      "label": "same-view-ahead",
+      "method": "GET",
+      "target": "beads/r00",
+      "expectedStatus": 503,
+      "bodyBytes": 0,
+      "bodySha256": null
+    },
+    {
+      "ordinal": 21,
+      "label": "anonymous-malformed",
+      "method": "GET",
+      "target": "beads/r00",
+      "expectedStatus": 401,
+      "bodyBytes": 0,
+      "bodySha256": null
+    },
+    {
+      "ordinal": 22,
+      "label": "method-before-minimum",
+      "method": "POST",
+      "target": "beads/r00",
+      "expectedStatus": 405,
+      "bodyBytes": 0,
+      "bodySha256": null
+    }
+  ],
+  "bodyLiterals": [
+    "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/r00\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r01\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r02\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r03\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r04\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r05\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r06\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r07\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r08\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r09\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r10\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r11\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r12\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r13\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r14\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r15\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r16\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r17\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r18\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r19\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r20\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r21\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r22\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r23\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r24\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r25\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r26\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r27\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r28\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r29\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r30\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r31\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}}]}",
+    "{\"collection\":\"beads\",\"selector\":\"$[?@.type == \\\"https://reference.invalid/acme/types/task\\\"]\",\"cardinality\":{\"min\":32,\"max\":32},\"change\":[{\"op\":\"replace\",\"path\":\"/n\",\"value\":1}]}"
+  ],
+  "bodyBytesTotal": 3907,
+  "bodyBytesMaximum": 3728,
+  "credentialValues": "generated only at execution, never reported",
+  "canonicalScope": "https://reference.invalid/acme/",
+  "receiptTargets": "actual schema-validated second receipt.id and receipt.next; no manufactured page",
+  "installedTimersMs": {
+    "request": 5000,
+    "work": 45000,
+    "cleanup": 10000,
+    "test": 60000,
+    "outerCommand": 120000
+  },
+  "boundedResponseBytesPerNewExchange": 32768,
+  "boundsMeaning": "receive/body retention ceiling, not total heap; legacy regression response buffering unchanged",
+  "sourceRaw": {
+    "positive": 6,
+    "oraclePositive": 1,
+    "emittedNegative": 1,
+    "requestMs": 5000,
+    "workMs": 15000,
+    "testMs": 20000,
+    "redirects": 0
+  },
+  "installedRawHeaderOccurrences": "flat ordered Node HTTP header arrays; duplicate steps6-8 send two real occurrences of one minimum field each",
+  "safeRetainedHeaders": [
+    "bdp-scope-epoch",
+    "bdp-authorization-view",
+    "bdp-scope-position",
+    "content-type",
+    "content-length",
+    "cache-control",
+    "retry-after",
+    "www-authenticate",
+    "x-bdp-development",
+    "x-bdp-development-limit",
+    "etag",
+    "last-modified",
+    "allow",
+    "location",
+    "link"
+  ],
+  "safeRecord": "ordinal,label,method,url,credential role only, request body bytes/hash, three minimum-field occurrence counts,status,response bytes/hash,allowlisted response headers. No request Authorization, token, raw config, or arbitrary error text. Binding contains nonsecret identity hashes."
+}

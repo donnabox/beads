@@ -1,0 +1,28 @@
+{
+  "source": "b20c92914b48e66b33b66e9e7434dbc3467fad10",
+  "tree": "6a84e1cc2916ee5fb4cc49ad7cfd2a65562ef260",
+  "verifiedSourceFiles": [
+    "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md",
+    "packages/protocol/src/index.ts",
+    "packages/protocol/src/transaction-discovery-values.test.ts",
+    "packages/protocol/src/transaction-discovery-values.ts",
+    "packages/server/src/transaction-discovery.test.ts",
+    "packages/server/src/transaction-discovery.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-installed-contracts.test.ts",
+    "packages/server/src/transaction-read.test.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-service.ts",
+    "scripts/smoke-executables.mjs"
+  ],
+  "tarballs": {
+    "protocol.tgz": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+    "server.tgz": "10cb809a2f74a5b42dd62bd582bf78be76b993a621de3c429153316215d9ec04"
+  },
+  "summarySha256": "b8cae4efae349797c0aaad5bf3adbd3e78352d222538c9fe93b610f7b56fba85",
+  "execution": "inspected author outputs; no root test or installed rerun",
+  "reviewScope": "root read all production hunks, protocol exports, smoke boundaries and report; independent council pending",
+  "status": "do not merge: native confirmed callback receiver regression; repair isolated"
+}

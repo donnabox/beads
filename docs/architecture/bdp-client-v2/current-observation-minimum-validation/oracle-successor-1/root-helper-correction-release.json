@@ -1,0 +1,13 @@
+{
+  "at": "2026-10-17T21:29:51.724991+00:00",
+  "nativePlanSha256": "2d2cc7a2bb91e9208ffe9e92027274191a7c7e4d4d24054add5615ca7c275214",
+  "accepted": true,
+  "scope": "Separate CLOSED helper-successor-1 and required-checks-helper-successor-1; sole behavioral helper correction remove refusedOwnerEntries numeric scalar and require existing rows(o,refusedOwnerEntries,0). Preserve all other predicates.",
+  "sourceFilesVerifiedUnchanged": 679,
+  "sourceBindingSha256": "f133bf6d5d8f9ebf9fbe21f171d6e77e4d18fc1797a5593090ec40d7601cc406",
+  "author": "Conditional",
+  "preparationReleased": true,
+  "executionReleased": false,
+  "reusedPrerequisites": "Original correction-successor-2 bootstrap2 only; all19later+4fresh",
+  "history": "97sourcepass/E37 distinct from failed immediate audit8a076bfa, historical mistaken F2 and earlier failures retained"
+}

@@ -1,0 +1,17 @@
+{
+  "head": "30035b88380b7cbb3abd5359787db236b70345c7",
+  "tree": "cdee4bc7e31511cde094d17c045ea618163b6d7a",
+  "parent": "c555fe01df5cd20454fb0d663431df816c1270aa",
+  "main": "7e46cdc93b2fd02094ba7e15e57e743d2ef81daa",
+  "parentMainTree": "062a3ab7e24236417bd915b373a4b44ba9908647",
+  "clean": true,
+  "scope": "docs/design/transaction-implementation-progress.md |  34 +++\n packages/server/src/transaction-comparison.ts      |  23 +-\n packages/server/src/transaction-http.test.ts       | 234 ++++++++++++++++++---\n packages/server/src/transaction-http.ts            |   6 +\n packages/server/src/transaction-store.test.ts      | 125 +++++++++++\n packages/server/src/transaction-store.ts           |  16 ++\n packages/server/src/transaction-submission.test.ts | 120 +++++++++++\n packages/server/src/transaction-submission.ts      |  34 ++-\n 8 files changed, 557 insertions(+), 35 deletions(-)",
+  "nativeReviewSha256": "b93f20324f4500bc9434f1d99a88df00d23da360534ad2635c6b4da9253b3075",
+  "externalReview": "pending",
+  "ci": "pending",
+  "time": "2026-10-14T18:02:58.725163+00:00",
+  "pr": "https://github.com/gastownhall/bdp/pull/120",
+  "remoteHeadVerified": "30035b88380b7cbb3abd5359787db236b70345c7",
+  "ciRun": 38611890879,
+  "ciJob": 116017056158
+}

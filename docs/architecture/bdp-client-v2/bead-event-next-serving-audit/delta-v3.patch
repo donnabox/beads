@@ -1,0 +1,17 @@
+--- plan-v2.md
++++ plan-v3.md
+@@ -1,4 +1,4 @@
+-# Initial finite Link Event opaque-minimum implementation plan v2 — CLOSED
++# Initial finite Link Event opaque-minimum implementation plan v3 — CLOSED
+ 
+ Subordinate to the sole design.md workstream, copied immutably to context-v2/design.md. The earlier plan.md is a recommendation and remains preserved. No source authoring, test/build/import, review launch, branch, integration or publication is released by this packet. Basis is clean5bcd277b2a61461211ffc0c2d2f8fd701ef0a385 in vickie-bead-event-minimum, tree64fa36f4196da7e9eb48a9d248725d5f38c46282, soleparentf6204255d53ef65d4aea56ff5ccc86d72e8cc7b0. PR155 CI/integration remains root-owned; frozen PR150 and newer main are untouched. Future authoring must explicitly bind the actual root-authorized checkout/HEAD rather than assuming this review basis stayed current.
+ 
+@@ -60,7 +60,7 @@
+ 25–28 partial tuple pair→400 malformed-request; unsupported query pair→400 invalid-parameter, no observation context.
+ 29–30 unknown Link Event opaque pair→contextual404.
+ 31 POST deleteLink gone (distinct idempotency key from seed, one operation/pos2);32 GET links/gone→current Resource404;33 GET links/gone?view=events→schema-valid retained created/deleted Link page/current context;34–35 retained Link opaque GET/HEAD using context33→contextual503.
+-Exact status distribution:5038,50012,4004,4043,2008. Two mutation requests/five operations,8 bounded waits. Per dispatch<=35/final35, ordered method/suffix/status observations and measured elapsed. No uncounted seed/setup. GET Problems validated with validMinimumProblem; exact reference503 unavailable/code/retry shape vs normative schema distinction. Expect retry-after1/private,no-store, current epoch/view/position, no ETag/Last-Modified/development marker. HEAD empty and paired GET media/length. Private500 remains bodyless, no invented Problem. Known/deleted pages validate source/subject and identity; missing Resource is not Event existence oracle. Use current emitted callback pair semantics; no broad extraction. Existing auth/method/Origin tests preserved, no new auth policy inference. Close runtime before rm, aggregate errors; actual cleanup measurement. If elapsed approaches unchanged5s bound stop for root-reviewed split; no widen/retry or shorter80ms budget.
++Exact status distribution:5038,50012,4004,4043,2008. Two mutation requests/five operations,8 bounded waits. Per dispatch<=35/final35, ordered method/suffix/status observations and measured elapsed. No uncounted seed/setup. GET Problems validated with validMinimumProblem; exact reference503 unavailable/code/retry shape vs normative schema distinction. Expect retry-after1/private,no-store, current epoch/view/position, no ETag/Last-Modified. Require x-bdp-development-limit absent on non-500 responses; excluded private500 responses retain minimum-position in that limit header. Preserve x-bdp-development: non-attesting on all responses, including503. HEAD empty and paired GET media/length. Private500 remains bodyless, no invented Problem. Known/deleted pages validate source/subject and identity; missing Resource is not Event existence oracle. Use current emitted callback pair semantics; no broad extraction. Existing auth/method/Origin tests preserved, no new auth policy inference. Close runtime before rm, aggregate errors; actual cleanup measurement. If elapsed approaches unchanged5s bound stop for root-reviewed split; no widen/retry or shorter80ms budget.
+ 
+ ## E: exact new installed callback
+ 

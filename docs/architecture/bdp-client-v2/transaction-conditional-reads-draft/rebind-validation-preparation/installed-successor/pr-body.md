@@ -1,0 +1,5 @@
+Adds a bounded Transactional conditional-read scenario that exercises GET and HEAD before and after a mutation, conditional responses, and authentication/missing-resource precedence over actual installed HTTP. Portable assertions allow the specified HEAD omissions; complete postimage and changed-validator comparisons remain explicit reference-app checks. Historical scenarios and ordinary Update behavior are preserved.
+
+Validation: native Codex and actual Claude reviews dispositioned; 56 selected source cases plus static checks passed on identical source bytes. The committed candidate passed a fresh clean build, Read evidence verification, strict archive/external-consumer checks and seven installed cohorts (712 actual HTTP requests). Full cohort elapsed: 5.45s under its existing 63s limit. All 264 sampled processes were absent after validation.
+
+Targets the working sequence/depth branch. Transactional coverage remains partial and claimEligible:false; this does not activate a public write profile or promote a release.

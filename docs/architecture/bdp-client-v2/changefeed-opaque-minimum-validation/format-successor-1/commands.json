@@ -1,0 +1,494 @@
+{
+  "configurationFinalized": true,
+  "state": "Formatting successor concrete inputs; execution CLOSED",
+  "finalOrder": [
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "review-focused-source",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "changefeed-history-external",
+    "review-changefeed-history-external",
+    "changefeed-opaque-external",
+    "review-changefeed-opaque-external"
+  ],
+  "commands": {
+    "workspace-install": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--frozen-lockfile"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "bind-workspace-tools": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/audit.py",
+        "tools"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "typecheck": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "format-check": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/node_modules/@biomejs/biome/bin/biome",
+        "format",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/biome.json",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-service.ts",
+        "packages/server/src/transaction-store.ts",
+        "packages/server/src/transaction-changefeed.test.ts",
+        "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "lint": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/node_modules/@biomejs/biome/bin/biome",
+        "lint",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/biome.json",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-service.ts",
+        "packages/server/src/transaction-store.ts",
+        "packages/server/src/transaction-changefeed.test.ts",
+        "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "fresh-build": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "build"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "bind-fresh-build": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/audit.py",
+        "build"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "focused-source": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-changefeed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/run/focused-source.results.json",
+        "--testNamePattern",
+        "^(keeps\\ genesis\\ checkpoint\\ distinct\\ from\\ zero\\ position\\ and\\ resumes\\ after\\ an\\ empty\\ caught\\-up\\ page|uses\\ bounded\\ context\\-fenced\\ checkpoints,\\ never\\ Event\\ IDs/raw\\ positions/future\\ rows|does\\ not\\ classify\\ a\\ missing\\ previously\\ committed\\ cursor\\ row\\ as\\ never\\ issued\\ or\\ skip\\ its\\ gap|captures\\ feed\\ body\\ and\\ serving\\ context\\ inside\\ one\\ fenced\\ owner\\ entry|keeps\\ start=now's\\ original\\ admission\\ anchor\\ through\\ a\\ minimum\\ wait\\ and\\ drains\\ on\\ close|serves\\ actual\\ HTTP\\ finite\\ GET/HEAD,\\ absolute\\ navigation,\\ native\\ conditions\\ and\\ restart|decides\\ actual\\ HTTP\\ minimum\\ refusal\\ before\\ conditional\\ shortcuts\\ with\\ final\\ context|preserves\\ current\\ context\\ on\\ owner\\-observed\\ changefeed\\ parameter\\ refusals\\ over\\ HTTP|waits\\ for\\ fresh\\ finite\\ changefeed\\ opaque\\ minimum\\ without\\ recapturing\\ admission:\\ unknown|waits\\ for\\ fresh\\ finite\\ changefeed\\ opaque\\ minimum\\ without\\ recapturing\\ admission:\\ pos\\-01|aborts\\ fresh\\ finite\\ changefeed\\ opaque\\ waiting\\ before\\ close\\ drains|preserves\\ fresh\\ finite\\ changefeed\\ admission\\ before\\ wait\\ preflight:\\ already\\-aborted|preserves\\ fresh\\ finite\\ changefeed\\ admission\\ before\\ wait\\ preflight:\\ invalid\\-policy|preserves\\ fresh\\ finite\\ changefeed\\ admission\\ before\\ wait\\ preflight:\\ throwing\\-clock|preserves\\ fresh\\ finite\\ changefeed\\ admission\\ before\\ wait\\ preflight:\\ nonfinite\\-clock|keeps\\ direct\\ and\\ excluded\\ changefeed\\ minimum\\ paths\\ strict|serves\\ finite\\ start\\-now\\ opaque\\ minima\\ before\\ HTTP\\ shortcuts)$"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "keeps genesis checkpoint distinct from zero position and resumes after an empty caught-up page",
+        "uses bounded context-fenced checkpoints, never Event IDs/raw positions/future rows",
+        "does not classify a missing previously committed cursor row as never issued or skip its gap",
+        "captures feed body and serving context inside one fenced owner entry",
+        "keeps start=now's original admission anchor through a minimum wait and drains on close",
+        "serves actual HTTP finite GET/HEAD, absolute navigation, native conditions and restart",
+        "decides actual HTTP minimum refusal before conditional shortcuts with final context",
+        "preserves current context on owner-observed changefeed parameter refusals over HTTP",
+        "waits for fresh finite changefeed opaque minimum without recapturing admission: unknown",
+        "waits for fresh finite changefeed opaque minimum without recapturing admission: pos-01",
+        "aborts fresh finite changefeed opaque waiting before close drains",
+        "preserves fresh finite changefeed admission before wait preflight: already-aborted",
+        "preserves fresh finite changefeed admission before wait preflight: invalid-policy",
+        "preserves fresh finite changefeed admission before wait preflight: throwing-clock",
+        "preserves fresh finite changefeed admission before wait preflight: nonfinite-clock",
+        "keeps direct and excluded changefeed minimum paths strict",
+        "serves finite start-now opaque minima before HTTP shortcuts"
+      ],
+      "prospectiveWorkload": {
+        "cases": 17,
+        "stores": 17,
+        "ownerLifetimes": 19,
+        "networkRequests": 44,
+        "newObservationRecords": 9,
+        "historicalObservationRecords": 1,
+        "totalObservationRecords": 10
+      },
+      "selectionAttribution": "17 exact source cases; nine new records plus one unchanged historical parameter-context report. Counts source-derived, not execution results.",
+      "termAfterSeconds": 115
+    },
+    "review-focused-source": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/audit.py",
+        "source"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "node-version": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "prepare-package-directory": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/packages.py",
+        "directory"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "pack-protocol": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/run/packages"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "pack-server": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/run/packages"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "verify-archives": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/packages.py",
+        "tar"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "prepare-consumer": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/packages.py",
+        "consumer"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "consumer-install": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/run/consumer",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "verify-installed-consumer": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/packages.py",
+        "installed"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "changefeed-history-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/run/changefeed-history-external.results.json",
+        "--testNamePattern",
+        "^(observes\\ genuine\\ installed\\ current\\ context\\ on\\ changefeed\\ parameter\\ refusals)$"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "observes genuine installed current context on changefeed parameter refusals"
+      ],
+      "prospectiveWorkload": {
+        "callbacks": 1,
+        "requests": 10,
+        "children": 1,
+        "stores": 1,
+        "workMs": 45000,
+        "callbackMs": 60000
+      },
+      "expectedObservation": "private-installed-changefeed-parameter-context",
+      "expectedExchanges": 10,
+      "expectedChildren": 1,
+      "env": {
+        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/run/consumer/node_modules/@bdp/server/dist/transaction-installed-process.js",
+        "BDP_TRANSACTIONAL_SOURCE_COMMIT": "5ceb213b632e17f28714684efc5e35a62b282bf6"
+      },
+      "termAfterSeconds": 115
+    },
+    "review-changefeed-history-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/audit.py",
+        "history"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    },
+    "changefeed-opaque-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/run/changefeed-opaque-external.results.json",
+        "--testNamePattern",
+        "^(observes\\ genuine\\ installed\\ finite\\ start\\-now\\ opaque\\ minimum\\ refusal)$"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "observes genuine installed finite start-now opaque minimum refusal"
+      ],
+      "prospectiveWorkload": {
+        "callbacks": 1,
+        "requests": 4,
+        "children": 1,
+        "stores": 1,
+        "workMs": 45000,
+        "callbackMs": 60000
+      },
+      "expectedObservation": "private-installed-changefeed-opaque-minimum",
+      "expectedExchanges": 4,
+      "expectedChildren": 1,
+      "env": {
+        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/run/consumer/node_modules/@bdp/server/dist/transaction-installed-process.js",
+        "BDP_TRANSACTIONAL_SOURCE_COMMIT": "5ceb213b632e17f28714684efc5e35a62b282bf6"
+      },
+      "termAfterSeconds": 115
+    },
+    "review-changefeed-opaque-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/audit.py",
+        "changefeed"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "termAfterSeconds": 115
+    }
+  },
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "pending": [
+    "Root/native formatting successor closure and staged release",
+    "Fresh static/build/source/package/installed outcomes",
+    "Root actual consumer lock and provenance acceptance"
+  ],
+  "freshBootstrapStages": 0,
+  "postBootstrapStages": 19,
+  "totalStages": 21,
+  "reusedEvidence": [
+    "Only original workspace-install and bind-workspace-tools; predecessor source attribution retained"
+  ],
+  "sourceBindingSha256": "71a70bf7150f43fbcc4b0a29ea7647eb5c17347132e59bc710d6833312790d3b",
+  "helperImplementationFinalized": true,
+  "runtimeTempPolicy": {
+    "root": "/private/tmp",
+    "allocation": "new unique task-owned directory per actual stage; record literal and realpath",
+    "reason": "avoid ancestor .beads/proxieddb discovery under /Users/dbox; no shared database access",
+    "noDirectoryCreatedYet": true
+  },
+  "requiredPublicationChecks": {
+    "state": "Root-owned follow-through; no execution authorized here",
+    "commands": [
+      [
+        "pnpm",
+        "run",
+        "check:boundaries"
+      ],
+      [
+        "pnpm",
+        "run",
+        "e2e:ready:preflight"
+      ],
+      [
+        "pnpm",
+        "run",
+        "smoke"
+      ],
+      [
+        "pnpm",
+        "run",
+        "evidence:verify"
+      ]
+    ],
+    "policy": "Retain normal required checks/hooks and exact-head CI. Do not fabricate local pass or evidence, regenerate historical evidence, or add an arbitrary full local suite. Stage/supervisor scope for these normal checks must be fixed before release if root runs locally. Evidence nonzero remains explicit no-claim/failure, never silently accepted as qualification."
+  },
+  "reusedBootstrapPrerequisites": 2,
+  "freshStages": 19
+}

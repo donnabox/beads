@@ -1,0 +1,108 @@
+{
+  "source": "f864c4dde1b679d674cefe68f9047dd5cb3d1abc",
+  "stoppedAt": "transaction-sequence-positive",
+  "stages": [
+    {
+      "stage": "typecheck",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 2.019114667084068,
+      "cases": 0,
+      "sourceUnchanged": true,
+      "remainingGroup": [],
+      "remainingRuntimeDirs": [],
+      "sha256": "99254e6a7172a96891148caecdd87e10c6dee89398fc63eac821dddea608ae6c"
+    },
+    {
+      "stage": "fresh-build",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.6407550000585616,
+      "cases": 0,
+      "sourceUnchanged": true,
+      "remainingGroup": [],
+      "remainingRuntimeDirs": [],
+      "sha256": "683be7f9137868f56b997462d9575e177cd081d0684f1f4f58945fbb5ffe710a"
+    },
+    {
+      "stage": "format-check",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.212837791070342,
+      "cases": 0,
+      "sourceUnchanged": true,
+      "remainingGroup": [],
+      "remainingRuntimeDirs": [],
+      "sha256": "8adab246b0a40167b5b28313b64a775379fc28a53c3fbc88e9f90c3e2694d2f6"
+    },
+    {
+      "stage": "lint",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.0062754999380559,
+      "cases": 0,
+      "sourceUnchanged": true,
+      "remainingGroup": [],
+      "remainingRuntimeDirs": [],
+      "sha256": "1b309c0466e5c9de6f623606f31090a8b24fe71303a8cfe2952b3dd4b3ecde9c"
+    },
+    {
+      "stage": "boundaries",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.113824333064258,
+      "cases": 0,
+      "sourceUnchanged": true,
+      "remainingGroup": [],
+      "remainingRuntimeDirs": [],
+      "sha256": "5926de1785a81fc0d44f54ef6baa70ac6cf5d07f22394ca867c0e0623dbb4d3b"
+    },
+    {
+      "stage": "read-seal",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.9063478328753263,
+      "cases": 0,
+      "sourceUnchanged": true,
+      "remainingGroup": [],
+      "remainingRuntimeDirs": [],
+      "sha256": "68d8fa59b046e78453b578ad687bbb4e171f03d3df2b344447a580299da6b05b"
+    },
+    {
+      "stage": "transaction-set-positive",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.5058386661112309,
+      "cases": 3,
+      "sourceUnchanged": true,
+      "remainingGroup": [],
+      "remainingRuntimeDirs": [],
+      "sha256": "3a22fc98b3c5e3ad1aca1fe84acb4a40e0683313d08371a7c9069c2988013005"
+    },
+    {
+      "stage": "transaction-submission-positive",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 6.575249540852383,
+      "cases": 7,
+      "sourceUnchanged": true,
+      "remainingGroup": [],
+      "remainingRuntimeDirs": [],
+      "sha256": "157fd29de70cff31f95b4bac930874e27f7481dde1a52e6b373dc456b67f8852"
+    },
+    {
+      "stage": "transaction-sequence-positive",
+      "exit": 1,
+      "supervisorExit": 1,
+      "seconds": 1.1028074999339879,
+      "cases": 0,
+      "sourceUnchanged": true,
+      "remainingGroup": [],
+      "remainingRuntimeDirs": [],
+      "sha256": "7f52fcfc8ec26fa7fe2752e6bf5ea236d570b65c4115b9d13aedce7a7b896178"
+    }
+  ],
+  "runtimeClaim": "3set+7submission passed; sequence12pass1fail; laterstages notrun",
+  "failure": "strict constructor/prototype equality despite identical JSON; isolated emitted probe established41metadata-only differences",
+  "preserved": true
+}

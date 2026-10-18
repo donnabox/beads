@@ -1,0 +1,50 @@
+{
+  "at": "2026-10-15T06:50:33.359139+00:00",
+  "acceptedPreparationRebind": true,
+  "manifestSha256": "99564c88a3e3535bc861e9f87d2a244cbc74622071dab6476ddcbed1840aa5ad",
+  "sourceBindingSha256": "ecc0ceea2ca3eed4f8acf2638dacc315b0c63235f7c266b2689f71dcc0962d47",
+  "checks": [
+    "All nine successor/original packet hashes match",
+    "Five Python scripts unchanged; commands delta only controlOracle reference",
+    "Control assertion IDs/titles/counts unchanged; new manifest-derived digest measurements differ",
+    "No live gate or product command execution"
+  ],
+  "controlOracleChanges": [
+    {
+      "normalBytes": [
+        750596,
+        750437
+      ],
+      "compactBytes": [
+        366171,
+        366123
+      ],
+      "nodes": [
+        19575,
+        19570
+      ],
+      "compactSha256": [
+        "e9155ed02cd1a0a14d3a4a83be58fa5863746ee2f5e80997e9810cbaf8342094",
+        "2b271f5df6c633ae6eadcef002df19aabd73f3c6db49e7bef680aa070d1fc9cb"
+      ]
+    },
+    {
+      "normalBytes": [
+        750587,
+        750428
+      ],
+      "compactBytes": [
+        366162,
+        366114
+      ],
+      "nodes": [
+        19575,
+        19570
+      ],
+      "compactSha256": [
+        "eb25b1bd76d8996715bdf3a06360f0160120a9c21dd3f521b9a807b5bb4b6052",
+        "8e5e40ac289daa764e5e38c7f7f18d936fc7a8cfeabf4543786c72c6f8c75e71"
+      ]
+    }
+  ]
+}

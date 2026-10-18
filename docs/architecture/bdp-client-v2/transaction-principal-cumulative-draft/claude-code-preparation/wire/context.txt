@@ -1,0 +1,792 @@
+
+### apps/bdptest/src/transactional-matrix.test.ts:1-362 [FROZEN WORKING]
+```
+1: import { execFileSync, spawnSync, type ChildProcess } from "node:child_process";
+2: import { createHash, randomBytes } from "node:crypto";
+3: import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+4: import { tmpdir } from "node:os";
+5: import path from "node:path";
+6: import { fileURLToPath } from "node:url";
+7: import { expect, it } from "vitest";
+8: import {
+9:   createJsonSchemaValidator,
+10:   createRawHttpExchangeExecutor,
+11:   type ExactHttpModeOptions,
+12:   type HttpExchangeResponse,
+13: } from "@bdp/conformance";
+14: import {
+15:   createCumulativeTransactionalArtifactBundle,
+16:   loadProfileContractSelection,
+17:   runCumulativeTransactionalMatrix,
+18:   assertSameServedProfileConfiguration,
+19: } from "@bdp/conformance/testing";
+20: import {
+21:   createTransactionalExecutionBinding,
+22:   installedTransactionBinding,
+23: } from "../test-support/transactional-execution-binding.js";
+24: import schema from "../../../schemas/bdp-v0.schema.json" with { type: "json" };
+25: const root = fileURLToPath(new URL("../../../", import.meta.url));
+26: const { launchInstalledTransaction } = (await import(
+27:   new URL("../../../scripts/transaction-installed-observation.mjs", import.meta.url).href
+28: )) as {
+29:   launchInstalledTransaction(
+30:     entry: string,
+31:     configuration: unknown,
+32:     signal?: AbortSignal,
+33:   ): Promise<{ child: ChildProcess; ready: Record<string, unknown>; close(): Promise<void> }>;
+34: };
+35: const scope = "https://reference.invalid/acme/";
+36: const entry =
+37:   process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY ??
+38:   path.join(root, "packages/server/dist/transaction-installed-process.js");
+39: const source = (file: string) => ({
+40:   bytes: readFileSync(path.join(root, "packages/conformance/test-support/transactional", file)),
+41: });
+42: const fixtureSource = source("fixture-v1.json"),
+43:   manifestSource = source("manifest-v1.json");
+44: const bundle = createCumulativeTransactionalArtifactBundle(
+45:   loadProfileContractSelection("transactional"),
+46:   { manifest: manifestSource, fixture: fixtureSource },
+47: );
+48: function artifacts() {
+49:   const task = `${scope}types/task`,
+50:     link = `${scope}types/relationship`,
+51:     propertiesSchema = `${scope}schemas/properties`;
+52:   const descriptors = [
+53:     { id: task, name: "Task", describes: "bead", conformsTo: [], propertiesSchema },
+54:     {
+55:       id: link,
+56:       name: "Relationship",
+57:       describes: "link",
+58:       conformsTo: [],
+59:       propertiesSchema,
+60:       source: { conformsTo: [task], external: "opaque" },
+61:       target: { conformsTo: [task], external: "opaque" },
+62:     },
+63:   ];
+64:   return {
+65:     descriptors: descriptors.map((d) => ({ retrievalUri: d.id, utf8: JSON.stringify(d) })),
+66:     schemas: [
+67:       {
+68:         retrievalUri: propertiesSchema,
+69:         utf8: JSON.stringify({
+70:           $id: propertiesSchema,
+71:           type: "object",
+72:           properties: { title: { type: "string" } },
+73:           additionalProperties: false,
+74:         }),
+75:       },
+76:     ],
+77:   };
+78: }
+79: const sourceCommit =
+80:   process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT ??
+81:   execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
+82: function errorCauses(error: unknown): Set<unknown> {
+83:   const seen = new Set<unknown>();
+84:   const visit = (value: unknown) => {
+85:     if (seen.has(value)) return;
+86:     seen.add(value);
+87:     if (value instanceof AggregateError) for (const cause of value.errors) visit(cause);
+88:     if (value instanceof Error && value.cause !== undefined) visit(value.cause);
+89:   };
+90:   visit(error);
+91:   return seen;
+92: }
+93: type InstalledObservation = {
+94:   result: Awaited<ReturnType<typeof runCumulativeTransactionalMatrix>>;
+95:   sessions: Record<string, unknown>[];
+96:   baseline: ReturnType<typeof installedTransactionBinding>;
+97: };
+98: async function observe(control?: {
+99:   readonly budgetMs?: number;
+100:   /** Negative-test deadline begins after the first real exchange, with startup still bounded. */
+101:   readonly afterFirstExchangeBudgetMs?: number;
+102:   readonly scenarioSelection?: readonly string[];
+103:   readonly collapsePrincipalB?: boolean;
+104:   readonly onDispatch?: (request: PrincipalDispatchInput) => void;
+105:   /** Retain genuine returned evidence before cleanup can fail; never replace it. */
+106:   readonly onObserved?: (observed: InstalledObservation) => void;
+107:   readonly invalidReceiptCredentials?: boolean | "set-update" | "set-delete";
+108:   /** Negative-only removal of one already declared canonical set route. */
+109:   readonly omitRoute?: {
+110:     readonly method: "POST";
+111:     readonly url: `${typeof scope}operations/${"update-where" | "delete-where"}`;
+112:   };
+113:   readonly signal?: AbortSignal;
+114:   readonly children?: ChildProcess[];
+115:   /** Negative-test gate after actual ordinary wire, never a response replacement. */
+116:   readonly afterExchange?: (response: HttpExchangeResponse, signal: AbortSignal) => Promise<void>;
+117:   readonly ready?: (ready: Record<string, unknown>) => Record<string, unknown>;
+118:   readonly manifest?: (value: {
+119:     scenarios: { id: string; actions: Record<string, unknown>[] }[];
+120:   }) => void;
+121: }) {
+122:   const budgetMs = control?.budgetMs ?? 90000;
+123:   if (!Number.isSafeInteger(budgetMs) || budgetMs < 1 || budgetMs > 90000)
+124:     throw new Error("invalid cohort budget");
+125:   const afterFirstExchangeBudgetMs = control?.afterFirstExchangeBudgetMs;
+126:   if (
+127:     afterFirstExchangeBudgetMs !== undefined &&
+128:     (!Number.isSafeInteger(afterFirstExchangeBudgetMs) ||
+129:       afterFirstExchangeBudgetMs < 1 ||
+130:       afterFirstExchangeBudgetMs > budgetMs)
+131:   )
+132:     throw new Error("invalid after-first-exchange cohort budget");
+133:   const controller = new AbortController();
+134:   const signal = control?.signal
+135:     ? AbortSignal.any([control.signal, controller.signal])
+136:     : controller.signal;
+137:   signal.throwIfAborted();
+138:   const changed = JSON.parse(manifestSource.bytes.toString()) as {
+139:     scenarios: { id: string; actions: Record<string, unknown>[] }[];
+140:   };
+141:   control?.manifest?.(changed);
+142:   const runBundle = control?.manifest
+143:     ? createCumulativeTransactionalArtifactBundle(loadProfileContractSelection("transactional"), {
+144:         fixture: fixtureSource,
+145:         manifest: { bytes: Buffer.from(JSON.stringify(changed)) },
+146:       })
+147:     : bundle;
+148:   const directory = mkdtempSync(path.join(tmpdir(), "bdp-tx-installed-"));
+149:   const tokens: PrincipalTokens = {
+150:     operator: randomBytes(32).toString("base64url"),
+151:     reader: randomBytes(32).toString("base64url"),
+152:     principalA: randomBytes(32).toString("base64url"),
+153:     principalARotated: randomBytes(32).toString("base64url"),
+154:     principalB: randomBytes(32).toString("base64url"),
+155:   };
+156:   const roles = principalCredentialRoles(tokens, control?.collapsePrincipalB ?? false);
+157:   const configuration = {
+158:     scope,
+159:     directory: path.join(directory, "bootstrap"),
+160:     create: true,
+161:     credentials: roles.map(({ token, principal, canMutate }) => ({ token, principal, canMutate })),
+162:     artifacts: artifacts(),
+163:   };
+164:   let target: ReturnType<typeof createTransactionalExecutionBinding> | undefined;
+165:   const sessions: Record<string, unknown>[] = [];
+166:   const deniedReceiptUrls = new Set<string>();
+167:   const expireCohort = () => controller.abort(new Error("installed cohort deadline"));
+168:   const timer = setTimeout(expireCohort, budgetMs);
+169:   let firstExchangeTimer: ReturnType<typeof setTimeout> | undefined;
+170:   let observed: InstalledObservation | undefined;
+171:   let failure: unknown;
+172:   const cleanupFailures: unknown[] = [];
+173:   try {
+174:     const bootstrap = await launchInstalledTransaction(entry, configuration, signal);
+175:     control?.children?.push(bootstrap.child);
+176:     let baseline: ReturnType<typeof installedTransactionBinding>;
+177:     try {
+178:       baseline = installedTransactionBinding(bootstrap.ready, sourceCommit, fixtureSource);
+179:     } finally {
+180:       await bootstrap.close();
+181:     }
+182:     const routes = bundle.manifest.scenarios
+183:       .flatMap((s) => s.actions ?? [])
+184:       .flatMap((a) => {
+185:         if (a.family !== "http") return [];
+186:         const base =
+187:           a.target.binding === "scope" ? scope : bundle.fixture.bindings?.[a.target.binding];
+188:         if (!base) throw new Error("predeclared target unavailable");
+189:         const url = new URL(a.target.path ?? "", base);
+190:         for (const [key, value] of Object.entries(a.target.query ?? {})) {
+191:           if (typeof value !== "string") throw new Error("literal query required");
+192:           url.searchParams.set(key, value);
+193:         }
+194:         return [{ method: a.method, url: url.href }];
+195:       });
+196:     const uniqueRoutes = routes.filter(
+197:       (r, i) => routes.findIndex((o) => o.url === r.url && o.method === r.method) === i,
+198:     );
+199:     // Independently authored route inventory, not a second derivation from the manifest.
+200:     expect(uniqueRoutes).toEqual([
+201:       { method: "POST", url: `${scope}operations/batch` },
+202:       { method: "GET", url: `${scope}beads/?limit=32` },
+203:       { method: "GET", url: `${scope}events/` },
+204:       { method: "POST", url: `${scope}operations/create-bead` },
+205:       { method: "POST", url: `${scope}operations/sequence` },
+206:       { method: "POST", url: `${scope}operations/update-bead` },
+207:       { method: "GET", url: `${scope}beads/a` },
+208:       { method: "GET", url: `${scope}links/l` },
+209:       { method: "GET", url: `${scope}beads/new` },
+210:       { method: "GET", url: `${scope}changes/?after=genesis` },
+211:       { method: "GET", url: `${scope}links/?limit=32` },
+212:       { method: "GET", url: `${scope}beads/b` },
+213:       { method: "GET", url: `${scope}beads/c` },
+214:       { method: "POST", url: `${scope}operations/update-where` },
+215:       { method: "POST", url: `${scope}operations/delete-where` },
+216:     ]);
+217:     const omitted = control?.omitRoute;
+218:     if (omitted) {
+219:       expect([`${scope}operations/update-where`, `${scope}operations/delete-where`]).toContain(
+220:         omitted.url,
+221:       );
+222:       expect(omitted.method).toBe("POST");
+223:       expect(
+224:         uniqueRoutes.filter((r) => r.url === omitted.url && r.method === omitted.method),
+225:       ).toHaveLength(1);
+226:     }
+227:     const exactMode: ExactHttpModeOptions = {
+228:       scope,
+229:       profile: "transactional",
+230:       routes: uniqueRoutes.filter(
+231:         (r) => !omitted || r.url !== omitted.url || r.method !== omitted.method,
+232:       ),
+233:       maximumRequestHeaderBytes: 16384,
+234:       maximumRequestBodyBytes: 65536,
+235:       defaultCredentialRef: "operator",
+236:       credentialHandles: [
+237:         ...roles.map(({ ref }) => ({ id: ref, headerNames: ["authorization"] })),
+238:         { id: "anonymous", headerNames: [] },
+239:       ],
+240:       resolveCredentials: ({ credentialRef, url }) =>
+241:         principalHeaders(
+242:           roles,
+243:           credentialRef,
+244:           (control?.invalidReceiptCredentials === true && url.startsWith(`${scope}receipts/`)) ||
+245:             deniedReceiptUrls.has(url),
+246:         ),
+247:     };
+248:     target = createTransactionalExecutionBinding({
+249:       baseline,
+250:       sourceCommit,
+251:       fixtureSource,
+252:       exactMode,
+253:       launch: async (scenario, reopen, signal) => {
+254:         if (signal.aborted) throw new Error("launch aborted");
+255:         const child = await launchInstalledTransaction(
+256:           entry,
+257:           {
+258:             ...configuration,
+259:             directory: path.join(directory, scenario),
+260:             create: !reopen,
+261:           },
+262:           signal,
+263:         );
+264:         control?.children?.push(child.child);
+265:         sessions.push({ ...child.ready, scenario, reopen });
+266:         return control?.ready ? { ...child, ready: control.ready(child.ready) } : child;
+267:       },
+268:     });
+269:     const result = await runCumulativeTransactionalMatrix(
+270:       {
+271:         scope,
+272:         signal,
+273:         profile: "transactional",
+274:         seed: 0,
+275:         artifactBundle: runBundle,
+276:         ...(control?.scenarioSelection === undefined
+277:           ? {}
+278:           : { scenarioSelection: control.scenarioSelection }),
+279:         execute: async () => {
+280:           throw new Error("generic HTTP executor forbidden");
+281:         },
+282:         exactExecution: {
+283:           execute: async (request) => {
+284:             control?.onDispatch?.(
+285:               Object.freeze({
+286:                 method: request.method,
+287:                 url: request.url,
+288:                 credentialRef: request.credentialRef,
+289:               }),
+290:             );
+291:             const response = await target!.target.execute(request);
+292:             if (afterFirstExchangeBudgetMs !== undefined && firstExchangeTimer === undefined) {
+293:               firstExchangeTimer = setTimeout(expireCohort, afterFirstExchangeBudgetMs);
+294:             }
+295:             if (
+296:               typeof control?.invalidReceiptCredentials === "string" &&
+297:               response.status === 200 &&
+298:               [
+299:                 baseline.operationTargets.updateWhere,
+300:                 baseline.operationTargets.deleteWhere,
+301:               ].includes(response.url)
+302:             ) {
+303:               const receipt = JSON.parse(response.bodyText) as {
+304:                 id?: unknown;
+305:                 idempotencyKey?: unknown;
+306:               };
+307:               if (
+308:                 receipt.idempotencyKey === control.invalidReceiptCredentials &&
+309:                 typeof receipt.id === "string"
+310:               )
+311:                 deniedReceiptUrls.add(receipt.id);
+312:             }
+313:             await control?.afterExchange?.(response, signal);
+314:             signal.throwIfAborted();
+315:             return response;
+316:           },
+317:           configuration: target.target.exactConfiguration!,
+318:         },
+319:         harness: {
+320:           ...target.target.harness,
+321:           cleanup: async (...args) => {
+322:             try {
+323:               await target!.target.harness.cleanup(...args);
+324:             } catch (error) {
+325:               cleanupFailures.push(error);
+326:               throw error;
+327:             }
+328:           },
+329:         },
+330:         schemaValidator: createJsonSchemaValidator(schema),
+331:         declaredTargetLabel: "private-installed-transactional-partial",
+332:         prepareTimeoutMs: 10000,
+333:         cleanupTimeoutMs: 10000,
+334:         requestTimeoutMs: 5000,
+335:       },
+336:       target.context,
+337:     );
+338:     observed = { result, sessions, baseline };
+339:     control?.onObserved?.(observed);
+340:   } catch (error) {
+341:     failure = error;
+342:   } finally {
+343:     // The runner can report abort as row state; retain the cohort's original
+344:     // reason before a subsequent child/session cleanup failure is aggregated.
+345:     if (failure === undefined && signal.aborted) failure = signal.reason;
+346:     try {
+347:       await target?.target.close();
+348:     } catch (cleanup) {
+349:       cleanupFailures.push(cleanup);
+350:     } finally {
+351:       clearTimeout(timer);
+352:       clearTimeout(firstExchangeTimer);
+353:       rmSync(directory, { recursive: true, force: true });
+354:     }
+355:   }
+356:   if (cleanupFailures.length) {
+357:     const causes = [...new Set([...(failure === undefined ? [] : [failure]), ...cleanupFailures])];
+358:     throw new AggregateError(causes, "installed cohort cleanup failed");
+359:   }
+360:   if (failure !== undefined) throw failure;
+361:   signal.throwIfAborted();
+362:   if (!observed) throw new Error("missing installed observation");
+```
+
+### apps/bdptest/src/transactional-matrix.test.ts:2963-2980 [FROZEN WORKING]
+```
+2963: function memberHandoff(
+2964:   index: number,
+2965:   url: string,
+2966:   digest: string | undefined,
+2967:   key: string | undefined,
+2968:   writeState: string | undefined,
+2969: ) {
+2970:   return (
+2971:     (index === 0 || index === 4) &&
+2972:     url === `${scope}operations/sequence` &&
+2973:     digest === "f3cde631127aaf530ea5349330e6c7bb46766b02b135f9c7c59acfcd2f2c71c7" &&
+2974:     key === undefined &&
+2975:     writeState === "complete"
+2976:   );
+2977: }
+2978: /** Full actual values stay local to assertions. Reports retain only identities,
+2979:  * digests and performed-pair inventory; receipt helper equality is separate. */
+2980: function sequenceMemberWire(negative = false) {
+```
+
+### apps/bdptest/src/transactional-matrix.test.ts:3189-3215 [FROZEN WORKING]
+```
+3189: function composedMemberWire(
+3190:   cross: ReturnType<typeof crossCarrierWire>,
+3191:   minimum: ReturnType<typeof commandMinimumWire>,
+3192:   member: ReturnType<typeof sequenceMemberWire>,
+3193: ) {
+3194:   let handedOff = false;
+3195:   return async (response: HttpExchangeResponse) => {
+3196:     await minimum.afterExchange(response);
+3197:     const request = response.exactRequest,
+3198:       key = request?.headerLines.find((h) => h.name.toLowerCase() === "idempotency-key")?.value;
+3199:     const exempt = memberHandoff(
+3200:       member.count(),
+3201:       response.url,
+3202:       request?.bodyDigest,
+3203:       key,
+3204:       request?.writeState,
+3205:     );
+3206:     if (exempt && !handedOff) {
+3207:       cross.finish();
+3208:       handedOff = true;
+3209:     }
+3210:     if (!exempt) await cross.afterExchange(response);
+3211:     if (handedOff) await member.afterExchange(response);
+3212:   };
+3213: }
+3214: function assertMemberPositive(
+3215:   observed: Awaited<ReturnType<typeof observe>>,
+```
+
+### apps/bdptest/test-support/transactional-execution-binding.ts:1-175 [COMMITTED BASE]
+```
+1: import { isDeepStrictEqual } from "node:util";
+2: import { installedContractsDigest } from "./installed-contract-identity.js";
+3: /** Source-only installed binding. Runner retains sole receipt observation authority. */
+4: import { createHash } from "node:crypto";
+5: import {
+6:   createRawHttpScenarioTarget,
+7:   type ExactHttpModeOptions,
+8:   type ConformanceFixture,
+9:   type ExecutableScenario,
+10: } from "@bdp/conformance";
+11: import {
+12:   bindServedProfileConfiguration,
+13:   assertSameServedProfileConfiguration,
+14:   type TransactionalRunContext,
+15:   type TransactionalSession,
+16: } from "@bdp/conformance/testing";
+17: export interface InstalledTransactionChild {
+18:   readonly ready: Record<string, unknown>;
+19:   close(): Promise<unknown>;
+20: }
+21: export function installedTransactionBinding(
+22:   ready: Record<string, unknown>,
+23:   sourceCommit: string,
+24:   fixture: { bytes: Uint8Array },
+25: ) {
+26:   if (
+27:     ready.profile !== "transactional" ||
+28:     ready.history !== false ||
+29:     ready.claimEligible !== false ||
+30:     ready.authorityMode !== "canonical" ||
+31:     typeof ready.scope !== "string" ||
+32:     typeof ready.runtimeConfigurationIdentity !== "string" ||
+33:     !/^[a-f0-9]{64}$/.test(ready.runtimeConfigurationIdentity)
+34:   )
+35:     throw new Error("installed Transactional metadata unavailable");
+36:   if (typeof ready.listenUrl !== "string")
+37:     throw new Error("installed physical session unavailable");
+38:   const url = new URL(ready.listenUrl);
+39:   if (
+40:     url.protocol !== "http:" ||
+41:     url.hostname !== "127.0.0.1" ||
+42:     !url.port ||
+43:     url.username ||
+44:     url.password ||
+45:     url.pathname !== "/" ||
+46:     url.search ||
+47:     url.hash
+48:   )
+49:     throw new Error("invalid installed dial binding");
+50:   const targetNames = {
+51:     createBead: "create-bead",
+52:     updateBead: "update-bead",
+53:     deleteBead: "delete-bead",
+54:     createLink: "create-link",
+55:     updateLink: "update-link",
+56:     deleteLink: "delete-link",
+57:     putAlias: "put-alias",
+58:     deleteAlias: "delete-alias",
+59:     updateWhere: "update-where",
+60:     deleteWhere: "delete-where",
+61:     batch: "batch",
+62:     sequence: "sequence",
+63:   };
+64:   const operationTargets = Object.freeze(
+65:     Object.fromEntries(
+66:       Object.entries(targetNames).map(([name, suffix]) => [
+67:         name,
+68:         `${ready.scope}operations/${suffix}`,
+69:       ]),
+70:     ),
+71:   );
+72:   if (!isDeepStrictEqual(ready.targets, operationTargets))
+73:     throw new Error("installed operation target inventory mismatch");
+74:   const served = bindServedProfileConfiguration({
+75:     scope: ready.scope,
+76:     profile: "transactional",
+77:     history: false,
+78:     sourceCommit,
+79:     installedPayloadDigest: ready.payloadIdentity as string,
+80:     installedContractsDigest: installedContractsDigest(ready.artifactIdentity),
+81:     policyDigest: ready.policyIdentity as string,
+82:     authenticationDigest: ready.authenticationIdentity as string,
+83:     fixture,
+84:   });
+85:   return Object.freeze({
+86:     served,
+87:     operationTargets,
+88:     runtimeConfigurationIdentity: ready.runtimeConfigurationIdentity,
+89:     authorityMode: "canonical" as const,
+90:   });
+91: }
+92: export function createTransactionalExecutionBinding(options: {
+93:   readonly baseline: ReturnType<typeof installedTransactionBinding>;
+94:   readonly sourceCommit: string;
+95:   readonly fixtureSource: { bytes: Uint8Array };
+96:   readonly exactMode: ExactHttpModeOptions;
+97:   readonly launch: (
+98:     scenario: string,
+99:     reopen: boolean,
+100:     signal: AbortSignal,
+101:   ) => Promise<InstalledTransactionChild>;
+102: }) {
+103:   let active:
+104:     | (TransactionalSession & { controller: AbortController; pending: Set<Promise<unknown>> })
+105:     | undefined;
+106:   let generation = 0;
+107:   let presentation:
+108:     | { scenario: ExecutableScenario; scope: string; seed: number; fixture: ConformanceFixture }
+109:     | undefined;
+110:   let reopening = false;
+111:   const target = createRawHttpScenarioTarget(
+112:     async (scenario, scope, seed, fixture, signal) => {
+113:       const child = await options.launch(scenario.id, reopening, signal);
+114:       try {
+115:         if (signal.aborted) throw new Error("installed preparation aborted");
+116:         const actual = installedTransactionBinding(
+117:           child.ready,
+118:           options.sourceCommit,
+119:           options.fixtureSource,
+120:         );
+121:         assertSameServedProfileConfiguration(options.baseline.served, actual.served);
+122:         if (
+123:           actual.runtimeConfigurationIdentity !== options.baseline.runtimeConfigurationIdentity ||
+124:           actual.authorityMode !== options.baseline.authorityMode
+125:         )
+126:           throw new Error("installed runtime identity mismatch");
+127:         const listenUrl = child.ready.listenUrl as string,
+128:           address = new URL(listenUrl);
+129:         const controller = new AbortController(),
+130:           pending = new Set<Promise<unknown>>();
+131:         const binding = Object.freeze({
+132:           scenario: scenario.id,
+133:           generation: ++generation,
+134:           listenUrl,
+135:           runtimeConfigurationIdentity: actual.runtimeConfigurationIdentity,
+136:           responseLimits: Object.freeze({
+137:             headerBytes: 65536 as const,
+138:             bodyBytes: 1048576 as const,
+139:             wireBytes: 2097152 as const,
+140:           }),
+141:           configurationDigest: createHash("sha256")
+142:             .update(JSON.stringify(actual.served))
+143:             .digest("hex"),
+144:         });
+145:         const current = {
+146:           binding,
+147:           controller,
+148:           pending,
+149:           signal: AbortSignal.any([controller.signal, signal]),
+150:           dialRoute: Object.freeze({
+151:             transport: "plain" as const,
+152:             host: address.hostname,
+153:             port: Number(address.port),
+154:           }),
+155:           resolveCredentials: options.exactMode.resolveCredentials,
+156:           register<T>(operation: Promise<T>) {
+157:             pending.add(operation);
+158:             void operation.then(
+159:               () => pending.delete(operation),
+160:               () => pending.delete(operation),
+161:             );
+162:             return operation;
+163:           },
+164:         };
+165:         active = current;
+166:         presentation = { scenario, scope, seed, fixture };
+167:         return {
+168:           capabilities: fixture.capabilities,
+169:           bindings: fixture.bindings,
+170:           dialRoute: current.dialRoute,
+171:           async close() {
+172:             if (active === current) active = undefined;
+173:             controller.abort();
+174:             await Promise.allSettled([...pending]);
+175:             await child.close();
+```
+
+### packages/conformance/src/http-executor.ts:730-790 [COMMITTED BASE]
+```
+730:       Buffer.from(
+731:         ` HTTP/1.1\r\n${lines.map(({ name, value }) => `${name}: ${value}`).join("\r\n")}\r\n\r\n`,
+732:         "latin1",
+733:       ),
+734:     ]);
+735:     const exchanged = await exchangeRawBytes(
+736:       route,
+737:       head,
+738:       request.method,
+739:       signal,
+740:       requestDeadline(signal, deadline),
+741:       maximumHeaderBytes,
+742:       maximumBodyBytes,
+743:       body,
+744:       (next) => {
+745:         state = next;
+746:       },
+747:     );
+748:     state = exchanged.writeState;
+749:     requestDeadline(signal, deadline);
+750:     const parsed = parseRawResponse(
+751:       exchanged.bytes,
+752:       request.method,
+753:       maximumHeaderBytes,
+754:       maximumBodyBytes,
+755:     );
+756:     const exactRequest = Object.freeze({
+757:       source: "raw-http1-serializer" as const,
+758:       headerLines: Object.freeze(lines),
+759:       bodyPresent: body !== undefined,
+760:       bodyOctets: body?.length ?? 0,
+761:       ...(body === undefined
+762:         ? {}
+763:         : { bodyDigest: createHash("sha256").update(body).digest("hex") }),
+764:       writeState: exchanged.writeState,
+765:     });
+766:     const response = {
+767:       url: url.href,
+768:       ...parsed,
+769:       wireResponseBytes: Uint8Array.from(exchanged.bytes),
+770:       exactRequest,
+771:       effectiveRequest: {
+772:         url: url.href,
+773:         // Deliberately lossy last-occurrence compatibility view, never exact wire evidence.
+774:         // Ordered exactRequest.headerLines is authoritative for every occurrence.
+775:         headers: Object.freeze(
+776:           Object.fromEntries(lines.map(({ name, value }) => [name.toLowerCase(), value])),
+777:         ),
+778:       },
+779:     };
+780:     requestDeadline(signal, deadline);
+781:     return response;
+782:   } catch (error) {
+783:     if (error instanceof HttpTransportError)
+784:       throw new HttpTransportError(error.category, error.message, {}, state);
+785:     throw new HttpTransportError(
+786:       "configuration",
+787:       "exact HTTP request configuration is invalid",
+788:       {},
+789:       state,
+790:     );
+```
+
+### packages/conformance/src/runner.ts:1358-1386 [COMMITTED BASE]
+```
+1358:   const effectiveRequest = exact ? undefined : response.effectiveRequest;
+1359:   if (effectiveRequest !== undefined) assertEffectiveRequest(effectiveRequest, url, scope);
+1360:   let next: ObservedExchange = {
+1361:     ...observed,
+1362:     ...(effectiveRequest === undefined
+1363:       ? {}
+1364:       : {
+1365:           request: {
+1366:             ...observed.request,
+1367:             url: redactUrl(effectiveRequest.url),
+1368:             headers: redactHeaders(effectiveRequest.headers, reportVersion),
+1369:             ...(!exact && effectiveRequest.headersTransmitted === true
+1370:               ? { wireHeadersObserved: true as const }
+1371:               : {}),
+1372:           },
+1373:         }),
+1374:     response: {
+1375:       url: redactUrl(response.url),
+1376:       status: response.status,
+1377:       headers: redactHeaders(responseHeaders, reportVersion),
+1378:       decodedBodyBytes: new TextEncoder().encode(response.bodyText).byteLength,
+1379:       ...(response.bodyOctets === undefined ? {} : { wireBodyOctets: response.bodyOctets }),
+1380:       bodyKind: bodyObservation.kind,
+1381:     },
+1382:   };
+1383:   exchanges[exchanges.length - 1] = next;
+1384:   if (bodyObservation.kind === "unrepresentable-json") {
+1385:     if (bodyObservation.attribution === "runner-limit")
+1386:       throw new ScenarioObservationLimitError(bodyObservation.reason);
+```
+
+### packages/conformance/src/runner.ts:3304-3327 [COMMITTED BASE]
+```
+3304: const EXACT_REPORT_HEADER_NAMES = new Set([...REPORT_HEADER_NAMES, "idempotency-key"]);
+3305: 
+3306: function redactHeaders(
+3307:   headers: Readonly<Record<string, string>>,
+3308:   version: 3 | 4 = 3,
+3309: ): Readonly<Record<string, string>> {
+3310:   return Object.fromEntries(
+3311:     Object.keys(headers)
+3312:       .map((name) => name.toLowerCase())
+3313:       .filter((name) => (version === 4 ? EXACT_REPORT_HEADER_NAMES : REPORT_HEADER_NAMES).has(name))
+3314:       .map((name) => [name, "<redacted>"] as const)
+3315:       .sort(([left], [right]) => compareKeys(left, right)),
+3316:   );
+3317: }
+3318: 
+3319: function redactUrl(value: string): string {
+3320:   const url = new URL(value);
+3321:   const hadQuery = url.search !== "";
+3322:   url.username = "";
+3323:   url.password = "";
+3324:   url.hash = "";
+3325:   url.search = "";
+3326:   return `${url.href}${hadQuery ? "?<redacted>" : ""}`;
+3327: }
+```
+
+### packages/conformance/src/schema-validator.ts:1-64 [COMMITTED BASE]
+```
+1: import {
+2:   Ajv2020,
+3:   type ErrorObject,
+4:   type JSONSchemaType,
+5:   type ValidateFunction,
+6: } from "ajv/dist/2020.js";
+7: import { isJsonSchemaDateTime, isJsonSchemaUri } from "@bdp/protocol";
+8: 
+9: export interface SchemaValidationFailure {
+10:   readonly instancePath: string;
+11:   readonly message: string;
+12: }
+13: 
+14: export interface SchemaValidator {
+15:   resolve(schemaRef: string): void;
+16:   validate(schemaRef: string, value: unknown): readonly SchemaValidationFailure[];
+17: }
+18: 
+19: export class SchemaValidatorError extends Error {
+20:   constructor(message: string, options: ErrorOptions = {}) {
+21:     super(message, options);
+22:     this.name = "SchemaValidatorError";
+23:   }
+24: }
+25: 
+26: /** Validates against the repository's offline canonical schema bundle. */
+27: export function createJsonSchemaValidator(
+28:   bundle: JSONSchemaType<unknown> | Record<string, unknown>,
+29: ): SchemaValidator {
+30:   const ajv = new Ajv2020({ allErrors: false, strict: true });
+31:   ajv.addFormat("uri", { type: "string", validate: isJsonSchemaUri });
+32:   ajv.addFormat("date-time", { type: "string", validate: isJsonSchemaDateTime });
+33:   const root = bundle as Record<string, unknown>;
+34:   if (typeof root.$id !== "string" || root.$id.length === 0)
+35:     throw new SchemaValidatorError("schema bundle must declare a non-empty $id");
+36:   const schemaId = root.$id;
+37:   ajv.addSchema(bundle, schemaId);
+38:   const resolve = (schemaRef: string): ValidateFunction => {
+39:     const ref = schemaRef.startsWith("#") ? `${schemaId}${schemaRef}` : schemaRef;
+40:     let validator: ValidateFunction | undefined;
+41:     try {
+42:       validator = ajv.getSchema(ref);
+43:     } catch (error) {
+44:       throw new SchemaValidatorError("schema reference could not be compiled", { cause: error });
+45:     }
+46:     if (validator === undefined)
+47:       throw new SchemaValidatorError(`unknown schema reference '${schemaRef}'`);
+48:     return validator;
+49:   };
+50:   return {
+51:     resolve(schemaRef) {
+52:       resolve(schemaRef);
+53:     },
+54:     validate(schemaRef, value) {
+55:       const validator = resolve(schemaRef);
+56:       if (validator(value)) return [];
+57:       return (validator.errors ?? []).map(formatAjvError);
+58:     },
+59:   };
+60: }
+61: 
+62: function formatAjvError(error: ErrorObject): SchemaValidationFailure {
+63:   return { instancePath: error.instancePath, message: error.message ?? error.keyword };
+64: }
+```

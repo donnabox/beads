@@ -1,0 +1,272 @@
+{
+  "checkedAt": "2026-10-15T23:21:38.128608+00:00",
+  "source": "c18c71202c90fa2558f34107ad342befabf750fe",
+  "tree": "596abe870220fb61ce606f8382a9da52d554d063",
+  "finalSourceSha256": "273b5d230ddbac111b106463a5af351db14d77082d77e9c090b4802d96c0d923",
+  "preparationAuthorOverlap": true,
+  "stageCount": 14,
+  "stages": [
+    {
+      "stage": "node-version",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.4627557920757681,
+      "logSha256": "a8f8f7ba69d43285857a0ea34017ef8dadd3ba012404bb7dd188fc773cf63ee2",
+      "exitSha256": "d0cce0c03e8d14ab098e2646be71a7171fbb9dfbeef6647289bb83355292161e"
+    },
+    {
+      "stage": "package-directory",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.739092041971162,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitSha256": "3aaf17568ad0e997c79b6218053e735b25d6c97e093ea2c95872f5a671fceebc"
+    },
+    {
+      "stage": "pack-protocol",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.7470790001098067,
+      "logSha256": "a18f8521b8bb95f278548f774223fd2e09abb434f8c4a378a25771f53866202f",
+      "exitSha256": "22ad2201aef532d970c427cc5d271bea9d4ad4ac4d3b0323f71bea817ea4b9fd"
+    },
+    {
+      "stage": "pack-server",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.8407520828768611,
+      "logSha256": "ed9a909468ddd7a724c1721fad0ab6411032357e764e1026bef9fd977d09362e",
+      "exitSha256": "c89d3ba54c57f9ae8e7bd0b493fca4ab65d5216a559861f649ba07d5eeb03a79"
+    },
+    {
+      "stage": "verify-tar",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.7174576669931412,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitSha256": "1d87691179d812d8e8873d47c7b1a46f5e9fb60fc4b8ca047e41adbdd5875c2b"
+    },
+    {
+      "stage": "prepare-consumer",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.624659749912098,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitSha256": "3e6c09244dcfd44536f156b520eb5664874fc10a146b57fd9a5d10c6318e934f"
+    },
+    {
+      "stage": "consumer-install",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.9443476658780128,
+      "logSha256": "f84777cc74a9b8dc2d83a58f3cf2d6bd773975b86e159daaf4e1e308ad72da09",
+      "exitSha256": "e91d89ebff0a3394eac5314d18d78b5893a3ebb312e55e177be5af407712fb6f"
+    },
+    {
+      "stage": "verify-installed",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.7367267908994108,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exitSha256": "275f6c85d6c0c44bca2eb7358b8fe1ea58353820a49ee95d8b4775e3f03378f2"
+    },
+    {
+      "stage": "minimum-positive",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 2.2499006672296673,
+      "logSha256": "243336c62c94d85ad6a0dbe9e3f071594eb2d7fddd5a957894ca4a6e1efdcb45",
+      "exitSha256": "ed4e07e08f162ecffc19da6a106f0f670a755bb197d9ac9f800cf2d6bb6b72ca"
+    },
+    {
+      "stage": "minimum-positive-review",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.8107957500033081,
+      "logSha256": "9ebceca89ae7c8e48d1374c8f29935b80dfc5fdb8ae4e67734b6610089a954ce",
+      "exitSha256": "1869ecd0ca02e4b0e294fdab21dd160c45c7f8a92baf4f54d7f16f1e98241356"
+    },
+    {
+      "stage": "snapshot-capacity",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 1.552517875097692,
+      "logSha256": "6f114194b07fb1929b35858606b185a6c2b592a5060a5501173813b06254b33f",
+      "exitSha256": "c62ee8023635b47a71185cc35a64325e8a77df1cc13cdad7853bd77562990e2a"
+    },
+    {
+      "stage": "snapshot-capacity-review",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.7314492498990148,
+      "logSha256": "ea4f16e90741388661dd3d69b6ebc925383a86218f10c00c70616137355ccd05",
+      "exitSha256": "e753d5e4fe4d8098c9ac68555043b1c59614eca49e4f789341570fd568b31433"
+    },
+    {
+      "stage": "snapshot-fresh",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 7.281255249865353,
+      "logSha256": "845156dcb051decbccf3c598dcc54c39c42f173b057c630c9afdd34dcfd7ac89",
+      "exitSha256": "cba0dc533f5e17093d754fbd1e12de05fdd93f19707cad363ca935022b1db130"
+    },
+    {
+      "stage": "snapshot-fresh-review",
+      "exit": 0,
+      "supervisorExit": 0,
+      "seconds": 0.8161619170568883,
+      "logSha256": "cff0be329ed5e57ba948150f895659840d69240ca124cc9d8788c0446f9dc0d2",
+      "exitSha256": "711fca91c1866b6d218a3ae00220a0916b017ee568921c6b2ddd30c77c66c741"
+    }
+  ],
+  "cohorts": [
+    {
+      "cohort": "minimum-positive",
+      "case": "rejects malformed read minimum tuples before observation while preserving receipt nondisclosure",
+      "passed": 1,
+      "skipped": 0,
+      "recordExchanges": [
+        22
+      ],
+      "responses": 22,
+      "children": 1,
+      "logSha256": "243336c62c94d85ad6a0dbe9e3f071594eb2d7fddd5a957894ca4a6e1efdcb45",
+      "resultsSha256": "37c18fabbfdc3decb421f7918294a8a10e9db1350783503125a5a828a5a2ee57"
+    },
+    {
+      "cohort": "snapshot-capacity",
+      "case": "observes nonallocating creation decisions through the actual eight-handle capacity boundary",
+      "passed": 1,
+      "skipped": 9,
+      "recordExchanges": [
+        10,
+        29
+      ],
+      "responses": 39,
+      "children": 3,
+      "logSha256": "6f114194b07fb1929b35858606b185a6c2b592a5060a5501173813b06254b33f",
+      "resultsSha256": "34fef1275f1b034bd1717abbe06b1d3eedd2093c61e248c6cd565ed2d4b8b30d"
+    },
+    {
+      "cohort": "snapshot-fresh",
+      "case": "observes fresh Snapshot minima with exact current context and retained gaps over packed bytes",
+      "passed": 1,
+      "skipped": 9,
+      "recordExchanges": [
+        31
+      ],
+      "responses": 31,
+      "children": 2,
+      "logSha256": "845156dcb051decbccf3c598dcc54c39c42f173b057c630c9afdd34dcfd7ac89",
+      "resultsSha256": "ad71f277815c20b4bc3c597611e93b08e17e8ce36c13584d34afdb63d5d6c54c"
+    }
+  ],
+  "http": 92,
+  "children": [
+    56778,
+    56927,
+    56930,
+    56935,
+    57070,
+    57143
+  ],
+  "records": 4,
+  "sampledPidsIndependentlyAbsent": [
+    56025,
+    56027,
+    56098,
+    56100,
+    56105,
+    56108,
+    56118,
+    56143,
+    56145,
+    56149,
+    56177,
+    56179,
+    56198,
+    56228,
+    56230,
+    56234,
+    56238,
+    56248,
+    56281,
+    56283,
+    56288,
+    56335,
+    56337,
+    56342,
+    56647,
+    56649,
+    56654,
+    56753,
+    56755,
+    56761,
+    56764,
+    56778,
+    56825,
+    56827,
+    56833,
+    56860,
+    56905,
+    56907,
+    56911,
+    56913,
+    56927,
+    56930,
+    56935,
+    56974,
+    56976,
+    56981,
+    56993,
+    57007,
+    57047,
+    57049,
+    57053,
+    57056,
+    57070,
+    57143,
+    57190,
+    57192,
+    57208,
+    57238,
+    57243
+  ],
+  "retainedNodeCaches": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/installed-preparation/run/consumer-install.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/installed-preparation/run/pack-protocol.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/installed-preparation/run/pack-server.tmp/node-compile-cache"
+  ],
+  "buildCounts": {
+    "inputFiles": 673,
+    "packageFiles": 312,
+    "emittedFiles": 440
+  },
+  "buildInventorySha256": "40b93065c4accc56de2618ab65899c72205c01cdea07edff11a335e3cbe6824b",
+  "archiveMembers": 313,
+  "packages": {
+    "protocol": {
+      "members": 63,
+      "archiveSha256": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227"
+    },
+    "server": {
+      "members": 250,
+      "archiveSha256": "bf523e2465b519823e5b0aef92f10fe6c691fab91edb482a590da77aed5c8ce4"
+    }
+  },
+  "productionPackages": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "payload": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+  "payloadFileVisits": 473,
+  "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+  "claimEligible": false,
+  "limitations": "Independent retained-data audit by preparation author; not additional independent code council. Callback body/schema equality is not reconstructable from retained hashes. No child Git attestation. Historical dirty source/control evidence stays distinct. Actual code council/CI pending."
+}

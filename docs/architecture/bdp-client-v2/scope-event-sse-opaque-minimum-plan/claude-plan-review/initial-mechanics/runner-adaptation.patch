@@ -1,0 +1,20 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-plan/claude-plan-review/run.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-plan/claude-plan-review/run.py
+@@ -1,7 +1,7 @@
+ from pathlib import Path
+ import subprocess,time,json,hashlib,os,signal,datetime,runpy
+ p=Path(__file__).parent
+-w=Path("/Users/dbox/repos/wt/vickie/vickie-alias-opaque-minimum")
++w=Path("/Users/dbox/repos/wt/vickie/vickie-changefeed-opaque-minimum")
+ b=json.loads((p/"binding.json").read_text());sha=lambda x:hashlib.sha256(x).hexdigest()
+ def guard(): subprocess.run(["/opt/homebrew/opt/python@3.14/bin/python3.14","/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py","/usr/bin/true"],check=True)
+ assert b["rootLaunchReleased"] is True, "Closed: root must release this one review"
+@@ -11,7 +11,7 @@
+ def git(*args):return subprocess.check_output(["git",*args],cwd=w)
+ def merge_snapshot():
+     head=git("rev-parse","HEAD").decode().strip()
+-    assert head=="5ceb213b632e17f28714684efc5e35a62b282bf6", "Candidate changed"
++    assert head=="bbfa5b2cac0e381b497384e3a8e29cd937ea2738", "Candidate changed"
+     assert git("status","--porcelain=v1","--untracked-files=all").decode()==b["expectedGitStatus"]=="", "Frozen clean source changed"
+     assert set(git("ls-files").decode().splitlines())==set(b["files"]), "Tracked scope changed"
+     return {"head":head,"tree":git("rev-parse","HEAD^{tree}").decode().strip(),"parents":git("show","-s","--format=%P","HEAD").decode().split()}

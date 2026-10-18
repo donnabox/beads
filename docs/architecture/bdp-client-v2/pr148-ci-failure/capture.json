@@ -1,0 +1,36 @@
+{
+  "capturedAt": "2026-10-16T21:20:50.667101+00:00",
+  "files": {
+    "run.json": {
+      "sha256": "df709d1948ececbfcef837d716b18d2c24be50c922ae90ef4bd9829bcff241ff",
+      "bytes": 12283,
+      "command": [
+        "gh",
+        "api",
+        "repos/gastownhall/bdp/actions/runs/38966223164"
+      ]
+    },
+    "jobs.json": {
+      "sha256": "5816968a0f2559e09f3b9107810792b40661e9366e0c18146ddc5ac68445e2b5",
+      "bytes": 5784,
+      "command": [
+        "gh",
+        "api",
+        "repos/gastownhall/bdp/actions/runs/38966223164/jobs"
+      ]
+    },
+    "failed.log": {
+      "sha256": "20bc162ad80d07429de4941b6592823a2f331f908c59fd9663dc6de46c1ad04a",
+      "bytes": 1610976,
+      "command": [
+        "gh",
+        "run",
+        "view",
+        "38966223164",
+        "--repo",
+        "gastownhall/bdp",
+        "--log-failed"
+      ]
+    }
+  }
+}

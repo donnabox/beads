@@ -1,0 +1,132 @@
+No files were created or modified; the worktree is still clean at `d325208`. All probes ran from stdin (`node --input-type=module <<EOF`) against `packages/*/dist`, wrote only into `mkdtemp` dirs that were removed, and terminated their own runtimes only.
+
+# Verification reproduced (Node 24.16.0, pnpm 11.20.0)
+
+| Check | Result |
+|---|---|
+13-file matrix (`authority-read`, `read-pagination{,-public}`, `read-sequence-lifecycle`, 9 × `transaction-*`) | **498 passed, 0 skipped** — matches report exactly |
+Full workspace suite (not claimed by the worker) | 124 files, **7992 passed / 1 skipped**; the skip is outside the matrix |
+`typecheck`, `check:boundaries` (11 pkgs), `format:check` (349 files), `git diff --check` | PASS |
+`lint` | 3 warnings + 1 info, all four in files untouched by the commit (`numeric-model.test.ts`, `read-update-transport.test.ts`, `installed-schema-evaluator.ts`, `read-sequence-lifecycle.test.ts`) — matches report |
+`pnpm run smoke`, `smoke-development.mjs` (`claimEligible:false`), `read-cohort-evidence.mjs` (89 rows, no reseal) | PASS |
+Independent invariant probe: 12 concurrent point reads at `pos-1…pos-12` with 6 interleaved real commits | 7 × 200 served at exactly the demanded position, 5 × 503 at the final actual context, **0 success-below-minimum**, no cross-request control bleed |
+
+Spec cross-checks that hold: `token` regex `[A-Za-z0-9_-]{1,256}` matches bdp.md 6563–6584; `catch-up-timeout` carries `type: …/problems/unavailable`, status 503, `retry: after-delay` per the 5280–5296 `unavailable` family suffix and is a *direct* code per 5298–5305; `applyReadHttpSemantics` rewrites only 200-JSON/204, so no 409/410/503 can be converted to 304/412, and context survives on 304/412/406 per 5801–5807; one `metadata` SELECT per owner entry (154:154 with resource reads) proves no second position observation.
+
+---
+
+# Findings
+
+### 1. Receipt retention/expiry is evaluated *before* the minimum-position check, inverting bdp.md 4618–4624 — Medium
+
+**Location** `packages/server/src/transaction-store.ts:1282-1288` (`retainedReceipt` → `readContext` → `observeReceipt` → `checkTransactionMinimum`), reached from `transaction-service.ts:214-232`.
+
+bdp.md 4618–4624 fixes the order as: authentication → principal/epoch nondisclosure → **minimum-position context and consistency wait** → page expiry → representation. The implementation runs nondisclosure → **expiry** → **representation projection** → minimum.
+
+**Impact** A receipt read whose minimum is never satisfied reports `404 resource-not-found` instead of `503 catch-up-timeout` when the receipt's terminal detail expires during the wait. Confirmed over real HTTP: a `failed` receipt at `pos-0`, minimum `pos-5`, retention clock advanced inside the wait seam →
+
+```
+# behind receipt read, receipt expires mid-wait -> 404  pos= -  waits= 2
+{"code":"resource-not-found","status":404,...}
+```
+
+The client's consistency requirement was never met for the whole budget, yet the answer asserts the receipt does not exist — a different disposition, with no `Retry-After` and no context, so the client cannot distinguish "gone" from "we never caught up". This is already encoded as intended by `transaction-service.test.ts` ("rechecks receipt retention and principal nondisclosure on each attempt", asserts `{status: 404}` with `waits === 1`), and `report.md:26` only claims "nondisclosure precedes minimum diagnosis" — the expiry inversion is nowhere disclosed. Secondary (currently unreachable) effect: `observeReceipt` integrity throws would preempt a 409/410/503 with a bodyless 500; unreachable only because this owner's epoch is fixed and `retainedReceipt` already filters foreign epochs.
+
+**Fix** Move the minimum decision ahead of expiry inside the same `atomic` entry: after `retainedReceipt`'s principal/epoch filter establishes disclosure, evaluate `checkTransactionMinimum(condition, context)` before `expireRow` disposal and before `observeReceipt`. Concretely, split `retainedReceipt` into a disclosure lookup and a retention step, or pass the tuple down so the behind-throw happens before `expireRow(stored, instant())`. The existing rollback-on-throw behaviour of `atomic()` already makes this safe (no disposal commits on a behind attempt).
+
+---
+
+### 2. Valid consistency fields turn already-correct `400 invalid-parameter` refusals into bodyless `500` development gaps — Medium
+
+**Location** `packages/server/src/transaction-http.ts:334-342`, specifically the `isReadProblem(parsed)` disjunct on line 338.
+
+`requestFromUrl(url, scope)` on line 335 is a pure parse that has *already decided* the refusal. The gate discards it and returns `developmentGap("minimum-position-route")`.
+
+**Impact** Measured, same server, same credentials, difference is only three valid consistency headers naming the current epoch/view and a **satisfied** position:
+
+```
+beads/a?unknown=1                   no-tuple=400 invalid-parameter  | with-satisfied-tuple=500 minimum-position-route
+beads/a?view=bogus                  no-tuple=400 invalid-parameter  | with-satisfied-tuple=500 minimum-position-route
+beads/a?view=properties&unknown=2   no-tuple=400 invalid-parameter  | with-satisfied-tuple=500 minimum-position-route
+alias/missing                       no-tuple=404 resource-not-found | with-satisfied-tuple=500 minimum-position-route
+```
+
+This is not an unruled-ordering case. Request-syntax validity is normatively determined, already implemented, and independent of any minimum; the handler itself already puts 405 (`methodResponse`), out-of-scope 404, and 401 (line 312) ahead of the barrier, so suppressing only the 400s is internally inconsistent. A client that sends correct consistency fields and one typo'd query parameter is told "internal development gap" instead of "your parameter is invalid".
+
+The plan does say the gate should reject "alias/probe/discovery/collection/malformed routes with supplied controls" (disposition 3), so the gate's *shape* was sanctioned — but gating a pure, already-computed refusal was not the intent of avoiding unsupported *execution*, and the result is a wire-honesty regression.
+
+**Fix** Replace the `isReadProblem(parsed)` disjunct with `if (isReadProblem(parsed)) return problem(parsed);` placed before the route gap, leaving the gap for targets that would otherwise *succeed* or whose ordering really is unruled (collections, probe, discovery, existing aliases). `transaction-http.test.ts`'s unsupported-route loop must drop `beads/a?unknown=1` and assert 400 instead. Leave `beads/?cursor=missing` (410) in the gap — that one is genuinely covered by unresolved question 1.
+
+---
+
+### 3. No `AbortSignal` is plumbed from HTTP, so a disconnect cancels neither point nor receipt waits — and the report/progress doc claim otherwise for points — Low–Medium
+
+**Location** `packages/server/src/transaction-runtime.ts:149` (`new Request(url, { method, headers })` — no `signal`) and `transaction-http.ts:167` (`facet.perform(parsed)` — no options). `transaction-service.ts:207` does forward `receiving?.signal`, but nothing ever supplies one.
+
+**Impact** Measured with a raw socket destroyed mid-wait (budget 1200 ms):
+
+```
+point    {"waitsAtDisconnect":7,"waitsAfterClose":55,"closeMs":1039}
+receipt  {"waitsAtDisconnect":7,"waitsAfterClose":55,"closeMs":1022}
+```
+
+Point and receipt behave identically: the abandoned read keeps re-entering the owner for the rest of the budget and delays `close()` by the full remainder. `report.md:37-39` says "point delivery supports abort. **Receipt** HTTP disconnect does not cancel its finite wait and can delay shutdown up to the remaining budget", and `docs/design/transaction-implementation-progress.md` repeats the asymmetry ("abort signals cancel point-read delivery… HTTP **disconnect** does not cancel a receipt wait"). Both read as though point disconnects *are* cancellable. In a document whose stated purpose is honest limit disclosure, the asymmetric phrasing is the defect; the service-level `AbortSignal` support it refers to is real but unreachable from the transport.
+
+**Fix** Either plumb the signal — construct `new Request(url, { method, headers, signal })` from a controller aborted on `response.on("close")`, and pass `{ signal }` through `readRoute`'s `perform` into `facet.perform(parsed, { signal })` (receipt waits would additionally need the signal threaded into `receiptAtMinimum`) — or correct both documents to state plainly that no HTTP disconnect cancels either wait and that shutdown is bounded by the remaining budget for both.
+
+---
+
+### 4. `genesis`, the spec's reserved distinguished initial checkpoint, is refused as an unsupported tuple — Low
+
+**Location** `packages/server/src/transaction-consistency.ts:14-15` (`position()` accepts only `/^pos-(0|[1-9][0-9]*)$/`), surfacing at `transaction-http.ts:333`.
+
+**Impact** `BDP-Minimum-Scope-Position: genesis` with a correct epoch/view returns a bodyless 500:
+
+```
+minimum=genesis (reserved initial checkpoint)    500  minimum-position
+minimum=pos-0 (trivially satisfied)              200  pos=pos-1
+```
+
+bdp.md 6573–6575 reserves `genesis` as *the* initial Scope checkpoint, so it is trivially satisfied by every position — it is a known normative value, not the "valid opaque token from another implementation" that unresolved question 3 and `report.md:101` declare unqualified. Low severity because the gap response is honest and bodyless, but the declared gap does not actually cover this spelling.
+
+**Fix** Either map `genesis` to `0` in `position()` (one clause), or amend `report.md`/the progress note to name `genesis` explicitly as part of the unsupported-spelling gap rather than letting "unknown opaque positions" imply it is only about foreign tokens.
+
+---
+
+### 5. 5 ms polling re-materializes the representation ~154× per 1 s wait, per waiter, with no concurrency bound — Low (efficiency)
+
+**Location** `transaction-consistency.ts:117` (`await wait(Math.min(5, deadline - current))`) combined with the hook placement at `transaction-read.ts:46-56` (condition evaluated *after* `materialize`).
+
+**Impact** Instrumenting `DatabaseSync.prototype.prepare` across one default-budget point wait:
+
+```
+# default-budget point wait: 503 1005ms
+  154 SELECT value FROM metadata WHERE name=?
+  154 SELECT * FROM resources WHERE id=?
+```
+
+Every poll performs a full owner entry and full materialization (plus incident-link reads for linked beads) solely to compare an integer, and discards it. Receipt polls additionally take `BEGIN IMMEDIATE` and roll back ~154 times. Nothing caps concurrent waiters, and finding 3 means the cost continues after the client is gone. Disposition 9's "no busy-loop polling" is true only in the bounded-sleep sense; there is no commit notification.
+
+**Fix** Lowest-risk improvement is an owner-side position check before materializing, with materialization still inside the same entry once the minimum is satisfied — but note this trades against the visibility gap, which *needs* the `resource-not-found` refusal from `materialize` to classify absent resources. A cleaner option is a commit-sequence waiter on the owner (resolve waiters when `position` advances) so attempts happen on actual progress rather than on a clock. Either way, consider a cap on simultaneous waiting minimum reads before this fixture is ever exposed beyond loopback.
+
+---
+
+# Closure of prior plan requirements
+
+**Approved subset (plan §"Approved smallest complete subset", items 1–5)**
+
+1. Raw target/method/authentication first — **closed.** `methodResponse` (405/404) and the line-312 401 precede all minimum handling; 401 carries `WWW-Authenticate` and no context. *Except* that request-syntax 400s do not survive the route gate (finding 2).
+2. Receipt principal/epoch nondisclosure before history controls — **closed.** `retainedReceipt` filters by principal (SQL) and epoch before anything else; foreign principal + foreign epoch returns 404 with `waits === 0` and no context. The *rest* of 4618–4624's order (minimum before expiry) is **not** closed — finding 1.
+3. Immutable tuple checked against the actual read entry — **closed.** `snapshotTransactionMinimum` rejects getters/proxies/symbols and freezes; `transaction-read.test.ts` shows one `metadata` observation per entry and `inspect()` throwing "reentrant" inside it.
+4. 410 foreign epoch / 409 foreign view / finite wait then 503 with `Retry-After`, satisfiable by a concurrent commit — **closed.** Verified end-to-end; epoch precedes view precedes position; the 12-waiter probe shows real commits satisfying waits and the unsatisfied ones ending at the final actual context.
+5. Representation and serving context from the same successful entry, conditions after — **closed.** 304/412 carry `pos-2` in the HTTP test; `applyReadHttpSemantics` cannot touch 409/410/503.
+
+**Done predicates (plan §"Whole-subset done predicates")** — satisfied/unsatisfied: never success below minimum ✔ (0 violations over 12 concurrent waiters); finite non-restarting budget, no SQLite held across an await ✔ (writes interleave during waits; `atomic`/`enter` release before the sleep, and a callback throw does not fence the owner — `atomic`'s `committing/cleanRollback/sqlite` triage rethrows unchanged); epoch/view precede conditions ✔; receipt 404-before-differences and 401 ✔; GET+HEAD × 200/304/412 with the same context ✔; "failed/expired retained receipt outcomes remain truthful after a wait" ✔ **as written**, but it is this predicate that encodes finding 1; parallel callers cannot share control state ✔ (`sourceCondition` is a `deliver` local; no global); abort and close-while-waiting release within the bound ✔ at the service API, ✘ from HTTP (finding 3); no key/receipt/graph/position change from a supplied tuple ✔ (durable receipt table inspected empty after owner shutdown for both 401 and 403); existing continuation/no-control and retained-page tests pass ✔; build-first + full matrix + typecheck/boundaries/format/lint + both smokes + unchanged evidence ✔ (all reproduced).
+
+**14 external dispositions** — 1 ✔ (final-attempt context on 409/410/503, including after real mid-wait commits); 2 ✔; 3 **partially** — the gate exists and the stable router receives the real `Request`, but it also swallows decided 400s (finding 2); 4 ✔ (`transactionalProblem` compiled from `schemas/bdp-v0.schema.json`, no public parser added); 5 ✔ (visibility gap, no tuple-first adoption); 6 ✔ (`performance.now`, original deadline, bounded 5 ms, separate typed outcome, finite/nondecreasing clock validation); 7 ✔ as implemented but **mis-described** (finding 3); 8 ✔ (HEAD waits identically, body stripped last, `Retry-After` and context retained); 9 ✔ in the bounded-sleep sense — see finding 5; 10 ✔; 11 ✔ (partial/duplicate/malformed → gap, no invented 400) with the `genesis` exception (finding 4); 12 ✔ (`Origin` → 403 at `transaction-runtime.ts:157`, local wait); 13 ✔ (synchronous exclusive owner mutex for points, `atomic` for receipts, no new per-point BEGIN); 14 ✔. Inherited repair ✔ (auth/authz before the private gap, empty receipt table, key reusable afterwards, batch depth marker pinned).
+
+**Unresolved questions 1–4** — all four remain genuinely out of scope and are enforced, not merely narrated: collection/continuation targets with controls hit the route gap (Q1); partial, bare, duplicated and malformed spellings hit the `minimum-position` gap (Q2, Q3 — `genesis` excepted); absent/hidden Resources hit the dedicated `minimum-position-visibility` gap uniformly across `beads|links × resource|properties × GET|HEAD × satisfied|foreign-epoch|future-minimum`, with no context header and no body (Q4).
+
+**Unqualified claims** — `report.md`'s "Deliberately unqualified" section is accurate as written. The claims I could not substantiate are the point-read abort asymmetry (finding 3) and the implicit completeness of the "unknown opaque positions" gap (finding 4); the one undisclosed divergence is the receipt expiry/minimum order (finding 1).
+
+**Repro note:** `node scripts/smoke-executables.mjs` fails with `pnpm did not provide npm_execpath`; it must be invoked as `pnpm run smoke`.

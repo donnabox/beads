@@ -1,0 +1,96 @@
+I have everything I need. Here are my findings.
+
+---
+
+# Review: frozen owned‑Link Transactional projection
+
+**Range** `71549f2` (base) → `01e2d54` (frozen HEAD), checkout `/Users/dbox/repos/wt/vickie/vickie-transaction-owned`, branch `codex/vickie-transaction-owned`. Read‑only; no files written, no builds or tests run.
+
+**New owned logic isolated to `293fab8` + `01e2d54`.** I confirmed by per‑file attribution that the `receiptProblem`/`BatchProblem` code‑and‑status subset in `transaction-batch.ts:453-524` and every `transaction-set.test.ts` change came in via `27bad2b`/merge `d3008c7`, and that the merge resolved only additive progress text — `git diff d3008c7^1 d3008c7 -- transaction-batch.ts` contains nothing but the `27bad2` guard. Treated as the already‑reviewed integrated dependency you specified and excluded from findings. Cardinality‑before‑count ordering at `transaction-batch.ts:792-811` is intact and I did not flag it.
+
+## Verdict
+
+**No correctness defect found in the new owned projection.** The four findings below are one documentation/comment contradiction, two test‑coverage gaps against the accepted plan's own predicates, and one efficiency cleanup. Nothing blocks the slice on correctness grounds.
+
+## What I verified against the normative spec
+
+Spec read at `docs/specs/bdp.md` (Owned Links 409‑504; owned Event shape/order 5437‑5508; receipt results 5140‑5168; group normalization 5695‑5715, 5943‑5957), with `schemas/bdp-v0.schema.json` authoritative for wire shapes.
+
+- **Same‑turn source preimages.** `transaction-batch.ts:599-612` wraps `putResource` and reads `tx.resource(row.id)` before forwarding. The evaluator writes `[after, sourceAfter]` in that order (`resource-evaluator.ts:1047-1072`, `1093`), so the owning source's preimage is captured after the Link write but before its own — distinct row, so the captured revision is this operation's actual prior source revision, not a later state. `previous.has` guards a second write. No recipe, allocator, clock, or `owner.inspect` escape. The structurally unreachable branches (`!oldSource`, missing row, bead/link kind mismatch, `source.revision !== outcome.sourceRevision`) are asserted at `:707-715` as internal invariants, not request errors — as the plan required.
+- **Canonical final state.** `changes` is keyed exclusively by `readStoredResource(...).id` (`:648`) or `before.id` (`:664`); evaluator local paths are used only as `tx.resource()` lookups. `storedRecord` asserts `resourcePath(scope, record.id, kind) === stored.id` (`resource-evaluator.ts:377`), so `before.id === ${scope}${id}` holds by construction, including encoded/nested IDs. Later operations overwrite the Map entry while `results`/`events` stay immutable — confirmed by the chain test asserting the final group entry equals the live record (`transaction-owned.test.ts:324-326`).
+- **Source revisions and owned deltas.** Nested `ownedLink.link` is built field‑by‑field: full postimage for `created`, `{id,type,revision}` for `deleted`, `{id,type,previousRevision,revision,change?,metadataChange?,revisionProvenance?}` for `updated`. This satisfies `ownedLinkDelta`'s `anyOf` change/metadataChange requirement, and `updatedData`'s `oneOf` (ownedLink present ⇒ `change`/`metadataChange` absent) holds by construction. `updateLink`/`updateBead` are addressed by plain string and carry no whole‑value `properties`/`metadata` (`read-update-values.ts:71-92`), and a patchless update is necessarily a `noOp` (`resource-evaluator.ts:862-866`) that returns before Event emission — so the `:721` "lacks committed patch" assert is genuinely unreachable, and the nested delta always carries the same committed patch as the Link's own `updated` fact. The test asserts that identity literally (`:222`).
+- **Event order, self‑Link, nested ownership.** Lifecycle → source incidence → target incidence → source `updated` last; 4 facts for in‑scope creation/deletion including self‑Link (both endpoint facts, `:274`), 2 for update. Ordinals contiguous and `source === ${scope}events/` asserted across all groups (`:259-262`). Ownership does not cascade: a source's inline `ownedLinks` embeds Link records whose endpoints are references, so a grandparent owner is correctly not re‑versioned.
+- **Hidden visibility.** `isResourceVisible(tx, record, scope, policy)` is applied at `:788`, before Selector, cardinality, and matched counting — the accepted root8d/current637 predicate is preserved, not replaced. Transitive + cyclic closure with a hidden target yields `count: 0` and no effects (`:559-593`); readable‑but‑nonwritable selected members fail after selection rather than being filtered (`:528-542`); no hidden IDs in diagnostics.
+- **Guard/limit rollback.** Store rolls back to `SAVEPOINT effects` on `!result.ok` (`transaction-store.ts:1005`, `1044-1045`); `effective = events.length > 0` gates group insert and `effectPosition`, so all‑noop batches produce neither (`:1069-1081`, test `:339-340`). Stale Link guard, stale Bead guard after a Link‑induced source version, and incident‑deletion safety all roll back both Resources and groups; a source change alone does not fail a current Link guard (`:405-417`).
+- **Set behavior.** Frozen member set selected once, sorted by `compareCanonicalIds`, matched entry precedes member results, `count` = selected Links only (no induced sources charged), per‑member source chain asserted consecutive (`:443-444`).
+- **Replay / restart / crash.** Same‑key replay returns the identical completed and identical failed receipts across reopen; real SIGKILL at `after-effects` and `after-terminal` leaves resources, groups *and* identities untouched, and re‑admission completes the original caller‑assigned Link identity (`:595-622`).
+- **4096 Event boundary.** Arithmetic checks out and the boundary is exact, not approximated: 1 024 self‑Link deletions × 4 facts = 4 096 events / 2 048 changes pass; 1 025 trips `scopeEvent`'s `events.length >= eventMaximum` on the 4 097th fact, yielding transaction‑wide `413 limit-exceeded` / `transaction.inducedEvents` with no `operationIndex` and no partial graph, replayed after reopen (`:718-753`).
+- **No preimage body serialized.** `previous` never leaves `applyResource`; only `.revision` is read from it. Events carry revisions and postimages/identities only; tombstones carry `{resourceKind, resource:{id,type,revision}}` — the spread of `outcome.deleted` adds nothing, verified against both the evaluator's construction (`resource-evaluator.ts:1074-1084`) and `toContainEqual` at `:253-257`.
+- **No unsupported profile advertised.** The diff touches no discovery, profile, or conformance surface. Smoke logs show `claimEligible: false` and "public profile admission fails closed before bind"; the normative descriptor rule the schema cannot express (explicit `max` ≤ wildcard `max`) *is* enforced by `parseTypeDescriptor` (`read-values.ts:84-87`), which `openTransactionStore` calls on every descriptor — so removing the owning refusal did not open an unvalidated install path. The compiled path additionally requires the full owned Link Type closure (`installed-contract-artifact.ts:278-281`).
+- **Evidence.** `transaction-owned-regressions.json`: 753/753 passed, 0 failed, 18 files, `success: true`; the owned file contributes exactly 15 tests, the boundary test at 2 152 ms (report's "2.14 s"). Build/typecheck/boundaries/format‑check/lint/both smokes/89‑row evidence verifier all clean; the one new lint error appears only in the superseded `transaction-owned-lint-expanded.log:563` and is absent from the final `transaction-owned-lint.log`, matching the report's disclosure. Pinned Node 24.16.0 / pnpm 11.20.0 confirmed in the logs.
+
+---
+
+## Findings
+
+### 1. Stale "unowned" claims contradict shipped behavior — Low (documentation/comment accuracy)
+
+**Location** `packages/server/src/transaction-service.ts:10`; `docs/design/transaction-implementation-progress.md:754`, `:791-793`, `:802`
+
+The plan required dropping stale "and unowned" wording. That was done for the store's guard string (`transaction-store.ts:191`) but three in‑scope occurrences survive, all phrased in the present tense:
+
+- `transaction-service.ts:10` — "Only the existing fixed all-visible, schema-free/unowned configuration applies." The service is composed by `transaction-runtime.ts:276-289` directly over the store, and the new owned HTTP test (`transaction-owned.test.ts:624`) drives `startTransactionRuntime` with a compiled **owning** bundle through this exact path. (The "schema-free" half was already stale from the compiled‑contract slice; "/unowned" is made stale by this one.)
+- progress doc `:793` — "Owned-Link transitions remain unsupported," directly contradicting the new §"Atomic owned-Link projection" in the same document. `01e2d54` reflowed that very paragraph (formatter rewrap) without correcting the sentence.
+- progress doc `:791-793` — "Deletion mints no version for either supported collection (Beads and unowned Links), so supplied provenance is inert in both." Now wrong for owned Links: `deleteLink` carries `MintInput` (`read-update-values.ts:92`), `deleteWhere` forwards it (`transaction-batch.ts:829-831`), and `noOp` is false when `deleting` — so `needsContext` is true for an `agent`/`message` input and the owning source's new version records that native attribution.
+- progress doc `:754`, `:802` — "The supported installation remains all-visible, schema-free and unowned", "owned-source fanout … remain outside this slice."
+
+**Impact** The progress document is the handoff/review record for this slice. A later integrator reading §"Bounded set-core review repairs" concludes owned transitions are refused and deletion provenance is inert — the opposite of what ships. Note the direction is *under*-claiming, so there is no profile over‑advertisement risk here.
+
+**Fix** Update `transaction-service.ts:10` to drop "schema-free/unowned". In the progress doc, either mark the superseded sentences as historical or correct them: delete `:793`'s sentence, qualify `:791-793` to "unowned Links" only, and qualify `:754`/`:802`'s "unowned" to the slice in which it was true.
+
+### 2. Owned transitions never exercise native (`agent`/`message`) attribution — Low (test coverage)
+
+**Location** `packages/server/src/transaction-owned.test.ts` (whole file); projection at `transaction-batch.ts:730`, `:739`
+
+`grep` over the owned test file returns zero occurrences of `agent`, `message`, or `committedAt`. The store sets `recordChangeContext: false` (`transaction-store.ts:1023`), and every owned provenance assertion uses actor‑only input (`provenance = { actor: {...} }`, `:148`). Because `needsContext` requires `agent` or `message` (`resource-evaluator.ts:869-873`), the owned path never reaches `makeContext`/`observeCommitTime`, and no test observes a `committedAt`‑bearing provenance on either the nested delta or the Event level. This is also precisely the case the doc in finding 1 declares inert for deletion.
+
+**Impact** The batch is the new code and is what copies `subject.revisionProvenance` into the nested delta and `source.revisionProvenance` into the Event. Spec 5437‑5508 requires these be the same value ("An operation that mints both a Link version and a source version records its one attribution on both"). A regression that dropped, swapped, or stale‑copied native attribution on owned creation/update/deletion would pass the entire 15‑test owned suite. Mitigated — not eliminated — by evaluator and `development-contracts.test.ts` ("revision/provenance fanout") coverage at the layer below, which does not assert the Transactional Event projection.
+
+**Fix** Add `revisionProvenance: { agent: "a", message: "m" }` to one owned create, one update, and one delete (plus the `deleteWhere` member path), and assert the Event‑level `revisionProvenance` deep‑equals the nested delta's for create/update, equals the source record's for delete, and carries a `committedAt` in the `present` state.
+
+### 3. Three redundant full `readStoredResource` parses per owned operation — Low (efficiency / simplification)
+
+**Location** `packages/server/src/transaction-batch.ts:598`, `:606-610`, `:644-652`, `:704-706`
+
+Within one owned operation the same rows are parsed and schema‑validated repeatedly:
+
+- `:606-610` parses the preimage of **every** write, including the direct subject — which `:598` already parsed into `before` — while only the owning source's `.revision` is ever read.
+- `:704-706` re‑parses the source **postimage** that the `changed` loop already parsed at `:647` and stored in `changes` under the identical key `outcome.source`.
+
+An owner's body inlines its entire owned set, so each owner parse is O(owned‑set size). Net: ~3 owner‑sized parses where 1 suffices, on the hot owned path.
+
+**Impact** Constant‑factor cost on every owned mutation, scaling with the owner's owned‑set size. This is adjacent to the report's own disclosed INCONCLUSIVE 80 s+ run at 32 self‑Links per owner — the fixture was reduced to one Link per source specifically to avoid that cost. I am **not** claiming this is that slowdown (the report correctly notes graph shape and helper work changed together, so it isn't isolated); it is the cheap, obviously‑safe reduction in the same region.
+
+**Fix** Two independent one‑liners: store the raw `EvaluatorStoredResource` in `previous` and parse once at the point of use in the owned block; and replace `:705-706` with `changes.get(outcome.source)?.resource`, which the `changed` loop is guaranteed to have just set with the canonical postimage. The `:707-715` invariants run unchanged against either.
+
+### 4. Set‑path gaps against the accepted plan's predicate 7 — Low (test coverage)
+
+**Location** `packages/server/src/transaction-owned.test.ts:424-461`, `:503-513`, `:528-540`, `:582-589`, `:734-736`
+
+Every `updateWhere`/`deleteWhere` in the owned suite is the **sole** operation of its transaction. Three specifics of predicate 7 are therefore unreached:
+
+- *"Later set or explicit operation sees final staged owned state"* — no test places two set operations, or a set followed by an explicit owned operation, in one transaction. (The explicit‑only interleave at `:289-327` does cover staged visibility for explicit operations.)
+- *"No-op members have no source fact"* — `:426-431` selects `n == 0` and writes `1`, so both members are effectful; `:450` and `:735` are deletions. No set mixes no‑op and effectful owned members. The explicit mixed case at `:346-347` is covered.
+- *"retains per-member sourceRevision"* — `:438` maps results to `count ?? resource?.id` only; unlike the explicit chain assertion at `:312-316`, no set test asserts that each member's `sourceRevision` equals its own source Event's `revision`.
+
+**Impact** A defect in staged‑state visibility across set operations (stale candidate snapshot, or a selector re‑scanning after an earlier member re‑versioned the shared source), a spurious source fact on a no‑op set member, or a receipt reporting the final source revision on every member, would all pass. Low likelihood given the batch derives each from evaluator output per member, but these are the plan's named predicates and the report implies them under "Staged canonical set updates/deletes of owned Links, per-member sourceRevision."
+
+**Fix** One added transaction covering all three: `updateWhere` over owned Links whose `change` is a no‑op for one selected member and effectful for another, followed in the same batch by a second set operation and an explicit owned update; assert the no‑op member yields an `updated` entry with unchanged `sourceRevision` and no source fact, that the later operations observe the staged state, and that each member's `sourceRevision` matches its own source Event.
+
+---
+
+## Explicitly not counted as defects
+
+Per your framing, these are later Event‑serving / snapshot / materialization work, correctly scoped out and correctly disclosed in both the report and the new progress section: aggregate receipt/group byte materialization (the group in the boundary test carries 2 048 full postimages); `mutatedResources` accounting, which is not implemented and is not substituted by any byte condition; Snapshot/changefeed serving and the replica inline/first‑class agreement check; mutable grants, retained‑view withholding and erasure; HTTP set admission; schema hosting; incomplete minimum controls.
+
+Two further non‑findings I ruled out rather than assumed: on the schema‑free install path there is no `checkDependencies` equivalent, so an owning descriptor may name an uninstalled Link Type and persist a permanently‑empty explicit bucket — but the plan deliberately specifies not diagnosing an incomplete fixture as a batch failure, and spec 409‑504 requires explicit empty buckets to persist, so this is intended. And the group's `changes` entries now derive from re‑parsed stored bytes rather than the evaluator's in‑memory postimage (receipt `results` still use the latter); since `properties`/`metadata` are open objects in the bundle and every record member is evaluator‑produced, the re‑parse cannot fail, and the change moves the group toward agreement with what Read actually serves.

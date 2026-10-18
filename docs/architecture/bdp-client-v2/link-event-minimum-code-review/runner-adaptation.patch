@@ -1,0 +1,34 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-code-review/run.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/link-event-minimum-code-review/run.py
+@@ -1,16 +1,17 @@
+ from pathlib import Path
+ import subprocess,time,json,hashlib,os,signal,datetime,runpy
+ p=Path(__file__).parent
+-w=Path("/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum")
++w=Path("/Users/dbox/repos/wt/vickie/vickie-link-event-minimum")
+ b=json.loads((p/"binding.json").read_text());sha=lambda x:hashlib.sha256(x).hexdigest()
+-def guard(): subprocess.run(["python3","/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py","/usr/bin/true"],check=True)
++def guard(): subprocess.run(["/opt/homebrew/opt/python@3.14/bin/python3.14","/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py","/usr/bin/true"],check=True)
+ assert b["rootLaunchReleased"] is True, "Closed: root must release this one review"
+ outputs=["source-before.json","source-after.json","process.json","stream.jsonl","progress.jsonl","stderr.txt","exit.json","final-review.txt","terminal-results.json"]
+ assert not any((p/name).exists() for name in outputs), "Preserve prior attempt; no retry"
+-def snap():return {"files":{f:sha((w/f).read_bytes()) for f in b["files"]},"context":{f:sha(Path(f).read_bytes()) for f in b["context"]},"artifacts":{f:sha(Path(f).read_bytes()) for f in b["artifacts"]},"head":subprocess.check_output(["git","rev-parse","HEAD"],cwd=w,text=True).strip(),"promptSha256":sha((p/"prompt.txt").read_bytes()),"runnerSha256":sha((p/"run.py").read_bytes())}
++def snap():return {"files":{f:sha((w/f).read_bytes()) for f in b["files"]},"context":{f:sha(Path(f).read_bytes()) for f in b["context"]},"artifacts":{f:sha(Path(f).read_bytes()) for f in b["artifacts"]},"head":subprocess.check_output(["git","rev-parse","HEAD"],cwd=w,text=True).strip(),"promptSha256":sha((p/"prompt.txt").read_bytes()),"runnerSha256":sha((p/"run.py").read_bytes()),"status":subprocess.check_output(["git","status","--porcelain=v1","--untracked-files=all"],cwd=w,text=True),"bindingSha256":sha((p/"binding.json").read_bytes())}
+ before=snap()
+ for key in ["files","context","artifacts","head","promptSha256","runnerSha256"]: assert before[key]==b[key], key
+ assert set(subprocess.check_output(["git","diff","--name-only","HEAD"],cwd=w,text=True).splitlines())==set(b["files"])
++assert before["status"]==b["expectedGitStatus"], "Exact frozen six-file dirty scope required"
+ parser=runpy.run_path(str(p/"parse-stream.py"))
+ args=json.loads((p/"arguments.json").read_text())
+ guard();os.umask(0o077);(p/"source-before.json").write_text(json.dumps(before,indent=2))
+@@ -84,8 +85,8 @@
+             except ProcessLookupError:pass
+ remaining=[r for r in processes() if (c is not None and r[2]==str(c.pid)) or int(r[0]) in sampled]
+ after=snap()
+-source_unchanged=before["files"]==after["files"] and before["context"]==after["context"] and before["head"]==after["head"]
+-packet_unchanged=before["artifacts"]==after["artifacts"] and before["promptSha256"]==after["promptSha256"] and before["runnerSha256"]==after["runnerSha256"]
++source_unchanged=before["files"]==after["files"] and before["context"]==after["context"] and before["head"]==after["head"] and before["status"]==after["status"]==b["expectedGitStatus"]
++packet_unchanged=before["artifacts"]==after["artifacts"] and before["promptSha256"]==after["promptSha256"] and before["runnerSha256"]==after["runnerSha256"] and before["bindingSha256"]==after["bindingSha256"]
+ classification=parser["classify"](results,exit_code=c.returncode if c else None,timed_out=timed,parse_errors=parse_errors,source_unchanged=source_unchanged,packet_unchanged=packet_unchanged,remaining=remaining,cleanup_required=cleanup_required,wrapper_error=wrapper_error)
+ result={"classification":classification,"reviewComplete":classification=="review_complete","approvalInferred":False,"exitCode":c.returncode if c else None,"timeout":timed,"elapsedSeconds":time.monotonic()-start,"sourceInputsUnchanged":source_unchanged,"packetUnchanged":packet_unchanged,"sampledPids":sorted(sampled),"remainingProcesses":remaining,"cleanupRequired":cleanup_required,"wrapperErrorType":wrapper_error,"streamRecords":records,"streamBytes":bytes_seen,"parseErrors":parse_errors,"terminalResultCount":len(results),"lastEventElapsed":last_event,"streamSha256":sha((p/"stream.jsonl").read_bytes()),"stderrSha256":sha((p/"stderr.txt").read_bytes())}
+ guard();(p/"source-after.json").write_text(json.dumps(after,indent=2));(p/"terminal-results.json").write_text(json.dumps(results,indent=2));(p/"exit.json").write_text(json.dumps(result,indent=2))

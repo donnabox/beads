@@ -1,0 +1,22 @@
+--- reviewed-draft/packages/server/src/transaction-submission.test.ts
++++ typing-repair/packages/server/src/transaction-submission.test.ts
+@@ -1129,7 +1129,8 @@
+         // The real owner is frozen; delegates preserve its closure-backed faults.
+         const owner = {
+           ...f.store,
+-          admit: admit as typeof f.store.admit,
++          admit: ((...args: Parameters<typeof f.store.admit>) =>
++            admit(...args)) as typeof f.store.admit,
+           admitObserved,
+           observeComparisonDeadline: observe,
+         };
+@@ -1178,7 +1179,8 @@
+         wait = vi.fn(async () => {});
+       const owner = {
+         ...f.store,
+-        admit: admit as typeof f.store.admit,
++        admit: ((...args: Parameters<typeof f.store.admit>) =>
++          admit(...args)) as typeof f.store.admit,
+         admitObserved,
+         observeComparisonDeadline: observe,
+       };

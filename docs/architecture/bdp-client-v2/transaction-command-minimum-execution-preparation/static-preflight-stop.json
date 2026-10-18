@@ -1,0 +1,28 @@
+{
+  "time": "2026-10-14T21:55:43.506354+00:00",
+  "sourceDiffSha256": "8f0123c9484a74a5c4995dea84833561056f603c8da64d5f9139107b85d44df8",
+  "completed": {
+    "offline-setup": {
+      "exit": 0,
+      "seconds": 0.7547725001350045
+    },
+    "typecheck": {
+      "exit": 0,
+      "seconds": 1.7349980419967324
+    },
+    "build": {
+      "exit": 0,
+      "seconds": 1.169645291985944
+    },
+    "format-check": {
+      "exit": 1,
+      "seconds": 1.777502833167091
+    }
+  },
+  "failure": "Biome format check found layout differences in three changed test files; no source mutation",
+  "baselineWarning": "Existing3.5MiB Read+Update matrix exceeds formatter1MiB maximum; retained, no cap change",
+  "noRuntimeTestExecuted": true,
+  "noOwnedProcessOrRuntimeRootRemaining": true,
+  "retainedTempClassification": "Node compile caches only, preserved",
+  "next": "Prepare exact formatting-only three-file patch outside frozen reviewer checkout; semantic AST equality, then root successor release after current Claude finishes. No unchanged retry or service test yet."
+}

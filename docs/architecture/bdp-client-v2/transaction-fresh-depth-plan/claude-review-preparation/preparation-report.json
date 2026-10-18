@@ -1,0 +1,23 @@
+{
+  "status": "CLOSED; no root-release.json and no launch",
+  "promptBytes": 7607,
+  "promptSha256": "132fdef18846ed575ff978f00e80c890ee24b0169703163f80ca0edd945aed00",
+  "runnerSha256": "2cfe8c883d678e8663463a28c0ef8cee2768e09cb09592183eb0821b41cc230a",
+  "bindingSha256": "cbbe3ccd7a4eec8a557c41d344eebb61a1663f6be94b69a9187040b16fce8152",
+  "sourcePins": 40,
+  "sourceExcerptBytes": 56348,
+  "bodyBytes": 145884,
+  "runnerSource": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/claude-split-code/production/run.py",
+  "runnerSourceSha256": "60fc40979517ba1b8696723bf20febfb4247e6740e0d070998b7fa7b056b81eb",
+  "runnerChanges": "Output directory, exact add-dir target, review kind only; original source/git/patch/gate checks and895TERM/900lifecycle preserved.",
+  "proposedInvocation": [
+    "python3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "python3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-plan/claude-review-preparation/run.py"
+  ],
+  "cleanup": "Exclusive stdout/stderr/process/exit/source-before/source-after/head/cleanup evidence; process-group samples,895TERM/900KILL, retained TMPDIR. No actual process exists for this packet.",
+  "correction": "New Snapshot raw fixture bypasses existing native JSON.stringify helper; count-neutral, no product change.",
+  "capacityQualification": "Fixture-derived deep-copy counting + conservative shallow envelope reserve, not observed response sizes/runtime capacity changes.",
+  "rootAction": "Read packet, accept clarifications, then write released binding/root-release with exact prompt/runner/binding/head/tree; no launch inferred."
+}

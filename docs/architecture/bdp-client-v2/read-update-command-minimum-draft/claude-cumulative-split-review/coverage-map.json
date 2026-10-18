@@ -1,0 +1,132 @@
+{
+  "reviewHead": "b89554c6004edf99d3278518bee1b150dce3fa98",
+  "reviewParent": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+  "scopePartition": {
+    "literals": "L / LITERALS AND PORTABLE VALIDATION: review the complete eleven-action JSON row, complete old/new coverage mapping, accepted command-ignore scope and exact assertion feasibility/cause discrimination. All actual status/media/json-pointer/schema evaluation branches used by these47 assertions are supplied. Check body/key/revision/auth/header fidelity, meaningful negative outcomes and legitimate whole-obligation versus partial-profile credit. The harness validates original response/schema/full singleton and sequence Resource/replay/point state before projecting ONLY second response outcome created\u2192updated, then joins genuine runner IDs and verifies7pass/1fail. Full new harness code is separately reviewed, not copied here. Fanout reviewer owns corpus preservation, counts/fences/derivatives/catalog-order and static source changes.\n",
+    "fanout": "F / CUMULATIVE FANOUT AND PRESERVATION: review every remaining app static/count/fence/pin hunk plus the complete three conformance TS diffs, complete new row/old-new coverage and independent local request ledger/static callback. Check raw old-object/full-parent preservation, exact current versus historical hashes, catalog order, coverage inheritance, source-size versus runtime caps and workload selection/counts. Literal/schema evaluator correctness is assigned to L; runtime original-response/control/lifecycle correctness is assigned to the completed harness scope. No new public qualification is claimed; only this specific command-ignore obligation becomes whole-bound.\n"
+  },
+  "sections": [
+    {
+      "name": "remaining-diffs",
+      "sha256": "b84e79b5007f66c2454e471701491e11c4779055c3960d35283e5bf46396a769",
+      "owners": [
+        "fanout"
+      ]
+    },
+    {
+      "name": "complete-data-edits",
+      "sha256": "320e5cfd2737f4e1699c26c4fa441ddbcb3db33c5c3cf285c116e89d098e861b",
+      "owners": [
+        "literals",
+        "fanout"
+      ]
+    },
+    {
+      "name": "runner-projection-dispatch",
+      "sha256": "723b8f14ab0e9cfc6195ae115b28fc6a0fb7568b3c5593c31dc170764a8c2cd1",
+      "owners": [
+        "literals"
+      ]
+    },
+    {
+      "name": "normative-rule",
+      "sha256": "ce0c13d55c0c6c21710222811c581b0d5a67e2814dfdf63bd9afe2e0c112e085",
+      "owners": [
+        "literals",
+        "fanout"
+      ]
+    },
+    {
+      "name": "complete-schema-objects",
+      "sha256": "f9651b464b00f8ff322361d2efd576a121971625d5a041ad811e6c3cc02346de",
+      "owners": [
+        "literals"
+      ]
+    },
+    {
+      "name": "shared-static-callback",
+      "sha256": "bed45721cd4be639f2b56b1b4958e83ebca80addf205364485e2e5099a459f53",
+      "owners": [
+        "fanout"
+      ]
+    },
+    {
+      "name": "measurements",
+      "sha256": "d730290e6f17acf700cf6e83527084a9c00ac00a5a4c9927444f51a78f4a759c",
+      "owners": [
+        "fanout"
+      ]
+    }
+  ],
+  "additionalExactExcerpts": [
+    {
+      "owner": "literals",
+      "path": "packages/conformance/src/runner.ts",
+      "first": 2014,
+      "last": 2043,
+      "sha256": "98a926fd9229aa8cbf7af498b86305bf72e835ed10f36e4d030a5289125d96bd",
+      "sourceSha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1"
+    },
+    {
+      "owner": "literals",
+      "path": "packages/conformance/src/runner.ts",
+      "first": 2163,
+      "last": 2171,
+      "sha256": "e894dfd64ccfa8d9c760dda5ebece336587afd641b8c86b8853fbd150be8a731",
+      "sourceSha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1"
+    },
+    {
+      "owner": "literals",
+      "path": "packages/conformance/src/runner.ts",
+      "first": 2231,
+      "last": 2292,
+      "sha256": "34f6a48d4fe28e00294a07173d84d12ddfeae35aad1bde9251b693b96a8ccc74",
+      "sourceSha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1"
+    },
+    {
+      "owner": "literals",
+      "path": "packages/conformance/src/runner.ts",
+      "first": 2390,
+      "last": 2403,
+      "sha256": "0953d27bdfa504150a86c236438e8a9f9878e12fd0f20efd5f03d3338bb923a5",
+      "sourceSha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1"
+    },
+    {
+      "owner": "literals",
+      "path": "packages/conformance/src/runner.ts",
+      "first": 637,
+      "last": 695,
+      "sha256": "5eafaf2817e620c64f94f57e826c2c4420e97f9345e7272f4f900a93609c2428",
+      "sourceSha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1"
+    },
+    {
+      "owner": "fanout",
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "first": 718,
+      "last": 995,
+      "sha256": "53ee845fa68ca44c4f63b6db0a864777564c98b38029ed7916d14bc8031950a7",
+      "sourceSha256": "1bf2661fa7bee90aa43622741d9e71d9770b2982d0a8804fa55ac1afb59e4d5d"
+    }
+  ],
+  "unchangedCatalogRow": {
+    "path": "packages/conformance/catalog/read-update-v1.json",
+    "sourceSha256": "73d215813df034a2be0cd15d0caff7cf2c8823a067f271b9140c9cbb90e859c3",
+    "compactRowSha256": "8667de4ce35fe9cf6c42b35e916f24781f2c52264d6fc361ed15a5617ca45583"
+  },
+  "parentCoverageMap": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/claude-split-review/coverage-map.json",
+  "parentCoverageMapSha256": "e7feb160d6ecb9ea5e965223925a36ae48ea54f985c9d0a6cce4317dd2a4d155",
+  "completePriorCumulativeCoverage": true,
+  "identityPins": {
+    "manifest": {
+      "parentSha256": "80f74625b6074892b707365859572f8bc0b8c10478d36ac307370ef6027f5fc3",
+      "currentSha256": "10a7c6f97a280cf88e58d3aa2039fe580904b74bfffcebda4747fc3c1a34b583"
+    },
+    "coverage": {
+      "parentSha256": "85b717f1817d8ea295d0a7c51f8914bdfb942d1786d414924d3d5f80be7cd10a",
+      "currentSha256": "4120abfe2f724fe34b3868bd3533b181e18479768d5de752b5098c6288dbb395"
+    },
+    "newRowCompactSha256": "61d74c4cae007646ea04d928503e57933fa6bae7496758cb50d3e4b7907058c6",
+    "newCoverageCompactSha256": "63fc576c428b8d9ad0441a8e1840c5774188aa7f1080b691acc48b300def19e8"
+  },
+  "noBindingHashCycle": true
+}

@@ -1,0 +1,10 @@
+--- a/validation-source-recovery/review-installed.py
++++ b/validation-source-recovery/review-installed.py
+@@ -23,6 +23,7 @@
+ require(len(o['completedResponses'])==oracle['http'],'Missing responses')
+ for actual,expected in zip(o['completedResponses'],rows,strict=True):
+  for a,b in [('ordinal','index'),('label','label'),('method','method'),('accept','accept'),('key','key'),('status','status'),('requestBodyBytes','bodyBytes'),('requestBodySha256','bodySha256')]:require(actual[a]==expected[b],'Ordered request/response differs '+a)
++ if name=='fresh-installed':require(actual.get('requestBodyPresent') is (expected['bodyRef'] is not None),'Wrong actual request body presence')
+  if expected['url'] is not None:require(actual['url']==expected['url'],'Wrong actual target')
+  else:
+   require(name=='fresh-installed' and actual['ordinal']==13 and re.fullmatch(r'https://reference\.invalid/acme/receipts/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}',actual['url']),'Actual receipt target absent/invalid')

@@ -1,0 +1,113 @@
+## Findings
+
+Reviewed `b14fb28` against `b64d7e4` (9 files, +196/−25). Read both context documents, then the exact diff and every touched production path plus the pump, service registration, disconnect bridge, `deliver`, capture/digest, and the existing short-seam and shutdown tests. Static evidence I ran: `node scripts/check-dependency-boundaries.mjs` → *"Dependency boundaries valid for 11 workspace packages"*, exit 0; `npx tsc -p tsconfig.check.json --noEmit` → exit 0 at the reviewed commit. No files written.
+
+---
+
+### 1. Medium — teardown can retain an ordinary cancellation as the "first genuine fault", so `close()` rejects on a clean shutdown
+
+**Source:** F2 repair. `packages/server/src/transaction-runtime.ts:196-197` (capture predicate), `:339` (close aggregation); `packages/server/src/transaction-sse.ts:48-50` and `:73-74` (the two non-abort `"stream transport closed"` throws).
+
+The capture predicate is `response.headersSent && !streamSignal.aborted && !firstStreamFault`. `streamSignal` is linked to the disconnect signal only through `supplied.addEventListener("abort", …)` in `transaction-service.ts:208-210`, and that abort originates from `response.once("close")` in `node-http-disconnect.ts:18-20`. Node sets `response.destroyed` **synchronously** on `socket.destroy()` but emits `'close'` on `nextTick`. So there is a window in which `sink.destroyed === true` and `streamSignal.aborted === false`. Both `write()` entry points fail non-abort in that window: `transaction-sse.ts:49` (`throw new Error("stream transport closed")`) and `:73` (`else if (sink.destroyed) closed()`).
+
+The backpressured-drain path is safe — `createNodeHttpDisconnectSignal` registers its `response` `'close'` listener before `write()` registers its own, so `aborted` rejects first and `closed()` lands on an already-settled promise. The unguarded path is the `pumpTransactionChanges` loop re-entering `write()` from a queued microtask.
+
+**Failure scenario:** `runtime.close()` is called with a live stream. `closeListener()` runs `server.closeAllConnections()` synchronously inside the async IIFE prologue (`transaction-runtime.ts:260-264`), i.e. inside a microtask drain; `emitCloseNT` queues on `nextTick`. If the pump has an already-resolved continuation in that same microtask drain (reachable whenever groups are flowing, since `node:sqlite` reads resolve without a macrotask), it re-enters `write()`, sees `destroyed`, throws `Error("stream transport closed")` with `streamSignal.aborted` still false → captured as `firstStreamFault` → unshifted at `:339` → `close()` rejects with `AggregateError("transaction runtime shutdown failed")`. `transaction-sse.test.ts:249-254` exercises exactly this (`const again = f.stream("changes/?start=now")` left open across `await f.runtime.close()`), with no `shutdownFailure` callback, so it becomes intermittently red; in the installed launcher the same window turns a normal shutdown into a reported shutdown failure. Root's disposition 2 explicitly requires that "ordinary pre-abort, client disconnect and service cancellation must remain clean".
+
+Note the native 321-test pass does not disconfirm this: the pump's duty cycle is ~99% inside `delay(pollMilliseconds)`, so the window is narrow, and every `f.stream()` recorder is closed *before* `runtime.close()` in `afterEach`'s reversed cleanup — except at `:254`.
+
+**Minimal remedy:** one added conjunct at `:196`:
+
+```ts
+if (response.headersSent && !streamSignal.aborted && !response.destroyed && !firstStreamFault)
+```
+
+`finally { response.destroy() }` at `:199-200` runs *after* the catch, so at capture time `response.destroyed` is true only if the transport already went away — genuine store/owner faults (`next()` throwing) leave it false and remain captured. This is the same already-accepted narrowing tradeoff as `!streamSignal.aborted`. No wire, protocol, or test-expectation change; the F2 test at `:527-547` still passes because the injected `prepare` throw leaves the response alive.
+
+---
+
+### 2. Low — the accepted heartbeat/idle validation is wired to module constants, so it cannot fail for any caller input; effective pump timers are validated only after headers
+
+**Source:** F1 repair. `packages/server/src/transaction-runtime-configuration.ts:296-302`; `packages/server/src/transaction-sse.ts:88`.
+
+```ts
+validateTransactionStreamTimers(
+  TRANSACTION_RUNTIME_DEFAULTS.changefeedStream,
+  TRANSACTION_RUNTIME_DEFAULTS.transport.timeout,
+);
+```
+
+Both arguments are frozen module constants with zero dependence on `input` or `rawSeams`. The one line that does read effective configuration — `liveStreamsAvailable = settings.changefeedStream.heartbeatMilliseconds < settings.transport.timeout` (`:303-304`) — degrades to a capability refusal rather than validating. Net: the rule root accepted ("heartbeat strictly below socket idle timeout") is enforced as a constant assertion plus a refusal, never as validation of the effective settings object. Separately, `settings.changefeedStream` is not seam-overridable today (`:287-293` overrides only `transport`, `receiptMaximumItems`, `maintenanceIntervalMs`), and the pump's own `validateTransactionStreamTimers(settings)` at `transaction-sse.ts:88` runs **after** `writeHead`/`flushHeaders` at `transaction-runtime.ts:180-181`.
+
+**Failure scenario:** conditional, not reachable at this commit. Add a `changefeedStream` seam (the natural next step for G2b stream tuning) with `pollMilliseconds: 0`: capture accepts it (the validator saw constants), `liveStreamsAvailable` stays true (it inspects only heartbeat), the client receives `200` + `text/event-stream` headers, the pump then throws `"invalid transaction stream timer"` post-header, which finding 1's predicate retains as a genuine fault and `close()` rejects — a misconfiguration surfaces as a successful stream that dies plus a shutdown AggregateError, instead of a startup `TypeError`.
+
+**Minimal remedy:** pass the effective object — `validateTransactionStreamTimers(settings.changefeedStream, settings.transport.timeout)` — and gate the refusal on the result rather than re-deriving the comparison. Identical behavior and identical test expectations today (`settings.changefeedStream` *is* `TRANSACTION_SSE_DEFAULTS`), and the invariant then holds under any future seam. The existing `:294-295` `headersTimeout`/`requestTimeout` check is already written against `settings`, so this also makes the two cross-timer checks consistent.
+
+---
+
+### 3. Low — the new raw-byte oracle couples SSE frame index to finite page index without pinning one group per page
+
+**Source:** F5 repair. `packages/server/src/transaction-sse.test.ts:177-178`.
+
+```ts
+for (const [index, rawFinite] of [firstBytes, secondBytes].entries())
+  expect(rawFinite).toContain(groups(stream)[index]!.split("\ndata: ")[1]!);
+```
+
+`groups(stream)[0]` is asserted against `firstBytes` and `groups(stream)[1]` against `secondBytes`, which is only correct while each page carries exactly one group. Nothing in the test pins that; the preceding `stream.until(() => groups(stream).length === 2)` constrains only the total.
+
+**Failure scenario:** a page-default or grouping change that puts both groups on the first page leaves `second.groups` empty. The preceding `toEqual` at `:174-176` still passes (2 frames vs 2 frames), while the new loop compares frame 1 against an empty-groups page body and fails with a diff that reads as a serialization mismatch rather than a paging change. Fails loud, not silent — this is a diagnosability/robustness defect, not a soundness hole in the oracle.
+
+**Minimal remedy:** one line before the loop — `expect([first.groups, second.groups].map((g) => g.length)).toEqual([1, 1]);` — using data already fetched. No production change.
+
+---
+
+### 4. Informational — the `index.ts` leg of F6 restores import order but closes nothing docblock-shaped
+
+**Source:** F6 repair. `packages/server/src/index.ts:1`, `:23`.
+
+`packages/server/src/index.ts` has no module docblock at any revision: at `94ef8da` line 1 was the `./read-request.js` import block, and the file's first comment is `/** Identifies the shared BDP server package. */` at `:75`. The original finding's `index.ts:1-2` citation was inaccurate. The edit (moving `createNodeHttpDisconnectSignal` from `:1` to `:23`) does restore the pre-`b64` leading-import structure, which is a legitimate minimal-diff cleanup, but the progress-doc phrasing "docblock cleanup" is accurate for only two of the three files. No remedy required; worth not re-litigating as a docblock question later.
+
+---
+
+### 5. Informational — the installed F5 witness has no numeric-like property keys
+
+**Source:** F5 repair. `apps/bdptest/src/transactional-sse-installed.test.ts:156`, `:175`.
+
+Root's disposition 5 said "add numeric-like keys if needed to prove sensitivity"; the source test does so (`properties: { "10": "ten", "2": "two", n: 100, … }` at `transaction-sse.test.ts:149-154`), and that is what makes the *pair* of assertions sensitive — authored `"10","2"` order would fail the round-trip `toEqual`, while a reserialization divergence fails the raw `toContain`. The installed test uses `properties: { n: 100 }` only, so its `expect(finite.bodyText).toContain(…)` is a byte-containment check on a payload with no key-ordering degree of freedom. Inside root's wording. Flagged so the installed assertion is not later cited as independent byte-ordering evidence.
+
+---
+
+### 6. Informational — the installed test's observer process now pulls server source through `@bdp/server/testing`
+
+**Source:** F3 repair. `apps/bdptest/src/transactional-sse-installed.test.ts:11`; `packages/server/test-support/testing.ts:7`, `:429`.
+
+`@bdp/server/testing` resolves to `packages/server/test-support/testing.ts` (vitest alias, `vitest.config.ts:48-50`; tsconfig path `tsconfig.check.json:20`), which imports `../src/index.js`. The previous import was a standalone recorder whose only dependency was `node:net`. The observer process therefore now holds a source `@bdp/server` graph alongside the spawned installed artifact. This does not contaminate the artifact under test (the launcher is a separate process and nothing asserts module identity), server test-support is already loaded in every test process via `setupFiles: ["./packages/server/test-support/read-conformance-mock.ts"]`, and root approved this exact edge. Recorded as a widening of the installed test's observer module graph, not a defect.
+
+---
+
+## Closure matrix
+
+| # | Root disposition | Status | Evidence / residual |
+|---|---|---|---|
+| **F1** | Positive finite pump timers; heartbeat **strictly** below socket idle; no factor-of-two; defaults unchanged; short finite-only seams gain no capability; assess existing tests | **Closed, with finding 2** | `transaction-sse.ts:16-25`: `Number.isSafeInteger && >0 && ≤2_147_483_647`, and `heartbeat >= idleTimeout` → `TypeError`. No 2× anywhere. `TRANSACTION_SSE_DEFAULTS` (100/5000/1) and `TRANSACTION_RUNTIME_DEFAULTS.transport` (10000/10000/10000/1000) byte-unchanged. Boundary pinned at exactly strict: `5000`→throw, `4999`→throw, `5001`→pass (`transaction-sse.test.ts:711-717`). Existing short-seam tests assessed and unaffected: `transaction-sse.test.ts:478` (`timeout: 80`) sends only *incomplete* requests + a finite `HEAD`, never selects a live stream; `transaction-runtime-configuration.test.ts:571` (`timeout: 100`) only reads `configurationMetadata`. Residual: validator bound to constants (finding 2) |
+| **F1b** | Short seams refuse live SSE *before* headers/slot | **Closed** | `transaction-runtime.ts:166-175` returns before `const activeService = service!` and before `activeService.stream(...)` — no `writeHead`, no capacity registration. `HEAD` + `accept: text/event-stream` still resolves `kind === "finite"` and bypasses the gate. Test `:719-738`: `500`, `x-bdp-development-limit: stream-transport-timing`, `body === ""`, `frames === []`, finite `200`, `HEAD` `200`. `deliver` stamps `x-bdp-development: non-attesting` (`:84`), so the refusal is not an unlabelled 500. Recorder dechunks (`raw-sse-recorder.ts:77-93`), so `body === ""` is a real assertion on the chunked zero-length body |
+| **F2** | First unexpected post-header fault captured **inside** the pump callback before `response.destroy()`; bounded retention; surfaced via existing close aggregation; disconnect/pre-abort/service cancellation clean; no error Event, no second status, no new logging | **Partially closed — finding 1** | Capture is inside the callback's own `catch` (`:195-198`), strictly before `finally { response.destroy() }` (`:199-200`) — the ordering root required. Retention is one slot, never reset (`:109`), `!firstStreamFault` makes it first-write-wins. Surfaced only through the pre-existing `failures` array (`:339`), after `closeListener`, `allSettled(pending)` and `service.close()` all run, so a rejecting close still completes cleanup; `void completion.catch(() => {})` (`:343`) keeps it from becoming unhandled. No `event: error`, no second status, no new output. Test `:527-547` is discriminating on both legs (`errors).toEqual([original])` is exact because `afterEach` runs `vi.restoreAllMocks()` *before* cleanup at `:28-31`, so `close()` itself sees the real `prepare`). **Residual:** the `!streamSignal.aborted` predicate alone does not cover the destroyed-but-not-yet-aborted window, so service cancellation and late disconnects are not reliably clean (finding 1) |
+| **F3** | Move unchanged recorder to server test-support; app uses existing source-only `@bdp/server/testing`; server test uses its own relative import; package exports unchanged; no production inventory module | **Closed** | `similarity index 100%` rename — byte-identical, zero content lines in the diff. `packages/server/test-support/testing.ts:429` re-export; `apps/bdptest/src/transactional-sse-installed.test.ts:11` uses `@bdp/server/testing`; `packages/server/src/transaction-sse.test.ts:23` uses `../test-support/raw-sse-recorder.js`. The sole former `packages/* → apps/*` import is gone; `check-dependency-boundaries.mjs` exit 0. No `packages/server/package.json` change → exports still only `.` and `./development`; no new `src/` module, so the packed inventory and `smoke-executables.mjs:390-391` ("packed server must not contain test-support files") are unaffected. Secondary gain: `tsconfig.check.json` `include` covers `packages/*/test-support/**/*.ts` but not `apps/*/test-support/**/*.ts`, so the recorder is now directly type-checked — `tsc -p tsconfig.check.json --noEmit` exit 0 |
+| **F4** | Explicit `signal.aborted` guard before the generic finite-500 fallback; discriminating pre-abort/registration-race test | **Closed** | `let signal: AbortSignal | undefined` hoisted to `:107`, assigned `:142`; guard first in the outer catch at `:205-209`. The test at `:740-764` is genuinely discriminating: without the guard the plain `Error("registration race disconnect")` matches neither `ScopeServerOperationAbortedError` nor `TransactionStreamCapacityError`, `headersSent` is false and the real socket is alive, so the old code writes a 500 and `expect(stream.wireBytes.length).toBe(0)` fails. The fixture has no `shutdownFailure`, so the test also pins that pre-abort does **not** become a retained fault |
+| **F5** | Retain structural/order/count tests **and** bind each SSE `data:` payload to raw finite bytes; no parse/reserialize as sole oracle; numeric-like keys if needed | **Closed, with finding 3** | `transaction-sse.test.ts:168-172` switches to `.text()` and parses locally, so the structural `toEqual` at `:174-176` is retained *and* `:177-178` adds raw-byte containment. Numeric-like keys added at `:149-154`; the `1.0e2 → 100` wire witness at `:179` is preserved. The two assertions are jointly sensitive to integer-key ordering — authored `"10","2"` order would break the round-trip `toEqual`, a reserialization divergence breaks the raw `toContain`. Installed leg at `transactional-sse-installed.test.ts:175`; the `exchange` refactor to `{bodyText, parsed}` has no stale `.groups` call sites (only `:174`, `:175`). Residual: index coupling (finding 3) and the installed witness's simpler payload (finding 5) |
+| **F6** | Small docblock placement cleanup in affected files | **Closed for 2 of 3 — finding 4** | `transaction-runtime.ts:1-2` and `transaction-runtime-configuration.ts:1` now lead with their non-attestation docblocks. `index.ts` has no module docblock at any revision; that edit restores pre-`b64` import order instead (finding 4) |
+| **F7** | Defer `start=now` + `Last-Event-ID` exactly as approved; record that it also blocks automatic EventSource reconnect after the first event; no invented 4xx, no semantics change | **Closed** | Zero production change: `transaction-http.ts` is not in the diff, and `transaction-sse.test.ts:276` still pins `500`. Recorded at `docs/design/transaction-implementation-progress.md:1333-1338`, including the explicit "makes no browser interoperability claim or new protocol ruling". No 4xx invented, no reopened header or `start=now` semantics |
+
+**Regression sweep (no finding):** `liveStreamsAvailable` is a property of the captured object, not of `settings`, and `runtimeConfigurationIdentity` hashes `{revision, scope, artifactIdentity, settings, authorityMode, policyIdentity, authenticationIdentity, profile, history}` (`transaction-runtime-configuration.ts:375-385`) — the installed digest and its `TRANSACTION_RUNTIME_DEFAULTS` reconstruction are unchanged. `seamCapture.supplied` still suppresses metadata, so both short-seam tests correctly assert `configurationMetadata === undefined`. Capacity refusal still flows through `TransactionStreamCapacityError` → 503, unchanged by the new `signal?.aborted` precedence (a disconnected client at capacity now gets a destroy instead of a 503, which is correct). `x-bdp-development-limit: stream-transport-timing` follows the established `transaction-http.ts:115` token pattern and is unreachable on the installed path (5000 < 10000). No public export, schema, catalog, or profile change; `claimEligible` remains false.
+
+---
+
+## Static limits of this review
+
+- **Not executed:** no test run, no installed/native evidence, no socket-level timing experiment. Native closure and the fresh installed evidence run independently, per the brief. The only commands I ran were the dependency-boundary checker and the no-emit typecheck, both read-only, both exit 0 at `b14fb28`.
+- **Finding 1 is an ordering argument, not an observed failure.** It rests on Node's documented `destroy()`-then-`nextTick('close')` sequence and on `processTicksAndRejections` draining all microtasks inside `runMicrotasks()` before returning to the `nextTick` queue. A targeted repro would need to force a pump continuation to be queued at the instant `closeAllConnections()` runs. The native pass is consistent with the window being narrow, not with its absence.
+- **Spy efficacy in the new pre-abort test is assumed, not proven statically.** `vi.spyOn` on the ESM namespaces of `../dist/node-http-disconnect.js` and `../dist/transaction-service.js` depends on Vite transforming those `dist` files into settable export bindings, and on `createTransactionService` returning a plain own-property object (spread at `:751-759` would drop prototype methods otherwise). Both failure modes surface as a test failure or a 5 s recorder-deadline stall rather than a silent pass, so the test is fail-safe — but I did not confirm the transform.
+- **Unchanged-by-this-diff areas were not re-derived.** The prior review's "verified clean" set (group-loss/duplication, backpressure and listener cleanup, lifecycle ordering, representation selection, HEAD/304/412, frame safety, `TRANSACTION_CHANGEFEED_BYTES` arithmetic, settings-hash key order, raw bridge) was taken as established for `b64`; I re-derived only the parts the repair touches — the service abort wiring at `transaction-service.ts:208-214`, `deliver` at `transaction-runtime.ts:81-88`, the recorder's chunked decoder, and the close-path ordering at `:328-342`.
+- **Also unchanged and untouched:** erasure publication fencing, mutable views, Event Source SSE, set HTTP admission, real-socket backpressure against `server.timeout`. G2b was not read and is not in scope. No deferred `start=now`/header semantics were reopened and no new protocol was proposed.
+- **Type coverage asymmetry is pre-existing:** `apps/*/test-support/**/*.ts` remains outside `tsconfig.check.json` `include`, so `apps/bdptest/test-support/transactional-execution-binding.ts` is still only transitively checked. The recorder move removed the one file this mattered for; the general gap is out of scope.

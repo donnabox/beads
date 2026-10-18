@@ -1,0 +1,51 @@
+{
+  "tree": "02e44cf9e277d9c66f60f3b91f69fe524ca844ed",
+  "main": "96b00e0be63994b79025fc84ba82a36a55da0bb7",
+  "app": "c91f45cc5c827f5d4684a62c73f7b296c1e65230",
+  "filesDifferentFromMain": [
+    "apps/bdptest/src/read-update-artifact-execution.test.ts",
+    "apps/bdptest/src/read-update-matrix.test.ts",
+    "apps/bdptest/test-support/read-update-artifact-execution.ts",
+    "packages/conformance/fixtures/read-update-reference-v1.json",
+    "packages/conformance/matrices/read-update-reference-continuation-v1.json",
+    "packages/conformance/src/cumulative-artifact.test.ts",
+    "packages/conformance/src/read-update-artifact-set.test.ts",
+    "packages/conformance/test-support/read-update-artifact-set-v1.json",
+    "packages/conformance/test-support/read-update-coverage-v1.json",
+    "packages/conformance/test-support/testing.ts"
+  ],
+  "filesDifferentFromApp": [
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+    "apps/bdptest/src/transactional-sse-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md",
+    "packages/server/src/index.ts",
+    "packages/server/src/node-http-disconnect.ts",
+    "packages/server/src/read-http.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "packages/server/src/transaction-events.test.ts",
+    "packages/server/src/transaction-events.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-runtime-configuration.test.ts",
+    "packages/server/src/transaction-runtime-configuration.ts",
+    "packages/server/src/transaction-runtime.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-sse.test.ts",
+    "packages/server/src/transaction-sse.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/test-support/raw-sse-recorder.ts",
+    "packages/server/test-support/testing.ts",
+    "packages/server/test-support/transaction-replica.ts",
+    "scripts/smoke-executables.mjs"
+  ],
+  "allAppFilesEqualFrozenApp": true,
+  "allRuntimeFilesEqualMain": true,
+  "conflicts": [],
+  "head": "4819068d0201fb3d1fe32dd6adaf8625ef9ba666",
+  "parents": [
+    "c91f45cc5c827f5d4684a62c73f7b296c1e65230",
+    "96b00e0be63994b79025fc84ba82a36a55da0bb7"
+  ],
+  "clean": true
+}

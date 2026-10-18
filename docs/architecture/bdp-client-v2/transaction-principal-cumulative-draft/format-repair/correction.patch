@@ -1,0 +1,27 @@
+--- a/apps/bdptest/src/transactional-matrix.test.ts
++++ b/apps/bdptest/src/transactional-matrix.test.ts
+@@ -3970,16 +3970,14 @@
+       const row = observed.result.scenarios.find((r) => r.id === principalId)!;
+       expect(row.exchanges).toHaveLength(maximum);
+       expect(joined(observed)).toEqual(
+-        principalRequests
+-          .slice(0, maximum)
+-          .map((literal, ordinal) => ({
+-            id: literal.action,
+-            method: literal.method,
+-            dispatchUrl: literal.dispatchUrl,
+-            reportedUrl: literal.reportedUrl,
+-            credentialRef: literal.credentialRef,
+-            ordinal,
+-          })),
++        principalRequests.slice(0, maximum).map((literal, ordinal) => ({
++          id: literal.action,
++          method: literal.method,
++          dispatchUrl: literal.dispatchUrl,
++          reportedUrl: literal.reportedUrl,
++          credentialRef: literal.credentialRef,
++          ordinal,
++        })),
+       );
+       for (const [i, exchange] of row.exchanges.entries()) {
+         expect(exchange.request.method).toBe(principalRequests[i]!.method);

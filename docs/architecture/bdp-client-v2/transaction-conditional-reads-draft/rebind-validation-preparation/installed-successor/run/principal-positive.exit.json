@@ -1,0 +1,80 @@
+{
+  "name": "principal-positive",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/transactional-matrix.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/principal-positive.results.json",
+    "--testNamePattern",
+    "^(?:observes\\ authenticated\\ principal\\ isolation\\ and\\ rotation\\ through\\ selected\\ cumulative\\ HTTP)$"
+  ],
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/transactional-matrix.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/principal-positive.results.json",
+    "--testNamePattern",
+    "^(?:observes\\ authenticated\\ principal\\ isolation\\ and\\ rotation\\ through\\ selected\\ cumulative\\ HTTP)$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+  "started": "2026-10-16T20:57:01.720044+00:00",
+  "adjudication": {
+    "kind": "exact-source-selection",
+    "passedFullNames": [
+      "observes authenticated principal isolation and rotation through selected cumulative HTTP"
+    ],
+    "skipped": 66,
+    "jsonSha256": "9fa2f2a6d0c7e5e7ca4be9eaae710601bf4ca6f25a507657c8cb4cdd020f4602",
+    "limitation": "Static HTTP/owner model is not an independently observed network quota; raw logs and reported cleanup remain separately reviewed."
+  },
+  "elapsedSeconds": 1.5152512500062585,
+  "exit": 0,
+  "supervisorExit": 0,
+  "timeout": false,
+  "forcedCleanup": false,
+  "errors": [],
+  "processGroup": 59673,
+  "remainingBeforeCleanup": [],
+  "remainingAfterCleanup": [],
+  "sampledPids": [
+    59673,
+    59685,
+    59764,
+    59813,
+    59938,
+    59965
+  ],
+  "sampledPidsStillPresent": {},
+  "sampledTempEntries": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/principal-positive.tmp/bN0UrGCfNlmS4Sd07ccdj",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/principal-positive.tmp/bdp-tx-installed-OE8wGD"
+  ],
+  "tempEntriesAfter": [],
+  "remainingTempEntriesForClassification": [],
+  "runtimeDirectoriesStillPresent": [],
+  "unclassifiedTempEntriesStillPresent": [],
+  "sourceUnchanged": true,
+  "sourceSha256After": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "bbb7def1bf11e1d14efbcb369e6a7fae6eb5aff01f483f8e99f7443ce9a6ee73",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "a2c620ce489257f4cd425207195af89b4e2aac238333cf6e7d21ce629d98a238",
+    "packages/conformance/src/transactional-cumulative.test.ts": "5ecfa916baca16b24c9c57b5f52e6c2cb5fa771d8cc6b5ea412ba570ba796993",
+    "apps/bdptest/src/transactional-matrix.test.ts": "95e07ead41f9cb39087a155e87cad22998d92cd3967cb9c3c446568ff6139bc8"
+  },
+  "samplingSeconds": 0.05,
+  "commandWindowSeconds": 115,
+  "groupHardDeadlineSeconds": 120,
+  "cleanupBound": "TERM at115s, KILL no later than120s; wait/reap after kill adds no product execution allowance",
+  "samplingLimitation": "Short-lived or detached descendants may evade group sampling; helper counts and independent final checks remain separate.",
+  "tempClassification": "Only the selected fixture prefixes under this attempt TMPDIR are owned runtime roots; all other entries are preserved for review, not deleted or called leaks.",
+  "resultLimitation": "A declared negative raw exit1 may complete its supervisor; subsequent strict review is mandatory. No generic exit1 acceptance or product qualification."
+}

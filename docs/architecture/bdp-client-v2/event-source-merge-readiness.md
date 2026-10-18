@@ -1,0 +1,7 @@
+# PR92 merge verification
+
+PR92 merged at 2026-10-13T17:46:34Z as `96b00e0be63994b79025fc84ba82a36a55da0bb7`. Remote API verifies MERGED and reviewed head `310871d49c4bb9adb1177a318e06fde29b29cf96`. Actual parents are prior main `f31424cdfc57871925a04659208686bac7bddfed` and reviewed310. Actual merged tree `cab316af0ed69a68beeab60902af089b63d5d354` equals reviewed310 exactly. This is ordinary merge ancestry.
+
+Exact-head CI38440193366/job115444460106 completed SUCCESS at 2026-10-13T17:45:45Z. Native plus Claude council is dispositioned in event-source-sse-root-dispositions.md. Independent repair closure in event-source-sse-review-repair-native-review.md passed98 focused tests and a cadence counterfactual. Author repair report records130 focused tests, guard and cursor red/green controls, static/build/both smokes/unchanged Read seal, and fresh installed Event SSE1/changefeed SSE1/finite TX-Snapshot30 on exact310. Parent6a's separate5,849 tests and fresh installed RU173 remain source-bound; they are not relabeled as310 results.
+
+Every outward action rechecked the current session. Scope/Bead/Link retained and live Event serving is delivered through the private installed service. This does not complete Transactional qualification, activate public write profiles, release anything, or promote Preview2. Structural reference-release evidence remains distinguished from executable GC/heap proof. Metadata-only incident-Link projection and other recorded gaps remain explicit.

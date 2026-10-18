@@ -1,0 +1,66 @@
+{
+  "verdict": "EXPECTED_NAMED_CONTROL_FAILURE",
+  "actualTestExit": 1,
+  "actualSupervisorExit": 1,
+  "requests": 2,
+  "responses": [
+    {
+      "label": "batch-seed",
+      "method": "POST",
+      "url": "http://127.0.0.1:62269/acme/operations/batch",
+      "accept": "application/json",
+      "status": 200,
+      "requestBodyBytes": 150,
+      "requestBodySha256": "3db7ee64eb95248fc9f50347c1b7c482f00ad64c411aa81c15ff65703b1b8236",
+      "responseBodyBytes": 665,
+      "responseBodySha256": "891aa28ba01112e5dc064bc605d6c35581b2d3e3da018c7e1ff4012734efaa15",
+      "headers": {
+        "bdp-scope-epoch": "71332716-1408-47ea-9ec8-ee3a741fd948",
+        "bdp-authorization-view": "development-all-visible",
+        "bdp-scope-position": "pos-1",
+        "x-bdp-development": "non-attesting",
+        "x-bdp-development-limit": null,
+        "content-type": "application/json",
+        "content-length": "665"
+      }
+    },
+    {
+      "label": "batch-deep-conflict",
+      "method": "POST",
+      "url": "http://127.0.0.1:62269/acme/operations/batch",
+      "accept": "text/plain",
+      "status": 500,
+      "requestBodyBytes": 605,
+      "requestBodySha256": "7f559c520455c5a1ba45c73cf27cee9e58076b9b033ac7d8259408c03f2d0b8b",
+      "responseBodyBytes": 0,
+      "responseBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "headers": {
+        "bdp-scope-epoch": null,
+        "bdp-authorization-view": null,
+        "bdp-scope-position": null,
+        "x-bdp-development": "non-attesting",
+        "x-bdp-development-limit": "unsupported-transaction-composition",
+        "content-type": null,
+        "content-length": "0"
+      }
+    }
+  ],
+  "cleanup": {
+    "cleanupActions": 2,
+    "cleanupActionsCompleted": 2,
+    "cleanupCompleted": true,
+    "primaryOrCleanupFailureCount": 1
+  },
+  "failureMessages": [
+    "AssertionError: depth-key:batch:conflict-before-depth: expected 500 to be 409 // Object.is equality\n    at /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/mirror/packages/server/src/transaction-http.test.ts:4311:74\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/mirror/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+  ],
+  "resultsSha256": "0d40feac714ff07a064fa8d72fe742b3b73f3e4ac22855da9eac311e7e82b7fb",
+  "logSha256": "3e62d10272598c661d5e08ba4c4400d1502d4708a1a5e48db58a18c5c61d1fc6",
+  "sourceAttribution": "External copied source/emitted/tool binding; no child attestation or public qualification",
+  "graph": {
+    "packetSha256": "2a5d92822153b08235f2dc8f246d6db96c942a1fed6b6f20373a29f16267a70c",
+    "sourceAndBuildMembers": 1133,
+    "toolFiles": 1932,
+    "links": 180
+  }
+}

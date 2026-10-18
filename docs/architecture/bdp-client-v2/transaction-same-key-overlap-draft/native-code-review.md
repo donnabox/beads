@@ -1,0 +1,21 @@
+# Native code review — frozen same-key dispatch draft
+
+No actionable source defect found in the frozen two-path change. This is a read-only code assessment, not compilation, execution approval, or proof that either installed cohort passes.
+
+## Exact basis and role
+
+Reviewed all958 lines of the new test and the complete documentation append in draft.patch SHA256a4aa320ea35ac713581509bc5ae0935bf26c26b01fc1543d123ee5931f1c6626, source-binding ad840a73fe10f830e58959dcc7642b35ec91f0a2cea4db4f4fb9912f940df0d0. Actual parent98c600767e8e91a79e109cb741beb91e23b9bebe/treefde859381752d15c8caabcbc946d3c2e384b9cf6. New test e6a52fa4d645ffef04e4b6e8ccd9bbcb7495624ae0e3f46536e0e9ac6b707974; progress document21069d8d8eb5d5048a1dbcb38871ea0f8e72b463e9456633b12b4860e024a728. Verified the entire129684-byte parent document is an unchanged prefix; historical document claims were not re-reviewed as newly authored source. Current Git scope is exactly these two paths.
+
+I did not author this test or its documentation. I helped revise the accepted plan and assembled the supplied-context review packet; that prior plan authorship is disclosed. Root remains independent reviewer/integrator, and actual Claude code review is separately pending. Accepted plan47c29039/ledgerfb6ba031/native closure83514470 and actual author report/report-contract/selection are the expectation basis.
+
+## Concrete checks and limits
+
+- Configuration309–327 contains exactly the existing caller shape, separates the supplemental projection from actual served identities, and uses unchanged launcher/binding. Ready checks333–340 and the committed binding validate canonical targets/loopback metadata; request URL confinement118–134/345–393 retains exact query and Host behavior.
+- Both sends640–642 are dispatched before awaiting with immediate rejection handlers526–528. Pair milestones650–669 are honestly dispatch/client timing facts, not wire/admission overlap. Each local send is bounded to six total, with response retention checked before append460–469, fatal UTF8/JSON processing and completed fingerprints495–507 before later oracles.
+- Receipt549–637 performs schema and closed literal checks; control674–685 validates own key, own context, unordered positions, distinct transactions/allocations before the named shared-receipt-id assertion. No positive pos-1 condition preempts the control. Correct control has one primary assertion failure, fulfilled transport promises and retained prerequisites; actual execution must still demonstrate it.
+- Both-pending branch695–700 fails inconclusively after two receipts without requests3–6. One-pending uses the terminal baseline701, and GET3 must match terminal full receipt. GET4 and GET5 check complete closed collection/Event structures; private Event ID is computed from GET5 context and observed source. Retained replay only covers batch. No assertion normalization weakens the five-field fixture Resource.
+- Cleanup788–847 preserves original failures, aborts/destroys owned work, drains and closes under existing bounds, and removes the directory only for known stop/no launch. A pre-ready unknown stop retains the directory and cannot pass. External process-group/PID absence remains required; sampled cleanup is not universal descendant proof.
+- Explicit report construction850–954 retains failure/count/performed facts and actual served identities without arbitrary Error/config/request serialization. Exclusive resolved report path and overflow fail closed. Full parsed body comparisons remain in-memory; fingerprints are not advertised as retained wire bodies. In pathological cleanup/report failure, the run fails and is not an acceptable negative control.
+- Bound arithmetic remains positive6/control2 expected (8), max12, two scheduled children/<=2 simultaneous requests; the fixed literals and schema/artifact inputs match accepted ledger. Default CI is positive only; no public profile/cold discovery/catalog credit.
+
+Only reads, Git/data hashing, and external runner preparation occurred. No product imports, typecheck, lint, build, tests, service, package or review invocation. Static tooling may still expose issues not decidable by source inspection. Neither code review nor preparation supplies runtime evidence, final clean commit attribution, package equality, or permission to merge.

@@ -1,0 +1,143 @@
+## Review — frozen installed Update candidate `4078ca7` vs `2c5fe9e`
+
+Read-only. No file written or modified; `git status --porcelain` empty and `HEAD` still `4078ca709b55d363c147a5bdc0d5141ede9ec247` at exit. Read `update-installed/review.md`, `update-contracts-claude-review.txt`, `update-installed-claude-plan-review.txt`. Diff audited is the 11 files / +1688 −81 between `2c5fe9e` and `4078ca7`.
+
+### Verification I actually ran (pinned Node 24.16.0 / pnpm 11.20.0, frozen install, build first)
+
+| Check | Result |
+|---|---|
+| `pnpm install --frozen-lockfile` | already up to date |
+| `pnpm build` (`clean && tsc -b`) | exit 0 |
+| `typecheck`, `check:boundaries`, `format:check` | exit 0 |
+| `lint` | exit 0, 3 warnings / 1 info (pre-existing) |
+| 14-file targeted suite, `--maxWorkers=2` | **491 passed / 14 files** — reproduces `final-qualified-tests.log` exactly |
+| **full repository suite** | **7918 passed, 1 skipped / 120 files**, exit 0 — broader than review.md's stated scope |
+| `pnpm smoke` (packed, outside workspace) | exit 0; `payloadIdentity` **reproduces byte-for-byte**: `b8a74cc5…8632db`; `artifactIdentity` reproduces: `development-schema5-e1dff401…f148e7`; `configurationIdentity` differs per run as documented |
+| `pnpm smoke:development` | PASS, `claimEligible:false` |
+| `pnpm evidence:verify` | `evidence.verified`, unchanged Read artifact, 89 rows |
+
+Plus my own out-of-tree probes against live candidates (raw sockets, child-process IPC, direct dist imports). Those are what the findings below rest on — the author's 491 tests and smokes are corroboration, not the basis.
+
+---
+
+## Closed against the real successor
+
+**A1 — closed.** `development-contracts.ts:96-118` moves the completeness check after the emit loop and faults only when the receiver did not stop; the `valid` branch keeps its own guard. The pinned test flipped from `emitted === 0` to `emitted === 1024`. New HTTP tests prove the 1025-`allOf` case yields 422 / 32 diagnostics / `diagnosticsTruncated:true`, no Resource, retained replay, same-key conflict, corrected fresh-key 200; the 4000-`uniqueItems` `limit-work` refusal stays a local 500 with no retained key.
+
+**A2 — closed.** `value.max < 1` in the new `captureDevelopmentAggregatePolicy`, invoked pre-provisioning at both `installed-reference-configuration.ts:149` and `development-runtime.ts:286`. I confirmed independently that admission refuses before any filesystem work.
+
+**A3 — closed.** Canonicalized by `Map(stringifyJsonValue(entry) → entry)` + sort; reorder and exact-duplicate reopen preserves a real Bead. Redundant distinct maxima deliberately not coalesced.
+
+**A4 — closed, both halves.** `access.capture(principal)` pre-check at `development-runtime.ts:276` precedes `openDevelopmentAuthority` at `:513`, and again at config capture (`:111`). The related Low is genuinely fixed: `(await view.discover()).kind !== "discovery"` throws — and `discovery` is the real success variant (`authority-read.ts:715`), not a name that would make the check vacuous or always-throwing.
+
+**A5 — closed.** Identity digests `{artifacts, artifactLimits, graphLimits, evaluatorLimits}`; a changed `limits.descriptors` now changes identity. The installed path additionally pins `bundle.limits = CONTRACT_ARTIFACT_CEILINGS`.
+
+**A6 — closed as documented.** `capturedConfiguration()` frozen; the scope-digest vs per-principal split is recorded. I checked the leak path on both surfaces: `AuthorityDiscoveryData` (`authority-read.ts:704-712`) carries no `policyIdentity`, and the installed `perform` reads only `observation.resourceRevision`. Residual is in-process, exactly as A6 scoped it.
+
+**A7 —** bounded limitation retained and accurately disclosed.
+
+**A8 — closed, and tighter than the proposed fix.** Root prefix + `assertCanonicalPathSegments` on the whole id. I specifically hunted the fail-open this opens up — a non-canonical spelling that passes validation but never matches `local(record.id)` — and it does not exist: `validateCanonicalIdSegment` enforces `canonicalPathSegment(decoded) === segment`. Real-HTTP test covers `beads/team/a.b` and `beads/a%20b` for both `hidden` and `readOnly`; `beads/a/../b` throws.
+
+**A9 — closed.** `...(configured === undefined ? forPrincipal(principal) : {})`; test pins absence of `mutate`/`discover` on a configured authority, and the eager `lifecycle.readFor` for the module constant is gone.
+
+**A10 — closed, including the "also noted".** `hidden`/`readOnly` are `Set`s; per-request facet construction replaced by a `principalViews` lookup (better than relocating it); `if (principalViews.has(principal)) continue` means a duplicate-principal credential builds no discarded route — test asserts `constructed === 2` for 3 credentials, and the alternate Alice token authenticates to the same principal.
+
+**H1 — closed.** `Promise.allSettled` + `AggregateError` in both the startup catch (`:543-556`, with `cause` set to the original) and `close()` (`:563-572`). Injected listener-close failure asserts `errors === [original, cleanup]` and that reopening the same real store succeeds. One residual below.
+
+**H2 — closed.** Identity derives only from `normalizationSafeRawRequestPath(rawUrl)` rebased on `new URL(scope).origin`; Host is ingress-only in the installed branch. Raw-socket probe against a live candidate:
+
+```
+baseline origin-form               -> 200    absolute-form foreign authority -> 200
+absolute-form http vs https scope  -> 200    protocol-relative raw target    -> 200
+x-forwarded-host + forwarded       -> 200    Origin present (installed)      -> 200
+path outside scopePath             -> 404    listener root (scopePath=/acme/) -> 404
+no Host / duplicate Host / userinfo-> 400    %2e%2e / backslash target       -> 400
+no credential                      -> 401    CONNECT                         -> 405
+```
+Every 200 served the configured Scope's resource — Host, forwarding headers, absolute-form authority **and scheme** cannot rebind identity.
+
+**L1 — closed.** Absolute-form with a foreign authority: probe 204, service-desc 200, `operations/` directory 200. Normalize-then-rebase makes the exact-equality route matches correct for absolute-form by construction.
+
+**M1 — closed as prescribed.** One conditional keyed on `transport === undefined`; development branch holds at 403 (its suites pass unchanged); installed branch accepts Origin, emits no `access-control-allow-origin`, and answers OPTIONS with endpoint-specific bodyless 405 (`GET, HEAD` / `POST`). The Bearer-only / no-cookie / preflight-required rationale holds.
+
+**M3 — closed.** `installedTransport` is its own parameter with its own exact-key capture; `DevelopmentDeployment` and every existing deployment literal untouched.
+
+**Admission boundary — confirmed sound.** `development.ts` still exposes only `startDevelopmentReferenceServer(options)` (one argument), so the public `./development` export cannot reach composition/deployment/transport. `index.ts` and `admitReadServerProfile` untouched. `package.json` exports still `.` and `./development`. Configuration admission is fail-closed on every probe I could construct — foreign `propertiesSchema` with or without an artifact, non-Scope-local schema hosting, query/fragment in a schema URI, foreign descriptor id, non-loopback listener host, relative directory, short token, credential without policy, non-canonical Scope, empty credentials — all refused before any filesystem work, and an unresolvable schema fails `graph:missing-resource` rather than fetching. There is no network path.
+
+---
+
+## Open findings
+
+### 1 — HIGH · M4 is not closed. Bare file-path import of the emitted entry tears down the importing process's IPC channel and poisons its exit code.
+
+`installed-reference-process.ts:9` guards on `!process.send || process.argv.length !== 2`. Neither is an entry-point check, and `void main()` runs at module load. M4 required refusal unless the module *is* the process entry point, and inertness on bare import. Demonstrated:
+
+- **Non-IPC host.** `node --input-type=module -e 'await import(".../dist/installed-reference-process.js")'` → stderr `installed reference qualification failed`, and the host is left with `process.exitCode === 2`. A host that merely imported the module exits non-zero.
+- **IPC host with `argv.length === 2`** — e.g. `node --import file://.../installed-reference-process.js <any-entry>`, which is also what `NODE_OPTIONS=--import` produces. The guard passes, `process.once("message")` **consumes the host application's first IPC message**, `administrativeData(message, ["configuration"])` throws, and the catch calls `process.disconnect()`. Parent-side observation: `PARENT: channel disconnected by child`, `child exit 2`, and the next `child.send` throwing `ERR_IPC_CHANNEL_CLOSED`.
+
+This is precisely the hijack M4 named, and it is worse than predicted — not just signal-handler capture but channel destruction. It is reachable because `files: ["dist"]` ships the module in the tarball and the `exports` map does not govern file-path or `--import` resolution; the repo's own harnesses (`test-support/development-process.ts`, `test-support/development-discovery.ts`) load `dist/*.js` exactly that way. The `smoke-executables.mjs` additions only assert the **exports map** denies `@bdp/server/installed-reference-process` and `@bdp/server/dist/installed-reference-process.js` — both bypassed here. Neither inertness nor the no-IPC refusal is asserted anywhere, so review.md's "No package export, bin or CLI flag" is true while the module is still a live side-effecting import target.
+
+Fix: compare resolved `process.argv[1]` against `fileURLToPath(import.meta.url)`; on mismatch return without writing stderr, setting `exitCode`, or calling `disconnect()`. Pin both the bare-import inertness and the no-IPC spawn refusal.
+
+### 2 — HIGH · H3 is only partially closed. The listener serves credentialed traffic, including committed mutations, before startup completes.
+
+`server.listen` (`:502`) precedes `openDevelopmentAuthority` (`:513`) and the per-credential readiness loop (`:521-542`). The implemented gates are `!authority` → 503 and a `principalViews.get(id)` miss → 401. The `serving` flag the plan review prescribed — published after the composition loop, refusing `temporarily-unavailable` until then — was not implemented.
+
+Demonstrated: with 32 credentials and a composition that issues one HTTP request from inside the **first** `createReadRoute` call, `POST /acme/operations/create-bead` returned **200 with a created resource** while `startDevelopmentReferenceRuntime` had not yet resolved — so a write committed before the caller held any `close()` handle. (`routes constructed: 32, startup ms: 47`.)
+
+Two consequences:
+
+- **(a)** A valid credential whose view has not yet been constructed gets **401 `unauthenticated`** with `www-authenticate`, not 503. A conforming retrying cold client treats 401 as permanent. Fail-closed, so the H3 legacy-200/unguarded-mutation hazard *is* gone — but review.md's "ready follows compilation/store validation/principal checks/route construction" describes the `qualification.ready` message, not the socket.
+- **(b)** The startup catch (`:543-556`) does **not** drain `pending`, unlike `close()` (`:565`). A request admitted in that window races `authority.close()`. I attempted to reproduce a write surviving a failed startup twice and lost the connect race to `closeAllConnections()` both times, so I am reporting (b) as the structural mechanism only — not as an observed outcome.
+
+Fix: `let serving = false` set after the loop, refuse until then, drain `pending` in the startup catch, and assert 503-not-401 for both a read and a mutation against a configured port during startup.
+
+### 3 — MEDIUM · M2 is only partially closed; the configuration identity still omits observable owner limits.
+
+Genuinely bound and in the identity: `DEVELOPMENT_LIMITS`, `DEVELOPMENT_READ_LIMITS` (read at `:226`) and `DEVELOPMENT_RETENTION_MS` (`day`, feeding `:160`, `:206-207`). Still inline literals inside `openDevelopmentAuthority`, in no exported object and in no identity: `patchOperations: 128`, `patchPathBytes: 4096`, `patchPathDepth: 32`, `representationBytes: 256*1024` (`:191-194`), `maintenanceIntervalMs: 60_000` (`:186`), and the pagination retention capacities `retainedStateCapacity: 100`, `maxRetainedCursorPositionsPerSnapshot: 20`, `retainedSnapshotByteCapacity: 4 MiB`, `retainedSnapshotNodeCapacity: 100_000`, `maxOpaqueTokenLength: 64`, `tokenGenerationAttempts: 3` (`:240-247`).
+
+These are observable Update-plane bounds — a 129-operation patch is refused. Two builds differing only in `patchOperations` produce identical `configurationIdentity` and reopen each other's stores cleanly. M2's prescribed single `DEVELOPMENT_OWNER_LIMITS` covering *every one* of those values was not created, so review.md's "fixed Read/Update/retention limits" overstates coverage.
+
+### 4 — MEDIUM · The emitted canonical composition is a byte-identical fork of the test fixture, and the regression suite validates the fixture copy.
+
+`diff` of `installed-reference.ts:34-108` against `test-support/development-discovery.ts:24-98` is **empty** — 75 identical lines, two independent copies, nothing shared and nothing asserting they agree. `development-discovery`, `development-matrix`, `development-server`, `development-disconnect` and all of `development-contracts.test.ts` drive the **fixture** copy; the emitted copy is exercised only by `installed-reference.test.ts` and one smoke pass. A one-sided edit to the emitted copy — including exactly the L2 hoist-the-static-directory-above-the-gate refactor the plan review warned about — leaves 7918 tests green. This is the "author's own tests are not independent review" concern made structural: the heavy coverage is pointed at the artifact that does not ship. Have the fixture import the emitted factory, or assert source equality.
+
+### 5 — LOW · H1 residual: `close()` still caches a rejected `completion`.
+
+`:561-574` assigns `completion` unconditionally, so a failed shutdown can never be retried. The plan review called this out by name ("Do not cache a rejected `completion`"). Mitigated — `allSettled` guarantees the owner close was attempted before the rejection — but unaddressed.
+
+### 6 — LOW · The hosted-schema route is the only installed response missing `x-bdp-development: non-attesting`.
+
+`development-runtime.ts:345-361` builds its own header set and never adds the marker, unlike `json()` (`:85-95`), `readJson()` (`:126-131`) and the composed-read branch (`:390`). Verified on a live candidate:
+
+```
+scope probe / service-desc / operations directory / type descriptor / type inventory -> HAS marker
+hosted schema (GET /acme/schemas/s)                                                  -> NO marker
+```
+
+For a candidate whose premise is non-attesting observation, the one route serving operator-supplied bytes verbatim is the worst place to lose it. `installed-reference.test.ts:153` asserts the body bytes and never inspects headers.
+
+### 7 — LOW · `payloadIdentity` excludes a real runtime dependency.
+
+`installed-reference.ts:21-31` hashes only `.js` files directly in `packages/server/dist/` and the resolved `@bdp/protocol` dist directory. Both dists are flat, so that part is complete — but `node_modules` is excluded, including `fast-uri@3.1.5`, which `packages/server/src/installed-schema-uri.ts` uses on the schema-compilation path this candidate depends on. Swapping it changes observable URI resolution while `payloadIdentity` stays identical. review.md's wording is literally accurate; the code comment "Bind actual installed executable bytes, independently of caller assertions" is not.
+
+### 8 — LOW · `referenceTypeArtifacts` remaps an enumerated field list with no output-side check.
+
+I verified the current closure directly rather than trusting the claim: 13 descriptors, key union exactly `{conformsTo, describes, id, name, ownsOutgoing, source, target}`, every absolute URL anywhere in the structure is one of the 13 `https://work.example/types/*` ids, all 13 last segments unique. **The remapping is complete and exactly invertible for the current closure.** Nothing enforces that, though: the Scope-local check at `:138` inspects `d.id` only; the inverse-remap test (`installed-reference.test.ts:91-99`) substitutes `${scope}types/` → `https://work.example/types/` and would pass an un-remapped field unchanged; the smoke's completeness loop checks exactly the four positions the remapper already handles. All three checks are circular. A future reference Type with a `propertiesSchema`, a Type-bearing `ownsOutgoing` rule value, or an id outside `https://work.example/types/` leaks a foreign URI silently (a last-segment collision does fail closed in `ingestContractArtifacts`). Add an assertion that no emitted descriptor contains an absolute URL outside `${scope}`.
+
+### 9 — LOW · L2 is implemented but unpinned.
+
+The owner gate precedes the directory in the emitted composition (`installed-reference.ts:100-107`) and the schema route (`development-runtime.ts:333`). No test pins it. Because startup now pre-validates every credential's principal and no `replace` handle escapes `captureInstalledReferenceConfiguration`, a request-time `capture` failure is effectively unreachable in the installed path — which is good, but also means the test L2 asked for cannot easily be written, leaving nothing to catch a future hoist. Combined with finding 4, that is the gap worth closing.
+
+---
+
+## Accepted divergences worth recording, not defects
+
+- **H2 went further than prescribed.** The fix suggested bounding Host to the listener or captured-Scope authority; the implementation accepts any syntactically valid Host and discards the absolute-form authority *and scheme* entirely. Safe — identity never derives from them — and it matches the shipped public listener's rebase-onto-canonical-origin behavior. But it is a decision, not the prescribed fix, and should be recorded as such rather than assumed.
+- **Cleartext loopback under an `https` Scope.** The smoke's configured Scope is `https://reference.invalid/acme/` while the listener is plain HTTP on 127.0.0.1, so emitted resource ids are not dereferenceable off-box. Consistent with "not deployment TLS" and inherent to the harness; noting it so it is not mistaken for a conformance claim.
+- **`configurationIdentity` commits to exact token digests** (unsalted SHA-256 of high-entropy randoms). No practical disclosure, but publishing the identity lets a token holder confirm the binding. Intended per the credential-to-principal mapping requirement.
+- **`schemaArtifacts.find(...)` is a linear scan ahead of all route classification**, bounded at 4096 entries, on every request including mutations. Trivial at realistic counts; mentioning only because it is the same shape as the A10 ordering concern.
+
+## Scope not established by this candidate
+
+Unchanged from review.md and confirmed by reading: no public Write profile, no cumulative required-contract runner, no applicability/counterfactuals, no independent profile-specific evidence generation, no final public startup/configuration gate. No deterministic between-member interruption, mid-commit crash or power-loss durability — the installed smoke adds no IPC scheduling, fault or store hook. Compiler schema breadth and production work/heap qualification remain separate.

@@ -1,0 +1,321 @@
+{
+  "notice": "Pinned illustrative fixtures, not runtime evidence; see event-log-audit.md",
+  "snapshot": {
+    "id": "https://beads.example/acme/snapshot?snapshot=snapshot-42",
+    "scope": "https://beads.example/acme/",
+    "scopeEpoch": "epoch-1",
+    "authorizationView": "view-a",
+    "scopePosition": "pos-42",
+    "checkpoint": "ckpt-42",
+    "expiresAt": "2026-09-07T19:22:00Z",
+    "erasures": [],
+    "beads": {
+      "items": [
+        {
+          "id": "https://beads.example/acme/beads/task-41",
+          "type": "https://work.example/types/task",
+          "revision": "task-41-r3",
+          "properties": {
+            "title": "Land the Read+Update wire",
+            "status": "closed"
+          }
+        },
+        {
+          "id": "https://beads.example/acme/beads/task-42",
+          "type": "https://work.example/types/task",
+          "revision": "task-42-r7",
+          "properties": {
+            "title": "Specify BDP mutation",
+            "status": "open"
+          }
+        }
+      ],
+      "next": null
+    },
+    "links": {
+      "items": [
+        {
+          "id": "https://beads.example/acme/links/blocks-3",
+          "type": "https://work.example/types/blocks",
+          "revision": "blocks-3-r1",
+          "source": "https://beads.example/acme/beads/task-42",
+          "target": "https://beads.example/acme/beads/task-41",
+          "properties": {}
+        }
+      ],
+      "next": null
+    }
+  },
+  "batchRequest": {
+    "method": "POST",
+    "target": "operations/batch",
+    "headers": {
+      "content-type": "application/json",
+      "accept": "application/json",
+      "idempotency-key": "client-key-0001"
+    },
+    "schema": "#/$defs/batchRequest",
+    "body": {
+      "operations": [
+        {
+          "name": "decision",
+          "operation": "createBead",
+          "id": "beads/dec-9",
+          "type": "https://work.example/types/decision",
+          "properties": {
+            "title": "Adopt owned Links",
+            "status": "proposed"
+          },
+          "attribution": {
+            "principal": "agent:planner",
+            "status": "claimed"
+          }
+        },
+        {
+          "name": "cite",
+          "operation": "createLink",
+          "type": "https://work.example/types/cites",
+          "source": "@decision",
+          "target": "beads/task-42",
+          "properties": {
+            "role": "evidence"
+          },
+          "attribution": {
+            "principal": "agent:planner",
+            "status": "claimed"
+          }
+        },
+        {
+          "operation": "updateBeadProperties",
+          "bead": "beads/task-42",
+          "expectedRevision": "task-42-r7",
+          "change": [
+            {
+              "op": "replace",
+              "path": "/status",
+              "value": "cited"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "changeGroup": {
+    "scopeEpoch": "epoch-1",
+    "authorizationView": "view-a",
+    "checkpoint": "ckpt-43",
+    "position": "pos-43",
+    "previousPosition": "pos-42",
+    "projectionAdvance": false,
+    "transaction": "txn-0a1b",
+    "eventCount": 6,
+    "changes": [
+      {
+        "operation": "upsert",
+        "resourceKind": "bead",
+        "resource": {
+          "id": "https://beads.example/acme/beads/dec-9",
+          "type": "https://work.example/types/decision",
+          "revision": "dec-9-r2",
+          "attribution": {
+            "principal": "agent:planner",
+            "status": "claimed"
+          },
+          "properties": {
+            "title": "Adopt owned Links",
+            "status": "proposed"
+          },
+          "ownedLinks": {
+            "https://work.example/types/cites": [
+              {
+                "id": "https://beads.example/acme/links/9c1e",
+                "type": "https://work.example/types/cites",
+                "revision": "9c1e-r1",
+                "attribution": {
+                  "principal": "agent:planner",
+                  "status": "claimed"
+                },
+                "source": "https://beads.example/acme/beads/dec-9",
+                "target": "https://beads.example/acme/beads/task-42",
+                "properties": {
+                  "role": "evidence"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "operation": "upsert",
+        "resourceKind": "link",
+        "resource": {
+          "id": "https://beads.example/acme/links/9c1e",
+          "type": "https://work.example/types/cites",
+          "revision": "9c1e-r1",
+          "attribution": {
+            "principal": "agent:planner",
+            "status": "claimed"
+          },
+          "source": "https://beads.example/acme/beads/dec-9",
+          "target": "https://beads.example/acme/beads/task-42",
+          "properties": {
+            "role": "evidence"
+          }
+        }
+      },
+      {
+        "operation": "upsert",
+        "resourceKind": "bead",
+        "resource": {
+          "id": "https://beads.example/acme/beads/task-42",
+          "type": "https://work.example/types/task",
+          "revision": "task-42-r8",
+          "properties": {
+            "title": "Specify BDP mutation",
+            "status": "cited"
+          }
+        }
+      }
+    ],
+    "erasures": [],
+    "events": [
+      {
+        "id": "ckpt-43_0",
+        "ordinal": 0,
+        "type": "created",
+        "source": "https://beads.example/acme/events/",
+        "subject": "https://beads.example/acme/beads/dec-9",
+        "subjectType": "https://work.example/types/decision",
+        "transaction": "txn-0a1b",
+        "time": "2026-09-07T18:04:12Z",
+        "data": {
+          "revision": "dec-9-r1",
+          "properties": {
+            "title": "Adopt owned Links",
+            "status": "proposed"
+          },
+          "attribution": {
+            "principal": "agent:planner",
+            "status": "claimed"
+          }
+        }
+      },
+      {
+        "id": "ckpt-43_1",
+        "ordinal": 1,
+        "type": "created",
+        "source": "https://beads.example/acme/events/",
+        "subject": "https://beads.example/acme/links/9c1e",
+        "subjectType": "https://work.example/types/cites",
+        "transaction": "txn-0a1b",
+        "time": "2026-09-07T18:04:12Z",
+        "data": {
+          "revision": "9c1e-r1",
+          "properties": {
+            "role": "evidence"
+          },
+          "attribution": {
+            "principal": "agent:planner",
+            "status": "claimed"
+          },
+          "source": "https://beads.example/acme/beads/dec-9",
+          "target": "https://beads.example/acme/beads/task-42"
+        }
+      },
+      {
+        "id": "ckpt-43_2",
+        "ordinal": 2,
+        "type": "linked",
+        "source": "https://beads.example/acme/events/",
+        "subject": "https://beads.example/acme/links/9c1e",
+        "subjectType": "https://work.example/types/cites",
+        "transaction": "txn-0a1b",
+        "time": "2026-09-07T18:04:12Z",
+        "data": {
+          "endpoint": "source",
+          "link": {
+            "id": "https://beads.example/acme/links/9c1e",
+            "type": "https://work.example/types/cites"
+          },
+          "source": "https://beads.example/acme/beads/dec-9",
+          "target": "https://beads.example/acme/beads/task-42"
+        }
+      },
+      {
+        "id": "ckpt-43_3",
+        "ordinal": 3,
+        "type": "linked",
+        "source": "https://beads.example/acme/events/",
+        "subject": "https://beads.example/acme/links/9c1e",
+        "subjectType": "https://work.example/types/cites",
+        "transaction": "txn-0a1b",
+        "time": "2026-09-07T18:04:12Z",
+        "data": {
+          "endpoint": "target",
+          "link": {
+            "id": "https://beads.example/acme/links/9c1e",
+            "type": "https://work.example/types/cites"
+          },
+          "source": "https://beads.example/acme/beads/dec-9",
+          "target": "https://beads.example/acme/beads/task-42"
+        }
+      },
+      {
+        "id": "ckpt-43_4",
+        "ordinal": 4,
+        "type": "updated",
+        "source": "https://beads.example/acme/events/",
+        "subject": "https://beads.example/acme/beads/dec-9",
+        "subjectType": "https://work.example/types/decision",
+        "transaction": "txn-0a1b",
+        "time": "2026-09-07T18:04:12Z",
+        "data": {
+          "previousRevision": "dec-9-r1",
+          "revision": "dec-9-r2",
+          "ownedLink": {
+            "operation": "created",
+            "link": {
+              "id": "https://beads.example/acme/links/9c1e",
+              "type": "https://work.example/types/cites",
+              "revision": "9c1e-r1",
+              "attribution": {
+                "principal": "agent:planner",
+                "status": "claimed"
+              },
+              "source": "https://beads.example/acme/beads/dec-9",
+              "target": "https://beads.example/acme/beads/task-42",
+              "properties": {
+                "role": "evidence"
+              }
+            }
+          },
+          "attribution": {
+            "principal": "agent:planner",
+            "status": "claimed"
+          }
+        }
+      },
+      {
+        "id": "ckpt-43_5",
+        "ordinal": 5,
+        "type": "updated",
+        "source": "https://beads.example/acme/events/",
+        "subject": "https://beads.example/acme/beads/task-42",
+        "subjectType": "https://work.example/types/task",
+        "transaction": "txn-0a1b",
+        "time": "2026-09-07T18:04:12Z",
+        "data": {
+          "previousRevision": "task-42-r7",
+          "revision": "task-42-r8",
+          "change": [
+            {
+              "op": "replace",
+              "path": "/status",
+              "value": "cited"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

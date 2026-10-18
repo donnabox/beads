@@ -1,0 +1,25 @@
+{
+  "status": "preparation-only; source changing; launch not released",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "parent": "0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a",
+  "parentTree": "80a6fe0605698e18f9504432407e7943e1f665b4",
+  "runnerProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-plan/claude-review/run.py",
+    "sha256": "3fa7735199fab26d4ec98309c51c188239580064fd382d748b8dbc0ce0eb9294"
+  },
+  "changesToRunner": [
+    "Output directory only; keep same actual CLI, deadline, process/output/cleanup capture.",
+    "Replace clean HEAD condition with frozen HEAD/tree, exact porcelain/tracked diff/untracked list plus every owned file hash; include all in before/after snapshot.",
+    "Require root frozen manifest/full patch hashes and explicit root release."
+  ],
+  "pending": "Final eight-file source, full patch/new file, context, static outcomes, final prompt and launch binding/root release. No changing source read as frozen; no product import, test, build, service or Claude invocation.",
+  "cliArgv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "",
+    "--no-session-persistence"
+  ],
+  "boundSeconds": 900
+}

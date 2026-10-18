@@ -1,0 +1,112 @@
+[
+  {
+    "duration_api_ms": 1227334,
+    "stop_reason": "end_turn",
+    "session_id": "fbd3d707-1307-47fd-9aaf-7994d5622431",
+    "total_cost_usd": 14.002354000000002,
+    "usage": {
+      "input_tokens": 200,
+      "cache_creation_input_tokens": 287887,
+      "cache_read_input_tokens": 17754784,
+      "output_tokens": 89675,
+      "output_tokens_details": {
+        "thinking_tokens": 64916
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 287887,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 11046,
+          "cache_read_input_tokens": 292365,
+          "cache_creation_input_tokens": 268,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 268
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 3142,
+        "outputTokens": 15,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.003217,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-opus-5[1m]": {
+        "inputTokens": 200,
+        "outputTokens": 89675,
+        "cacheReadInputTokens": 17754784,
+        "cacheCreationInputTokens": 287887,
+        "webSearchRequests": 0,
+        "costUSD": 13.999137000000001,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 64916,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "permission_denials": [],
+    "terminal_reason": "completed",
+    "fast_mode_state": "off",
+    "fast_mode_disabled_reason": "sdk_opt_in_required",
+    "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+        "background": 0,
+        "foreground": 0,
+        "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+        "parent": 0,
+        "user": 0,
+        "system": 0
+      },
+      "refused": {
+        "depth_limit": 0,
+        "concurrency_limit": 0,
+        "budget": 0
+      },
+      "by_type": {}
+    },
+    "is_error": false,
+    "num_turns": 114,
+    "subtype": "success",
+    "api_error_status": null,
+    "result": "I've completed the review. Findings below; no shells, tests, builds or review tools were run \u2014 Read/Glob/Grep only.\n\n---\n\n# Code review \u2014 frozen Bead Event opaque-minimum draft (HEAD f620425, six dirty files)\n\n## Verdict\n\n**No blockers found in the six-file implementation.** The three production seams match plan\u2011v3's bounded design, the spec basis holds, and the five new/edited test workloads have real oracles (types, context, counters, wire bytes) rather than counter-only assertions. The only hard problem I can demonstrate is an *execution precondition* (F1), not a source defect. Everything else is low-severity or an explicitly preserved pre-existing gap.\n\n---\n\n## Numbered findings\n\n### F1 \u2014 Required before any execution (not a source defect): no emitted build exists in this worktree\n- **Severity:** blocking for validation, not for code acceptance.\n- **Where:** `packages/server/src/transaction-events.test.ts:1400` and `:1680` (`await import(\"../dist/transaction-runtime.js\")`); `apps/bdptest/src/transactional-event-missing-context-installed.test.ts:57-62` (module-level `realpathSync(packages/server/dist/transaction-installed-process.js)`).\n- **Evidence:** `packages/server/dist/*.js` does not exist in this checkout (`node_modules` does). `package.json` builds via `tsc -b` into `dist`.\n- **Impact:** without a fresh build, D and the two existing emitted-HTTP callbacks fail with `ERR_MODULE_NOT_FOUND`, and the installed file fails at *module load*, taking all three installed callbacks (including the two historical ones) with it. Worse, with a **stale** dist the modified Scope sentinel (`transaction-events.test.ts:1532`, now 503) and all of D's 503 oracles would fail as if the implementation were wrong. \n- **Smallest fix:** keep plan\u2011v3's ordering literally \u2014 static checks \u2192 fresh build/inventory \u2192 25 source callbacks \u2192 archives/consumer \u2192 3 installed callbacks. No source change.\n\n### F2 \u2014 Owner comment is now narrower than the code it describes\n- **Severity:** low (optional).\n- **Where:** `packages/server/src/transaction-store.ts:1663-1664`: `// Unknown/hidden sources are nondisclosing before initial Scope/Bead minimum checks.`\n- **Defect:** `eventSourceKnown` at :1665 precedes **every** minimum path \u2014 the `\"unsupported\"` sentinel (:1667), the strict `checkTransactionMinimum` and the lenient `checkCurrentReadMinimum`. The new wording implies the nondisclosure ordering is specific to initial Scope/Bead minima, which is a weaker claim than the code makes and than `transaction-events.test.ts:228`/`:297` already pin.\n- **Impact:** documentation only; could invite a future refactor to move the sentinel check earlier/later for non-initial sources.\n- **Smallest fix:** `// Unknown/hidden sources are nondisclosing before any minimum check or scan.` (one line, keeps the retained-identity sentence).\n\n### F3 \u2014 Service classification catch has an unreachable rethrow branch and no oracle\n- **Severity:** low (informational; no change recommended).\n- **Where:** `packages/server/src/transaction-service.ts:491-498`.\n- **Analysis:** `transactionEventRequest` can only escape as `TypeError` (from `new URL(source)`) or `TransactionEventParameterError`; its internal `resolveCanonicalLocalResourceId`/`new URL(subject)` failures are already converted at `transaction-events.ts:167-173`, and `parseCanonicalScope` cannot fail for `owner.scope`. So `throw error` is defensive-only and untestable without mocking the parser (which the plan forbids). The adjacent `typeof source === \"string\"` test is likewise dead at type level; at runtime a non-string would throw `TypeError` from `new URL`, be swallowed as classification, and still reach the owner's `TypeError(\"Event source and cursor must be strings\")` \u2014 i.e. the ordering requirement holds either way.\n- **Impact:** none observable. Record it so the missing oracle is not later read as a coverage hole.\n\n### F4 \u2014 D pins the 503 count but not the ordered status sequence (E does)\n- **Severity:** low (optional improvement).\n- **Where:** `transaction-events.test.ts:1872-1873` (`filter(503).length === 8`, `calls === 37`) versus `transactional-event-missing-context-installed.test.ts:861-866` (exact ordered `method/url/status` triples).\n- **Defect:** `responses` is recorded and logged but only aggregate-checked. Coverage is nonetheless adequate because `pair()`/each `exchange` call asserts its own expected status inline, so a mis-dispatched call cannot pass silently; the per-status totals in `workload.json` (200:8 / 503:8 / 500:14 / 400:4 / 404:3 = 37) are reproducible from the code but not asserted.\n- **Smallest fix (optional):** add one `expect(Object.entries(...counts))`-style assertion over `responses`; do **not** restructure `pair`.\n\n### F5 \u2014 Mutable caller tuples are still re-read per attempt on non-selected sources\n- **Severity:** low, **unchanged pre-existing gap** (this change narrows it).\n- **Where:** `transaction-service.ts:476-505` \u2014 when `initialMinimumSource` is false (Link source, after-bearing, non-canonical), `minimum` stays the caller's object and `transaction-store.ts:1656-1661` re-snapshots it on every retry, so a caller mutating between `behind` retries is observed.\n- **Impact:** no HTTP exposure (HTTP always passes frozen tuples from `currentReadMinimumHeaders`/`transactionMinimumHeaders`). B/C prove capture for the selected path only (`transaction-service.test.ts:2786`).\n- **Smallest fix:** none in scope \u2014 would require widening capture beyond the authorized predicate.\n\n### F6 \u2014 Unknown position + foreign epoch/view remains a private 500, not the normative 409/410\n- **Severity:** informational, **unchanged pre-existing gap**, correctly marked.\n- **Where:** `transaction-consistency.ts:122-129` \u2192 `transaction-http.ts:659-660` (`developmentGap(\"minimum-position\")`); oracles at `transaction-events.test.ts:1610-1613` (Unsupported) and `:1813-1814` (500).\n- **Analysis:** spec 1904 / 5841-5843 would make `409 foreign-view` or `410 cursor-expired` the normative answer. A *recognized* position with a foreign context **does** return the normative 410/409 (`checkCurrentReadMinimum` \u2192 `checkTransactionMinimum` \u2192 HTTP catch). Only the unknown-plus-foreign combination stays a bodyless, `x-bdp-development-limit: minimum-position`, non-attesting gap, which plan\u2011v3 excludes explicitly. The tests assert the gap as a gap and invent no Problem \u2014 correct.\n\n### F7 \u2014 The G2 projection gap is now shadowed for opaque minima\n- **Severity:** informational, explicitly deferred by disposition #8.\n- **Where:** pre-scan gate at `transaction-store.ts:1672-1675` vs. the gap raised later inside the scan (`transaction-events.ts` projection, surfaced at `transaction-http.ts:657-658`).\n- **Analysis:** a Bead view with unresolved incident-Link metadata **and** a matched opaque token now returns 503 catch-up-timeout; the `incident-link-metadata` 500 only surfaces for eligible/no-minimum reads (still pinned unchanged at `transaction-events.test.ts:341-373` and `:571-577`). This is the accepted ordering, but it must not be read as evidence that G2 is closed or that 503 is the G2 answer. No combined control exists, by design.\n\n### F8 \u2014 Existing callback name under-describes its new Bead oracle\n- **Severity:** low (no change recommended; renaming needs a new disposition).\n- **Where:** `transaction-events.test.ts:1331` \"gates initial **Scope** Event unknown minima before retained scans\" now asserts `TransactionMinimumUnproved` for a **Bead** source at `:1385-1387`; `selection.json` pins the old name and the historical PR154 result retains it.\n- **Impact:** attribution/readability only. The adjacent comment edit at `:1380` is accurate.\n\n### F9 \u2014 Provenance obligation not satisfiable from these bytes\n- **Severity:** required before commit (process, not code).\n- **Where:** `transactional-event-missing-context-installed.test.ts:65-69`, `:912-913`.\n- **Analysis:** `workspaceDirty` (`git status --porcelain`) and `declaredSourceCommit` (`git rev-parse HEAD`) are computed truthfully at module load, so the record will honestly say *dirty at f620425* \u2014 exactly what plan\u2011v3 requires. The **exact-hash mapping** from these six dirty files to the eventual clean commit is not produced by the test and must come from the validation packet; `source-binding.json` carries the 679 before/after hashes but is not itself verified here. Note also that `plan-v3.md:3` names the basis worktree `vickie-finite-event-minimum` and `contextInputs` point at `finite-event-next-serving-audit/`, while this binding is worktree `vickie-bead-event-minimum` at the same commit \u2014 reconcile the naming in the final packet so provenance reads coherently.\n\n---\n\n## Per-file coverage\n\n**`packages/server/src/transaction-http.ts` (502-518).** Single-local rename + widened source-kind guard; canonical Scope URL equality retained for `kind === \"scope\"`; `after === undefined`, absent URL `after`, `media === \"json\"`, absent normalized `Last-Event-ID` and zero raw `lastEventIds` all preserved. Lenient `currentReadMinimumHeaders` applies only to the selected predicate; the strict fallback and `?? \"unsupported\"` sentinel are untouched, as are the response dispatch (`:519-547`) and the catch chain (`:634-663`). Verified upstream ordering is unchanged: method/auth (`:403`), lexical 400 (`:404-405`), alias/receipt fencing (`:495-502`). No conditional/negotiation shortcut can reach the 503: `applyReadHttpSemantics` (`read-http.ts:10-39`) only rewrites 200-JSON/204, and `media === \"json\"` implies `acceptsJson`, so 304/412/406 are structurally impossible on the refusal. HEAD keeps paired GET metadata via `read-http.ts:42-46` plus `transaction-runtime.ts:88-96` (`content-length` not overwritten when `body === undefined`). `retry-after: 1` and `cache-control: private, no-store` come from `problem()`/`jsonResponse`. No discovery/profile activation touched.\n\n**`packages/server/src/transaction-service.ts` (3, 469-511).** Classification is inside the **first** attempt only (`captured` latch), i.e. after `run()`'s synchronous `check()` and after the waiter's policy/`now()`/deadline/abort preflight (`transaction-consistency.ts:147-161`) \u2014 confirmed by F's clock counts. The catch is scoped to `TypeError | TransactionEventParameterError` and leaves eligibility false; `snapshotCurrentReadMinimum` is **outside** the try, so a malformed tuple on a selected source rejects rather than being swallowed. Canonicality is enforced by `parsed.source.url === source` plus `parsed.after === undefined`. Owner source-error order is preserved for non-canonical and relative inputs (both fall through to one owner attempt). No duplicated preflight, no owner entry across the wait, no deadline reset; `beginEvents`/`nextEvents`/`changes`/`snapshot` untouched; only the one new import added.\n\n**`packages/server/src/transaction-store.ts` (1654-1675).** `initialMinimumSource = after === undefined && (kind scope|bead)` uses the already-parsed canonical source; chooses lenient snapshot outside `enter` and `checkCurrentReadMinimum(..., true)` inside; other sources/after retain strict snapshot/check. `eventSourceKnown` (`:693-703`) still precedes the sentinel and the semantic check, and it consults the retained `identities` table (insert-only \u2014 no `DELETE FROM identities` anywhere, `:241/:1304`), so an authorized deleted identity stays readable while its Resource 404s, per spec 5665-5676. Context capture stays in the same entry before `retainedGroupReader()` (`:1686`); no projection, cursor, membership, scan or interface change. `transaction-consistency.ts` and `transaction-events.ts` are untouched, and `readEvents` has exactly one production caller (`transaction-service.ts:505`), so the direct-owner reclassification (pre-entry `TypeError` \u2192 `Unproved`/contextual `missing`) cannot leak to another route.\n\n**`packages/server/src/transaction-events.test.ts`.** Both superseded sentinels are exactly the accepted ones (`:1380` comment, `:1385-1387` Unproved, `:1398` title without \"only\", `:1532` 503 with observed context); the Scope callback's 32 requests and 80 ms budget are unchanged, now with 8 wait requests. **A** (`:1563-1675`) has 12 ordered owner reads (counted in source) plus one separate non-read `replaceAuthorizationPolicy()`, two completed `f.run` transactions, one captured `prepare` and one spy held throughout, zero `FROM groups` on every refusal and `>0` on the two positive scans, retained created/deleted at pos\u20112 fitting the default `maximum = 2` exactly, Unproved carrying `retained.context`, and hidden-source `missing` with the replacement view. I verified the policy call actually replaces (`transaction-authorization.ts:18-37` generation 0 \u2192 `transaction-store.ts:1908-1931`) and that completed receipts release ownership (`:1394`), so the `temporarily-unavailable` guard cannot fire. **D** (`:1677-1898`) has the four-operation seed, distinct delete key, actual source-local cursor, conditional overlays, known-current and no-minimum 200 pairs, genuinely seeded Link exclusion, SSE/after/Last-Event-ID/`image/png` 500 gaps, 400 pairs with no context, contextual 404, deleted-Resource 404 vs retained-Event 200, final retained 503 pair, 8 \u00d7 80 ms waits, 37 calls, measured `elapsedMs` under the unchanged 5 s default (`vitest.config.ts` sets no `testTimeout`), close-before-rm and failure aggregation. The 503 body `toEqual` matches `readProblem(\"temporarily-unavailable\")` + overrides exactly (4 members, family `unavailable`) and the `transactionalProblem` schema's `catch-up-timeout` branch (`schemas/bdp-v0.schema.json:4260-4283`). No existing oracle elsewhere conflicts with the widening: the only other `view=events` + minimum sites are `:297` (strict, unchanged), `:1055-1059` (after defined), `transaction-http.test.ts:4528` (400 path) and receipt/alias routes at `:536`.\n\n**`packages/server/src/transaction-service.test.ts`.** One import added; fixture `finiteEventMinimumFixture` reused unchanged. **B/C** seed with a real `service.submit(batch())` (asserting a completed receipt with `requiredPosition: \"pos-1\"`) **before** `watchScans()`, and the submit path bypasses `minimumReads` so the gate/tick schedule is untouched. I re-derived both schedules against `waitForTransactionMinimum`: B = reads 4 / attempts [0,0,5,10] / 2 gated 5 ms waits with real `withRead` probes, with the caller's post-entry tuple mutation correctly *not* observed (capture oracle); C = reads 5 / attempts [0,0,5,10,15] / abort gate released before awaiting rejection / synchronous close refusal counted as the 4th service call / drain then `{value: undefined}` / post-close direct owner refusal. **F**'s seven rows pin error identity and class, clock counts 1/0/1/1/1/1/1, owner reads 0/0/0/0/0/1/1 and zero waits; `malformed-after-valid-preflight` reads 0 is a genuine discriminator of the new service-side capture, and `noncanonical-query`/`relative-source` pin the original owner source-error order (`eventSource` before tuple capture; `ERR_INVALID_URL` not converted). Service cleanup is registered after the fixture's, so teardown runs service \u2192 owner \u2192 directory.\n\n**`apps/bdptest/src/transactional-event-missing-context-installed.test.ts`.** The patch is a pure append at line 637 with three context lines and no deletions, consistent with the byte-preserved 25 284-byte prefix claim; both historical callbacks read unchanged. **E** uses a per-callback generated operator, callback-local `installedTransactionBinding`, fresh child/store/directory, exact-mode allowlist of exactly POST batch / GET / HEAD (enforced per request by `validateExactRunConfiguration`, `http-executor.ts:679`), dispatch `<= 4` and final `=== 4`, ordered URL/method/status, serializer assertions (`source`, `writeState`, `bodyPresent`, `bodyOctets`, `bodyDigest`, Host `reference.invalid`, Accept, and the minimum headers echoed), real seed body with its own idempotency key, schema-valid receipt/page/problem, exact reference 503 Problem, HEAD empty body with paired GET media/length, and `x-bdp-development: non-attesting`. All raw field names survive the executor's secret/reserved filters (`:340-358`; note `bdp-authorization-view` is explicitly exempted, and `idempotency-key`/`content-type` match neither list). Lifecycle matches the corrected f620 shape: 5 s requests / 45 s shared `expiresAt` / 60 s callback, late-rejection observation, no retry, append-only failures, removal only on verified clean timely exit, measured `directoryAbsent`, actual/null PID/exit/signal, truthful `declaredSourceCommit`/`workspaceDirty`, no invented survivors.\n\n**Counts (derived from code, not observed):** D = 8\u00d7200 + 8\u00d7503 + 14\u00d7500 + 4\u00d7400 + 3\u00d7404 = 37; emitted 32 + 59 + 37 = 128; installed 11 + 3 + 4 = 18; callbacks 14 existing + 11 new = 25 source + 3 installed = 28 stores; 3 in-process listeners; 3 sequential installed children. All selected names exist verbatim in the frozen files, and no tracked file outside the test references the renamed Scope callback.\n\n---\n\n## Uncertainty requiring execution (explicitly not claimed as passing)\n\n1. **Nothing has been run on these bytes**; I infer no pass from author prose, plan dispositions or unexecuted tests. Every schedule, count and status above is derived by reading code paths.\n2. **Diff completeness is unverified.** I confirmed the three production hunks and all test regions match the live bytes, and the supplied `gitStatus` shows exactly the six dirty files, but I cannot run `git diff`/hashing, so \"673 other tracked files unchanged\", the 679-hash map and the byte-exact installed prefix remain author claims.\n3. **Formatter/typecheck unverified.** No line in the new code exceeds 100 columns except unbreakable `it(\"\u2026\")` titles (pre-existing pattern), and the only plausible TS concern \u2014 narrowing `parsed` through `parsed?.source.kind === \"bead\"` before `parsed.after` \u2014 is valid optional-chain discriminant narrowing. `biome format`/`lint` are format- and lint-only here (no `organizeImports` assist in the pinned scripts), so the new import position is safe. Still unproven without running them.\n4. **Timing.** D's ~800 ms of real 80 ms waits plus startup should fit the 5 s default, and E's two ~1 s default-budget (`transaction-runtime-configuration.ts:112`) 503s fit the 5 s request timeout \u2014 both unmeasured here; D's `elapsedMs` log exists precisely to decide the plan's split condition.\n5. **Installed/package evidence.** Entry provenance, archive/consumer equivalence and the dirty\u2192clean hash mapping are validation-stage artifacts outside these frozen inputs; I assumed nothing about the future runners.\n\nNo implementation edits were made, and no files were written.",
+    "ttft_ms": 1649,
+    "type": "result",
+    "duration_ms": 1227476,
+    "uuid": "092962c4-84f8-4e89-b683-bb6087a8c043",
+    "ttft_stream_ms": 991,
+    "time_to_request_ms": 13,
+    "first_content_frame_ms": 992,
+    "queued_turn_count": 0
+  }
+]

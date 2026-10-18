@@ -1,0 +1,78 @@
+{
+  "name": "omit-context-control",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "exec",
+    "vitest",
+    "run",
+    "packages/server/src/transaction-http.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/omit-context-control.json",
+    "-t",
+    "^(?:serves\\ current\\ missing\\ receipt\\ root\\ and\\ page\\ context\\ without\\ changing\\ nondisclosure\\ or\\ HEAD)$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy",
+  "started": "2026-10-15T12:39:42.572908+00:00",
+  "head": "015cac1aa4fa827cc4a2c647dff08454c6c8e6f8",
+  "workspaceDirty": true,
+  "sourceSha256": {
+    "packages/server/src/transaction-store.ts": "eec0f4723c8fcfb2245d2e80d77b2de014235cdb208101d523c0ab83fde78eed",
+    "packages/server/src/transaction-service.ts": "53f655faf494209996aac2e0f93a4c2c785e471f66aac6af9ea41f92c9cfbe00",
+    "packages/server/src/transaction-http.ts": "0e42f034c3aada6fd0a7696897200b336d2b0c547d69497e46500f6da4c2267a",
+    "packages/server/src/transaction-receipt-pages.test.ts": "e944bd61590f78a510b427b0f5d6eb7856f6b3715f9f0e5dc590bf8d4724c6a1",
+    "packages/server/src/transaction-service.test.ts": "c61ba7254ab1cf39abf85e6020e4f846ffb684740076de39f43fe12d509093b9",
+    "packages/server/src/transaction-http.test.ts": "3fc5c6750a00968021d2ecc78049535ebbe9a3d2d7684108f2807e8b2276e899",
+    "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts": "eaf1289ed0a8318ce949704ba4cd983755c6f5fd20ffe9d61712869894cb5064",
+    "docs/design/transaction-implementation-progress.md": "28b30246931ccf39588a0dd654715aa7f00eda95893a9b5ed8ec10ffe7fdf6fc"
+  },
+  "sourceDiffSha256": "837bacdc192bcf0401171ecc9a8312ae034beabed7b69620b6a3beaef0cb9de7",
+  "rootAcceptanceSha256": "0972d4280fb997d2a0ee28289d111ecb780d4bff54420c129b18ce1c7372fbed",
+  "preparationSha256": "6f13b69f5ad5ea9d6698c06669e88ec51e8f54ecb546d1e4c8349c9599b97889",
+  "bdpOverrides": {},
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "exec",
+    "vitest",
+    "run",
+    "packages/server/src/transaction-http.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/run/omit-context-control.json",
+    "-t",
+    "^(?:serves\\ current\\ missing\\ receipt\\ root\\ and\\ page\\ context\\ without\\ changing\\ nondisclosure\\ or\\ HEAD)$"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {
+    "cases": 1,
+    "http": 13,
+    "owners": 1,
+    "directories": 1,
+    "listeners": 1,
+    "productChildren": 0
+  },
+  "derivativeBinding": {
+    "module": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/packages/server/dist/transaction-http.js",
+    "positiveSha256": "71e4a41978f975b8424b4be5cb835aa2545d4a03d006ee27b4b7ccea971bc6de",
+    "negativeSha256": "194427b2ff57c2581bfe063b98d92c4f7bbdead2d835d746980b5e0832364487",
+    "sites": [
+      {
+        "positive": "transactionHttpProblem(page.code, page.code === \"resource-not-found\" ? page.context : undefined)",
+        "negative": "transactionHttpProblem(page.code)"
+      },
+      {
+        "positive": "transactionHttpProblem(result.code, result.code === \"resource-not-found\" ? result.context : undefined)",
+        "negative": "transactionHttpProblem(result.code)"
+      }
+    ],
+    "changes": 2,
+    "sourceModified": false
+  }
+}

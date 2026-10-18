@@ -1,0 +1,1066 @@
+{
+  "source": {
+    "head": "6ce9cb4e30d4afa7ac26552490619358fb7044fe",
+    "tree": "4984b474155560429a318bd5459593a6c53ad6bd",
+    "parents": [
+      "8c78cba5d2be5d5612c6a9324ee36ed690fdeb19"
+    ],
+    "clean": true,
+    "branch": "codex/vickie-direct-refusal-context",
+    "files": [
+      {
+        "path": "packages/server/src/transaction-store.ts",
+        "bytes": 84645,
+        "sha256": "92f06ec2844a5c343a8e3d8233682929fdb6eccadda3bc603b94689cf8f23636",
+        "baseSha256": "9df1a0a18d9a73763aab3e4ae185614848a21bf804d4634acb9c5f7f1f92c863",
+        "oldTestPrefixPreserved": null
+      },
+      {
+        "path": "packages/server/src/transaction-submission.ts",
+        "bytes": 6250,
+        "sha256": "68f4bf7c8288ad0eb1d743bab07889c94ad39f283983924762ec93192e522c1f",
+        "baseSha256": "f6b3b58c95afe65ab3f09a35dd799a8c178b053d131e413dba58212259d1c8ee",
+        "oldTestPrefixPreserved": null
+      },
+      {
+        "path": "packages/server/src/transaction-http.ts",
+        "bytes": 26749,
+        "sha256": "f80157d591f9cf2e0269d7eb6927e42d8a9abd81395552924528d1e3b0a81f5a",
+        "baseSha256": "ce94a326af825a84b70252bd8ea5a2c2cf410ef3e99e9223a125c985ecbbde36",
+        "oldTestPrefixPreserved": null
+      },
+      {
+        "path": "packages/server/src/transaction-store.test.ts",
+        "bytes": 131890,
+        "sha256": "c65b917e8e8f6f2162396c718420820cdf49cf59cfd1849008cd8179d40480ea",
+        "baseSha256": "d71b2784a14aaba7567f645b9e54469fb73e8b88c0664af201331881f34ef28f",
+        "oldTestPrefixPreserved": true
+      },
+      {
+        "path": "packages/server/src/transaction-submission.test.ts",
+        "bytes": 38003,
+        "sha256": "61178770397281640dc07f97326683d939c15b9ee072ae4e6d31c9b92387eb41",
+        "baseSha256": "9e923c47a9dd60fdcdf605610da3f2fb2080c451c80d86cda8e73f1e5f497b13",
+        "oldTestPrefixPreserved": true
+      },
+      {
+        "path": "packages/server/src/transaction-http.test.ts",
+        "bytes": 101555,
+        "sha256": "332618fa68236b16907245b65a75f56caa27b561febf2dc920487c8d516c5521",
+        "baseSha256": "bf82259ae0748c5b5f6d84a170d21218ffd68e769c684fb634f96aff8292cc9f",
+        "oldTestPrefixPreserved": true
+      },
+      {
+        "path": "apps/bdptest/src/transactional-direct-refusal-installed.test.ts",
+        "bytes": 17741,
+        "sha256": "bc2dfbc8f3bf71a692b00c4c039a7caed305d8691dbc5941a8b819ced0cedd44",
+        "baseSha256": null,
+        "oldTestPrefixPreserved": null
+      }
+    ],
+    "diffSha256": "7fbdbb17ca905f76ccb9df24ae2b8d5b718fe1ed0d5f403ee0a290c17faced94",
+    "claimEligible": false
+  },
+  "tests": {
+    "focusedTests": 362,
+    "focusedFiles": 7,
+    "controls": [
+      {
+        "name": "capture-outside-owner-transaction",
+        "failedTests": 1,
+        "failures": [
+          {
+            "title": "captures selected observed refusals inside the owner transaction without changing unobserved admissions",
+            "message": "AssertionError: refusal position read must remain inside owner transaction: expected false to be true // Object.is equality"
+          }
+        ],
+        "resultSha256": "7a1c17e92684c7050b633d4580b6dde16c30fb207001a564f5f08f6ca2baf480",
+        "patchSha256": "c897db600648d483b55a556a256e51e82c9363c5ece7a1cae7eda02e88df1c4d",
+        "executedDiffSha256": "8a6d674e3ec77f811d5fbc88d8747a145210cf6efd97555e92ea2f386282fa26"
+      },
+      {
+        "name": "missing-http-context",
+        "failedTests": 1,
+        "failures": [
+          {
+            "title": "carries current owner context on direct conflict, operation-limit and both negotiation refusals",
+            "message": "AssertionError: direct refusal context presence: bdp-scope-epoch: expected false to be true // Object.is equality"
+          }
+        ],
+        "resultSha256": "7a62448ffaa119dd4e4230136a9b4f9ff19949f24b221536ffa4fce69028b17f",
+        "patchSha256": "5fd361e08922a177f0ca7771628759ca6b57ac715d731d3d9bde5eeb24a29d60",
+        "executedDiffSha256": "d608f634ae61754fd09e1b9ba062c198455a01ae4b138569180f78f0b774c1e9"
+      },
+      {
+        "name": "stale-retained-position",
+        "failedTests": 1,
+        "failures": [
+          {
+            "title": "carries current owner context on direct conflict, operation-limit and both negotiation refusals",
+            "message": "AssertionError: direct refusal current context: bdp-scope-position: expected 'pos-1' to be 'pos-2' // Object.is equality"
+          }
+        ],
+        "resultSha256": "c46bb663385619aedd281d89c6a4c0c9ad6a14c081e8270482318c5f8f49f15a",
+        "patchSha256": "5b9af3bb15e375ca2b3bbbe1170586206a3e8151374daadc2426ee5c41e6d196",
+        "executedDiffSha256": "7fae8c5b1b4756eab2f329c2384f5cba19aafdbd967f93f94cdb04afda66ecd7"
+      },
+      {
+        "name": "unobserved-context-leak",
+        "failedTests": 2,
+        "failures": [
+          {
+            "title": "compares conflict before negotiation and negotiates exact pending/terminal replay without changing it",
+            "message": "AssertionError: expected { kind: 'not-acceptable', \u2026(1) } to deeply equal { kind: 'not-acceptable' }"
+          },
+          {
+            "title": "checks fresh capacity before negotiation and never captures a refused key",
+            "message": "AssertionError: expected { kind: 'refused', status: 413, \u2026(3) } to deeply equal { kind: 'refused', status: 413, \u2026(2) }"
+          }
+        ],
+        "resultSha256": "b7fff0f68703524f74f5139657eb5450509245adc64297c26747c8764f95cfeb",
+        "patchSha256": "d0c78ecd82074138dc72cf1d18ba995acf5fe422b5c224cabc1d19bb1ae9c8d9",
+        "executedDiffSha256": "ff8133e9b6ea412a22b8d23b373de50f331b53c453c9aa0493c2d0c7e780e186"
+      }
+    ],
+    "checks": {
+      "boundaries-1.exit.json": {
+        "name": "boundaries-1",
+        "exit": 0,
+        "elapsed": 1.0071336671244353,
+        "started": "2026-10-14T15:40:47Z",
+        "ended": "2026-10-14T15:40:48Z",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-context",
+        "args": [
+          "node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "check:boundaries"
+        ]
+      },
+      "build-1.exit.json": {
+        "name": "build-1",
+        "exit": 0,
+        "elapsed": 1.0068244999274611,
+        "started": "2026-10-14T15:38:11Z",
+        "ended": "2026-10-14T15:38:12Z",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-context",
+        "args": [
+          "node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "build"
+        ]
+      },
+      "control-capture-outside-owner-transaction-build.exit.json": {
+        "name": "control-capture-outside-owner-transaction-build",
+        "exit": 0,
+        "elapsed": 1.0065669999457896,
+        "started": "2026-10-14T15:41:06Z",
+        "ended": "2026-10-14T15:41:07Z",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-controls",
+        "args": [
+          "node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "build"
+        ]
+      },
+      "control-capture-outside-owner-transaction-test.exit.json": {
+        "name": "control-capture-outside-owner-transaction-test",
+        "exit": 1,
+        "elapsed": 1.0067840421106666,
+        "started": "2026-10-14T15:41:07Z",
+        "ended": "2026-10-14T15:41:08Z",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-controls",
+        "args": [
+          "node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "exec",
+          "vitest",
+          "run",
+          "packages/server/src/transaction-store.test.ts",
+          "-t",
+          "captures selected observed refusals inside the owner transaction",
+          "--maxWorkers=1",
+          "--reporter=verbose",
+          "--reporter=json",
+          "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-direct-refusal-context/controls/capture-outside-owner-transaction/result.json"
+        ]
+      },
+      "control-install.exit.json": {
+        "name": "control-install",
+        "exit": 0,
+        "elapsed": 1.0066717499867082,
+        "started": "2026-10-14T15:40:37Z",
+        "ended": "2026-10-14T15:40:38Z",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-controls",
+        "args": [
+          "node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "install",
+          "--offline",
+          "--frozen-lockfile"
+        ]
+      },
+      "control-missing-http-context-build.exit.json": {
+        "name": "control-missing-http-context-build",
+        "exit": 0,
+        "elapsed": 2.007327875122428,
+        "started": "2026-10-14T15:41:00Z",
+        "ended": "2026-10-14T15:41:02Z",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-controls",
+        "args": [
+          "node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "build"
+        ]
+      },
+      "control-missing-http-context-test.exit.json": {
+        "name": "control-missing-http-context-test",
+        "exit": 1,
+        "elapsed": 2.0125707080587745,
+        "started": "2026-10-14T15:41:02Z",
+        "ended": "2026-10-14T15:41:04Z",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-controls",
+        "args": [
+          "node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "exec",
+          "vitest",
+          "run",
+          "packages/server/src/transaction-http.test.ts",
+          "-t",
+          "carries current owner context on direct conflict",
+          "--maxWorkers=1",
+          "--reporter=verbose",
+          "--reporter=json",
+          "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-direct-refusal-context/controls/missing-http-context/result.json"
+        ]
+      },
+      "control-stale-retained-position-build.exit.json": {
+        "name": "control-stale-retained-position-build",
+        "exit": 0,
+        "elapsed": 1.0051530830096453,
+        "started": "2026-10-14T15:41:04Z",
+        "ended": "2026-10-14T15:41:05Z",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-controls",
+        "args": [
+          "node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "build"
+        ]
+      },
+      "control-stale-retained-position-test.exit.json": {
+        "name": "control-stale-retained-position-test",
+        "exit": 1,
+        "elapsed": 1.0068067088723183,
+        "started": "2026-10-14T15:41:05Z",
+        "ended": "2026-10-14T15:41:06Z",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-controls",
+        "args": [
+          "node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "exec",
+          "vitest",
+          "run",
+          "packages/server/src/transaction-http.test.ts",
+          "-t",
+          "carries current owner context on direct conflict",
+          "--maxWorkers=1",
+          "--reporter=verbose",
+          "--reporter=json",
+          "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-direct-refusal-context/controls/stale-retained-position/result.json"
+        ]
+      },
+      "control-unobserved-context-leak-build.exit.json": {
+        "name": "control-unobserved-context-leak-build",
+        "exit": 0,
+        "elapsed": 1.0056333329994231,
+        "started": "2026-10-14T15:41:08Z",
+        "ended": "2026-10-14T15:41:09Z",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-controls",
+        "args": [
+          "node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "build"
+        ]
+      },
+      "control-unobserved-context-leak-test.exit.json": {
+        "name": "control-unobserved-context-leak-test",
+        "exit": 1,
+        "elapsed": 1.006962209008634,
+        "started": "2026-10-14T15:41:09Z",
+        "ended": "2026-10-14T15:41:10Z",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-controls",
+        "args": [
+          "node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "exec",
+          "vitest",
+          "run",
+          "packages/server/src/transaction-submission.test.ts",
+          "-t",
+          "compares conflict before negotiation and negotiates exact pending/terminal replay without changing it|checks fresh capacity before negotiation and never captures a refused key",
+          "--maxWorkers=1",
+          "--reporter=verbose",
+          "--reporter=json",
+          "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-direct-refusal-context/controls/unobserved-context-leak/result.json"
+        ]
+      },
+      "focused-1.exit.json": {
+        "name": "focused-1",
+        "exit": 0,
+        "elapsed": 6.028125375043601,
+        "started": "2026-10-14T15:38:18Z",
+        "ended": "2026-10-14T15:38:24Z",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-context",
+        "args": [
+          "node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "exec",
+          "vitest",
+          "run",
+          "packages/server/src/transaction-store.test.ts",
+          "packages/server/src/transaction-submission.test.ts",
+          "packages/server/src/transaction-http.test.ts",
+          "packages/server/src/transaction-dependencies.test.ts",
+          "packages/server/src/transaction-sequence-alias.test.ts",
+          "packages/server/src/transaction-set.test.ts",
+          "packages/server/src/transaction-owned.test.ts",
+          "--maxWorkers=2",
+          "--reporter=verbose",
+          "--reporter=json",
+          "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-direct-refusal-context/focused-1.json"
+        ]
+      },
+      "format-1.exit.json": {
+        "name": "format-1",
+        "exit": 0,
+        "elapsed": 2.007065874990076,
+        "started": "2026-10-14T15:40:44Z",
+        "ended": "2026-10-14T15:40:46Z",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-context",
+        "args": [
+          "node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "format:check"
+        ]
+      },
+      "install.exit.json": {
+        "name": "install",
+        "exit": 0,
+        "elapsed": 1.006573542021215,
+        "started": "2026-10-14T15:37:42Z",
+        "ended": "2026-10-14T15:37:43Z",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-context",
+        "args": [
+          "node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "install",
+          "--frozen-lockfile"
+        ]
+      },
+      "lint-1.exit.json": {
+        "name": "lint-1",
+        "exit": 0,
+        "elapsed": 1.0070002500433475,
+        "started": "2026-10-14T15:40:46Z",
+        "ended": "2026-10-14T15:40:47Z",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-context",
+        "args": [
+          "node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "lint"
+        ]
+      },
+      "read-seal-1.exit.json": {
+        "name": "read-seal-1",
+        "exit": 0,
+        "elapsed": 1.006970375077799,
+        "started": "2026-10-14T15:40:48Z",
+        "ended": "2026-10-14T15:40:49Z",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-context",
+        "args": [
+          "node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "evidence:verify"
+        ]
+      },
+      "typecheck-1.exit.json": {
+        "name": "typecheck-1",
+        "exit": 1,
+        "elapsed": 2.008256332948804,
+        "started": "2026-10-14T15:37:48Z",
+        "ended": "2026-10-14T15:37:50Z",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-context",
+        "args": [
+          "node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "typecheck"
+        ]
+      },
+      "typecheck-2.exit.json": {
+        "name": "typecheck-2",
+        "exit": 0,
+        "elapsed": 1.0035773748531938,
+        "started": "2026-10-14T15:38:05Z",
+        "ended": "2026-10-14T15:38:06Z",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-context",
+        "args": [
+          "node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "typecheck"
+        ]
+      }
+    }
+  },
+  "installed": {
+    "positive": {
+      "mode": "positive",
+      "source": "6ce9cb4e30d4afa7ac26552490619358fb7044fe",
+      "tree": "4984b474155560429a318bd5459593a6c53ad6bd",
+      "authorSource": "6ce9cb4e30d4afa7ac26552490619358fb7044fe",
+      "clean": true,
+      "packs": {
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-direct-refusal-context/packed-positive/packs/protocol.tgz": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-direct-refusal-context/packed-positive/packs/server.tgz": "03f1d0bd077e3a8e190a60b5e30a1e8e6fa949fd4be8bb5dd454be9293be6b25"
+      },
+      "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-direct-refusal-context/packed-positive/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+      "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+      "observation": {
+        "observation": "private-installed-direct-refusal-context",
+        "declaredSourceCommit": "6ce9cb4e30d4afa7ac26552490619358fb7044fe",
+        "workspaceDirty": false,
+        "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-direct-refusal-context/packed-positive/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+        "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+        "directoryAbsent": true,
+        "evidenceRetention": "Response fingerprints and context only; complete wire and body bytes are not retained",
+        "binding": {
+          "served": {
+            "scope": "https://reference.invalid/acme/",
+            "profile": "transactional",
+            "history": false,
+            "sourceCommit": "6ce9cb4e30d4afa7ac26552490619358fb7044fe",
+            "installedPayloadDigest": "ced4ef93640ae2dcd67e88a5c7684bab802e9aa73eba974fab81d30ff3e56d19",
+            "installedContractsDigest": "1f369030c8696ff445c235b24637cc1ac41f0ab724a1b2402511347f74da344f",
+            "policyDigest": "f174ef60802cff86faa98ecb2ed448d2f7f8dd3afe1a13dfe159c70171bffe44",
+            "authenticationDigest": "c8ab86870c00a35347ef93ca47ac97fa39b1541a4e17a2fa06d77a639882574a",
+            "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+            "fixtureId": "reference-transactional-v1",
+            "capabilities": [
+              "installed-transactional-http",
+              "transactional-receipt-observation"
+            ]
+          },
+          "operationTargets": {
+            "createBead": "https://reference.invalid/acme/operations/create-bead",
+            "updateBead": "https://reference.invalid/acme/operations/update-bead",
+            "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+            "createLink": "https://reference.invalid/acme/operations/create-link",
+            "updateLink": "https://reference.invalid/acme/operations/update-link",
+            "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+            "putAlias": "https://reference.invalid/acme/operations/put-alias",
+            "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+            "updateWhere": "https://reference.invalid/acme/operations/update-where",
+            "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+            "batch": "https://reference.invalid/acme/operations/batch",
+            "sequence": "https://reference.invalid/acme/operations/sequence"
+          },
+          "runtimeConfigurationIdentity": "66c5907bd6c0cb0e553fdc17ead3e4a0f97931525c52b54271234cad0bd39136",
+          "authorityMode": "canonical"
+        },
+        "routes": [
+          {
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/create-bead"
+          },
+          {
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/batch"
+          },
+          {
+            "method": "GET",
+            "url": "https://reference.invalid/acme/beads/?limit=32"
+          },
+          {
+            "method": "GET",
+            "url": "https://reference.invalid/acme/events/"
+          }
+        ],
+        "sessions": [
+          {
+            "pid": 5945,
+            "exit": 0,
+            "signal": null
+          }
+        ],
+        "attemptedRequests": 14,
+        "completedResponses": [
+          {
+            "label": "seed-a",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/create-bead",
+            "status": 200,
+            "requestBodyBytes": 94,
+            "requestBodySha256": "8730ee46597d5173aa5f13593fd8282ada4fecc1729fd568974cbcdee7275ee8",
+            "responseBodyBytes": 663,
+            "responseBodySha256": "0402174f44fa2323474fd43f5ab61fb92d67389bc6f90cf278795bd8ffe60e0c",
+            "wireSha256": "9ff61df696862898dab4e2cec3a103686d3a20584f1827160c9ee638de4588f9",
+            "context": {
+              "epoch": "c16e73cd-cd5a-4201-a8f1-054a22ec86a1",
+              "view": "development-all-visible",
+              "position": "pos-1"
+            }
+          },
+          {
+            "label": "seed-b",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/batch",
+            "status": 200,
+            "requestBodyBytes": 136,
+            "requestBodySha256": "bdec7df3b90efd349ee33374fe1cb8911aa7b7adbf06ca8d31e920e8115e166d",
+            "responseBodyBytes": 662,
+            "responseBodySha256": "5185df720609c816bacc29ebe99ec1a0a4a7719d491c7fb9783adbb4c970cc93",
+            "wireSha256": "7ab5468400dd4a938a06e179f56540001549ca85301d24e9387367350e1cc0f0",
+            "context": {
+              "epoch": "c16e73cd-cd5a-4201-a8f1-054a22ec86a1",
+              "view": "development-all-visible",
+              "position": "pos-2"
+            }
+          },
+          {
+            "label": "singleton-conflict",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/create-bead",
+            "status": 409,
+            "requestBodyBytes": 106,
+            "requestBodySha256": "89cc71bbe2d8fdfd7cbec72887b165d25755fd848af915de005436361fe94c8b",
+            "responseBodyBytes": 122,
+            "responseBodySha256": "6659f511cbef9350ede5c7ed10ed8d17f0a713a0c938e35ff4ab844e06b42b96",
+            "wireSha256": "5e6a96aa2346cf8361c5cda0e423e3a3e3da10b0079e83335d74e03c8ddde1b1",
+            "context": {
+              "epoch": "c16e73cd-cd5a-4201-a8f1-054a22ec86a1",
+              "view": "development-all-visible",
+              "position": "pos-2"
+            }
+          },
+          {
+            "label": "batch-conflict",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/batch",
+            "status": 409,
+            "requestBodyBytes": 148,
+            "requestBodySha256": "626c3acb09d848f40a2a97f0e87ef4225cc2a59e864334245a6b7925f98b4951",
+            "responseBodyBytes": 122,
+            "responseBodySha256": "6659f511cbef9350ede5c7ed10ed8d17f0a713a0c938e35ff4ab844e06b42b96",
+            "wireSha256": "5e6a96aa2346cf8361c5cda0e423e3a3e3da10b0079e83335d74e03c8ddde1b1",
+            "context": {
+              "epoch": "c16e73cd-cd5a-4201-a8f1-054a22ec86a1",
+              "view": "development-all-visible",
+              "position": "pos-2"
+            }
+          },
+          {
+            "label": "retained-negotiation",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/create-bead",
+            "status": 406,
+            "requestBodyBytes": 94,
+            "requestBodySha256": "8730ee46597d5173aa5f13593fd8282ada4fecc1729fd568974cbcdee7275ee8",
+            "responseBodyBytes": 0,
+            "responseBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "wireSha256": "74a354a62d56e6482230eb36500957eab0abda5c33aeacd8aba2b5cf1b85e79d",
+            "context": {
+              "epoch": "c16e73cd-cd5a-4201-a8f1-054a22ec86a1",
+              "view": "development-all-visible",
+              "position": "pos-2"
+            }
+          },
+          {
+            "label": "fresh-negotiation",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/create-bead",
+            "status": 406,
+            "requestBodyBytes": 94,
+            "requestBodySha256": "c54e2350ba3d0f5514cbef8dafcb231213608964c7e68a4e77cc6ada18127681",
+            "responseBodyBytes": 0,
+            "responseBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "wireSha256": "74a354a62d56e6482230eb36500957eab0abda5c33aeacd8aba2b5cf1b85e79d",
+            "context": {
+              "epoch": "c16e73cd-cd5a-4201-a8f1-054a22ec86a1",
+              "view": "development-all-visible",
+              "position": "pos-2"
+            }
+          },
+          {
+            "label": "fresh-capacity",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/batch",
+            "status": 413,
+            "requestBodyBytes": 4616,
+            "requestBodySha256": "fe8750234527a921024115c489b435f0fb66758d17019062e50428f4cc679304",
+            "responseBodyBytes": 145,
+            "responseBodySha256": "97c5bc0ad96786188599c531d4a06db8ee460ada44a2a5b807f3b4d62756d06f",
+            "wireSha256": "fe52fc0ac13faddd874d54dda944d4334cc9fdbeff67abdf85f0f35e41420473",
+            "context": {
+              "epoch": "c16e73cd-cd5a-4201-a8f1-054a22ec86a1",
+              "view": "development-all-visible",
+              "position": "pos-2"
+            }
+          },
+          {
+            "label": "retained-root",
+            "method": "GET",
+            "url": "https://reference.invalid/acme/receipts/4c4ce1cc-2b70-4def-9499-4dbf1b030042",
+            "status": 200,
+            "requestBodyBytes": 0,
+            "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "responseBodyBytes": 663,
+            "responseBodySha256": "0402174f44fa2323474fd43f5ab61fb92d67389bc6f90cf278795bd8ffe60e0c",
+            "wireSha256": "d6043532efb19c09f3bbf5d4f1a91d48c966c4180c86680b88d04c776589bcff",
+            "context": {
+              "epoch": "c16e73cd-cd5a-4201-a8f1-054a22ec86a1",
+              "view": "development-all-visible",
+              "position": "pos-2"
+            }
+          },
+          {
+            "label": "unchanged-beads",
+            "method": "GET",
+            "url": "https://reference.invalid/acme/beads/?limit=32",
+            "status": 200,
+            "requestBodyBytes": 0,
+            "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "responseBodyBytes": 403,
+            "responseBodySha256": "4b85a64238d171475a43d60c2e41195b9560721166a15c8cc7210fb200e1fa1e",
+            "wireSha256": "be38a684ef5a51c94e7756e90ef3a2eca01374ed081b256b78a105ed259b4829",
+            "context": {
+              "epoch": "c16e73cd-cd5a-4201-a8f1-054a22ec86a1",
+              "view": "development-all-visible",
+              "position": "pos-2"
+            }
+          },
+          {
+            "label": "unchanged-events",
+            "method": "GET",
+            "url": "https://reference.invalid/acme/events/",
+            "status": 200,
+            "requestBodyBytes": 0,
+            "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "responseBodyBytes": 1128,
+            "responseBodySha256": "1ce5520592128df903b0a9fa43094dee6441910a95b2fc3ff6bbdc09d77a11ab",
+            "wireSha256": "880f545e18bc89a4db3f4a9f72609a4260d05e2eba3acb322000d007433a89ce",
+            "context": {
+              "epoch": "c16e73cd-cd5a-4201-a8f1-054a22ec86a1",
+              "view": "development-all-visible",
+              "position": "pos-2"
+            }
+          },
+          {
+            "label": "retry-negotiation-key",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/create-bead",
+            "status": 200,
+            "requestBodyBytes": 94,
+            "requestBodySha256": "c54e2350ba3d0f5514cbef8dafcb231213608964c7e68a4e77cc6ada18127681",
+            "responseBodyBytes": 672,
+            "responseBodySha256": "14ac74424aea0a9c19ea321f5161a34784d1c0fb150e2a5b80a78da2f201a991",
+            "wireSha256": "241ef87ccc7f45d549dadc26d616f154a9c5ddfebb38d930d487671808f0bba5",
+            "context": {
+              "epoch": "c16e73cd-cd5a-4201-a8f1-054a22ec86a1",
+              "view": "development-all-visible",
+              "position": "pos-3"
+            }
+          },
+          {
+            "label": "retry-capacity-key",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/batch",
+            "status": 200,
+            "requestBodyBytes": 136,
+            "requestBodySha256": "c39c944cd13c464b4d886d0d1968296ad43f72c153532c49ce687153b9e36819",
+            "responseBodyBytes": 669,
+            "responseBodySha256": "30addfc2e92535d118350a78110927ed57a8a85ee327bec008bdac52f43de8e3",
+            "wireSha256": "c03baea890831b6062980bd7e886d8727b1c33a37279ac78a8ae50d549fc6df0",
+            "context": {
+              "epoch": "c16e73cd-cd5a-4201-a8f1-054a22ec86a1",
+              "view": "development-all-visible",
+              "position": "pos-4"
+            }
+          },
+          {
+            "label": "final-beads",
+            "method": "GET",
+            "url": "https://reference.invalid/acme/beads/?limit=32",
+            "status": 200,
+            "requestBodyBytes": 0,
+            "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "responseBodyBytes": 783,
+            "responseBodySha256": "d96546843c38b9f17fae0944363c754f84c7795e5d4a94d991c02f4e13f4093b",
+            "wireSha256": "167bf6cbf34a465136c43d146580959ee1df6bad0db615a2c6f557ca775ac3bb",
+            "context": {
+              "epoch": "c16e73cd-cd5a-4201-a8f1-054a22ec86a1",
+              "view": "development-all-visible",
+              "position": "pos-4"
+            }
+          },
+          {
+            "label": "final-events",
+            "method": "GET",
+            "url": "https://reference.invalid/acme/events/",
+            "status": 200,
+            "requestBodyBytes": 0,
+            "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "responseBodyBytes": 2182,
+            "responseBodySha256": "ada95beaf5d814c6fd71b8f1f3c042374aaed3d6745e66b30ef302ef02a24235",
+            "wireSha256": "42e7ef40451c934dbd41ede4a250013c1b6e36c619a7e8c0f5c7ea8330173f6c",
+            "context": {
+              "epoch": "c16e73cd-cd5a-4201-a8f1-054a22ec86a1",
+              "view": "development-all-visible",
+              "position": "pos-4"
+            }
+          }
+        ],
+        "outcome": "passed",
+        "claimEligible": false
+      },
+      "exits": {
+        "build": {
+          "exit": 0,
+          "seconds": 0.8769767910707742,
+          "started": "2026-10-14T15:42:14Z",
+          "ended": "2026-10-14T15:42:15Z",
+          "command": [
+            "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+            "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+            "build"
+          ],
+          "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-context",
+          "pid": 5858
+        },
+        "pack-protocol": {
+          "exit": 0,
+          "seconds": 0.23617362510412931,
+          "started": "2026-10-14T15:42:15Z",
+          "ended": "2026-10-14T15:42:15Z",
+          "command": [
+            "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+            "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+            "pack",
+            "--out",
+            "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-direct-refusal-context/packed-positive/packs/protocol.tgz"
+          ],
+          "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-context/packages/protocol",
+          "pid": 5921
+        },
+        "pack-server": {
+          "exit": 0,
+          "seconds": 0.28649208415299654,
+          "started": "2026-10-14T15:42:15Z",
+          "ended": "2026-10-14T15:42:15Z",
+          "command": [
+            "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+            "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+            "pack",
+            "--out",
+            "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-direct-refusal-context/packed-positive/packs/server.tgz"
+          ],
+          "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-context/packages/server",
+          "pid": 5927
+        },
+        "install": {
+          "exit": 0,
+          "seconds": 0.4421014580875635,
+          "started": "2026-10-14T15:42:15Z",
+          "ended": "2026-10-14T15:42:16Z",
+          "command": [
+            "npm",
+            "install",
+            "--offline",
+            "--ignore-scripts",
+            "--no-audit",
+            "--no-fund"
+          ],
+          "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-direct-refusal-context/packed-positive/install",
+          "pid": 5928
+        },
+        "installed": {
+          "exit": 0,
+          "seconds": 0.9169160001911223,
+          "started": "2026-10-14T15:42:16Z",
+          "ended": "2026-10-14T15:42:16Z",
+          "command": [
+            "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+            "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+            "exec",
+            "vitest",
+            "run",
+            "apps/bdptest/src/transactional-direct-refusal-installed.test.ts",
+            "--maxWorkers=1",
+            "--reporter=verbose",
+            "--reporter=json",
+            "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-direct-refusal-context/packed-positive/installed.json"
+          ],
+          "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-context",
+          "pid": 5930
+        }
+      },
+      "childPidsAbsent": [
+        5945
+      ]
+    },
+    "negativeAdjudication": {
+      "source": {
+        "mode": "negative",
+        "source": "8c78cba5d2be5d5612c6a9324ee36ed690fdeb19",
+        "tree": "f2bc6fd3750bb7b453984f9927f75e64554c777a",
+        "authorSource": "6ce9cb4e30d4afa7ac26552490619358fb7044fe",
+        "clean": true,
+        "packs": {
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-direct-refusal-context/packed-negative/packs/protocol.tgz": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-direct-refusal-context/packed-negative/packs/server.tgz": "e0dd60d3101768be2d1ddeb5b45fd49939aefb01769cba7c0b7ad48d33f04d97"
+        },
+        "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-direct-refusal-context/packed-negative/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+        "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c"
+      },
+      "observation": {
+        "observation": "private-installed-direct-refusal-context",
+        "declaredSourceCommit": "8c78cba5d2be5d5612c6a9324ee36ed690fdeb19",
+        "workspaceDirty": false,
+        "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-direct-refusal-context/packed-negative/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+        "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+        "directoryAbsent": true,
+        "evidenceRetention": "Response fingerprints and context only; complete wire and body bytes are not retained",
+        "binding": {
+          "served": {
+            "scope": "https://reference.invalid/acme/",
+            "profile": "transactional",
+            "history": false,
+            "sourceCommit": "8c78cba5d2be5d5612c6a9324ee36ed690fdeb19",
+            "installedPayloadDigest": "a4f4d446ff0e506a329fc19d8f0dbac9a81e325e80750a30936a31bb9e57f6b6",
+            "installedContractsDigest": "1f369030c8696ff445c235b24637cc1ac41f0ab724a1b2402511347f74da344f",
+            "policyDigest": "9380baa00028a8fb85b77e1ff6d9a42ff028b5249c5dcdd1386cab83bd5826af",
+            "authenticationDigest": "00c92ddf2481df158dd3535cbf59df1d4d5f8fb8adef93d90207a6064c36b16c",
+            "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+            "fixtureId": "reference-transactional-v1",
+            "capabilities": [
+              "installed-transactional-http",
+              "transactional-receipt-observation"
+            ]
+          },
+          "operationTargets": {
+            "createBead": "https://reference.invalid/acme/operations/create-bead",
+            "updateBead": "https://reference.invalid/acme/operations/update-bead",
+            "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+            "createLink": "https://reference.invalid/acme/operations/create-link",
+            "updateLink": "https://reference.invalid/acme/operations/update-link",
+            "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+            "putAlias": "https://reference.invalid/acme/operations/put-alias",
+            "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+            "updateWhere": "https://reference.invalid/acme/operations/update-where",
+            "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+            "batch": "https://reference.invalid/acme/operations/batch",
+            "sequence": "https://reference.invalid/acme/operations/sequence"
+          },
+          "runtimeConfigurationIdentity": "1266286b21c18ddb6e7c5801b0b514a3f3c86b6f4240f84252b2625503ececc9",
+          "authorityMode": "canonical"
+        },
+        "routes": [
+          {
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/create-bead"
+          },
+          {
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/batch"
+          },
+          {
+            "method": "GET",
+            "url": "https://reference.invalid/acme/beads/?limit=32"
+          },
+          {
+            "method": "GET",
+            "url": "https://reference.invalid/acme/events/"
+          }
+        ],
+        "sessions": [
+          {
+            "pid": 6047,
+            "exit": 0,
+            "signal": null
+          }
+        ],
+        "attemptedRequests": 3,
+        "completedResponses": [
+          {
+            "label": "seed-a",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/create-bead",
+            "status": 200,
+            "requestBodyBytes": 94,
+            "requestBodySha256": "8730ee46597d5173aa5f13593fd8282ada4fecc1729fd568974cbcdee7275ee8",
+            "responseBodyBytes": 663,
+            "responseBodySha256": "03634685f53beaaaee73ba6d7d65cfd67ef36a56457200b0e85e15007cdbc6e5",
+            "wireSha256": "12c94be2371ac0788d5bd00f5c4c12ccbab5eb2514f71cb2c2b5c335d0321d41",
+            "context": {
+              "epoch": "e17e3a41-2084-4a97-8367-01befdef1c9c",
+              "view": "development-all-visible",
+              "position": "pos-1"
+            }
+          },
+          {
+            "label": "seed-b",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/batch",
+            "status": 200,
+            "requestBodyBytes": 136,
+            "requestBodySha256": "bdec7df3b90efd349ee33374fe1cb8911aa7b7adbf06ca8d31e920e8115e166d",
+            "responseBodyBytes": 662,
+            "responseBodySha256": "b607c332a5dc7222b8ead7927ccaf011a58051dfe08c0101bf2be1df63611ec7",
+            "wireSha256": "beac1a36a88a1585ab07f52f37863b01ff09407de2c76a49175b7613ff91b022",
+            "context": {
+              "epoch": "e17e3a41-2084-4a97-8367-01befdef1c9c",
+              "view": "development-all-visible",
+              "position": "pos-2"
+            }
+          },
+          {
+            "label": "singleton-conflict",
+            "method": "POST",
+            "url": "https://reference.invalid/acme/operations/create-bead",
+            "status": 409,
+            "requestBodyBytes": 106,
+            "requestBodySha256": "89cc71bbe2d8fdfd7cbec72887b165d25755fd848af915de005436361fe94c8b",
+            "responseBodyBytes": 122,
+            "responseBodySha256": "6659f511cbef9350ede5c7ed10ed8d17f0a713a0c938e35ff4ab844e06b42b96",
+            "wireSha256": "b3e0323c6a91f5a8b85ec41d41b531866e66c0682f06d6b90490ddd8f43e1ba0",
+            "context": {}
+          }
+        ],
+        "outcome": "failed",
+        "claimEligible": false
+      },
+      "originalPostprocessorFailed": true,
+      "reason": "Expected custom assertion label is suppressed by Vitest numeric matcher type-check. Actual failure is exact context-presence assertion line226 receiving undefined at request3 conflict; no rerun.",
+      "failure": [
+        "TypeError: actual value must be number or bigint, received \"undefined\"\n    at assertTypes (file:///Users/dbox/repos/wt/vickie/vickie-direct-refusal-context/node_modules/.pnpm/@vitest+utils@4.1.10/node_modules/@vitest/utils/dist/helpers.js:56:9)\n    at Proxy.<anonymous> (file:///Users/dbox/repos/wt/vickie/vickie-direct-refusal-context/node_modules/.pnpm/@vitest+expect@4.1.10/node_modules/@vitest/expect/dist/index.js:1338:3)\n    at Proxy.<anonymous> (file:///Users/dbox/repos/wt/vickie/vickie-direct-refusal-context/node_modules/.pnpm/@vitest+expect@4.1.10/node_modules/@vitest/expect/dist/index.js:1156:15)\n    at Proxy.methodWrapper (file:///Users/dbox/repos/wt/vickie/vickie-direct-refusal-context/node_modules/.pnpm/chai@6.2.2/node_modules/chai/index.js:1700:25)\n    at context (/Users/dbox/repos/wt/vickie/vickie-direct-refusal-context/apps/bdptest/src/transactional-direct-refusal-installed.test.ts:226:9)\n    at /Users/dbox/repos/wt/vickie/vickie-direct-refusal-context/apps/bdptest/src/transactional-direct-refusal-installed.test.ts:318:5\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///Users/dbox/repos/wt/vickie/vickie-direct-refusal-context/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+      ],
+      "logSha256": "bc119469c88cedcbb9f22f54315e43a9fd5f3c4cbfbbdfbf8a049c96ba37734d",
+      "resultSha256": "66e7ebffa6dd6ec311402c3e1770bec908627e9cc97c77c372bf877540df2e60",
+      "exitRecords": {
+        "frozen-install": {
+          "exit": 0,
+          "seconds": 0.4463174589909613,
+          "started": "2026-10-14T15:42:24Z",
+          "ended": "2026-10-14T15:42:24Z",
+          "command": [
+            "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+            "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+            "install",
+            "--offline",
+            "--frozen-lockfile"
+          ],
+          "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-predecessor",
+          "pid": 5981
+        },
+        "build": {
+          "exit": 0,
+          "seconds": 1.41119220899418,
+          "started": "2026-10-14T15:42:24Z",
+          "ended": "2026-10-14T15:42:26Z",
+          "command": [
+            "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+            "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+            "build"
+          ],
+          "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-predecessor",
+          "pid": 5986
+        },
+        "pack-protocol": {
+          "exit": 0,
+          "seconds": 0.22920754202641547,
+          "started": "2026-10-14T15:42:26Z",
+          "ended": "2026-10-14T15:42:26Z",
+          "command": [
+            "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+            "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+            "pack",
+            "--out",
+            "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-direct-refusal-context/packed-negative/packs/protocol.tgz"
+          ],
+          "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-predecessor/packages/protocol",
+          "pid": 6026
+        },
+        "pack-server": {
+          "exit": 0,
+          "seconds": 0.2920544580556452,
+          "started": "2026-10-14T15:42:26Z",
+          "ended": "2026-10-14T15:42:26Z",
+          "command": [
+            "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+            "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+            "pack",
+            "--out",
+            "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-direct-refusal-context/packed-negative/packs/server.tgz"
+          ],
+          "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-predecessor/packages/server",
+          "pid": 6027
+        },
+        "install": {
+          "exit": 0,
+          "seconds": 0.2803650829009712,
+          "started": "2026-10-14T15:42:26Z",
+          "ended": "2026-10-14T15:42:26Z",
+          "command": [
+            "npm",
+            "install",
+            "--offline",
+            "--ignore-scripts",
+            "--no-audit",
+            "--no-fund"
+          ],
+          "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-direct-refusal-context/packed-negative/install",
+          "pid": 6028
+        },
+        "installed": {
+          "exit": 1,
+          "seconds": 0.8751942089293152,
+          "started": "2026-10-14T15:42:26Z",
+          "ended": "2026-10-14T15:42:27Z",
+          "command": [
+            "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+            "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+            "exec",
+            "vitest",
+            "run",
+            "apps/bdptest/src/transactional-direct-refusal-installed.test.ts",
+            "--maxWorkers=1",
+            "--reporter=verbose",
+            "--reporter=json",
+            "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-direct-refusal-context/packed-negative/installed.json"
+          ],
+          "cwd": "/Users/dbox/repos/wt/vickie/vickie-direct-refusal-context",
+          "pid": 6030
+        }
+      },
+      "additionalExecution": false
+    },
+    "requests": 17,
+    "children": 2,
+    "maximumRequests": 28,
+    "maximumChildren": 2
+  },
+  "cleanup": {
+    "absentChildPids": [
+      5945,
+      6047
+    ],
+    "directoriesAbsent": true,
+    "sourceClean": true
+  },
+  "claimEligible": false,
+  "limitations": [
+    "Private non-attesting installed entry, not public profile qualification",
+    "Complete body/wire bytes validated in memory but only fingerprints/context retained",
+    "Source-only pending/dependency refusal variants are not installed evidence",
+    "Full workspace suite not run",
+    "Negative harness postprocessor label mismatch retained and adjudicated without execution"
+  ]
+}

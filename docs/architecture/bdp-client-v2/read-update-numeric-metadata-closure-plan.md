@@ -1,0 +1,78 @@
+# Attribution promotion and numeric metadata closure — supporting plan
+
+Plan only under the sole fork `docs/architecture/bdp-client-v2/design.md`. No implementation authorization, source edits, tests, servers, credentials or outward actions. Root/council must accept this plan and supply a **frozen, accepted ordinary R/N successor** before implementation. Do not edit the current numeric-admission author checkout.
+
+Authority: accepted whole-clause audit `read-update-attribution-numeric-whole-audit.md`, SHA25665cb5ea5a5674d9b5d3eab29878c041aeb951dea7b6f1b77dc6a8b3e44537abd; accepted R/N plan `read-update-after-attribution-next-plan-revised.md`, SHA2560af9d4d447b0a571d702c960de4e48ff2925074a4af89a535b0077dc1c285a8e and root acceptance. Main basis2a40740cb98545f4e83166c8e58e2aee0e587a65 has the reviewed9c tree. Read-only provisional context is `vickie-read-update-numeric-admission` at that HEAD with five dirty authorized files, plus its authored-ledger/source-audit JSON. These bytes are **not frozen or accepted evidence**. Reconcile exact measurements, hashes, source anchors and any council changes against the eventual approved predecessor; stop on unexpected scope overlap.
+
+## Intended outcome and exact law
+
+1. Promote `read-update.singleton.attribution` only through root's reviewed acceptance of the three exact selected clauses already audited, preserved row bytes, and fresh final source-bound evidence. No additional attribution actions are proposed.
+2. Extend existing B, `read-update.numeric-model.same-value-no-op`, with the missing metadataChange refusal witness on its own two Resource kinds. B stays false during authoring/first evidence review. Promote B only after the added witnesses pass and independent clause closure plus root explicitly authorizes that flag. R/N remain false; neither their successes nor their metadata probes substitute for B-local evidence.
+
+B's selected law is `packages/conformance/catalog/numeric-model-v1.json:25–28`, `docs/specs/bdp.md:2264–2266`: number equality and admissibility of every number literal a change carries are defined by Revisions. Existing B observes admissible spellings in both document planes, but puts its bad literals only in propertiesChange. This proposal closes that plane-specific observation gap. As accepted R/N notes, metadata refusal follows the general BDP JSON number model (`bdp.md:891–903`) and the shared Property Change definition; do not relabel the properties-scoped Numeric admission MUST as an independently quoted metadata MUST. A contrary actual result goes to the existing runtime/spec owners for interpretation, not to an invented new rule or a weakened oracle. Configured metadata diagnostic labeling and unapplied-patch location behavior are described at3452–3473.
+
+## Eight appended B actions, zero new Resources or routes
+
+Preserve all existing73 B actions exactly and append after its current final endpoint checks. At that point, independently validated `num-subject-distinct-read` and `num-link-distinct-read` contain each current preimage: properties `{one:9007199254740994,zero:0,large:1e300,nested:{a:1,b:[1,2]}}`, metadata `{number:1,tag:"numeric"}`, the existing distinct actor, and established identity/Type/endpoints. No later prior action changes either Resource. Verify these facts from the accepted predecessor before relying on them.
+
+For `subject` (bead) then `link` (unowned Link), append this four-action cycle with unique IDs/keys using the prefix `num-<kind>-metadata-closure-`:
+
+1. **Raw refusal.** Existing exact POST update-bead/update-link route; UTF-8 authored body contains `metadataChange:[{op:"replace",path:"/number",value:9007199254740993}]` and otherwise valid, effectful `propertiesChange:[{op:"replace",path:"/zero",value:7}]`. Explicit actor-only provenance uses a new fixed writer ID. Fresh literal key. Require actual422, exact authored-body and complete-write observations, normative readUpdateProblem, and complete independent expected Problem:
+   `{type:"https://github.com/gastownhall/bdp/problems/validation",status:422,code:"validation-failed",retry:"never",diagnostics:[{message:"metadata: unsupported number at request location /metadataChange/0/value",document:"metadata"}]}`.
+   No instanceLocation, Type or schemaLocation is invented. This exact fixture expectation does not outlaw other conforming implementations' optional Problem fields.
+2. **Unchanged GET.** Existing fixed point binding, completed actual client GET, canonical current Resource schema and full `/body` equalsBinding against that kind's independently checked `num-*-distinct-read`. This catches partial application of zero7, bad metadata rounding, a changed revision or changed provenance. The failed response is not its own state oracle.
+3. **Raw admitted comparator.** Same complete body and route, changing only …993 to …992 plus a fresh key. Require200/updated, exact authored bytes/complete write, closed mutationResult and independently authored identity, Type, full properties (zero7; all other literals retained), full metadata(number9007199254740992), actor-only envelope, unowned/no-owner-result facts and Link endpoints when applicable. This is effectful in both planes, distinguishing rejection of all metadata or silently dropping the companion patch.
+4. **Independent GET.** Same point binding; validate complete record schema and independently authored identity/Type/documents/provenance/endpoints/absent owned plane. Opaque revision gets schema validation; do not synthesize it or assert response-record equality from an unavailable raw object capture. The selected missing obligation requires literal state after the correction, not a new revision-allocation theorem. If a complete raw response object cannot be captured by the existing seam, keep these independent facts; do not add an assertion API.
+
+All four raw mutations preserve literal strings without JSON.parse/stringify. All keys differ from each other and every existing key. Raw bodies remain<4096bytes. Existing point routes and update targets already occur earlier: append no route, fixture binding, Resource, Type, policy or capability. Independently re-enumerate exact route order/digest to prove it stayed unchanged rather than assume set equality implies ordered identity equality.
+
+## One additional targeted sensitivity control
+
+Keep old13 client+3 raw controls and their<=16 assertion unchanged. Add one separately named closure-control table/case, with length1 and combined A/B controls<=17; R/N's6 raw+3 client controls and<=9 bound remain unchanged.
+
+Use existing `RetryControl` on the new subject unchanged-GET action: after the real failed metadata POST and real GET, mutate only `/body/properties/zero` to7. The selected clientAction.input must exactly equal executed input before substitution. Require one application, row failure, and **exactly the new GET's `postimage` assertion** failing; its schema remains valid. Cleanup must complete. This directly proves sensitivity to committing the valid properties companion despite metadata refusal. The new raw negative/comparator actions themselves use the existing actual serializer assertions; do not mislabel this post-response client control as raw-wire corruption. No runner/helper/transport expansion or synthetic raw-digest disclosure is required.
+
+## Proposed planning-bound changes and measured headroom
+
+Root is willing to consider only A unchanged75, B73→**81**, old A+B148→**156**, plus one closure control. R/N remain72/52/124actions and9controls. B becomes19 raw exchanges (14 POST) +62 client actions =81; A stays6+69=75. Actual app positive-test raw POST expectation must change10→14. Total two new R/N rows unchanged; total four A/B/R/N actions280, not a new global runtime limit.
+
+The following read-only measurement matched the provisional author's ledger; exact hashes are saved in `read-update-numeric-metadata-closure-provisional-measurements.json`:
+
+| Source | Measured provisional bytes / nodes | Existing planning fence | Remaining space |
+| --- | --- | --- | --- |
+| continuation |823730 /21614|995852bytes /26286nodes|172122bytes /4672nodes |
+| coverage |698614 /14394|714717bytes|16103bytes |
+| fixture |29707 /764|37247bytes|7540bytes; **no change proposed** |
+
+Continuation digest923443a20223cd84abc144f3dce4858fd0b5d18f2cea4a23a9a61a274a236267; coverage14d856bc135c0c93f6ee74741530a38fb7ad5c1bd523bc97438bdf5714817ac3; fixturef89932d68e3bf5867d79eb3de680af4bc67b761b3c3bce5da127f6ca75e27765. They are reconciliation inputs, not accepted-parent pins yet.
+
+Proposed additional conservative authoring fences: continuation<=80KiB and<=2000nodes; coverage<=12KiB INCLUDING both revised reasons/whole flags and added bindings; fixture/index unchanged. At measured provisional sizes these yield<=905650bytes/23614nodes continuation and<=710902bytes coverage, within every current planning fence. New actions should need<=100 assertions total (two raw refusals, two unchanged GETs, two fully checked successes, two independent GETs); cap names/IDs at80characters and record actual coverage growth. These are estimates with explicit stop fences, not generated-source measurements. Preserve the existing9c growth bases535052/14286/648157/29055 and all four995852/26286/714717/37247 ceilings. Recompute against the frozen R/N predecessor; if less space remains or any fence is exceeded, stop and report actual need. Do not minify, increase parser budgets or consume another shard by assumption.
+
+Keep90s cooperative aggregate,120s outer,5s requests,30s focused cases and240s packed-invocation supervisor. R/N final runtime timing is pending; no current performance promise can be made. Record accepted predecessor timing and new exact timings. A failed/timeout run remains failed; report before any adjustment if the additional8actions/control exhaust a bound. No deadline raising or lost assertion to make it pass.
+
+## File ownership and reconciliation
+
+Exactly four implementation files are proposed:
+
+- `packages/conformance/matrices/read-update-reference-continuation-v1.json`: append B8 actions only; retain all other rows' raw blocks and all old B action objects/bytes.
+- `packages/conformance/test-support/read-update-coverage-v1.json`: A reason/whole decision only; B ordered binding extension/reason and separately authorized whole decision. Every other coverage row, especially R/N, identical.
+- `apps/bdptest/src/read-update-matrix.test.ts`: precise A/B bounds and separate one-control case; B14-raw-POST expectation; promotion-sensitive false flags/counts; preservation pins described below. Existing framework unchanged.
+- `packages/conformance/src/cumulative-artifact.test.ts`: insert explicitly accepted whole IDs into the reviewed canonical ordered list, first A and only later B if authorized. No factory/admission changes.
+
+Fixture, baseline, index, numeric catalog test, catalogs, schemas, runtime, runner, helpers and TX files are read-only. Numeric catalog's three approved numeric IDs established by R/N do not change. Run its closed-world rejection tests, but do not edit its list.
+
+Important app reconciliation points in provisional source: A/B action/whole pins near3695–3767; positive B raw count near3440; R/N old-block hashes near3972–3980; progress whole/uncovered pins at1231/1248/1322/1982/2215/2645 and any equivalent exact-source occurrences found at implementation. Change only semantic whole-count expectations, never blanket-replace numeric99 (which also occurs in test values). R/N setup/counts/controls and byte preservation stay intact.
+
+The R/N test currently hashes B's entire old block. Replace that specific B preservation rule with an exact approved-predecessor **old73 action span/prefix hash**, plus exactly8 named appended actions, unique IDs and unchanged row header/setup/applicability/cleanup. Pin the final full B block separately after authoring. Keep A and C existing raw-block hashes, and add frozen-parent raw hashes for R and N to protect them. Preserve baseline hashc86b33535f25a1d117ce021a3bb70164f5635bdaee50758e3428c130ccc3227f and unchanged index hash7277980894dd0955a8fcd22ba5d2845b0a6801b7e7e13a937018e11d3a65de37.
+
+## Machine-evaluable completion and acceptance stages
+
+1. Root-supplied frozen R/N parent is an ordinary ancestor; the four allowed paths are the entire diff. Exact accepted-parent raw blocks A,C,R,N and all baseline bytes match; B old73 actions remain exact/in order, row fields unchanged, exactly8 appended named actions. Fixture/index byte-identical. Old control arrays unchanged; new table exactly1. Numeric catalog list/canonical required selection unchanged.
+2. Required IDs remain129 in canonical order and owned once across the same2shards; authored54/unplanned75 unchanged. Every A/B/R/N binding equals its exact ordered action/assertion list. R/N and all other row flags unchanged. Whole list is an explicitly reviewed canonical subset, never inferred automatically from passing outcomes. With A only:31whole/98notwhole; with independently accepted B as well:32/97. ClaimEligible stays false in both stages.
+3. Static byte/node/ID/key/resource/action/control fences above pass. Distinct new keys are checked against actual client and raw keys, preserving deliberate retries in unrelated C. New bad/good bodies differ only in the intended numeric token and key; no property-dropped comparator. Exactly four new raw mutation requests use UTF-8 authored-body/complete-write assertions and normative schemas; actual raw report digests remain withheld. Complete Problem oracle is independent.
+4. Run actual positive B and A plus the one new control and all old A/B/R/N controls, C/preservation/association regressions. Pinned clean pre-build typecheck, build, applicable catalog/artifact tests, format/lint/boundaries, executable smokes and unchanged Read seal. No new runtime framework or unnecessary full workspace claim.
+5. Freeze the evidence successor with B still false; collect genuine fresh **both-shard** packed evidence against its exact source and installed payload/config/fixture/routes. A promotion must be included only after explicit root acceptance of audit and preserved source; even coverage-only changes alter set/report associations and require this fresh run. Independent clause closure reviews the added B witnesses and existing five selected clauses.
+6. If root then authorizes B promotion, make a distinct ordinary source successor changing only its approved coverage reason/flag and exact whole-list/count gates. Execute fresh both-shard packed evidence again for that final source; do not relabel the earlier false-flag reports. If root combines a reviewed promotion before a final freeze instead, the same rule remains: final coverage bytes need final genuine source-bound observations, with all gates explicit.
+7. Reports record exact source, clean status, artifact/coverage/set digest map, installed payload/contracts/policy/authentication and per-shard exact routes; written genuine reports/digests, full129 denominator, source-specific whole/uncovered accounting, real raw/client counts, timing, cleanup and every failed attempt. No success summary on abort/IO/cleanup failure, no credential disclosure, no lingering owned child. No public admission, advertisement or profile qualification follows.
+
+Stop and report any parent mismatch, changed R/N scope, route-order change, insufficient source/time budget, wrong actual numeric behavior, missing capture, unintended control failure, noncanonical catalog order or required file outside the four-file scope. This proposal changes evidence and reviewed coverage only; it does not decide new semantics or authorize implementation.

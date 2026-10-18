@@ -1,0 +1,33 @@
+{
+  "status": "VERIFIED_BEFORE_CHILD",
+  "exitSha256": "e12711cbff755cc47cdd926c48e431ca7a38a52e08c9c3c6858244eadb3c7a90",
+  "provenanceSha256": "a9a879a165f1d41d5a457c3218667147402c92565ba7585f74364739e161352f",
+  "sourceCommit": "be0cc70d8a3174760c4877e8969728dbdec4ead5",
+  "sourceTree": "93b2ea89d6db05512d4c0bc5bb3cf6083560e8da",
+  "members": {
+    "protocol": 63,
+    "server": 250
+  },
+  "graph": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv-formats": "3.0.1",
+    "ajv": "8.17.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "payloadIdentity": "2c8e39768e673a56bcaee043e79e89d15bfbf171468c5aea8114a3b6387f4685",
+  "entryRealpath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/installed-reference-process.js",
+  "entrySha256": "3eb9a6bc8df1237d78ba4aae7e95589df6fb7f4781f572e04adda583f359c71d",
+  "consumerLockSha256": "bb4ee62d7d037237784d13af711eae2cfd3ba43362edd8798967b75efd98e4e6",
+  "independentSampledPidsAbsent": [
+    40620,
+    40622,
+    40627
+  ],
+  "remaining": [],
+  "positiveStarted": false,
+  "limitation": "No runtime claim before positive. A read-only console summary initially requested nonexistent packages.files rather than checkedMembers and raised KeyError after printing substantive provenance; no artifact/product execution was repeated."
+}

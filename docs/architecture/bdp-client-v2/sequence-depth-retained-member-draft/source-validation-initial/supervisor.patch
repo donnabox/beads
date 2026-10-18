@@ -1,0 +1,79 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/execution-preparation-v3/run-source.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-initial/run-source.py
+@@ -1,4 +1,4 @@
+-"""Closed one-command minimum-receiving supervisor, adapted from reviewed receipt source supervisor.
++"""Closed one-command sequence-depth preliminary supervisor, adapted from reviewed receipt source supervisor.
+ Root supplies execution-gate.json; this file does not create/release that gate.
+ Usage: python3 run-source.py COMMAND_ID. Never retries or invokes controls/packages.
+ """
+@@ -14,20 +14,21 @@
+ 
+ P = Path(__file__).resolve().parent
+ D = P.parent
+-W = Path("/Users/dbox/repos/wt/vickie/vickie-minimum-receiving")
+-E = D / "run-v3"
++W = Path("/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained")
++E = P / "run"
+ L = Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs")
+ GUARD = L / "guarded-action.py"
+-BINDING = D / "receiving-test-repair" / "source-binding.json"
++BINDING = D / "source-binding.json"
+ COMMANDS = P / "commands.json"
+ BINDING_SHA = None  # Actual frozen manifest must be pinned by root gate, never guessed.
+-COMMANDS_SHA = 'ba8e8822045998731e290600a3bb3cadb922075da685d2166eccad756713927e'
++COMMANDS_SHA = '973548a176d4c84a8089a03d8b91010be2dadaaf46b10ac6128352d89b1b516d'
+ GUARD_SHA = 'fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84'
+-HEAD = '5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854'
+-TREE = '057f879132074166f2c0f643a8b45bbd9dd47c6f'
++HEAD = 'df80f8cb86b7763bc7bb005492e43d8840527045'
++TREE = '25e9d4aa926ea728f5e356365cb1ffadba269221'
+ SESSION = "2026-10-08T20:26:35Z-81e5"
+-ORDER = ['offline-setup', 'typecheck', 'build', 'format-check', 'lint', 'boundaries', 'read-seal', 'consistency-positive', 'http-positive', 'snapshot-positive', 'schema-positive', 'changefeed-positive', 'spec-static']
+-OWNED_PATHS = ['docs/specs/bdp.md', 'packages/server/src/transaction-consistency.ts', 'packages/server/src/transaction-http.ts', 'packages/server/src/transaction-consistency.test.ts', 'packages/server/src/transaction-http.test.ts', 'packages/server/src/transaction-snapshot-http.test.ts', 'packages/server/src/transaction-schema-http.test.ts', 'packages/server/src/transaction-changefeed.test.ts', 'apps/bdptest/src/transactional-snapshot-installed.test.ts', 'apps/bdptest/src/transactional-minimum-receiving-installed.test.ts', 'docs/design/transaction-implementation-progress.md']
++ORDER = ['offline-setup', 'typecheck', 'build', 'format-check', 'lint', 'boundaries', 'read-seal', 'preparation-positive', 'sequence-positive', 'http-positive']
++OWNED_PATHS = ['packages/server/src/transaction-batch.ts', 'packages/server/src/transaction-http.ts', 'packages/server/src/transaction-set.test.ts', 'packages/server/src/transaction-sequence.test.ts', 'packages/server/src/transaction-http.test.ts', 'apps/bdptest/src/transactional-sequence-depth-installed.test.ts', 'docs/design/transaction-implementation-progress.md']
++CONTEXT_SHA = '7d34998a9e6cbe8f60c6a22afe284da36f745aec4555cf8390b0e040bae9edc9'
+ 
+ def require(ok, message):
+     if not ok:
+@@ -42,9 +43,9 @@
+ def source_hashes():
+     require(sha(BINDING.read_bytes()) == BINDING_SHA, "Successor source binding changed")
+     binding = json.loads(BINDING.read_text())
+-    require(set(binding["files"]) == set(OWNED_PATHS), "Expected exactly eleven minimum receiving paths")
++    require(set(binding["files"]) == set(OWNED_PATHS), "Expected exactly seven sequence depth paths")
+     require(binding["head"] == HEAD and binding["tree"] == TREE, "Manifest base mismatch")
+-    require(binding["branch"] == "codex/vickie-minimum-receiving", "Unexpected draft branch")
++    require(binding["branch"] == "codex/vickie-sequence-depth-retained", "Unexpected draft branch")
+     require(binding["workspace"] == str(W), "Manifest workspace mismatch")
+     require(git("rev-parse", "HEAD").decode().strip() == HEAD, "HEAD changed")
+     require(git("rev-parse", "HEAD^{tree}").decode().strip() == TREE, "Base tree changed")
+@@ -57,7 +58,12 @@
+     require(changed == set(binding["files"]), "Unexpected source scope")
+     actual = {name: sha((W / name).read_bytes()) for name in binding["files"]}
+     require(actual == {name: item["sha256"] for name, item in binding["files"].items()}, "Frozen source changed")
+-    return actual
++    require(sha((P / "context-binding.json").read_bytes()) == CONTEXT_SHA, "Context binding changed")
++    context = json.loads((P / "context-binding.json").read_text())
++    require(git("status", "--porcelain").decode() == context["expectedStatus"], "Reviewed git status changed")
++    all_inputs = {name: sha((W / name).read_bytes()) for name in context["sourceHashes"]}
++    require(all_inputs == context["sourceHashes"], "Reviewed context changed")
++    return all_inputs
+ 
+ def source_patch_hash():
+     binding = json.loads(BINDING.read_text())
+@@ -98,7 +104,13 @@
+     require(len(matches) == 1, "Command identity ambiguous")
+     spec = dict(matches[0])
+     require(spec["cwd"] == str(W) and spec["supervisorSeconds"] == 120, "Unexpected cwd/bound")
+-    expected_tool = str(W / "node_modules/vitest/vitest.mjs") if "selectedFullNames" in spec else "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs"
++    tool_binding = json.loads(COMMANDS.read_text())["toolBinding"]
++    expected_tool = tool_binding["expectedVitest"] if "selectedFullNames" in spec else tool_binding["pnpm"]
++    require(sha(Path(tool_binding["node"]).read_bytes()) == tool_binding["nodeSha256"], "Pinned Node changed")
++    require(sha(Path(tool_binding["pnpm"]).read_bytes()) == tool_binding["pnpmSha256"], "Pinned pnpm changed")
++    if "selectedFullNames" in spec:
++        require((W / "node_modules/vitest/vitest.mjs").resolve() == Path(expected_tool), "Vitest realpath differs after setup")
++        require(sha(Path(expected_tool).read_bytes()) == tool_binding["expectedVitestSha256"], "Pinned Vitest changed")
+     require(spec["argv"][:2] == ["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node", expected_tool], "Toolchain changed")
+     require(not spec.get("validatedBdpOverrides"), "Source phase must not inherit installed/control overrides")
+     spec.setdefault("ownedTempPrefixes", [])

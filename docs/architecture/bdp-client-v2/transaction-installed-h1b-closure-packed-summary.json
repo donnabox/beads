@@ -1,0 +1,50 @@
+{
+  "sourceCommit": "ee947ae919472d937625d196e2b5e5b67aa809d1",
+  "claimEligible": false,
+  "rowStates": {
+    "harness-error": 251,
+    "pass": 4
+  },
+  "observedRows": [
+    {
+      "id": "transactional.batch.atomic-commit",
+      "state": "pass",
+      "exchanges": 7
+    },
+    {
+      "id": "transactional.batch.rollback",
+      "state": "pass",
+      "exchanges": 9
+    },
+    {
+      "id": "transactional.receipt.readable",
+      "state": "pass",
+      "exchanges": 8
+    },
+    {
+      "id": "transactional.idempotency.failed-retained",
+      "state": "pass",
+      "exchanges": 11
+    }
+  ],
+  "exchanges": 35,
+  "dynamicExchanges": 10,
+  "physicalSessions": 5,
+  "runtimeConfigurationIdentity": "795917202d184f9909277d3134223c547dd99f139edb92aebdb17e857bdf0804",
+  "binding": {
+    "scope": "https://reference.invalid/acme/",
+    "profile": "transactional",
+    "history": false,
+    "sourceCommit": "ee947ae919472d937625d196e2b5e5b67aa809d1",
+    "installedPayloadDigest": "09768af5b56fe2db91ff53bb4254e08b4983734cc547b1e549de34385008f464",
+    "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+    "policyDigest": "d03e15f338ac1e43c3af1e73e4fd818bcc1d3a97655b2a19fc5266e762c60474",
+    "authenticationDigest": "7d8a917102c1c5c1948fe27746e1afb9d81e35a67a55567ad083bfb3f02d1dc4",
+    "fixtureDigest": "8a1252afaae04e57e07cd722b77f66d26c6c696c823733aa97be256938fa41c1",
+    "fixtureId": "reference-transactional-v1",
+    "capabilities": [
+      "installed-transactional-http",
+      "transactional-receipt-observation"
+    ]
+  }
+}

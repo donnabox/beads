@@ -1,0 +1,58 @@
+{
+  "name": "format-check",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "run",
+    "format:check"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained",
+  "started": "2026-10-16T05:28:58.138123+00:00",
+  "head": "11742645bc591b3e5affa9fcc2f36c551c6fa803",
+  "workspaceDirty": false,
+  "sourceSha256": {
+    "apps/bdptest/src/read-update-matrix.test.ts": "376709ecdcf356a98c5bf7770e6b0a637ab6e06cf9a9f7ed68c2e5c15da9dd36",
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": "615caab0e5a846c546e718f65c4041c5ca41bef59df1d56a6dea0e42638b0174",
+    "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts": "21146871e6b5bfa3d9e96ff2db7c4897dd62fac026de538981832de295628f15",
+    "apps/bdptest/src/transactional-sequence-depth-installed.test.ts": "8ad2c796bfb22375584fc6b348d494ece512490f8a59ef72a74fb34de3f2fca1",
+    "docs/design/transaction-implementation-progress.md": "9668b52c1d5cfdcc7f2a326cafe3468d87de6cca14438b73ae88816587b99c28",
+    "docs/specs/bdp.md": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+    "packages/conformance/matrices/read-update-v1.json": "10a7c6f97a280cf88e58d3aa2039fe580904b74bfffcebda4747fc3c1a34b583",
+    "packages/conformance/src/profile-contract-plan.test.ts": "3fec4ca8c6eee7a20bbcdd1aa53ef2a015989087ba2f8d6b37fd997dcae7dd64",
+    "packages/conformance/src/read-update-artifact-set.test.ts": "e5c8903119b7c336dcc1e1479378e22029aa4d36978817557e461ea723991379",
+    "packages/conformance/test-support/read-update-coverage-v1.json": "287c2a258afd04a95417f5de416c81bd8159c95762d71d568a64f0b402159f0f",
+    "packages/server/src/transaction-batch.ts": "0f67235a7fdadf3ae342695b6f8eee795ad51b70e6507dcb7d70ec8848ba9836",
+    "packages/server/src/transaction-consistency.test.ts": "904d1f74ff06237da41c45f3dc1d4727a1387dc760950860ef548db51e7f02c4",
+    "packages/server/src/transaction-consistency.ts": "ad51311d6098db32fd47849e0b78d3118162cdf1e80ee9ef4d46324bfa9f436f",
+    "packages/server/src/transaction-http.test.ts": "f4353454c8f8a9dc42367395804bbe6309f7bcc51dba2b91b3176975d08b5cce",
+    "packages/server/src/transaction-http.ts": "4143e8a36021d60d1deba4649b1de5dfbcb3ee2d630486749932eccc1374c602",
+    "packages/server/src/transaction-read.test.ts": "58e745c2ade0804bf0ab0230c34ff5e522c28725fa77ecb9303dbe972162e0f2",
+    "packages/server/src/transaction-read.ts": "7e2cc29b668bb80a3ba2948e90511518a98a7ff798b1dbfb8c6f51f0c0bd2a6f",
+    "packages/server/src/transaction-sequence.test.ts": "687f1a9c10277d178db187b2c8efefe07d099755c473db4c2e7d87e4d7be6a4b",
+    "packages/server/src/transaction-service.ts": "c700d5719918b60c3239a336eef02c9dff6717faca698777aba01181ebdcd278",
+    "packages/server/src/transaction-set.test.ts": "494f7536fac5fd452521902301d943865e40b20895fa16e9c0a3beb1b4481dc9"
+  },
+  "sourceDiffSha256": "20cc9cb184da35e3ebd1ac831af255bdb24076f4938bfb918aee0ebade26280f",
+  "rootAcceptanceSha256": "656e200acdadc4d4d854c3b3a240c831cb1da07e6d65ef9a616a6dccd14175f9",
+  "preparationSha256": "c9b524743c8b71c4487e55f5719713985a1665b6e61ec32d2d99534796ff9194",
+  "bdpOverrides": {},
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "run",
+    "format:check"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {
+    "cases": 0,
+    "http": 0,
+    "owners": 0,
+    "listeners": 0,
+    "directories": 0,
+    "productChildren": 0
+  },
+  "derivativeBinding": null
+}

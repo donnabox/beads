@@ -1,0 +1,57 @@
+{
+  "status": "frozen proposed successor; root release required; actual auth main integration required before final validation",
+  "created": "2026-10-16T02:22:59.363416+00:00",
+  "originalInputHashes": {
+    "plan.md": "c76853749217cd2a62b3d0e92c0c8976376ab8d86d78cdf9a49e24d2fa096bc8",
+    "ledger.json": "cd04e4c1de3cd2f2f17b1f7691fca5158cba0066b5b873205fbce185f9434def",
+    "operator-rulings.json": "dc9d3a1ae9027f92aadb68638f38507a7fad4dbb169954ded6e5299d83d24951",
+    "source-binding.json": "efcf81e24eaedb5a43f2dc010b31044e49f58a6f0e52ab89da80c85cc38ecbe7",
+    "claude-preparation/prompt.txt": "cedae8b24d5ca265f0521207da0634fb1045a771d7338ef7fb8b17ed90ec1ffe",
+    "claude-preparation/binding.json": "23a108e2a19615aad6a7fdc54fdf5711fba363ff18f0c03d0982a0ad82cb4469",
+    "claude-preparation/stdout.txt": "23f0ace327fa07ff8232b83f2c2bc43a9cf681ae7d2be2f01c6f8e36494ff0a1"
+  },
+  "nativeAuditSha256": "d2ef95b92097e9a1fd952713fec3c377eed896e1fbdedd689f34748ae96f53a6",
+  "reviewExit": {
+    "exitCode": 0,
+    "shellEquivalentExit": 0,
+    "timeout": false,
+    "forcedTermination": false,
+    "elapsedSeconds": 570.7149852090515,
+    "sourceAndInputsUnchanged": true,
+    "sourceCheckError": null,
+    "stdoutSha256": "23f0ace327fa07ff8232b83f2c2bc43a9cf681ae7d2be2f01c6f8e36494ff0a1",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdoutBytes": 18180,
+    "stderrBytes": 0,
+    "cleanupSha256": "7b5566b97aa7495739bbbf4f62a902c7dc3e5fc0310132e50c4ac85803c23521",
+    "cleanupClear": true
+  },
+  "independentReviewerPidAndGroupAbsent": true,
+  "noRuntimePerformed": true,
+  "sourceEdits": false,
+  "wire": {
+    "positive": 32,
+    "controlsExpected": [
+      2,
+      2
+    ],
+    "expectedTotal": 36,
+    "maximumTotal": 96,
+    "children": 3,
+    "positiveDefaultWaits": 4
+  },
+  "seedBodyBytes": 562,
+  "actualAuthoringParent": null,
+  "frozenAt": "2026-10-16T02:29:08.712890+00:00",
+  "seedBodySha256": "b2ed0ea801da54e92fd894c7c02cc9ca71788b3a3bc16362bd54c15f31565f94",
+  "seedCarrier": "sequence",
+  "seedPosition": "pos-3",
+  "aheadPosition": "pos-4",
+  "candidatePinsVerified": 26,
+  "seedCorrection": {
+    "predecessorDirectory": "before-seed-correction",
+    "reason": "putAlias cannot share resource batch; actual sequence keys/result/position law",
+    "countDelta": 0
+  },
+  "isolatedCandidateAuthoringPermittedAfterRootRelease": true
+}

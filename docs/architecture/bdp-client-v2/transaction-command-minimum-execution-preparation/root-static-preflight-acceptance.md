@@ -1,0 +1,9 @@
+# Root bounded static preflight release
+
+Root independently read all seven changed files, final binding cf5d2cd1/diff8f0123c9, accepted plan f8824197, native code review2196ad87 and packet closureb937d291, corrected measured report29fbfee0/requests a011b036, and full source commands/gate/supervisor. No actionable source finding. Exact parent122800511ee6306e4105e1f73bf3658f35c90a14/tree088290751951c353797b984f690b7d9fd96deb80; seven reviewed file hashes are pinned in gate.
+
+External Claude actual-code review remains RUNNING, not approved. Root narrows the previous all-validation hold to permit only offline dependency setup, typecheck, clean build, format check, lint, boundary and preserved Read-evidence verification while that independent review finishes. These authorized local static/preflight checks produce no mutation-service cohort. This staged order avoids waiting to discover compiler/format defects; it does not waive council before service testing/publication/main integration. No HTTP test, control, fresh package/consumer, commit/push/PR/merge is released here. The user's main-merge gates remain intact.
+
+Exactly seven source command IDs below, sequential once, each120seconds plus bounded cleanup. Inherited BDP overrides cleared; source bytes rechecked before and after; first failure stops later commands, original logs and results retained. No automatic retry or timeout increase. Workspace format/lint scripts are selected (existing baseline diagnostics preserved) rather than the author's equivalent targeted examples; no extra runtime test is introduced. Build precedes emitted consumers, which remain held. Unknown retained temp entries must be classified; test/service lifetimes remain zero in this stage.
+
+Approved: offline-setup, typecheck, build, format-check, lint, check-boundaries, evidence-verify.

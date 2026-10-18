@@ -1,0 +1,142 @@
+{
+  "allStagesAccepted": true,
+  "stageCount": 21,
+  "sourceBindingSha256": "ab7eb73718d4f1d00e53c8eee3308f5b218bf89312c0c7cfe7d3fc9b38950d5b",
+  "sourceIdentity": "507d86e5dac586bee57543bcf6ade921a5d354dfd36f08dd05fc5c8230f3afaa",
+  "dirtyBase": "f6204255d53ef65d4aea56ff5ccc86d72e8cc7b0",
+  "records": {
+    "typecheck": {
+      "exitSha256": "8d38412e9a14432c8b5e5fafd10972b5cb848c992e5783a93f957069598028dc",
+      "logSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+      "elapsedSeconds": 4.777265209006146
+    },
+    "format-check": {
+      "exitSha256": "3d526dd59fa5f02ec3af45090f91c9a5516cf49294c1457c5f7e2ca9d7be2296",
+      "logSha256": "54cc7e537e8e9e29537270106b40267b300b2d599bf189f5e49362ca0009599d",
+      "elapsedSeconds": 4.040298708016053
+    },
+    "lint": {
+      "exitSha256": "ec24c6d43d1065ef40e520e2c2786bf413c2d1993462f396a1344ba061ee57e5",
+      "logSha256": "557e6abd28291298473c07107997b6ceea78ba075c7bd1d66617d8e84def32d2",
+      "elapsedSeconds": 4.164183875080198
+    },
+    "fresh-build": {
+      "exitSha256": "1de4725bbdb6f634c734d20a4df94ef46680174c8475b7d5b14951dbb6a55844",
+      "logSha256": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208",
+      "elapsedSeconds": 4.898459499934688
+    },
+    "bind-fresh-build": {
+      "exitSha256": "f272f01625b935f05517d0da3458de7389f78a4974c10c5bfb8dcb45f0058946",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsedSeconds": 8.476867082994431
+    },
+    "focused-source": {
+      "exitSha256": "35abc81867194ac8108cfa5c577c74b5e3323fe6a14f02d32c0a9d969fa9bca8",
+      "logSha256": "344c696c89a6dc03177cf248aff8db02ce1910ef58026a1936cc216e46a83eab",
+      "elapsedSeconds": 7.715643250150606
+    },
+    "review-focused-source": {
+      "exitSha256": "60c93c49e321dc9d25bcf473ed607d3ced37f17f8c083e112ebd22a7fa93b8e8",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsedSeconds": 8.460233625024557
+    },
+    "node-version": {
+      "exitSha256": "6e862fc32828afc3843a00c182cf46c386b8d1eb358554cc577449c924bdf91b",
+      "logSha256": "a8f8f7ba69d43285857a0ea34017ef8dadd3ba012404bb7dd188fc773cf63ee2",
+      "elapsedSeconds": 3.929558541858569
+    },
+    "prepare-package-directory": {
+      "exitSha256": "903283d44c1c3e2bd3081a7fa861e68c335758b199cd49e05c89264e0bf7eae5",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsedSeconds": 8.404879542067647
+    },
+    "pack-protocol": {
+      "exitSha256": "ab91bfcb7efde04174ca58703d82d8a4b363f1a9fd29b3273863ed23384540c3",
+      "logSha256": "9ba26c555d54b94e344e9875a6e69218097466f8938055c826dd256214e8c173",
+      "elapsedSeconds": 4.301051832968369
+    },
+    "pack-server": {
+      "exitSha256": "e1cae1e22eeb169eae4cfc3aea5bc768fa8b52cc0d6a464295861d3aa2b1e8d5",
+      "logSha256": "194580aef14887501b818d68fae2295d8e948d5240b573afd3f9cda94268ba5f",
+      "elapsedSeconds": 4.289180167019367
+    },
+    "verify-archives": {
+      "exitSha256": "e9987a7e82050624227769c7f32c6a23c313d66d09f672e5718cdcff10dc9056",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsedSeconds": 8.502961792051792
+    },
+    "prepare-consumer": {
+      "exitSha256": "5ad5367611623440c116ea5829133ee03fdf4c8100b58a8a5d80c3d5b4c8260a",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsedSeconds": 8.501107749994844
+    },
+    "consumer-install": {
+      "exitSha256": "640130ef910ffa99fc595c3deb99b11465553b0e5aa7c595c2c66b058843b2a0",
+      "logSha256": "c64c46b149c1f27151f4c1880e639289588e2a196f2459f6e5c563e6af46a3e0",
+      "elapsedSeconds": 4.579271374968812
+    },
+    "verify-installed-consumer": {
+      "exitSha256": "aad2186ec812adc4267bf69965acf7a7bed720cf4339a8918c3b11d1da4d910d",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsedSeconds": 8.686050040880218
+    },
+    "event-bead-minimum-external": {
+      "exitSha256": "55e720abf9199e4d3f28d6c8a52a7368053ca8926d956180446baff0217c7254",
+      "logSha256": "4e27ca2a9faeb7978a62b788869aa80000a7540e6939d678120cda63362713f5",
+      "elapsedSeconds": 6.744506125105545
+    },
+    "review-event-bead-minimum-external": {
+      "exitSha256": "1dbd09e8ac422d1c55f0eacee70076fa9a8238389c9f579ea710280fae288943",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsedSeconds": 8.553072707960382
+    },
+    "event-minimum-external": {
+      "exitSha256": "c7ee1194b7ee91fad023d11540acc055850f19af0cbad1d7bd877c0d7976b01b",
+      "logSha256": "af4d77febb80f0ac950f8fea50c5e9f176a02c021c74c80c8e1e527aada9ca47",
+      "elapsedSeconds": 6.64805299998261
+    },
+    "review-event-minimum-external": {
+      "exitSha256": "05b8c249d4e04a0028cf1f5d852d44bd81c1031d91cf6acf989dc3e95936fb73",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsedSeconds": 8.602799667045474
+    },
+    "event-missing-context-external": {
+      "exitSha256": "42a3d7b43f9ab1ae7fafd47ab4c226bd34f8dab4a63f9f5f478428807c07c7ec",
+      "logSha256": "382d3821c805d72d1dba00fa0577cea4cbf83c429619167c2b3af58a8fc7a2fe",
+      "elapsedSeconds": 4.79305600002408
+    },
+    "review-event-missing-context-external": {
+      "exitSha256": "a3d8d4bfa2f96b772d15d6318dc00c8ffc434f6761edd34984245a443f1fa0b3",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsedSeconds": 8.526557834120467
+    }
+  },
+  "installed": [
+    {
+      "stage": "event-bead-minimum-external",
+      "requests": 4,
+      "childPid": 51297,
+      "directory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/event-bead-minimum-external.tmp/bdp-bead-event-minimum-installed-mQHwOA",
+      "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c"
+    },
+    {
+      "stage": "event-minimum-external",
+      "requests": 3,
+      "childPid": 54890,
+      "directory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/event-minimum-external.tmp/bdp-event-minimum-installed-CgQ4ME",
+      "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c"
+    },
+    {
+      "stage": "event-missing-context-external",
+      "requests": 11,
+      "childPid": 58492,
+      "directory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/event-missing-context-external.tmp/bdp-event-missing-context-installed-9ZSqSL",
+      "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c"
+    }
+  ],
+  "sampledPidsAbsent": 387,
+  "remainingProcesses": [],
+  "runtimeDirectoriesStillPresent": [],
+  "commitAuthorized": false,
+  "note": "Root verified actual terminal records/logs,3 actual installed reports/18requests/3cleanchildren and unchanged679source; awaiting final independent audit before commit. Original evidence remains dirty f620."
+}

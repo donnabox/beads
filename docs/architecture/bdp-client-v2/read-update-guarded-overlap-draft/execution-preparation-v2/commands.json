@@ -1,0 +1,367 @@
+{
+  "status": "CLOSED_APPLIED_FORMATTED_SOURCE_BOUND_PENDING_FINAL_COUNCIL_AND_ROOT_RELEASE",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "ownedPaths": [
+    "apps/bdptest/src/read-update-guarded-overlap-installed.test.ts",
+    "docs/design/update-implementation-progress.md"
+  ],
+  "executionOrder": [
+    "offline-setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "build-inventory",
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed",
+    "positive",
+    "positive-review",
+    "prepare-derivative",
+    "derivative-payload",
+    "negative",
+    "negative-review"
+  ],
+  "commands": {
+    "offline-setup": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    "typecheck": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    "build": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    "format-check": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "biome",
+        "format",
+        "apps/bdptest/src/read-update-guarded-overlap-installed.test.ts",
+        "docs/design/update-implementation-progress.md"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    "lint": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    "boundaries": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    "read-seal": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    "build-inventory": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v2/inventory.py"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    "node-version": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    "package-directory": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v2/packages.py",
+        "directory"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    "pack-protocol": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v2/run/packages"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    "pack-server": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v2/run/packages"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    "verify-tar": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v2/packages.py",
+        "tar"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    "prepare-consumer": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v2/packages.py",
+        "consumer"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    "consumer-install": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v2/run/consumer",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    "verify-installed": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v2/packages.py",
+        "installed"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    "positive": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/read-update-guarded-overlap-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v2/run/positive.json",
+        "-t",
+        "^preserves one guarded winner and both retained dispositions across overlapping ordinary Read\\+Update requests$"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": [
+        "bdp-ru-guarded-overlap-"
+      ],
+      "selectedFullNames": [
+        "preserves one guarded winner and both retained dispositions across overlapping ordinary Read+Update requests"
+      ],
+      "expectedExit": 0,
+      "mode": "fresh-consumer-positive",
+      "workload": {
+        "cases": 1,
+        "httpExpected": 10,
+        "httpMaximum": 10,
+        "children": 1,
+        "owners": 1,
+        "storeDirectories": 1,
+        "productListeners": 1,
+        "portReservationListeners": 1,
+        "maxPendingHttp": 2,
+        "exchangeMs": 5000,
+        "workMs": 30000,
+        "testMs": 45000
+      }
+    },
+    "positive-review": {
+      "phase": "review",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v2/review.py",
+        "positive"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    "prepare-derivative": {
+      "phase": "control-preparation",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v2/derivative.py"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    "derivative-payload": {
+      "phase": "control-preparation",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v2/derivative-payload.mjs"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    "negative": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/read-update-guarded-overlap-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v2/run/negative.json",
+        "-t",
+        "^preserves one guarded winner and both retained dispositions across overlapping ordinary Read\\+Update requests$"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": [
+        "bdp-ru-guarded-overlap-"
+      ],
+      "selectedFullNames": [
+        "preserves one guarded winner and both retained dispositions across overlapping ordinary Read+Update requests"
+      ],
+      "expectedExit": 1,
+      "mode": "emitted-derivative",
+      "workload": {
+        "cases": 1,
+        "httpExpected": 6,
+        "httpMaximum": 6,
+        "children": 1,
+        "owners": 1,
+        "storeDirectories": 1,
+        "productListeners": 1,
+        "portReservationListeners": 1,
+        "maxPendingHttp": 2,
+        "exchangeMs": 5000,
+        "workMs": 30000,
+        "testMs": 45000
+      }
+    },
+    "negative-review": {
+      "phase": "review",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v2/review.py",
+        "negative"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    }
+  },
+  "previewBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/review-successor/source-binding.json",
+    "sha256": "1fb4184d86e3d11f4f5ffbf59bf2e8517888692f1c78964ac1c9cd22229c3f0d"
+  },
+  "limits": {
+    "sourceTestCallbacks": 0,
+    "installedCases": 2,
+    "httpExpected": 16,
+    "httpMaximum": 16,
+    "productChildren": 2,
+    "noAutomaticRetry": true
+  },
+  "finalSourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/repository-application/source-binding.json",
+    "sha256": "3eeee5f6a7641fe064a98f0c3e8751f0c897b245fb6b687002fb7463ec8eaf31"
+  },
+  "reanchor": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v2/reanchor.json",
+    "actualMergedParent": "9a42a4531def99e12fa9a1fba02e70558d643265",
+    "tree": "a9cca0e1e5c52ac8bbd06ce989a94ca6e4f2b272"
+  }
+}

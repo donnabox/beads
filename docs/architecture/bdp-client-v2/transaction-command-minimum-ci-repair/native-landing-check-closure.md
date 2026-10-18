@@ -1,0 +1,17 @@
+# Native closure — successor landing checker binding repairs
+
+No remaining actionable blocker in the final frozen checker. The three findings in native-landing-check-review.md SHA256 d1d68cbbece00c91166b69f9cd77f18a1abe6e64d5b676eba8230da01060999a are closed. This is static inspection, not an executed readiness result or merge permission. Root acceptance and actual completed Claude delta review remain hard gates.
+
+1. Historical authority is pinned before runpy: original F/landing-check.py must equal8d63c1e06731124d1b6af8238527a1452b2c534cfc042a6fda9bb5d8d93a2bc1 before its fixed dictionaries are read. The preserved pre-repair successor is d03e2402e84bb312c48248654d46abfd3e86aaa13543e047f0aa1a65178cbd53.
+2. Root acceptance requires the exact sixteen literal repair artifacts, including the static release and exit, actual results/summary, completed Claude output/exit, root delta dispositions, native spec review and checker review/closure. Empty/partial maps fail; literal keys constrain paths. Acceptance binds PR123, CI run38648263438/job116140423947 and this exact checker SHA. Original/repair source bindings are explicitly joined through old head/tree and spec before/after/patch hashes. Missing acceptance or unsuccessful/incomplete Claude exit cannot produce readiness.
+3. The fixed live job log is fetched read-only and compared with the hash-pinned retained successful log. Its checkout git-log record must identify exactly S=ac6652f2d235915d87db04b710f4afcff45a6080; remote S must have tree734bf9daf40fd17d0fe2bf86b085598589122f2f and ordered parents[B,H]. Required step success and PR/main readbacks remain unchanged.
+
+Full final script reread preserves H727e→Of2ac→B1228005 ordinary ancestry, spec-only O→H repair, seven cumulative paths/six unchanged files, and historical installed18 evidence attributed to O/tree74327. Actual merged parents remain ordered[B,H], with exact tested tree. No automatic merge, release or qualification. Root owns separately guarded head-matching merge.
+
+## Reviewer binding correction
+
+The initial review's final basis hash782c42a68b670cabc90b263b645b002af5086b7e40599ee639d8f0dd7b07cdea was read after root concurrently replaced the originally inspected file with its first fourteen-artifact repair. It therefore identifies that intermediate repaired checker, not the original text underlying the findings. The original text is preserved as landing-check-before-native.py SHA256d03e2402e84bb312c48248654d46abfd3e86aaa13543e047f0aa1a65178cbd53. I compared that preserved file to the successor; the three findings accurately describe that original version. Removing only root-static-release.json and static-exit.json from the final required set reproduces782c42a6 exactly, confirming the intermediate identity. The initial report remains unchanged; this paragraph corrects its basis attribution.
+
+My first closure write stopped at this identity assertion before writing a report. I then read the complete frozen sixteen-artifact version and its exact diff. This closure binds current landing-check.py SHA256 `a864f8cb742eff9b1e2472900d76936648cb30fa26d01dc847a1c5b2deef216c` and supersedes the intermediate binding for readiness review.
+
+No checker import/execution, tests, services, product source edits, pushes, merges or coordination mutation. Only this report was written under the session guard. Running Claude is not counted as passed; checker source closure is separate from completed council/root acceptance.

@@ -1,0 +1,443 @@
+{
+  "status": "targeted source evidence audited; root acceptance/council separate",
+  "auditorRole": "scenario/test author data audit, not independent code council",
+  "checkedAt": "2026-10-16T01:52:27.942757+00:00",
+  "sourceBindingSha256": "06ef3656296d8288cc5d00be9c988d4ccc7d817a67f2ea6ce6b31c42068ad873",
+  "stages": [
+    {
+      "stage": "typecheck",
+      "elapsedSeconds": 1.5054106668103486,
+      "exit": 0,
+      "exitSha256": "3b32a81556fa102228d446fe3dc501b57a41497722d5a2e93faf51f2a9b1e117"
+    },
+    {
+      "stage": "format-check",
+      "elapsedSeconds": 0.6058190418407321,
+      "exit": 0,
+      "exitSha256": "fb2bb24a9b4b2405c0d73e7fae9632fcc9c7513f0010dd6f2af9709c0721e6fe"
+    },
+    {
+      "stage": "transport-targeted",
+      "elapsedSeconds": 1.304762874962762,
+      "exit": 0,
+      "exitSha256": "12ea6b7a0379c8f49bd86d8cd3aeb7e22577346673b5145b1b9e7961e01fcfdf"
+    },
+    {
+      "stage": "owner-targeted",
+      "elapsedSeconds": 1.2771431670989841,
+      "exit": 0,
+      "exitSha256": "17d899e3419e26cdf2d8cc195914b29ac1de448807d9cfcef3f6563307876877"
+    }
+  ],
+  "actualTargetedPassedNames": [
+    "narrows current Transactional visibility and fences issued handles after policy publication",
+    "preserves policy and delivery leases after confirmed policy rollback",
+    "projects receipt records and allocations without changing non-record execution facts",
+    "bounds administrative drain without cancelling admitted sequence work",
+    "captures one Scope policy for distinct principals and renders empty historical advances"
+  ],
+  "actualTargetedHTTP": 18,
+  "actualSafeObservations": [
+    {
+      "label": "authorization-transition-before-cleanup",
+      "name": "visibility-handles",
+      "attempts": 18,
+      "observations": [
+        {
+          "index": 1,
+          "method": "POST",
+          "target": "/acme/operations/batch",
+          "status": 200,
+          "bodyBytes": 8074,
+          "bodySha256": "9e262b3098da41e6326b5f6ffd8b654b2a120dd3086e0768765d652c583f9580",
+          "requestBodyBytes": 3728,
+          "requestBodySha256": "a778feb6f8559743228db36139ccc653370c43a30cdcf3d2017db2e85349b054",
+          "context": [
+            "7dc443b4-8b50-47a2-bd10-378f4b81f5d9",
+            "development-all-visible",
+            "pos-1"
+          ]
+        },
+        {
+          "index": 2,
+          "method": "POST",
+          "target": "/acme/operations/batch",
+          "status": 200,
+          "bodyBytes": 673,
+          "bodySha256": "b8d9a1c9d07a1e9e96f11b99573f8d9b1347cc8f282c2ec0695ceaa048e77377",
+          "requestBodyBytes": 132,
+          "requestBodySha256": "8f22a1dee8d5c16750f476c2c0f4883ca91c257014e07b9efef9d2e678a98220",
+          "context": [
+            "7dc443b4-8b50-47a2-bd10-378f4b81f5d9",
+            "development-all-visible",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 3,
+          "method": "GET",
+          "target": "/acme/beads/b00",
+          "status": 200,
+          "bodyBytes": 185,
+          "bodySha256": "c5a796ca604cefdbd3c3bf531967dc07e5b1d1339aa3dbbb7da29e36017455f7",
+          "requestBodyBytes": 0,
+          "context": [
+            "7dc443b4-8b50-47a2-bd10-378f4b81f5d9",
+            "development-all-visible",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 4,
+          "method": "GET",
+          "target": "/acme/beads/?limit=2",
+          "status": 200,
+          "bodyBytes": 478,
+          "bodySha256": "476b6bda5e60f68f255064feadcaf10de2f7f8849d1a889dfb703458cb74d56a",
+          "requestBodyBytes": 0,
+          "context": [
+            "7dc443b4-8b50-47a2-bd10-378f4b81f5d9",
+            "development-all-visible",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 5,
+          "method": "GET",
+          "target": "/acme/snapshot",
+          "status": 200,
+          "bodyBytes": 6586,
+          "bodySha256": "62525bf2f931ce660cbdcad905b5034afdd0ac46404db96c7a95aa2fc7ba6187",
+          "requestBodyBytes": 0,
+          "context": [
+            "7dc443b4-8b50-47a2-bd10-378f4b81f5d9",
+            "development-all-visible",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 6,
+          "method": "GET",
+          "target": "/acme/events/",
+          "status": 200,
+          "bodyBytes": 17040,
+          "bodySha256": "d98f6486403c3be2924300901e5f0e354377a3c8df21dced5b17897ebf8f86d7",
+          "requestBodyBytes": 0,
+          "context": [
+            "7dc443b4-8b50-47a2-bd10-378f4b81f5d9",
+            "development-all-visible",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 7,
+          "method": "GET",
+          "target": "/acme/changes/?start=now",
+          "stream": true,
+          "status": 200,
+          "context": [
+            "7dc443b4-8b50-47a2-bd10-378f4b81f5d9",
+            "development-all-visible",
+            "pos-2"
+          ],
+          "closed": true,
+          "clientAbortedBeforeClose": false,
+          "wireBytes": 354,
+          "completeFrames": 0
+        },
+        {
+          "publication": {
+            "revision": 1,
+            "bindingKind": "scope",
+            "generation": 1,
+            "authorizationView": "5a20438e-c1e3-4ff7-878b-92a37c7d0a9b",
+            "readPolicy": "empty",
+            "canMutate": false
+          },
+          "oldStreamClosedAtPublication": false
+        },
+        {
+          "index": 8,
+          "method": "GET",
+          "target": "/acme/beads/b00",
+          "status": 404,
+          "bodyBytes": 134,
+          "bodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1",
+          "requestBodyBytes": 0,
+          "context": [
+            "7dc443b4-8b50-47a2-bd10-378f4b81f5d9",
+            "5a20438e-c1e3-4ff7-878b-92a37c7d0a9b",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 9,
+          "method": "GET",
+          "target": "/acme/beads/?limit=2",
+          "status": 200,
+          "bodyBytes": 24,
+          "bodySha256": "9172f6f02ae5ecbbc5a9e487c33e751478b6207a8db8c534a21c7b404004c0db",
+          "requestBodyBytes": 0,
+          "context": [
+            "7dc443b4-8b50-47a2-bd10-378f4b81f5d9",
+            "5a20438e-c1e3-4ff7-878b-92a37c7d0a9b",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 10,
+          "method": "GET",
+          "target": "/acme/snapshot",
+          "status": 200,
+          "bodyBytes": 498,
+          "bodySha256": "37a5af901dbd5861acb26414d1996f550b5dbf08576ba7de869f160a1f2aa3ca",
+          "requestBodyBytes": 0,
+          "context": [
+            "7dc443b4-8b50-47a2-bd10-378f4b81f5d9",
+            "5a20438e-c1e3-4ff7-878b-92a37c7d0a9b",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 11,
+          "method": "GET",
+          "target": "/acme/snapshot?snapshot=13adf70d-1236-44c7-aaa0-77e4aeec7327",
+          "status": 409,
+          "bodyBytes": 127,
+          "bodySha256": "7cb8af9c90cff30f35b0d6deb2b4a47931671d3ef57c2c96b4e952fe809af0f9",
+          "requestBodyBytes": 0,
+          "context": [
+            "7dc443b4-8b50-47a2-bd10-378f4b81f5d9",
+            "5a20438e-c1e3-4ff7-878b-92a37c7d0a9b",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 12,
+          "method": "GET",
+          "target": "/acme/snapshot?snapshot=13adf70d-1236-44c7-aaa0-77e4aeec7327&stream=beads&page=sp_1_qeGpr9lZfMiN_9u_FrsbyTQaccKEn2hRUyhe124c5kE",
+          "status": 409,
+          "bodyBytes": 127,
+          "bodySha256": "7cb8af9c90cff30f35b0d6deb2b4a47931671d3ef57c2c96b4e952fe809af0f9",
+          "requestBodyBytes": 0,
+          "context": [
+            "7dc443b4-8b50-47a2-bd10-378f4b81f5d9",
+            "5a20438e-c1e3-4ff7-878b-92a37c7d0a9b",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 13,
+          "method": "GET",
+          "target": "/acme/beads/?limit=2&cursor=-kU65gru_8nQ-BEl7v5i9BQTPIw90QB8",
+          "status": 409,
+          "bodyBytes": 127,
+          "bodySha256": "7cb8af9c90cff30f35b0d6deb2b4a47931671d3ef57c2c96b4e952fe809af0f9",
+          "requestBodyBytes": 0,
+          "context": [
+            "7dc443b4-8b50-47a2-bd10-378f4b81f5d9",
+            "5a20438e-c1e3-4ff7-878b-92a37c7d0a9b",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 14,
+          "method": "GET",
+          "target": "/acme/changes/?start=now",
+          "stream": true,
+          "status": 409,
+          "context": [
+            "7dc443b4-8b50-47a2-bd10-378f4b81f5d9",
+            "5a20438e-c1e3-4ff7-878b-92a37c7d0a9b",
+            "pos-2"
+          ],
+          "closed": true,
+          "clientAbortedBeforeClose": false,
+          "wireBytes": 481,
+          "completeFrames": 0
+        },
+        {
+          "index": 15,
+          "method": "GET",
+          "target": "/acme/events/?after=ev_PQ2yeDM8q-VbGdBgfjAaqZNlE0vCyLe1j2qgF3FJ08s_bLUW9ljdXBysp41tfjGcabueApuHaoJDxyqyaQ2NBU4_RgIUXrU0P6WM7j6wYd02OFPUOAPbSxfmIxxMOjxonVU_pos-1_31",
+          "status": 409,
+          "bodyBytes": 127,
+          "bodySha256": "7cb8af9c90cff30f35b0d6deb2b4a47931671d3ef57c2c96b4e952fe809af0f9",
+          "requestBodyBytes": 0,
+          "context": [
+            "7dc443b4-8b50-47a2-bd10-378f4b81f5d9",
+            "5a20438e-c1e3-4ff7-878b-92a37c7d0a9b",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 16,
+          "method": "GET",
+          "target": "/acme/receipts/517b0b3a-e8c8-415a-83a2-c66a8993795c",
+          "status": 200,
+          "bodyBytes": 372,
+          "bodySha256": "1f65245a5b2e3e8fd6663587d36ed492a88cd3b937820b07dca7cce06dab8886",
+          "requestBodyBytes": 0,
+          "context": [
+            "7dc443b4-8b50-47a2-bd10-378f4b81f5d9",
+            "5a20438e-c1e3-4ff7-878b-92a37c7d0a9b",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 17,
+          "method": "HEAD",
+          "target": "/acme/receipts/517b0b3a-e8c8-415a-83a2-c66a8993795c",
+          "status": 200,
+          "bodyBytes": 0,
+          "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "requestBodyBytes": 0,
+          "context": [
+            "7dc443b4-8b50-47a2-bd10-378f4b81f5d9",
+            "5a20438e-c1e3-4ff7-878b-92a37c7d0a9b",
+            "pos-2"
+          ]
+        },
+        {
+          "index": 18,
+          "method": "POST",
+          "target": "/acme/operations/batch",
+          "status": 403,
+          "bodyBytes": 129,
+          "bodySha256": "7a92b82a7347430338fa07cbf1152a6865a4ff64e03657d92034909a1f8ba421",
+          "requestBodyBytes": 3728,
+          "requestBodySha256": "a778feb6f8559743228db36139ccc653370c43a30cdcf3d2017db2e85349b054",
+          "context": [
+            "7dc443b4-8b50-47a2-bd10-378f4b81f5d9",
+            "5a20438e-c1e3-4ff7-878b-92a37c7d0a9b",
+            "pos-2"
+          ]
+        }
+      ],
+      "failures": 0
+    },
+    {
+      "label": "authorization-transition-cleanup",
+      "name": "visibility-handles",
+      "attempts": 18,
+      "runtimeReturned": true,
+      "closed": true,
+      "directory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/transport-targeted.tmp/bdp-authorization-http-rO7WRh",
+      "directoryRemoved": true,
+      "failures": 0,
+      "claimEligible": false
+    }
+  ],
+  "historicalUnchangedCases": [
+    {
+      "title": "cancels an active Event stream after policy publication",
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/transport.results.json",
+      "sourceSha256": "775504bcc2cd630a98a2d82f5247c3e766e61f14dfbe58e8d2d4a1bbbd0c27a2"
+    },
+    {
+      "title": "publication cancels a queued Event frame before its drain permits another write",
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/queued-frame.results.json",
+      "sourceSha256": "493c3dfb6abd2283ab306e4cdfebbcd453a0bafe88eb4e9331cabf88cfb3e95b"
+    },
+    {
+      "title": "rejects an old selected Event packet before stream registration and accepts a current lease",
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/stale-lease.results.json",
+      "sourceSha256": "27cb57211957ef26f7afa637fc53e6da733a45a640c81c02805d6b9ec5cd6707"
+    },
+    {
+      "title": "migrates exact legacy authorization facts and preserves a no-op policy across reopen",
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/authorization-owner.results.json",
+      "sourceSha256": "a6cf7c55046345898130564182a4a70797201c04778f22cd9f5d07c810650f9c"
+    },
+    {
+      "title": "fences publication failure and recovers the committed empty policy",
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/authorization-owner.results.json",
+      "sourceSha256": "a6cf7c55046345898130564182a4a70797201c04778f22cd9f5d07c810650f9c"
+    },
+    {
+      "title": "separates Snapshot view fences from durable maintenance and actual expiry",
+      "source": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/authorization-owner.results.json",
+      "sourceSha256": "a6cf7c55046345898130564182a4a70797201c04778f22cd9f5d07c810650f9c"
+    }
+  ],
+  "combinedDistinctPositiveCases": 11,
+  "combinedHTTP": 22,
+  "combination": "Current T1 18HTTP plus historical unchanged T2 4HTTP; other9cases0HTTP. Not a fresh eleven-case run.",
+  "C1": {
+    "actualHistoricalTestExit": 1,
+    "adjudication": "EXPECTED_NAMED_CONTROL_FAILURE",
+    "http": 7,
+    "artifact": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/emitted-control-preparation-v2/run/adjudication.json",
+    "noRerun": true,
+    "bridge": "Exact first7 preconditions/namedgate unchanged; sharedhelper adds bodyBytes/HEAD support only, no GET/POST request change; newchecks after originalfailure."
+  },
+  "productionGraphReadback": {
+    "members": 1141,
+    "emitted": 468,
+    "testExceptions": [
+      "packages/server/src/transaction-authorization.test.ts",
+      "packages/server/src/transaction-runtime.test.ts"
+    ]
+  },
+  "cleanup": {
+    "sampledPids": [
+      13072,
+      13074,
+      13078,
+      13102,
+      13262,
+      13264,
+      13551,
+      13553,
+      13558,
+      13561,
+      13616,
+      13618,
+      13622,
+      13625
+    ],
+    "sampledPidsStillPresent": {},
+    "sampledPaths": [
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/owner-targeted.tmp/GQevYIVkgQoabudU2yTKq",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/owner-targeted.tmp/bdp-tx-authorization-6q2COS",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/transport-targeted.tmp/P-OnccZaqlxCOPv7-gVdH",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/transport-targeted.tmp/bdp-authorization-http-rO7WRh",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/typecheck.tmp/node-compile-cache"
+    ],
+    "presentPaths": [
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/typecheck.tmp/node-compile-cache"
+    ],
+    "runtimePathsStillPresent": [],
+    "limitation": "Sampling is not exhaustive short-lived-owner inventory. Only retained typecheck Node compile cache persists; no deletion performed."
+  },
+  "artifactHashes": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/typecheck.exit.json": "3b32a81556fa102228d446fe3dc501b57a41497722d5a2e93faf51f2a9b1e117",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/typecheck.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/typecheck.stderr.log": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/typecheck.started.json": "4bcd7c45baab721da8950accf8d8bfce39b0ef502e0aa7cef0970335c958db16",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/format-check.exit.json": "fb2bb24a9b4b2405c0d73e7fae9632fcc9c7513f0010dd6f2af9709c0721e6fe",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/format-check.log": "967c1eb73ff103928ef8edf73b47e89032eeb26ac7ff0f457c68f8c3928f9618",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/format-check.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/format-check.started.json": "423657e80256a801dd54c7b4f2f49d8a227a8bd3caebbca5c11ffd05d8ac7dd2",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/transport-targeted.exit.json": "12ea6b7a0379c8f49bd86d8cd3aeb7e22577346673b5145b1b9e7961e01fcfdf",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/transport-targeted.log": "2ce34820d9ed7e048da61aed6adc3684979353985e4b4096144d6c10033a71f3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/transport-targeted.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/transport-targeted.started.json": "40104b6f9da96747b73755fa2be1c369991e8e6544e032ba67efd8017bec729f",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/transport-targeted.results.json": "03295d0e4111adfb1025efb8431c4539a81c3428dfbff0383dd896a36d6aa729",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/owner-targeted.exit.json": "17d899e3419e26cdf2d8cc195914b29ac1de448807d9cfcef3f6563307876877",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/owner-targeted.log": "1ed73247c4b21768a153f502502788b8f43f24e64ff7fad07230554e7be4a3d8",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/owner-targeted.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/owner-targeted.started.json": "8722507fe613e56e92bcfa77f70ba41d2b383c977fdf48eb63513c41f72f1b2d",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/owner-targeted.results.json": "6549517c28cb63d8590d1ed4afe986122edc24a193c39662188c02435a2bf500",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/transport.results.json": "775504bcc2cd630a98a2d82f5247c3e766e61f14dfbe58e8d2d4a1bbbd0c27a2",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/queued-frame.results.json": "493c3dfb6abd2283ab306e4cdfebbcd453a0bafe88eb4e9331cabf88cfb3e95b",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/stale-lease.results.json": "27cb57211957ef26f7afa637fc53e6da733a45a640c81c02805d6b9ec5cd6707",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/authorization-owner.results.json": "a6cf7c55046345898130564182a4a70797201c04778f22cd9f5d07c810650f9c",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/emitted-control-preparation-v2/run/adjudication.json": "0a0eca586c646ee595474fd8d700e752053239518eb46b6e2db48d5c3a681f0f",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/emitted-control-preparation-v2/run/control.results.json": "174bf40f2b073d7009b7742cc003e2ad0d163a1e39a324a57fa6c87b30624428",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/emitted-control-preparation-v2/run/suppress-policy-publication.exit.json": "2fada20428149f0701c1ae949be9b53d6ff4cd44f6c4d81a66cce894d65ad696",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/evidence-repair/measurements.json": "4534fa414799005dfb6f42047ed56c3c1e475bfee5f099b25ddb52164ab12234"
+  },
+  "sourceUnchanged": true,
+  "successorExecutedByRoot": true
+}

@@ -1,0 +1,317 @@
+Review the supplied PLAN for actionable correctness defects only. Do not write or modify files. Output findings only in stdout. No tools or execution. Give concise severity/location/contradiction/impact/fix; label missing evidence honestly, never as a verified defect. Current catalog source is now clean102e140f; runtime/TX artifacts and planv3 unchanged. Authoring requires final catalog reanchor. Partial/wholefalse/RUomitted limits remain mandatory.
+
+
+=== COMPLETE FROZEN PLAN v3 ===
+# Next command-minimum executable evidence v2 — bounded TX slice
+
+Plan only, pending council and root release. Preserves original plan SHA256 `da2b4b51760be3f963a294a8860ebc27765a2bc3e8d6f8ee0cc3935baa79ea73` unchanged. This revision accepts both native findings and the related observation/CI-accounting corrections; no source authoring or execution. No source, tests, build, service, package or installed execution was performed for this plan. The current eleven-file catalog draft remains frozen for its own reviews. This is supporting work under the existing sole design plan, not a new protocol authority.
+
+## Source and dependency
+
+Inspected `/Users/dbox/repos/wt/vickie/vickie-command-minimum-catalog` at HEAD `bd2178dd6f4b9f7c2d239624d7edaa3d961c3e26`, tree `062c32778217aeb702b2f7798dc82b0d985e9c67`, plus the explicitly dirty, frozen catalog draft bound by `transaction-command-minimum-catalog-draft/source-binding.json` SHA256 `755192feb51c3fb063a48f1d5189ee8194fac32a0a4ee5e3f49a556844d6c010`. Actual authoring must wait for that slice's accepted final source/ordinary integration and reanchor its metadata. Do not treat this working draft as merged.
+
+Authority: `docs/specs/bdp.md:3581–3588`, Mutation command preconditions, requires ignoring the three named fields on mutation POSTs without minimum barriers or command-identity effects, while preserving ordinary syntax/bounds, authorization, idempotency, carrier validation and expectedRevision. Transactional consistency at5818–5822 preserves read/receipt minima. Use exactly the inherited ID `read-update.http.command-minimum-fields`, requiredProfile `read-update`, in the private Transactional manifest. `artifact-bundle.ts:214–227` compares requiredProfile against the canonical selected requirement, so using `transactional` for this inherited row would be wrong. The TX factory remains genuinely branded; neither public admission nor the runner needs widening.
+
+Historical concrete precedent is the private TX18 installed test at `apps/bdptest/src/transactional-collection-minimum-installed.test.ts:1173` and `transaction-command-minimum-final-draft/root-installed-summary.json`, attributed to source `f2ac3f980fc8d35a3b485db04b813ad1b569d94d`. Its packet demonstrates eighteen authored wire observations including copied malformed fields, replays, refusal and later receipt minima. It is not evidence for a future manifest/catalog digest. The current cumulative fixture is different: its task Bead has no owned relationship closure; do not copy the historical fixture's ownedLinks assertions.
+
+Read-only source pins: TX manifest SHA256 `726fc623bbb115a0f39e0bb3aaa586ea37254522b254e55e555ea95587f14cb9` (684206 disk bytes); coverage `a3a15b5143c118b24965698ec10289821664c90e935820b51c8cf76c05bdb1df` (99245 bytes); runner `ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1`; artifact factory `bbf54915eb792433ae492fd73a5334717e74e0942c485a72daa5105928546dd6`; installed precursor test `a3f772525ee1c87f3c488e37914af8114421dff5cc003d81640182d6f7a05903`. These identify inspected inputs, not a successful new run.
+
+## Smallest useful row: eleven actions, one fresh session
+
+Use the existing scope `https://reference.invalid/acme/`, task Type, credentials and routes. Insert the inherited RU row at its canonical selected order, ahead of the TX-only rows. Preserve every one of the thirteen old scenario and thirteen old coverage objects byte-for-byte, including complete-parent reconstruction after removing only the new entries. All keys are new row-specific literals; singleton bodies omit `operation`; batch/sequence members use their established carrier grammar.
+
+Literal header sets: M = minimum `not a position!`, epoch empty string, view `view-one, view-two`; F = minimum `pos-99`, epoch `foreign-epoch`, view `foreign-view`; P = epoch only; Z = all three present with empty values; O = all three absent. All are valid ordinary HTTP field syntax and comfortably under existing bounds. They do not stand for malformed HTTP framing. No captured epoch/view substitution is claimed.
+
+| # / proposed action | Actual request and result |
+|---|---|
+| 1 `m-create-a` | POST create-bead, key `minimum-a`, explicit beads/a and title `minimum-a`, M; successful receipt at pos-1. |
+| 2 `m-replay-a` | Exactly the same key/body/route with O; exact retained receipt equality, current context remains pos-1. |
+| 3 `m-create-b` | POST batch containing one explicit createBead beads/b/title `minimum-b`, key `minimum-b`, P; successful receipt at pos-2. |
+| 4 `m-replay-b` | Same batch key/body/route, Z; exact retained receipt equality, pos-2. |
+| 5 `m-create-c` | POST sequence containing one createBead beads/c/title `minimum-c`, member key `minimum-c`, F; successful sequence result, pos-3. |
+| 6 `m-replay-c` | Identical member/body with M; exact sequence body/result equality, pos-3. |
+| 7 `m-body-conflict` | Changed title in original batch body under key minimum-b, F; actual direct409 idempotency-conflict, complete fixture Problem/schema/current pos-3. No new receipt or effect asserted. |
+| 8 `m-stale-update` | POST update-bead on a, new key minimum-stale, literal wrong expectedRevision, valid title patch, M; failed retained receipt at required pos-3, absent effectPosition, exact revision-mismatch member Problem. |
+| 9 `m-retained-a` | Existing transactional.receipt-read GET using root captured from action1; exact original A receipt body/pos-1 fields with current response context pos-3. No minimum headers sent. |
+| 10 `m-current` | GET beads/?limit=32; exact IDs a,b,c, count3, next:null and every full item equals its latest independently validated successful Resource capture. |
+| 11 `m-events` | GET events/; next:null, exactly three created Events with ordered subject/revision/ordinal facts linked to the independent creates, context pos-3. No update/replay/refusal Event. |
+
+Pin successful complete receipt schema, key, disposition, required/effect positions, exact result indexes/outcomes, and full Resource identity/type/properties/metadata/provenance facts before relying on captured full-object equality. The sequence oracle uses the actual sequence schema and member projection, not an invented receipt shape. Validate captures only after the originating assertions have passed. Pin context presence and equality on both sides of comparisons; `exists:true` must remain on ordinary json-pointer equality. Pin the failed receipt's full known Problem, including optional-field absence where deterministic in this fixture. Runtime-generated opaque revisions/receipt IDs may be carried only as observed equality after independent semantic pins. Full collection equality closes extra-field/stale-record holes; exact three-member inventory closes extra allocation. Event evidence is a complete bounded Scope Event page, not a changes-page or universal history claim.
+
+Every raw action requires exact authored header/body observations. Empty values must be visible in the raw serializer evidence, not inferred from a fetch input. The app's existing afterExchange hook has no action ID: filter the ten raw HTTP actions by exact method/URL, row key, ordered expected body and uniquely scoped row progression, and fail on skipped/duplicate/unexpected matches. The dynamic receipt GET is executed internally by the private receipt helper and is not promised to reach that outer hook. Bind its actual returned exchange, request write state, sourceReceiptObservation, servedSession, dynamic exact configuration and client assertion results separately. Do not inspect or publish credentials. Pin one client action separately, ten raw-hook observations and all eleven returned exchange IDs/order, all per-action assertions and final row pass; do not repeat the previous client-only count mistake.
+
+## Deliberately partial scope and existing interface limit
+
+`executable-manifest.ts` raw.headerLines contains literal strings, not binding interpolation. `runner.ts:883–941` accepts only the existing private receipt binding/method and constructs empty raw headers. Therefore the new row cannot honestly exercise same-epoch/view future receipt barriers or foreign receipt minima without a separately reviewed helper/runner extension. Do not add one here, invent static receipt IDs, bypass frozen-route rules, or synthesize a read response. The default receipt GET proves retention/current-context behavior only.
+
+Keep wholeContract:false and an explicit coverage reason naming missing read-minimum enforcement in this row; same-context future-position tuples; the remaining singleton command target/kind and carrier-validation/bounds partitions; and actual RU-profile execution. This finite singleton/batch/sequence sample is not a universal all-fields/all-targets proof. Authorization is independently probed below; ordinary transport/parser limits are preserved, not newly proved. The historical TX18 and RU6 scenarios stay separately attributed and do not fill these new row's missing sections by relabeling.
+
+RU reuse is semantic/oracle reuse only. Leave the canonical RU coverage entry omitted/false/empty and both RU shards unchanged in this slice. A later separately bounded RU row must run against an actual RU configuration and its own disposition semantics. No new normative ID, public profile support or qualification flag.
+
+## Two discriminating actual-wire controls
+
+Use existing observe({manifest, afterExchange}) facilities and genuine child responses. Add only an app-local pass-through for the runner's existing scenarioSelection, fixed to `["read-update.http.command-minimum-fields"]` in these two controls. Keep the complete canonical branded bundle/catalog/fixture and full immutable route grants. Runner validates nonempty, unique, applicable exact IDs and preserves catalog order (`runner.ts:367–379,2762–2771`); neither runner/export changes nor a filtered/rebuilt one-row artifact is needed. Pin result.scenarioSelection and result.selectedScenarioIds to exactly that ID, exactly one failed returned scenario, one row session, bootstrap plus row child, and actual claimEligible:false. Other rows are not executed by these controls; never report them as passed. Do not mutate production or replace responses.
+
+1. `minimum-batch-body-conflict`: change only action4's batch title under the same key, preserving its field set and original retained-replay expectations. Update the authored-request/body oracle to describe the derivative request, so request verification succeeds. Actual409 idempotency-conflict at pos-2 must be recorded; expected200/retained-object assertions fail by their named IDs. Earlier three exchanges pass and the selected row stops at4; no other row executes. No generic exit1 acceptance.
+2. `minimum-readonly-credential`: action1 uses the existing same-principal readonly credential instead of operator, retaining M and the successful-command expectations. Actual403 must be recorded, with the existing unobserved authorization-refusal schema/absence facts; do not demand observed BDP context on this refusal. Authored request evidence must pass; named success/receipt expectations fail. The selected row stops at1; no other row executes. This distinguishes ignoring read controls from bypassing authorization.
+
+Freeze exact derivative inventories, failing/passing assertion-ID sets and complete safe returned run reports before release. Add static weakening checks in the new independent ledger test: deleting an empty header or dropping replay equality must fail the named ledger guard. These do not add product requests. Both actual controls must preserve input-vs-executed equality before any targeted hook, and log actual claimEligible. New response-output hook, if needed, follows the existing optional NOOP/DELETION/CROSS_CARRIER full-result writer pattern; no new reporting framework or fabricated ConformanceRunResult.
+
+## Five source paths, precise fanout
+
+1. `packages/conformance/test-support/transactional/manifest-v1.json`: one inherited eleven-action row.
+2. `packages/conformance/test-support/transactional/coverage-v1.json`: one false row with exact ordered nonempty assertion mirror and explicit missing portions.
+3. `packages/conformance/src/transactional-cumulative.test.ts`: independent literal/body/header/capture/receipt/state/event pins, old26-object preservation, canonical inherited placement, exact updated action/assertion/cap measurements and weakening checks. Unplanned238→237; before execution the new row remains in unobservedIds because ready-unexecuted is not observed. Keep existing wrong-profile denial tests.
+4. `apps/bdptest/src/transactional-matrix.test.ts`: positive ledger/wire filter/counts, two controls/full-result persistence, actual profile/route/config pins and mechanical count adaptation for the existing controls. Old test bodies/oracles remain; no dropping them to fit. Required251/report256 stay unchanged; successful authored13→14, sessions20→21 and children21→22. Route membership and authorization semantics stay unchanged, but first-use order and its exact digest change as specified below. Preserve dynamic receipt authorization, separately bound to genuine observed source/session. Inventory and update every affected literal route/preimage/digest assertion; no blind helper regeneration.
+5. `packages/conformance/src/profile-contract-plan.test.ts`: the currently proposed mapping test explicitly asserts absence in all three manifests. Change only its TX absence portion into exact inherited partial TX presence while retaining RU omission, Read exclusion, exact selectedText, no retirement and no duplicate TX authority. Rename its “without executable credit” title accurately. Omitting this fifth path would leave a known stale test.
+
+Insertion also changes which row is first. In app line605, replace the historical receipt-corruption fixture's `value.scenarios[0]` with exact ID `transactional.batch.atomic-commit`, preserving its four mutations and oracles. In cumulative tests, preserve historical atomic-commit fixture identity explicitly for prototypes at current lines60,141–142,155–157,421 and568; the line141 misprofile control must still change a TX-owned row to read-update, not accidentally accept the new inherited RU row. The generic frozen-first-object assertion at95 may still inspect the first object. Pin these fixture substitutions as selection-only and inspect all first-row uses; do not broaden negative expectations or change wrong-profile law. These are within the two already owned test paths.
+
+No fixture, schema, runtime, store, executor, runner, public exports, catalog, spec or other coverage paths. If accepted catalog review changes the fifth test before integration, reanchor its exact final semantics first. No present authoring release is implied.
+
+## Ordered route/configuration binding
+
+Retain existing first-occurrence derivation rather than introducing a new route-canonicalization mechanism. Independently author and assert this fifteen-route order (all URLs below relative to the fixed Scope):
+
+1. POST operations/create-bead
+2. POST operations/batch
+3. POST operations/sequence
+4. POST operations/update-bead
+5. GET beads/?limit=32
+6. GET events/
+7. GET beads/a
+8. GET links/l
+9. GET beads/new
+10. GET changes/?after=genesis
+11. GET links/?limit=32
+12. GET beads/b
+13. GET beads/c
+14. POST operations/update-where
+15. POST operations/delete-where
+
+Require uniqueness and exact equality of old and new method/absolute-URL sets, using the independently preserved old literal inventory, plus exact new array equality against actual manifest traversal. No sorting of the configured array and no dropped/ungranted route. Receipt root/page routes remain dynamically confined by the existing private helper, outside this static array.
+
+The runner digest's independent preimage contains exactly maximumRequestBodyBytes65536, maximumRequestHeaderBytes16384, profile transactional, this ordered routes array and scope `https://reference.invalid/acme/`, recursively sorted object keys with arrays retaining order. Read-only Python JSON arithmetic reproduced the existing1228-byte preimage/hash `a9a17908b6fa87674d5f573b584f4a1ce1d41d7909fadf48b65e9b05397ddfd4`; the proposed reordered1228-byte preimage hashes to `02dd7d9f35e7482c07ce1550a6572232cc48ba6858cd66f8dfc8f5384f3628be`. This is planning arithmetic, not actual source execution or a served configuration claim.
+
+Known literal sites in transactional-matrix.test.ts are uniqueRoutes at184–200, positive exactConfigurationDigest at352, independently authored preimage at1284–1307 and expected hash at1310. Update all four coherently, preserve old hash as history, and search for other exact hash/order dependents before freeze. Credentials/permissions/limits and fixture are unchanged; runtime/store configuration identity need not be conflated with this ordered execution-boundary digest. At draft freeze retain exact old/new preimages and independent set comparison; during execution require the actual returned declaration to equal the new independent pin. Selected controls use the same full static route array, not a smaller grant invented from their selection.
+
+## Measurement and execution gates
+
+Current TX artifact: disk684206, normal-form695598,18107 nodes, coverage99245,199 actions,2102 assertions. Existing authoring limits disk688302/normal699694/nodes18171/coverage100269 leave4096/4096/64/1024 respectively. The row will require a measured authoring amendment; these are not runtime/parser capacities. Before editing limits or testing, freeze normal-form source/derivatives, all bytes/node/assertion/capture counts, old26 raw hashes, route preimage and safe configuration digest. Initial planning ceilings only: additional120KiB manifest bytes in each form,3000 nodes,24KiB coverage and260 assertions; exact observed draft and all simultaneous historical delta/absolute fences go to root for approval, not automatic spending. TX1MiB,100000 JSON nodes and all wire/runtime limits remain unchanged. No shortened reason, weakened oracle, minification, baseline reset or unexplained reformatting to fit.
+
+Proposed source selection is seven CPU/static callbacks: existing canonical TX binding, noncanonical/profile rejection, source-copy/unplanned cases; one new independent command-minimum ledger/weakening case; the existing two app static ledger callbacks with mechanical new-row accounting; and the revised catalog mapping callback. This excludes the whole cumulative file's loopback cases. Resolve exact post-authoring titles/argv in preflight and inspect top-level emitted imports; build matching product modules first. No whole matrix/full workspace demand. Existing source-only mock setup and module evaluation must be disclosed, not claimed as zero product imports. Standard bounded type/build/format/lint/boundary/Read seal checks remain;120s per external command, no automatic retry.
+
+One clean frozen build and one fresh package/consumer setup, followed by exactly three separately reported installed cohorts: full positive, exact selected-row batch control, exact selected-row readonly control. Existing baseline is192 HTTP/21 children. Proposed positive203 HTTP/22 children; batch control4/2; readonly control1/2: expected total208 HTTP/26 sequential child launches across three cohorts, including each bootstrap; hard maximum225 HTTP/26 children (203+11+11 requests and22+2+2 children), no replacement attempt. Positive manifest210 actions, one added client action and ten raw HTTP actions. No new reopen. Check actual final source ordering/setup before freezing these figures; any discrepancy returns to root. Preserve90s cohort/120s test and supervisor,5s exchange,10s preparation/cleanup; these existing limits are not enlarged. Older control tests receive mechanical expected-count and explicit old-row fixture adaptations but are not claimed rerun by these three selections. Inspect their preservation and the recurring CI amplification inventory below; the three local cohorts are not the total CI workload.
+
+Package proof binds final ordinary commit/tree, actual archive members, source/build input equality, installed protocol/server/dependency closure, independently recomputed payload, child runtime metadata/configuration/contracts/policy and exact route/fixture/manifest/catalog digests. A supervisor-verified source label is not child-attested provenance. Capture full genuine returned reports before assertions/cleanup failure can erase them; safe wrapper fields only. Record every attempt, dispatch/observed wire counts, child PIDs/exits, service directories and independently checked final absence. Owned process-group cleanup only; preserve original plus cleanup failure. Unexpected runtime/shape/oracle failure stops dependent cohorts for disposition; no retry or new child without an explicit amendment.
+
+## Recurring CI amplification, distinct from local execution
+
+Current `.github/workflows/ci.yml` executes full `pnpm test` after build, under its existing20-minute job limit; local selection does not narrow that invocation. Source inspection of transactional-matrix.test.ts finds52 expanded existing invocations of observe(), grouped below. Other direct child-launch tests remain separate and unchanged. This is a prospective static inventory, not a measured CI duration or execution claim.
+
+| Existing group | Expanded invocations | Effect of new first row |
+|---|---:|---|
+| Full positive; altered receipt4; ordinary-ID capture/follow2; wrong set4; cross-wired set1; set credential-denied2; set effects7; pagination6; completed conflict5; no-op3; deletion3; cross-carrier2 | 40 | Normally +11 exchanges/+1 row child each, after preserving old corruption targets by ID. |
+| Globally invalid receipt credentials | 1 | New row fails its dynamic GET at action9: +9 exchanges/+1 child, not +11. Existing old-row assertions stay intact. |
+| Changed ready metadata5 | 5 | New setup attempt, zero new wire; inspect failure continuation semantics in final draft before freezing child count. |
+| Real-wire abort and deliberate child-kill/abort | 2 | Still stop on first raw exchange; first request changes from old anonymous GET to new POST. Preserve original abort/cleanup oracles and expose this changed triggering request, without claiming an additional full row. |
+| Pre-aborted1, duplicate-binding preflight1, omitted-route preflight2 | 4 | Zero new row wire/start; their existing prelaunch/bootstrap behavior is unchanged. |
+
+Two new selected controls add exactly5 expected requests and4 children, not two full matrices. Conditional on the inspected traversal/cleanup behavior, recurring CI's expected additional wire is40×11+9+5=454; conservative row wire maximum across the41 ordinary/full traversals plus two new controls is41×11+22=473. The five ready-metadata attempts add at most one new row child each;40 ordinary+1 globally denied+5 metadata plus4 new-control children gives at most50 incremental product children. Confirm exact expanded titles, traversal and counters in the measured draft; stop for any change rather than convert this estimate into a silently larger allowance. No CI deadline change is proposed. All three local cohorts remain separately bounded at208 expected/225 max and26 children.
+
+This inventory explains why inserting one row is not zero-cost in CI. Root/council may separately choose a future shared-control selection refactor, but this slice does not alter existing52 selections or introduce that broader change. Existing short20s/30s specialized tests keep their own deadlines; the new full-row cost must be disclosed before release. No generic assertion or time allowance is weakened to make the new row fit.
+
+## Machine-checkable completion
+
+All five final paths bound; catalog and production bytes unchanged; old26 objects reconstruct exact parent; row carries requiredProfile read-update and only the existing fixture capabilities; all assertion mirrors exact; counters reflect14 authored/251 required while all whole flags and actual claimEligible stayfalse. Seven selected static cases and three explicitly bounded actual cohorts have source-bound outcomes, exact control failure IDs and complete cleanup. The fresh positive proves the eleven observations above; the two controls distinguish identity conflict and authorization preservation. Missing portions remain explicit in the row and final report. Council/root acceptance of draft measurements, final code, actual outcomes and ordinary parent remains required before any publication; this plan grants none of those actions.
+
+
+=== PRIOR NATIVE FINDINGS/CLOSURE SUMMARY ===
+Native review found two Medium issues in v1: full-matrix controls unnecessarily592HTTP/66children despite existing exact selection; new first-row order invalidated the unchanged route digest. V2 closes them with one fullpositive plus two selected controls208expected/225maxHTTP,26children, explicit new15-route order/digest and old-set equality. Native independently checked1228-byte preimages, ten raw observations plus one internal receipt, explicit old atomic-commit targets and conditional52-invocation CI arithmetic. Sole remaining Low was declarations.scenarioSelection; v3 correctly pins result.scenarioSelection/result.selectedScenarioIds. Measurements, exact draft traversal and final reanchor remain gates; none is runtime evidence.
+
+
+=== apps/bdptest/src/transactional-matrix.test.ts:93-109 ===
+93: async function observe(control?: {
+94:   readonly budgetMs?: number;
+95:   readonly invalidReceiptCredentials?: boolean | "set-update" | "set-delete";
+96:   /** Negative-only removal of one already declared canonical set route. */
+97:   readonly omitRoute?: {
+98:     readonly method: "POST";
+99:     readonly url: `${typeof scope}operations/${"update-where" | "delete-where"}`;
+100:   };
+101:   readonly signal?: AbortSignal;
+102:   readonly children?: ChildProcess[];
+103:   /** Negative-test gate after actual ordinary wire, never a response replacement. */
+104:   readonly afterExchange?: (response: HttpExchangeResponse, signal: AbortSignal) => Promise<void>;
+105:   readonly ready?: (ready: Record<string, unknown>) => Record<string, unknown>;
+106:   readonly manifest?: (value: {
+107:     scenarios: { id: string; actions: Record<string, unknown>[] }[];
+108:   }) => void;
+109: }) {
+
+=== apps/bdptest/src/transactional-matrix.test.ts:165-200 ===
+165:     }
+166:     const routes = bundle.manifest.scenarios
+167:       .flatMap((s) => s.actions ?? [])
+168:       .flatMap((a) => {
+169:         if (a.family !== "http") return [];
+170:         const base =
+171:           a.target.binding === "scope" ? scope : bundle.fixture.bindings?.[a.target.binding];
+172:         if (!base) throw new Error("predeclared target unavailable");
+173:         const url = new URL(a.target.path ?? "", base);
+174:         for (const [key, value] of Object.entries(a.target.query ?? {})) {
+175:           if (typeof value !== "string") throw new Error("literal query required");
+176:           url.searchParams.set(key, value);
+177:         }
+178:         return [{ method: a.method, url: url.href }];
+179:       });
+180:     const uniqueRoutes = routes.filter(
+181:       (r, i) => routes.findIndex((o) => o.url === r.url && o.method === r.method) === i,
+182:     );
+183:     // Independently authored route inventory, not a second derivation from the manifest.
+184:     expect(uniqueRoutes).toEqual([
+185:       { method: "GET", url: `${scope}beads/a` },
+186:       { method: "POST", url: `${scope}operations/batch` },
+187:       { method: "GET", url: `${scope}links/l` },
+188:       { method: "GET", url: `${scope}beads/?limit=32` },
+189:       { method: "GET", url: `${scope}events/` },
+190:       { method: "GET", url: `${scope}beads/new` },
+191:       { method: "GET", url: `${scope}changes/?after=genesis` },
+192:       { method: "GET", url: `${scope}links/?limit=32` },
+193:       { method: "GET", url: `${scope}beads/b` },
+194:       { method: "GET", url: `${scope}beads/c` },
+195:       { method: "POST", url: `${scope}operations/update-where` },
+196:       { method: "POST", url: `${scope}operations/delete-where` },
+197:       { method: "POST", url: `${scope}operations/create-bead` },
+198:       { method: "POST", url: `${scope}operations/sequence` },
+199:       { method: "POST", url: `${scope}operations/update-bead` },
+200:     ]);
+
+=== apps/bdptest/src/transactional-matrix.test.ts:212-225 ===
+212:       scope,
+213:       profile: "transactional",
+214:       routes: uniqueRoutes.filter(
+215:         (r) => !omitted || r.url !== omitted.url || r.method !== omitted.method,
+216:       ),
+217:       maximumRequestHeaderBytes: 16384,
+218:       maximumRequestBodyBytes: 65536,
+219:       defaultCredentialRef: "operator",
+220:       credentialHandles: [
+221:         { id: "operator", headerNames: ["authorization"] },
+222:         { id: "reader", headerNames: ["authorization"] },
+223:         { id: "anonymous", headerNames: [] },
+224:       ],
+225:       resolveCredentials: ({ credentialRef, url }) =>
+
+=== apps/bdptest/src/transactional-matrix.test.ts:254-266 ===
+254:       {
+255:         scope,
+256:         signal,
+257:         profile: "transactional",
+258:         seed: 0,
+259:         artifactBundle: runBundle,
+260:         execute: async () => {
+261:           throw new Error("generic HTTP executor forbidden");
+262:         },
+263:         exactExecution: {
+264:           execute: async (request) => {
+265:             const response = await target!.target.execute(request);
+266:             if (
+
+=== apps/bdptest/src/transactional-matrix.test.ts:282-292 ===
+282:                 deniedReceiptUrls.add(receipt.id);
+283:             }
+284:             await control?.afterExchange?.(response, signal);
+285:             signal.throwIfAborted();
+286:             return response;
+287:           },
+288:           configuration: target.target.exactConfiguration!,
+289:         },
+290:         harness: {
+291:           ...target.target.harness,
+292:           cleanup: async (...args) => {
+
+=== packages/conformance/src/runner.ts:367-379 ===
+367:   if (runOptions.scenarioSelection !== undefined) {
+368:     const applicable = new Set(metadata.map(({ id }) => id));
+369:     const missing = runOptions.scenarioSelection.filter((id) => !applicable.has(id));
+370:     if (missing.length > 0)
+371:       throw new ConformanceRunnerError(
+372:         `scenarioSelection names scenarios that are unknown or inapplicable: ${missing.join(", ")}`,
+373:       );
+374:     const requested = new Set(runOptions.scenarioSelection);
+375:     // Catalog order is preserved: the selection names membership, not sequence.
+376:     selected = metadata.filter(({ id }) => requested.has(id));
+377:   }
+378:   preflightExactPlans(
+379:     selected.flatMap(({ id }) => byId.get(id) ?? []),
+
+=== packages/conformance/src/runner.ts:403-420 ===
+403:   const common = {
+404:     scope: runOptions.scope,
+405:     profile: runOptions.profile,
+406:     seed: runOptions.seed,
+407:     selectedScenarioIds: selected.map(({ id }) => id),
+408:     ...(runOptions.scenarioFilter === undefined
+409:       ? {}
+410:       : { scenarioFilter: runOptions.scenarioFilter }),
+411:     ...(runOptions.scenarioSelection === undefined
+412:       ? {}
+413:       : { scenarioSelection: runOptions.scenarioSelection }),
+414:     artifacts: runOptions.artifactBundle.digests,
+415:     declarations: {
+416:       targetLabel: runOptions.declaredTargetLabel,
+417:       ...(runOptions.artifactBundle.manifest.manifestVersion === 2 &&
+418:       runOptions.exactExecution !== undefined
+419:         ? { exactConfigurationDigest: exactConfigurationDigest(runOptions.exactExecution) }
+420:         : {}),
+
+=== packages/conformance/src/runner.ts:2762-2771 ===
+2762:   if (options.scenarioSelection !== undefined) {
+2763:     if (options.scenarioFilter !== undefined)
+2764:       throw new ConformanceRunnerError(
+2765:         "scenarioSelection and scenarioFilter are mutually exclusive",
+2766:       );
+2767:     if (options.scenarioSelection.length === 0)
+2768:       throw new ConformanceRunnerError("scenarioSelection must not be empty");
+2769:     if (new Set(options.scenarioSelection).size !== options.scenarioSelection.length)
+2770:       throw new ConformanceRunnerError("scenarioSelection must not repeat scenario ids");
+2771:   }
+
+=== packages/conformance/src/runner.ts:1580-1598 ===
+1580: function exactConfigurationDigest(binding: ExactScenarioExecution): string {
+1581:   const config = binding.configuration;
+1582:   return createHash("sha256")
+1583:     .update(
+1584:       JSON.stringify(
+1585:         sortJsonValue({
+1586:           scope: config.scope,
+1587:           profile: config.profile,
+1588:           routes: config.routes,
+1589:           maximumRequestHeaderBytes: config.maximumRequestHeaderBytes,
+1590:           maximumRequestBodyBytes: config.maximumRequestBodyBytes,
+1591:           ...(binding.approvedSyntheticManifestDigest === undefined
+1592:             ? {}
+1593:             : { approvedSyntheticManifestDigest: binding.approvedSyntheticManifestDigest }),
+1594:         }),
+1595:       ),
+1596:     )
+1597:     .digest("hex");
+1598: }
+
+=== packages/conformance/src/http-executor.ts:530-544 ===
+530:   routes: readonly { method: HttpMethod; url: string }[];
+531: } {
+532:   const scope = canonicalHttpUrl(scopeValue);
+533:   if (scope.href.includes("?") || !scope.pathname.endsWith("/")) return configuration();
+534:   const routes: { method: HttpMethod; url: string }[] = [];
+535:   const sourceRoutes = arrayItems(routeValue);
+536:   for (let i = 0; i < sourceRoutes.length; i++) {
+537:     const entry = dataRecord(arrayItem(sourceRoutes, i), ["method", "url"]);
+538:     if (!isHttpMethod(entry.method)) return configuration();
+539:     const target = canonicalHttpUrl(entry.url);
+540:     if (target.origin !== scope.origin || !target.pathname.startsWith(scope.pathname))
+541:       return configuration();
+542:     routes.push(Object.freeze({ method: entry.method, url: target.href }));
+543:   }
+544:   return { scope, routes: Object.freeze(routes) };

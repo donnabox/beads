@@ -1,0 +1,31 @@
+## Verdict: no blockers. The working-tree delta is exactly the intended four-literal repair.
+
+### Delta vs. reference patch
+`scripts/smoke-executables.mjs:228-231` contains exactly:
+
+```
+      "json-value-equality.d.ts",
+      "json-value-equality.d.ts.map",
+      "json-value-equality.js",
+      "json-value-equality.js.map",
+```
+
+Byte-identical to the `@@ -225,6 +225,10 @@` hunk in `repair.patch` (and to the identical copy at `validation-preparation/repair.patch`): same order, 6-space indentation matching neighbors, trailing comma present. Context is exact — inserted immediately after `resource-evaluator.js.map` (`:227`) and before `retained-disclosure.d.ts` (`:232`), the approved placement next to its importer. No other occurrence of the literal anywhere in the repo except this set and the source/test importers.
+
+### Evidence the delta is complete and nothing else shifted
+- **Necessary and sufficient, independently:** the preserved CI failure reports `missing=[], unexpected=[json-value-equality.d.ts, .d.ts.map, .js, .js.map]` (`smoke-excerpt.log:13`) — four artifacts, no other drift.
+- **Set cross-check:** the `expectedServerOutput` Set now holds 256 entries (lines 135–391, minus the pre-existing blank at `:151`) = 64 modules × 4. Enumerating all 128 `packages/server/src/*.ts` and dropping `*.test.ts` yields exactly those same 64 module names — no missing, no stale entry. `json-value-equality.ts` has no sibling `.test.ts`, so it cannot trip the `assertBuildOutput` test-artifact check.
+- **Four artifact kinds are right:** `tsconfig.base.json` sets `declaration`, `declarationMap`, `sourceMap`; `packages/server/tsconfig.json` includes `src/**/*.ts`, excludes `src/**/*.test.ts`.
+- **Line-shift corroboration:** the pre-repair CI trace points at `smoke-executables.mjs:397` (`throw new Error(`) and `:867` (`const installed = await installPackedWorkspace();`) on this same HEAD `ddfb5f4`; in the working tree those are now `:401` and `:871` — exactly +4, so there is no other net line insertion or deletion ahead of them.
+
+### Fences preserved (all verified in current file)
+- **Strict set fence:** `:393-404` still requires `length === size` *and* full membership, with the missing/unexpected report intact — no relaxation to subset/`includes`.
+- **Exports fence:** `:411` still calls `assertServerExports`, which deep-equals the map against exactly `"."` and `"./development"` (`scripts/smoke-safety.mjs:5-14`). `packages/server/package.json` exports/`files` unchanged — `json-value-equality` is **not** exported.
+- **Test-support fence:** `:405-407` unchanged.
+- **No-public-import fence:** `packages/server/src/transaction-snapshot.test.ts:674-680` asserts exports keys equal `[".", "./development"]` and that neither `index.ts` nor `development.ts` mentions `json-value-equality`.
+- **Private-resolution loop:** `:509-520` still covers only `installed-schema-*` / `transaction-*` `.js`, so `json-value-equality` gets no subpath probe — the deferral the disposition approved, fenced by exact-exports equality plus the no-public-import test. Not a blocker.
+- **Runtime/importers untouched:** `json-value-equality.ts` is a dependency-free pure helper imported only by `resource-evaluator.ts`, `transaction-snapshot.ts` and their tests; the delta adds no `console.log`, so all 17 entries in `smoke-markers.json` still match one-for-one.
+- **Build attribution holds:** `package.json:15,17` — `build` = `pnpm clean && tsc -b`, `clean` = `tsc -b --clean && node scripts/clean-build.mjs`; `commands.json` `fresh-build` invokes `pnpm run build`, ordered before `smoke`. No bypass, no stale-output reuse.
+
+### One residual, already gated — not an action item for you
+I was restricted to Read/Glob/Grep, so I could not compute `sha256`/`git diff` to prove whole-file byte-exactness. The start-of-session `git status` shows only `M scripts/smoke-executables.mjs`, and `validation-preparation/run.py` itself enforces `set(git diff --name-only HEAD) == {binding.file}` plus `sha(git diff --binary HEAD) == 8ecdf489…` both at stage entry and at acceptance (and re-checks `HEAD`/`tree` against `ddfb5f4`), so the byte-level pin is adjudicated by the validation run rather than needing a separate manual step.

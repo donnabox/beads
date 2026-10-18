@@ -1,0 +1,60 @@
+--- a/packages/conformance/src/transactional-cumulative.test.ts
++++ b/packages/conformance/src/transactional-cumulative.test.ts
+@@ -1181,15 +1181,16 @@
+   // Preserve bases488280/13019/70662 and margins4096B/64nodes/1024B.
+   // Root-accepted sequence-member: disk790009/normal802361/nodes20956/coverage117702.
+   // Root-accepted principal: disk825049/normal837765/nodes21908/coverage124537.
++  // Root-accepted conditional Read: disk870122/normal883414/nodes23196/coverage133517.
+   // These measured source authoring fences do not change runtime/parser limits.
+-  expect(read("manifest").byteLength - 488280).toBeLessThanOrEqual(340865);
+-  expect(read("manifest").byteLength).toBeLessThanOrEqual(829145);
+-  expect(Buffer.byteLength(JSON.stringify(manifest, null, 2) + "\n")).toBeLessThanOrEqual(841861);
+-  expect(read("coverage").byteLength - 70662).toBeLessThanOrEqual(54899);
+-  expect(read("coverage").byteLength).toBeLessThanOrEqual(125561);
++  expect(read("manifest").byteLength - 488280).toBeLessThanOrEqual(385938);
++  expect(read("manifest").byteLength).toBeLessThanOrEqual(874218);
++  expect(Buffer.byteLength(JSON.stringify(manifest, null, 2) + "\n")).toBeLessThanOrEqual(887510);
++  expect(read("coverage").byteLength - 70662).toBeLessThanOrEqual(63879);
++  expect(read("coverage").byteLength).toBeLessThanOrEqual(134541);
+   expect(
+     Buffer.byteLength(JSON.stringify(JSON.parse(read("coverage").toString()), null, 2) + "\n"),
+-  ).toBeLessThanOrEqual(125561);
++  ).toBeLessThanOrEqual(134541);
+   expect(
+     manifest.scenarios.flatMap((r: { actions: { assertions: unknown[] }[] }) =>
+       r.actions.flatMap((a) => a.assertions),
+@@ -1206,8 +1207,8 @@
+     nodes++;
+     if (value && typeof value === "object") pending.push(...Object.values(value));
+   }
+-  expect(nodes - 13019).toBeLessThanOrEqual(8953);
+-  expect(nodes).toBeLessThanOrEqual(21972);
++  expect(nodes - 13019).toBeLessThanOrEqual(10241);
++  expect(nodes).toBeLessThanOrEqual(23260);
+   // Clause ownership is independent from the exhaustive mechanical assertion mirror.
+   const clauseMap = {
+     "transactional.receipt.pagination": [
+--- a/apps/bdptest/src/transactional-matrix.test.ts
++++ b/apps/bdptest/src/transactional-matrix.test.ts
+@@ -1775,8 +1775,8 @@
+     }
+     // Historical root-accepted maximum701716B/18263nodes plus4096B/64nodes.
+     // Command-minimum measured maximum756707B/19731nodes plus4096B/64nodes.
+-    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(847979);
+-    expect(nodes).toBeLessThanOrEqual(22128);
++    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(893628);
++    expect(nodes).toBeLessThanOrEqual(23416);
+     const loaded = createCumulativeTransactionalArtifactBundle(
+       loadProfileContractSelection("transactional"),
+       { fixture: fixtureSource, manifest: { bytes: Buffer.from(wire) } },
+@@ -2186,8 +2186,8 @@
+     // Historical measurement-only derivative guards were650386B/17275nodes.
+     // Historical root-accepted maximum701716B/18263nodes plus4096B/64nodes.
+     // Command-minimum measured maximum756707B/19731nodes plus4096B/64nodes.
+-    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(847979);
+-    expect(nodes).toBeLessThanOrEqual(22128);
++    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(893628);
++    expect(nodes).toBeLessThanOrEqual(23416);
+     const loaded = createCumulativeTransactionalArtifactBundle(
+       loadProfileContractSelection("transactional"),
+       { fixture: fixtureSource, manifest: { bytes: Buffer.from(JSON.stringify(changed)) } },

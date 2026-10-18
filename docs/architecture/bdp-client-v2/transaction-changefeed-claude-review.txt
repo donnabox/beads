@@ -1,0 +1,60 @@
+## Verdict
+
+I reviewed `a7430dd` against `8569b85` in the frozen checkout (HEAD confirmed `a7430ddf0fc2e56b0923d8c75fcfc752ee89ac88`, tree clean; no files written, no builds or tests run). **No correctness defect found in the serving path, the checkpoint codec, the fences, the start=now anchor, the bound, or the HTTP semantics.** All four numeric claims and all verification-log claims in `report.md` reproduce exactly. Three low-severity findings follow — one real (if modest) performance regression introduced by the shared-helper extraction, and two evidence-precision gaps against the plan's own done-when list.
+
+---
+
+## Findings
+
+### 1. Low — efficiency regression on the inherited Event path from the helper extraction
+**File/line:** `packages/server/src/transaction-store.ts:543-555` (callers `:1313`, `:1394`)
+
+The extracted `retainedGroupAtOrAfter` calls `db.prepare(...)` on **every invocation** for both statements. The code it replaced hoisted `rowAt` and `bodyAt` once, above `readEvents`'s group-walk loop (`8569b85:1282-1287`).
+
+**Impact:** `readEvents` for a Resource source (`?view=events`) walks and parses *every* group from the cursor to head, because most groups project zero visible events for one subject (`:1312-1351`). That loop now compiles 1–2 SQLite statements per group walked instead of 2 per request, and leaks that many un-finalized `StatementSync` handles until GC. No behavioral change — `report.md:11`'s "preserves Event framing and cursor behavior" is accurate — but the per-row cost is new and is not mentioned. The changefeed path itself is unaffected (bounded at ≤2 helper calls plus 2 inline probes per request, `:1391`, `:1402`).
+
+**Fix:** hoist both statements into lazily-prepared closure constants inside `openTransactionStore` (alongside the existing pattern) and have `retainedGroupAtOrAfter` reuse them. Note that `transaction-events.test.ts:467-499` spies on `DatabaseSync.prototype.prepare` and attaches per-statement `get` mocks, so it keeps passing either way.
+
+### 2. Low — `position` tampering is in the plan's done-when but has no test anywhere
+**File/line:** `packages/server/src/transaction-changefeed.test.ts:366-373`
+
+Done-when #10 enumerates "Tampered position/previousPosition/eventCount/ordinal fails closed." The corruption table covers `previousPosition`, `projectionAdvance`, all-empty arrays, shifted `ordinal`, and `eventCount:100`, plus one end-to-end DB tamper of `previousPosition` (`:374-382`). Tampered `position`, `checkpoint`, `scopeEpoch` and `authorizationView` are **not** exercised — and `grep` finds no equivalent in `transaction-events.test.ts` or `transaction-store.test.ts` either, so there is no inherited coverage to lean on.
+
+**Impact:** evidence only. The code does fail closed, via `transaction-events.ts:182-192` (`group.position !== \`pos-${expectedPosition}\``, `group.checkpoint !== group.position`, epoch/view equality), reached unconditionally from `projectTransactionChangeGroup` (`transaction-changefeed.ts:138-144`). So this is an unproven-but-correct branch, not a hole.
+
+**Fix:** add `{ position: "pos-99" }`, `{ checkpoint: "cg_x" }`, `{ scopeEpoch: "foreign" }` to the existing `for (const change of [...])` table — one line each, no new fixture.
+
+### 3. Low — "replaying from the unchanged durable cursor" is asserted more strongly than the test shows
+**File/line:** `packages/server/src/transaction-changefeed.test.ts:272-274` (claim at `report.md:22`, plan done-when #3)
+
+After `client.apply(seed, true)` throws and state is confirmed unchanged at `{graph: Map{}, checkpoint: "genesis", position: "pos-0"}`, the retry is `client.apply(seed)` — the **same in-memory group object**, not a re-read of the feed keyed by the oracle's unchanged durable checkpoint (`page(owner, client.state().checkpoint)`).
+
+**Impact:** evidence precision. The composed claim does hold, because test 1 (`:258-260`) separately proves that re-reading the same cursors — across `reopen()` — yields byte-identical pages. But no single test demonstrates "reconnect from old checkpoint replays whole group, applies once," which is what done-when #3 words.
+
+**Fix:** replace `client.apply(seed)` with `client.apply(page(f.owner, client.state().checkpoint).groups[0]!)`, which closes the loop without new scaffolding.
+
+---
+
+## Verified clean (scope items)
+
+- **Whole-group HTTP/owner observation.** `changes/` routes after the 401 and before the Event/receipt/Read routes (`transaction-http.ts:321-332`); `methodResponse` gives bodyless `405 Allow: GET, HEAD` independent of DB contents. Exactly one complete group per page; `next` is absolute `${scope}changes/?after=<delivered checkpoint>` and is emitted only after probing that the following row exists (`transaction-store.ts:1400-1407`) — it can never name an undelivered group. `inspect()` is not on the serving path.
+- **Checkpoints and epoch/view fencing.** `cg_<43>_<43>_<N>` with fixed-width tags is an unambiguous parse; `tag()` domain-separates by leading element and arity (`transaction-changefeed.ts:53-72`). `genesis` is position 0 and is never minted for `N≥1` (regex `[1-9][0-9]*`). Epoch-tag mismatch → `cursor-expired`/410, view-tag mismatch → `foreign-view`/409, both *before* success and before any conditional shortcut; foreign-Scope tokens fall into the same non-disclosing 410. `pos-N`, `ev_…`, `""`, `token.toUpperCase()`, `${token}=` and `MAX_SAFE_INTEGER` round-trip are all covered (`:328-348`). Outward `position`/`previousPosition`/`observedHeadPosition`/`BDP-Scope-Position` remain `pos-N`, genesis position `pos-0`.
+- **Shared Scope Event IDs.** The changefeed calls `projectTransactionEventGroup` with `{kind:"scope", url: \`${scope}events/\`}` and the raw stored `pos-N` checkpoint — identical inputs to the Event lane's scope route, so IDs are byte-identical, asserted directly (`:246`). For `kind:"scope"` the metadata-only incident gap at `transaction-events.ts:246-247` is unreachable, so `report.md:38` is right that it does not affect this path.
+- **Serving bound.** `253,493,248 + 256*(65536+258+32) + 2*65536 + 12*258 + 4096 = 270,482,968`, headroom `266,387,920` against `536,870,888` — reproduced from `TRANSACTION_RUNTIME_LIMITS` (M64/E256/O32/R262144/Q65536/S65536) and matched by `transaction-changefeed-bound.{mjs,log}`, which pins clean `8569b85` and allocates nothing. I independently confirmed the addition is genuinely conservative: stored source/id are never subtracted, `epoch` is a UUID and `view` a 23-char literal (`transaction-store.ts:513-514`), `scope` is guarded ≤ S at open (`:200-201`), and `URLSearchParams` leaves `-`/`_` unescaped, so the `2S + 3096 + 4096` envelope has large slack. Module-load guard derives from the real constants (`transaction-changefeed.ts:26-27`). No committed transaction is refused by a response budget.
+- **start=now anchor.** `captureChangesStart()` runs synchronously inside `run(...)` *before* `waitForTransactionMinimum`, and the same `after` is reused on every retry (`transaction-service.ts:234-241`). The discriminating test commits inside `wait()` and proves `page.after === initial` while the intervening commit is returned (`:551-582`). An empty store correctly anchors at `genesis`.
+- **Finite Last-Event-ID.** Ignored completely: a valid checkpoint in `Last-Event-ID` with no query still 400s; a foreign/malformed header with `?after=genesis` still 200s; `Last-Event-ID: genesis` does not override `?start=now`.
+- **Conditional / context / HEAD coherence.** Page body, `observedHeadPosition` and the three `BDP-*` headers all come from one `readContext()` inside one `enter()` (verified by the reentrancy-injection test, `:419-441`). `applyReadHttpSemantics` runs last and only on `200 + application/json`, so 410/409/503 (`application/problem+json`) win over 304/412/406; 304 and 412 retain full context; no ETag/Last-Modified is minted, satisfying the finite-feed validator-omission rule; HEAD content-length is computed with the same `stringifyJsonValue` the listener uses, and 406 is bodyless with parity across GET/HEAD.
+- **Negative owned-agreement oracle / atomic publication.** Both directions are checked member-for-member (inline→first-class and first-class→inline) over the staged graph, so the filtered-bead tombstone case genuinely fails. Publication is a single synchronous `graph/checkpoint/position` assignment after all assertions; duplicate checkpoints with differing bytes are refused; positions are compared by equality only.
+- **Restart.** `collect()` equality across `reopen()`, and HTTP `firstPage` equality across runtime restart, both hold with stable epoch/checkpoints/Event IDs. Uncertain-COMMIT fencing blocks `readChanges` *and* `captureChangesStart`, and the committed group recovers on reopen.
+- **Schema/spec conformance.** Page and group field sets match `$defs.changefeedPage`/`changeGroup` exactly under `additionalProperties:false`; `cg_…` and `pos-N` satisfy `wireToken`; `metadata` is always present on upserts because `changes` are built through `readStoredResource` (`transaction-batch.ts:664-668`); `page.maximumItems` is confirmed to count Resource records and receipt entries only (spec 1059, 3831), so one-group-per-page claims nothing.
+- **Verification evidence.** 428/428 across 17 files in 7.35s, feed file = 20 tests (confirmed from `regressions-final.json`); 89-row evidence verified not resealed; boundaries valid for 11 packages; 34 warnings + 1 info, none attributable to the new files; both smokes pass with `claimEligible:false`; emitted-output inventory is an exact-set assertion so the 4 new entries were mandatory; both bare and `dist` deep imports denied. All four attributed initial-failure causes match the actual `focused.log` errors, and `typecheck-initial`/`lint-initial` name only `transaction-changefeed.test.ts`.
+
+## Deliberate behaviors I checked and am not flagging
+
+- `start > head` → 400 `invalid-parameter` rather than a minimum wait or 410 (`transaction-store.ts:1389`). This is the plan's explicit ruling for future/never-issued tokens, and under a single owner with a stable epoch no legitimately issued checkpoint can exceed head. Rolling a store file back to an older copy would preserve the epoch and reach this branch, but no restore path exists in this slice.
+- A corrupt row at `start+2` makes the otherwise-servable page at `start+1` fail 500 (`:1402`). Strictly more conservative than required; nothing is skipped either way.
+- `service.changes` spends an owner entry on `captureChangesStart()` before discovering `minimum === "unsupported"`, and `readChanges` spends an `enter()` to return `{kind:"unsupported"}`. Only an extra metadata read; the gap is still bodyless and after authentication.
+- `request.signal` is never aborted (the runtime builds `new Request(url, {method, headers})` with no signal), matching "no new cancellation subsystem."
+- `url.hash` is unreachable over HTTP (Fetch strips the fragment from `request.url`); it is live for the direct API.
+
+No Snapshot, SSE, public-profile, discovery, pruning, erasure or hidden-projection claim is made or implied anywhere in the diff, and `report.md:36-41` lists those as open correctly.

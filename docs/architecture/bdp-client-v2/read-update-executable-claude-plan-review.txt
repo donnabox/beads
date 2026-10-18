@@ -1,0 +1,109 @@
+Reviewed the plan against both frozen trees (both verified clean: `1f2d75f` here, `dea6f9e` in `vickie-update-installed-repair`). No files written. Findings below, most severe first.
+
+---
+
+## F1 — Cumulative bundle has no single catalog source, but a bundle carries exactly one `catalogDigest`
+
+**Severity:** High
+**Location:** plan §Concrete scope 1 / Expected files (`artifact-bundle.ts`); `packages/conformance/src/artifact-bundle.ts:35-39,54-58,99-105,162-164`; `packages/conformance/test-support/profile-contract-plan.ts:28,80-109`
+**Evidence:** `ConformanceArtifactBundleSources.catalog` is one `ConformanceArtifactSource` documented as "Exact source bytes", and `ConformanceArtifactDigests` has a single `catalogDigest` that lands in the run report (`runner.ts:236-240,379`). The canonical selection is assembled from six classified files and exposes `catalogDigests: Record<file,digest>`; its merged catalog is a synthesized object, `{ catalogVersion: 1, scenarios: [...byId.values()] }` (`profile-contract-plan.ts:109`), never serialized bytes.
+**Impact:** Any single `catalogDigest` for the cumulative bundle is either a hash of a re-serialization — an identity no exact source reproduces — or an arbitrary pick of one of six files. Both break the artifact boundary's exact-bytes discipline, and the report would carry a catalog identity that does not denote the contract actually selected.
+**Fix:** State in the plan that the source-private factory takes the `ProfileContractSelection` itself rather than catalog bytes, and define `catalogDigest` as sha256 over canonical JSON of `selection.catalogDigests` (a map of exact file → exact-byte digest, reproducible from sources alone). Record the per-file map verbatim in the progress artifact.
+
+## F2 — `planProfileExecution`'s carrier gate rejects the new v2 RU carrier; reusing the selection as written yields zero ready rows
+
+**Severity:** High
+**Location:** `packages/conformance/test-support/profile-contract-plan.ts:343-349,406-428`; plan Expected files (file not listed) vs. "reuse `profile-contract-plan.ts` selection rather than another requirement list"
+**Evidence:** `carrierBlocker` is `undefined` only when `manifest.catalogId === "read-v1" && bound.profile === "read"`. A `read-update-v1` v2 manifest at profile `read-update` sets the blocker, so every requirement resolves to `carrier-unsupported`, `dependencyReady` is false for all rows, and `unobservedIds` is the whole selection. The runner itself already admits this carrier (`runner.ts:2567-2586`) — only the planner does not.
+**Impact:** The plan must either edit the planning seam commit `1f2d75f` just stabilized (unlisted in Expected files) or bypass `planProfileExecution` and rebuild readiness/DAG logic — the duplicate requirement list the plan explicitly forbids.
+**Fix:** Choose the edit, and list `test-support/profile-contract-plan.ts` in Expected files: widen the predicate to admit `manifestVersion: 2` + `catalogId: "read-update-v1"` at `read-update` while still refusing Transactional and still refusing v1/`read-v1` above Read, with negative controls for both refusals.
+
+## F3 — Three named cases cannot count their rows under the whole-contract rule
+
+**Severity:** High
+**Location:** plan §Concrete scope 2; `packages/conformance/catalog/read-update-v1.json`
+**Evidence:**
+- `read-update.singleton.update-bead` cites both patch application *and* "A semantic no-op update … succeeds with outcome `updated` and the retained revision." The plan's sequence (create/read/guarded update/read/delete/read) has no no-op leg.
+- `read-update.singleton.delete-bead` carries four citations, including "`incident-links-exist`: a Bead deletion reached while a live Link is incident upon the Bead" and "After a Bead or Link is deleted, ordinary `GET`, `view=properties`, and, for a Bead, `view=links` return the same `404` `resource-not-found`". "delete/read" reaches at most the ordinary GET; the refusal leg additionally needs `create-link`.
+- `read-update.singleton.idempotent-retry` cites "a singleton whose key is retained, in flight, conflicting, or expired answers exactly as the corresponding sequence member would" — a four-state, sequence-comparative obligation. "Duplicate-key exact replay" covers only *retained*.
+- `read-update.singleton.create-bead` cites "If `id` is omitted, the authority allocates one"; the plan never says the case omits `id`.
+
+For contrast, `read-update.singleton.expected-revision` *is* fully covered (matching guard applies + stale fails `revision-mismatch` with unchanged state), and `read-update.discovery.document` is coverable provided the default-order leg actually reads a collection and verifies canonical-URI order — note the installed target always emits `limits`, so the "omitted `order`" observation must be an absence check plus an ordering read.
+**Impact:** Under the approved rule, these rows must be reported uncovered despite being executed — or the slice over-claims.
+**Fix:** Either extend the cases (no-op update; Link-incident delete refusal plus `view=properties`/`view=links` 404s; one `id`-omitted create) or move `update-bead`, `delete-bead` and `idempotent-retry` onto the explicit uncovered list *in the plan*, so the expected selected-ID set is honest before authoring starts.
+
+## F4 — P1's frozen boundary emits three identities; `ServedProfileConfiguration` demands nine fields, three of them unobtainable without parallel calculation
+
+**Severity:** High
+**Location:** plan §Concrete scope 3 and §P1 integration dependency ("reuse those values rather than parallel identity calculation"); `vickie-update-installed-repair/packages/server/src/installed-reference-process.ts:48-56`, `installed-reference-configuration.ts:154-176`, `installed-reference.ts:120-126`; `test-support/profile-contract-plan.ts:134-151,216-241`
+**Evidence:** `qualification.ready` carries `scope`, `claimEligible`, `configurationIdentity`, `artifactIdentity`, `payloadIdentity`. That supplies `installedPayloadDigest` ← `payloadIdentity` and `installedContractsDigest` ← `artifactIdentity`. But `policyDigest` and `authenticationDigest` are never emitted separately: `access.policy.identity()` and the credential `{principal, tokenDigest}` list are folded *inside* the single `configurationIdentity` preimage (`installed-reference-configuration.ts:154-164`). `sourceCommit` (required `/^[0-9a-f]{40}$/`) is emitted by nothing. `profile` and `history` are likewise absent from the ready message (`history: false` exists only inside the identity preimage).
+**Impact:** Three required fields cannot be sourced from the frozen target boundary. The harness must fabricate or recompute them — precisely the parallel identity calculation the plan bars — while the plan asserts all of them are "captured from the actual target/configuration boundary".
+**Fix:** Decide in the plan between (i) requesting a P1 successor that also emits `policyIdentity`, `authenticationIdentity`, `profile`, `history` and a build-stamped commit, or (ii) reshaping `ServedProfileConfiguration` to mirror the real boundary — one `configurationIdentity` replacing the policy and auth digests — and declaring `sourceCommit` a caller-asserted launcher input, not a target observation. Then stop describing the whole set as boundary-captured.
+
+## F5 — No seam carries installed provenance into the run report
+
+**Severity:** High
+**Location:** plan "Done when" bullet 2 ("include inspectable source/config/artifact identity"); `runner.ts:228-246,368-388,1359-1377`
+**Evidence:** `ConformanceRunResultBase` carries only `scope`, `profile`, `seed`, `selectedScenarioIds`, `artifacts{catalog,manifest,fixture}`, `declarations{targetLabel, exactConfigurationDigest}`, `claimEligible`. `exactConfigurationDigest` hashes scope, profile, routes, header/body bounds and the optional synthetic approval — not credential handles, and no installed identity. There is no field for source commit, payload, contracts, policy or auth digests.
+**Impact:** The done-condition is unreachable without the evidence-schema change the plan rules out in its own closing paragraph.
+**Fix:** Restate it: identity lives in the source-private progress record, cross-referenced to the run report by `artifacts.manifestDigest`/`fixtureDigest` and `declarations.exactConfigurationDigest`, with a test asserting the correspondence (including that `ServedProfileConfiguration.fixtureDigest` equals `bundle.digests.fixtureDigest`, since both hash the same bytes independently).
+
+## F6 — "Bounded selected cases" and "missing cases are reported" conflict; the run shape is unspecified
+
+**Severity:** Medium
+**Location:** plan "Done when" bullets 1-2; `runner.ts:320-346,2626-2645,2720-2730`
+**Evidence:** `runConformanceMatrix` selects every applicable catalog row unless `scenarioFilter`/`scenarioSelection` is supplied; unplanned rows become `missingPlanResult` (`harness-error`/`not-implemented`, non-fatal per `mustStopMatrixAfter`). The cumulative catalog at `read-update` has **134 applicable rows** (48 Read-profile, 81 RU, 5 companion; exactly one retired row, `read.discovery.document`). With `scenarioSelection`, `selectedScenarioIds` records only the chosen ids and the gaps disappear from the report.
+**Impact:** The obvious reading of "bounded" (`scenarioSelection`) satisfies boundedness by deleting the evidence of the gaps.
+**Fix:** Specify an **unfiltered** cumulative run — bounded by what the manifest plans, not by what the runner selects. The ~125 unplanned rows then surface as `not-implemented`, which is the explicit-gap property the plan wants. Reserve `scenarioSelection` for focused debugging.
+
+## F7 — The cumulative run observes no inherited Read obligation; "cumulative" is selection-only
+
+**Severity:** Medium
+**Location:** plan title and §Concrete scope 1; `artifact-bundle.ts:65-70`
+**Evidence:** A bundle binds exactly one manifest, so `matrices/read-v1.json` (49 Read plans) cannot be combined with the new RU manifest in one run. All 48 applicable Read-profile rows will be `not-implemented`.
+**Impact:** "First cumulative Read+Update executable slice" reads as if inherited Read rows are observed against installed P1. They are not.
+**Fix:** Say so explicitly: this slice observes RU rows only; inherited Read coverage against the installed target is a later slice, or a second run binding the Read matrix to the same configuration proven identical via `assertSameServedProfileConfiguration`.
+
+## F8 — `profile-contract-plan.ts` is not reachable from `apps/bdptest`
+
+**Severity:** Medium
+**Location:** plan Expected files (`apps/bdptest/src/read-update-matrix.test.ts` + "reuse `profile-contract-plan.ts` selection"); `tsconfig.check.json:17`; `packages/conformance/test-support/testing.ts:1`
+**Evidence:** The only mapped source-private subpath is `@bdp/conformance/testing` → `test-support/testing.ts`, which re-exports just `createDevelopmentReadUpdateArtifactBundle`. `profile-contract-plan.ts` is imported today only by `packages/conformance/src/profile-contract-plan.test.ts`.
+**Impact:** The bdptest integration file cannot import the selection as the plan describes.
+**Fix:** List the `testing.ts` re-export (selection loader, configuration binder, cumulative factory) in Expected files. No `package.json` `exports` entry is needed — bdptest reads artifacts by repo-relative path (`read-matrix.test.ts:65-67,195-203`), so the plan's "no public package exports" constraint does hold.
+
+## F9 — The "mismatched provenance fails before execution" control has no enforcement point
+
+**Severity:** Medium
+**Location:** plan §Concrete scope 4; `runner.ts:2559-2592`; `test-support/profile-contract-plan.ts:270-278`
+**Evidence:** The runner validates Scope, profile, fixture binding, `catalogId` and synthetic approval pre-execution, but takes no `ServedProfileConfiguration`. Provenance equality exists only in `assertSameServedProfileConfiguration`, which nothing calls unless a harness does.
+**Impact:** The profile/Scope/fixture half of that control is genuinely enforced; the provenance half would be vacuous as written.
+**Fix:** Name the gate in the plan — the bdptest harness binds the configuration from `qualification.ready`, calls `assertSameServedProfileConfiguration` against the pinned expectation before constructing run options, and the negative control mutates one digest and asserts the throw.
+
+## F10 — The P1 dependency section is stale and understates the merge
+
+**Severity:** Medium
+**Location:** plan §P1 integration dependency; `caf5ca7..dea6f9e`
+**Evidence:** The plan asks root for "a frozen accepted successor" and warns against binding to "provisional4078" — commit `4078ca7`. Its successor `dea6f9e` exists and is the commit under review. `caf5ca7..dea6f9e` is +3,937/-184 across 17 files, including `packages/server/src/index.ts` (122 lines — `createHttpHandler` refactored out into the new `read-http-routing.ts`) and `development-authority.ts` (265 lines). The plan's open questions are all answerable from that frozen source.
+**Impact:** The blanket "no shared server/evaluator implementation edits" reads as violated the moment P1 merges, and root is being asked for information already frozen.
+**Fix:** Name `dea6f9e` and inline the answers: **IPC** — fork `packages/server/dist/installed-reference-process.js` with no extra argv and an `ipc` stdio slot (`argv.length !== 2` is refused), send `{configuration}`, await `qualification.ready{scope, claimEligible:false, configurationIdentity, artifactIdentity, payloadIdentity}`, stop via `{command:"close"}`/SIGTERM/disconnect. **Credentials** — configuration takes `credentials: [{token, principal}]` with `policies` per principal; the wire form is `authorization: Bearer <token>` plus `idempotency-key` per singleton. **Payload digest** — `payloadIdentity`, sha256 over sorted `dist/*.js` of server and protocol. Then restate the constraint as "this slice adds no shared server/evaluator edits beyond those the P1 merge already carries".
+
+## F11 — "Reuse the existing raw HTTP executor, transport credential handles" understates new harness work
+
+**Severity:** Medium
+**Location:** plan §Concrete scope 3; `exactMode` appears only in `packages/conformance/src/{http-executor,raw-http-scenario-target}.ts` (+tests), `runner.test.ts` and `apps/bdptest/test-support/development-raw-actions.ts`; `exactExecution` only in `runner.ts`/`runner.test.ts`
+**Evidence:** No file under `apps/bdptest/src/` or `packages/conformance/test-support/` constructs `ExactHttpModeOptions`, `credentialHandles`, `defaultCredentialRef` or `resolveCredentials` today. At `profile !== "read"` *every* http action is an exact request (`runner.ts:1386-1398`), requiring manifestVersion 2, a complete `routes` allowlist checked per request (`validateExactRunConfiguration`), and raw-authored header lines and literal bodies (`prepareExactRequest`, `runner.ts:1447-1456`; bodies are `{encoding, value}` literals only) — so `content-length`, `content-type` and `idempotency-key` are all authored bytes.
+**Impact:** Route enumeration, a credential resolver over P1's bearer tokens, the loopback dial route, and exact body authoring are new code, not reuse; costing them as reuse under-scopes the slice.
+**Fix:** List the exact-mode harness as new `apps/bdptest/test-support/` code in Expected files, and enumerate the (method, url) route set the selected cases require up front.
+
+## F12 — Use the existing machine-checked coverage inventory, not a prose progress doc
+
+**Severity:** Low
+**Location:** plan Expected files, last bullet; `packages/conformance/development/read-update-coverage-v1.json`; `src/development-read-update.test.ts:67-105`
+**Evidence:** The diagnostic lane already has a test-enforced inventory shape — `{version, developmentOnly, claimEligible, normativeCatalog, rows:[{id, status: "bounded-observation"|"omitted", category, reason, bindings:[{scenario, assertions, limits}]}]}` — asserted to list all 81 RU rows exactly once in catalog order, with every assertion id cross-checked against the manifest (today: 58 bounded, 23 omitted).
+**Impact:** A free-form markdown report cannot be enforced and will drift from the manifest.
+**Fix:** Emit the cumulative slice's selected/uncovered IDs in that same shape and assert it the same way.
+
+---
+
+**Things the plan gets right and that the code confirms:** the retired `read.discovery.document` is the single retired row at `read-update` and is excluded automatically by `selectApplicableScenariosForProfile`, so "never execute the retired row" is structurally enforced; prerequisite rebinding to `read-update.discovery.document` works because it sits at merged-catalog index 49, ahead of every other RU row, and `prerequisiteResultBeforeRun` requires a prior `pass` in the same run; unplanned rows are reported as `not-implemented` and never pass or go N/A; the `createConformanceArtifactBundle` catalogId guard already rejects writer artifacts and is already covered by a test; Scope/dial separation in `createRawHttpScenarioTarget` cleanly accommodates P1's loopback listener under the canonical `https://reference.invalid/acme/` Scope; and every operation and problem code the selected cases need (`create-bead`, `update-bead`, `delete-bead`, `expectedRevision`/`revision-mismatch`, `idempotency-conflict`, `incident-links-exist`) is present in the frozen P1 server.

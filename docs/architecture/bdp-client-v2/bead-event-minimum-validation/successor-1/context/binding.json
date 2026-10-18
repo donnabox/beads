@@ -1,0 +1,49 @@
+{
+  "state": "CLOSED formatting-only proposal; original source frozen",
+  "sourceAuthoringReleased": false,
+  "executionReleased": false,
+  "baseHead": "f6204255d53ef65d4aea56ff5ccc86d72e8cc7b0",
+  "originalSourceBindingSha256": "65cc7b8f38c03d43eabb8c76d3087a8c74b30ca37f8037989c90454acd7778a5",
+  "originalFullPatchSha256": "33c7e00400c1923c4a16dadc03040cf5ae3f773c926a86396defd305d45c4ece",
+  "proposedFiles": {
+    "packages/server/src/transaction-events.test.ts": {
+      "beforeSha256": "d6dd08a07355bca304c50909bce61b1744ae22cec8b1bba56c2638442439f36f",
+      "proposedAfterSha256": "c627c3103b49af98df4c9d32e40456989da5deb7d5a3eec4ade539de7b24e44a"
+    },
+    "packages/server/src/transaction-service.test.ts": {
+      "beforeSha256": "1296229ecaad736390882d64b120b433fc8d84d40f022f46803a8574c99ac828",
+      "proposedAfterSha256": "45f2444071c5cbbd3651449f878feb1e70d9e51c3c57cdcc243395b7735b25a7"
+    }
+  },
+  "originalEvidence": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/run/workspace-install.started.json": "b7e338b3954e72771c6b22c2a678a3379a250624c88e88651f2e53db65fc8e50",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/run/workspace-install.exit.json": "832c47402f79a89f353925739d866ff2e51f41410af5318f9c3cf94aca654142",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/run/workspace-install.log": "db4d3a4ab75ac6dbbbc39d93a2d8c433a939ce426fba05edf52cff62e838fdec",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/run/workspace-install.processes.jsonl": "61ac9371e4c71662fb85a7e9f2214236a1c105eedc155b8b8c426272fed37183",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/run/bind-workspace-tools.started.json": "0ad33416c438d96ccc7f61a0e3980922d7e61221c66271c69d85a4e8cb063cce",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/run/bind-workspace-tools.exit.json": "54a6262799debc5b28e45b9b8bdeea3b82b75b22bbb54d874b544cdeb7b83415",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/run/bind-workspace-tools.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/run/bind-workspace-tools.processes.jsonl": "6a949c221057c7b0c34108c27f3eeb5bb4ba671a841dbba7cf686de9d585df96",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/run/typecheck.started.json": "bb0fba3e6d190337e1e945cac8c556832433c4a66aeda6f79feb97dd83346d79",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/run/typecheck.exit.json": "3ea80dc4ed7a46b929a4173ad293f0a832bb3b6300f6433149ae10d93c5c9441",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/run/typecheck.log": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/run/typecheck.processes.jsonl": "cedd831605e484599e89442c4976302220fe4e757e4bac0549f828b386f3ed4b",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/run/format-check.started.json": "b35b65004f890e2e2403b3d1cc26335c89bf80344eddcefb49e27d35bb86f524",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/run/format-check.exit.json": "f33bd1162650309f6e4ad857677fb569583892960d56b0c547851ee97368aac0",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/run/format-check.log": "721818f2b3ebaac0360a710f91ff044fba055941055b3fecb6d46ef0efb4a332",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/run/format-check.processes.jsonl": "f7dfda4b8e13301e9d221c9cc35d3ebe433f0dbc5486a4ea1ae1465b1a9e9ba3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/run/workspace-tools.json": "9f76539014b42745e98a3386b4b548c24330fb07a7d68b9a9a309a9c06982cad",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/execution-gate.json": "dbeb46f1d5384d5f381705861e55d4442f92a1f916f62c3d3e5eecbbb094221a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/source-binding.json": "7c120a0e2bca99dbe41f7d6666a564704d4188d2cbf2eb94d759db13f31b9d87",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/implementation-hashes.json": "03874b77918586f0c61535086845bd87bc77fbcd5daefb2d2f802c70d45a10d9",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-author/source-binding.json": "65cc7b8f38c03d43eabb8c76d3087a8c74b30ca37f8037989c90454acd7778a5",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-author/full.patch": "33c7e00400c1923c4a16dadc03040cf5ae3f773c926a86396defd305d45c4ece",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/base-tools.json": "df9c2ad463d91b86b4f6d6de78a5fb6c64d27a9491c0cca1a6ced22792f8b7dc",
+    "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum/pnpm-lock.yaml": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d"
+  },
+  "proposalFiles": {
+    "plan.md": "d35a2be17e31bb00a5b44b947f926bf570910c7c75314d2fe5b9aad7eecd0a1d",
+    "proposed-replacements.json": "b11ffd0f2957d8cbaf6b9a4557dfe9f0ac6110ac797a0b0ad0d8b77dc02f8a14",
+    "proposed.patch": "d874cb268b837bd48f16a0f30e1517c2f8bb5e67edc7e77acb90d37e2da72556"
+  }
+}

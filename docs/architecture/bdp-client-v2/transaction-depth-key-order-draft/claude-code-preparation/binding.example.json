@@ -1,0 +1,41 @@
+{
+  "status": "PREPARATION_ONLY_NOT_FROZEN",
+  "head": "0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a",
+  "tree": "80a6fe0605698e18f9504432407e7943e1f665b4",
+  "ownedPaths": [
+    "packages/server/src/transaction-batch.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-submission.ts",
+    "packages/server/src/transaction-set.test.ts",
+    "packages/server/src/transaction-submission.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-depth-key-order-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "expectedOwnedPaths": [
+    "packages/server/src/transaction-batch.ts",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-submission.ts",
+    "packages/server/src/transaction-set.test.ts",
+    "packages/server/src/transaction-submission.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-depth-key-order-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "sourceHashes": {},
+  "statusPorcelain": null,
+  "trackedDiffSha256": null,
+  "untrackedFiles": null,
+  "frozenSourceManifest": null,
+  "frozenSourceManifestSha256": null,
+  "fullPatch": null,
+  "fullPatchSha256": null,
+  "promptSha256": null,
+  "plans": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-plan/root-plan-acceptance.json": "976f13cfea62036ff96e7eb220fb95b10395a30454b7bcd5831a948513bb2219",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-plan/claude-review/proposed-successor/plan-v2.md": "6feac902eeef212241afd964d13b7ec323600768a557e56e8a5521de33f80fd4",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-plan/claude-review/proposed-successor/ledger-v2.json": "115f878af586fe7753ca50ca1be8eb913f3321306438d9af7c1ea0a4376a150b",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-plan/claude-review/source-dispositions.md": "acd88a910c2ea23669238c6fd00492eee144f4d482efa322d255c70abb5e60fa",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-plan/claude-review/stdout.txt": "ff032b1fd2f64decf1e8b80e58d9833c63f5b1195e5cfe39004a6e2f7ee59112"
+  }
+}

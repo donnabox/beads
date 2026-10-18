@@ -1,0 +1,1 @@
+Root read full bounded prompt/correction and independent native closure. Release one actual Claude read-only focused review on exact0baf666f source. No test results inferred; actual static prefix is separately gated.

@@ -1,0 +1,64 @@
+{
+  "status": "EXPECTED_SOURCE_BINDING_REANCHORED_TO_ACTUAL_FINAL_DRAFT",
+  "actualSourceManifestRequiredBeforeRelease": true,
+  "originalSourceBindingSha256": "cf5d2cd13a57d4a01220f931bdd308a71c8709f5d185592b2f6a08347631c24e",
+  "formatCorrectionSha256": "5d5104f9ada2652d9dd821792d59027bc0ea374d25626db33eeed10e1cace888",
+  "formatSummarySha256": "e78064e9ca369fc7fbdc70da66cd8b0721934edb3ecf9077ca872a725867efc5",
+  "parent": "122800511ee6306e4105e1f73bf3658f35c90a14",
+  "parentTree": "088290751951c353797b984f690b7d9fd96deb80",
+  "files": [
+    {
+      "path": "apps/bdptest/src/installed-reference.test.ts",
+      "sha256": "2c87160890b1c8aed2ada117a1aa293fe7fcfa85db794a3d9ef6514a39d199d1",
+      "bytes": 26445,
+      "input": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-format-repair/output/apps/bdptest/src/installed-reference.test.ts",
+      "origin": "format-output"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "sha256": "a3f772525ee1c87f3c488e37914af8114421dff5cc003d81640182d6f7a05903",
+      "bytes": 54970,
+      "input": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-format-repair/output/apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "origin": "format-output"
+    },
+    {
+      "path": "docs/design/transaction-implementation-progress.md",
+      "sha256": "e4f474baf6808aa110dea0ac53df2560c8f7a9be9298928908acca2ba45e9be5",
+      "bytes": 123696,
+      "input": "/Users/dbox/repos/wt/vickie/vickie-command-minimum/docs/design/transaction-implementation-progress.md",
+      "origin": "actual-final-draft-doc-correction"
+    },
+    {
+      "path": "docs/specs/bdp.md",
+      "sha256": "c2bee88f7a29349f7e420f711d10f3acff1fb0559d012b0d111fd7ac21bd175d",
+      "bytes": 392735,
+      "input": "/Users/dbox/repos/wt/vickie/vickie-command-minimum/docs/specs/bdp.md",
+      "origin": "unchanged-frozen-source"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "sha256": "8f66df9f9cf891383a19a67fb50c85708eaae055c59a661777b7110060b0c56f",
+      "bytes": 139444,
+      "input": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-format-repair/output/packages/server/src/transaction-http.test.ts",
+      "origin": "format-output"
+    },
+    {
+      "path": "packages/server/src/transaction-http.ts",
+      "sha256": "1339f32e0818aee5a44fc01a2034366a73e72c40027d6cde7041f26525aba366",
+      "bytes": 26832,
+      "input": "/Users/dbox/repos/wt/vickie/vickie-command-minimum/packages/server/src/transaction-http.ts",
+      "origin": "unchanged-frozen-source"
+    },
+    {
+      "path": "packages/server/src/transaction-service.test.ts",
+      "sha256": "5e8dc095dcbe9c8fdfb28a5dea4db024ddc65e7e4f51175edeae5a90ea7125be",
+      "bytes": 85418,
+      "input": "/Users/dbox/repos/wt/vickie/vickie-command-minimum/packages/server/src/transaction-service.test.ts",
+      "origin": "unchanged-frozen-source"
+    }
+  ],
+  "actualFinalDraftManifest": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-final-draft/source-binding.json",
+    "sha256": "ff9c63417fbb348bf8ad9863483096ccc0329beb5c05b532333cf75cd0726a38"
+  }
+}

@@ -1,0 +1,63 @@
+### Findings
+
+#### Proven Defects
+
+* **Severity**: Low
+* **File & Exact Line/Section**: [`packages/server/src/development-runtime.ts#L209-L213`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/development-runtime.ts#L209-L213)
+* **Concrete Issue**: Shadowed dead code causing incorrect HTTP status code routing. Line 213 (`if (!operation && name !== "sequence") throw new ReceivingError("resource-not-found");`) can never be reached under any circumstances. Line 209 checks `if (request.method !== "POST" || !mutationTarget)`. Because `mutationTarget` is defined on line 166 as `operation !== undefined || name === "sequence"`, whenever `mutationTarget` is `false`, line 209 unconditionally executes `empty(response, 405, "GET, HEAD"); return;`. Conversely, whenever line 213 is reached, `mutationTarget` is guaranteed to be `true`, rendering `!operation && name !== "sequence"` permanently false.
+* **Reachable Trigger**: A client sends a `POST` request to an unknown or invalid operation target under `/development/` (for example, `POST /development/nonexistent-op` or `POST /development/unknown`).
+* **Impact**: RFC 9110 status code violation. The server returns `405 Method Not Allowed` with `Allow: GET, HEAD` instead of the intended `404 Not Found` (`resource-not-found` Problem response), falsely communicating to the client that `GET` and `HEAD` methods are valid for the target resource when `GET /development/nonexistent-op` actually returns 404.
+* **Fix / Next Step**: In `packages/server/src/development-runtime.ts`, discriminate unknown `/development/` operation paths before returning 405. If `rawUrl.startsWith("/development/")` and `!mutationTarget`, throw `ReceivingError("resource-not-found")` so unknown mutation endpoints correctly return 404 rather than 405.
+
+---
+
+### Questions Needing Omitted Context
+
+1. **`@bdp/protocol` Problem Code Coverage**:
+   * **Location**: [`packages/server/src/development-runtime.ts#L38-L42`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/development-runtime.ts#L38-L42), [`packages/server/src/development-runtime.ts#L73`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/development-runtime.ts#L73)
+   * **Question**: In `ReceivingError`, `code` accepts `ReadProblemCode | "unsupported-media-type"`. In lines 116 and 121, `ReceivingError("request-too-large")` is thrown, which in turn calls `readProblem("request-too-large")`. The implementation of `readProblem` and the exact enumeration of `ReadProblemCode` in `@bdp/protocol` are not included in this packet. Does `readProblem` support `"request-too-large"` with a standard 413 RFC 7807 problem structure, or does it throw an unhandled error causing an empty 500 response?
+2. **`@bdp/protocol` Carrier Error Types**:
+   * **Location**: [`packages/server/src/development-runtime.ts#L247-L248`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/development-runtime.ts#L247-L248), [`packages/server/src/development-authority.ts#L188`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/development-authority.ts#L188), [`packages/server/src/development-authority.ts#L197`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/development-authority.ts#L197)
+   * **Question**: `prepareReadUpdateSingleton` and `prepareReadUpdateSequence` run inside `mutate` and `sequence`. The catch block in `handle` specifically checks `error instanceof ReadUpdateCarrierError || error instanceof JsonSyntaxError`. Because `@bdp/protocol` is outside this packet, it cannot be verified whether other carrier or schema validation errors can be raised that bypass this catch and escape to `empty(response, 500)`.
+3. **Canonical Cohort Serialization Implementation**:
+   * **Location**: [`packages/conformance/src/cohort-verification.ts#L162`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/src/cohort-verification.ts#L162), [`packages/conformance/src/cohort-verification.ts#L164`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/src/cohort-verification.ts#L164)
+   * **Question**: `assertCanonicalReadCohortBytes` and `readCohortEvidenceConstant` from `./cohort-artifact.js` are called to verify canonical bytes and compute the evidence constant. The implementation of `./cohort-artifact.js` is not provided in this packet.
+
+---
+
+### Known Bounded Exclusions Relevant to Packet 03
+
+1. **Write-Profile Conformance Intentionally Disabled**:
+   * As documented in [`packages/conformance/development/README.md#L4-L6`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/development/README.md#L4-L6) and enforced by [`packages/conformance/src/artifact-bundle.ts#L115-L142`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/src/artifact-bundle.ts#L115-L142), Read+Update test rows are diagnostic only (`kind: "diagnostic"`, target label `development-only-non-attesting-bdptest`, `claimEligible: false`). The production runner guards write profile claims from being certified or admitted.
+2. **Read Profile Evidence Admitted and Pinned**:
+   * The two-target Read cohort evidence constant (`6142cf73deae687bc3e9668cc014ea408fa02843`) in [`packages/server/src/read-conformance-capability.ts#L29`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/read-conformance-capability.ts#L29) admits only the Read profile (`read-v1`).
+3. **Bounded Development Runtime & Private Transactional Implementation**:
+   * `startDevelopmentReferenceRuntime` and `openDevelopmentAuthority` in `packages/server` provide a loopback-only, non-attesting development server with a single fixed operator bearer token, fixed development Types (`bead`, `link`), and a closed local SQLite store. It does not implement or claim a complete public Transactional service, service discovery, or public authorization models.
+4. **Deliberately Uncovered Read Variants (D2)**:
+   * Eight variants are explicitly excluded and declared in `uncovered` within `docs/design/evidence/read-cohort/read-v1.json` (e.g., `cors-enabled`, `cors-enabled-options`, `on-wire-number-model-declaration`, `independent-authority-descriptor-installation`, and `absent-optional-limits`). These are documented exclusions, not conformance regressions.
+5. **In-Process Self-Certified Scenarios**:
+   * 11 scenarios for `bdptest` and 8 scenarios for `bdpbd` are self-certified in-process rather than tested against packaged standalone targets because they exercise controlled internal fault and boundary channels (`unexpected-internal-fault`, limit advertisements, scope restoration) not exposed on the packaged network interface.
+
+---
+
+### Explicit List of Files and Ranges Read
+
+* [`docs/specs/bdp.md lines 2486-2501`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/docs/specs/bdp.md#L2486-L2501)
+* [`docs/specs/bdp.md lines 2685-2740`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/docs/specs/bdp.md#L2685-L2740)
+* [`docs/specs/bdp.md lines 3524-3560`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/docs/specs/bdp.md#L3524-L3560)
+* [`packages/server/src/development-runtime.ts lines 1-303`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/development-runtime.ts#L1-L303)
+* [`packages/server/src/development-authority.ts lines 1-219`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/development-authority.ts#L1-L219)
+* [`packages/server/src/read-http.ts lines 1-198`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/read-http.ts#L1-L198)
+* [`packages/server/src/node-http-target.ts lines 1-51`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/node-http-target.ts#L1-L51)
+* [`packages/conformance/src/artifact-bundle.ts lines 1-504`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/src/artifact-bundle.ts#L1-L504)
+* [`packages/conformance/src/cohort-verification.ts lines 1-641`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/src/cohort-verification.ts#L1-L641)
+* [`packages/server/src/read-conformance-capability.ts lines 1-58`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/read-conformance-capability.ts#L1-L58)
+* [`scripts/read-cohort-evidence.mjs lines 1-404`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/scripts/read-cohort-evidence.mjs#L1-L404)
+* [`scripts/generate-read-cohort.mts lines 1-728`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/scripts/generate-read-cohort.mts#L1-L728)
+* [`packages/conformance/development/README.md lines 1-126`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/development/README.md#L1-L126)
+* `DERIVED CURRENT ARTIFACT SUMMARY` (snapshot prompt metadata)
+
+#### Truncated or Unread Material
+* `docs/design/evidence/read-cohort/read-v1.json`: Full exchange rows were omitted from the snapshot prompt (only summarized metrics and structural keys were supplied).
+* Omitted lines of `docs/specs/bdp.md` (all lines outside 2486-2501, 2685-2740, and 3524-3560).
+* External imports not supplied in the packet: `@bdp/protocol`, `./cohort-artifact.js`, `./bd-baseline.mjs`, `./read-harness-bindings.js`.

@@ -1,0 +1,49 @@
+{
+  "expandedCount": 14,
+  "titlesByFile": {
+    "transaction-store.test.ts": [
+      "returns a stopped comparison observation for a normally closed owner",
+      "preserves a fenced owner's comparison observation failure",
+      "preserves background maintenance failure in a closed comparison owner"
+    ],
+    "transaction-submission.test.ts": [
+      "propagates closed maintenance faults before admission (observed=false)",
+      "propagates closed maintenance faults before admission (observed=true)",
+      "preserves normal closed submission shape (observed=false)",
+      "preserves normal closed submission shape (observed=true)",
+      "keeps full-owner unobserved comparison exact and excludes a caller callback",
+      "distinguishes a stopped final observation at the reached comparison deadline"
+    ],
+    "transaction-service.test.ts": [
+      "uses the original finite comparison budget while an earlier sequence dependency is unresolved"
+    ],
+    "transaction-dependencies.test.ts": [
+      "proves static mismatch immediately, retains no timeout outcome and keeps the owner"
+    ],
+    "transaction-sequence-alias.test.ts": [
+      "uses one bounded comparison deadline and leaves the owner's reservation intact"
+    ],
+    "transaction-http.test.ts": [
+      "preserves maintenance faults as bodyless internal errors before direct admission",
+      "keeps a live listener from serving through an owner fenced by injected commit uncertainty"
+    ]
+  },
+  "proposedArgv": [
+    "node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "exec",
+    "vitest",
+    "run",
+    "packages/server/src/transaction-store.test.ts",
+    "packages/server/src/transaction-submission.test.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-dependencies.test.ts",
+    "packages/server/src/transaction-sequence-alias.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "-t",
+    "(?:returns a stopped comparison observation for a normally closed owner|preserves a fenced owner's comparison observation failure|preserves background maintenance failure in a closed comparison owner|propagates closed maintenance faults before admission \\(observed=false\\)|propagates closed maintenance faults before admission \\(observed=true\\)|preserves normal closed submission shape \\(observed=false\\)|preserves normal closed submission shape \\(observed=true\\)|keeps full-owner unobserved comparison exact and excludes a caller callback|distinguishes a stopped final observation at the reached comparison deadline|uses the original finite comparison budget while an earlier sequence dependency is unresolved|proves static mismatch immediately, retains no timeout outcome and keeps the owner|uses one bounded comparison deadline and leaves the owner's reservation intact|preserves maintenance faults as bodyless internal errors before direct admission|keeps a live listener from serving through an owner fenced by injected commit uncertainty)$",
+    "--maxWorkers=1",
+    "--reporter=verbose"
+  ],
+  "note": "Static title/template checks only, not Vitest discovery or execution."
+}

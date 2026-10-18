@@ -1,0 +1,112 @@
+[
+  {
+    "duration_api_ms": 664921,
+    "stop_reason": "end_turn",
+    "session_id": "70a8d4f0-cf96-4c75-b599-923c08901947",
+    "total_cost_usd": 5.157755499999999,
+    "usage": {
+      "input_tokens": 78,
+      "cache_creation_input_tokens": 161685,
+      "cache_read_input_tokens": 4372869,
+      "output_tokens": 53642,
+      "output_tokens_details": {
+        "thinking_tokens": 39884
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 161685,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 9267,
+          "cache_read_input_tokens": 163869,
+          "cache_creation_input_tokens": 2562,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 2562
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 12946,
+        "outputTokens": 17,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.013031,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-opus-5[1m]": {
+        "inputTokens": 78,
+        "outputTokens": 53642,
+        "cacheReadInputTokens": 4372869,
+        "cacheCreationInputTokens": 161685,
+        "webSearchRequests": 0,
+        "costUSD": 5.144724499999999,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 39884,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "permission_denials": [],
+    "terminal_reason": "completed",
+    "fast_mode_state": "off",
+    "fast_mode_disabled_reason": "sdk_opt_in_required",
+    "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+        "background": 0,
+        "foreground": 0,
+        "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+        "parent": 0,
+        "user": 0,
+        "system": 0
+      },
+      "refused": {
+        "depth_limit": 0,
+        "concurrency_limit": 0,
+        "budget": 0
+      },
+      "by_type": {}
+    },
+    "is_error": false,
+    "num_turns": 58,
+    "subtype": "success",
+    "api_error_status": null,
+    "result": "I verified the plan's load-bearing claims against the candidate checkout, the incoming snapshots, and both base-relative patches. The mapped resolution itself is accurate and well-grounded; the problems I found are in the validation harness and in one uncovered fallout class.\n\n## Verified correct (no action)\n\n- **Four hidden readers** exist at exactly the claimed d4 lines \u2014 `transactional-event-sse-installed.test.ts:531`, `transactional-fresh-depth-installed.test.ts:71`, `transactional-minimum-current-resource-installed.test.ts:87`, `transactional-sequence-depth-installed.test.ts:79` \u2014 and they are the **complete** set of candidate-only live root-schema filesystem readers. Every other match in the final sweep is either a main-changed file (main's relocation survives, e.g. `scripts/read-cohort-evidence.mjs:30` \u2192 `specs/profiles/core/...` in the incoming snapshot), a package-local path (`packages/protocol/src/read-values.ts:27`, `packages/server/src/installed-schema-graph.policy.test.ts:28`), or historical `docs/design/*`.\n- **Overlap set is exactly 9** (`docs/specs/bdp.md` + the 8 tests). I cross-checked the candidate's 35 diff headers against the manifest's incoming paths. Main's diffs in those 8 are schema path + Prettier rewrap only (e.g. `incoming-from-common-base.patch:130-140`, `:220-225`, `:9716-9722`).\n- **Per-callback entry distinction is exactly right.** `transactional-minimum-current-resource-installed.test.ts:55` defaults to `packages/server/dist/transaction-installed.js`; the other four default to `transaction-installed-process.js`. The \"existing private wrapper\" is real: the test writes `private-bootstrap.mjs` (`:343-347, :396-401`) which itself re-verifies `realpathSync(entry)===entry` and `sha256(entry)===__SHA__` before `startInstalledTransactionCandidate`. Substituting the process entry there would break the wrapper contract, as the plan says.\n- **All five selectors match verbatim** and all five are top-level `it(` with no `describe` wrapper, so the `^\u2026$` anchored patterns will match the full test name.\n- **Destination verified**: `incoming-main/specs/profiles/write/write.md:3800` `### Transactional HTTP consistency`, with the two edit points at `:3824` and `:3832-3835`, byte-aligned with the candidate's two monolith hunks. The candidate block adds no headings and no Markdown links, so no new anchor, no `spec-path-map.json` change, and the physical link audit is trivially satisfied.\n- **234 distinction is real**: `transactional-matrix.test.ts:627` (exchange sum), `:628` (63000ms), `:644` (120000ms); the separate `transactional-cumulative.test.ts:199` asserts 234 *unplanned* requirements.\n- **CI attribution**: `incoming-main/.github/workflows/ci.yml:19` is `timeout-minutes: 20` (=1200s) and `:7` is `branches: [main]`; `candidate-from-common-base.patch:9-10` adds `\"codex/vickie-*\"`, main never touched `ci.yml`, and the proposed branch matches the glob. Evidence exit semantics are exactly 0/1/2/3 as stated (`scripts/read-cohort-evidence.mjs:235, 241, 255, 392, 400`), and the plan is right that CI's `pnpm evidence:verify || test $? -eq 2` (`ci.yml:77`) masks the raw code.\n- **Build before collection** is genuinely required and satisfied; `build` is `pnpm clean && tsc -b` (`package.json:15`), so freshness is structural. `evidence:verify` needs no bd (`assertIdentityPin` reads committed observations).\n- **Inherited drafts stay drafts**: `incoming-main/specs/README.md:14-16` marks Types and Issue as WIP and the Memory row as PR143, unadopted. `spec-layout.test.ts:73` asserting the root schema is absent, and `:69-72` requiring `docs/specs/bdp.md` to stay navigation-only with no `MUST|SHALL|SHOULD|REQUIRED`, are both satisfied by retaining main's file byte-for-byte.\n\n## Blockers\n\n**1. `full-test` argv may never produce the JSON the stage's own postcondition depends on.** Validation plan `stages[full-test].argv` passes `--reporter=json --outputFile.json=<OUT>/full-test.json` as bare args to `pnpm test`. `--reporter` is also a pnpm global option, so forwarding is not guaranteed, and `json` is not a valid pnpm reporter value. The postcondition \"inspect test JSON and all four repaired files executed\" then rests on an artifact that may not exist.\n*Smallest correction:* `[\"\u2026node\", \"\u2026pnpm.cjs\", \"test\", \"--\", \"--reporter=json\", \"--outputFile.json=<OUT>/full-test.json\"]`; add to the postcondition that the file exists, parses, and names the five target tests before any claim rests on it. Make the per-callback argv use the same `--outputFile.json=<path>` form rather than a space-separated value.\n\n**2. `<OUT>`, the pack destination and `<MEASURED_CONSUMER>` are unbound, and two callbacks assert on worktree cleanliness and entry location.** `transactional-fresh-depth-installed.test.ts:419-424` asserts, *only when the entry override is set*, that `git status --porcelain` in the repo root is empty and that the resolved entry is outside the repo root; `transactional-event-sse-installed.test.ts:336-338` enforces the external-entry rule for callback 2. `.gitignore` covers only `node_modules/`, `dist/`, `coverage/`, `*.tsbuildinfo`, so writing report JSON, tarballs or the consumer tree anywhere else inside the worktree makes it dirty \u2014 callback 3 fails for purely environmental reasons and the remaining four record `workspaceDirty: true`, poisoning the provenance record the stage exists to produce.\n*Smallest correction:* bind `<OUT>`, the pack destination and `<MEASURED_CONSUMER>` to absolute paths under the log directory (outside the worktree), and add a stage precondition that `git status --porcelain` is empty immediately before each callback dispatch.\n\n**3. The sweep does not cover the one sealed citation the moved block touches.** The candidate hunk does not only add prose \u2014 it rewrites the paragraph at incoming `write.md:3832-3835` and the sentence at `:3824`. `packages/conformance/catalog/transactional-v1.json:1176-1181` (scenario `transactional.changefeed.consistency-fields`) cites `source: \"docs/specs/bdp.md\"`, `anchor: \"#transactional-http-consistency\"`, `selectedText: \"It never reports success with an older position.\"` \u2014 a sealed catalog untouched by both parents. It survives the move only because the sentence is retained (re-wrapped across lines) inside the same anchored section and `validateCatalogCitations` normalizes whitespace (`packages/conformance/src/catalog.ts:175`). The plan's final-tree sweep greps only two path strings, so a reviewer rewording that sentence, or moving it out of the `#transactional-http-consistency` section, surfaces as an opaque catalog failure instead of a resolution-time stop.\n*Smallest correction:* name this as an explicit must-hold invariant in the sweep: the moved block keeps \"It never reports success with an older position.\" inside write.md's `#transactional-http-consistency` section; extend the sweep from path strings to the replaced prose.\n\n## Bounded clarifications (optional)\n\n**4. The packed-witness scope claim is overstated.** \"their actual schema/package boundary is the affected surface\" \u2014 in that stage the test process still runs from the workspace and reads `specs/profiles/core/bdp-v0.schema.json` from the candidate checkout; only the child server comes from the packed consumer. So the stage proves external-entry/package provenance, not packed schema-path coverage. Relatedly, the repaired read in `transactional-event-sse-installed.test.ts:531` sits *inside the second callback*, so the first event-sse callback never executes it. Also, the discriminator for selecting these five is \"files this reconciliation edits\" \u2014 roughly twenty installed tests support `BDP_TRANSACTIONAL_INSTALLED_ENTRY`, so override support alone does not bound the set. Worth saying plainly so the final report does not read as packed schema-path evidence. Separately: `scripts/smoke-executables.mjs:509-520` deliberately asserts that `@bdp/server/dist/transaction-installed*.js` do **not** resolve as package specifiers; the packed witness works only because it passes an absolute filesystem path. State that, so nobody \"fixes\" resolution by adding an export and trips the surface tripwire.\n\n**5. `type-examples` interpreter is ambiguous.** `stages[type-examples].argv[0]` is `<PINNED_ISOLATED_PYTHON>` while `tools` pins the global Homebrew `python3.14`. Say explicitly that the recorded Homebrew interpreter is only the base for an isolated venv, and that `<PINNED_ISOLATED_PYTHON>` must resolve to that venv's interpreter with its own realpath/hash and locked dependency identities. (The dependency list is right: `incoming-main/scripts/check_type_examples.py:7-10` imports `jsonschema` and `referencing`.)\n\n**6. Record the parent's `evidence:verify` exit as a baseline.** Because exit 2 is \"acceptable with the limitation stated\", a silent 0\u21922 regression would pass. The evidence paths (`docs/design/evidence/read-cohort/read-v1.json`, `packages/server/src/read-conformance-capability.ts`, per `read-cohort-evidence.mjs:20-26`) are untouched by both parents and the gate's git facts are confined to a historical run-head\u2192evidence-commit window, so the merged tree should return whatever d4 returned. Pin that number and treat a change as a stop condition.\n\n**7. Three stage caps are unmeasured.** The only measured d4 figures are whole-job 1097s and test-step 873s, leaving ~224s for the other eight steps. `smoke` gets 120s but `scripts/smoke-executables.mjs:103-128` does a recursive `pnpm pack` of all packages/apps plus a network `npm install` of every tarball into a fresh prefix; `e2e:ready:preflight` is likewise unmeasured. Either take per-step durations from run 38981157039's log or label those caps as unmeasured, so a timeout is attributed to the budget rather than diagnosed as a product failure. This is about attribution, not widening \u2014 the no-widening rule should stand.\n\n**8. Path-count convention.** The plan says main \"changed99\"; `incoming-manifest.json` says `incomingChangedPathCount: 100`. The incoming diff records `schemas/bdp-v0.schema.json \u2192 specs/profiles/core/bdp-v0.schema.json` as a rename (`incoming-from-common-base.patch:10583`), so the gap is rename-vs-delete+add. State the convention in both documents so the conflict ledger reproduces.\n\n## Evidence I could not inspect\n\nThe merge has not been performed, so every conflict/resolution statement \u2014 mine included \u2014 remains a prediction from the two base-relative diffs; I did not run `merge-tree`. I did not inspect `tools/go`, `tools/bin/bd`, `identity.json`, the Go distribution digest, bd build info, consumer hashes or Python dependency identities: all are `null`/unset in the plan by design, and their absence is correctly declared rather than assumed. I had only the summary timings quoted in the plan for run 38981157039, not its per-step log. I read the incoming snapshots bearing on resolution, schema paths, citations, layout, CI and package surface \u2014 not all 99.",
+    "ttft_ms": 5061,
+    "type": "result",
+    "duration_ms": 664183,
+    "uuid": "6a75389a-2fe2-48f7-9c1b-77890e98197c",
+    "ttft_stream_ms": 1130,
+    "time_to_request_ms": 11,
+    "first_content_frame_ms": 1131,
+    "queued_turn_count": 0
+  }
+]

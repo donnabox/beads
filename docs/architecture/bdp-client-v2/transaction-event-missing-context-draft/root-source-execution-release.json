@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-15T10:50:41.441046+00:00",
+  "sourceBindingSha256": "acf190e742dfb669fe5607085a3ac60c5ecb66f4f86b1f05025424a7873615b0",
+  "nativeReviewSha256": "1e5631115b6eda981befb864acc6c7a5291dbf84d8b973fe0a35e08b2a34dde6",
+  "supervisorSha256": "4d765e2408033fb42c828cdebfdf59b2e2b1c16d154522b3e4e018d3e8c8689f",
+  "decision": "Release nine exact source preparation/static/positive commands only. Full root read of wrapper, frozen sixpath code and native review completed.",
+  "sequencingAmendment": "Run unchanged-source checks in parallel with read-only actual Claude code review to avoid idle latency. Actual Claude disposition remains mandatory before publication/main integration. This changes ordering only; no source/count/limit increase. Do not edit tracked source while review is active. Stop on first failure; no retries.",
+  "authorizations": [
+    "offline-setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "events-positive",
+    "sse-regression"
+  ],
+  "controlGate": "closed",
+  "installedGate": "closed",
+  "historicalAttribution": "Original83e5 packet is unexecuted; current successoracf190e7/e0c25b19 governs. Commands are inherited unchanged and independently bound."
+}

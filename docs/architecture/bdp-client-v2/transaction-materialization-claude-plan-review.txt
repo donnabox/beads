@@ -1,0 +1,107 @@
+No files written or modified. Findings below; verification notes follow.
+
+## Findings
+
+### 1. HIGH — Single-knob over-constraint: the group bound is Event-driven, so M=32 is ~8× tighter than the plan's own conservatism requires
+
+**Location:** plan lines 9–22, 134–148, 213–217 · `packages/server/src/transaction-batch.ts:55-56,545,726`
+
+**Impact:** The plan charges the maximal *per-invocation* coefficient (`11R+4S+A`) to all `K=M+O` invocations, so M becomes the only lever and "256 does not pass" (909 MB) kills it. But 9R+4S of that 11R+4S is Event payload, and Events are governed by a *separate* existing cap. The two artifacts decouple cleanly: the group scales with Event count, the receipt with result/match count. The plan notices half of this — line 213 observes the 4096 Event cap "may be unreachable at the current lower invocation budget" — and then does not draw the inference that the Event cap is the correct knob for the group.
+
+Rederiving with E as the knob (`#changes ≤ #events`, since the worst changes-per-Event ratio is 1:1 — unowned update 1/1, owned update 2/2, owned create/delete 2/4):
+
+```
+Group(E,M) = E*(2R+S) + min(2K,E)*R + K*A + H
+E=256, M=256, K=288 → 221,511,680   (41% of 536,870,888)
+E=384, M=256        → 330,563,584   (62%)
+E=512, M=256        → 439,615,488   (82%)
+Receipt at M=256    → 173,346,816   (the plan's own table, line 141)
+```
+
+**E=256/M=256 yields essentially the plan's recommended group size (221.5 MB vs 202.9 MB at M=32) with 8× the matched-Resource capacity**, and the receipt at M=256 is 32% of the ceiling.
+
+**Fix:** Lower `maximumInducedEvents` as the group guard and let the receipt bound set M (formula 3 permits K≤896, i.e. M≤864; measured per-entry cost is 262,196 bytes, so the real receipt ceiling is ~2× looser still). This is *smaller* than the proposed change, not larger: both constants are already evaluator-only seams that cannot be raised (`transaction-batch.ts:509-511`), the lower-Event-cap seam is already exercised (`transaction-set.test.ts:352`), `transaction.inducedEvents` is existing 413 vocabulary, and the Event cap fires *during* fanout (`:545`, checked before push) rather than after a completed selection. State the trade honestly: the Event cap is shared between explicit operations and set fanout, so achievable set size becomes fanout-dependent — worst case (32 explicit owned creates + `deleteWhere` on owned Links at E=256) floors at 32 members, equal to flat M=32 and never worse; common cases are 4–8× better.
+
+### 2. MEDIUM-HIGH — The R premise rests on an *optional* option, which the proposed tuple does not close
+
+**Location:** `resource-evaluator.ts:107` (`representationBytes?: number`), `:1055-1057` · `transaction-store.ts:991` · `development-authority.ts:57` · plan lines 80–84, 180–186
+
+**Impact:** The whole proof depends on "new installs contain only records written under R." That is enforced by `options.limits.representationBytes !== undefined && ...` — an optional field, with the value duplicated as two literals (`262144` and `256 * 1024`). A future owner or evaluator construction that simply omits the field admits unbounded records and the startup proof will not notice, because the tuple can be present in configuration while a call site still fails to pass it.
+
+**Fix:** Make `representationBytes` and `propertiesBytes` **required** in `ResourceEvaluationOptions["limits"]` and source both from the single tuple. The compiler then enforces the premise at every call path — strictly stronger and smaller than a startup assertion. Keep the configuration binding for the retention concern only.
+
+### 3. MEDIUM — Highest-risk unaccounted extension is unnamed: a source *preimage body* in the owned source-updated Event
+
+**Location:** plan lines 98–103, 119–122 · owned plan step 1 (lines 89–102) and predicates 2–3
+
+**Impact:** The owned plan's capture-before-write seam deliberately retains each operation's prior source row inside `applyResource`. Serializing it (`previous: <source preimage>` next to `previousRevision`) is a one-line temptation that roughly doubles the Event coefficient: 11R→~20R puts M=32 at ~368 MB and makes M=128 fail outright (~882 MB). The plan says "Neither allowance licenses arbitrary new extension fields" but never identifies the one extension the companion slice makes trivially available. I confirmed current code serializes revisions only — `transaction-batch.ts:632` emits `previousRevision: before.revision`, and `TransactionStateChange` (`:446-452`) holds one postimage or an `{id,type,revision}` triple, never a before-image.
+
+**Fix:** State as a load-bearing invariant that no preimage *body* appears in any Event, change wrapper or receipt result — only `previousRevision`/`sourceRevision` — and have the owned slice assert it.
+
+### 4. MEDIUM — Per-Event coefficients are sound only via an unstated partition argument; `A=8192` cannot pay for the fields it appears to cover
+
+**Location:** plan lines 76–103, 112–125 · `transaction-batch.ts:544-559,624-657`
+
+**Impact:** Every Event carries `subject` (Scope-qualified id) and `subjectType` (a Type ID). Neither appears in the plan's "accounted for separately" list (Scope, Resource data, operation name, patch payload, diagnostics), and `A=8192` cannot cover them — four Events' `subjectType` alone can exceed A, since Type IDs are bounded at 4096 JSON bytes only in the compiled-contract path (`development-contracts.ts:84`) and otherwise only by R. The bound in fact holds, but only because `id`/`type`/`properties`/`metadata`/`source`/`target` partition **one** `R = |bodyJson|` (`resource-evaluator.ts:1050`): a `created` Event is ≤ R+S+fixed, and an incidence fact — which duplicates id/type — is ≤ 2r+S, exactly the 2R+S allotment. The plan never says this, and it explicitly invites a tighter re-derivation (line 146), which is precisely where this gets broken.
+
+**Fix:** One sentence: "Event `subject`, `subjectType` and `data` are disjoint fields of the same bodyJson, so one lifecycle Event ≤ R+S; incidence facts duplicate id/type and are ≤ 2R+S." The coefficients then justify themselves.
+
+### 5. MEDIUM — A 128× reduction turns a previously-unreachable, index-free 413 into a routine failure
+
+**Location:** plan lines 13–16, 208–217 · `transaction-batch.ts:491-499,833-845`
+
+**Impact:** `transaction.matchedResources` carries `operationIndex?: never` by design, and the budget is *cumulative* across operations. At 4096 this was practically unreachable; at 32 a two-set batch with 20+20 matches hits it and the client cannot tell which operation overflowed, nor is the cumulative notion visible anywhere on the wire. Compounding it: admission accepts `cardinality.max: 100` (`transaction-store.ts:847` only checks operation count), and after 064db8a deliberately moved the cardinality guard ahead of the charge, a client's own guard can no longer pre-empt the limit. The plan presents only the atomicity trade (lines 208–214) and never names the diagnosability regression it is creating.
+
+**Fix:** Preferred — keep M high enough (finding 1) that this stays rare. Otherwise refuse `cardinality.max > M` at preparation, where `operationIndex` exists, reusing `limit-exceeded` with no new vocabulary. That narrows behaviour (a `max:100` request matching 5 would now refuse) so it needs explicit approval. At minimum, name the regression.
+
+### 6. MEDIUM-LOW — `S ≤ Q` is an arbitrary precondition, ~16× looser than a bound already in the tree
+
+**Location:** plan lines 83–88, 143–144, 180–186 · `read-values.ts:316` (no length bound) · `development-contracts.ts:84`
+
+**Impact:** At the maximal permitted `S=Q=65536`, Scope terms contribute `4S*K` = 16.8 MB at M=32 (8.3% of the group bound) and 41.9 MB at M=128 — entirely from a precondition set ~1000× larger than any real Scope. Coupling a URL-length condition to the request-body budget also reads as new byte vocabulary where none is needed; nothing else in the proof requires S to be as large as Q.
+
+**Fix:** Reuse the magnitude already present — `development-contracts.ts:84` bounds a Type diagnostic identifier at 4096 JSON bytes. `S ≤ 4096` drops the Scope contribution to ~1 MB at M=32 and removes the Q coupling. (With S≤4096, the E=256/M=256 group above falls to 205,783,040.)
+
+### 7. LOW — "Scan" understates it: the match cap fires *after* a full parsed materialization of the collection
+
+**Location:** `transaction-batch.ts:693-726` · plan lines 164–167
+
+**Impact:** Each set operation runs `tx.resources(kind).map(readStoredResource).filter(isResourceVisible)` — a `JSON.parse` of **every row** in the collection (each ≤ R), a transitive visibility closure per record, and a retained sorted `selected` array — all before cardinality and before the match guard, up to 32 times per batch. Peak heap is ≈ C×R and no value of M changes it. The plan's "Candidate scans remain independent of M and can visit an arbitrarily large collection before the match guard" is true but reads as a streaming scan.
+
+**Fix:** Say "materializes", give the C×R shape, and note this is an independent argument for the Event knob (which guards *during* fanout).
+
+### 8. LOW — The measurement harness is itself an unbounded materializer
+
+**Location:** `transaction-store.ts:1518-1533` (`inspect()`) · plan done predicates 3 and 5 (lines 237–252)
+
+**Impact:** `inspect()` JSON.parses every row of `resources` **and** every row of `groups` into one object. A peak-RSS gate that touches it measures the harness, not the owner, and will OOM before the subject does at R-sized fixtures. The owned plan forbids `inspect()` for implementation; the materialization plan's gates do not.
+
+**Fix:** Have predicates 3/5 state that peak-RSS and group/receipt size runs read only through the emitted owner/HTTP path, never `inspect()`.
+
+### 9. LOW — Tuple placement for `recovery-store` is unscoped
+
+**Location:** `recovery-store.ts:142,190,585` · plan lines 180–186, 219–226
+
+**Impact:** The plan's file scope is batch/store. `recovery-store` keeps its own captured Scope and its own `store-mismatch` refusal, and its line 190 comment already anticipates "silently reseed an existing store under the new representation." If recovery can reopen or reseed retained Resource rows, it needs the same tuple, or the "no silently-opened old-budget store" condition has a second door.
+
+**Fix:** State explicitly whether recovery is in or out, and why.
+
+### 10. LOW — 7× is sound with slack; one evidence gap, no analytical impact
+
+**Location:** plan lines 69–110 · `transaction-materialization-ratios.mjs/.log`
+
+**Impact (mostly confirmation):** I rederived independently. Max `JSON.stringify` number token is **exactly 25 chars** (`-0.0000010000000000000002`) — the plan's figure is exact, not merely safe. Worst *ratio* over all token lengths is 5.25 at 4 bytes (`1e20`→21), 3.33 at 3 bytes (`9e9`→10), ≤1 at 1–2 bytes; 7 holds with ~33% slack. Line 71–73 is correct: UTF-8 byte length ≥ UTF-16 code-unit length for any well-formed encoding, so a byte bound does bound the V8 code-unit ceiling. Gap: the probe tests a valid surrogate pair (`\ud83d\ude00`, ratio 0.43) but not a *lone* surrogate, the only string path that can expand — I verified `JSON.stringify(JSON.parse('"\\ud800"'))` is 8 bytes from 8 (ratio 1), and a raw WTF-8 surrogate would be 3→6 (ratio 2). Still < 7. Separately: `updateWhere` forwards only `propertiesChange` (`:741`), so set members can never carry `metadataChange` — the 2N charge is reachable only through explicit operations, worth one line.
+
+**Fix:** Optional — add a lone-surrogate row; record 5.25 as the actual worst ratio so a future tightening need not rederive it.
+
+## Verification notes
+
+**Arithmetic reproduced exactly.** All twelve table cells and all three formulas check out against `K*(11R+4Q+A)+H`, `K*(7R+16Q+A)+H`, `K*(2R+Q+A)+32*128+Q+H`, and the prose forms (`11R+4S+A`, `7R+2S+2N+A`, `2R+Q+A`) are consistent with S=Q, N=7Q. M=128 → 505,675,776 < 536,870,888 (5.8% headroom); M=256 → 909,377,536 > ceiling. `MAX_STRING_LENGTH 536870888` confirmed (on local v26.0.0; pinned is 24.16.0 — same V8 constant, I did not run the pinned runtime). Cited probe evidence matches: `resourceBytes 262144`, `largestInput 60138`, `actualReceiptBytes 8392367`, `perResourceEntryBytes 262196`, `resourcePostimagesAt4096 1073741824`.
+
+**Every cited source fact verified and accurate:** the six `transaction-batch.ts:54-67` constants; selection order post-064db8a (cardinality 409 before cumulative charge and 413); 413/`limit-exceeded`/`transaction.matchedResources` with no `operationIndex`; key ≤256 `[A-Za-z0-9_-]` and unbounded principal (`:747-755`); `representationBytes: 262144` measuring the **complete** `stringifyJsonValue(record)`, which is why R legitimately covers qualified references and attribution; `incident-links-exist` refusal, no cascade; 3 facts for unowned create/delete, 1 for update, no graph facts on update; one `json(receipt)` and one `json(group)` per terminal commit; page ranges over the complete result list (`:481-501`), with the served receipt truncated by `receiptPrefix` to `receiptMaximumItems` — so the 39 MB figure is the stored string, as the plan says; `stringifyJsonValue` joining one string with "No implicit output bound"; `parseCanonicalScope` with no length bound; retained-key equality returning the stored receipt **before** any fresh admission control, so a lowered cap cannot refuse or recompute a retained key.
+
+**Two plan claims I specifically tried to break, and could not:** (a) sequences cannot nest sets — `prepareTransactionSequence` builds each member as `kind: "singleton"` with `operations: [op]`, capped at 32, and the RU sequence cap is also 32, so the aggregate response is ≤32 single-Resource/alias receipts (~19 MB), as asserted; (b) `configurationIdentity` is not wire-visible — it reaches `readConfiguration` and the `qualification.ready` IPC event (`installed-reference-process.ts:53`) only, never an HTTP body or header, and no profile or limits document publishes `matchedResources` or 4096. So the plan's "no advertisement changed / private identity change only" claim holds, and the repair really is one line: `transaction-store.ts:432-441` already does an exact-string compare on `configuration` and raises `"transaction installation mismatch"`.
+
+Also confirmed: `diagnosticBytes` is a cumulative total (`json-admission.ts:350`), so the ≤524,288 failed-receipt term is right; failed receipts carry no partial `results` (`:1017-1024`); expired receipts replace `results` with a strictly smaller `allocated` list (`:358-395`).
+
+**Not done, per scope:** no file written or edited, no build, no test run, no native review reports read.

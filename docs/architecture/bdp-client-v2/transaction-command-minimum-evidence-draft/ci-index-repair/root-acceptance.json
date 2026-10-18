@@ -1,0 +1,31 @@
+{
+  "at": "2026-10-15T08:22:29.613315+00:00",
+  "accepted": true,
+  "scope": "One test line index9 to10 only",
+  "documents": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/ci-index-repair/source-binding.json",
+      "sha256": "1e62745b2dd5fa6e949810764c1e56805d8d0051bee2be2f423e0f0ebc31aacc"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/ci-index-repair/native-closure.md",
+      "sha256": "38780962211eeae3e704e001c7ae85eafb18a01b27829e1af046584f0ac64120"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/ci-index-repair/validation-summary.json",
+      "sha256": "7b04b77871d7143db606beca3ffa275274701d8e06b5fdee621d1399a6e1c40b"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/claude-ci-index-supplement/stdout.txt",
+      "sha256": "87caa5bc6cbde8e46cbe7b01932875d68c2747a36163f2feb9fd723bfdae5de5"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/claude-ci-index-supplement/exit.json",
+      "sha256": "4fe47d82fb52ea48d41d9469b1b1b2713e7be87264406ee9189e529885a50597"
+    }
+  ],
+  "findings": "Native and actual Claude report no blocking finding; root fully read both. Four actual source callbacks/typecheck/format pass.",
+  "priorEvidence": "V3 installed run remains at a912c23f;11 original source hashes and all312build inventory files unchanged, test source excluded from build. No new installed execution claimed.",
+  "remaining": "Ordinary successor commit and exact-head green CI before merge; actual merged tree verification",
+  "profileQualification": false
+}

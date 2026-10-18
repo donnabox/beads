@@ -1,0 +1,8 @@
+{
+  "status": "EXTERNAL PROPOSAL ONLY; source untouched; apply after activeClaude terminal/rootrelease",
+  "path": "packages/server/src/transaction-http.test.ts",
+  "beforeSha256": "afb6fb0f7b77591c0eeb0a88e4087fcebe28100fb1ac12a66ca0755ca8f98a38",
+  "proposedAfterSha256": "5e094d09beaba41dbf5b0f56799f5d9b91d24c38684ef78a47f8a11e0880ad2f",
+  "patchSha256": "39bbc32533abbd5cec5914d6d3b4ba251f345590673c9397f77c90365784903b",
+  "purpose": "Replace two explicit finally throws with recording into existing failures and branch-gated cleanup. Preserve primary error, stop uncertainty/owned directory, no cleanup on unknown startup, no request/oracle/limit changes."
+}

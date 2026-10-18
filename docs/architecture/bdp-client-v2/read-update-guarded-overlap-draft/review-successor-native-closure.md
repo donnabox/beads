@@ -1,0 +1,13 @@
+# Native RU successor closure
+
+No actionable finding in the exact external successor. Full330line successor and literal delta read, all21 source-reference hashes checked, and original preview preserved. Applied successor testc0d65166e9587311d101883727cbba8bdb5baa0c31bc240e87ed55a45e74d56c, binding1fb4184d86e3d11f4f5ffbf59bf2e8517888692f1c78964ac1c9cd22229c3f0d and full draft3f6f29facd7c8467583747c27a7aac408069f8360f1670a3f4be94ce22583d84 match. The correction text exactly equals the diff against original2a15f4d1. Product worktree is not authored by this packet.
+
+F3: startupPhase remains true through setup and launch readiness, then becomes false before actual HTTP. Ordinary pre-launch filesystem/Git/port exceptions now report startup; explicit WitnessError and work-deadline classification retain priority. Existing launcher rejection classification is explicitly work-deadline if that timer fired, otherwise startup. No body/oracle failure is reclassified after readiness.
+
+F7: finally clears the work timer, then aborts outstanding local exchanges before destroying active requests. Their already-installed abort handlers use fail/finish to settle, remove listeners and clear exchange timers. Fully settled requests have removed those handlers; a successful positive is not converted to failure by cleanup abort. Existing workDeadline and primary failures are not overwritten; abort is idempotent if already expired. Child close and request drain remain concurrent, bounded and independently collected. This is defensive hardening, not retroactive proof of the prior speculative race.
+
+F8: POST iff body and body iff key rejects every mismatched shape before dispatch; all ten/six existing ledger calls remain admitted. F9: seen is now updated only after retained-cap admission, so future dropped milestones remain missing. Current26possible slots/32cap remains unexercised headroom. Retention wording explicitly denies entry-hash-alone source binding.
+
+Requests/selection/doc amendment/full proposed doc are byte-identical. Strict clean exit, complete200/409/schema/media/Resource/replay assertions and named two-success rejection remain unchanged. No HTTP/child/callback/time/cap increase. Dedicated external BDP scrub versus default CI variables is explicit in successor report/root dispositions; no global environment mutation was introduced.
+
+No code executed/imported/formatted/built/tested, no product file changed. Actual merged-parent reanchor, final static checks and real evidence remain pending. This source closure allows only the already-authorized focused actual Claude supplement, not product execution.

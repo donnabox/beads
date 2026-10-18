@@ -1,0 +1,71 @@
+{
+  "formatExit": 0,
+  "cpuExit": 0,
+  "passed": 8,
+  "skipped": 336,
+  "failed": 0,
+  "sampledPids": [
+    61900,
+    61902,
+    61906,
+    61907,
+    62098,
+    62101,
+    62105,
+    62108,
+    62129,
+    62134,
+    62137
+  ],
+  "independentlyPresent": [],
+  "temporaryEntriesAfter": [],
+  "sourceBindingSha256": "a027e05e421c0b3539da422cbe69f6262791f568add9606c1015a8dab1bfa13a",
+  "results": {
+    "format-check": "d64040535b5ad0b0e136ac46c2ce14b3e54d67cf4b1762461c7ffa1c48094e5c",
+    "cpu-eight": "d7b03e2aabbf6c7c86a1077c96502778846c6274b3879ae24dcc97c3884cc926"
+  },
+  "noInstalledRerun": true,
+  "selectedTests": [
+    {
+      "file": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/apps/bdptest/src/read-update-matrix.test.ts",
+      "fullName": "pins command minimum literals, ordinary admission and parent preservation",
+      "status": "passed"
+    },
+    {
+      "file": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/apps/bdptest/src/read-update-matrix.test.ts",
+      "fullName": "pins cold RU directory literals, actual target bindings and parent preservation",
+      "status": "passed"
+    },
+    {
+      "file": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/apps/bdptest/src/read-update-matrix.test.ts",
+      "fullName": "pins numeric admission source growth, old blocks and independent row ledgers",
+      "status": "passed"
+    },
+    {
+      "file": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/apps/bdptest/src/read-update-matrix.test.ts",
+      "fullName": "pins metadata closure growth, old B actions and final N preservation",
+      "status": "passed"
+    },
+    {
+      "file": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/apps/bdptest/src/read-update-matrix.test.ts",
+      "fullName": "pins bounded R closure source, changed-action ledger and unchanged companions",
+      "status": "passed"
+    },
+    {
+      "file": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/packages/conformance/src/cumulative-artifact.test.ts",
+      "fullName": "pins cumulative source digest map, catalog order and every coverage binding",
+      "status": "passed"
+    },
+    {
+      "file": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/packages/conformance/src/profile-contract-plan.test.ts",
+      "fullName": "canonical cumulative profile contracts maps ordinary Update command-minimum evidence while TX mapping remains partial",
+      "status": "passed"
+    },
+    {
+      "file": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/packages/conformance/src/read-update-artifact-set.test.ts",
+      "fullName": "private two-artifact Read+Update set accepts the actual current corpus split with unchanged prerequisite groups and coverage",
+      "status": "passed"
+    }
+  ],
+  "postReviewAddendum": "Exact selected names copied from original unchanged machine result; no rerun or relabeling. Original summary preserved separately."
+}

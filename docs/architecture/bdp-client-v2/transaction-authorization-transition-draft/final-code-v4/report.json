@@ -1,0 +1,30 @@
+{
+  "sourceBindingSha256": "f7cf0b51f79c56ee6b24a5be571336066a7148b97e1aa769d511a45579646cbd",
+  "fullPatchSha256": "cc03010d7c9390cb3034eaf18eebd9b2ac5dd3522aa72e998e991b5d5e20e189",
+  "correctionSha256": "db7ea6adf47c4aeb0c4cf233722c0b5d0731d34554aa05976f7d00dc019b4062",
+  "changedPaths": [
+    "packages/server/src/transaction-authorization.test.ts"
+  ],
+  "unchangedPaths": 14,
+  "productionUnchanged": true,
+  "workload": {
+    "callbacks": 11,
+    "http": 21,
+    "successfulOwnerOpens": 14,
+    "normalDirectories": 11,
+    "rejectedOpenCopyDirectories": 5,
+    "listeners": 2,
+    "productChildren": 0
+  },
+  "predecessorEvidence": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/authorization-owner.exit.json": "f49b7bf668b9f019a5866be2477f2682a7ca9074bba732f26ef11241c28f0287",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/authorization-owner.results.json": "a6cf7c55046345898130564182a4a70797201c04778f22cd9f5d07c810650f9c",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/authorization-owner.stderr.log": "d0406e62ccb834931061a5b3b8e6b32568fce6eabee883b839474c3b931afbcc",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/build.exit.json": "5742ecb89800bda4ca212644ce546e8c36b691dc17d5ef374158434b7729d7f8",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/transport.exit.json": "bbdc14d10f1d202c2c99c711f32ef49425b12c652406509e90a4452aff87e502",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/queued-frame.exit.json": "f767a441891f5b7a15bc41f2d9255413a77777cef1590b7d37adc14dcfe9d0bd",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/stale-lease.exit.json": "87c4224d24394f93176a787f7fd3be8d728f136039875ca8b39ff1de89833415"
+  },
+  "validationExecuted": false,
+  "suggestedValidation": "root-approved typecheck for newly narrowed body access plus exact T11 callback only; no production rebuild required"
+}

@@ -1,0 +1,47 @@
+Reviewed the frozen diff (8 files, `5995f6b` → `d53450a`), the v2 plan, dispositions, root acceptance, and the artifacts in `transaction-start-now-resume-implementation`. I read source only — no tests, builds, network, subagents, or writes.
+
+## Verified clean
+
+- **Production change is exactly the approved two lines.** `packages/server/src/transaction-http.ts:438-440` keeps URL grammar first, repeated-header rejection, and the pre-existing `media === "sse" && fields.length === 1 ? { after: fields[0] }` mapping. `start=now` + one header now flows through the established `after` path: `transaction-service.ts:373-388` freezes `{after}` and never calls `captureChangesStart()`, `transaction-changefeed.ts:56-86` owns syntax/epoch/view, `transaction-store.ts:1676-1677` applies exclusive replay and refuses `start > head`, and `transaction-runtime.ts:197-206` continues with `{after}` only. No `start` intent leaks into the pump. The Event branch (`transaction-http.ts:477-492`) and finite JSON path are untouched; ordering change for `start=now` + repeated header (500 → 400) is the intended consequence and is tested.
+- **No orphaned gap identifier.** `start-now-last-event-id` has zero remaining references repo-wide; `dist/` is gitignored.
+- **Citations hold at the frozen tree.** All three `transactional.changefeed.sse-reconnect` excerpts appear whitespace-normalized in `#scope-changefeed`; `validateCatalogCitations` normalizes whitespace (`catalog.ts:175`), so the post-check re-wrap disclosed in `report.md:5` is harmless. The packet mirror row is byte-identical to the canonical row (parsed-equal, 125 packet rows). Spec 5974-5975 ("Omitting both is an error…") is byte-identical and contiguous; no catalog row quotes the amended `start=now` bullet.
+- **Helper extraction is exact.** `installedExchanges` (`apps/bdptest/src/transactional-sse-installed.test.ts:66-117`) is the verbatim old body parameterized by `{address, token, controller}` with a fresh `key = 0`; the only old-test edit is line 161. The 15-second idle scenario's request order, wait, assertions, report fields and cleanup are unchanged.
+- **Core replay proofs do discriminate.** `transaction-sse.test.ts:848` and `installed.test.ts:382-405` both fail against a header-ignoring implementation (the `until` for the offline group would hit the recorder deadline with no live write available to mask it), and the installed test refuses to commit G3 after a missing G2.
+- **Artifacts match.** All eight `source.json` SHA-256s and the tree hash match `d53450a`; `focused.json` records 163/163 passing; `report.md` correctly states installed evidence is pending and claims no installed success.
+
+## Required
+
+**1. Severity: medium — `docs/specs/bdp.md:5972-5973` — the new clause is readable as the inverse of the ruling, and introduces an undefined term.**
+The clause is appended inside the list introduced by "A client supplies exactly one explicit starting intent", so its plain reading is a *grammar* restriction — `start=now` is an admissible starting intent only when no reconnect checkpoint is supplied — rather than the intended *semantics* qualifier. That is the opposite of the operator ruling and of the shipped behavior. Separately, "selected-SSE" appears exactly once in the whole specification and nowhere in the design docs; everywhere else the spec uses "selected" for Resources/sets/representations (1419, 1516, 4243, 5578), and media negotiation is phrased as "an endpoint selects an acceptable supported…" (1954) or "Accepting `text/event-stream`" (6110).
+*Impact:* an implementer reading only the bullet can conclude `start=now` + `Last-Event-ID` must be refused — the behavior this commit removed. The disambiguating sentence is two paragraphs away at 6113-6115, and no catalog row cites the bullet, so nothing guards the misreading.
+*Fix:* keep the bullet a pure intent definition and qualify with the spec's own idiom, e.g. "`start=now` to deliberately observe only future groups; when `text/event-stream` is the accepted media type and the request also carries a reconnect checkpoint in `Last-Event-ID`, that checkpoint governs instead." Leave 5974-5975 byte-identical, then re-run the catalog citation check.
+
+**2. Severity: medium — `packages/server/src/transaction-sse.test.ts:879-907` — the minimum-wait test cannot distinguish header-honored from header-ignored.**
+`f.create("before")` puts head at pos-1, and the supplied `Last-Event-ID` is pos-1's checkpoint — the same value `captureChangesStart()` would return at open time. Under a build where `effective` ignored the header for `start=now`, `after` would still be `cg_…_1`, the minimum would still retry, and the test would still observe pos-2 with `previousPosition` pos-1 and `bdp-scope-position: pos-2`.
+*Impact:* the test's name, the plan row ("saved checkpoint remains effective and intervening group is delivered") and `report.md:9` ("controlled minimum retry") all claim coverage the test does not provide; the header × minimum-wait interaction is unguarded, and only `:848` discriminates at all.
+*Fix:* put the saved checkpoint strictly behind head before opening — create two groups (pos-1, pos-2), send pos-1's checkpoint with `BDP-Minimum-Scope-Position: pos-3`, commit pos-3 during the wait, and assert the first delivered group is **pos-2** (`previousPosition` pos-1). Head capture would deliver pos-3 there, so the case becomes a real old-guard/ignored-header discriminator with no new minimum semantics.
+
+**3. Severity: low-medium — `apps/bdptest/src/transactional-sse-installed.test.ts:462,484` — `directoryRemoved: true` is asserted rather than observed, and a cleanup fault discards the whole evidence log.**
+`directoryRemoved: true` is a literal, unlike the adjacent computed `childClosed` (482-483). It is also unverifiable in principle as written: `rmSync(directory, { recursive: true, force: true })` is the last statement of `finally`, `force` only suppresses missing-path errors, and `maxRetries` defaults to 0 — so an `EBUSY`/`EPERM` from a file the installed child still holds throws out of `finally`, skipping both the `console.log` and the `AggregateError`.
+*Impact:* the reported evidence carries a cleanup claim no observation backs, and in the one case the evidence matters most — the pending ignored-header derivative, which is expected to fail — a cleanup race would destroy the stream bytes, hashes, `phase` and named-oracle message entirely. Root acceptance requires "preserve every failure and cleanup."
+*Fix:* wrap `rmSync` in `try/catch` pushing to `failures`, and set `directoryRemoved: !existsSync(directory)` computed after removal.
+
+## Optional
+
+**4. `installed.test.ts:268,394,406,429` — `phase` is too coarse to satisfy the "not a generic setup error" requirement for steps 1-4.** Any failure in the initial stream, G1 decode, finite parity, or the applied-state check reports `phase: "launch"`. Setting `phase` per numbered request would make a derivative stop point unambiguous.
+
+**5. `installed.test.ts:441` — `deadlines: { finite: 5000, … }` hardcodes the literal where the sibling test uses `{ ...actualSettings.transport, … }` (`:210`).** Accurate (it names the exact executor's `requestTimeoutMs`) and `settings: actualSettings` is still recorded, so this is consistency only.
+
+**6. `transaction-sse.test.ts:329` — `expect(…after).not.toBe("genesis")` is a negative assertion where the value is known.** Head is pos-1, so asserting the actual head checkpoint would make this control as strong as the existing positive form at `transaction-changefeed.test.ts:623`.
+
+**7. `docs/design/transaction-implementation-progress.md:1337-1340` — the paragraph was not reflowed; "checkpoint," is orphaned on line 1339.** Cosmetic, but `report.md:5` says "only Markdown line-wrapping changed before commit," which reads oddly against a paragraph left mid-wrap.
+
+**8. `packages/conformance/src/transactional-catalog.test.ts:23` — the inserted clause runs the docstring line to ~113 chars against the file's ~95 wrap, and attaches "including the ruled changefeed reconnect mirror" to "citation consistency," though the mirror is checked by a different `it` (`:68`).** Reflow and attach it to the "rows mirror the specification's table" phrase.
+
+**9. `installed.test.ts:427-428` — `expect(requests).toHaveLength(8)` is self-bookkeeping.** The array is pushed from the same code path, so the assertion restates the script rather than observing the server's request count. It usefully documents the ceiling; just don't read it as an independent count.
+
+**10. `installed.test.ts:390` / `transaction-sse.test.ts:859` — client-side `close()` does not await server-side slot release before the next `expect(status).toBe(200)`.** An intervening POST round-trip makes this very unlikely, and the pattern is pre-existing at `transaction-sse.test.ts:254-257`; noted only because a lost race would surface as a confusing 503 rather than a replay failure.
+
+## Not findings
+
+I found no correctness regression, no unsupported product claim in the owned docs, no stale gap/refusal text left behind (progress doc 1246 and 1470 remain accurate; packet 3531 and 4679 describe finite `after` and are unaffected), no change to Event-route query grammar or headerless `start=now` anchoring (`transaction-sse.test.ts:389-414` preserved), no `.only`/`.skip`, and no scope beyond the eight approved files. Installed and derivative evidence is pending by design — nothing here assumes it ran.

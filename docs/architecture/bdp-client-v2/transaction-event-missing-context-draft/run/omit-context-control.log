@@ -1,0 +1,280 @@
+Scope: all 12 workspace projects
+Recreating /Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules
+✓ Lockfile passes supply-chain policies (verified 3d ago)
+Lockfile is up to date, resolution step is skipped
+Already up to date
+
+devDependencies:
++ @babel/parser 8.0.4
++ @biomejs/biome 2.5.7
++ @types/node 24.13.3
++ ajv 8.17.1
++ typescript 7.0.2
++ vitest 4.1.10
+
+Done in 302ms using pnpm v11.20.0
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/copy
+
+ ↓ packages/server/src/transaction-events.test.ts > projects Scope, Link and Bead facts through deletion/restart (owned=false)
+ ↓ packages/server/src/transaction-events.test.ts > projects Scope, Link and Bead facts through deletion/restart (owned=true)
+ ↓ packages/server/src/transaction-events.test.ts > uses same-group endpoints for create/update/delete and self-Link incidences (owned=false)
+ ↓ packages/server/src/transaction-events.test.ts > uses same-group endpoints for create/update/delete and self-Link incidences (owned=true)
+ ↓ packages/server/src/transaction-events.test.ts > preserves endpoint pins, omits external sources and does not mutate Beads for incidence
+ ↓ packages/server/src/transaction-events.test.ts > pages within groups, continues exclusively after end and rejects unrelated/fabricated cursors
+ ↓ packages/server/src/transaction-events.test.ts > keeps unknown sources nondisclosing before minimum and refuses older success/fenced owner
+ ↓ packages/server/src/transaction-events.test.ts > does not emit failed/no-op transactions and does not expire Events with receipt detail
+ ↓ packages/server/src/transaction-events.test.ts > isolates unresolved metadata-only incident membership while Scope/Link sources remain available
+ ↓ packages/server/src/transaction-events.test.ts > bounds actual finite page bytes with long canonical sources and emits no partial Event
+ ↓ packages/server/src/transaction-events.test.ts > keeps Event route/query validation private and closed
+ ↓ packages/server/src/transaction-events.test.ts > serves finite Event HTTP with current context, conditionals, HEAD and bounded minimum waits
+ ↓ packages/server/src/transaction-events.test.ts > checks the admitted group byte length before selecting its body and proves first-page feasibility
+ ↓ packages/server/src/transaction-events.test.ts > checks minimum position before any retained group scan or body materialization
+ ↓ packages/server/src/transaction-events.test.ts > continues a Resource cursor across groups with zero contributions and observes the true end
+ ↓ packages/server/src/transaction-events.test.ts > refuses retained group missing corruption without changing the valid owner
+ ↓ packages/server/src/transaction-events.test.ts > refuses retained group body-type corruption without changing the valid owner
+ ↓ packages/server/src/transaction-events.test.ts > refuses retained group context corruption without changing the valid owner
+ ↓ packages/server/src/transaction-events.test.ts > refuses retained group ordinal corruption without changing the valid owner
+ ↓ packages/server/src/transaction-events.test.ts > refuses a retained positional hole after a matched cursor rather than skipping the group
+ ↓ packages/server/src/transaction-events.test.ts > accounts exact UTF8 and escaped Event bytes once rather than repeatedly serializing a growing page
+ ↓ packages/server/src/transaction-events.test.ts > private one-group scans preserve self-Link ordinals, partial packets and immutable replay
+ ↓ packages/server/src/transaction-events.test.ts > idle scan advances do not construct group readers or reread unrelated historical bodies
+ ↓ packages/server/src/transaction-events.test.ts > scan handles cannot be fabricated, moved between owners or reused across reopen/close
+ ↓ packages/server/src/transaction-events.test.ts > scan initial identity and minimum precede reconnect validity; contextual errors preserve the observed entry
+ ↓ packages/server/src/transaction-events.test.ts > byte-bound scan packets preserve the exact finite reservation and within-group suffix
+ ↓ packages/server/src/transaction-events.test.ts > scan refuses a regressed captured head and a sticky fenced owner
+ ↓ packages/server/src/transaction-events.test.ts > refuses configuration whose group step differs from the structural owner implementation
+ ↓ packages/server/src/transaction-events.test.ts > captures immutable current context for missing 'finite' 'Bead' Event source
+ ↓ packages/server/src/transaction-events.test.ts > captures immutable current context for missing 'finite' 'Link' Event source
+ ↓ packages/server/src/transaction-events.test.ts > captures immutable current context for missing 'SSE' 'Bead' Event source
+ ↓ packages/server/src/transaction-events.test.ts > captures immutable current context for missing 'SSE' 'Link' Event source
+stdout | packages/server/src/transaction-events.test.ts > serves contextual missing Event responses for Bead and Link JSON and SSE GET and HEAD
+{"observation":"source-missing-event-context","verdict":"see-final-vitest-result","deadlineExceeded":false,"attempts":11,"completedResponses":[{"method":"POST","url":"https://example.test/events/operations/batch","accept":"application/json","status":200,"headers":{"content-type":"application/json","content-length":"670","cache-control":"private, no-store","retry-after":null,"www-authenticate":null,"x-bdp-development":"non-attesting","x-bdp-development-limit":null,"bdp-scope-epoch":"19aff42f-4c21-4d6c-b278-36a3576a31c6","bdp-authorization-view":"development-all-visible","bdp-scope-position":"pos-1"},"bodySha256":"cacfbc5b497feea8b1c1e07273ab9b1f3f6af000c8d314da8d48a88635c9a23e"},{"method":"GET","url":"https://example.test/events/events/","accept":"application/json","status":200,"headers":{"content-type":"application/json","content-length":"587","cache-control":"private, no-store","retry-after":null,"www-authenticate":null,"x-bdp-development":"non-attesting","x-bdp-development-limit":null,"bdp-scope-epoch":"19aff42f-4c21-4d6c-b278-36a3576a31c6","bdp-authorization-view":"development-all-visible","bdp-scope-position":"pos-1"},"bodySha256":"b48ecd14f81c8e4778829b80a72c5f2102cdff528d896e1833c952bce039ed4f"},{"method":"GET","url":"https://example.test/events/beads/missing?view=events","accept":"application/json","status":404,"headers":{"content-type":"application/problem+json","content-length":"134","cache-control":"private, no-store","retry-after":null,"www-authenticate":null,"x-bdp-development":"non-attesting","x-bdp-development-limit":null,"bdp-scope-epoch":null,"bdp-authorization-view":null,"bdp-scope-position":null},"bodySha256":"6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1"},{"method":"HEAD","url":"https://example.test/events/beads/missing?view=events","accept":"application/json","status":404,"headers":{"content-type":"application/problem+json","content-length":"134","cache-control":"private, no-store","retry-after":null,"www-authenticate":null,"x-bdp-development":"non-attesting","x-bdp-development-limit":null,"bdp-scope-epoch":null,"bdp-authorization-view":null,"bdp-scope-position":null},"bodySha256":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},{"method":"GET","url":"https://example.test/events/beads/missing?view=events","accept":"text/event-stream","status":404,"headers":{"content-type":"application/problem+json","content-length":"134","cache-control":"private, no-store","retry-after":null,"www-authenticate":null,"x-bdp-development":"non-attesting","x-bdp-development-limit":null,"bdp-scope-epoch":null,"bdp-authorization-view":null,"bdp-scope-position":null},"bodySha256":"6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1"},{"method":"HEAD","url":"https://example.test/events/beads/missing?view=events","accept":"text/event-stream","status":404,"headers":{"content-type":"application/problem+json","content-length":"134","cache-control":"private, no-store","retry-after":null,"www-authenticate":null,"x-bdp-development":"non-attesting","x-bdp-development-limit":null,"bdp-scope-epoch":null,"bdp-authorization-view":null,"bdp-scope-position":null},"bodySha256":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},{"method":"GET","url":"https://example.test/events/links/missing?view=events","accept":"application/json","status":404,"headers":{"content-type":"application/problem+json","content-length":"134","cache-control":"private, no-store","retry-after":null,"www-authenticate":null,"x-bdp-development":"non-attesting","x-bdp-development-limit":null,"bdp-scope-epoch":null,"bdp-authorization-view":null,"bdp-scope-position":null},"bodySha256":"6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1"},{"method":"HEAD","url":"https://example.test/events/links/missing?view=events","accept":"application/json","status":404,"headers":{"content-type":"application/problem+json","content-length":"134","cache-control":"private, no-store","retry-after":null,"www-authenticate":null,"x-bdp-development":"non-attesting","x-bdp-development-limit":null,"bdp-scope-epoch":null,"bdp-authorization-view":null,"bdp-scope-position":null},"bodySha256":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},{"method":"GET","url":"https://example.test/events/links/missing?view=events","accept":"text/event-stream","status":404,"headers":{"content-type":"application/problem+json","content-length":"134","cache-control":"private, no-store","retry-after":null,"www-authenticate":null,"x-bdp-development":"non-attesting","x-bdp-development-limit":null,"bdp-scope-epoch":null,"bdp-authorization-view":null,"bdp-scope-position":null},"bodySha256":"6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1"},{"method":"HEAD","url":"https://example.test/events/links/missing?view=events","accept":"text/event-stream","status":404,"headers":{"content-type":"application/problem+json","content-length":"134","cache-control":"private, no-store","retry-after":null,"www-authenticate":null,"x-bdp-development":"non-attesting","x-bdp-development-limit":null,"bdp-scope-epoch":null,"bdp-authorization-view":null,"bdp-scope-position":null},"bodySha256":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},{"method":"GET","url":"https://example.test/events/beads/missing?view=events","accept":"text/event-stream","status":401,"headers":{"content-type":"application/problem+json","content-length":"136","cache-control":"private, no-store","retry-after":null,"www-authenticate":"Bearer realm=\"bdp-transaction-development\"","x-bdp-development":"non-attesting","x-bdp-development-limit":null,"bdp-scope-epoch":null,"bdp-authorization-view":null,"bdp-scope-position":null},"bodySha256":"9d3ea90197aca7525a1eb9d6c0f2845d5ad3656852c3d5ca1f4fd2df55b346c3"}],"closed":true,"startupCompleted":true,"directory":"/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/omit-context-control.tmp/bdp-events-http-UslqoJ","directoryAbsent":true,"failureCount":0,"responseDigest":"03b96b6ad3f7a6683086789a6bd5e1d1c7d21f1ffa81170fcfc094af9cb66fe4"}
+
+ × packages/server/src/transaction-events.test.ts > serves contextual missing Event responses for Bead and Link JSON and SSE GET and HEAD 310ms
+   → missing-event-context:Bead:JSON:GET: expected [ null, null, null ] to strictly equal [ …(3) ]
+   → missing-event-context:Bead:JSON:HEAD: expected [ null, null, null ] to strictly equal [ …(3) ]
+   → missing-event-context:Bead:SSE:GET: expected [ null, null, null ] to strictly equal [ …(3) ]
+   → missing-event-context:Bead:SSE:HEAD: expected [ null, null, null ] to strictly equal [ …(3) ]
+   → missing-event-context:Link:JSON:GET: expected [ null, null, null ] to strictly equal [ …(3) ]
+   → missing-event-context:Link:JSON:HEAD: expected [ null, null, null ] to strictly equal [ …(3) ]
+   → missing-event-context:Link:SSE:GET: expected [ null, null, null ] to strictly equal [ …(3) ]
+   → missing-event-context:Link:SSE:HEAD: expected [ null, null, null ] to strictly equal [ …(3) ]
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/server/src/transaction-events.test.ts > serves contextual missing Event responses for Bead and Link JSON and SSE GET and HEAD
+AssertionError: missing-event-context:Bead:JSON:GET: expected [ null, null, null ] to strictly equal [ …(3) ]
+
+- Expected
++ Received
+
+  [
+-   "19aff42f-4c21-4d6c-b278-36a3576a31c6",
+-   "development-all-visible",
+-   "pos-1",
++   null,
++   null,
++   null,
+  ]
+
+ ❯ packages/server/src/transaction-events.test.ts:1261:14
+    1259|               label,
+    1260|             )
+    1261|             .toStrictEqual(expected);
+       |              ^
+    1262|         }
+    1263|       }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  packages/server/src/transaction-events.test.ts > serves contextual missing Event responses for Bead and Link JSON and SSE GET and HEAD
+AssertionError: missing-event-context:Bead:JSON:HEAD: expected [ null, null, null ] to strictly equal [ …(3) ]
+
+- Expected
++ Received
+
+  [
+-   "19aff42f-4c21-4d6c-b278-36a3576a31c6",
+-   "development-all-visible",
+-   "pos-1",
++   null,
++   null,
++   null,
+  ]
+
+ ❯ packages/server/src/transaction-events.test.ts:1261:14
+    1259|               label,
+    1260|             )
+    1261|             .toStrictEqual(expected);
+       |              ^
+    1262|         }
+    1263|       }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  packages/server/src/transaction-events.test.ts > serves contextual missing Event responses for Bead and Link JSON and SSE GET and HEAD
+AssertionError: missing-event-context:Bead:SSE:GET: expected [ null, null, null ] to strictly equal [ …(3) ]
+
+- Expected
++ Received
+
+  [
+-   "19aff42f-4c21-4d6c-b278-36a3576a31c6",
+-   "development-all-visible",
+-   "pos-1",
++   null,
++   null,
++   null,
+  ]
+
+ ❯ packages/server/src/transaction-events.test.ts:1261:14
+    1259|               label,
+    1260|             )
+    1261|             .toStrictEqual(expected);
+       |              ^
+    1262|         }
+    1263|       }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  packages/server/src/transaction-events.test.ts > serves contextual missing Event responses for Bead and Link JSON and SSE GET and HEAD
+AssertionError: missing-event-context:Bead:SSE:HEAD: expected [ null, null, null ] to strictly equal [ …(3) ]
+
+- Expected
++ Received
+
+  [
+-   "19aff42f-4c21-4d6c-b278-36a3576a31c6",
+-   "development-all-visible",
+-   "pos-1",
++   null,
++   null,
++   null,
+  ]
+
+ ❯ packages/server/src/transaction-events.test.ts:1261:14
+    1259|               label,
+    1260|             )
+    1261|             .toStrictEqual(expected);
+       |              ^
+    1262|         }
+    1263|       }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  packages/server/src/transaction-events.test.ts > serves contextual missing Event responses for Bead and Link JSON and SSE GET and HEAD
+AssertionError: missing-event-context:Link:JSON:GET: expected [ null, null, null ] to strictly equal [ …(3) ]
+
+- Expected
++ Received
+
+  [
+-   "19aff42f-4c21-4d6c-b278-36a3576a31c6",
+-   "development-all-visible",
+-   "pos-1",
++   null,
++   null,
++   null,
+  ]
+
+ ❯ packages/server/src/transaction-events.test.ts:1261:14
+    1259|               label,
+    1260|             )
+    1261|             .toStrictEqual(expected);
+       |              ^
+    1262|         }
+    1263|       }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  packages/server/src/transaction-events.test.ts > serves contextual missing Event responses for Bead and Link JSON and SSE GET and HEAD
+AssertionError: missing-event-context:Link:JSON:HEAD: expected [ null, null, null ] to strictly equal [ …(3) ]
+
+- Expected
++ Received
+
+  [
+-   "19aff42f-4c21-4d6c-b278-36a3576a31c6",
+-   "development-all-visible",
+-   "pos-1",
++   null,
++   null,
++   null,
+  ]
+
+ ❯ packages/server/src/transaction-events.test.ts:1261:14
+    1259|               label,
+    1260|             )
+    1261|             .toStrictEqual(expected);
+       |              ^
+    1262|         }
+    1263|       }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  packages/server/src/transaction-events.test.ts > serves contextual missing Event responses for Bead and Link JSON and SSE GET and HEAD
+AssertionError: missing-event-context:Link:SSE:GET: expected [ null, null, null ] to strictly equal [ …(3) ]
+
+- Expected
++ Received
+
+  [
+-   "19aff42f-4c21-4d6c-b278-36a3576a31c6",
+-   "development-all-visible",
+-   "pos-1",
++   null,
++   null,
++   null,
+  ]
+
+ ❯ packages/server/src/transaction-events.test.ts:1261:14
+    1259|               label,
+    1260|             )
+    1261|             .toStrictEqual(expected);
+       |              ^
+    1262|         }
+    1263|       }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  packages/server/src/transaction-events.test.ts > serves contextual missing Event responses for Bead and Link JSON and SSE GET and HEAD
+AssertionError: missing-event-context:Link:SSE:HEAD: expected [ null, null, null ] to strictly equal [ …(3) ]
+
+- Expected
++ Received
+
+  [
+-   "19aff42f-4c21-4d6c-b278-36a3576a31c6",
+-   "development-all-visible",
+-   "pos-1",
++   null,
++   null,
++   null,
+  ]
+
+ ❯ packages/server/src/transaction-events.test.ts:1261:14
+    1259|               label,
+    1260|             )
+    1261|             .toStrictEqual(expected);
+       |              ^
+    1262|         }
+    1263|       }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 32 skipped (33)
+   Start at  04:07:15
+   Duration  612ms (transform 321ms, setup 16ms, import 228ms, tests 311ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/omit-context-control.json
+Traceback (most recent call last):
+  File "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py", line 5, in <module>
+    subprocess.run(sys.argv[1:],check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['/Users/dbox/.nvm/versions/node/v24.16.0/bin/node', '/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs', 'exec', 'vitest', 'run', 'packages/server/src/transaction-events.test.ts', '--maxWorkers=1', '--reporter=verbose', '--reporter=json', '--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/omit-context-control.json', '-t', '^(?:serves\\ contextual\\ missing\\ Event\\ responses\\ for\\ Bead\\ and\\ Link\\ JSON\\ and\\ SSE\\ GET\\ and\\ HEAD)$']' returned non-zero exit status 1.

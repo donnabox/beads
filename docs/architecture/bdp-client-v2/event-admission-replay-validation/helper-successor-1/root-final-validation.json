@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-18T00:22:17.826859+00:00",
+  "accepted": true,
+  "sourceBinding": "07c407cf0a676e2f53d4e4b2ce7948d9df8a4cc8a4f1ad0bc6e4d9e89f370218",
+  "nativeAudit": "aa393f7eee4762eb7e34fc1966782a272d9d8acc00738859db0740e775cedadc",
+  "nativeEvidence": "a66b10f08f0b8b8b5436a893ed595704c0d6d604d345a0a7f3e832bb936a9db4",
+  "freshMain": 19,
+  "freshRequired": 4,
+  "reusedOnly": "Original actual bootstrap2",
+  "commitFiles": [
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "packages/server/src/transaction-events.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-store.ts"
+  ],
+  "held": [
+    "main",
+    "release",
+    "public-profile-qualification"
+  ],
+  "originalFailuresPreserved": true
+}

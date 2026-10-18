@@ -1,0 +1,46 @@
+{
+  "kind": "prospective source-derived work, not observed evidence",
+  "source": {
+    "cases": 17,
+    "stores": 17,
+    "networkRequests": 28,
+    "inProcessHandlerRequests": 3,
+    "readFileCases": 16,
+    "readFileGuardedEntries": 64,
+    "readFileWrites": 45,
+    "readFileWaits": 11,
+    "readFileClockCalls": 51,
+    "policyReplacements": 1,
+    "postCloseRawInspectProbes": 2,
+    "newRecords": 10
+  },
+  "installed": {
+    "historical": {
+      "callbacks": 1,
+      "requests": 36,
+      "children": 2,
+      "stores": 1,
+      "workMs": 90000,
+      "callbackMs": 120000
+    },
+    "new": {
+      "callbacks": 1,
+      "requests": 6,
+      "children": 1,
+      "stores": 1,
+      "workMs": 45000,
+      "cleanupTotalMs": 10000,
+      "callbackMs": 60000,
+      "requestMs": 5000
+    }
+  },
+  "totalNetworkRequests": 70,
+  "totalStores": 19,
+  "boundaries": [
+    "No SQL/count qualification claim",
+    "Constructor/configuration work excluded from measured read counters",
+    "Historical counts derived from source and existing assertions; new instrumentation observes actual calls",
+    "Fresh build before HTTP/installed collection",
+    "No run or authoring release"
+  ]
+}

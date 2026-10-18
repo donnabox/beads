@@ -1,0 +1,50 @@
+{
+  "name": "format-check",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/@biomejs/biome/bin/biome",
+    "format",
+    "apps/bdptest/src/read-update-matrix.test.ts"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+  "started": "2026-10-16T21:37:22.191608+00:00",
+  "head": "8ee4d86cadc9a1c79a9656cc8b106f34712b3ade",
+  "workspaceDirty": true,
+  "sourceSha256": {
+    "apps/bdptest/src/read-update-matrix.test.ts": "37558e78d79d665363528fb2bf4f81de4f4334cd8438a099030cac7a68e0637b"
+  },
+  "sourceDiffSha256": "ce75bdd54327c03dc80cac29c934f5b758a6fb3481e5f94a262d7b84275fba96",
+  "rootAcceptanceSha256": "6cfb89a682e48e51871699323dc7442159f0aeb8f4747f873e137d892622356c",
+  "preparationSha256": {
+    "source-binding.json": "7837f33db0171dc1ded381a709ef7a0096e94413ba9d2bd0abc4e461e6a22063",
+    "input-binding.json": "876e2714bef09f3193dda8c4859e0f74fe384f2de7760dc5b61190156734cff1",
+    "tool-binding.json": "8c24f6ce5924ec852d44e0679554828cbd67ad3673d76902f26b3f62a91ce520",
+    "commands.json": "b330a646399c99d6627a0c39322cd8e3074fa5bb0091677bfeb138bdef01c1af",
+    "gate.py": "7f12263f8b8b766fd59ff1440bffc17f61623e79406444d7e5d77a22f396d4ca",
+    "plan.md": "8418dfc3148e474b8dcdd64a127a15bedfb8785e3675905444854155f520a169",
+    "supervise.py": "36cf3f1473b206c932f4f5fbaa1e6e99d10c943f61022aea5c05bec37608499a",
+    "build-binding.json": "08ca22c731fdbbdb493500ce1e9a84f502ff13ef6ceb164a8bf9f4043b498dce",
+    "supervisor-adaptation.patch": "7bd3653f13947d61c5e6ae340f8c1216cd0338b56ee575a8ca850033467f9ce9"
+  },
+  "bdpOverrides": {},
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/@biomejs/biome/bin/biome",
+    "format",
+    "apps/bdptest/src/read-update-matrix.test.ts"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Frozen independently reviewed diagnostic test; emitted production verified unchanged; not a root-cause fix or profile qualification",
+  "diagnosticOnly": true,
+  "nativeCodeReviewed": true,
+  "externalReviewPending": false,
+  "councilAccepted": true,
+  "plannedWorkload": {
+    "cases": 0,
+    "productChildren": 0,
+    "HTTP": 0
+  },
+  "derivativeBinding": null
+}

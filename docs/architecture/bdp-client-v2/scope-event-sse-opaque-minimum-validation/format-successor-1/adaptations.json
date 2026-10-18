@@ -1,0 +1,46 @@
+{
+  "state": "CLOSED exact formatting successor",
+  "predecessor": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-validation/implementation",
+  "sourceSuccessor": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/scope-event-sse-opaque-minimum-author/format-successor-1",
+  "sourceChanges": {
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts": {
+      "before": "67d6d2c7f07a233c97517609d03b7d2f1d63e49c9526b351c252b93682b159fe",
+      "after": "0d2c2ddf069a57e9a4533894da03589beb1645d7608537dac45c2995ee7c0a23"
+    },
+    "packages/server/src/transaction-event-sse.test.ts": {
+      "before": "c5f51b0b8b645332f6b59b15e4af4eb1a799aa3f2e424f83d4f1ae00e0797d26",
+      "after": "0bd45d46a5401c23e98d110c5f2dc0a6159965e8df09dc2c19105c7b282c8f0f"
+    }
+  },
+  "reusedPrerequisites": [
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "freshStages": 19,
+  "logicalStages": 21,
+  "unchangedHelpers": [
+    "run.py",
+    "audit.py",
+    "packages.py"
+  ],
+  "unchangedSelection": {
+    "sourceCallbacks": 8,
+    "sourceReports": 5,
+    "newReports": 4,
+    "historicalReports": 1,
+    "sourcePlannedHttp": 108,
+    "installedRequests": [
+      5,
+      6
+    ]
+  },
+  "dependencyInputs": 17,
+  "tools": 11,
+  "gatePrecedent": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/changefeed-opaque-minimum-validation/format-successor-1/gate.py",
+    "sha256": "72074686ca1829b5d62a511cbed642e782c8b6b71a3607afc7c85c6f36e93459"
+  },
+  "originalSourceIdentity": "db9e4f028ccab8618e0bdb4c4b8c87033571b138d171986d9a030e77767c8bfb",
+  "successorSourceIdentity": "41d71ce7bc02fc4ee8e729e443490d94ee1b0c69469dfc7ddfea24469a5ffaad",
+  "executionReleased": false
+}

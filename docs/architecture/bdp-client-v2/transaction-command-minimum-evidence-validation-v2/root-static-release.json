@@ -1,0 +1,30 @@
+{
+  "at": "2026-10-15T07:26:21.817331+00:00",
+  "acceptedForStaticValidation": true,
+  "source": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/raw-header-repair/source-binding.json",
+    "sha256": "612cbb471df504b3a0440e11f15a29911cf59aeeae89247836f04d5b19dc580b"
+  },
+  "preparation": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v2/preparation-hashes.json",
+    "sha256": "23ec04759135a3cd0980e8f80148774d1f7d94945869fe608e1e57aa8f539e87"
+  },
+  "native": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/raw-header-repair/native-code-review.md",
+    "sha256": "d55887ff71f098f918251ea2ad04ec183421e154248299707f1f7d80c7d9f594"
+  },
+  "claudePending": true,
+  "approvedCommandIds": [
+    "offline-setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "static-cases",
+    "build-inventory"
+  ],
+  "limits": "30 exact callbacks; one loopback exchange, no product children. Installed package stages remain closed. Stop on failure; preserve attempts; no automatic retry.",
+  "historicalGrowth": "Original five files unchanged; prior growth measurements retain original attribution and unchanged guards."
+}

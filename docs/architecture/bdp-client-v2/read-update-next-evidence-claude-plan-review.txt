@@ -1,0 +1,99 @@
+Verification complete. Plan hash `e2236d26…0dcfb` and frozen `31aab4db0f61e3d8b1139a7b78ff1ff10f890836` (clean tree) both confirmed.
+
+## What held up
+
+Every inventory number is exact: 129 required IDs, 43 authored scenarios, 26 `wholeContract:true`, 17 partial, 86 omitted, 103 uncovered, matrix 2,038,702 bytes (4 MiB bound at `cumulative-artifact.test.ts:304`), `claimEligible:false`. Post-change arithmetic (45/19+26/103) is consistent, and `uncoveredIds` is computed from `wholeContract` only (`read-update-matrix.test.ts:750-752`), so the `toHaveLength(103)` pin at `:881` survives.
+
+Both target IDs exist as `omitted`/`wholeContract:false` rows. All four source citations are accurate (`development-authority.ts:307-328` — `mutate` and `sequence` both call `lifecycle.submit(carrier, principal, …)`; `development-runtime.ts:451-467`; `sequence-executor.ts:176-189`; `sequence-executor.test.ts:601` genuinely exercises sequence→singleton and `made`→`renamed`).
+
+The normative basis is real and stronger than the plan claims. `bdp.md:3197-3200` is verbatim the shared-namespace clause; `:2109-2111` adds "one idempotency namespace, one semantic-identity rule, and one retention rule"; `:3210` excludes `idempotencyKey` and `name` from semantic identity. The implementation matches: keys are indexed by `(principal, key)` only (`recovery-store.ts:98`), and `read-update-values.ts:347-353` strips `operation`/`idempotencyKey`/`name` from member `input`, so `identityJson` (`member-identity.ts:404-407`) is byte-identical across carriers. Cross-carrier replay and renames are normatively required, not accidental.
+
+Feasibility claims that check out: sequence bodies are authored literals today including `type: "https://reference.invalid/acme/types/task"` and explicit `id` (`sequence.local-bindings/fresh-binding`), so no recursive body-binding is needed; `bodyBindings.bead` is already used 60× from captured IDs; `sequenceOperations:32` / `requestBodyBytes:65536` leave ample room for 3-4 members; `mutationResult` is `unevaluatedProperties:false`, so the forbidden-singleton-envelope control does fail by schema as the plan predicts; `harnessInstalled_*` wrappers already defer to normative `$defs`. Node 24.16.0 / pnpm 11.20.0, the 5s request timeout, and the 90s/120s budgets are all real.
+
+Most importantly, the plan's single most load-bearing honesty claim is correct: row B's second catalog requirement (`#sequence-request-envelope`, spec `:2874-2879`) is explicitly premised on **client disconnection**, so declaring the lost-response obligation unestablished by a deliberate retry is exactly right, and `wholeContract:false` is mandatory.
+
+---
+
+## Findings
+
+### 1. HIGH — The plan's own constraints make the independent-GET oracle and its negative control mutually unsatisfiable
+
+**Location:** plan lines 53, 75, 78, 87 · `packages/conformance/src/runner.ts:801-817` · `apps/bdptest/src/read-update-matrix.test.ts:375-376` · `apps/bdptest/test-support/read-update-exact-client.ts:51-56`
+
+`runner.ts:801-817` dispatches `family:"http"` to `runRequest(..., execute, ...)` and only non-http families reach `actionExecutor`. In the app test, `actionExecutor` (`:375-376`) is the *only* place the counterfactual layer wraps anything — it wraps `executeClient`. So every GET authored as `family:http` is structurally unreachable by the response-corruption layer.
+
+Plan line 53 prefers exactly that form ("fixed `family:http` actions with `target:{binding:"beads",path:"..."}` for authored IDs") and in the same sentence forbids the alternative ("do not add fixture bindings solely for these paths"), while line 78 forbids editing the raw executor. The three available mechanisms each violate one constraint:
+
+- `family:http` + `{binding:"beads", path:"…"}` — works, but control line 75 ("corrupt one independent final GET to the replay's old postimage") cannot be applied, and it mutates the route set.
+- `family:client` + new fixture binding — the only counterfactual-reachable form (the shipped `w2ReadControl` dispatches on `targetBinding === "w2.beads.w2-independent"` / `"w2.beads.w2-count-0"`, both fixture bindings), but forbidden by plan line 53.
+- `family:client` + captured ID — reachable and route-free, but **cannot express a provably-absent Bead**: `targetBinding` must name an existing binding (`read-update-exact-client.ts:51-56`), and a never-created F has nothing to capture.
+
+Row A step 5 ("Prove absence first") and step 6 therefore have no satisfying form at all. The repo's established idiom for this is a dedicated fixture binding — `http.absent → beads/http-never-created`, `w1.missing-link`, and 13 more `w2.beads.w2-{missing,unknown-*}` entries — used precisely by `family:client` 404 reads.
+
+**Impact:** Row A steps 5-6 are unauthorable as written; the line 75 control and row B step 4's GET assertions are undiscriminated. An author following line 53 literally ships GET oracles with no sensitivity control, which is the exact failure mode the controls section exists to prevent.
+
+**Fix:** Drop the "do not add fixture bindings solely for these paths" prohibition. Declare the handful of bindings for the authored A/B/F paths (following the `w2.beads.*` naming), author every independent GET as `family:client` so it lands in the counterfactual layer, and add `packages/conformance/fixtures/read-update-reference-v1.json` as a fourth expected-edited file. The fixture digest is computed dynamically everywhere (no literal pin), so this is mechanically safe.
+
+### 2. HIGH — Row B step 3's headline assertion is not expressible in the assertion vocabulary
+
+**Location:** plan lines 59, 62 · `packages/conformance/src/runner.ts:2111-2141` (esp. `:2113-2114`)
+
+`json-array-tuples` throws `"array tuple projection was absent"` if **any** projected pointer is missing from **any** array item. Row B deliberately mixes named and unnamed members and success and failure members, so neither `/operationName` (optional — `sequenceMemberResult.required` is `["operationIndex"]` only) nor `/outcome` vs `/code` (mutually exclusive) can be projected across the results array. "Assert **the entire ordered index/name/outcome-or-code array**" as one assertion cannot be written.
+
+Whole-array `equalsBinding` — the mechanism that makes the shipped `retained-results` control catch an injected `detail` — is also unavailable here, because row B's positions, order, and length all lawfully differ from the original. The shipped precedent confirms the shape of the workaround: `retained-bindings/indices` projects `/operationIndex` *alone*, and `sequence.member-problem-shape` uses per-member `json-pointer` assertions (`name-0`…`name-4`, `index-1`, `index-5`) for exactly this reason.
+
+**Impact:** The plan's assertion design for its primary novel observation is unimplementable without a runner change, which plan line 87 forbids. It also leaves plan line 62 ("compare every actual non-positional field … do not silently narrow equality to `code` alone") with no available mechanism for the retained *failure* member, whose positional and non-positional fields are siblings — leaving field enumeration (`code`/`status`/`type`/`retry` + `detail exists:false` + `outcome exists:false`) as the only route, which is weaker than deep equality.
+
+**Fix:** Restate step 3 as the decomposition that actually exists: one `json-array-tuples` with `ordered:true` projecting `/operationIndex` only (this also pins exact length, `runner.ts:2163-2165`), plus per-member `json-pointer` assertions for each `operationName` presence/absence, each `outcome`-or-`code`, each retained `resource` via `equalsBinding` against the step-1 capture, and an explicit `/detail exists:false` on the failure member. State that `detail` is accounted for by asserted absence — the installed authority never emits it (`member-executor.ts:116-131`), though `readUpdateProblem` permits it.
+
+### 3. MEDIUM — The evidence-gap statement is factually wrong; installed cross-carrier evidence already ships
+
+**Location:** plan line 14 · matrix `read-update.sequence.local-bindings` actions `retained-bindings`, `dependent-key-conflict`, `conflict-unchanged`
+
+The plan asserts "Existing installed evidence only exercises same-carrier singleton replay and some retained failed local bindings." It does not. Key `blocked-dependent` is presented as a **sequence member** in `retained-bindings` (retained `binding-unavailable` failure) and then re-presented as a **singleton** in `dependent-key-conflict` with a different operation record, asserting HTTP `409` and `code: "idempotency-conflict"`, with `conflict-unchanged` proving the live record was untouched. That is cross-carrier outcome 2 (`bdp.md:3289-3291`) over installed HTTP, with negative controls already attached.
+
+**Impact:** Row A steps 3 and 4's changed-input-conflict halves substantially duplicate shipped evidence, so the slice's actual novelty is narrower than claimed: cross-carrier *replay* (outcome 1), cross-carrier retained-*failure* replay, and positional reprojection. Worse, the plan's own anti-credit discipline (line 40) is violated in the opposite direction — the new coverage `reason` prose, written from line 14, would overstate the delta. The existing omitted `reason` ("cross-row observations do not award this required ID whole-contract credit") is in fact the accurate framing and the plan contradicts it.
+
+**Fix:** Rewrite line 14 to name `sequence.local-bindings/dependent-key-conflict` as existing installed cross-carrier conflict evidence, and restate the gap as cross-carrier retained-success replay, cross-carrier retained-failure replay, and positional reprojection. Carry that wording into the new coverage `reason` fields.
+
+### 4. MEDIUM — Mis-pinned normative citation points at a clause the slice explicitly excludes
+
+**Location:** plan line 36 · `docs/specs/bdp.md:3304-3305` vs `:3307-3311`
+
+The plan cites "retained postimage `:3307–3310`". The retained-postimage clause ("a retained `resource` record is the postimage at the time of the mutation, not a fresh read") is at `:3304-3305`. Lines `:3307-3311` are the Authorization-View re-authorization clause ("before returning a retained `created` or `updated` result the authority re-authorizes disclosure of the retained record") — which plan line 32 lists as out of scope ("changed authorization") and which belongs to the separate omitted rows `idempotency.authorization-view` and `idempotency.forbidden-retained`.
+
+Separately, "retained equality/current positions `:3285–3289`" spans outcome 1 (`:3286-3288`) plus the first line of outcome 2; and line 30's `#operation-directory-and-singleton-targets` "begins at `:2064`" is the section start — the clause the catalog actually selects is at `:2109-2111`.
+
+**Impact:** A reviewer following the row B citation lands on a clause this slice deliberately does not witness, which reads as scope creep into authorization and makes the partial-limitation list self-inconsistent.
+
+**Fix:** Repoint to `:3304-3305` for the retained postimage, `:3286-3288` for retained equality and current positions, and `:2109-2111` for carrier equivalence. Add an explicit line stating `:3307-3311` is *not* exercised.
+
+### 5. MEDIUM — Two `exactConfigurationDigest` pins must move together, not one
+
+**Location:** plan line 86 · `apps/bdptest/src/read-update-matrix.test.ts:878-880` and `:1195-1197`
+
+Both pin `bdffd6f957401222f6e5ffc928c7769d23976e8a8a8d5eb16dfa1bb7ce836a07`; those are the only two occurrences in the repo. `exactConfigurationDigest` hashes `routes` (`runner.ts:1362-1379`), and `readRoutes`/`clientReadRoutes` are derived from `bundle.manifest.scenarios` — the full matrix, independent of `scenarioSelection` (which is why the single-scenario test at `:1191` yields the same digest as the 43-scenario run). Any new `family:http` GET, or any `family:client` GET on a new fixture binding, changes both.
+
+**Impact:** Plan line 86 says "pin" singular. Updating only `:879` leaves `:1196` red — and that test ("does not admit an unused fixture binding as a fixed client GET route") is precisely the guard most likely to be misread as unrelated to the new rows.
+
+**Fix:** Say "both `exactConfigurationDigest` pins (`:879` and `:1196`)" and require them recomputed to the same value from the actual mode. Note that captured-ID client GETs add no route and so cost nothing here — which is a second reason to prefer them (finding 1).
+
+### 6. LOW — The A/B labelling inverts required catalog insertion order
+
+**Location:** plan lines 9-12, 84, and section order at 28/34/42/55 · `packages/conformance/src/cumulative-artifact.test.ts:114-116`
+
+In `selection.required`, `read-update.sequence.idempotent-retry` is index 96 and `read-update.idempotency.cross-carrier` is index 107. The plan numbers cross-carrier first and calls it "row A", then calls idempotent-retry "row B", and presents them in that order throughout — while line 84 correctly requires "canonical catalog order". `cumulative-artifact.test.ts:114-116` asserts the matrix scenario order equals the catalog-filtered order.
+
+**Impact:** An author inserting in the plan's presentation order fails that assertion; the A/B labels mislead for the whole document.
+
+**Fix:** State the insertion positions explicitly — `sequence.idempotent-retry` after `sequence.carrier-rejection`, `idempotency.cross-carrier` after `idempotency.principal-isolation` — and either renumber the sections or note that A/B are labels, not order.
+
+### 7. LOW — Two more authority startups against a budget already raised from 30s, with no stated fallback
+
+**Location:** plan line 93 · `apps/bdptest/src/read-update-matrix.test.ts:766-769`, `:887`
+
+The comment reads "One aggregate job starts 41 isolated authorities; Linux CI exceeded 30s", and the cooperative abort was set to 90s with a 120s outer timeout. All 43 scenarios declare `setup.requires`, and the new rows need fresh per-row disposable stores, so this adds ~2 child-process authority startups to a job whose budget was already enlarged 3× for startup cost.
+
+**Impact:** The plan makes passing within 90s/120s a done-when gate while forbidding "new budget mechanism", so a CI overrun has no sanctioned resolution — the author would be stuck between an unauthorized budget edit and silently dropping observations.
+
+**Fix:** Record the measured wall-clock of the current 43-scenario run as a baseline before authoring, and state the fallback explicitly: if the 90s cooperative abort is approached, stop and report rather than widen the budget or thin the rows.

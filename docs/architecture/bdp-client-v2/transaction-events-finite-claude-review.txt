@@ -1,0 +1,75 @@
+## Review — `8569b85` (finite Event serving) vs `0762018` (materialization)
+
+Read: `report.md`, `docs/specs/bdp.md` (§Events and Event Sources 5350–5595, §Transactional Resource Event view 5623, §Events after Resource deletion 5629, §Event replay 6130–6287, §Conditional reads and HEAD 1978–2006, §Transactional conditional reads 5800–5813, §Alias resolution 1422), the full diff, and the surrounding store/service/HTTP/runtime code. No files written, nothing built or run.
+
+---
+
+### 1. Minimum-position barrier is evaluated *after* the whole scan → client-controlled CPU amplification
+**Severity:** Medium (resource bound / availability)
+**Location:** `packages/server/src/transaction-store.ts:1275-1342`, with `transaction-consistency.ts:106-119`
+
+`readEvents` captures `context`/`head` at :1275-1276, then performs the complete scan — group row reads, `JSON.parse` of every group body from the cursor to head, projection, and per-candidate page serialization — and only checks the barrier at :1342 (`checkTransactionMinimum`). `waitForTransactionMinimum` retries the *entire* attempt every ≤5 ms until the budget (1000 ms by default in `startTransactionRuntime`) expires.
+
+**Impact:** one authenticated `GET {scope}events/` carrying `BDP-Minimum-Scope-Position: pos-<future>` re-executes the full retained-log scan over and over until the budget is consumed — i.e. it converts a barrier wait that should cost one metadata read into up to a full budget of synchronous CPU, each attempt re-parsing groups the gate admits at up to 253 493 248 bytes each (measured achievable: 45 MB, per the materialization doc). Each attempt runs inside `enter()` with the event loop blocked, so concurrent commits and reads stall. The report discloses that total log length and synchronous CPU are unbounded, but it does not disclose the ~budget-wide *multiplier* on an otherwise-cheap refusal path.
+
+**Fix:** `context` cannot change inside the synchronous entry, so the check is purely positional and can run immediately after :1276 with identical semantics — move `if (minimum !== undefined) checkTransactionMinimum(minimum, context);` there (keep the trailing call if you want a belt-and-braces assertion).
+
+Secondary ordering consequence from the same placement: the never-member 400 (:1310-1315) and `if (!cursorMatched) throw` (:1341) preempt the barrier, so a cursor whose position is ahead of the observed head answers `invalid-parameter` instead of waiting/`catch-up-timeout`. That is the exact case the barrier exists for (bdp.md:5762 "route, wait, or fail explicitly"). It is unreachable in this slice — the group insert and the position bump are one atomic commit (`transaction-store.ts:1080-1083`, the only writer of `metadata.position`), and a restore that dropped groups must rotate the epoch (bdp.md:3665-3667) — but it becomes live the moment a lagging reader or replica exists.
+
+---
+
+### 2. Event-route precedence breaks the required uniform 404 for query-bearing alias URLs
+**Severity:** Medium (normative regression on a pre-existing route)
+**Location:** `packages/server/src/transaction-http.ts:318-332`; `transaction-events.ts:134-156`
+
+The Event branch is placed before `readRoute`, and `transactionEventRequest` *throws* `TransactionEventParameterError` for any in-scope URL carrying `view=events` whose local path is not `beads/…`/`links/…` (:145-148). So `GET {scope}alias/{path}?view=events` now maps to 400 `invalid-parameter` (`transaction-http.ts:416-417`). Before this commit it reached `readRoute`, where `classifyAliasPath` returns `notFound()` for *any* query-bearing alias URL (`read-request.ts:943`) and the alias handler is dispatched before query parsing (`read-http-routing.ts:29-30`) → 404 `resource-not-found`.
+
+bdp.md:1432-1435 is explicit: "An unknown alias, **an alias URL carrying a query or fragment**, and any alias URL at an authority that does not advertise `aliases` return the same `404` `resource-not-found` … aliases are not an enumeration oracle."
+
+**Impact:** a conformant route changed status class. It is not an actual disclosure (the 400 is existence-independent), but it defeats the stated uniformity and is invisible to the suite: `transaction-http.test.ts:562` exercises only a query-free alias, and `:1012` only `alias/missing` with minimum headers, so nothing covers `alias/…?view=events`.
+
+**Fix:** gate the branch on `classifyAliasPath(url, scope) === undefined` (already imported at `transaction-http.ts:31`), or have `transactionEventRequest` return `undefined` rather than throwing when the local root is neither `beads/` nor `links/`, letting the Read route produce its established diagnosis.
+
+Same precedence also turns `{scope}receipts/{token}?view=events` from the receipts route's uniform 404 into 400. Harmless (existence-independent) but it should be a recorded decision, not a side effect — the receipt row at bdp.md:4602 is built around non-disclosure.
+
+---
+
+### 3. Page-byte measurement is O(n²) in events per page
+**Severity:** Low (resource bound)
+**Location:** `packages/server/src/transaction-store.ts:1318-1336`
+
+For every candidate event the loop builds `[...events, event]` and re-serializes the **entire** candidate page (`json({source, events: candidate, next: …})`). For a page of *n* events the serializer processes ≈ n/2 × page bytes.
+
+**Impact:** at the default item ceiling of 32 and a 4 MiB page that is ~68 MiB of transient string work per page request; `transactionReceiptMaximum` (:167-171) accepts any positive safe integer with no upper bound, so a larger configured ceiling scales quadratically. Multiplied by finding 1 this is the dominant per-request cost.
+
+**Fix:** keep a running `used` total — `used += 1 + Buffer.byteLength(json(event))` — and compare `base + used + Buffer.byteLength(json(eventContinuation(source.url, event.id)))` against the budget. The reservation argument is unaffected: it only needs the candidate's continuation length, which is computable directly. (The reservation itself is sound — I verified the emitted page is always ≤ the last measured candidate: the dropped event costs ≥ ~200 bytes while `len(last.id) − len(candidate.id)` is at most +2.)
+
+---
+
+### Missing discriminating tests
+
+- **HTTP mapping of the documented conventions is unexercised.** All malformed/never-member cursor assertions are store-level (`transaction-events.test.ts:240-251`); `transaction-http.ts:416-417` (`→ 400 invalid-parameter`) and `:418-419` (`TransactionEventProjectionGap → developmentGap("incident-link-metadata")`) have no HTTP test. The report states these as reference conventions; the wire behaviour is unverified.
+- **HEAD length coherence.** `transaction-events.test.ts:453-455` asserts only an empty HEAD body. Nothing asserts `content-length` on HEAD equals the GET body length, which is the actual invariant in `read-http.ts:42-46` and the requirement at bdp.md:2002-2006 ("HEAD retains the corresponding GET … decision", explicitly extended to Scope `events/` and `view=events` at 5809-5811).
+- **No fault injection for any retained-group integrity guard.** `"missing retained Event group"` (:1290, :1296), `"retained Event group context mismatch"`, `"invalid retained Event framing"`, `"inconsistent retained Link endpoints"`, `"incident Link update lacks same-group endpoints"`, `"finite Event page cannot hold first retained Event"` (:1332) are all untested. The byte gate is the only one with a counterfactual. The report's "A corrupt missing group is refused" is therefore a code-reading claim, not observed. Worth pinning in the same test: the guard's status is asymmetric — a missing group is 500 without a cursor but 400 `invalid-parameter` with one (:1312 `p !== start?.position`), i.e. owner corruption presented as a client error.
+- **No test that the barrier precedes the scan** (the regression test for finding 1): with a behind minimum, assert zero `SELECT body FROM groups` executions using the existing `DatabaseSync.prototype.prepare` spy pattern from `transaction-events.test.ts:474-492`.
+- **No route-precedence tests** for `alias/{path}?view=events`, `receipts/{token}?view=events`, or the non-canonical-subject guard at `transaction-events.ts:151` (e.g. `beads/%61?view=events`, which passes `validateCanonicalIdSegment` and lands on a distinct, 404-ing source identity).
+- **No zero-contribution scan test.** Pagination is covered only at `receiptMaximumItems` 2/32 with ≤38 events in ≤14 groups. Nothing resumes a Resource-source cursor across groups that project no events for that subject — the shape that makes the disclosed full-log scan (and the empty-page-with-`next: null` result) observable, and the shape finding 1 amplifies.
+- **Group gate is only tested in the refusal direction** with an overridden length. Nothing ties the write-side worst case to the read-side gate; the invariant "every committed group ≤ `TRANSACTION_EVENT_GROUP_BYTES`" is never enforced at write time. Not a defect — bdp.md:5663-5667 forbids rejecting a valid transaction because a view's projection is too large, so the read-side 500 is the honest in-slice behaviour — but the only recovery is operator action, and the 253 MB gate sits ~5.6× above the 45 059 033-byte largest measured group.
+
+---
+
+### Scoped claims I checked and found sound
+
+- **Projection membership matches the spec.** Excluding `linked`/`unlinked` from a Link's own source (`transaction-events.ts:234`) is exactly bdp.md:5547 ("A Link-scoped Event Source reports `created`, `updated`, and `deleted` facts about that Link"); including them in the Scope source is bdp.md:6225, and 6216-6218's "only in an in-Scope endpoint Bead's Event Source" constrains Resource-scoped sources, not the Scope feed. Self-Link double incidence (5563-5565) is projected and tested. The Link's own `created`/`deleted` facts are correctly absent from an endpoint Bead's view.
+- **Same-group endpoint witnesses are keyspace-correct.** `changes.set(record.id, …)` and `scopeEvent(subject.id, …)` both use canonical URLs (`transaction-batch.ts:664`, `:594`), so `linkIds.has(event.subject)` and `endpoints.get(event.subject)` resolve; tombstoned links are remembered through the `unlinked`/`created` pass (:211-220) since `"source" in change.resource` is false for tombstones. Update-then-delete and create-update-delete both work without live Link reads.
+- **Group contiguity is a real invariant.** `metadata.position` is bumped only at `transaction-store.ts:1081`, inside the same `atomic` as the group insert at :1080, gated on `effective`. No `DELETE FROM groups` exists anywhere. So `at = p + 1` is justified, and no-op/failed transactions cannot create a positional hole.
+- **Length gate genuinely precedes body materialization** — two statements (`rowAt` on `length(CAST(body AS BLOB))`, then `bodyAt`), with `PRAGMA locking_mode=EXCLUSIVE` (:461) plus single-threaded synchronous execution inside `enter()` removing any TOCTOU between them. `CAST(... AS BLOB)` is the right choice (bytes, not characters).
+- **First-page feasibility holds.** 5R + 7Q + A + 1024 = 1 778 688 < 4 194 304, and it is a true upper bound: `resource-evaluator.ts:1055` caps `bodyJson` at R, so `subject` + `subjectType` share one R, `data` ≤ R, and the three source-URL copies ≤ 3(R+12) — ≈ 5R + 536 worst case. The Scope source URL is separately gated at ≤ S (`transaction-store.ts:192`).
+- **Page budget is on real wire bytes.** The store measures with `transactionStorageText` → `stringifyJsonValue`, which `deliver` (`transaction-runtime.ts:84`) and the HEAD path (`read-http.ts:44`) use verbatim, and which is documented as byte-identical to `JSON.stringify` escaping and enumeration order.
+- **`next` never lies.** It is non-null only when a candidate was rejected, i.e. only when an unreturned event exists — matching bdp.md:6186.
+- **ETag/minimum/HEAD coherence.** No validator is emitted (permitted by bdp.md:1991), and `conditionalReadStatus` implements 1992-1994 exactly (`If-None-Match: *` → 304, specific `If-Match` → 412, `If-Match: *` → 200). The barrier is satisfied inside the store before any conditional shortcut, satisfying 5805-5807; `bdp-scope-epoch/view/position` survive on 304/412/406 because only `content-type`/`etag`/`content-length` are deleted. Tests pin all of this.
+- **Restart and receipt-expiry independence.** Event IDs are epoch/view-derived and both are persisted constants; `sweep` touches only `receipts`. Covered by `transaction-events.test.ts:175-177` and `:293-316`.
+- **Cursor forgeability is correctly non-load-bearing.** `hash` is unkeyed and epoch/view are echoed in headers, so a cursor is forgeable — but `:1313` re-derives the ID from the actual projection, so a forged cursor is accepted only for an event that genuinely exists in that source. Consistent with bdp.md:3705 ("the token is not a credential") and with the code's own comment. The 256-byte parse cap cannot reject a legitimate ID (max length ≈ 159).
+- **`request.signal` is a never-aborting signal** (`transaction-runtime.ts:202` constructs `new Request` without one), so HTTP disconnect drains the wait budget rather than cancelling — exactly as the report discloses; only the service facet exercises real cancellation.
+
+Not flagged, as instructed: the metadata-only incident `Link` gap (`transaction-events.ts:246-247`) is a defensible reading — bdp.md:5553 says "mutable **properties** change" while 5610 treats properties and common metadata as distinct — and SSE / public profile admission are absent and unclaimed.

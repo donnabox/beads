@@ -1,0 +1,47 @@
+{
+  "node": "v24.16.0",
+  "parser": "@babel/parser8.0.4",
+  "mode": "parse only; no product import or evaluation",
+  "removedMetadata": [
+    "start",
+    "end",
+    "loc",
+    "leadingComments",
+    "innerComments",
+    "trailingComments",
+    "comments",
+    "extra"
+  ],
+  "templateRawValuesPreserved": true,
+  "literalsAndOperatorsPreserved": true,
+  "rows": [
+    {
+      "path": "apps/bdptest/src/installed-reference.test.ts",
+      "beforeSha256": "447a8b5fb3ee03ec4f2a894b02a1bb0fdb74ccdea0ad35576da78942373e0cae",
+      "afterSha256": "2c87160890b1c8aed2ada117a1aa293fe7fcfa85db794a3d9ef6514a39d199d1",
+      "normalizedBeforeSha256": "136730102a9ef95f6c994e137df855923eb9f9d20b7f149a3f2b6212876eb5d4",
+      "normalizedAfterSha256": "136730102a9ef95f6c994e137df855923eb9f9d20b7f149a3f2b6212876eb5d4",
+      "normalizedBytes": 198832,
+      "equal": true
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "beforeSha256": "5349dab51055d29d30bb80f286cb30e69947882bd07ed1eaa831b26fd0567174",
+      "afterSha256": "a3f772525ee1c87f3c488e37914af8114421dff5cc003d81640182d6f7a05903",
+      "normalizedBeforeSha256": "7c79794e7590a055e82b314eedcd8aa34585b2420ec5778817ab25b9d8ce77b7",
+      "normalizedAfterSha256": "7c79794e7590a055e82b314eedcd8aa34585b2420ec5778817ab25b9d8ce77b7",
+      "normalizedBytes": 407914,
+      "equal": true
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "beforeSha256": "b4ed09796b4dc28a51d9cc73c04a677059434a606f09dddffa46eefaa432ad8e",
+      "afterSha256": "8f66df9f9cf891383a19a67fb50c85708eaae055c59a661777b7110060b0c56f",
+      "normalizedBeforeSha256": "abfd06c301416269c5cfcece5f07c30b80172d2ba2ebca1589c729967e8c6147",
+      "normalizedAfterSha256": "abfd06c301416269c5cfcece5f07c30b80172d2ba2ebca1589c729967e8c6147",
+      "normalizedBytes": 1194139,
+      "equal": true
+    }
+  ],
+  "allEqual": true
+}

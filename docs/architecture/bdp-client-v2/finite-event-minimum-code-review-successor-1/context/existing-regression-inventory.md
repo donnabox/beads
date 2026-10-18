@@ -1,0 +1,58 @@
+# Existing finite Scope Event regression inventory
+
+Status: read-only prospective selection; no tests, imports, installs, builds, services or product edits performed. Parent owns execution release. Only this report is owned here; the isolated author owns the six-file draft and new A–E callbacks. The author was notified of this separate artifact ownership. Observable-test-runs discipline applies: bounded supervised attempts, exact names, stop on failure, no automatic retry or timeout widening.
+
+## Frozen inspection basis
+
+Clean source `/Users/dbox/repos/wt/vickie/vickie-parser-refusal` at b76c3b7df77ea9b33611bc9027db651833e20abb, tree 4d9f8ac00702d32a45c3eb38cf50fac55ac96f2d. No inspection of the active author's changing product source. Accepted plan is `parser-next-serving-audit/plan-v3.md`; source hashes below pin this inventory, not a claim that authoring has completed. Existing callbacks must remain unchanged and are selected separately from A–E.
+
+## Small meaningful selection: four source callbacks and one installed callback
+
+1. `packages/server/src/transaction-events.test.ts:232` — **pages within groups, continues exclusively after end and rejects unrelated/fabricated cursors**.
+   Preserves successful Resource Event continuation after a real end cursor and later mutation, cross-source/nonmember/fabricated cursor refusal, malformed cursor refusal, and foreign view/epoch cursor classification. One fresh owner/store, two direct seeded transactions (three creation operations, then one Link update), zero HTTP/listeners/product children. Exactly **17 owner.readEvents invocations**: three `collect` calls consume 1 Resource page + 3 Scope pages + 2 later Resource pages, then 11 explicit invocations including four malformed tokens. The seed's Scope projection has five authority Events (two Bead creates, one Link create, two incidence Events), so its page-size-two collection requires three reads. This corrects the preliminary 16-call estimate sent before inspecting the authority Event construction. No unbounded data-dependent input: fixed seed and two-item pages determine these counts.
+
+2. `packages/server/src/transaction-events.test.ts:614` — **checks minimum position before any retained group scan or body materialization**.
+   Preserves recognized future-minimum refusal before `FROM groups`, independently of newly authored A. One store, one direct one-Bead seed transaction, exactly **2 owner.readEvents invocations** (real current setup and recognized `pos-2` behind refusal), zero HTTP/listeners/children. Existing prepare spy is restored by afterEach. No extra callback is selected for the similar missing/fenced-owner case: HTTP, lifecycle and installed callbacks below already exercise that boundary.
+
+3. `packages/server/src/transaction-service.test.ts:1016` — **cancels finite Event waits through the facet and drains uncancelled waits before owner close**.
+   Preserves cancellation and drain for **recognized behind minima**, distinct from new opaque B/C controls. One empty store/service, zero mutations/HTTP/listeners/children. Exactly **4 service.events invocations**: setup, cancelled read, drained read, and synchronous rejected call while closing. One additional direct post-close owner.readEvents invocation refuses. The first three service calls enter the read path; the closing refusal does not. Nested owner retry counts are real-clock dependent and not instrumented, so no exact count is claimed. Existing minimum budget is **30 ms**, waiter delay at most 5 ms; ordinary Vitest callback bound is unchanged. Cancellation is observed after waiter resumption, not claimed to interrupt an arbitrary parked wait. Existing fixture closes the service/owner and removes its directory.
+
+4. `packages/server/src/transaction-events.test.ts:394` — **serves finite Event HTTP with current context, conditionals, HEAD and bounded minimum waits**.
+   Preserves actual recognized future-minimum catch-up after a concurrent mutation, recognized timeout before If-None-Match, missing Resource precedence, conditional statuses, media negotiation, HEAD byte lengths, invalid/cross-source cursors, alias/receipt exclusions, auth/Origin/method precedence and Resource-source existence after deletion. One fresh emitted runtime/listener/store; zero product children. Exactly **59 HTTP exchanges**, consisting of **5 mutation POSTs** and **54 other HTTP requests**. Trace by sequential blocks: seed1 + absent routes3 + setup1 + waiting GET1 + update POST1 + timeout1 + missing1 + conditional3 + media2 + matching Resource GET/HEAD2 + invalid-after6 + noncanonical1 + excluded alias/receipt matrix24 + Origin/auth/method3 + delete POST1 + deleted Bead/Event2 + metadata seed/update POSTs2 + metadata-gap GET/HEAD2 + Link/Scope reads2 =59. Its recognized minimum budget stays **80 ms**, with a single existing 15 ms interleaving delay. Fetches have no separately declared per-request timeout; do not falsely label them 5-second requests. The callback has the existing default **5-second Vitest lifecycle bound**, and the future outer supervisor remains bounded separately. It contains historical G2 incident-link-metadata private-refusal assertions; preserve them verbatim, without deciding G2 or describing that refusal as completed functionality.
+
+5. `apps/bdptest/src/transactional-event-missing-context-installed.test.ts:95` — **observes genuine installed missing Event context across Bead and Link JSON and SSE GET and HEAD**.
+   Preserves the actual installed historical path and nondisclosing contextual Resource absence before stream start. One fresh store and one actual child; no reopen or active SSE subscription. Exactly **11 HTTP exchanges**: seed POST1, real Scope Event setup GET1, Bead/Link × JSON/SSE Accept × GET/HEAD8, unauthenticated SSE-Accept GET1. Existing exact-mode executor asserts attempted==responses.length==11 and the exact ordered requests. Keep **5000 ms exchange timeout, 45000 ms owned deadline, 60000 ms callback timeout**, and existing byte limits. Select this once against the fresh verified external installed consumer, with its own report separate from new E; default local-dist fallback remains supported but is not external installed evidence. Capture actual child PID/exit/signal, close/deadline flags, directory and observed absence. Historical cleanup removes the directory even following a close failure; preserve the callback, and require no failures/clean exit plus independent process audit rather than treating directory absence alone as proof of process cleanup. New E's stronger failure-preservation policy must not relabel this historical behavior.
+
+## Workload and selection discipline
+
+Existing selection alone: **5 callbacks, 5 stores, 1 in-process runtime/listener, 1 installed child, 70 HTTP exchanges (59 emitted +11 external)**. Direct owner-only callbacks contribute 19 readEvents calls; the service callback adds one explicitly refused post-close direct call plus its nested clock-dependent reads. Its four service calls are a separate layer, not additional HTTP traffic. Direct seed transactions and HTTP POSTs must not be double-counted.
+
+Combined prospectively with the accepted new A–E, if all selected once: **10 callbacks/stores, 2 in-process listeners, 2 installed children, 105 HTTP exchanges (91 emitted +14 external)**. New A–E remain their own author-reviewed workload: eight direct owner calls; B/C six service calls and nine delegated read attempts, five waits/probes and one post-close direct refusal; D32 HTTP; E3 HTTP. Existing dynamic retry counts are not added to a fabricated exact global owner total. These counts describe work, not profile completion, qualification or executed evidence.
+
+Use escaped, anchored exact-name selectors, grouped by source file as needed. Assert the resulting executed callback names against this list plus the separately frozen A–E selection; do not infer selection from a total alone. No full Event, service, owner, HTTP or installed suite is needed for this bounded change. Broader retained corruption, stream restart/scan, Snapshot, discovery, receipt and projection suites are omitted because the plan requires their production regions byte-identical. New A/D directly cover opaque after/Resource exclusions; the old cursor callback preserves their existing successful no-minimum behavior. There is no request to alter any existing callback.
+
+## Fresh emitted and installed prerequisites
+
+Static checks can precede the build. The emitted HTTP callback dynamically imports `../dist/transaction-runtime.js` inside its body; Vitest package source aliases do not replace that URL. The installed module resolves `realpathSync(entry)` and hashes the entry at module evaluation. Therefore a **fresh exact-source build and observed artifact inventory must precede both relevant execution/collection stages**. `pnpm build` already runs `pnpm clean && tsc -b`; clean runs `tsc -b --clean && node scripts/clean-build.mjs`. No redundant clean or stale emitted tree should be used.
+
+Before the two installed callbacks, use freshly produced protocol/server archives and a real external consumer installed with the accepted lock discipline. Verify exact source/patch/build identity, archive contents, actual consumer lock/package versions/files/links, resolved entry and recursive package payload; bind these measured artifacts before release. Supply a truthful BDP_TRANSACTIONAL_INSTALLED_ENTRY and BDP_TRANSACTIONAL_SOURCE_COMMIT only for that verified consumer. A declared commit/environment override alone is not provenance. Preserve source-dirty identity if runtime is tested before a later commit, and never relabel predecessor evidence. Parent decides validation staging, ordinary commit order and release gates.
+
+Use the established finite supervisor (120-second outer stage) and current callback budgets without widening; stop on unexpected assertion, timeout, cleanup survivor or source drift. Record raw logs, actual selected names, actual response report, child exit and independently sampled process/store cleanup. No execution is authorized by this inventory.
+
+## Input fingerprints
+
+Plan SHA256: `92993265e606c5d338f4f02601ceb3ddfe3a34ef1af28f56aca77982ca360858`.
+
+- `packages/server/src/transaction-events.test.ts` — `0152561cdf096a48b0b01ec0e0d8bc81208a905bb5bf71dad411694387b58b27`
+- `packages/server/src/transaction-service.test.ts` — `32010b6fb1107076534c544f2bbb93e62cc39c89cd0fbc3c482f0736cc28cfe2`
+- `apps/bdptest/src/transactional-event-missing-context-installed.test.ts` — `828c05f358ae5863c992f93194da15a31df9a200e073e5e3525531ba39fe7d0d`
+- `packages/server/src/transaction-store.ts` — `f7fe71da918c135eb43cb4659f186df6cd442aed9c42c2835e95cde05c782a9e`
+- `packages/server/src/transaction-service.ts` — `b6f9584d67992ddd3a08304a6b76563318252c316b09afd991e49a3304d3af05`
+- `packages/server/src/transaction-http.ts` — `9ee59d7b2f5ecf6bb1ace7bacb70fd5124343dc9320439afeb3c28cf2f174584`
+- `packages/server/src/transaction-events.ts` — `6c5ab4482f0b00110a71a96b16d44ca5fe713cb5f397ff78778cc6646f632a3a`
+- `packages/server/src/transaction-batch.ts` — `830ad57a680db7148fc75cd9cc10cadfc6a812448fd1704c1b0f47b13611808d`
+- `packages/server/src/transaction-consistency.ts` — `ad51311d6098db32fd47849e0b78d3118162cdf1e80ee9ef4d46324bfa9f436f`
+- `scripts/transaction-installed-observation.mjs` — `6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b`
+- `apps/bdptest/test-support/transactional-execution-binding.ts` — `cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89`
+- `vitest.config.ts` — `a84575ea9ef0b6e75b6484024a627fa89422aea2fdbeb26127e09714dba0641f`
+- `package.json` — `f081baa3202b4815663d360d3ad1608206efe1b023086a4c8feff4d7fb97d8d0`

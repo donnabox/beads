@@ -1,0 +1,5 @@
+# Final bounded app repair
+
+Combined successor of frozen f72c4f2c: local optional onObserved report-retention callback and the two approved source-authoring fence pairs. Existing result shape is named InstalledObservation; callback receives genuine result immediately after assignment inside try, before finally. Positive and both selected controls move identical safe serialization into callback. Any callback exception becomes original failure and cleanup remains mandatory; no earlier runner throw fabricates a report.
+
+Root independently measured forty derivative specimens, max756707normal bytes/19731nodes. Both existing app guards now760803/19795, exactly4096bytes/64nodes headroom. Historical701716/18263 and original650386/17275 comments retained; new measured rationale added. No runtime, execution deadline, case/count, manifest, coverage, fixture, schema or production changes. Targeted formatting only; no tests/build/typecheck/install/services/pack/commit/push. Original f72c4 source and report plus intermediate retention-only snapshot remain preserved.

@@ -1,0 +1,92 @@
+# Independent review — five-file classifier correction (diff `fc4fd747…`, correction `4b7a84fb…`)
+
+Scope reviewed: the ten-path diff as supplied, against the supplied post-correction source excerpts. No files read, written, or executed; no commands run.
+
+**Verdict:** the production classifier change itself is complete and I find no security regression or wrong-pass hazard in it. Blockers remain in the new test code (findings 1–3) plus two proof-scope items (4–5).
+
+Symmetry check, for the record: all four required sites use the new predicate — `executable-manifest.ts:984` (raw), `:1477` (normalized), `http-executor.ts:675` (exact serializer), `:479` (handle eligibility). Because `:479` now rejects the exempt name, the resolver loop at `http-executor.ts:702-715` keeps it uninjectable through membership alone, and `append` at `:713` is unreachable for it. Real credential protection is intact: `authorization|cookie|proxy-authorization|set-cookie|x-api-key|x-auth-token` and the unanchored `auth|token|secret|password|credential` alternative still fire for every name except the one literal, and `RESERVED_FIELDS`/`EXACT_RESERVED_FIELDS` are outside the exemption.
+
+---
+
+## Findings
+
+### 1. High — `packages/conformance/src/executable-manifest.test.ts:607-641` — `manifestVersion: 1` × `actions: [{ family: "http", … }]` is unverified, and the negative branch is undifferentiated
+
+Problem: the loop at `:608-611` crosses `version ∈ {1,2}` with `actions ∈ {false,true}`. Nothing in the supplied context establishes that a v1 scenario accepts an `http`-family action: the only v1 action fixture in this file (`actionManifest()`, `:41-64`) uses `family: "client"`, and the only `family: "http"` fixtures (`exactManifest`, `:1469-1497`) are v2. `executable-manifest.ts:927-928` only admits `"family"` as a known request key when `version === 2`. Separately, the mixed-case branch at `:627-630` asserts only `toThrow(ManifestValidationError)`, so it cannot distinguish the intended lowercase rule (`:1475-1476`) from a re-regressed secret rule (`:1477-1478`) or from an unrelated v1-action rejection.
+
+Consequence: if v1 does not support http-family actions, `parseExecutableScenarioManifest(source)` at `:632` throws and the test fails on the first gated run — the candidate is frozen and unexecuted, so this burns the authorized validation cycle. Independently, 8 of the 16 branches (the mixed-case ones) pass on *any* throw, which is the weakest possible assertion for a test whose purpose is to prove the lowercase rule was not changed.
+
+Correction: pin issues per branch instead of `toThrow` alone — capture `error.issues` and assert the mixed-case branch contains `"must be a lowercase HTTP field name"` and does **not** contain `"secret headers are not allowed in a scenario"`; for the lowercase branch keep the `toMatchObject`. Then either confirm v1 admits `family: "http"` actions or restrict the `actions` arm to `version === 2` (v2 actions are already covered by the raw test at `:1536-1553`), keeping `requests` across both versions.
+
+### 2. Medium — `executable-manifest.test.ts:613, :614, :632, :1547` — four non-null assertions in a codebase that otherwise avoids them
+
+Problem: the new code uses `base.scenarios[0]!`, `requests[0]!`, `.scenarios[0]!`, `parsed.scenarios[0]!`. No `!` appears anywhere in the ~1,500 supplied lines of source or test; the surrounding code uses `.at(0)` plus an explicit `undefined` throw (`:644-648`, `:665-669`) or optional chaining (`:1521-1522`), and production code reaches for `as string` (`runner.ts:1786`) and `as ScenarioConditionalHeader["form"]` (`runner.ts:1499`) where `!` would be shorter. That pattern is what a `noNonNullAssertion` lint rule produces.
+
+Consequence: the plan's `lint` gate fails before any test runs. Biome `format` (the only tool the author ran, exit 0) does not flag this.
+
+Correction: replace with the existing ceremony (`const scenario = base.scenarios.at(0); if (scenario === undefined) throw new Error(...)`), or verify the pinned Biome 2.5.7 config has the rule off. Conditional on the lint config, which was not supplied.
+
+### 3. Medium — `packages/conformance/src/runner.test.ts:5587-5598, :5612` — the request-side compatibility projection is never populated, so the leak path the fix actually opens is untested
+
+Problem: the mocked response overrides `headers` and `exactRequest` but supplies no `effectiveRequest`. The base mock in `setup` (`:4749-4779`) does not supply one either. `exchange.request.headers` is therefore empty/absent for this exchange, so `expect(exchange?.request.headers).not.toHaveProperty("bdp-authorization-view")` at `:5612` cannot fail, and the `CONTEXT-SENTINEL`/`CREDENTIAL-SENTINEL` absence checks at `:5615-5616` never exercise `redactHeaders` on the request side. In the real executor this is exactly where both values land: `http-executor.ts:775-777` lowercases and last-wins-collapses every line into `effectiveRequest.headers`, including the admitted context value **and** the resolved `Authorization` value.
+
+Consequence: the stated privacy claim ("admission is not permission to disclose") is proven for `request.exact.headerLines` (`:5606-5611`, elision arithmetic is correct — see below) and for response headers (`:5613`), but not for the compatibility map, which is the surface the exemption newly feeds.
+
+Correction: have the mock return `effectiveRequest: { url: response.url, headers: { "bdp-authorization-view": "CONTEXT-SENTINEL", authorization: "CREDENTIAL-SENTINEL" } }`, keeping all existing assertions; `redactHeaders` should drop the context name and emit `authorization: "<redacted>"`. Confirm the added field does not flip `authored-head`/`write` (it should not: `headersTransmitted` stays absent, as the existing exact tests expect at `http-executor.test.ts:726`).
+
+### 4. Medium — proof scope: a shared production classifier changed, but only 30 named callbacks are selected
+
+Problem: `isSecretHeaderName` now governs every caller of `parseRequestInput`, `parseHeaders`, `snapshotExactHttpMode`, and `executeExact` — which includes `raw-http-scenario-target.ts:62`, `runner.ts` exact configuration capture, and every other test file in both packages. The selection (`selection.json`, 30 callbacks) covers only the three edited test files plus the five frozen evidence callbacks. Any non-selected existing callback that asserts rejection of a name matching `auth` — or that registers a `bdp-`named credential handle — now behaves differently and will not be observed.
+
+Consequence: a green focused run does not establish absence of regression. The plan's gate list (typecheck/build/format/lint/boundaries/Read seal) contains no full test run.
+
+Correction: before merge, run the full `packages/conformance` and `apps/bdptest` suites, or at minimum record a repo-wide search for `bdp-authorization-view` and for `headerNames` registrations in test files, and state the result in the validation record.
+
+### 5. Medium — bounded limitation: sufficiency is proven only up to `parseExecutableScenarioManifest`
+
+Problem: the retained failure output is strong evidence that the parse defect is fully characterized — exactly 6 issues, one per action at `actions[0,3,4,5,6,7]`, all `"raw source header is secret or executor-owned"`, and that message is pushed without an early return (`executable-manifest.ts:984-986`), so no downstream issue was masked. It follows that after the exemption the manifest parses clean. It does **not** follow that the bundle binds: everything after `executable-manifest.ts:495` inside `createBoundArtifactBundle` (`artifact-bundle.ts:170` onward — catalog/coverage cross-checks, claim binding, digests) has never executed against the new row, and the two `apps/bdptest` callbacks never ran at all.
+
+Consequence: the four cumulative callbacks, the profile-contract callback, and the two app callbacks may still fail for reasons unrelated to this correction. The correction is necessary and, at the parse layer, sufficient; it is not evidence of a passing evidence slice.
+
+Correction: none in code. State this explicitly in the validation record so a first-run failure in bundle binding is not misread as a classifier defect.
+
+### 6. Low — `packages/conformance/src/http-executor.test.ts:790-804` — registration test under-asserts the stated invariant, and two of three branches are non-discriminating
+
+Problem: the test asserts only the message string. It does not pin `category: "configuration"`, and it does not assert that no `requestWriteState` is fabricated for a registration failure — the invariant the brief singles out. (The source does hold it: `configuration()` at `http-executor.ts:365-367` passes no state argument, unlike the `executeExact` catch at `:783-790`.) The `"BDP-Authorization-View"` branch is rejected by the pre-existing lowercase rule at `:478` and `"x-ordinary"` by the pre-existing non-secret rule, so only the `"bdp-authorization-view"` branch discriminates the fix.
+
+Consequence: a future change that fabricated a write state on construction failure, or that re-routed the rejection to a different category, would pass.
+
+Correction: capture the thrown value and assert `category === "configuration"` and `requestWriteState === undefined` (`HttpTransportError` is not currently imported at `:7-13`; property checks on an `unknown` avoid adding the import).
+
+### 7. Low — `selection.json` — schema inconsistency across entries
+
+The 7 new and 15 retained entries carry `"kind"`; the 8 evidence entries omit it. The counts are internally consistent (`newExpandedCount 7` + `retainedFocusedCount 15` = `focusedCount 22`, + `existingEvidenceCount 8` = `total 30`, and the `testNamePattern` has 30 alternatives matching the describe-prefixed titles I can verify), but any consumer keying on `kind` miscounts. Add `"kind": "existing-evidence"` (or equivalent) to the eight.
+
+### 8. Low / optional maintenance — the two predicates
+
+`executable-manifest.ts:422-429` and `http-executor.ts:343-345` are same-named, same-contract, module-private, and provably equivalent for lowercase ASCII token names (the `^(?:…)$|(?:…)` form in `SECRET_FIELD` anchors only its first alternative, matching the two-part form in the manifest module). The exempt literal is written twice with no shared constant and no test asserting the two agree — drift here reopens exactly the asymmetry this correction closes. Also: the comment at `:421` says "This protocol context field" without naming it or citing the governing clause (`docs/specs/bdp.md:3581-3588`, with the response-field definition at `:5263-5273`), and the broad regex literal at `:427` is re-created per call. All optional; the brief rules out a shared public seam, and a single cross-module assertion in one of the two existing test files would be enough.
+
+---
+
+## Checked, no finding
+
+- **Exception boundary.** `toLowerCase()` is locale-independent, and both admission grammars (`HEADER_PATTERN`, `HTTP_FIELD_NAME`) restrict names to ASCII token characters, so there is no Unicode/dotless-ı or whitespace bypass of the `!==` comparison. The six lookalikes in `http-executor.test.ts:807-814` are all still caught by the unanchored `auth` alternative, and the parser arm of that test is nonvacuous (`issues = []` fails the `.some` at `:847-849`).
+- **Both parser arms and the mixed-case guard.** `:1477`'s `name === name.toLowerCase() &&` prefix is unchanged, so the normalized arm still reports only the lowercase issue for mixed-case names (consistent with the existing expectation at `:658-661`).
+- **Exact raw bytes.** The expected head in `http-executor.test.ts:765-778` matches `executeExact`'s serializer exactly: authored lines verbatim including `BDP-Authorization-View` casing, both empty values rendering as `"name: "` with the trailing space, credential line inserted after authored and before the four defaults (`http-executor.ts:713` then `:716-723`), then `Host`/`Connection`/`Content-Length`. Head budget ≈374 bytes against the configured 1024. `legacy` is unreachable on the exact arm.
+- **TCP accumulation.** `:745`'s `boundary !== -1 && wire.length >= boundary + 4 + 2` waits for the full head plus the 2-byte body before responding; `received` is asserted to be exactly 1.
+- **Cleanup.** The new listener and its sockets are registered by `bind()` (`:673-683`) before `listen`, so the existing `afterEach` (`:631-639`) reclaims them even when an assertion throws mid-test. The two denial tests use `deadRoute()` and reject at `http-executor.ts:675` / `:479`, before `validateExactRunConfiguration`, `resolveCredentials`, and any dial.
+- **Privacy test non-vacuity.** `setup()` parses the manifest at `runner.test.ts:4727`, so the test cannot run at all without the fix; `state === "pass"` and `authored-head.passed === true` are asserted before every absence check. `exactHeadersMatch` consumes 2 authored + 1 credential + 4 defaults + `Host`/`Connection` = 9 = `actual.length`, with no `Content-Length` since the override drops the body (matching the existing no-body exact test at `:5621-5650`). `elidedHeaderLines === 4` is correct: of the 9 observed lines, `Authorization`/`Accept`/`Accept-Language`/`Accept-Encoding`/`User-Agent` are in `EXACT_REPORT_HEADER_NAMES`, and the two context lines plus `Host`/`Connection` are not.
+- **Accounting.** 7 new registered callbacks (1 + 2 in the manifest tests, 3 in the executor tests, 1 in the runner) + 15 retained + 8 evidence = 30. One listener / one loopback exchange, zero stores, zero product children. Diff totals reconcile to 252 insertions / 12 deletions across exactly the five additional paths; the five preserved hashes are byte-identical to `ea04e6ba…`.
+
+## Missing context (labeled, not inferred)
+
+1. `http-executor.ts` ≈215-330, 512-605, 802-845, 885+ and `executable-manifest.ts` 447-900, 1060-1450, 1528+ were not supplied. I cannot confirm that `SECRET_FIELD` / `SECRET_HEADER_PATTERN` have no remaining direct call site outside the two helpers; if one exists, the symmetry claim is incomplete.
+2. `runner.ts:900-918` (private receipt exact configuration) and `:1551` (configuration capture) were not supplied. A third authored-name classifier there cannot be excluded from the supplied context, and it would fail the new runner test at first execution.
+3. The `HttpTransportError` class body was not supplied; the `category` / `requestWriteState` property names asserted at `http-executor.test.ts:856-859` are inferred from the construction sites at `http-executor.ts:783-790`.
+4. `test-support/transactional/manifest-v1.json` (frozen) was not supplied; the new row's shape is inferred only from the six reported issue paths.
+5. The Biome/lint configuration was not supplied; finding 2 is conditional on it.
+6. Nothing has executed on this candidate — no test, typecheck, lint, or build. Every assertion-level conclusion above is static reading of the supplied text.
+
+## Blocker status before root-authorized validation
+
+Yes. Fix findings 1 and 2 (and, since the candidate is frozen, 3 and 6 in the same pass) before the gated run; findings 4 and 5 are proof-scope obligations for the validation record, not code changes. No change is needed to the production classifier, to real credential protection, or to report-redaction logic.

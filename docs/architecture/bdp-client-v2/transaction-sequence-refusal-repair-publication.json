@@ -1,0 +1,25 @@
+{
+  "verifiedAt": "2026-10-14T16:55:59.692506+00:00",
+  "pr": {
+    "baseRefOid": "d50f554cf6418ba036072ebf6795cb272cd6cbc1",
+    "headRefOid": "4aa2d0be950f157f3f0617278dd37c40f41ec035",
+    "isDraft": true,
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "detailsUrl": "https://github.com/gastownhall/bdp/actions/runs/38602209334/job/115984000843",
+        "name": "verify",
+        "startedAt": "2026-10-14T16:55:30Z",
+        "status": "IN_PROGRESS",
+        "workflowName": "CI"
+      }
+    ]
+  },
+  "ordinaryParent": "90cc834c3672b02840c68dcd7abb35794f038887",
+  "tree": "5afa00950cb042b931450bb7545369c4274ef8ba",
+  "rootAudit": "transaction-sequence-refusal-review-repair/root-audit.json",
+  "codeReview": "Four accepted test/documentation findings repaired; independent closure pending. Production unchanged.",
+  "historicalInstalledSource": "90cc834c3672b02840c68dcd7abb35794f038887"
+}

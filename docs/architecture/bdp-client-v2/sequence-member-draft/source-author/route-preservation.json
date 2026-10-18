@@ -1,0 +1,198 @@
+{
+  "fixtureSha256": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+  "parentAndCurrentRoutes": [
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/sequence"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/update-bead"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?limit=32"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/events/"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/a"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/l"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/new"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/changes/?after=genesis"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/?limit=32"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/b"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/c"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/update-where"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/delete-where"
+    }
+  ],
+  "preimage": {
+    "maximumRequestBodyBytes": 65536,
+    "maximumRequestHeaderBytes": 16384,
+    "profile": "transactional",
+    "routes": [
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/create-bead"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/batch"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/sequence"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/update-bead"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/?limit=32"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/events/"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/a"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/links/l"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/new"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/changes/?after=genesis"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/links/?limit=32"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/b"
+      },
+      {
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/c"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/update-where"
+      },
+      {
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/delete-where"
+      }
+    ],
+    "scope": "https://reference.invalid/acme/"
+  },
+  "configurationDigest": "02dd7d9f35e7482c07ce1550a6572232cc48ba6858cd66f8dfc8f5384f3628be",
+  "equal": true,
+  "newRowTargets": [
+    {
+      "action": "s-sequence",
+      "target": {
+        "binding": "scope",
+        "path": "operations/sequence"
+      }
+    },
+    {
+      "action": "s-first-receipt",
+      "target": {
+        "binding": "batch"
+      }
+    },
+    {
+      "action": "s-first-facts",
+      "target": null
+    },
+    {
+      "action": "s-failed-receipt",
+      "target": {
+        "binding": "batch"
+      }
+    },
+    {
+      "action": "s-failed-facts",
+      "target": null
+    },
+    {
+      "action": "s-last-receipt",
+      "target": {
+        "binding": "batch"
+      }
+    },
+    {
+      "action": "s-last-facts",
+      "target": null
+    },
+    {
+      "action": "s-replay",
+      "target": {
+        "binding": "scope",
+        "path": "operations/sequence"
+      }
+    },
+    {
+      "action": "s-current",
+      "target": {
+        "binding": "scope",
+        "path": "beads/",
+        "query": {
+          "limit": "32"
+        }
+      }
+    },
+    {
+      "action": "s-events",
+      "target": {
+        "binding": "scope",
+        "path": "events/"
+      }
+    }
+  ]
+}

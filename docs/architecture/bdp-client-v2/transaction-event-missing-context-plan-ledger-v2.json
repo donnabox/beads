@@ -1,0 +1,330 @@
+{
+  "status": "ROOT_ACCEPTED_SIX_PATH_DRAFT_AUTHORING_ONLY_EXECUTION_HELD",
+  "head": "88c9408e908590ab1a4c64c9b9dee1a8b705999c",
+  "tree": "b2d9f2c18502e0778c51123be8b4564af052d803",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "branch": "codex/vickie-event-missing-context",
+  "ownedPaths": {
+    "packages/server/src/transaction-store.ts": {
+      "sha256": "0cda4b6488f589258eda46d1a00612e0278228172fc102305d889fe3c4364ad1",
+      "bytes": 86365
+    },
+    "packages/server/src/transaction-http.ts": {
+      "sha256": "4fd4758726c363c342e9a7b292e56e3f8b17dd1beb7b98d45554bd07a25dde83",
+      "bytes": 26984
+    },
+    "packages/server/src/transaction-events.test.ts": {
+      "sha256": "9fa1e8fc59e9abd1660ff13ac456f8506d01aebe7766ce8f3df580c37e128213",
+      "bytes": 38731
+    },
+    "apps/bdptest/src/transactional-event-missing-context-installed.test.ts": {
+      "new": true
+    },
+    "docs/design/transaction-implementation-progress.md": {
+      "sha256": "e4f474baf6808aa110dea0ac53df2560c8f7a9be9298928908acca2ba45e9be5",
+      "bytes": 123696
+    },
+    "packages/server/src/transaction-event-sse.test.ts": {
+      "sha256": "0855df46101eb8f6b1402cb64b44fd5fcecf0e3b7d1ae889c92a627ecd42ac62",
+      "bytes": 33198
+    }
+  },
+  "sourceSelections": {
+    "path": "packages/server/src/transaction-events.test.ts",
+    "existing": [
+      "preserves endpoint pins, omits external sources and does not mutate Beads for incidence",
+      "keeps unknown sources nondisclosing before minimum and refuses older success/fenced owner",
+      "scan initial identity and minimum precede reconnect validity; contextual errors preserve the observed entry"
+    ],
+    "newExpanded": [
+      "captures immutable current context for missing finite Bead Event source",
+      "captures immutable current context for missing finite Link Event source",
+      "captures immutable current context for missing SSE Bead Event source",
+      "captures immutable current context for missing SSE Link Event source",
+      "serves contextual missing Event responses for Bead and Link JSON and SSE GET and HEAD"
+    ],
+    "total": 9,
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "exec",
+      "vitest",
+      "run",
+      "packages/server/src/transaction-events.test.ts",
+      "--maxWorkers=1",
+      "--reporter=verbose",
+      "--reporter=json",
+      "--outputFile=<supervisor-owned-result.json>",
+      "-t",
+      "^(?:preserves\\ endpoint\\ pins,\\ omits\\ external\\ sources\\ and\\ does\\ not\\ mutate\\ Beads\\ for\\ incidence|keeps\\ unknown\\ sources\\ nondisclosing\\ before\\ minimum\\ and\\ refuses\\ older\\ success/fenced\\ owner|scan\\ initial\\ identity\\ and\\ minimum\\ precede\\ reconnect\\ validity;\\ contextual\\ errors\\ preserve\\ the\\ observed\\ entry|captures\\ immutable\\ current\\ context\\ for\\ missing\\ finite\\ Bead\\ Event\\ source|captures\\ immutable\\ current\\ context\\ for\\ missing\\ finite\\ Link\\ Event\\ source|captures\\ immutable\\ current\\ context\\ for\\ missing\\ SSE\\ Bead\\ Event\\ source|captures\\ immutable\\ current\\ context\\ for\\ missing\\ SSE\\ Link\\ Event\\ source|serves\\ contextual\\ missing\\ Event\\ responses\\ for\\ Bead\\ and\\ Link\\ JSON\\ and\\ SSE\\ GET\\ and\\ HEAD)$"
+    ],
+    "additionalSelections": [
+      {
+        "path": "packages/server/src/transaction-event-sse.test.ts",
+        "title": "Event reconnect syntax, minimum ordering and exact context codes are preserved over HTTP",
+        "http": 28,
+        "owners": 1,
+        "listeners": 1,
+        "directories": 1,
+        "children": 0
+      }
+    ]
+  },
+  "control": {
+    "name": "omit-missing-event-http-context",
+    "emittedOnly": true,
+    "selectedTitles": [
+      "serves contextual missing Event responses for Bead and Link JSON and SSE GET and HEAD"
+    ],
+    "expectedNamedFailures": [
+      "missing-event-context:Bead:JSON:GET",
+      "missing-event-context:Bead:JSON:HEAD",
+      "missing-event-context:Bead:SSE:GET",
+      "missing-event-context:Bead:SSE:HEAD",
+      "missing-event-context:Link:JSON:GET",
+      "missing-event-context:Link:JSON:HEAD",
+      "missing-event-context:Link:SSE:GET",
+      "missing-event-context:Link:SSE:HEAD"
+    ],
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "exec",
+      "vitest",
+      "run",
+      "packages/server/src/transaction-events.test.ts",
+      "--maxWorkers=1",
+      "--reporter=verbose",
+      "--reporter=json",
+      "--outputFile=<supervisor-owned-result.json>",
+      "-t",
+      "^(?:serves\\ contextual\\ missing\\ Event\\ responses\\ for\\ Bead\\ and\\ Link\\ JSON\\ and\\ SSE\\ GET\\ and\\ HEAD)$"
+    ]
+  },
+  "installed": {
+    "path": "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+    "title": "observes genuine installed missing Event context across Bead and Link JSON and SSE GET and HEAD",
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+      "exec",
+      "vitest",
+      "run",
+      "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+      "--maxWorkers=1",
+      "--reporter=verbose",
+      "--reporter=json",
+      "--outputFile=<supervisor-owned-result.json>",
+      "-t",
+      "^(?:observes\\ genuine\\ installed\\ missing\\ Event\\ context\\ across\\ Bead\\ and\\ Link\\ JSON\\ and\\ SSE\\ GET\\ and\\ HEAD)$"
+    ],
+    "requests": [
+      {
+        "id": "seed",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/batch",
+        "routeSource": "transaction-http.ts:168\u2013174 plus transaction-discovery.ts:19; verify ready target equals exact canonical URL before dispatch",
+        "accept": "application/json",
+        "credential": "operator",
+        "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/known\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"event-context\"}}]}",
+        "bodyBytes": 152,
+        "expectedStatus": 200,
+        "headers": {
+          "idempotency-key": "missing-event-context-seed",
+          "content-type": "application/json",
+          "accept": "application/json"
+        }
+      },
+      {
+        "id": "known",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/events/",
+        "accept": "application/json",
+        "credential": "operator",
+        "bodyBytes": 0,
+        "expectedStatus": 200,
+        "headers": {
+          "accept": "application/json"
+        }
+      },
+      {
+        "id": "beads-JSON-GET",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/missing?view=events",
+        "accept": "application/json",
+        "credential": "operator",
+        "bodyBytes": 0,
+        "expectedStatus": 404,
+        "headers": {
+          "accept": "application/json"
+        }
+      },
+      {
+        "id": "beads-JSON-HEAD",
+        "method": "HEAD",
+        "url": "https://reference.invalid/acme/beads/missing?view=events",
+        "accept": "application/json",
+        "credential": "operator",
+        "bodyBytes": 0,
+        "expectedStatus": 404,
+        "headers": {
+          "accept": "application/json"
+        }
+      },
+      {
+        "id": "beads-SSE-GET",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/missing?view=events",
+        "accept": "text/event-stream",
+        "credential": "operator",
+        "bodyBytes": 0,
+        "expectedStatus": 404,
+        "headers": {
+          "accept": "text/event-stream"
+        }
+      },
+      {
+        "id": "beads-SSE-HEAD",
+        "method": "HEAD",
+        "url": "https://reference.invalid/acme/beads/missing?view=events",
+        "accept": "text/event-stream",
+        "credential": "operator",
+        "bodyBytes": 0,
+        "expectedStatus": 404,
+        "headers": {
+          "accept": "text/event-stream"
+        }
+      },
+      {
+        "id": "links-JSON-GET",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/links/missing?view=events",
+        "accept": "application/json",
+        "credential": "operator",
+        "bodyBytes": 0,
+        "expectedStatus": 404,
+        "headers": {
+          "accept": "application/json"
+        }
+      },
+      {
+        "id": "links-JSON-HEAD",
+        "method": "HEAD",
+        "url": "https://reference.invalid/acme/links/missing?view=events",
+        "accept": "application/json",
+        "credential": "operator",
+        "bodyBytes": 0,
+        "expectedStatus": 404,
+        "headers": {
+          "accept": "application/json"
+        }
+      },
+      {
+        "id": "links-SSE-GET",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/links/missing?view=events",
+        "accept": "text/event-stream",
+        "credential": "operator",
+        "bodyBytes": 0,
+        "expectedStatus": 404,
+        "headers": {
+          "accept": "text/event-stream"
+        }
+      },
+      {
+        "id": "links-SSE-HEAD",
+        "method": "HEAD",
+        "url": "https://reference.invalid/acme/links/missing?view=events",
+        "accept": "text/event-stream",
+        "credential": "operator",
+        "bodyBytes": 0,
+        "expectedStatus": 404,
+        "headers": {
+          "accept": "text/event-stream"
+        }
+      },
+      {
+        "id": "anonymous",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/missing?view=events",
+        "accept": "text/event-stream",
+        "credential": "anonymous",
+        "bodyBytes": 0,
+        "expectedStatus": 401,
+        "headers": {
+          "accept": "text/event-stream"
+        }
+      }
+    ],
+    "expectedRequests": 11,
+    "maximumRequests": 11,
+    "children": 1,
+    "uniqueUrls": 4,
+    "seedBodySha256": "e09f4e2f71b146c5de095f3a841a016c5ad64fe64759e7f217c4d6768fc0eae9"
+  },
+  "workloads": {
+    "sourcePositive": {
+      "cases": 9,
+      "ownerLifetimes": 9,
+      "directories": 9,
+      "http": 39,
+      "listeners": 2,
+      "productChildren": 0
+    },
+    "emittedControl": {
+      "cases": 1,
+      "ownerLifetimes": 1,
+      "directories": 1,
+      "http": 11,
+      "listeners": 1,
+      "productChildren": 0
+    },
+    "installed": {
+      "cases": 1,
+      "ownerLifetimes": 1,
+      "directories": 1,
+      "http": 11,
+      "listeners": 1,
+      "productChildren": 1
+    },
+    "combined": {
+      "caseExecutions": 11,
+      "ownerLifetimes": 11,
+      "directories": 11,
+      "httpExpected": 61,
+      "httpMaximum": 61,
+      "listeners": 4,
+      "productChildren": 1
+    }
+  },
+  "bounds": {
+    "supervisorSeconds": 120,
+    "newHttpAndInstalledTestSeconds": 60,
+    "newHttpAndInstalledAggregateSeconds": 45,
+    "perExchangeSeconds": 5,
+    "maximumResponseBytes": 32768,
+    "maximumRequestBodyBytes": 65536,
+    "maximumRequestHeaderBytes": 16384,
+    "automaticRetries": 0
+  },
+  "readOnlyInspections": "No product module imports, tests, build, install, pack or service execution.",
+  "anchors": {
+    "missingOwner": [
+      1565,
+      1648
+    ],
+    "missingHttp": [
+      498,
+      512
+    ],
+    "problemProjector": [
+      107,
+      118
+    ],
+    "headEmitter": [
+      87,
+      94
+    ]
+  },
+  "predecessorLedgerSha256": "457c0c33d0558cb92c4bbdd0ae060f81446656c6562ef59c5eb0e394b7f6ce18"
+}

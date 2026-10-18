@@ -1,0 +1,96 @@
+## Reviewed source (exact)
+
+- Checkout `/Users/dbox/repos/wt/vickie/vickie-alias-minimum-receiving-repair`, HEAD = `3959a25e70bc6dc9d143abfead187ccaf84ca11e` ("Preserve alias minimum delivery receiving boundaries"), tree clean.
+- Plan: `/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-next-serving-slice-plan.md` (61 lines).
+- Read at frozen: `packages/server/src/transaction-read.ts` (297 L), `transaction-service.ts` (581 L), `authority-read.ts` (lines 180–204, 280–330, 925–1157), `transaction-consistency.ts` (121 L), `transaction-http.ts` (196–236, 520–540), `node-http-disconnect.ts`, `transaction-read.test.ts` (995–1105, 1210–1265, 1470–1540, 1600–1766), `transaction-service.test.ts` (770–840), `apps/bdptest/src/transactional-collection-minimum-installed.test.ts` (bounds only), `docs/specs/bdp.md:5750–5812`.
+- Cited history objects also inspected read-only: `0432d48` (main, PR#111 merge), `8d23862`, `9611253`.
+- Verification limit: the governing `design.md` ("Autonomous profile completion", "Current priority") is not tracked anywhere in this repo (`git ls-files | grep design.md$` → none), so the plan's authority chain could not be checked against source. No tests, builds, servers, network or agents were run; nothing was written.
+
+## Citation and provenance audit (all verified)
+
+Every line citation in the plan resolves correctly: frozen `3959:97–114` (`captureTransactionAliasDeliveryOptions`), `225–232` (minimum `perform` spread), `309–315` (`readAtMinimum.perform` + `receiving?.signal`), `317–331` (repaired alias branch); main `transaction-read.ts:206–213`, `transaction-service.ts:305–311`, `transaction-http.ts:214–219`; `authority-read.ts:296–313` (`ownData`), `1026–1078` (`deliver`); `transaction-consistency.ts:101–118`; spec `5758–5764`, `5776–5786`, `5791–5798`, `5805–5807`. `8d23862` vs `0432d48` is empty over `packages/server/src` and `packages/protocol/src`. `transaction-read.ts`/`transaction-service.ts` at `3959a25` equal main's plus exactly the alias repair (one caveat: `0432d48` is not a git ancestor of `3959a25` — merge-base is `2a78699` — but the content is a superset, so the stated base holds).
+
+The three claimed defects are real. Spread drops an own **non-enumerable** `signal`, so the direct facet performs a *successful* owner read with a pre-aborted signal; an enumerable getter/Proxy executes during the spread and throws **synchronously** out of `perform` instead of through the observed Promise; `{...null}`, `{...[]}`, `{...0}` and `Object.create({})` all launder into an accepted `{sourceCondition: minimum}` call. Capture closes all of these. The four-file scope is sufficient, including the rename: the helper is referenced only at `transaction-read.ts:100,237` and `transaction-service.ts:23,319,321`, no test imports it by name, and `packages/server/dist/` is gitignored with 0 tracked files. No existing test depends on the laundering — the only option-bearing minimum `perform` calls are plain `{signal}` objects (`transaction-read.test.ts:1503`, `transaction-service.test.ts:803`) — and HTTP always supplies `{signal: request.signal}` from a genuine `AbortController` (`node-http-disconnect.ts:11–21`), so wire bytes are unchanged.
+
+---
+
+# Findings
+
+## 1. BLOCKER — the service-capture discriminator does not discriminate
+
+**Severity:** blocker (test plan; invalidates a done-when gate)
+**Location:** plan line 46 (Service capture bullet), line 48 counterfactual #2, done-when #3; source `transaction-service.ts:309–315`, `transaction-read.ts:230`, `transaction-consistency.ts:107`
+
+**Issue.** The plan's experiment is "mutate caller options to a different signal/sourceCondition after admission. Abort the originally captured signal, release the held wait and require no second owner attempt." Both halves already hold on the old code:
+
+- `receiving?.signal` at `transaction-service.ts:314` is an **argument expression**, evaluated once, eagerly, before `waitForTransactionMinimum` is entered. The wait signal is therefore already captured by value for the loop's lifetime. Mutating `receiving.signal` afterwards cannot change it, and aborting the original still trips `signal?.aborted` at `transaction-consistency.ts:107` on the next iteration, before attempt 2.
+- A mutated `sourceCondition` is already defeated because `transaction-read.ts:230` appends `sourceCondition: minimum` **after** the spread, overriding any caller value at any enumerability.
+
+**Impact.** The control passes against candidate *and* counterfactual. Done-when #2 ("each bounded old-code counterfactual fails its intended test") cannot be satisfied by it, and done-when #3's "captured original signal" claim would rest on a test that proves nothing — precisely for the slice's most important service-side property, per-attempt option immutability.
+
+**Correction.** Make the mutation observable only through the per-attempt options handed to the authority. Either:
+- (a) while the finite wait is held, define an extra own key on the live caller object (`receiving.unknown = 1`) and require the read to still complete — old code re-spreads the live object and rejects `invalid-input` on attempt 2; or
+- (b) replace `receiving.signal` with a second, **pre-aborted** signal (or `delete` it) and require completion via an independent satisfying commit — old code passes the mutated signal and rejects `ScopeServerOperationAbortedError` on attempt 2.
+
+Keep the `get signal()` control as the separate (and genuinely discriminating) witness for the eager `receiving?.signal` read, and restate counterfactual #2 as covering the getter *and* the per-attempt re-read, not abort timing.
+
+## 2. Optional (medium) — fallback safety rests on an unstated cross-module invariant
+
+**Severity:** optional, but worth one plan sentence plus one named test case
+**Location:** plan lines 22, 44; source `transaction-read.ts:81–93, 235–242`, `authority-read.ts:304–311, 1054`
+
+**Issue.** On capture failure, both the facet and the service hand the **raw** caller options to the authority with **no** `sourceCondition: minimum`. That is safe only because capture's rejection set is a subset of the authority's. I verified it currently is, for every shape — but one case is held together non-obviously: for an own **non-enumerable unknown key**, `ordinaryDeliveryOptions` rejects via `Reflect.ownKeys` (`:81–93`), while the authority rejects only because `ownData` re-publishes every own data property as *enumerable* (`authority-read.ts:310`) before `Object.keys(receiving).some(...)` at `:1054`.
+
+**Impact.** If that normalization ever changed, the fallback would deliver a **successful read that ignores the configured minimum** — the exact "unconditioned fallback" the plan forbids. Latent, not live.
+
+**Correction.** State the invariant explicitly ("capture must reject only shapes the authority rejects, else the fallback serves an unconditioned read"), and require the witness discriminator by name on the `perform` path rather than the ambiguous "unknown": `Object.defineProperty({}, "unknown", {value: 1})` and `Object.defineProperty({}, "signal", {value: <not a signal>})`, asserting `invalid-input` and zero owner entries. `transaction-read.test.ts:1659` already carries the first for alias; say the perform mirror must retain it.
+
+## 3. Optional (low) — lifecycle precedence differs by mode; the plan overstates "the authority's"
+
+**Severity:** optional
+**Location:** plan lines 26, 45; source `transaction-service.ts:123–131`, `transaction-read.test.ts:1725` vs `:1732`
+
+**Issue.** After `service.close()`, a previously obtained guarded facet rejects through the **service's** synchronous `check()` (`Error("transaction service is closing or closed")`), not through the authority and not through an observed Promise — capture is never reached. The existing alias test pins exactly this asymmetry: synchronous throw in service mode (`:1725`), `code: "server-closed"` through a Promise in direct mode (`:1732`). The plan's lifecycle bullet asks for "the authority's existing closed/reentrant precedence" without distinguishing modes.
+
+**Impact.** An implementer mirroring the bullet literally for the service writes a failing test, or "fixes" `run`/`check` and changes service admission semantics outside the stated scope.
+
+**Correction.** Split the bullet: direct facet → authority `ScopeServerClosedError`/`reentrant` through the observed Promise; service → unchanged synchronous `"closing or closed"` admission throw with capture unreached.
+
+## 4. Optional (low) — route gate pre-empts receiving precedence on `perform`; state the precondition
+
+**Severity:** optional
+**Location:** plan lines 44–45; source `transaction-read.ts:226–227`, `:32–56`
+
+**Issue.** Unlike `resolveAlias`, `minimumFor.perform` evaluates `isCurrentTransactionMinimumRead` **before** any capture or authority lifecycle check and rejects with a bare `TypeError`. Every receiving/lifecycle discriminator on the perform path must therefore use an in-subset request or the TypeError pre-empts the expected `invalid-input`/`server-closed`/`reentrant` outcome. Line 44 says "valid literal requests"; the lifecycle bullet (line 45) does not repeat it. Separately, that gate reads `request.kind`/`.resource`/`.collection`/`.continuation` as plain property accesses (`:32–56`) — only `id` is descriptor-read (`:38`) — so caller accessors on those keys still execute before the authority sees the request.
+
+**Impact.** A literal reading yields either a confusingly failing test or pressure to broaden request classification, which the plan forbids.
+
+**Correction.** Add "in-subset request required" to the lifecycle bullet, and scope line 44's "no getter/trap invocation" assertion to the **delivery-options object**, naming `transaction-read.ts:32–56` as a known deferred residual of the same class.
+
+## 5. Optional (low) — one validation identifier is not resolvable against frozen source
+
+**Severity:** optional
+**Location:** plan line 50; done-when #4
+
+**Issue.** "Type/incident 20/1" and "alias 18/1" map to real literal bounds — `apps/bdptest/src/transactional-collection-minimum-installed.test.ts:939` (`expect(count).toBe(20)`) and `:1155` (`toBe(18)`). "Current-collection 38/1" does not: the initial-collection scenario at `:401` asserts no request count at all, and the only other bound in that file is `toBe(10)` at `:751` (compatible missing 404). No `38` appears anywhere under `apps/bdptest/src`. "Two targeted RU positives" is likewise unresolvable to named tests.
+
+**Impact.** Done-when #4's "per-scenario counts" is not machine-checkable as written.
+
+**Correction.** Give file + test title + actual asserted bound for each scenario, or label 38 as a run-log request total rather than an asserted count.
+
+## 6. Optional (low) — same-class residual left unnamed in a file the slice edits
+
+**Severity:** optional
+**Location:** plan line 33; source `transaction-service.ts:243,267,338,355,362,379,387,393,400,409` with `transaction-consistency.ts:107`
+
+**Issue.** The unvalidated-`aborted`-read pattern persists for the other minimum entry points (`discoveryObserved`, `snapshot`, `changes`, `events`, `beginEvents`), which take a bare `signal` parameter and hand it straight to `waitForTransactionMinimum`. Excluding them is a defensible boundary, but the plan never names them, so the slice can read as closing the receiving boundary. Line 9's generic non-exhaustiveness disclaimer only partly covers this.
+
+**Correction.** One sentence listing them as deliberately deferred, same class, private-API-only, no wire exposure.
+
+---
+
+## Verified with no finding
+
+Descriptor-safe reuse is sound: capture is pure (descriptor reads only, `isProxy` checked before any `ownKeys`), idempotent under the service→facet double pass, and preserves a non-enumerable own `signal` by value. Promise/lifecycle precedence is preserved because `guard()` runs at `authority-read.ts:1049` *inside* `deliver`'s try, ahead of `ownData` at `:1053`. `sourceCondition` override semantics hold on every path, including a non-enumerable caller condition. Cancellation semantics are described accurately — `waitForTransactionMinimum` samples `signal?.aborted` only at loop top and does not interrupt `await wait(...)`, and the plan explicitly declines to claim otherwise. Wire behavior is unchanged. Spec clauses are quoted faithfully and are not stretched into JavaScript options syntax or a new cancellation Problem. The hard dependency on the alias repair landing first (sole source of the helper; overlapping files; no simultaneous writers) is correctly stated, and the four-path restriction matches how `3959a25` itself was committed (source + test only, no progress-doc row).
+
+Findings 2–6 are plan-text and test-precision corrections. Finding 1 should be fixed before the test plan is treated as satisfying done-when #2 and #3.

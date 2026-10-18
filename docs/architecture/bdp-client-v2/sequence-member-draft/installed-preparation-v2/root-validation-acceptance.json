@@ -1,0 +1,29 @@
+{
+  "accepted": true,
+  "validationOnlyWhileCouncilPending": true,
+  "head": "82f60a25da8799334381f6ebd810f32a3574cd2d",
+  "tree": "3cd1da66ba3a6cbd0bbdaa2442d10002939d826b",
+  "base": "18104a03b850553641f24fe83e7318493fa102ca",
+  "scope": "Only clean-source fresh-package and four installed cohorts; no readiness or merge approval.",
+  "preparation": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/preparation-hashes.json",
+    "sha256": "ad894aadcc12d5aba7e90d23d8accd45608fdf08a2abbeefa79ab3d53cc31692"
+  },
+  "nativePredecessorReview": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/native-preparation-review.md",
+    "sha256": "41222fa7dc56fcd6f04eb48626c52b78d1bd5a06907bda88c77f46e532d5cafd"
+  },
+  "deltaReviewedByRoot": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/preparation.patch",
+    "sha256": "a78c4b05ee3ed12fa9fa6b1f749fbaa308c0148b32a70bb03f347e613ff63f40"
+  },
+  "sourceValidation": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/root-source-acceptance.json",
+    "sha256": "15e91b6ab40beda200189a569d9475eaedc6ffc09cb7d0154c4ca9bececbdf39"
+  },
+  "bounds": {
+    "httpExpected": 623,
+    "httpMaximum": 632,
+    "children": 71
+  }
+}

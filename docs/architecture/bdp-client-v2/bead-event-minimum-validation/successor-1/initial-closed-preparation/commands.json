@@ -1,0 +1,506 @@
+{
+  "finalOrder": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "review-focused-source",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "event-bead-minimum-external",
+    "review-event-bead-minimum-external",
+    "event-minimum-external",
+    "review-event-minimum-external",
+    "event-missing-context-external",
+    "review-event-missing-context-external"
+  ],
+  "commands": {
+    "typecheck": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "format-check": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum/node_modules/@biomejs/biome/bin/biome",
+        "format",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum/biome.json",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-service.ts",
+        "packages/server/src/transaction-store.ts",
+        "packages/server/src/transaction-events.test.ts",
+        "packages/server/src/transaction-service.test.ts",
+        "apps/bdptest/src/transactional-event-missing-context-installed.test.ts"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "lint": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum/node_modules/@biomejs/biome/bin/biome",
+        "lint",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum/biome.json",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-service.ts",
+        "packages/server/src/transaction-store.ts",
+        "packages/server/src/transaction-events.test.ts",
+        "packages/server/src/transaction-service.test.ts",
+        "apps/bdptest/src/transactional-event-missing-context-installed.test.ts"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "fresh-build": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "build"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "bind-fresh-build": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/audit.py",
+        "build"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "focused-source": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-events.test.ts",
+        "packages/server/src/transaction-service.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/focused-source.results.json",
+        "--testNamePattern",
+        "^(?:gates\\ initial\\ Scope\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|captures\\ an\\ initial\\ Scope\\ Event\\ opaque\\ tuple\\ across\\ one\\ bounded\\ wait|cancels\\ and\\ drains\\ initial\\ Scope\\ Event\\ opaque\\ waits|serves\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minima\\ through\\ bounded\\ waiting|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ already\\-aborted|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ invalid\\-policy|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ throwing\\-clock|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ nonfinite\\-clock|preserves\\ initial\\ Scope\\ Event\\ preflight\\ before\\ malformed\\ capture:\\ malformed\\-after\\-valid\\-preflight|pages\\ within\\ groups,\\ continues\\ exclusively\\ after\\ end\\ and\\ rejects\\ unrelated/fabricated\\ cursors|checks\\ minimum\\ position\\ before\\ any\\ retained\\ group\\ scan\\ or\\ body\\ materialization|cancels\\ finite\\ Event\\ waits\\ through\\ the\\ facet\\ and\\ drains\\ uncancelled\\ waits\\ before\\ owner\\ close|serves\\ finite\\ Event\\ HTTP\\ with\\ current\\ context,\\ conditionals,\\ HEAD\\ and\\ bounded\\ minimum\\ waits|isolates\\ unresolved\\ metadata\\-only\\ incident\\ membership\\ while\\ Scope/Link\\ sources\\ remain\\ available|gates\\ initial\\ Bead\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|captures\\ an\\ initial\\ Bead\\ Event\\ opaque\\ tuple\\ across\\ one\\ bounded\\ wait|cancels\\ and\\ drains\\ initial\\ Bead\\ Event\\ opaque\\ waits|serves\\ initial\\ finite\\ Bead\\ Event\\ opaque\\ minima\\ with\\ retained\\ identity\\ and\\ route\\ fences|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ already\\-aborted|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ invalid\\-policy|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ throwing\\-clock|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ nonfinite\\-clock|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ malformed\\-after\\-valid\\-preflight|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ noncanonical\\-query|preserves\\ initial\\ Bead\\ Event\\ classification\\ and\\ preflight:\\ relative\\-source)$"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "gates initial Scope Event unknown minima before retained scans",
+        "captures an initial Scope Event opaque tuple across one bounded wait",
+        "cancels and drains initial Scope Event opaque waits",
+        "serves initial finite Scope Event opaque minima through bounded waiting",
+        "preserves initial Scope Event preflight before malformed capture: already-aborted",
+        "preserves initial Scope Event preflight before malformed capture: invalid-policy",
+        "preserves initial Scope Event preflight before malformed capture: throwing-clock",
+        "preserves initial Scope Event preflight before malformed capture: nonfinite-clock",
+        "preserves initial Scope Event preflight before malformed capture: malformed-after-valid-preflight",
+        "pages within groups, continues exclusively after end and rejects unrelated/fabricated cursors",
+        "checks minimum position before any retained group scan or body materialization",
+        "cancels finite Event waits through the facet and drains uncancelled waits before owner close",
+        "serves finite Event HTTP with current context, conditionals, HEAD and bounded minimum waits",
+        "isolates unresolved metadata-only incident membership while Scope/Link sources remain available",
+        "gates initial Bead Event unknown minima before retained scans",
+        "captures an initial Bead Event opaque tuple across one bounded wait",
+        "cancels and drains initial Bead Event opaque waits",
+        "serves initial finite Bead Event opaque minima with retained identity and route fences",
+        "preserves initial Bead Event classification and preflight: already-aborted",
+        "preserves initial Bead Event classification and preflight: invalid-policy",
+        "preserves initial Bead Event classification and preflight: throwing-clock",
+        "preserves initial Bead Event classification and preflight: nonfinite-clock",
+        "preserves initial Bead Event classification and preflight: malformed-after-valid-preflight",
+        "preserves initial Bead Event classification and preflight: noncanonical-query",
+        "preserves initial Bead Event classification and preflight: relative-source"
+      ],
+      "prospectiveWorkload": {
+        "callbacks": 25,
+        "existingCallbacks": 14,
+        "newCallbacks": 11,
+        "stores": 25,
+        "inProcessListeners": 3,
+        "productChildren": 0,
+        "httpExchanges": 128,
+        "existingHttpExchanges": 91,
+        "newHttpExchanges": 37,
+        "newBeadDirectOwnerReads": 12,
+        "newBeadNonReadPolicyReplacements": 1,
+        "newBeadSeedDirectTransactions": 2,
+        "newBeadServiceSeedSubmissions": 2,
+        "newBeadServiceEventsCalls": 6,
+        "newBeadWaitDelegatedReads": 9,
+        "newBeadWaitsAndProbes": 5,
+        "newBeadPostCloseDirectRefusal": 1,
+        "newBeadPreflightCallbacks": 7,
+        "newBeadPreflightInitialClocks": 6,
+        "newBeadPreflightDelegatedReads": 2,
+        "newBeadPreflightWaits": 0,
+        "existingRetryAttempts": null,
+        "attribution": "Prospective plan-v3 only; no authored-source or measured observation claim."
+      }
+    },
+    "review-focused-source": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/audit.py",
+        "source"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "node-version": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "prepare-package-directory": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/packages.py",
+        "directory"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "pack-protocol": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/packages"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "pack-server": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/packages"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "verify-archives": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/packages.py",
+        "tar"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "prepare-consumer": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/packages.py",
+        "consumer"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "consumer-install": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/consumer",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "verify-installed-consumer": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/packages.py",
+        "installed"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "event-minimum-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/event-minimum-external.results.json",
+        "--testNamePattern",
+        "^(?:observes\\ installed\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minimum\\ timeout)$"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "observes installed initial finite Scope Event opaque minimum timeout"
+      ],
+      "prospectiveWorkload": {
+        "callbacks": 1,
+        "stores": 1,
+        "productChildren": 1,
+        "maximumConcurrentChildren": 1,
+        "httpExchanges": 3,
+        "requestTimeoutMs": 5000,
+        "ownedDeadlineMs": 45000,
+        "callbackBoundMs": 60000
+      },
+      "expectedObservation": "private-installed-finite-event-minimum",
+      "expectedExchanges": 3
+    },
+    "review-event-minimum-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/audit.py",
+        "minimum"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "event-missing-context-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/event-missing-context-external.results.json",
+        "--testNamePattern",
+        "^(?:observes\\ genuine\\ installed\\ missing\\ Event\\ context\\ across\\ Bead\\ and\\ Link\\ JSON\\ and\\ SSE\\ GET\\ and\\ HEAD)$"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "observes genuine installed missing Event context across Bead and Link JSON and SSE GET and HEAD"
+      ],
+      "prospectiveWorkload": {
+        "callbacks": 1,
+        "stores": 1,
+        "productChildren": 1,
+        "maximumConcurrentChildren": 1,
+        "httpExchanges": 11,
+        "requestTimeoutMs": 5000,
+        "ownedDeadlineMs": 45000,
+        "callbackBoundMs": 60000
+      },
+      "expectedObservation": "private-installed-event-missing-context",
+      "expectedExchanges": 11
+    },
+    "review-event-missing-context-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/audit.py",
+        "missing"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "event-bead-minimum-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-bead-event-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/run/event-bead-minimum-external.results.json",
+        "--testNamePattern",
+        "^(?:observes\\ installed\\ initial\\ finite\\ Bead\\ Event\\ opaque\\ minimum\\ timeout)$"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "observes installed initial finite Bead Event opaque minimum timeout"
+      ],
+      "prospectiveWorkload": {
+        "callbacks": 1,
+        "stores": 1,
+        "productChildren": 1,
+        "maximumConcurrentChildren": 1,
+        "httpExchanges": 4,
+        "requestTimeoutMs": 5000,
+        "ownedDeadlineMs": 45000,
+        "callbackBoundMs": 60000
+      },
+      "expectedObservation": "private-installed-bead-event-minimum",
+      "expectedExchanges": 4
+    },
+    "review-event-bead-minimum-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/bead-event-minimum-validation/successor-1/audit.py",
+        "bead"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    }
+  },
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "rootCheckpoints": {
+    "beforeBootstrap": "No install stage. Only original successful workspace-install + bind-workspace-tools records may be reused after exact finalized old-to-new source/dependency/tool mapping and root acceptance.",
+    "afterWorkspaceTools": "Original tool record retains original source attribution; rehash17 unchanged dependency inputs and11 actual tools, require root acceptance of bootstrap-reuse-binding before fresh static.",
+    "beforeRuntime": "Final exact source binding, native and actual Claude code dispositions required; build+binding before source/module collection.",
+    "afterConsumerInstall": "Stop; root pins newly measured consumer lock before verification.",
+    "afterConsumerVerification": "Stop; root accepts actual archive/source/payload/provenance and whole consumer inventory before external callbacks.",
+    "afterAllValidation": "Root may commit only after all source+three installed immediate audits and cleanup; exact679-byte equality maps honest dirty evidence to final clean commit."
+  },
+  "configurationFinalized": false,
+  "sourceSelectionState": "PENDING actual authored formatting successor; prior25+3 selection retained as required invariant, not future validation evidence",
+  "validationOrder": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "review-focused-source",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "event-bead-minimum-external",
+    "review-event-bead-minimum-external",
+    "event-minimum-external",
+    "review-event-minimum-external",
+    "event-missing-context-external",
+    "review-event-missing-context-external"
+  ],
+  "bootstrapOrder": [],
+  "stageCounts": {
+    "reusedBootstrap": 2,
+    "validation": 21,
+    "newSupervisedAttempts": 21
+  },
+  "reusedPrerequisiteStages": [
+    "workspace-install",
+    "bind-workspace-tools"
+  ]
+}

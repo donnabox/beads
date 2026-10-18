@@ -1,0 +1,35 @@
+{
+  "status": "CLOSED_TEMPLATE",
+  "id": "early-depth-control",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "PENDING_VERIFIED_MIRROR_VITEST_REALPATH",
+    "run",
+    "packages/server/src/transaction-http.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/run/control.results.json",
+    "-t",
+    "^serves\\ retained\\ direct\\ key\\ conflicts\\ before\\ private\\ depth\\ and\\ preserves\\ fresh\\ refusal$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/mirror",
+  "supervisorSeconds": 120,
+  "cases": 1,
+  "httpExpected": 2,
+  "httpHardMaximum": 13,
+  "http": 13,
+  "owners": 1,
+  "directories": 1,
+  "listeners": 1,
+  "productChildren": 0,
+  "readonlyInventoryHandles": 0,
+  "selectedFullNames": [
+    "serves retained direct key conflicts before private depth and preserves fresh refusal"
+  ],
+  "ownedTempPrefixes": null,
+  "workSeconds": 25,
+  "testSeconds": 30,
+  "cleanupSeconds": 5,
+  "note": "http=13 is the inherited supervisor workload ceiling, not an actual/expected response count. Exact output fields and temp prefix require final frozen H."
+}

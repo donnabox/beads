@@ -1,0 +1,93 @@
+{
+  "name": "http-positive",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving/node_modules/vitest/vitest.mjs",
+    "run",
+    "packages/server/src/transaction-http.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v3/http-positive.results.json",
+    "-t",
+    "^(?:source\\-private\\ actual\\ Transactional\\ HTTP\\ fails\\ minimum\\ controls\\ closed\\ before\\ ordinary\\ Read\\ and\\ expired\\ cursor\\ conditional\\ decisions|orders\\ page\\ nondisclosure,\\ minimum\\ waits,\\ expiry\\ and\\ representation\\ using\\ actual\\ owner\\ state|refuses\\ unsupported\\ root\\ controls\\ after\\ nondisclosure\\ but\\ before\\ read\\-triggered\\ retention|keeps\\ failed\\ parent\\ rows\\ unchanged\\ for\\ nonexistent\\ page\\ reads\\ with\\ any\\ controls|serves\\ conditioned\\ live\\ aliases\\ and\\ preserves\\ bodyless\\ redirects,\\ refusal\\ context\\ and\\ receiving\\ boundaries|rejects\\ malformed\\ minimum\\ tuples\\ across\\ read\\ routes\\ without\\ entering\\ the\\ actual\\ owner|rejects\\ raw\\ repeated\\ minimum\\ fields\\ and\\ keeps\\ receiving\\ HEAD\\ and\\ SSE\\ refusals\\ finite|enforces\\ the\\ minimum\\-receiving\\-malformed\\-request\\ boundary\\ over\\ the\\ emitted\\ listener)$"
+  ],
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving/node_modules/vitest/vitest.mjs",
+    "run",
+    "packages/server/src/transaction-http.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v3/http-positive.results.json",
+    "-t",
+    "^(?:source\\-private\\ actual\\ Transactional\\ HTTP\\ fails\\ minimum\\ controls\\ closed\\ before\\ ordinary\\ Read\\ and\\ expired\\ cursor\\ conditional\\ decisions|orders\\ page\\ nondisclosure,\\ minimum\\ waits,\\ expiry\\ and\\ representation\\ using\\ actual\\ owner\\ state|refuses\\ unsupported\\ root\\ controls\\ after\\ nondisclosure\\ but\\ before\\ read\\-triggered\\ retention|keeps\\ failed\\ parent\\ rows\\ unchanged\\ for\\ nonexistent\\ page\\ reads\\ with\\ any\\ controls|serves\\ conditioned\\ live\\ aliases\\ and\\ preserves\\ bodyless\\ redirects,\\ refusal\\ context\\ and\\ receiving\\ boundaries|rejects\\ malformed\\ minimum\\ tuples\\ across\\ read\\ routes\\ without\\ entering\\ the\\ actual\\ owner|rejects\\ raw\\ repeated\\ minimum\\ fields\\ and\\ keeps\\ receiving\\ HEAD\\ and\\ SSE\\ refusals\\ finite|enforces\\ the\\ minimum\\-receiving\\-malformed\\-request\\ boundary\\ over\\ the\\ emitted\\ listener)$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+  "started": "2026-10-15T22:55:30.168083+00:00",
+  "adjudication": {
+    "kind": "exact-source-selection",
+    "passedFullNames": [
+      "source-private actual Transactional HTTP fails minimum controls closed before ordinary Read and expired cursor conditional decisions",
+      "orders page nondisclosure, minimum waits, expiry and representation using actual owner state",
+      "refuses unsupported root controls after nondisclosure but before read-triggered retention",
+      "keeps failed parent rows unchanged for nonexistent page reads with any controls",
+      "serves conditioned live aliases and preserves bodyless redirects, refusal context and receiving boundaries",
+      "rejects malformed minimum tuples across read routes without entering the actual owner",
+      "rejects raw repeated minimum fields and keeps receiving HEAD and SSE refusals finite",
+      "enforces the minimum-receiving-malformed-request boundary over the emitted listener"
+    ],
+    "skipped": 73,
+    "jsonSha256": "0f0ea02bb23a993bedd65e2bed43eb82bd966dc03e76c070e3acc66ff837e998",
+    "limitation": "Static HTTP/owner model is not an independently observed network quota; raw logs and reported cleanup remain separately reviewed."
+  },
+  "elapsedSeconds": 2.476937416009605,
+  "exit": 0,
+  "supervisorExit": 0,
+  "timeout": false,
+  "forcedCleanup": false,
+  "errors": [],
+  "processGroup": 45682,
+  "remainingBeforeCleanup": [],
+  "remainingAfterCleanup": [],
+  "sampledPids": [
+    45682,
+    45684,
+    45691,
+    45694
+  ],
+  "sampledPidsStillPresent": {},
+  "sampledTempEntries": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v3/http-positive.tmp/NDV5aZuCLRonU4RW9yEK8",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v3/http-positive.tmp/bdp-tx-http-acJHGN",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v3/http-positive.tmp/bdp-tx-http-xiTKxj"
+  ],
+  "tempEntriesAfter": [],
+  "remainingTempEntriesForClassification": [],
+  "runtimeDirectoriesStillPresent": [],
+  "unclassifiedTempEntriesStillPresent": [],
+  "sourceUnchanged": true,
+  "sourceSha256After": {
+    "docs/specs/bdp.md": "63e93be562334c84c1e967da2fce212e8ef515aa3c9448924c5f9a272ea7b80b",
+    "packages/server/src/transaction-consistency.ts": "00a420c3e9f5dcb1b8814a6476d5ce52edfb7adbbd1c64ab082833f17322a336",
+    "packages/server/src/transaction-http.ts": "ebb3550110bd6fda638572966e5faa05c15f062f37a10947f6e442fc7d4570f4",
+    "packages/server/src/transaction-consistency.test.ts": "4d45ba52c028c3081188a6f76498889d7170cceaaad114004458b86331191bc9",
+    "packages/server/src/transaction-http.test.ts": "ca2e4e7663a93060ba2a0788c5ef349a3de4991e3108f81507f37a723d964781",
+    "packages/server/src/transaction-snapshot-http.test.ts": "61023b5f24396fe484c7820c706b560cb87abd7a3e16670f5a0944fbefd44d8a",
+    "packages/server/src/transaction-schema-http.test.ts": "eee33a0948c9a0981a2a963cec5a8f16102ae5bab32128f83c39956abe0a952b",
+    "packages/server/src/transaction-changefeed.test.ts": "97c3f8604ccbb7f3141a22e5c3d338f51929b308b80614309a7e837801b12043",
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts": "58f4ad828861ea332de7bf4413f48eb4646f32237b76d3a4db310e081b99ffe9",
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts": "cefde296b07d6be86a83d13892a603588c9054bdd54196048a855e74f9e9b7f9",
+    "docs/design/transaction-implementation-progress.md": "2c30837b7d43f51129b7cdfbc3b1cb09941b2527fb7d432a94755d6c5edb3522"
+  },
+  "samplingSeconds": 0.05,
+  "commandWindowSeconds": 115,
+  "groupHardDeadlineSeconds": 120,
+  "cleanupBound": "TERM at115s, KILL no later than120s; wait/reap after kill adds no product execution allowance",
+  "samplingLimitation": "Short-lived or detached descendants may evade group sampling; helper counts and independent final checks remain separate.",
+  "tempClassification": "Only the selected fixture prefixes under this attempt TMPDIR are owned runtime roots; all other entries are preserved for review, not deleted or called leaks.",
+  "resultLimitation": "Exit0 is command completion, not independent oracle/claim/provenance adjudication."
+}

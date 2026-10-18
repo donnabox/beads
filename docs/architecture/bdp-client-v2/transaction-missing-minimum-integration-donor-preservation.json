@@ -1,0 +1,57 @@
+{
+  "base": "9b95df5dd866dbaf84150404c4db86ac8054b724",
+  "parents": [
+    "26d6cd1b947db8c00e24015771506d26098a293e",
+    "7791aed7394e30fef2d2c1ed4fed3f43504e42ba"
+  ],
+  "automaticMerge": true,
+  "conflicts": [],
+  "checks": [
+    {
+      "path": "packages/server/src/transaction-discovery.test.ts",
+      "donor": "26d6cd1b947db8c00e24015771506d26098a293e",
+      "sha256": "977dfae7a1cba9ffe11bdd3633ee26fa15eb8579254c6304eea1d6ac10667356",
+      "byteIdentical": true
+    },
+    {
+      "path": "packages/server/src/transaction-discovery.ts",
+      "donor": "26d6cd1b947db8c00e24015771506d26098a293e",
+      "sha256": "bb8055e2089f640a5d2071e389ac2011d08c038427265b50ab3d03c02047cfef",
+      "byteIdentical": true
+    },
+    {
+      "path": "packages/server/src/transaction-runtime-configuration.test.ts",
+      "donor": "26d6cd1b947db8c00e24015771506d26098a293e",
+      "sha256": "3167dc4a4748f63ec069f0c9f3fddbcbd82a14aca127c49c5ba118bb8cd9f79d",
+      "byteIdentical": true
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "donor": "7791aed7394e30fef2d2c1ed4fed3f43504e42ba",
+      "sha256": "15ac10dadb019deabda1b22e5c8363aebc3c89692992e5e017e682e8c94b85c9",
+      "byteIdentical": true
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "donor": "7791aed7394e30fef2d2c1ed4fed3f43504e42ba",
+      "sha256": "5f6655bd0c3fe9ee6e2e46b5630ad7d3668901a894d40c401458534e373440a3",
+      "byteIdentical": true
+    },
+    {
+      "path": "packages/server/src/transaction-read.test.ts",
+      "donor": "7791aed7394e30fef2d2c1ed4fed3f43504e42ba",
+      "sha256": "7b22c465600b8e42e68c7e5f0317660aceef8a86e3d548ec0f94ed9654552d54",
+      "byteIdentical": true
+    },
+    {
+      "path": "packages/server/src/transaction-read.ts",
+      "donor": "7791aed7394e30fef2d2c1ed4fed3f43504e42ba",
+      "sha256": "be0e1fdc96b90a58cd34ddc9d1f687234603f9b6e97642e908d10bfbb71a3ee0",
+      "byteIdentical": true
+    }
+  ],
+  "progressDiffs": {
+    "26d6cd1b947db8c00e24015771506d26098a293e": "diff --git a/docs/design/transaction-implementation-progress.md b/docs/design/transaction-implementation-progress.md\nindex 51de554..afe8fb6 100644\n--- a/docs/design/transaction-implementation-progress.md\n+++ b/docs/design/transaction-implementation-progress.md\n@@ -659,18 +659,31 @@ is unchanged by this Read-route forwarding. Unsupported command controls\n still fail before mutation admission, after authentication/authorization.\n \n This remains a named subset, not complete minimum-position qualification.\n-Absent/hidden Resource ordering relative to a minimum has no established ruling;\n-such point requests return the explicit private visibility gap without adopting\n-either 404-first or barrier-first semantics. This fixed all-visible owner does\n-not qualify changing visibility policies. Collection continuations, Types,\n+Compatible, already-satisfied minimums on absent/deleted canonical Bead/Link\n+records and properties now return the actual observed404 with same-entry current\n+context. Simultaneous missing/hidden and behind/foreign conditions retain the\n+private visibility gap; their arbitration remains unqualified. The ordinary\n+in-process Read facet now forwards only signal, ignoring generic sourceCondition;\n+only minimumFor honors a minimum. Corrupt owner context propagates as an integrity\n+failure (sanitized500 without a visibility marker), rather than being masked as\n+missing/minimum ambiguity. This fixed all-visible owner does not qualify changing\n+visibility policies. Source and HTTP tests cover the absent/deleted, Bead/Link,\n+record/properties, equal/earlier product, conditionals and no-poll collisions.\n+The separately reported installed compatible-missing scenario uses two owned-Link\n+batches and eight reads (10 exchanges, one child), including a final behind failure.\n+Per-step source revisions prove the owned deletion sequence; no earlier create\n+image is represented as the final owner image. Supporting source-bound evidence\n+and three source-mutant controls are recorded in the workstream's\n+`transaction-compatible-missing-minimum-implementation/report.md`.\n+Collection continuations, Types,\n incident Links, aliases and discovery retain the development gap when minimum\n controls are supplied. Partial/malformed tuples, bare epoch/view fields and\n unknown opaque position spellings also retain that gap; no normative error rule\n is invented for them. In particular, whether a minimum constrains an old retained\n query page's anchor or its current serving observation remains unresolved. Normal\n continuations without controls retain their existing stable data/lifetime behavior.\n-No public profile/discovery, schema, durable format, Type or evidence change was\n-made. Fresh Snapshot creation GET/HEAD now also accepts the complete canonical\n+No public profile/discovery, schema, durable format, Type or qualification claim\n+changes. Fresh Snapshot creation GET/HEAD now also accepts the complete canonical\n minimum tuple. Both capture and nonallocating preflight check the actual owner\n context before expiry/copy/allocation and reuse one finite wait with disconnect\n cancellation. Preflight remains authoritative before conditional/media decisions;\n@@ -1057,7 +1070,12 @@ context must also identify a retained Event in that Source. Malformed and\n never-member cursors return `invalid-parameter` as a local reference convention.\n A known Resource identity remains an Event Source after deletion; an unknown\n source returns nondisclosing 404 before minimum checks, also a local reference\n-ordering choice. Receipt detail expiry does not prune Events.\n+ordering choice. Unknown receipt pages likewise keep their local context-free404\n+convention under arbitrary controls. Neither convention establishes global\n+missing/minimum precedence: canonical current Resource/properties reads return\n+observed404 with context only when the supplied minimum is compatible and already\n+satisfied; missing+behind/foreign remains a private gap. Receipt detail expiry does\n+not prune Events.\n \n HTTP authentication and Origin/Host/raw-target checks precede Event access. The\n existing finite minimum wait releases the owner entry between attempts, reports\n",
+    "7791aed7394e30fef2d2c1ed4fed3f43504e42ba": "diff --git a/docs/design/transaction-implementation-progress.md b/docs/design/transaction-implementation-progress.md\nindex c3b455b..afe8fb6 100644\n--- a/docs/design/transaction-implementation-progress.md\n+++ b/docs/design/transaction-implementation-progress.md\n@@ -1645,9 +1645,10 @@ owner reopens, without treating a compact completed receipt as a forgotten key.\n This is **not a wire-ready description**. The internal validation projection\n closes a disclosure prerequisite, but remaining mandatory serving behavior and\n its review gates must close before activation. Optional request, Resource,\n-transaction and retention limits remain omitted; omission does not authorize\n-silent truncation or non-normative errors. C3 neither serves this candidate nor grants public Transactional\n-admission. Scope, descriptor and directory GET/HEAD remain explicitly refused.\n+sequence, patch, transaction and retention limits remain omitted; omission does\n+not authorize silent truncation or non-normative errors. C3 neither serves this\n+candidate nor grants public Transactional admission. Scope, descriptor and\n+directory GET/HEAD remain explicitly refused.\n The source-private installed boundary fixture has exactly 12 exchanges and one\n child: six authenticated discovery GET/HEAD refusals, three anonymous refusals,\n then a real batch, independent afterstate GET and exact retained retry. Its\n"
+  }
+}

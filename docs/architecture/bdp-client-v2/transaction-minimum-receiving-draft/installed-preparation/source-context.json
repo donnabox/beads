@@ -1,0 +1,27 @@
+{
+  "status": "DIRTY_SOURCE_REFERENCE_NOT_FINAL_PACKAGE_BINDING",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/receiving-test-repair/source-binding.json",
+    "sha256": "b7082c68869b1cecd715ed8d6e0ef88c6ba064a2e698beddf02844ed4dc252fb"
+  },
+  "head": "5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854",
+  "statusPorcelain": " M apps/bdptest/src/transactional-snapshot-installed.test.ts\n M docs/design/transaction-implementation-progress.md\n M docs/specs/bdp.md\n M packages/server/src/transaction-changefeed.test.ts\n M packages/server/src/transaction-consistency.test.ts\n M packages/server/src/transaction-consistency.ts\n M packages/server/src/transaction-http.test.ts\n M packages/server/src/transaction-http.ts\n M packages/server/src/transaction-schema-http.test.ts\n M packages/server/src/transaction-snapshot-http.test.ts\n?? apps/bdptest/src/transactional-minimum-receiving-installed.test.ts\n",
+  "referenceFiles": {
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts": "cefde296b07d6be86a83d13892a603588c9054bdd54196048a855e74f9e9b7f9",
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts": "58f4ad828861ea332de7bf4413f48eb4646f32237b76d3a4db310e081b99ffe9",
+    "apps/bdptest/test-support/transactional-execution-binding.ts": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+    "apps/bdptest/test-support/installed-contract-identity.ts": "d33f6d1ca8a3691bbc2529129bbe85260cdd38f09c8895304a870ec8cf7c4165",
+    "scripts/transaction-installed-observation.mjs": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+    "packages/conformance/test-support/transactional/fixture-v1.json": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+    "schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+    "pnpm-lock.yaml": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d"
+  },
+  "sourceAudit": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/run-v3/native-source-outcome.md",
+    "sha256": "a9c8580df7ddb255dab76ce20fe68c7077a20f063a83202c7f7692fd95525d7a"
+  },
+  "finalCandidate": null,
+  "finalTree": null,
+  "actualIntegratedParent": null,
+  "buildInventory": null
+}

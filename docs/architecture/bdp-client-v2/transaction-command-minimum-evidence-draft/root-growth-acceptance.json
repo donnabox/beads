@@ -1,0 +1,78 @@
+{
+  "at": "2026-10-15T06:09:50.100642+00:00",
+  "decision": "ACCEPT_EXACT_MEASURED_SOURCE_AUTHORING_FENCES",
+  "base": "453b6dab386746bb03aac2c0a293572b8a71c969",
+  "measurement": {
+    "reportSha256": "a67427f3f264b34535a00e14e28328681bc356b4d95186c4cdd419565672a60e",
+    "dataSha256": "96aa5b057bc7ae76bb831222b91e8e70bfd3f927da88c008a9c28802c90159af",
+    "canonicalSha256": "1af0302a328004a0a2614dae85d279f86c530a12d3f4d69bd174ade5d24b0059",
+    "rootIndependentDataRecount": {
+      "derivatives": 40,
+      "maximumNormalBytes": 756707,
+      "maximumNodes": 19731,
+      "manifestDiskBytes": 738783,
+      "manifestNormalBytes": 750589,
+      "manifestNodes": 19575,
+      "coverageBytes": 108091
+    }
+  },
+  "accepted": {
+    "status": "PROPOSED_ONLY_NOT_APPLIED",
+    "canonical": {
+      "manifestDisk": {
+        "oldAbsolute": 688302,
+        "newAbsolute": 742879,
+        "oldDeltaFrom488280": 200022,
+        "newDeltaFrom488280": 254599,
+        "margin": 4096
+      },
+      "manifestNormal": {
+        "oldAbsolute": 699694,
+        "newAbsolute": 754685,
+        "margin": 4096
+      },
+      "nodes": {
+        "oldAbsolute": 18171,
+        "newAbsolute": 19639,
+        "oldDeltaFrom13019": 5152,
+        "newDeltaFrom13019": 6620,
+        "margin": 64
+      },
+      "coverage": {
+        "oldAbsolute": 100269,
+        "newAbsolute": 109115,
+        "oldDeltaFrom70662": 29607,
+        "newDeltaFrom70662": 38453,
+        "margin": 1024
+      }
+    },
+    "bothAppDerivativeLocations": {
+      "oldNormalBytes": 705812,
+      "newNormalBytes": 760803,
+      "byteMargin": 4096,
+      "oldNodes": 18327,
+      "newNodes": 19795,
+      "nodeMargin": 64
+    },
+    "exactActions": 210,
+    "exactAssertions": 2294,
+    "newActionAssertions": 192,
+    "sourceBindingSha256": "69925496fd59441691f976c12a80631f55f2ba178a8462f47cf3fba8e897547b",
+    "diffSha256": "7a13a1f6113e0dfb0d0a0d2691ba92bb726c81ddd281ce70ff70a289e57d4b14",
+    "derivativeMeasurementSha256": "96aa5b057bc7ae76bb831222b91e8e70bfd3f927da88c008a9c28802c90159af",
+    "appDerivativeMatchesIndependentData": true,
+    "sourceUnchanged": true
+  },
+  "ownership": {
+    "canonicalGuards": "update_implementation; cumulative test only",
+    "derivativeGuards": "cross_carrier_plan_v2_review; app test only"
+  },
+  "otherRepair": "N1 genuine report retention before cleanup; no fabricated result",
+  "executionAuthorized": false,
+  "limitsUnchanged": [
+    "1MiB artifact",
+    "100000 JSON nodes",
+    "all runtime/wire/time/CI limits"
+  ],
+  "rationale": "Measured growth only with existing4096byte/64node/1024coverage margins; historical bases retained. Final code council and exact execution packet still required."
+}

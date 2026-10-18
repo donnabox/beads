@@ -1,0 +1,319 @@
+{
+  "status": "FRESH_HEALTHY_INSTALLED14_1_PASSED",
+  "sourceCommit": "fc47fbfb5f1055766e2f680df40a1d729d39638d",
+  "sourceTree": "11641e37dc87560c4e92928fed86c88b2b314412",
+  "sourceClean": true,
+  "selectedCases": 1,
+  "passed": 1,
+  "failed": 0,
+  "httpRequests": 14,
+  "completedResponses": 14,
+  "childCount": 1,
+  "session": {
+    "pid": 27563,
+    "exit": 0,
+    "signal": null
+  },
+  "entryRealpath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/consumer-v4/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed-process.js",
+  "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+  "installedPayloadDigest": "2e982099f4c4e3688c47734256e2cc6b1cb461948a265bcc5fe1945fdfdda5d0",
+  "runtimeConfigurationIdentity": "024af4f800063a337ce22987b872a17c8457e9510f824a133f41c895d14316da",
+  "readyBinding": {
+    "served": {
+      "scope": "https://reference.invalid/acme/",
+      "profile": "transactional",
+      "history": false,
+      "sourceCommit": "fc47fbfb5f1055766e2f680df40a1d729d39638d",
+      "installedPayloadDigest": "2e982099f4c4e3688c47734256e2cc6b1cb461948a265bcc5fe1945fdfdda5d0",
+      "installedContractsDigest": "1f369030c8696ff445c235b24637cc1ac41f0ab724a1b2402511347f74da344f",
+      "policyDigest": "00bfa76b813a82096479a8cbb10a83aada279cbe1483d445f35dfd90a1bf9974",
+      "authenticationDigest": "1cea8b3b8c0f8727a209197647148107e9ef7b0827f5a438d93f389a226a0c16",
+      "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+      "fixtureId": "reference-transactional-v1",
+      "capabilities": [
+        "installed-transactional-http",
+        "transactional-receipt-observation"
+      ]
+    },
+    "operationTargets": {
+      "createBead": "https://reference.invalid/acme/operations/create-bead",
+      "updateBead": "https://reference.invalid/acme/operations/update-bead",
+      "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+      "createLink": "https://reference.invalid/acme/operations/create-link",
+      "updateLink": "https://reference.invalid/acme/operations/update-link",
+      "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+      "putAlias": "https://reference.invalid/acme/operations/put-alias",
+      "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+      "updateWhere": "https://reference.invalid/acme/operations/update-where",
+      "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+      "batch": "https://reference.invalid/acme/operations/batch",
+      "sequence": "https://reference.invalid/acme/operations/sequence"
+    },
+    "runtimeConfigurationIdentity": "024af4f800063a337ce22987b872a17c8457e9510f824a133f41c895d14316da",
+    "authorityMode": "canonical"
+  },
+  "verifiedFileMembers": 313,
+  "verifiedProductionPackageCount": 8,
+  "productionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "commands": {
+    "fresh-build": {
+      "name": "fresh-build",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair",
+      "validatedBdpOverrides": {},
+      "started": "2026-10-14T19:24:39.034216+00:00",
+      "elapsedSeconds": 1.061582875205204,
+      "exit": 0,
+      "timeout": false,
+      "processGroup": 26208,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/fresh-build.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/fresh-build.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    },
+    "pack-protocol": {
+      "name": "pack-protocol",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--dir",
+        "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair/packages/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/packages"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair",
+      "validatedBdpOverrides": {},
+      "started": "2026-10-14T19:24:40.394160+00:00",
+      "elapsedSeconds": 0.35755133302882314,
+      "exit": 0,
+      "timeout": false,
+      "processGroup": 26264,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/pack-protocol.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/pack-protocol.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    },
+    "pack-server": {
+      "name": "pack-server",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--dir",
+        "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair/packages/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/packages"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair",
+      "validatedBdpOverrides": {},
+      "started": "2026-10-14T19:24:41.060356+00:00",
+      "elapsedSeconds": 0.4355749578680843,
+      "exit": 0,
+      "timeout": false,
+      "processGroup": 26273,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/pack-server.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/pack-server.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    },
+    "install-consumer": {
+      "name": "install-consumer",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/consumer",
+      "validatedBdpOverrides": {},
+      "started": "2026-10-14T19:25:16.531831+00:00",
+      "elapsedSeconds": 0.5438018329441547,
+      "exit": 1,
+      "timeout": false,
+      "processGroup": 26351,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/install-consumer.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/install-consumer.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    },
+    "install-consumer-v2": {
+      "name": "install-consumer-v2",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/consumer-v2",
+      "validatedBdpOverrides": {},
+      "started": "2026-10-14T19:26:14.291069+00:00",
+      "elapsedSeconds": 0.43047474999912083,
+      "exit": 1,
+      "timeout": false,
+      "processGroup": 26585,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/install-consumer-v2.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/install-consumer-v2.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    },
+    "install-consumer-v3": {
+      "name": "install-consumer-v3",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/consumer-v3",
+      "validatedBdpOverrides": {},
+      "started": "2026-10-14T19:27:13.667370+00:00",
+      "elapsedSeconds": 0.6464039168786258,
+      "exit": 1,
+      "timeout": false,
+      "processGroup": 26837,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/install-consumer-v3.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/install-consumer-v3.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    },
+    "install-consumer-v4": {
+      "name": "install-consumer-v4",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/consumer-v4",
+      "validatedBdpOverrides": {},
+      "started": "2026-10-14T19:28:13.164922+00:00",
+      "elapsedSeconds": 0.5332489579450339,
+      "exit": 0,
+      "timeout": false,
+      "processGroup": 27059,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/install-consumer-v4.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/install-consumer-v4.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    },
+    "healthy-installed14": {
+      "name": "healthy-installed14",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "apps/bdptest/src/transactional-direct-refusal-installed.test.ts",
+        "-t",
+        "observes current context on installed direct refusals within14requests$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/installed.results.json"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-repair",
+      "validatedBdpOverrides": {
+        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/consumer-v4/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed-process.js",
+        "BDP_TRANSACTIONAL_SOURCE_COMMIT": "fc47fbfb5f1055766e2f680df40a1d729d39638d"
+      },
+      "started": "2026-10-14T19:29:48.337600+00:00",
+      "elapsedSeconds": 1.1161862090229988,
+      "exit": 0,
+      "timeout": false,
+      "processGroup": 27541,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/healthy-installed14.tmp/bdp-refusal-installed-uBe77s",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/healthy-installed14.tmp/l9sMfw8Jb1bdsmrVPLT9Z",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/healthy-installed14.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-typing-repair/fresh-healthy-installed/healthy-installed14.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    }
+  },
+  "priorFailures": [
+    "install-stop.json",
+    "install-v2-stop.json",
+    "install-v3-stop.json",
+    "provenance-inspection-stop.json"
+  ],
+  "firstThreeConsumerAttemptsRuntimeCounts": {
+    "childCount": 0,
+    "httpRequests": 0
+  },
+  "limitsUnchanged": {
+    "requestTimeoutMs": 5000,
+    "cohortTimeoutMs": 90000,
+    "testTimeoutMs": 120000,
+    "commandTimeoutMs": 120000,
+    "requestHeaderBytes": 16384,
+    "requestBodyBytes": 65536,
+    "responseBodyBytes": 131072,
+    "maxWorkers": 1
+  },
+  "cleanupSha256": "28fddfa248b9e7f9ac4e83119eebb1eb7c2d327865926cdc67537596f2ff7298",
+  "provenanceSha256": "99b15d16c66b39c0ffe05e13634d9eb2b98dd082ce9786e19a85c83a0f870193",
+  "observationSha256": "92a6d69a7f31f409e7a8e38ae641b367869bf9efa0ed28aae31012ed06427d72",
+  "payloadDigestProofSha256": "1a702603c5d0f955609fffc634f92c2d8e0634366e300371370e105de7144933",
+  "notClaimed": [
+    "maintenance-fault qualification through installed defaults",
+    "full suite",
+    "profile completion/public claim",
+    "child cryptographic source attestation",
+    "complete retained response body/wire bytes",
+    "merge/CI clearance"
+  ]
+}

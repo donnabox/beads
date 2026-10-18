@@ -1,0 +1,265 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads
+
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > observes erasure pointer disclosure in the shipped assertions: {}
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > observes erasure pointer disclosure in the shipped assertions: { Object (pointer) }
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > observes erasure pointer disclosure in the shipped assertions: { pointer: null }
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > observes erasure pointer disclosure in the shipped assertions: { Object (archivedAt) }
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > preserves mixed action ordering while the runner owns assertions and captures
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > materializes target-specific programmable input from the bound fixture oracle
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > fails closed when a programmable action has no executor
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > records runner-owned programmable assertion failures
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > snapshots programmable output without invoking getters, toJSON, or leaking proxy errors
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > skips cleanup when a timed-out programmable action never settles
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > decodes an authored raw request target only at the HTTP executor boundary
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > materializes portable raw request-target templates from the resolved semantic URL
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > resolves an exact JSON oracle from the bound target realization
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > normalizes a JSON pointer before comparing it with a fixture oracle
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > normalizes ISO timestamps only at explicitly declared target-specific pointers
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > compares canonical timestamp strings exactly outside declared dynamic pointers
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > does not normalize calendar-invalid timestamp-like strings
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > compares an array projection with the bound realization's exact multiset
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > keeps external and Scope-local URI members portable in an array oracle
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > compares relational tuples with the bound realization's exact multiset
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > does not copy fixture oracle values into failure reports
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > records a deterministic pass from public HTTP observations without attesting evidence
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > compares relational array tuples with field-specific URI normalization
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > compares ordered tuple sequences positionally while default mode stays a multiset
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > distinguishes observable mismatches, setup failures, applicability, and cleanup failures
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > binds the harness preparation to fixture capabilities, names, and values
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > fails closed when catalog metadata has no executable plan
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > captures discovered navigation and validates the offline schema independently
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > keeps request authorization decoration separate from response headers
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > fails fast when schema configuration is missing
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > redacts secret response headers in report observations
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > does not reflect credential-shaped response header values or names
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > blocks a dependent scenario when its actual prerequisite did not pass
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > reports a failed repeated prerequisite observation as a recheck
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > stops after an uncontained prerequisite recheck deadline
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > stops after a prerequisite recheck exceeds a runner observation bound
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > stops after a prerequisite recheck escapes the safe fetch boundary
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > refuses unsafe discovery fetches without misclassifying target conformance
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > stops after cleanup cannot safely restore an already failed scenario
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > retains invalid response evidence without embedding the raw body
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > materializes a repeated query key as repeated wire occurrences
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > runs exactly the scenarios an exact-id selection names and records the request
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > fails closed when a selection names an unknown or inapplicable scenario
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > refuses a selection combined with a substring filter
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > does not copy expected header contents into assertion diagnostics
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > does not copy target-controlled schema paths into assertion diagnostics
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > records only the size and shape of potentially sensitive JSON bodies
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > does not let an unrepresentable JSON value invalidate body-independent assertions
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > keeps response and Link captures independent of unrepresentable JSON
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > keeps body-absence checks on the raw observed body
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > attributes BOM-only HEAD octets to body absence instead of the harness
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > fails closed when a body-absence assertion lacks wire-octet observation
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > rejects a private fixture sentinel in the raw response reason phrase
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > rejects a private fixture sentinel in the raw response header
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > rejects a private fixture sentinel in the raw response body
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > allows arbitrary safe response metadata when the private sentinel stays off-wire
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > fails closed on absent, invalid, or oversized raw-wire evidence
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > fails closed when CORS-header absence lacks an Origin-bearing effective request
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > accepts and records redacted Origin evidence for a CORS-header absence
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > fails closed when CORS evidence reports planned rather than serialized headers
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > fails closed when effective CORS evidence substitutes the requested Origin
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > fails closed when preflight method evidence differs from the serialized request
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > compares HEAD stable metadata content-length with earlier GET
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > compares HEAD stable metadata bdp-scope-epoch with earlier GET
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > compares HEAD stable metadata bdp-authorization-view with earlier GET
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > compares HEAD stable metadata bdp-scope-position with earlier GET
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > attributes a 'unrepresentable-json' JSON-pointer capture to the target and continues
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > attributes a 'empty' JSON-pointer capture to the target and continues
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > attributes a 'invalid-json' JSON-pointer capture to the target and continues
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > reports an unparseable 'empty' body before JSON value comparison
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > reports an unparseable 'invalid-json' body before JSON value comparison
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > rejects an unparseable 'empty' body before schema validation
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > rejects an unparseable 'invalid-json' body before schema validation
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > attributes an unrepresentable JSON value to a body-consuming assertion and continues
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > reports valid over-limit target JSON locally and continues independent scenarios
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > reports a 'node' bound locally and continues independent scenarios
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > reports a 'per-container entry' bound locally and continues independent scenarios
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > gives runner safety bounds precedence over target-value attribution
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > uses own properties and canonical array indices for JSON Pointer
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > parses media types exactly while allowing case and parameters
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > compares Allow methods case-sensitively and rejects undeclared extras
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > compares Cache-Control directive names case-insensitively when declared
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > rejects noncanonical Scope URLs before contacting a target
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > rejects noncanonical target URL percent encoding
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > uses standard relative URL resolution for resource bindings
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > materializes fixture query bindings in absolute and Scope-relative forms
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > bounds fixture preparation even when the harness ignores its signal
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > rejects fixture bindings that shadow Scope or a scenario capture
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > treats invalid executor authorization setup as a harness error
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > rejects and redacts an unsafe executor-supplied effective request
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > rejects an executor-supplied effective request with a changed query
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > bounds a custom executor even when it ignores the request signal
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > does not start later scenarios after an uncontained deadline
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > rejects timeout values that exceed the Node timer range
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > validates safety-critical run identity, profile, and filter options before execution
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > snapshots the factory-created artifact bundle once before any await
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > rejects prerequisite filters and ordering errors before execution
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > classifies caller cancellation as a harness-side abort
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > bounds cooperative fixture cleanup and prevents a passing scenario
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > enforces the cleanup deadline when a harness ignores its signal
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > bounds response bodies before returning an observation
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > reports a response byte bound locally and continues independent scenarios
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > does not wait for an uncooperative body cancellation after the limit
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > times out a response body that never produces another byte
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > rejects an HTTP response body that is not valid UTF-8
+ ↓ packages/conformance/src/runner.test.ts > black-box conformance runner > cancels a response reader when UTF-8 decoding fails midstream
+ ↓ packages/conformance/src/runner.test.ts > runner observed ETag context > uses actual opaque ETag bytes across statuses and redacts them (actions=false)
+ ↓ packages/conformance/src/runner.test.ts > runner observed ETag context > rejects missing/invalid source ETag before sending the dependent request (actions=false): undefined
+ ↓ packages/conformance/src/runner.test.ts > runner observed ETag context > rejects missing/invalid source ETag before sending the dependent request (actions=false): "two", "tags"
+ ↓ packages/conformance/src/runner.test.ts > runner observed ETag context > rejects missing/invalid source ETag before sending the dependent request (actions=false): 1234
+ ↓ packages/conformance/src/runner.test.ts > runner observed ETag context > rejects missing/invalid source ETag before sending the dependent request (actions=false): w/"x"
+ ↓ packages/conformance/src/runner.test.ts > runner observed ETag context > fails an absent or changed cross-status ETag (actions=false): undefined
+ ↓ packages/conformance/src/runner.test.ts > runner observed ETag context > fails an absent or changed cross-status ETag (actions=false): "different"
+ ↓ packages/conformance/src/runner.test.ts > runner observed ETag context > rejects a comparison with missing or malformed source ETag (actions=false): undefined
+ ↓ packages/conformance/src/runner.test.ts > runner observed ETag context > rejects a comparison with missing or malformed source ETag (actions=false): "two", "tags"
+ ↓ packages/conformance/src/runner.test.ts > runner observed ETag context > rejects a comparison with missing or malformed source ETag (actions=false): 1234
+ ↓ packages/conformance/src/runner.test.ts > runner observed ETag context > rejects a comparison with missing or malformed source ETag (actions=false): w/"x"
+ ↓ packages/conformance/src/runner.test.ts > runner observed ETag context > uses actual opaque ETag bytes across statuses and redacts them (actions=true)
+ ↓ packages/conformance/src/runner.test.ts > runner observed ETag context > rejects missing/invalid source ETag before sending the dependent request (actions=true): undefined
+ ↓ packages/conformance/src/runner.test.ts > runner observed ETag context > rejects missing/invalid source ETag before sending the dependent request (actions=true): "two", "tags"
+ ↓ packages/conformance/src/runner.test.ts > runner observed ETag context > rejects missing/invalid source ETag before sending the dependent request (actions=true): 1234
+ ↓ packages/conformance/src/runner.test.ts > runner observed ETag context > rejects missing/invalid source ETag before sending the dependent request (actions=true): w/"x"
+ ↓ packages/conformance/src/runner.test.ts > runner observed ETag context > fails an absent or changed cross-status ETag (actions=true): undefined
+ ↓ packages/conformance/src/runner.test.ts > runner observed ETag context > fails an absent or changed cross-status ETag (actions=true): "different"
+ ↓ packages/conformance/src/runner.test.ts > runner observed ETag context > rejects a comparison with missing or malformed source ETag (actions=true): undefined
+ ↓ packages/conformance/src/runner.test.ts > runner observed ETag context > rejects a comparison with missing or malformed source ETag (actions=true): "two", "tags"
+ ↓ packages/conformance/src/runner.test.ts > runner observed ETag context > rejects a comparison with missing or malformed source ETag (actions=true): 1234
+ ↓ packages/conformance/src/runner.test.ts > runner observed ETag context > rejects a comparison with missing or malformed source ETag (actions=true): w/"x"
+ ↓ packages/conformance/src/runner.test.ts > HEAD metadata omission allowance > 'omitted generated fields'
+ ↓ packages/conformance/src/runner.test.ts > HEAD metadata omission allowance > 'changed present length'
+ ↓ packages/conformance/src/runner.test.ts > HEAD metadata omission allowance > 'missing mandatory cache'
+ ↓ packages/conformance/src/runner.test.ts > HEAD metadata omission allowance > 'missing validator'
+ ↓ packages/conformance/src/runner.test.ts > HEAD metadata omission allowance > 'changed status'
+ ↓ packages/conformance/src/runner.test.ts > conditional cache metadata presence > checks conditional presence, not captured bytes, for date: {"prior":"first","status":304,"state":"fail"}
+ ↓ packages/conformance/src/runner.test.ts > conditional cache metadata presence > checks conditional presence, not captured bytes, for date: {"prior":"first","current":"later","status":304,"state":"pass"}
+ ↓ packages/conformance/src/runner.test.ts > conditional cache metadata presence > checks conditional presence, not captured bytes, for date: {"status":304,"state":"pass"}
+ ↓ packages/conformance/src/runner.test.ts > conditional cache metadata presence > checks conditional presence, not captured bytes, for date: {"current":"new","status":304,"state":"pass"}
+ ↓ packages/conformance/src/runner.test.ts > conditional cache metadata presence > checks conditional presence, not captured bytes, for date: {"prior":"first","current":"first","status":200,"state":"fail"}
+ ↓ packages/conformance/src/runner.test.ts > conditional cache metadata presence > checks conditional presence, not captured bytes, for content-location: {"prior":"first","status":304,"state":"fail"}
+ ↓ packages/conformance/src/runner.test.ts > conditional cache metadata presence > checks conditional presence, not captured bytes, for content-location: {"prior":"first","current":"later","status":304,"state":"pass"}
+ ↓ packages/conformance/src/runner.test.ts > conditional cache metadata presence > checks conditional presence, not captured bytes, for content-location: {"status":304,"state":"pass"}
+ ↓ packages/conformance/src/runner.test.ts > conditional cache metadata presence > checks conditional presence, not captured bytes, for content-location: {"current":"new","status":304,"state":"pass"}
+ ↓ packages/conformance/src/runner.test.ts > conditional cache metadata presence > checks conditional presence, not captured bytes, for content-location: {"prior":"first","current":"first","status":200,"state":"fail"}
+ ↓ packages/conformance/src/runner.test.ts > conditional cache metadata presence > checks conditional presence, not captured bytes, for vary: {"prior":"first","status":304,"state":"fail"}
+ ↓ packages/conformance/src/runner.test.ts > conditional cache metadata presence > checks conditional presence, not captured bytes, for vary: {"prior":"first","current":"later","status":304,"state":"pass"}
+ ↓ packages/conformance/src/runner.test.ts > conditional cache metadata presence > checks conditional presence, not captured bytes, for vary: {"status":304,"state":"pass"}
+ ↓ packages/conformance/src/runner.test.ts > conditional cache metadata presence > checks conditional presence, not captured bytes, for vary: {"current":"new","status":304,"state":"pass"}
+ ↓ packages/conformance/src/runner.test.ts > conditional cache metadata presence > checks conditional presence, not captured bytes, for vary: {"prior":"first","current":"first","status":200,"state":"fail"}
+ ↓ packages/conformance/src/runner.test.ts > conditional cache metadata presence > checks conditional presence, not captured bytes, for expires: {"prior":"first","status":304,"state":"fail"}
+ ↓ packages/conformance/src/runner.test.ts > conditional cache metadata presence > checks conditional presence, not captured bytes, for expires: {"prior":"first","current":"later","status":304,"state":"pass"}
+ ↓ packages/conformance/src/runner.test.ts > conditional cache metadata presence > checks conditional presence, not captured bytes, for expires: {"status":304,"state":"pass"}
+ ↓ packages/conformance/src/runner.test.ts > conditional cache metadata presence > checks conditional presence, not captured bytes, for expires: {"current":"new","status":304,"state":"pass"}
+ ↓ packages/conformance/src/runner.test.ts > conditional cache metadata presence > checks conditional presence, not captured bytes, for expires: {"prior":"first","current":"first","status":200,"state":"fail"}
+ ↓ packages/conformance/src/runner.test.ts > checked-in HTTP observer corrections > checks actual scope-not-modified-head Last-Modified parity: undefined
+ ↓ packages/conformance/src/runner.test.ts > checked-in HTTP observer corrections > checks actual scope-not-modified-head Last-Modified parity: changed
+ ↓ packages/conformance/src/runner.test.ts > checked-in HTTP observer corrections > checks actual scope-not-modified-head Last-Modified parity: unchanged
+ ↓ packages/conformance/src/runner.test.ts > checked-in HTTP observer corrections > checks actual scope-precondition-head Last-Modified parity: undefined
+ ↓ packages/conformance/src/runner.test.ts > checked-in HTTP observer corrections > checks actual scope-precondition-head Last-Modified parity: changed
+ ↓ packages/conformance/src/runner.test.ts > checked-in HTTP observer corrections > checks actual scope-precondition-head Last-Modified parity: unchanged
+ ↓ packages/conformance/src/runner.test.ts > checked-in HTTP observer corrections > permits a bodyless 412 without ETag using actual weak-match-fails assertions
+ ↓ packages/conformance/src/runner.test.ts > checked-in HTTP observer corrections > permits a bodyless 412 without ETag using actual nonmatch-fails assertions
+ ↓ packages/conformance/src/runner.test.ts > checked-in HTTP observer corrections > permits a bodyless 412 without ETag using actual match-precedes-none assertions
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > compares independent owned bytes and projects repeated redacted names without an unapproved hash
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > permits only exact source-bound approved synthetic fingerprints
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > preserves body bytes for 'utf8'/''
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > preserves body bytes for 'utf8'/'  {"a":1,"a":2}\uD800\n'
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > preserves body bytes for 'base64'/'/wA='
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > distinguishes absent body from explicit empty
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > rejects prefix corruption while retaining safe response assertions
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > rejects digest corruption while retaining safe response assertions
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > rejects length corruption while retaining safe response assertions
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > rejects framing corruption while retaining safe response assertions
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > rejects extra corruption while retaining safe response assertions
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > rejects state corruption while retaining safe response assertions
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > rejects missing corruption while retaining safe response assertions
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > rejects accessor corruption while retaining safe response assertions
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > rejects effective-accessor corruption while retaining safe response assertions
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > rejects effective-url corruption while retaining safe response assertions
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > rejects effective-header-accessor corruption while retaining safe response assertions
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > rejects flag corruption while retaining safe response assertions
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > keeps valid request fidelity separate from response conformance
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > fails missing configuration before preparation
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > fails scope configuration before preparation
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > fails profile configuration before preparation
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > fails route configuration before preparation
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > fails cap configuration before preparation
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > fails handle configuration before preparation
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > fails transactional configuration before preparation
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > refuses dispatch-time decorated configuration and stops the next scenario
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > retains cooperative cancellation state not-started
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > retains cooperative cancellation state started-completion-unestablished
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > retains cooperative cancellation state complete
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > bounds a noncooperative cancellation and never infers not-started
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > does not let executor mutation redefine the independent authored-body oracle
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > requires configured routes even for a v2 ordinary arm
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > checks dynamic captured routes before raw=false dispatch
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > checks dynamic captured routes before raw=true dispatch
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > keeps v3 normalized and echoed new names absent while v4 allows redacted names
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > late fulfillment after cancellation supplies only a settlement witness, not success or captures
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > shares the cleanup allowance with receipt collection
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > preserves actual native repeated header lines and unparsed bytes end to end
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > caller cancellation stays primary over terminal abort
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > caller cancellation stays primary over terminal configuration
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > checks elapsed exact execution time before accepting synchronous fulfillment
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > refuses wrong in-Scope response identity while retaining safe status
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > does not publish an unbound target digest even with synthetic source approval
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > records unavailable state on a categorized transport failure without inventing an exact request
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > uses complete ordered exact CORS evidence: valid
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > uses complete ordered exact CORS evidence: pending
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > uses complete ordered exact CORS evidence: not-started
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > uses complete ordered exact CORS evidence: wrong-origin
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > uses complete ordered exact CORS evidence: missing-origin
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > uses complete ordered exact CORS evidence: repeated-origin
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > uses complete ordered exact CORS evidence: empty-origin
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > uses complete ordered exact CORS evidence: wrong-method
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > uses complete ordered exact CORS evidence: repeated-method
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > uses complete ordered exact CORS evidence: empty-method
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > uses complete ordered exact CORS evidence: reordered
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > uses complete ordered exact CORS evidence: missing-duplicate
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > uses complete ordered exact CORS evidence: extra
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > uses complete ordered exact CORS evidence: changed-case
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > uses complete ordered exact CORS evidence: wrong-default
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > uses complete ordered exact CORS evidence: wrong-framing
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > uses complete ordered exact CORS evidence: missing-observation
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > keeps response outcomes when authored transmission is incomplete: not-started
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > keeps response outcomes when authored transmission is incomplete: started-completion-unestablished
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > keeps admitted authorization-view values out of report projections
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > accepts registered credential decoration and authored defaults without resolving credentials again
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > enforces positive source body caps at N and N+1 for utf8
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > enforces positive source body caps at N and N+1 for base64
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > enforces the authored-header lower bound at N and N+1 before preparation
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > checks supplied v2 ordinary-only Read config scope before declaration or preparation
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > checks supplied v2 ordinary-only Read config profile before declaration or preparation
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > gates only selected applicable route checks, preserving catalog order
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > gates only selected applicable cap checks, preserving catalog order
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > receives real socket cancellation after the native body receipt without executing another scenario
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > receives real credential-decorated overflow as a fail-stop harness refusal before dialing
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > preserves exact v3 bytes observed at the original e24 receiving base
+ ↓ packages/conformance/src/runner.test.ts > version 2 exact HTTP receiving > checks even unused v2 exact declarations while preserving a v1 unused binding
+ ↓ packages/conformance/src/runner.test.ts > refuses private dynamicExactConfiguration fields in the runner legacy boundary
+ ↓ packages/conformance/src/runner.test.ts > refuses private dynamicExactConfigurationDigest fields in the runner legacy boundary
+ ↓ packages/conformance/src/runner.test.ts > refuses private sourceReceiptObservation fields in the runner legacy boundary
+ ↓ packages/conformance/src/runner.test.ts > refuses private servedSession fields in the runner legacy boundary
+ ↓ packages/conformance/src/runner.test.ts > excludes all private Transactional metadata from the legacy exchange type
+ ↓ packages/conformance/src/runner.test.ts > requires explicit bdp-scope-epoch presence even when metadata equality sees two absent values
+ ↓ packages/conformance/src/runner.test.ts > requires explicit bdp-authorization-view presence even when metadata equality sees two absent values
+ ↓ packages/conformance/src/runner.test.ts > requires explicit bdp-scope-position presence even when metadata equality sees two absent values
+ ✓ packages/conformance/src/runner.test.ts > observes private first-page authority over actual HTTP: id-first 66ms
+ ✓ packages/conformance/src/runner.test.ts > observes private first-page authority over actual HTTP: page-first 42ms
+ ✓ packages/conformance/src/runner.test.ts > observes private first-page authority over actual HTTP: wrong-parent 32ms
+ ✓ packages/conformance/src/runner.test.ts > observes private first-page authority over actual HTTP: empty-page 27ms
+ ✓ packages/conformance/src/runner.test.ts > observes private first-page authority over actual HTTP: changed-page 26ms
+ ✓ packages/conformance/src/runner.test.ts > observes private first-page authority over actual HTTP: cancel-page 25ms
+ ✓ packages/conformance/src/runner.test.ts > observes private first-page authority over actual HTTP: null-next 23ms
+ ✓ packages/conformance/src/runner.test.ts > observes private first-page authority over actual HTTP: absent-next 22ms
+
+ Test Files  1 passed (1)
+      Tests  8 passed | 247 skipped (255)
+   Start at  13:35:24
+   Duration  555ms (transform 177ms, setup 16ms, import 224ms, tests 264ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/source-diagnostic-successor/run/receipt-first-page.results.json

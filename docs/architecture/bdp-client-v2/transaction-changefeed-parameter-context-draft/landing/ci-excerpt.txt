@@ -1,0 +1,15 @@
+2026-10-15T14:56:48.9977941Z HEAD is now at 0659712 Merge 1f9cb46c42fa69a09ac847f57e47bc96390aea6f into 77f4b89c117e46f0e73476f69b4c8b377306452b
+2026-10-15T15:00:54.6782512Z stdout | packages/server/src/transaction-changefeed.test.ts > preserves current context on owner-observed changefeed parameter refusals over HTTP
+2026-10-15T15:00:54.6859690Z  ✓ packages/server/src/transaction-changefeed.test.ts > preserves current context on owner-observed changefeed parameter refusals over HTTP 75ms
+2026-10-15T15:03:20.1943125Z stdout | apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts > observes genuine installed current context on changefeed parameter refusals
+2026-10-15T15:03:20.2028722Z  ✓ apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts > observes genuine installed current context on changefeed parameter refusals 661ms
+2026-10-15T15:07:02.4454919Z  Test Files  177 passed (177)
+2026-10-15T15:07:02.4496099Z       Tests  9303 passed | 1 skipped (9304)
+2026-10-15T15:07:02.4497755Z    Duration  475.31s (transform 5.52s, setup 1.98s, import 27.69s, tests 1088.76s, environment 13ms)
+2026-10-15T15:07:04.0027694Z  Test Files  1 passed (1)
+2026-10-15T15:07:04.0030066Z       Tests  7 passed (7)
+2026-10-15T15:07:04.0030979Z    Duration  978ms (transform 169ms, setup 27ms, import 215ms, tests 655ms, environment 0ms)
+2026-10-15T15:07:06.9983592Z bdp: installed clean lifecycle passed
+2026-10-15T15:07:07.0659518Z bdptest: installed clean lifecycle passed
+2026-10-15T15:07:07.1350829Z bdpbd: installed clean lifecycle passed
+2026-10-15T15:07:09.8363176Z {"level":"info","event":"evidence.verified","executable":"read-cohort-evidence","artifact":"docs/design/evidence/read-cohort/read-v1.json","constant":"674982be2123b9b7aae630bf79c3f774122900cd","runHead":"e5f7d0c43c151426350ceededdc77fe7e372db9b","evidenceCommit":"dbaf63a24219e1ea3f80394746853598b0d4464a","schemaReadProjection":"bd7da0fc3f8082e0bfb6f4969c04409f2a610e12408dbc6a0bd14b4b351127cc","schemaReadProjectionDefinitions":47,"schemaReadProjectionReachable":46,"rows":89}

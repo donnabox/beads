@@ -1,0 +1,25 @@
+{
+  "released": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "approvedCommandIds": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "negative-controls"
+  ],
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pr148-ci-failure/diagnostic-validation/root-release.json",
+    "sha256": "6cfb89a682e48e51871699323dc7442159f0aeb8f4747f873e137d892622356c"
+  },
+  "preparationSha256": {
+    "source-binding.json": "7837f33db0171dc1ded381a709ef7a0096e94413ba9d2bd0abc4e461e6a22063",
+    "input-binding.json": "876e2714bef09f3193dda8c4859e0f74fe384f2de7760dc5b61190156734cff1",
+    "tool-binding.json": "8c24f6ce5924ec852d44e0679554828cbd67ad3673d76902f26b3f62a91ce520",
+    "commands.json": "b330a646399c99d6627a0c39322cd8e3074fa5bb0091677bfeb138bdef01c1af",
+    "gate.py": "7f12263f8b8b766fd59ff1440bffc17f61623e79406444d7e5d77a22f396d4ca",
+    "plan.md": "8418dfc3148e474b8dcdd64a127a15bedfb8785e3675905444854155f520a169",
+    "supervise.py": "36cf3f1473b206c932f4f5fbaa1e6e99d10c943f61022aea5c05bec37608499a",
+    "build-binding.json": "08ca22c731fdbbdb493500ce1e9a84f502ff13ef6ceb164a8bf9f4043b498dce",
+    "supervisor-adaptation.patch": "7bd3653f13947d61c5e6ae340f8c1216cd0338b56ee575a8ca850033467f9ce9"
+  }
+}

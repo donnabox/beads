@@ -1,0 +1,304 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/gate.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1/gate.py
+@@ -74,6 +74,26 @@
+  for name,data in tar['packages'].items():require(sha(Path(data['archive']).read_bytes())==proof['packages'][name]['archiveSha256'],'Archive changed')
+  entry=Path(proof['entryRealpath']);require(entry.resolve(strict=True).is_relative_to((E/'consumer').resolve()) and sha(entry.read_bytes())==proof['entrySha256'],'External entry changed')
+  return proof
++def verify_bootstrap_reuse(g):
++ reuse=read(P/'bootstrap-reuse-binding.json');require(reuse.get('mappingFinalized') is True,'Bootstrap source transition pending');old=document(reuse['sourceBinding']);new=g['_sourceBinding']
++ require(reuse['successorSourceBinding']==g['sourceBinding'] and reuse['successorSourceIdentity']==g['_sourceIdentity'],'Successor bootstrap link differs')
++ require(reuse['originalSourceIdentity']==sha(json.dumps(old['trackedSourceFiles'],sort_keys=True).encode()),'Original source identity differs')
++ require(old['head']==reuse['originalHead']==new['head'] and old['tree']==reuse['originalTree']==new['tree'],'Bootstrap base chronology differs')
++ changes=sorted(p for p,h in new['trackedSourceFiles'].items() if old['trackedSourceFiles'].get(p)!=h)
++ require(set(old['trackedSourceFiles'])==set(new['trackedSourceFiles']) and changes==reuse['allowedSourceChanges'],'Unreviewed source transition')
++ require(all(old['trackedSourceFiles'][p]==new['trackedSourceFiles'][p]==h for p,h in reuse['dependencyInputs'].items()),'Dependency inputs changed')
++ for p,h in reuse['records'].items():require(sha(Path(p).read_bytes())==h,'Bootstrap evidence changed '+p)
++ require(reuse['tools']==g['workspaceTools'],'Original tool record must be reused without relabeling')
++ disposition=document(reuse['rootBootstrapDisposition']);require(disposition['accepted'] is True and disposition['dependencyInstallAuthorized'] is True and disposition['sourceBindingSha256']==reuse['sourceBinding']['sha256'],'Original bootstrap release differs')
++ tb=document(reuse['tools']);tools_check(tb['tools'])
++ require(tb['sourceIdentity']==reuse['originalSourceIdentity'] and tb['head']==reuse['originalHead'] and tb['sourceLockSha256']==g['sourceLockSha256'],'Original tool chronology/lock differs')
++ directory=Path(reuse['directory']);cfg=read(P/'commands.json')
++ for name in reuse['stages']:
++  v=read(directory/(name+'.exit.json'));start=read(directory/(name+'.started.json'))
++  require(v['accepted'] and v['exit']==0 and v['sourceUnchanged'] and not v['forcedCleanup'] and not v['errors'] and not v['remainingProcesses'] and not v['runtimeDirectoriesStillPresent'],'Original bootstrap failed')
++  require(v['sourceIdentity']==start['sourceIdentity']==reuse['originalSourceIdentity'] and start['head']==reuse['originalHead'] and start['tree']==reuse['originalTree'],'Bootstrap source chronology changed')
++  require(sha((directory/(name+'.log')).read_bytes())==v['logSha256'],'Bootstrap log changed')
++ require(tb['installExitSha256']==sha((directory/'workspace-install.exit.json').read_bytes()) and tb['installLogSha256']==sha((directory/'workspace-install.log').read_bytes()),'Install/tool linkage differs')
+ def load_gate(name,child=False):
+  require(__debug__,'Assertions required')
+  g=read(P/'execution-gate.json')
+@@ -97,15 +117,10 @@
+  if 'selectedFullNames' in spec:require(isinstance(spec['selectedFullNames'],list) and len(spec['selectedFullNames'])>0 and isinstance(spec['prospectiveWorkload'],dict),'Unbound callback selection/workload')
+  base=document(g['baseTools']);tools_check(base['tools'])
+  require(base['sourceLockSha256']==g['sourceLockSha256'],'Base lock differs')
+- if name in ['workspace-install','bind-workspace-tools']:
+-  require(disposition.get('dependencyInstallAuthorized') is True,'Dependency preparation not released')
+-  if name=='workspace-install':require(not (W/'node_modules').exists(),'Workspace install already exists; preserve it and rebind explicitly')
+- else:
+-  tb=document(g['workspaceTools']);tools_check(tb['tools'])
+-  require(tb['sourceIdentity']==g['_sourceIdentity'] and tb['sourceLockSha256']==g['sourceLockSha256'] and tb['head']==g['finalHead'],'Installed tools source differs')
+-  require(tb['installExitSha256']==sha((E/'workspace-install.exit.json').read_bytes()) and tb['installLogSha256']==sha((E/'workspace-install.log').read_bytes()),'Install evidence changed')
+-  require((g['actualClaudeReviewDisposed'] is True and g['nativeCodeReviewDisposed'] is True) or (name in ['typecheck','format-check','lint'] and g['staticValidationAuthorized'] is True),'Code review disposition pending; only explicit static prefix may run')
+-  require(disposition['staticValidationAuthorized'] is True if name in ['typecheck','format-check','lint'] else disposition['runtimeValidationAuthorized'] is True,'Root disposition does not authorize this stage')
++ require(disposition.get('bootstrapReuseAccepted') is True and disposition.get('bootstrapReuseBinding')=={'path':str(P/'bootstrap-reuse-binding.json'),'sha256':sha((P/'bootstrap-reuse-binding.json').read_bytes())},'Root bootstrap reuse acceptance absent')
++ verify_bootstrap_reuse(g)
++ require((g['actualClaudeReviewDisposed'] is True and g['nativeCodeReviewDisposed'] is True) or (name in ['typecheck','format-check','lint'] and g['staticValidationAuthorized'] is True),'Code review disposition pending; only explicit static prefix may run')
++ require(disposition['staticValidationAuthorized'] is True if name in ['typecheck','format-check','lint'] else disposition['runtimeValidationAuthorized'] is True,'Root disposition does not authorize this stage')
+  for prior in order[:order.index(name)]:complete(prior,g)
+  if MODE=='final' and order.index(name)>order.index('bind-fresh-build'):verify_build(g)
+  if name=='verify-installed-consumer':require(isinstance(g.get('consumerLockSha256'),str) and sha((E/'consumer/pnpm-lock.yaml').read_bytes())==g['consumerLockSha256'],'Consumer lock not root-pinned')
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/commands.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1/commands.json
+@@ -2,8 +2,6 @@
+   "configurationFinalized": true,
+   "state": "Concrete source-bound current-observation preparation; all execution CLOSED",
+   "finalOrder": [
+-    "workspace-install",
+-    "bind-workspace-tools",
+     "typecheck",
+     "format-check",
+     "lint",
+@@ -25,37 +23,6 @@
+     "review-current-observation-external"
+   ],
+   "commands": {
+-    "workspace-install": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+-      "argv": [
+-        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+-        "install",
+-        "--offline",
+-        "--ignore-scripts",
+-        "--frozen-lockfile"
+-      ],
+-      "outerSeconds": 120,
+-      "automaticRetries": 0,
+-      "acceptedRawExitCodes": [
+-        0
+-      ],
+-      "termAfterSeconds": 115
+-    },
+-    "bind-workspace-tools": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/audit.py",
+-        "tools"
+-      ],
+-      "outerSeconds": 120,
+-      "automaticRetries": 0,
+-      "acceptedRawExitCodes": [
+-        0
+-      ],
+-      "termAfterSeconds": 115
+-    },
+     "typecheck": {
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-current-observation-minimum",
+       "argv": [
+@@ -147,10 +114,10 @@
+       "termAfterSeconds": 115
+     },
+     "bind-fresh-build": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1/audit.py",
+         "build"
+       ],
+       "outerSeconds": 120,
+@@ -178,7 +145,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/run/focused-source.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1/run/focused-source.results.json",
+         "--testNamePattern",
+         "^(?:current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ omitted\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ undefined\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ null\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ number\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ false\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ empty\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ method\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ accessor\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ inherited\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ proxy\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ rejects\\ malformed\\ Type\\ ID\\ revoked\\ through\\ a\\ Promise\\ without\\ invoking\\ caller\\ data|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ projects\\ immutable\\ current\\ Types\\ and\\ exact\\ incident\\ directions\\ including\\ self\\-Link\\ deduplication|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ keeps\\ types\\ limits,\\ allocation\\ and\\ retained\\ continuation\\ boundaries\\ distinct|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ keeps\\ incident\\ limits,\\ allocation\\ and\\ retained\\ continuation\\ boundaries\\ distinct|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ waits\\ and\\ cancels\\ current\\ surface\\ 0\\ without\\ retaining\\ an\\ owner\\ entry|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ waits\\ and\\ cancels\\ current\\ surface\\ 1\\ without\\ retaining\\ an\\ owner\\ entry|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ waits\\ and\\ cancels\\ current\\ surface\\ 2\\ without\\ retaining\\ an\\ owner\\ entry|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ pre\\-aborts,\\ drains\\ and\\ releases\\ a\\ waiting\\ current\\ surface\\ 0|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ pre\\-aborts,\\ drains\\ and\\ releases\\ a\\ waiting\\ current\\ surface\\ 1|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ pre\\-aborts,\\ drains\\ and\\ releases\\ a\\ waiting\\ current\\ surface\\ 2|current\\ Type\\ and\\ incident\\-Link\\ minimums\\ keeps\\ compatible\\ missing\\ Types\\ and\\ absent/deleted\\ incident\\ anchors\\ separate\\ from\\ collisions|current\\ alias\\ minimum\\ subset\\ preserves\\ direct\\ minimum\\ alias\\ receiving\\ validation,\\ cancellation\\ and\\ lifecycle\\ precedence|current\\ alias\\ minimum\\ subset\\ preserves\\ service\\ minimum\\ alias\\ receiving\\ validation,\\ cancellation\\ and\\ lifecycle\\ precedence|current\\ alias\\ minimum\\ subset\\ conditions\\ alias\\ mapping\\ and\\ context\\ in\\ one\\ entry\\ without\\ revising\\ either\\ target|current\\ alias\\ minimum\\ subset\\ rechecks\\ a\\ repointed\\ alias\\ after\\ waiting\\ for\\ a\\ real\\ Resource\\ effect|current\\ alias\\ minimum\\ subset\\ keeps\\ live\\ alias\\ context\\ failures\\ and\\ compatible\\ absent/deleted/dangling\\ observations\\ distinct|current\\ alias\\ minimum\\ subset\\ forwards\\ ordinary\\ and\\ minimum\\ Request\\ aborts\\ before\\ SQL\\ and\\ drains\\ an\\ admitted\\ alias\\ wait|current\\ alias\\ minimum\\ subset\\ does\\ not\\ relabel\\ alias\\ provider\\ or\\ malformed\\ context\\ failures\\ as\\ missing|current\\ alias\\ minimum\\ subset\\ captures\\ unknown\\ alias\\ minima\\ while\\ resolving\\ each\\ retry\\ against\\ the\\ live\\ owner|current\\ alias\\ minimum\\ subset\\ captures\\ pos\\-01\\ alias\\ minima\\ while\\ resolving\\ each\\ retry\\ against\\ the\\ live\\ owner|current\\ alias\\ minimum\\ subset\\ preserves\\ absent\\ alias\\ nondisclosure\\ before\\ opaque\\ minimum\\ waiting|current\\ alias\\ minimum\\ subset\\ preserves\\ deleted\\ alias\\ nondisclosure\\ before\\ opaque\\ minimum\\ waiting|current\\ alias\\ minimum\\ subset\\ preserves\\ dangling\\ alias\\ nondisclosure\\ before\\ opaque\\ minimum\\ waiting|current\\ alias\\ minimum\\ subset\\ preserves\\ hidden\\ alias\\ nondisclosure\\ before\\ opaque\\ minimum\\ waiting|current\\ alias\\ minimum\\ subset\\ returns\\ current\\ alias\\ absence\\ when\\ an\\ admitted\\ opaque\\ wait\\ loses\\ its\\ mapping|current\\ alias\\ minimum\\ subset\\ drains\\ an\\ aborted\\ opaque\\ alias\\ wait\\ before\\ releasing\\ its\\ owner|current\\ alias\\ minimum\\ subset\\ preserves\\ incident\\-Link\\ opaque\\ exclusions\\ beside\\ alias\\ minima|current\\ minimum\\ perform\\ receiving\\ preserves\\ a\\ direct\\ non\\-enumerable\\ pre\\-aborted\\ signal\\ before\\ owner\\ entry|current\\ minimum\\ perform\\ receiving\\ preserves\\ direct\\ minimum\\ perform\\ receiving\\ validation,\\ cancellation\\ and\\ lifecycle\\ precedence|current\\ minimum\\ perform\\ receiving\\ preserves\\ service\\ minimum\\ perform\\ receiving\\ validation,\\ cancellation\\ and\\ lifecycle\\ precedence|internal\\ discovery\\ owner\\ observation\\ copies\\ exactly\\ one\\ owner\\ entry\\ and\\ parses\\ only\\ after\\ releasing\\ it|internal\\ discovery\\ owner\\ observation\\ keeps\\ entry\\ refusal\\ distinct\\ from\\ structural\\ validation\\ failure|internal\\ discovery\\ owner\\ observation\\ captures\\ nested\\ limits\\ once\\ and\\ enforces\\ the\\ captured\\ values\\ after\\ caller\\ mutation|internal\\ discovery\\ owner\\ observation\\ keeps\\ the\\ replay\\ position\\ floor\\ and\\ complete\\ genesis\\ groups\\ through\\ receipt\\ expiry\\ and\\ reopen|internal\\ discovery\\ minimum\\ observation\\ preserves\\ synchronous\\ no\\-minimum\\ timing\\ and\\ ignores\\ its\\ signal\\ and\\ wait\\ policy|internal\\ discovery\\ minimum\\ observation\\ returns\\ an\\ immutable\\ same\\-entry\\ eligible\\ prefix\\ for\\ pos\\-1\\ after\\ release|internal\\ discovery\\ minimum\\ observation\\ returns\\ an\\ immutable\\ same\\-entry\\ eligible\\ prefix\\ for\\ pos\\-0\\ after\\ release|internal\\ discovery\\ minimum\\ observation\\ returns\\ an\\ immutable\\ same\\-entry\\ eligible\\ prefix\\ for\\ genesis\\ after\\ release|internal\\ discovery\\ minimum\\ observation\\ captures\\ immutable\\ minimum\\ controls\\ and\\ releases\\ the\\ owner\\ during\\ controlled\\ catch\\-up|internal\\ discovery\\ minimum\\ observation\\ releases\\ the\\ owner\\ after\\ an\\ in\\-entry\\ scopeEpoch\\ refusal|internal\\ discovery\\ minimum\\ observation\\ releases\\ the\\ owner\\ after\\ an\\ in\\-entry\\ authorizationView\\ refusal|internal\\ discovery\\ minimum\\ observation\\ times\\ out\\ after\\ two\\ controlled\\ attempts\\ without\\ assembly\\ and\\ leaves\\ the\\ owner\\ reusable|internal\\ discovery\\ minimum\\ observation\\ rejects\\ pre\\-abort\\ before\\ entry\\ and\\ pending\\ abort\\ before\\ retry|internal\\ discovery\\ minimum\\ observation\\ drains\\ an\\ admitted\\ discovery\\ wait\\ before\\ closing\\ the\\ owner|internal\\ discovery\\ minimum\\ observation\\ keeps\\ malformed\\ input,\\ entry\\ refusal,\\ provider\\ and\\ parser\\ failures\\ distinct|captures\\ lexical\\ current\\ minimums\\ without\\ widening\\ strict\\ consumers\\ or\\ invoking\\ accessors|waits\\ for\\ unproved\\ current\\ eligibility\\ with\\ one\\ deadline\\ and\\ preserves\\ terminal\\ failures|distinguishes\\ closed\\ minimum\\ receiving\\ syntax\\ from\\ supported\\ position\\ identities|uses\\ actual\\ current\\ policy\\ for\\ missing\\-first\\ and\\ unproved\\ Resource\\ attempts|drains\\ an\\ admitted\\ unknown\\ minimum\\ to\\ timeout\\ and\\ rejects\\ new\\ reads\\ while\\ closing|records\\ one\\ atomic\\ page\\ chain,\\ retains\\ original\\ postimages\\ and\\ all\\ tail\\ allocations\\ through\\ expiry|captures\\ immutable\\ current\\ context\\ for\\ nondisclosable\\ receipt\\ pages\\ before\\ minimum\\ checks|checks\\ each\\ fresh\\ Snapshot\\ minimum\\ before\\ any\\ handle,\\ record,\\ page\\ or\\ expiry\\ work|does\\ not\\ expire\\ retained\\ Snapshot\\ details\\ on\\ an\\ ineligible\\ fresh\\ attempt|gates\\ fresh\\ Snapshot\\ opaque\\ minima\\ before\\ allocation\\ and\\ expiry|gates\\ initial\\ Scope\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|serves\\ initial\\ finite\\ Scope\\ Event\\ opaque\\ minima\\ through\\ bounded\\ waiting|gates\\ initial\\ Bead\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|serves\\ initial\\ finite\\ Bead\\ Event\\ opaque\\ minima\\ with\\ retained\\ identity\\ and\\ route\\ fences|gates\\ initial\\ Link\\ Event\\ unknown\\ minima\\ before\\ retained\\ scans|serves\\ initial\\ finite\\ Link\\ Event\\ opaque\\ minima\\ with\\ retained\\ identity\\ and\\ route\\ fences|gates\\ initial\\ Scope\\ Event\\ SSE\\ opaque\\ minima\\ before\\ scan\\ packets|captures\\ initial\\ Scope\\ Event\\ SSE\\ minima\\ once\\ and\\ recaptures\\ context\\ on\\ retry|drains\\ an\\ aborted\\ initial\\ Scope\\ Event\\ SSE\\ minimum\\ wait\\ before\\ owner\\ close|serves\\ initial\\ Scope\\ Event\\ SSE\\ opaque\\ minima\\ before\\ conditional\\ admission|keeps\\ direct\\ and\\ excluded\\ changefeed\\ minimum\\ paths\\ strict|serves\\ finite\\ start\\-now\\ opaque\\ minima\\ before\\ HTTP\\ shortcuts|serves\\ canonical\\ current\\ Type\\ and\\ incident\\ minimums\\ with\\ truthful\\ context\\ and\\ parser\\ boundaries|serves\\ conditioned\\ live\\ aliases\\ and\\ preserves\\ bodyless\\ redirects,\\ refusal\\ context\\ and\\ receiving\\ boundaries|waits\\ for\\ current\\ Resources\\ and\\ initial\\ collections\\ with\\ unknown\\ minima\\ and\\ preserves\\ residual\\ refusals|serves\\ fresh\\ Snapshot\\ opaque\\ minima\\ with\\ terminal\\ preflight\\ and\\ retained\\ fences|serves\\ opaque\\ receipt\\ root\\ minima\\ before\\ HTTP\\ shortcuts\\ with\\ private\\ fences|rejects\\ collection\\ parser\\ errors\\ before\\ unknown\\ minimum\\ support\\ checks|preserves\\ parser\\ refusal\\ parity\\ on\\ noncollection\\ and\\ excluded\\ query\\ routes|preserves\\ receiving\\ and\\ HTTP\\ error\\ precedence\\ for\\ parser\\ refusals|orders\\ page\\ nondisclosure,\\ minimum\\ waits,\\ expiry\\ and\\ representation\\ using\\ actual\\ owner\\ state|refuses\\ unsupported\\ root\\ controls\\ after\\ nondisclosure\\ but\\ before\\ read\\-triggered\\ retention|keeps\\ failed\\ parent\\ rows\\ unchanged\\ for\\ nonexistent\\ page\\ reads\\ with\\ any\\ controls|waits\\ for\\ lexical\\ current\\ observations\\ and\\ preserves\\ captured\\ tuples\\ across\\ real\\ progress|orders\\ Type\\ refusal\\ and\\ receipt\\ page\\ nondisclosure\\ before\\ projection|drains\\ lexical\\ current\\ observation\\ type\\ before\\ close|drains\\ lexical\\ current\\ observation\\ types\\ before\\ close|drains\\ lexical\\ current\\ observation\\ incident\\ before\\ close|drains\\ lexical\\ current\\ observation\\ page\\ before\\ close|drains\\ lexical\\ current\\ observation\\ discovery\\ before\\ close|preserves\\ receipt\\ page\\ detail\\ when\\ lexical\\ eligibility\\ is\\ unproved|serves\\ current\\ observation\\ minimums\\ with\\ actual\\ issued\\ pages\\ and\\ HTTP\\ parity)$"
+       ],
+@@ -398,10 +365,10 @@
+       }
+     },
+     "review-focused-source": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1/audit.py",
+         "source"
+       ],
+       "outerSeconds": 120,
+@@ -425,10 +392,10 @@
+       "termAfterSeconds": 115
+     },
+     "prepare-package-directory": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1/packages.py",
+         "directory"
+       ],
+       "outerSeconds": 120,
+@@ -447,7 +414,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1/run/packages"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -465,7 +432,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1/run/packages"
+       ],
+       "outerSeconds": 120,
+       "automaticRetries": 0,
+@@ -475,10 +442,10 @@
+       "termAfterSeconds": 115
+     },
+     "verify-archives": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1/packages.py",
+         "tar"
+       ],
+       "outerSeconds": 120,
+@@ -489,10 +456,10 @@
+       "termAfterSeconds": 115
+     },
+     "prepare-consumer": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1/packages.py",
+         "consumer"
+       ],
+       "outerSeconds": 120,
+@@ -503,7 +470,7 @@
+       "termAfterSeconds": 115
+     },
+     "consumer-install": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1/run/consumer",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -521,10 +488,10 @@
+       "termAfterSeconds": 115
+     },
+     "verify-installed-consumer": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/packages.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1/packages.py",
+         "installed"
+       ],
+       "outerSeconds": 120,
+@@ -544,7 +511,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/run/receiving-history-external.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1/run/receiving-history-external.results.json",
+         "--testNamePattern",
+         "^rejects\\ malformed\\ read\\ minimum\\ tuples\\ before\\ observation\\ while\\ preserving\\ receipt\\ nondisclosure$"
+       ],
+@@ -575,10 +542,10 @@
+       }
+     },
+     "review-receiving-history-external": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1/audit.py",
+         "history"
+       ],
+       "outerSeconds": 120,
+@@ -598,7 +565,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/run/current-observation-external.results.json",
++        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1/run/current-observation-external.results.json",
+         "--testNamePattern",
+         "^observes\\ installed\\ current\\ observation\\ minima\\ within37requests$"
+       ],
+@@ -629,10 +596,10 @@
+       }
+     },
+     "review-current-observation-external": {
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2",
+-      "argv": [
+-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/correction-successor-2/audit.py",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1",
++      "argv": [
++        "/opt/homebrew/opt/python@3.14/bin/python3.14",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1/audit.py",
+         "current"
+       ],
+       "outerSeconds": 120,
+@@ -654,15 +621,24 @@
+     "require-from-string": "2.0.2"
+   },
+   "pending": [
+-    "Native/root review of this closed validation rebind and staged execution release",
+-    "Root measured base tools and fresh workspace bootstrap/tools",
+-    "Actual build/archive/consumer lock/proof"
++    "Native/root formatting and preparation closure plus staged release",
++    "Root acceptance of measured original base/workspace tools and explicit bootstrap transition",
++    "Fresh build/archive/consumer lock/proof"
+   ],
+-  "freshBootstrapStages": 2,
++  "freshBootstrapStages": 0,
+   "postBootstrapStages": 19,
+-  "totalStages": 21,
+-  "reusedEvidence": [],
+-  "sourceBindingSha256": "18b462abd5920fd09ee1a3eaede84c8c7d5b2025000ee66fa98e295890642f55",
++  "totalStages": 19,
++  "reusedEvidence": [
++    {
++      "stages": [
++        "workspace-install",
++        "bind-workspace-tools"
++      ],
++      "binding": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-observation-minimum-validation/format-successor-1/bootstrap-reuse-binding.json",
++      "attribution": "Original correction-successor-2 only; no typecheck reuse"
++    }
++  ],
++  "sourceBindingSha256": "97f121161739d912d91c4150a2a59fce73fa7304e5883b9ab8cca5e94644a615",
+   "helperImplementationFinalized": true,
+   "runtimeTempPolicy": {
+     "root": "/private/tmp",

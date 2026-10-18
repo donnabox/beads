@@ -1,0 +1,64 @@
+{
+  "head": "30035b88380b7cbb3abd5359787db236b70345c7",
+  "tree": "cdee4bc7e31511cde094d17c045ea618163b6d7a",
+  "parents": [
+    "c555fe01df5cd20454fb0d663431df816c1270aa"
+  ],
+  "branch": "codex/vickie-comparison-timeout-context",
+  "clean": true,
+  "files": [
+    {
+      "path": "packages/server/src/transaction-comparison.ts",
+      "bytes": 3236,
+      "sha256": "3c5f9025675f506e08a9977ab0d1551a3a996669fd11b99772b1c2a39209998d",
+      "acceptedPreflightSha256": "3c5f9025675f506e08a9977ab0d1551a3a996669fd11b99772b1c2a39209998d"
+    },
+    {
+      "path": "packages/server/src/transaction-store.ts",
+      "bytes": 85323,
+      "sha256": "ff25fdb35772b48c230bfbe65f1f3cb7805df4a585965fdc6bd150a432c7e8ed",
+      "acceptedPreflightSha256": "ff25fdb35772b48c230bfbe65f1f3cb7805df4a585965fdc6bd150a432c7e8ed"
+    },
+    {
+      "path": "packages/server/src/transaction-submission.ts",
+      "bytes": 7246,
+      "sha256": "242839f8014eb6083d6f9d544c1461618561f8c511a53086eb45cd0fd3b75a37",
+      "acceptedPreflightSha256": "242839f8014eb6083d6f9d544c1461618561f8c511a53086eb45cd0fd3b75a37"
+    },
+    {
+      "path": "packages/server/src/transaction-http.ts",
+      "bytes": 27342,
+      "sha256": "f262e3cc623e3557758cfed39e929404e3d96d77f4cc80f394b5c3fcbbcf440b",
+      "acceptedPreflightSha256": "f262e3cc623e3557758cfed39e929404e3d96d77f4cc80f394b5c3fcbbcf440b"
+    },
+    {
+      "path": "packages/server/src/transaction-store.test.ts",
+      "bytes": 136467,
+      "sha256": "1aa048c36ef7cb412c7ed8c4a286e8c36627312a6ac8b736dddbe93886fd57b3",
+      "acceptedPreflightSha256": "1aa048c36ef7cb412c7ed8c4a286e8c36627312a6ac8b736dddbe93886fd57b3"
+    },
+    {
+      "path": "packages/server/src/transaction-submission.test.ts",
+      "bytes": 41895,
+      "sha256": "6a030b27ad4eae12e8502b409155b8f1e5ac9d4fda987b5817b7aedce198a07e",
+      "acceptedPreflightSha256": "6a030b27ad4eae12e8502b409155b8f1e5ac9d4fda987b5817b7aedce198a07e"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "bytes": 117951,
+      "sha256": "685e23477a635ccae2fda2df45c7358d107442f8cfdbad22c1c9b0490fde0978",
+      "acceptedPreflightSha256": "685e23477a635ccae2fda2df45c7358d107442f8cfdbad22c1c9b0490fde0978"
+    },
+    {
+      "path": "docs/design/transaction-implementation-progress.md",
+      "bytes": 120586,
+      "sha256": "380ab5e50a2d754c80e9441ee61defdabe82f124c5396ff2ac515d215ce078c9",
+      "acceptedPreflightSha256": "df46c4694460dffeb3afbced7f1114126557bfb2a8a14614fc08d77e2589f8ca"
+    }
+  ],
+  "productionAndTestsEqualAcceptedPreflight": true,
+  "postValidationChange": "Truthful owned progress prose only",
+  "guardedLocalCommit": true,
+  "expectedSession": "2026-10-08T20:26:35Z-81e5",
+  "commitMessage": "Observe current context at healthy comparison deadlines\n\nAgent-Signature: Vickie (Codex)"
+}

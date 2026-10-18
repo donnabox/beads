@@ -1,0 +1,130 @@
+{
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+  "branch": "codex/vickie-authorization-transition",
+  "head": "67a2842e3f1918e70978f745587cf11eaf0df5a8",
+  "base": "67a2842e3f1918e70978f745587cf11eaf0df5a8",
+  "baseTree": "596abe870220fb61ce606f8382a9da52d554d063",
+  "workspaceDirty": true,
+  "diffSha256": "3cc3bca567e041278453d475e6a1200cf114c08495c381bacd7905dbddef7872",
+  "files": {
+    "packages/server/src/transaction-authorization.test.ts": {
+      "sha256": "4e2a4fb500e546e3a3d8d671125c37653a4df5bb46bae679f80123cc8c680760",
+      "bytes": 24673,
+      "new": true,
+      "author": "cross_carrier_native_review"
+    },
+    "packages/server/src/transaction-authorization.ts": {
+      "sha256": "c87a7bfa8840aee2f097bf683fe3f3c97fcae80782020c6d5b1e41364d16b6d2",
+      "bytes": 4536,
+      "new": true,
+      "author": "cross_carrier_native_review"
+    },
+    "packages/server/src/transaction-changefeed.test.ts": {
+      "sha256": "ae4b6a0d4ae6e4e74e032074c850e5ced2de14d565078c2de88e2e62fa5e9c81",
+      "bytes": 39666,
+      "new": false,
+      "author": "cross_carrier_native_review"
+    },
+    "packages/server/src/transaction-changefeed.ts": {
+      "sha256": "1e678ecb1b2c3e59023dbb6a2e6516763907babd79f7926ca572a4764e40fc1e",
+      "bytes": 7664,
+      "new": false,
+      "author": "cross_carrier_native_review"
+    },
+    "packages/server/src/transaction-event-sse.test.ts": {
+      "sha256": "de14cbbbe935205c5ec43ef6cf6a055d3f1ca2b9632ee684c4c13fbfe9eed042",
+      "bytes": 35759,
+      "new": false,
+      "author": "update_implementation"
+    },
+    "packages/server/src/transaction-events.ts": {
+      "sha256": "6c5ab4482f0b00110a71a96b16d44ca5fe713cb5f397ff78778cc6646f632a3a",
+      "bytes": 11915,
+      "new": false,
+      "author": "cross_carrier_native_review"
+    },
+    "packages/server/src/transaction-http.ts": {
+      "sha256": "c6bac496033781306d1c63e570e1c65b5786d41ebb8dc565c5a8be44e91ccfa9",
+      "bytes": 28215,
+      "new": false,
+      "author": "cross_carrier_native_review"
+    },
+    "packages/server/src/transaction-read.ts": {
+      "sha256": "66e71ff74a8139b12f0c7581c30a6798cc8724bb488cac8517119b9678ace212",
+      "bytes": 12952,
+      "new": false,
+      "author": "cross_carrier_native_review"
+    },
+    "packages/server/src/transaction-runtime-configuration.ts": {
+      "sha256": "57cd5d38c7199011d05589bc2b8ac1a0e2a4a9dc7585d019f9de5801a0a4d808",
+      "bytes": 16196,
+      "new": false,
+      "author": "cross_carrier_native_review"
+    },
+    "packages/server/src/transaction-runtime.test.ts": {
+      "sha256": "4ac87ec1121760db3aff9221c2d291c3dfca45adc065c09eebcd84ed88d882f5",
+      "bytes": 30350,
+      "new": false,
+      "author": "update_implementation"
+    },
+    "packages/server/src/transaction-runtime.ts": {
+      "sha256": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+      "bytes": 16727,
+      "new": false,
+      "author": "cross_carrier_native_review"
+    },
+    "packages/server/src/transaction-service.test.ts": {
+      "sha256": "b6ec4b39ade9a204232bcf6ae10855011dacf23086948c9df2a8e04a9d4873e2",
+      "bytes": 93737,
+      "new": false,
+      "author": "update_implementation"
+    },
+    "packages/server/src/transaction-service.ts": {
+      "sha256": "8e2a00fba538fc38fd81241301d38b232190f7241fa695e1dcdaf10641e97dc8",
+      "bytes": 28193,
+      "new": false,
+      "author": "cross_carrier_native_review"
+    },
+    "packages/server/src/transaction-snapshot.ts": {
+      "sha256": "d74aad937b0a07ea2878ef2c275cec6dbdb033cf112006e2569d64537520b15c",
+      "bytes": 33290,
+      "new": false,
+      "author": "cross_carrier_native_review"
+    },
+    "packages/server/src/transaction-store.ts": {
+      "sha256": "bc10df9d02316e395b8c4ea7db6134ab2646c8e8abd83ea785b0ea09f2f0c82c",
+      "bytes": 94169,
+      "new": false,
+      "author": "cross_carrier_native_review"
+    }
+  },
+  "runtimeExecuted": false,
+  "productionBuild": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v4/run/build.exit.json",
+    "sha256": "5742ecb89800bda4ca212644ce546e8c36b691dc17d5ef374158434b7729d7f8",
+    "status": "root source-v4 actual build; all ten production sources unchanged in this test-only successor"
+  },
+  "amendments": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/administrative-lifetime-correction.md": "0b1e7bf427faaaad163bdda1af3bc0cda8e2b839e294e34c2c1751295d4be111",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/transport-author/source-binding.json": "1eab9a67dca2f6526a9338347506a1f71dc53cc0c099f79d2e9c7218bfededf7"
+  },
+  "predecessorSourceBinding": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/final-code-v4/source-binding.json",
+  "predecessorSourceBindingSha256": "f7cf0b51f79c56ee6b24a5be571336066a7148b97e1aa769d511a45579646cbd",
+  "correctionSha256": "36341fc9438db33c0f7a5dc2aee7086e2e14f2226d96833be9f11cb6ebdf46b0",
+  "originalSourceBindingSha256": "2928d83d55f2496bb3687ac0c3e87b1a536bea45fa511cd0a7ff4f2aceb5bcac",
+  "t4Correction": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/t4-expectation-repair/correction.patch",
+    "sha256": "3391c050c15e7fc862ff9b5a9c8a2885739b24ec5ed5a2d773879ea9bc1708d3"
+  },
+  "paginationCorrection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/transport-pagination-repair/correction.patch",
+    "sha256": "2432f7d675c6ebfd92f0b0567ad816af77c6f91b7555270cc3b2b1e5aa40e175"
+  },
+  "runtimeAttribution": "Historical final-code-v4 has 11 distinct passes across v4+targeted T11 and one C1 expected failure. Current two-test evidence successor is unexecuted; no production build rerun.",
+  "predecessorRuntimeExecuted": true,
+  "productionBuildAttribution": {
+    "appliesToCurrentProduction": true,
+    "reason": "All ten production sources exactly unchanged from final-code-v4 and actual root source-v4 build; only two test files differ. Historical build remains historical."
+  },
+  "tree": "596abe870220fb61ce606f8382a9da52d554d063"
+}

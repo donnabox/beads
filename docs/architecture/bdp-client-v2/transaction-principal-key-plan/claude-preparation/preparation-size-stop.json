@@ -1,0 +1,12 @@
+{
+  "attempt": 1,
+  "measuredPromptBytes": 196218,
+  "maximumPromptBytes": 120000,
+  "failure": "AssertionError: 196218",
+  "source": "standard-library source/JSON assembly; before any prompt or runner write",
+  "outputsWrittenBeforeFailure": [
+    "directory only"
+  ],
+  "reviewLaunched": false,
+  "correction": "Remove duplicate target metadata, select narrower actual source functions/patterns, compact complete ledger JSON; retain complete plan and actual schema closure."
+}

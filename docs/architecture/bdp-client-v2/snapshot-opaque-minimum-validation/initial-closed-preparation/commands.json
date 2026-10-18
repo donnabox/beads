@@ -1,0 +1,494 @@
+{
+  "configurationFinalized": false,
+  "state": "CLOSED pending actual authored source and report-contract reconciliation; selection is accepted plan only",
+  "finalOrder": [
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "review-focused-source",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "snapshot-history-external",
+    "review-snapshot-history-external",
+    "snapshot-opaque-external",
+    "review-snapshot-opaque-external"
+  ],
+  "commands": {
+    "workspace-install": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--frozen-lockfile"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "bind-workspace-tools": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation/audit.py",
+        "tools"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "typecheck": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "format-check": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum/node_modules/@biomejs/biome/bin/biome",
+        "format",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum/biome.json",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-service.ts",
+        "packages/server/src/transaction-store.ts",
+        "packages/server/src/transaction-snapshot.test.ts",
+        "packages/server/src/transaction-service.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "apps/bdptest/src/transactional-snapshot-installed.test.ts"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "lint": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum/node_modules/@biomejs/biome/bin/biome",
+        "lint",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum/biome.json",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-service.ts",
+        "packages/server/src/transaction-store.ts",
+        "packages/server/src/transaction-snapshot.test.ts",
+        "packages/server/src/transaction-service.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "apps/bdptest/src/transactional-snapshot-installed.test.ts"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "fresh-build": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "build"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "bind-fresh-build": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation/audit.py",
+        "build"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "focused-source": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-http.test.ts",
+        "packages/server/src/transaction-service.test.ts",
+        "packages/server/src/transaction-snapshot.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation/run/focused-source.results.json",
+        "--testNamePattern",
+        "^(?:checks\\ each\\ fresh\\ Snapshot\\ minimum\\ before\\ any\\ handle,\\ record,\\ page\\ or\\ expiry\\ work|does\\ not\\ expire\\ retained\\ Snapshot\\ details\\ on\\ an\\ ineligible\\ fresh\\ attempt|fresh\\ Snapshot\\ minimum\\ service\\ freezes\\ create\\ controls\\ and\\ retries\\ after\\ a\\ real\\ independent\\ commit|fresh\\ Snapshot\\ minimum\\ service\\ keeps\\ create\\ timeout\\ and\\ pre\\-abort\\ distinct\\ from\\ owner\\ work|fresh\\ Snapshot\\ minimum\\ service\\ freezes\\ preflight\\ controls\\ and\\ retries\\ after\\ a\\ real\\ independent\\ commit|fresh\\ Snapshot\\ minimum\\ service\\ keeps\\ preflight\\ timeout\\ and\\ pre\\-abort\\ distinct\\ from\\ owner\\ work|fresh\\ Snapshot\\ minimum\\ service\\ uses\\ one\\ service\\ call\\ for\\ each\\ fresh\\ HTTP\\ branch,\\ with\\ terminal\\ preflight|drains\\ admitted\\ finite\\ Snapshot\\ observation\\ and\\ refuses\\ new\\ work\\ while\\ closing|serves\\ complete\\ fresh\\ Snapshot\\ minima\\ with\\ exact\\ timeout,\\ foreign\\ and\\ conditional\\ context|gates\\ fresh\\ Snapshot\\ opaque\\ minima\\ before\\ allocation\\ and\\ expiry|captures\\ fresh\\ Snapshot\\ create\\ opaque\\ controls\\ across\\ independent\\ commits|cancels\\ and\\ drains\\ fresh\\ Snapshot\\ create\\ opaque\\ waits|captures\\ fresh\\ Snapshot\\ preflight\\ opaque\\ controls\\ across\\ independent\\ commits|cancels\\ and\\ drains\\ fresh\\ Snapshot\\ preflight\\ opaque\\ waits|serves\\ fresh\\ Snapshot\\ opaque\\ minima\\ with\\ terminal\\ preflight\\ and\\ retained\\ fences|preserves\\ fresh\\ Snapshot\\ capture\\ and\\ refusal\\ order:\\ malformed\\-aborted|preserves\\ fresh\\ Snapshot\\ capture\\ and\\ refusal\\ order:\\ malformed\\-invalid\\-kind|preserves\\ fresh\\ Snapshot\\ capture\\ and\\ refusal\\ order:\\ retained\\-unknown|preserves\\ fresh\\ Snapshot\\ capture\\ and\\ refusal\\ order:\\ retained\\-known|preserves\\ fresh\\ Snapshot\\ capture\\ and\\ refusal\\ order:\\ closed\\-malformed|preserves\\ fresh\\ Snapshot\\ capture\\ and\\ refusal\\ order:\\ closed\\-unknown\\-fresh|preserves\\ fresh\\ Snapshot\\ capture\\ and\\ refusal\\ order:\\ unknown\\-preaborted)$"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "checks each fresh Snapshot minimum before any handle, record, page or expiry work",
+        "does not expire retained Snapshot details on an ineligible fresh attempt",
+        "fresh Snapshot minimum service freezes create controls and retries after a real independent commit",
+        "fresh Snapshot minimum service keeps create timeout and pre-abort distinct from owner work",
+        "fresh Snapshot minimum service freezes preflight controls and retries after a real independent commit",
+        "fresh Snapshot minimum service keeps preflight timeout and pre-abort distinct from owner work",
+        "fresh Snapshot minimum service uses one service call for each fresh HTTP branch, with terminal preflight",
+        "drains admitted finite Snapshot observation and refuses new work while closing",
+        "serves complete fresh Snapshot minima with exact timeout, foreign and conditional context",
+        "gates fresh Snapshot opaque minima before allocation and expiry",
+        "captures fresh Snapshot create opaque controls across independent commits",
+        "cancels and drains fresh Snapshot create opaque waits",
+        "captures fresh Snapshot preflight opaque controls across independent commits",
+        "cancels and drains fresh Snapshot preflight opaque waits",
+        "serves fresh Snapshot opaque minima with terminal preflight and retained fences",
+        "preserves fresh Snapshot capture and refusal order: malformed-aborted",
+        "preserves fresh Snapshot capture and refusal order: malformed-invalid-kind",
+        "preserves fresh Snapshot capture and refusal order: retained-unknown",
+        "preserves fresh Snapshot capture and refusal order: retained-known",
+        "preserves fresh Snapshot capture and refusal order: closed-malformed",
+        "preserves fresh Snapshot capture and refusal order: closed-unknown-fresh",
+        "preserves fresh Snapshot capture and refusal order: unknown-preaborted"
+      ],
+      "prospectiveWorkload": {
+        "existingSourceCallbacks": 9,
+        "newSourceCallbacks": 13,
+        "sourceCallbacks": 22,
+        "sourceStores": 22,
+        "sourceListeners": 2,
+        "sourceEmittedHttp": 45,
+        "sourceInProcessHandlerRequests": 15,
+        "installedCallbacks": 2,
+        "installedStores": 2,
+        "installedSequentialChildren": 3,
+        "installedHttp": 34,
+        "allStores": 24,
+        "allNetworkHttp": 79,
+        "allRequestsIncludingHandler": 94,
+        "bounds": {
+          "sourceCallbackMs": 5000,
+          "deterministicSourceMinimumBudgetMs": 2,
+          "installedRequestMs": 5000,
+          "installedOwnedMs": 45000,
+          "installedCallbackMs": 60000,
+          "stageSupervisorMs": 120000,
+          "reviewSeconds": 3600,
+          "reviewTermAfterSeconds": 3595
+        },
+        "attribution": "Prospective accepted Snapshot selection, not observed counts. 45 network exchanges and15 direct handler requests are distinct. A14 calls/two offline opens are not network or extra stores."
+      }
+    },
+    "review-focused-source": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation/audit.py",
+        "source"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "node-version": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "prepare-package-directory": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation/packages.py",
+        "directory"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "pack-protocol": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation/run/packages"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "pack-server": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation/run/packages"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "verify-archives": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation/packages.py",
+        "tar"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "prepare-consumer": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation/packages.py",
+        "consumer"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "consumer-install": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation/run/consumer",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "verify-installed-consumer": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation/packages.py",
+        "installed"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "snapshot-history-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation/run/snapshot-history-external.results.json",
+        "--testNamePattern",
+        "^(?:observes\\ fresh\\ Snapshot\\ minima\\ with\\ exact\\ current\\ context\\ and\\ retained\\ gaps\\ over\\ packed\\ bytes)$"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "observes fresh Snapshot minima with exact current context and retained gaps over packed bytes"
+      ],
+      "prospectiveWorkload": {
+        "file": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+        "name": "observes fresh Snapshot minima with exact current context and retained gaps over packed bytes",
+        "anchoredNamePattern": "^observes\\ fresh\\ Snapshot\\ minima\\ with\\ exact\\ current\\ context\\ and\\ retained\\ gaps\\ over\\ packed\\ bytes$",
+        "stores": 1,
+        "sequentialChildren": 2,
+        "http": 31,
+        "amendment": "exchange19 unknown fresh minimum 500 becomes exact contextual503; all other30 exchanges preserved",
+        "bounds": {
+          "sourceCallbackMs": 5000,
+          "deterministicSourceMinimumBudgetMs": 2,
+          "installedRequestMs": 5000,
+          "installedOwnedMs": 45000,
+          "installedCallbackMs": 60000,
+          "stageSupervisorMs": 120000,
+          "reviewSeconds": 3600,
+          "reviewTermAfterSeconds": 3595
+        }
+      },
+      "expectedObservation": "private-installed-snapshot",
+      "expectedExchanges": 31,
+      "expectedChildren": 2
+    },
+    "review-snapshot-history-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation/audit.py",
+        "history"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    },
+    "snapshot-opaque-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-snapshot-opaque-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation/run/snapshot-opaque-external.results.json",
+        "--testNamePattern",
+        "^(?:observes\\ installed\\ fresh\\ Snapshot\\ opaque\\ minimum\\ timeout)$"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "selectedFullNames": [
+        "observes installed fresh Snapshot opaque minimum timeout"
+      ],
+      "prospectiveWorkload": {
+        "file": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+        "name": "observes installed fresh Snapshot opaque minimum timeout",
+        "anchoredNamePattern": "^observes\\ installed\\ fresh\\ Snapshot\\ opaque\\ minimum\\ timeout$",
+        "label": "E",
+        "stores": 1,
+        "sequentialChildren": 1,
+        "http": 3,
+        "seedTransactions": 1,
+        "seedOperations": 1,
+        "statusSequence": [
+          200,
+          503,
+          503
+        ],
+        "executorInstances": 1,
+        "dispatchCounterMaximum": 3,
+        "dispatchCounterFinal": 3,
+        "mutationReceiptValidator": "callback-local existing snapshotAjv compile",
+        "lifecycleReuse": [
+          "withDeadline",
+          "finishObservation"
+        ],
+        "bounds": {
+          "sourceCallbackMs": 5000,
+          "deterministicSourceMinimumBudgetMs": 2,
+          "installedRequestMs": 5000,
+          "installedOwnedMs": 45000,
+          "installedCallbackMs": 60000,
+          "stageSupervisorMs": 120000,
+          "reviewSeconds": 3600,
+          "reviewTermAfterSeconds": 3595
+        }
+      },
+      "expectedObservation": "private-installed-snapshot-opaque-minimum",
+      "expectedExchanges": 3,
+      "expectedChildren": 1
+    },
+    "review-snapshot-opaque-external": {
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-opaque-minimum-validation/audit.py",
+        "opaque"
+      ],
+      "outerSeconds": 120,
+      "automaticRetries": 0,
+      "acceptedRawExitCodes": [
+        0
+      ]
+    }
+  },
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "pending": [
+    "frozen seven-file authored source/patch/preservation",
+    "all679 actual byte rehash",
+    "actual report schema and request order reconciliation",
+    "code council dispositions",
+    "root release"
+  ],
+  "freshBootstrapStages": 2,
+  "postBootstrapStages": 19,
+  "totalStages": 21,
+  "reusedEvidence": []
+}

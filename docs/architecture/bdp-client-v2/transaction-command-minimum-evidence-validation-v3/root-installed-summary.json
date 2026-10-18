@@ -1,0 +1,335 @@
+{
+  "at": "2026-10-15T08:08:12.394014+00:00",
+  "sourceCommit": "a912c23fbd80e70ead382a27e700a70123bf3f21",
+  "sourceTree": "501791c6372c3d69b50ef38f777e79de5807f10a",
+  "sourceSha256": {
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": "3d7b202d71ab0857629b5694a397dad03bba1d36122440ba003036c8f16ba63a",
+    "apps/bdptest/src/transactional-matrix.test.ts": "e319109ab0e9f7258e6918ae789ed7a5672eb7aabd0ec8725ae38e3634164e68",
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts": "014a3b127a4be87f958e822df22fc24711bde92fa1c328e3e217e0991e5c22d2",
+    "packages/conformance/src/executable-manifest.test.ts": "ca570192d8763610b39a750d376df899b3f0f01a06b3c928e95bf3d83fd538af",
+    "packages/conformance/src/executable-manifest.ts": "65af0451cd046d57c10b0666e54efbaaecc2225551d3accc5cc1d032322913fa",
+    "packages/conformance/src/http-executor.test.ts": "13e289fe572f56f1bc15dc2a7f2ee3302c4196fc140ee2abc609871a4a5493c4",
+    "packages/conformance/src/http-executor.ts": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+    "packages/conformance/src/profile-contract-plan.test.ts": "e5be4864e456431db74bd325ec64d785bf3c5301a6be5b230bfcc7351ade4fc4",
+    "packages/conformance/src/runner.test.ts": "ad7e756bad1f70ecc6285e19830bc001ebec01899ed868af3fb4b08e888aba86",
+    "packages/conformance/src/transactional-cumulative.test.ts": "0d1f87199222e2426b048eae1a5aadd11c20c04298d31e3198ca46897e5492d3",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af",
+    "packages/conformance/test-support/transactional/manifest-v1.json": "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96"
+  },
+  "stages": [
+    {
+      "name": "boundaries.exit.json",
+      "sha256": "1aa2cafbf0bf59b0777bebbf212315536a4e4ce1fd8d62a23c3839b07c7a715f",
+      "seconds": 0.7532580830156803
+    },
+    {
+      "name": "build-inventory.exit.json",
+      "sha256": "a91c54837acbf6cff4bc6e0254a0d325fbe7090f53dfe77d7971e5d4488756b8",
+      "seconds": 0.23799866694025695
+    },
+    {
+      "name": "build.exit.json",
+      "sha256": "c52456990e31015638c902a94317a7937094637d13e252697d26040a36565354",
+      "seconds": 1.1662886659614742
+    },
+    {
+      "name": "consumer-install.exit.json",
+      "sha256": "35a75a5f61e52b13ca76430afc5c9a7a0ec5c5901d45cde805bb61a0d1f7477f",
+      "seconds": 0.6159571669995785
+    },
+    {
+      "name": "format-check.exit.json",
+      "sha256": "19b279b4f708cd81c641e3a7b5ee2f69b032dc13e1ec56b2ae869cd702bc111c",
+      "seconds": 0.5589668329339474
+    },
+    {
+      "name": "installed-batch-control-review.exit.json",
+      "sha256": "cdb79c4fee66df0f147b9c6307caf2c8709384417a1afeb2bcc7e48dbd1170a2",
+      "seconds": 0.22974000009708107
+    },
+    {
+      "name": "installed-batch-control.exit.json",
+      "sha256": "6cbed77290202ef33525e18542d1b3a4cb21d8bb91c911b5b48180d9d9ae5a3c",
+      "seconds": 1.0116088329814374
+    },
+    {
+      "name": "installed-compatible-minimum-review.exit.json",
+      "sha256": "959486c9d1cff276ba463d2c6c6ddc687ae779489e0ec422ad81343b34a5fd19",
+      "seconds": 0.2224983749911189
+    },
+    {
+      "name": "installed-compatible-minimum.exit.json",
+      "sha256": "f16142bbef86011ec237a1fbb92c5712e399587db384fb744d58c0f721c1f4ae",
+      "seconds": 0.8287805409636348
+    },
+    {
+      "name": "installed-positive-review.exit.json",
+      "sha256": "0054d678d2add1c9404532ee2a075d5562be582ee263079683498818043e42de",
+      "seconds": 0.23058712505735457
+    },
+    {
+      "name": "installed-positive.exit.json",
+      "sha256": "3546c24401a5e8329803ed2bbfaf682844f78080e2ed90f873e64a22f00ad340",
+      "seconds": 4.976258540991694
+    },
+    {
+      "name": "installed-reader-control-review.exit.json",
+      "sha256": "145906cae10f620b5f220cea2cdf1b09dec6b4387d6a8c75933260294b330ca9",
+      "seconds": 0.23161358293145895
+    },
+    {
+      "name": "installed-reader-control.exit.json",
+      "sha256": "06a9ddb0f038266d607a7fc43b986a3f228263a848dd1cef0b53bb6f51fc2e3a",
+      "seconds": 1.038209249963984
+    },
+    {
+      "name": "installed-snapshot-wait-review.exit.json",
+      "sha256": "57ed641ce20abcff5454e05a220168f07d90e76df22cb6ec9f4fa750e304646f",
+      "seconds": 0.2294337919447571
+    },
+    {
+      "name": "installed-snapshot-wait.exit.json",
+      "sha256": "0c8f4ea60dab94c9ae38a5d88e444792510d355e25245224d3a2bfe4bdbe635c",
+      "seconds": 1.7329562089871615
+    },
+    {
+      "name": "lint.exit.json",
+      "sha256": "30e90d9ea68929475d5bcb6ef32563606be78a2011123dda5082e1431ab5d32a",
+      "seconds": 0.6593161248601973
+    },
+    {
+      "name": "node-version.exit.json",
+      "sha256": "1667518f6dda6578c837e666ae55ec0f0334ac3799ef2456109c3f345d8cf4a4",
+      "seconds": 0.23300574999302626
+    },
+    {
+      "name": "offline-setup.exit.json",
+      "sha256": "f7a89e2232304f8dd30e8bb92d4425a537cab3c9a929d6e49e4dc803173629a0",
+      "seconds": 0.44870791700668633
+    },
+    {
+      "name": "pack-protocol.exit.json",
+      "sha256": "f0bc473951e80c609c882b9fd2340cb7e8a873a8ce9154df6db292dec32746ba",
+      "seconds": 0.4344416249077767
+    },
+    {
+      "name": "pack-server.exit.json",
+      "sha256": "a1e11fb787bb3e2a94b292143435960ecaf1036192e4ac8c11e82cf36d417f34",
+      "seconds": 0.5247179581783712
+    },
+    {
+      "name": "package-directory.exit.json",
+      "sha256": "28b1c317b8c6c8214265d84c06f17b766974e5fb014ff7bf8aacf431d47407d2",
+      "seconds": 0.23042854201048613
+    },
+    {
+      "name": "prepare-consumer.exit.json",
+      "sha256": "9596f14d4e8d7d05e1dc084cf5020ab0ba13112c0aca597b27813b66afbda74c",
+      "seconds": 0.23177037481218576
+    },
+    {
+      "name": "read-seal.exit.json",
+      "sha256": "1f6fef6cb65d4fb68f58ea6b529e704f35acab476c05dd6a1ad030ceff99a097",
+      "seconds": 0.5556933749467134
+    },
+    {
+      "name": "static-cases.exit.json",
+      "sha256": "ed9799e3e8900f91088096e3c9461bd524acdacab3ffbb6d2c17ca4d170abcfe",
+      "seconds": 1.8519386248663068
+    },
+    {
+      "name": "typecheck.exit.json",
+      "sha256": "12d561721949201303a9141b89c7b12b7d437cb77f99fd0e4f7dc43a819f0827",
+      "seconds": 1.1653403751552105
+    },
+    {
+      "name": "verify-installed.exit.json",
+      "sha256": "f9ad6aac6ff5d981e8aebfc7b7963b9a3dc33913eb9ff63db5d14f325f18da26",
+      "seconds": 0.3324587501119822
+    },
+    {
+      "name": "verify-tar.exit.json",
+      "sha256": "a3288876657e11ada22842579ab896e2296b0144677305af0aa5a999234a0f39",
+      "seconds": 0.32273787492886186
+    }
+  ],
+  "installedCases": [
+    {
+      "candidateMatches": true,
+      "rootReviewRequired": true,
+      "command": "installed-compatible-minimum",
+      "actualHttp": 10,
+      "reportedChildren": 1,
+      "childPidsIndependentlyAbsent": [
+        37117
+      ],
+      "sourceCommit": "a912c23fbd80e70ead382a27e700a70123bf3f21",
+      "sourceTree": "501791c6372c3d69b50ef38f777e79de5807f10a",
+      "payloadIdentity": "144f8c506ad961b6be61f2e25cf19ac8a2a862b25df1ae4edbfd5bdff7b7db7f",
+      "observationSha256": "b0d7bcad479441fb5d5733ff0caef722f74b1e0c227cfe4c39007c34b9176bb0",
+      "resultsSha256": "8d0dcd2c758271c1c2c6382646bf8855eb0316841626ac3e26f74e30a3fe79ef",
+      "logSha256": "bcd9a35393e0e0f4d04f385482f97db3ab1a16545644c5089190e3f4e0ee1b13",
+      "claimEligible": false,
+      "limitations": "Operator-only helper regression. Actual logged response fingerprints retained; no raw bodies or exact headers reconstructed. Supervisor source attribution is not child-attested Git. No reader/anonymous, whole-profile or installed fault qualification."
+    },
+    {
+      "candidateMatches": true,
+      "rootReviewRequired": true,
+      "command": "installed-snapshot-wait",
+      "actualHttp": 2,
+      "reportedChildren": 1,
+      "childPidsIndependentlyAbsent": [
+        37293
+      ],
+      "sourceCommit": "a912c23fbd80e70ead382a27e700a70123bf3f21",
+      "sourceTree": "501791c6372c3d69b50ef38f777e79de5807f10a",
+      "payloadIdentity": "144f8c506ad961b6be61f2e25cf19ac8a2a862b25df1ae4edbfd5bdff7b7db7f",
+      "observationSha256": "376c2dbcf78926b088a245d1667c4e72a8284394d16e2a5952d5f3f956e85f1d",
+      "resultsSha256": "52a1ac74ee6bdcee2a18a0de1c4a0dc900105380d0e2eb6c8c87bccc25acff49",
+      "logSha256": "48226eda9bda38f71922f90afd39d3ecbc864f52ba67ba90646501160fe1ce6f",
+      "claimEligible": false,
+      "limitations": "Operator-only helper regression. Actual logged response fingerprints retained; no raw bodies or exact headers reconstructed. Supervisor source attribution is not child-attested Git. No reader/anonymous, whole-profile or installed fault qualification."
+    },
+    {
+      "candidateMatches": true,
+      "rootReviewRequired": true,
+      "command": "installed-positive",
+      "actualHttp": 203,
+      "reportedChildren": 22,
+      "payloadIdentity": "144f8c506ad961b6be61f2e25cf19ac8a2a862b25df1ae4edbfd5bdff7b7db7f",
+      "reportSha256": "0db034eea594adeceb44ad9879f45facca12486882b2a17f89de8521e6c4a2f6",
+      "resultsSha256": "dd01ad6f2fa6efe4ba2205cc5687f192ff83265ce3540199c71fed72e32562e7",
+      "logSha256": "7de5ad843590a1ddbffdc2edda10141846f3adaf3d3fa82a156efd0156586cb8",
+      "limitations": "Partial inherited evidence only. Actual raw equality is asserted in frozen app/helper before report projection; report does not contain raw bodies. Supervisor/build/tar attribution is not child-attested Git. Detached/short-lived process sampling limits remain explicit."
+    },
+    {
+      "candidateMatches": true,
+      "rootReviewRequired": true,
+      "command": "installed-batch-control",
+      "actualHttp": 4,
+      "reportedChildren": 2,
+      "payloadIdentity": "144f8c506ad961b6be61f2e25cf19ac8a2a862b25df1ae4edbfd5bdff7b7db7f",
+      "reportSha256": "5756ef02d02756573f18659bfff13047cceca4b70a74f6ba1894fa8b19ae252e",
+      "resultsSha256": "85767d2efa1fe78d6aaa2f08e37ebbd05c4670dfadbec575b106aed5632858b3",
+      "logSha256": "ef639a41b54a5835143cdd8448120dffa5a61e99c4fd848746f3935e68aeefef",
+      "limitations": "Partial inherited evidence only. Actual raw equality is asserted in frozen app/helper before report projection; report does not contain raw bodies. Supervisor/build/tar attribution is not child-attested Git. Detached/short-lived process sampling limits remain explicit."
+    },
+    {
+      "candidateMatches": true,
+      "rootReviewRequired": true,
+      "command": "installed-reader-control",
+      "actualHttp": 1,
+      "reportedChildren": 2,
+      "payloadIdentity": "144f8c506ad961b6be61f2e25cf19ac8a2a862b25df1ae4edbfd5bdff7b7db7f",
+      "reportSha256": "7ae9efd1ac4595df4bec464ed733f5c808f90ea9d5586014dae346ca6037ab9a",
+      "resultsSha256": "9f12215aa7355ff7cc37ab5eae6ee39bc6b1eb0b5aad6f03a7ce32f763b0f04b",
+      "logSha256": "a83e051a747c2a494f8c8963894e9704af1b96d429263eef8b2e14369901b509",
+      "limitations": "Partial inherited evidence only. Actual raw equality is asserted in frozen app/helper before report projection; report does not contain raw bodies. Supervisor/build/tar attribution is not child-attested Git. Detached/short-lived process sampling limits remain explicit."
+    }
+  ],
+  "actualHttp": 220,
+  "reportedServiceLaunches": 28,
+  "allSampledPidsIndependentlyAbsent": [
+    33582,
+    33616,
+    33640,
+    33683,
+    33710,
+    33713,
+    33745,
+    33749,
+    33759,
+    33939,
+    33963,
+    33969,
+    33998,
+    34022,
+    34028,
+    34060,
+    34084,
+    34118,
+    34143,
+    34169,
+    34227,
+    34231,
+    34239,
+    34257,
+    34261,
+    34263,
+    34265,
+    34268,
+    34307,
+    36706,
+    36729,
+    36759,
+    36785,
+    36814,
+    36904,
+    36937,
+    37060,
+    37100,
+    37103,
+    37115,
+    37117,
+    37144,
+    37276,
+    37279,
+    37293,
+    37326,
+    37407,
+    37410,
+    37414,
+    37417,
+    37420,
+    37423,
+    37426,
+    37430,
+    37433,
+    37436,
+    37438,
+    37442,
+    37444,
+    37447,
+    37450,
+    37454,
+    37457,
+    37460,
+    37463,
+    37466,
+    37469,
+    37472,
+    37475,
+    37478,
+    37586,
+    37623,
+    37626,
+    37630,
+    37633,
+    37717,
+    37782,
+    37785,
+    37789,
+    37792,
+    37909
+  ],
+  "retainedCompileCacheDirectories": 11,
+  "remainingRuntimeEntries": [],
+  "provenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/installed-provenance.json",
+    "sha256": "3405dbb4c377fac6b5a706456964d9b4c7a05e6450b0a3317c12a9ee78cba1fc"
+  },
+  "council": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/root-final-context-council.json",
+    "sha256": "eeb207ba8bab4d9e53654c86ef20099d23254957f63f28b594b9c8824d5e7d12"
+  },
+  "rootDisposition": "Accepted actual helper observations, positive11-action row with three raw replay comparisons and retained receipt proof, and expected exact negative prefixes409/403. Reports contain fingerprints/projected outcomes; raw equality is asserted during execution, not reconstructed afterward.",
+  "history": "Original static failure and V2 precursor remain separately attributed; V3 matches exact committed bytes.",
+  "limitations": [
+    "Conformance host is workspace; service payload is fresh external installation",
+    "Helpers operator-only; broader role branches await CI",
+    "Sampled PID absence cannot prove no unsampled detached child ever existed",
+    "Partial contracts only; no public profile qualification",
+    "Exact-head CI remains pending"
+  ],
+  "profileQualification": false
+}

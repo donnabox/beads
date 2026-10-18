@@ -1,0 +1,11 @@
+--- positive/packages/server/dist/transaction-http.js
++++ control/packages/server/dist/transaction-http.js
+@@ -458,7 +458,7 @@
+                 }
+                 else if (error instanceof TransactionEventParameterError ||
+                     error instanceof TransactionChangefeedParameterError)
+-                    response = transactionHttpProblem("invalid-parameter", error.context);
++                    response = transactionHttpProblem("invalid-parameter", error instanceof TransactionEventParameterError ? error.context : undefined);
+                 else if (error instanceof TransactionEventProjectionGap)
+                     response = developmentGap(error.message);
+                 else if (error instanceof TransactionMinimumVisibilityGap)

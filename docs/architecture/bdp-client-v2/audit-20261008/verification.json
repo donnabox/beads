@@ -1,0 +1,1135 @@
+{
+  "method": "GitHub immutable recursive Git trees compared to git-blob SHA1 of every cited local source file; all Markdown blob citation line bounds checked. Content provenance, not runtime equivalence.",
+  "citations_checked": 287,
+  "unique_cited_source_files": 160,
+  "sources": [
+    {
+      "repo": "gastownhall/bdp",
+      "commit": "182f1fcf8a01d896976bff3c9e3fb87c596c6ca6",
+      "path": "docs/specs/bdp.md",
+      "git_blob_sha": "2532f6f7a1761ba3954894bcdb5070675f4c8d36",
+      "lines": 6971
+    },
+    {
+      "repo": "donnabox/beads",
+      "commit": "6c33ea17af3bffbdea46a5ac04715c6dccd7c9bf",
+      "path": "cmd/bd/graph_preview_memories.go",
+      "git_blob_sha": "6db621395d5aa82ca8eec3cd27dfc766b486fcb2",
+      "lines": 100
+    },
+    {
+      "repo": "donnabox/beads",
+      "commit": "6c33ea17af3bffbdea46a5ac04715c6dccd7c9bf",
+      "path": "cmd/bd/graph_preview_memories_projection.go",
+      "git_blob_sha": "79a4ba7dfdc9ff1185274794fe8120f37081d0a1",
+      "lines": 159
+    },
+    {
+      "repo": "donnabox/beads",
+      "commit": "6c33ea17af3bffbdea46a5ac04715c6dccd7c9bf",
+      "path": "cmd/bd/graph_preview_memories_projection_test.go",
+      "git_blob_sha": "c7678b54128f45de24c5432ed16e8814b46bea45",
+      "lines": 196
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/memory.go",
+      "git_blob_sha": "944ec014acd2718c85ca1ceffa5a9ac34ba2aacc",
+      "lines": 675
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/memory_embedded_test.go",
+      "git_blob_sha": "c397350301e1f69f7de8ced5d916e5ebaf84f361",
+      "lines": 712
+    },
+    {
+      "repo": "donnabox/beads",
+      "commit": "6c33ea17af3bffbdea46a5ac04715c6dccd7c9bf",
+      "path": "cmd/bd/graph_preview_generic_projection.go",
+      "git_blob_sha": "a9da1be0caca8fbb8d12092350f353489e91bdba",
+      "lines": 187
+    },
+    {
+      "repo": "donnabox/beads",
+      "commit": "6c33ea17af3bffbdea46a5ac04715c6dccd7c9bf",
+      "path": "cmd/bd/graph_preview_generic_projection_test.go",
+      "git_blob_sha": "d3654bebd8fc297a9bef222a56d9797cf47a0d14",
+      "lines": 311
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/export.go",
+      "git_blob_sha": "69bba6405a005e04b2b025565c90c209125f36e3",
+      "lines": 421
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/import.go",
+      "git_blob_sha": "a100f36a6a844e90d865453ab74d14a7282c47f3",
+      "lines": 627
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/import_chunking_test.go",
+      "git_blob_sha": "170a6c8dd8079c1502459c7a4f939af3a26c5720",
+      "lines": 516
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/backup_restore.go",
+      "git_blob_sha": "aa508838af68433f65e7492449d205e7d724a31d",
+      "lines": 175
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/capability_registry.go",
+      "git_blob_sha": "de387c97e6f57c78a797d04d8e7ad7b985389fba",
+      "lines": 690
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/backup_proxied_policy_test.go",
+      "git_blob_sha": "db2db3a70d35a72a7ad73764c209d8f50600a255",
+      "lines": 285
+    },
+    {
+      "repo": "donnabox/beads",
+      "commit": "6c33ea17af3bffbdea46a5ac04715c6dccd7c9bf",
+      "path": "cmd/bd/graph_preview_versions.go",
+      "git_blob_sha": "7f8c252ffa60c5c291d38bb20e6dbc79aecf65a8",
+      "lines": 194
+    },
+    {
+      "repo": "donnabox/beads",
+      "commit": "6c33ea17af3bffbdea46a5ac04715c6dccd7c9bf",
+      "path": "cmd/bd/graph_preview_compare.go",
+      "git_blob_sha": "d554cb163e2dc026a48455365b671e99029a0ac8",
+      "lines": 56
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/history.go",
+      "git_blob_sha": "0151cae95b12876936bd799e4369f2b23ed392b5",
+      "lines": 185
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/diff.go",
+      "git_blob_sha": "20d0fdaf1bbeff52416c83b935316bc1d1996fd3",
+      "lines": 156
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/history_remote_frontdoor_matrix_test.go",
+      "git_blob_sha": "8941651af87df746c893ceccb13ea2a0f1ebcf4f",
+      "lines": 479
+    },
+    {
+      "repo": "donnabox/beads",
+      "commit": "6c33ea17af3bffbdea46a5ac04715c6dccd7c9bf",
+      "path": "cmd/bd/graph_preview_versions_test.go",
+      "git_blob_sha": "1c056aa153101d7817ba08485f7b875dc53372a5",
+      "lines": 492
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/branch.go",
+      "git_blob_sha": "76e6a33e4b61925ba1436fff42b49087385a5918",
+      "lines": 87
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/vc.go",
+      "git_blob_sha": "360b2c2cf79d1eff2a2bbb500f1ca19b19900d70",
+      "lines": 310
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/sql.go",
+      "git_blob_sha": "34dedfe09eb77f8bafe1d98da65bec7a52be7042",
+      "lines": 241
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/memory_proxied_integration_test.go",
+      "git_blob_sha": "48daf94a32d6720b03d6085ce71d7478b9e1332f",
+      "lines": 193
+    },
+    {
+      "repo": "donnabox/beads",
+      "commit": "6c33ea17af3bffbdea46a5ac04715c6dccd7c9bf",
+      "path": "cmd/bd/graph_preview_recall.go",
+      "git_blob_sha": "dfbd1679a5101097ced165b6b0450f98468ff69a",
+      "lines": 53
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/graph_export.go",
+      "git_blob_sha": "02eff3422416217966874781535ba4d681ac2bc2",
+      "lines": 380
+    },
+    {
+      "repo": "donnabox/beads",
+      "commit": "6c33ea17af3bffbdea46a5ac04715c6dccd7c9bf",
+      "path": "cmd/bd/graph_apply.go",
+      "git_blob_sha": "24ba135ab1db860cd6b79991c73b7e4f6da6730a",
+      "lines": 1322
+    },
+    {
+      "repo": "donnabox/beads",
+      "commit": "6c33ea17af3bffbdea46a5ac04715c6dccd7c9bf",
+      "path": "cmd/bd/graph_apply_execution_test.go",
+      "git_blob_sha": "53ccb171b452f7fdddd74126a34e89a74c0aa028",
+      "lines": 227
+    },
+    {
+      "repo": "donnabox/beads",
+      "commit": "6c33ea17af3bffbdea46a5ac04715c6dccd7c9bf",
+      "path": "cmd/bd/versions_test.go",
+      "git_blob_sha": "568cc17dd166e1464f55652fbe42c870fc99787e",
+      "lines": 383
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/compact.go",
+      "git_blob_sha": "6d655d93bb4a4b44f15ea924f66f44c78d37bd92",
+      "lines": 1000
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/restore.go",
+      "git_blob_sha": "2d0cd523fac98e96a8f5cdaf62d702cfef75aa42",
+      "lines": 247
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/restore_embedded_test.go",
+      "git_blob_sha": "7d00c2dbc77ce0abb9a7318c2038d58d3295008d",
+      "lines": 258
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/prune.go",
+      "git_blob_sha": "e230e199c4acdd47e943e70b53dcb2a1e7d02776",
+      "lines": 79
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/gc.go",
+      "git_blob_sha": "1914128c5640ed46fbf795466e678b6f55552471",
+      "lines": 301
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/compact_plan.go",
+      "git_blob_sha": "8187190326879a80d96316ddaa53ddabb958293f",
+      "lines": 53
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/sync_test.go",
+      "git_blob_sha": "1acd6ff9d73eaf6379a8e93f176617701b8161f8",
+      "lines": 2211
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/federation.go",
+      "git_blob_sha": "06e7e207b7ca7abb9b2eac83e32e5587c1ddad0d",
+      "lines": 529
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/repo.go",
+      "git_blob_sha": "aadcc0564bfacbd6a3f1fee88caf793932447c79",
+      "lines": 482
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/vc_embedded_test.go",
+      "git_blob_sha": "03e550d4acd77a1068f5493ff255a9a3cd641fd1",
+      "lines": 270
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/config.go",
+      "git_blob_sha": "64cd85b5518bd57c24883ca740b8a1081a362279",
+      "lines": 1468
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/config_setmany_test.go",
+      "git_blob_sha": "30fd0388d9d93dd4991b4089b564960cbdea656c",
+      "lines": 322
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/kv.go",
+      "git_blob_sha": "5a52c8bd8259581cb8da759eca767bc59ec2a0a8",
+      "lines": 418
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/config_proxied_integration_test.go",
+      "git_blob_sha": "745142fc0599c850c3183c0dd81ee9f274e6ba09",
+      "lines": 425
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/init_registered_backend_test.go",
+      "git_blob_sha": "d6eb7945f6bf8a9273c5b6844bbcece60c5c863b",
+      "lines": 51
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/bootstrap.go",
+      "git_blob_sha": "25af0a9d471d40e38248a534e7b82e22dde2c6c1",
+      "lines": 1681
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/where.go",
+      "git_blob_sha": "1baf98a703e88a3a312c98f3499fe21efdf895f4",
+      "lines": 193
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/doctor_fix.go",
+      "git_blob_sha": "89b73532c53b705e37afdf1cc2e25fe534ce5b99",
+      "lines": 568
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/doctor_embedded_test.go",
+      "git_blob_sha": "e4f340be633151f939eb5b523c95633f9287b06e",
+      "lines": 180
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/migrate.go",
+      "git_blob_sha": "7ac75b2f16c3569aca2b63730493fcc1be29d34d",
+      "lines": 958
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/upgrade.go",
+      "git_blob_sha": "3db584df1bb0cf118fd8fca518806169b4485ee7",
+      "lines": 236
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/worktree_cmd_test.go",
+      "git_blob_sha": "c4d6d9b03c72cd6c0ede7e113a185d0472056b74",
+      "lines": 396
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/hooks_exec_composition_test.go",
+      "git_blob_sha": "5737f221541a68954593d48f846a97579c095366",
+      "lines": 352
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/setup_test.go",
+      "git_blob_sha": "cc9ff8b5e9a680fef5b88c31afbf6f5aa3f611c0",
+      "lines": 292
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/ado.go",
+      "git_blob_sha": "5e54257bc1d1f2bc6802ebe5296807a7c1cce9df",
+      "lines": 984
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/linear_roundtrip_test.go",
+      "git_blob_sha": "bcc0d41e069cceac0eb97a4e47b7427a0bc277e7",
+      "lines": 746
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/ado_roundtrip_test.go",
+      "git_blob_sha": "acedbf70381ed7b1002c5349546a99028e765091",
+      "lines": 752
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/serve_registered_backend_test.go",
+      "git_blob_sha": "872532de1a651fe6efa19be506021bdb14b821ed",
+      "lines": 490
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/create_test.go",
+      "git_blob_sha": "c80ab8a2b217558faad0d4004b7f6275bc7459ef",
+      "lines": 910
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/create.go",
+      "git_blob_sha": "38692d2872a974443fa5b46d9f40e052cdb94937",
+      "lines": 1102
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/update_proxied_server_test.go",
+      "git_blob_sha": "9fe7e1c3cf1c5aaaa29046a86d92c3a8b030923f",
+      "lines": 310
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/update_proxied_integration_test.go",
+      "git_blob_sha": "efea4da057ed1186bf5599b9a471f37f6d500408",
+      "lines": 1648
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "internal/storage/issueops/claim.go",
+      "git_blob_sha": "8d5733bfb2382360fb803ab86a05de5b6eb141bf",
+      "lines": 371
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/ready_proxied_integration_test.go",
+      "git_blob_sha": "758a62a645522f24eb8c9ae0227551fb99633692",
+      "lines": 777
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/reopen_defer_test.go",
+      "git_blob_sha": "fa056e97a470dd68d5ee26201097c801bb0dd171",
+      "lines": 72
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/close_embedded_test.go",
+      "git_blob_sha": "88ed651d1e9db6fd10b1e09652f27bf2dfda5286",
+      "lines": 789
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/update_close_policy_test.go",
+      "git_blob_sha": "394dd72ed6404fa97d19b5e59033af14e9641501",
+      "lines": 146
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "internal/storage/issueops/close_batch.go",
+      "git_blob_sha": "1a1be3a7bf4a67579b2f8d2ff612485d5d5f1cc1",
+      "lines": 175
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "internal/storage/issueops/delete_role.go",
+      "git_blob_sha": "b219925c3692c56bae61a52db9cca6e12aa9438c",
+      "lines": 369
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/delete_test.go",
+      "git_blob_sha": "2c2313dfad8381fa66ae5b8bcb093fb89990e9e2",
+      "lines": 312
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/list_test.go",
+      "git_blob_sha": "4404f688cf544dff854357fb35fd1a6b26a1d0b8",
+      "lines": 1908
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/search_test.go",
+      "git_blob_sha": "322e8e4ce89634bc49ef000a8b57aad41897037d",
+      "lines": 316
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "internal/storage/issueops/ready_work.go",
+      "git_blob_sha": "a1863a605d6337f2a86afaae35ff3a2c8b00a738",
+      "lines": 687
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "internal/storage/sqlbuild/ready.go",
+      "git_blob_sha": "2b78693c8f21cd977d74916954fc4be939eed477",
+      "lines": 232
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/dep_bulk_role_test.go",
+      "git_blob_sha": "9f81c9cacc6506beb648256abc1689a7edf40d94",
+      "lines": 186
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "internal/storage/issueops/dependency_editor.go",
+      "git_blob_sha": "ec8cb46b14993737c3c2d0d4d6d6f29491ac51fc",
+      "lines": 272
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/children_test.go",
+      "git_blob_sha": "efc9f9bc53320660a9e476ab967d131275502d8a",
+      "lines": 101
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/label_test.go",
+      "git_blob_sha": "d8db96af6d1b4d6b61c89cbf4f742ad2eeddf69c",
+      "lines": 365
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/comments_test.go",
+      "git_blob_sha": "e542849c972447f6a9b072aa663635cfac2b4765",
+      "lines": 164
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/gate.go",
+      "git_blob_sha": "98985e0628c555ec687b5c90eb479f58a9003b3f",
+      "lines": 1642
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/gate_check_proxied_integration_test.go",
+      "git_blob_sha": "633b854d5c177994d1dfa070124d1ef37cbc2b68",
+      "lines": 251
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/pour_proxied_integration_test.go",
+      "git_blob_sha": "dbe1c2856f9020352e6de13a49f50ca21ffacaff",
+      "lines": 109
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/pour.go",
+      "git_blob_sha": "7260365eebfaa38f554ea11300db0e2e1f41c42c",
+      "lines": 435
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/mol_squash_embedded_test.go",
+      "git_blob_sha": "53b12f453f29ff8d37dd25cb7bdafa7b626c928e",
+      "lines": 83
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/mol_burn_proxied_integration_test.go",
+      "git_blob_sha": "767371f3f537408d73ec05e408c790e44b2d63f4",
+      "lines": 117
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "internal/storage/issueops/lease.go",
+      "git_blob_sha": "d2b75f7e7f2e5a717dfd098cfbf0c720841bb498",
+      "lines": 803
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "internal/storage/dolt/ready_claimer_contract_test.go",
+      "git_blob_sha": "8cacfbbba8061586467d134703004a16bd39b512",
+      "lines": 115
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/ready_max_rows_test.go",
+      "git_blob_sha": "792d2cb1acff397efe7db033422f8b2e897bdffd",
+      "lines": 214
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "internal/storage/issueops/blocked_state.go",
+      "git_blob_sha": "66997bf2e2fc72f1f612b2263242ce2e1b2a5848",
+      "lines": 1160
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "internal/storage/issueops/close.go",
+      "git_blob_sha": "188c704c1fd93001121ed38252f810f301087799",
+      "lines": 401
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "internal/storage/issueops/claim_next.go",
+      "git_blob_sha": "7aac204082c4a8e65f9217285661452624950018",
+      "lines": 122
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/assign.go",
+      "git_blob_sha": "83b145f333e1e75d0be54ad98521a5ddbcc443b7",
+      "lines": 161
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/note.go",
+      "git_blob_sha": "9ee62cb9ea3d63469971dc07dd00343327aef503",
+      "lines": 208
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/quick.go",
+      "git_blob_sha": "e9ab99c03a7723a8a490445fb984ad2fa16b71e3",
+      "lines": 114
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/priority.go",
+      "git_blob_sha": "66a633e715d51e23cdce8692df021b8032d2f5f0",
+      "lines": 112
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/tag.go",
+      "git_blob_sha": "02e4db5de4c7582e41164eba5b09a4f931d75780",
+      "lines": 124
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/comment.go",
+      "git_blob_sha": "76cf3342a1adaa150bf8aae4c611af9f20d1d1dc",
+      "lines": 207
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "internal/storage/merge_slot.go",
+      "git_blob_sha": "3ae4c7718bfa05d1aaab9c070e6f396b5d949bbc",
+      "lines": 204
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/merge_slot.go",
+      "git_blob_sha": "cfd715394f812be4081a7e664105ffbfafd03106",
+      "lines": 337
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/swarm_ready_fronts_test.go",
+      "git_blob_sha": "1edf9fa353a92bc3c24302b308ff5a492354a22a",
+      "lines": 164
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/swarm.go",
+      "git_blob_sha": "9d066a023ef93cbbc06f139433187f856e8f7ee7",
+      "lines": 1256
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/duplicate.go",
+      "git_blob_sha": "9de5584e5b424a5284ccbc9f2a934c4b04a564e4",
+      "lines": 198
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/duplicate_embedded_test.go",
+      "git_blob_sha": "5467c0a5d701c381c16609a7351875e7e802d479",
+      "lines": 191
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/supersede_embedded_test.go",
+      "git_blob_sha": "f05778227fa4876529f2a76667d0b0543451e686",
+      "lines": 190
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/duplicates.go",
+      "git_blob_sha": "f11e4ea350e464c166929920abc74ec9f0883bba",
+      "lines": 452
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/find_duplicates.go",
+      "git_blob_sha": "51c6967e8d20bff8c7d00fed2d89a52d11ae47f9",
+      "lines": 543
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/promote_proxied_integration_test.go",
+      "git_blob_sha": "501ec1c4cc8d9d5ece8b3f2ebee291cc5e3e3678",
+      "lines": 241
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/prune_proxied_integration_test.go",
+      "git_blob_sha": "f4ebdba6afb97ab1e4fb01ab743e92e4e92f3198",
+      "lines": 191
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/purge.go",
+      "git_blob_sha": "cead0ae9850c37bb53a44b23e3f4328c03330f6c",
+      "lines": 496
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/wisp.go",
+      "git_blob_sha": "a1b7ac27e8a76b3ed5ddf394575280dcd8a7ed9c",
+      "lines": 1027
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/rename.go",
+      "git_blob_sha": "4305242caa4201e6d053697794319e159f720845",
+      "lines": 270
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/rename_prefix_rewrite_test.go",
+      "git_blob_sha": "dec82ef1b011e687527ade66a516b3749c10144a",
+      "lines": 53
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/duplicates_test.go",
+      "git_blob_sha": "936d5b59e2f60002b36961ea715aae043cbc8eb2",
+      "lines": 454
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/find_duplicates_test.go",
+      "git_blob_sha": "ff3aad10598b52e6326f6190cb4dc8e0da34c528",
+      "lines": 263
+    },
+    {
+      "repo": "gastownhall/bdp",
+      "commit": "182f1fcf8a01d896976bff3c9e3fb87c596c6ca6",
+      "path": "schemas/bdp-v0.schema.json",
+      "git_blob_sha": "a12889462395327ee48e1d2f262778b7edb6d802",
+      "lines": 5447
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "internal/query/evaluator.go",
+      "git_blob_sha": "45660701e8a1e3fd29e768122310b1ebdea7383f",
+      "lines": 1059
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/query.go",
+      "git_blob_sha": "7bfc3313f2f0fea3415b962225d81b2118dd16ee",
+      "lines": 304
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/query_embedded_test.go",
+      "git_blob_sha": "cf78514bafaa3c99e7c9b126a88f56ff86efc8fc",
+      "lines": 319
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/state.go",
+      "git_blob_sha": "b689b0f28c39bf971f478dbce9f94e4eeb3d63fb",
+      "lines": 392
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/state_test.go",
+      "git_blob_sha": "07bdbaab4fed130ee4277efe35468c6de4516546",
+      "lines": 112
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/todo.go",
+      "git_blob_sha": "b05c2fc99c3cd2816db6c81f0f62a54f9145840c",
+      "lines": 281
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/todo_embedded_test.go",
+      "git_blob_sha": "572c42904793889df8d37c7d379924c040772c15",
+      "lines": 341
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/ship.go",
+      "git_blob_sha": "9e56be5bd1241305d666ab2fde928f0608fe5375",
+      "lines": 157
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/ship_embedded_test.go",
+      "git_blob_sha": "20329422557938ee98de52e2640557c276f13d3f",
+      "lines": 270
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/epic_test.go",
+      "git_blob_sha": "2b6182db71e08bc57b2995a9cd28f9b81b739c56",
+      "lines": 240
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/epic.go",
+      "git_blob_sha": "e22b1b76f0cb951383455b3e99fe338c4b8f8ab7",
+      "lines": 206
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/orphans.go",
+      "git_blob_sha": "5f6ffa9d0fae35f4ebbe5b0ea8755865270c49af",
+      "lines": 233
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/orphans_test.go",
+      "git_blob_sha": "24d5fba1c786a671e4a9ceb868f74d0fbedead97",
+      "lines": 212
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/lint.go",
+      "git_blob_sha": "7e09049c14d53f4e3322da3a5f3b9e60c3eca729",
+      "lines": 199
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/lint_embedded_test.go",
+      "git_blob_sha": "66bbbb593c9e05156d573812800be42119cb8465",
+      "lines": 319
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/stale.go",
+      "git_blob_sha": "89b17861e29873cb38cefdb3d5ad6191a9fc62df",
+      "lines": 109
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/stale_test.go",
+      "git_blob_sha": "11c0be7179a5dbd63ef08e8f895b8ba93bed6037",
+      "lines": 285
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/defer_wake_proxied_integration_test.go",
+      "git_blob_sha": "ee07e7b0db4697600eabf0ed8ba73fb349263dc4",
+      "lines": 146
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "internal/storage/issueops/unclaim.go",
+      "git_blob_sha": "97b126af7ee6f2112af328d561025c7050770b10",
+      "lines": 232
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/unclaim_conditional_parity_test.go",
+      "git_blob_sha": "e2635f0c6b656a1cbd58ac0ec83af8adb7d34b23",
+      "lines": 190
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/reclaim.go",
+      "git_blob_sha": "2a5262d99c854c5d0d01f0ebb9d76d48cf306af0",
+      "lines": 231
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/reclaim_test.go",
+      "git_blob_sha": "9c400d7036dc506acb69656c46fd7c877473f001",
+      "lines": 116
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/heartbeat_proxied_integration_test.go",
+      "git_blob_sha": "9c06a736f1119c4652851d6c534ab903cd7c10ce",
+      "lines": 237
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/statuses.go",
+      "git_blob_sha": "fc272cc15e458095f5dace91f0564f83927307f0",
+      "lines": 129
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/types.go",
+      "git_blob_sha": "7278332608ef468b260c439d9b9b2624aeba3b00",
+      "lines": 230
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/statuses_types_proxied_integration_test.go",
+      "git_blob_sha": "8edf6f697a4545e2a6778ca9137c27d6e21b2c23",
+      "lines": 267
+    },
+    {
+      "repo": "gastownhall/bdp",
+      "commit": "182f1fcf8a01d896976bff3c9e3fb87c596c6ca6",
+      "path": "fixtures/transactional/batch.json",
+      "git_blob_sha": "9b1f5aa3f4f2c6b99e1f9b78865d29fb52ee9f38",
+      "lines": 586
+    },
+    {
+      "repo": "gastownhall/bdp",
+      "commit": "182f1fcf8a01d896976bff3c9e3fb87c596c6ca6",
+      "path": "fixtures/transactional/changefeed.json",
+      "git_blob_sha": "a24037e62d985c363e81ae596f7b09e895bc534a",
+      "lines": 762
+    },
+    {
+      "repo": "gastownhall/bdp",
+      "commit": "182f1fcf8a01d896976bff3c9e3fb87c596c6ca6",
+      "path": "fixtures/transactional/events.json",
+      "git_blob_sha": "f555f77aa357d8645b2692996732891b648398fe",
+      "lines": 250
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/batch.go",
+      "git_blob_sha": "01c7898bb6230c610542f90f80e03c4a311e72f5",
+      "lines": 507
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "internal/httpapi/batch_apply.go",
+      "git_blob_sha": "16b9d4a63e70be8d885b662f99e8af693cdbc3a8",
+      "lines": 1367
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "journalops/journal.go",
+      "git_blob_sha": "1a8f7423fa2948d809b2ae90e6c51fdd71ab335c",
+      "lines": 121
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "internal/storage/issueops/journal.go",
+      "git_blob_sha": "a4dc140e391eb67f4a14c2838c9da4fc4a361e2f",
+      "lines": 549
+    },
+    {
+      "repo": "gastownhall/bdp",
+      "commit": "182f1fcf8a01d896976bff3c9e3fb87c596c6ca6",
+      "path": "packages/protocol/src/transactional-wire.test.ts",
+      "git_blob_sha": "f3f0177fd7e0fd9d3bff5e646383ea367d5ee051",
+      "lines": 2471
+    },
+    {
+      "repo": "gastownhall/bdp",
+      "commit": "182f1fcf8a01d896976bff3c9e3fb87c596c6ca6",
+      "path": "packages/conformance/src/transactional-catalog.test.ts",
+      "git_blob_sha": "176116a0615653f5cc2b312cfae109a49a7ad9ec",
+      "lines": 228
+    },
+    {
+      "repo": "gastownhall/bdp",
+      "commit": "182f1fcf8a01d896976bff3c9e3fb87c596c6ca6",
+      "path": "packages/server/src/index.ts",
+      "git_blob_sha": "1e3a3822951ef5499e5ba47a26ae0ccb915c39f8",
+      "lines": 1662
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/human.go",
+      "git_blob_sha": "19fb98907246e915296ca33fb871776e37da94e0",
+      "lines": 503
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/human_embedded_test.go",
+      "git_blob_sha": "51e3b7bc6af6fc809e390b43968b0e44dde22b20",
+      "lines": 245
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/provenance.go",
+      "git_blob_sha": "a7d7e7038fc39743f3f0da6c5f4a7f5bf915f2ce",
+      "lines": 209
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/provenance_test.go",
+      "git_blob_sha": "445f21ff09b7811d5946c1cb820fb32dc1e5b8d6",
+      "lines": 392
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/kv_test.go",
+      "git_blob_sha": "ea1de9d2325448bd331b1e3095346df8f2997699",
+      "lines": 233
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/audit.go",
+      "git_blob_sha": "fd33d0536198b6772df0d38cfc2212705c174438",
+      "lines": 183
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/ping.go",
+      "git_blob_sha": "aeec6872c5a170baf0df8becda81be3575622961",
+      "lines": 103
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/mail.go",
+      "git_blob_sha": "7bec2e72eb5939a90c6291fa697ad43f15100b64",
+      "lines": 112
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/rules_test.go",
+      "git_blob_sha": "5f2c39e75238877224935e6b4f155959d48de26b",
+      "lines": 590
+    },
+    {
+      "repo": "gastownhall/beads",
+      "commit": "5126de8c1a02d01db2481e4fd5e78dd41010e25f",
+      "path": "cmd/bd/protocol/CATALOG.md",
+      "git_blob_sha": "4dde9f6ec22f005f15ca5d1688148031e6a85ad7",
+      "lines": 59
+    }
+  ],
+  "checks": {
+    "existing_tests": 219,
+    "existing_test_files": 3,
+    "extra_client_probes": 12,
+    "extra_journal_probes": 8,
+    "transactional_runtime_conformance": false,
+    "go_cli_database_tests_run": false
+  }
+}

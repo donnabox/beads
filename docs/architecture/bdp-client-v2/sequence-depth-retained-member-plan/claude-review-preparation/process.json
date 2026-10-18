@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--disable-slash-commands",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--add-dir",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-plan",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-plan",
+    "--no-session-persistence"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+  "pid": 74921,
+  "processGroup": 74921,
+  "started": "2026-10-16T03:51:31.774318+00:00",
+  "timeoutSeconds": 900,
+  "promptSha256": "9ea3ec830c2a0ae5b99271d1e571b2ca443d5f5fdb0891cdfd172b3909ae3d98",
+  "sourceBeforeSha256": "0cf215bc8fdb9aa2f8ccbf6858a27871ff69bf442e653190bb863399179c06e9",
+  "tempDirectory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-plan/claude-review-preparation/tmp",
+  "reviewKind": "on-disk plan review; Read/Glob/Grep only, no model override or execution tools"
+}

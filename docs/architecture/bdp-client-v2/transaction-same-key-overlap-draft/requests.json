@@ -1,0 +1,164 @@
+{
+  "status": "source-derived prospective ledger; no HTTP executed",
+  "sourceSha256": "e6a52fa4d645ffef04e4b6e8ccd9bbcb7495624ae0e3f46536e0e9ac6b707974",
+  "literalInputs": {
+    "singleton": {
+      "body": "{\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"same-key-overlap\"},\"metadata\":{}}",
+      "bytes": 108,
+      "sha256": "387ed98ffa4e2603db3358ac9a41a1acd815f64bf8e2dc3f233ef5c132328649"
+    },
+    "batch": {
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"same-key-overlap\"},\"metadata\":{}}]}",
+      "bytes": 150,
+      "sha256": "278716c3e493fbdee5adb3ef532fc296bf929111200bf85bfedf56fc6f6d012b"
+    }
+  },
+  "requests": [
+    {
+      "ordinal": 1,
+      "label": "singleton-pair-A",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead",
+      "headers": {
+        "host": "reference.invalid",
+        "accept": "application/json",
+        "connection": "close",
+        "content-type": "application/json",
+        "idempotency-key": "same-key-overlap",
+        "content-length": "108"
+      },
+      "credential": "operator: inject Bearer token in memory only",
+      "body": "{\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"same-key-overlap\"},\"metadata\":{}}",
+      "bodyBytes": 108,
+      "bodySha256": "387ed98ffa4e2603db3358ac9a41a1acd815f64bf8e2dc3f233ef5c132328649"
+    },
+    {
+      "ordinal": 2,
+      "label": "batch-pair-B",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "headers": {
+        "host": "reference.invalid",
+        "accept": "application/json",
+        "connection": "close",
+        "content-type": "application/json",
+        "idempotency-key": "same-key-overlap",
+        "content-length": "150"
+      },
+      "credential": "operator: inject Bearer token in memory only",
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"same-key-overlap\"},\"metadata\":{}}]}",
+      "bodyBytes": 150,
+      "bodySha256": "278716c3e493fbdee5adb3ef532fc296bf929111200bf85bfedf56fc6f6d012b"
+    },
+    {
+      "ordinal": 3,
+      "label": "issued-receipt-recovery",
+      "method": "GET",
+      "url": "validated shared receipt.id",
+      "headers": {
+        "host": "reference.invalid",
+        "accept": "application/json",
+        "connection": "close"
+      },
+      "credential": "operator: inject Bearer token in memory only",
+      "body": null,
+      "bodyBytes": 0,
+      "bodySha256": null
+    },
+    {
+      "ordinal": 4,
+      "label": "complete-current-beads",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?limit=32",
+      "headers": {
+        "host": "reference.invalid",
+        "accept": "application/json",
+        "connection": "close"
+      },
+      "credential": "operator: inject Bearer token in memory only",
+      "body": null,
+      "bodyBytes": 0,
+      "bodySha256": null
+    },
+    {
+      "ordinal": 5,
+      "label": "complete-scope-events",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/events/",
+      "headers": {
+        "host": "reference.invalid",
+        "accept": "application/json",
+        "connection": "close"
+      },
+      "credential": "operator: inject Bearer token in memory only",
+      "body": null,
+      "bodyBytes": 0,
+      "bodySha256": null
+    },
+    {
+      "ordinal": 6,
+      "label": "batch-terminal-replay",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "headers": {
+        "host": "reference.invalid",
+        "accept": "application/json",
+        "connection": "close",
+        "content-type": "application/json",
+        "idempotency-key": "same-key-overlap",
+        "content-length": "150"
+      },
+      "credential": "operator: inject Bearer token in memory only",
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"same-key-overlap\"},\"metadata\":{}}]}",
+      "bodyBytes": 150,
+      "bodySha256": "278716c3e493fbdee5adb3ef532fc296bf929111200bf85bfedf56fc6f6d012b"
+    }
+  ],
+  "controlOnlyDelta": {
+    "request": 2,
+    "header": "Idempotency-Key",
+    "before": "same-key-overlap",
+    "after": "same-key-overlap-other"
+  },
+  "bodyBytes": {
+    "positive": 408,
+    "controlExpected": 258,
+    "combinedExpected": 666,
+    "combinedMaximumScheduled": 816,
+    "largest": 150
+  },
+  "workloads": {
+    "positiveHttp": 6,
+    "negativeExpectedHttp": 2,
+    "negativeMaximumHttp": 6,
+    "combinedExpectedHttp": 8,
+    "combinedMaximumHttp": 12,
+    "scheduledLaunchAttempts": 2,
+    "maximumChildren": 2,
+    "owners": 2,
+    "listeners": 2,
+    "storeDirectories": 2,
+    "expectedConnections": 8,
+    "maximumConnections": 12,
+    "maximumSimultaneousSocketsPerCohort": 2,
+    "additionalBootstrapHttp": 0,
+    "retry": 0
+  },
+  "bounds": {
+    "workMs": 45000,
+    "launcherReadyMs": 10000,
+    "exchangeMs": 5000,
+    "cleanupMs": 10000,
+    "requestDrainMs": 5000,
+    "testMs": 60000,
+    "commandMs": 120000,
+    "requestBodyBytes": 65536,
+    "responseBodyRetainedBytes": 32768,
+    "requestHeaderBytes": 16384,
+    "responseHeaderBytes": 16384,
+    "reportBytesIncludingNewline": 65536,
+    "pairMilestones": 32
+  },
+  "ordinaryFullCi": "One registered positive callback, six requests/one child. Negative is explicit external selection of same callback.",
+  "knownTimingLimit": "Client dispatch/lifetime observations only; both connected/writes-before-first-response are recorded, not required. No server pending-join claim."
+}

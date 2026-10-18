@@ -1,0 +1,33 @@
+{
+  "status": "CLOSED_PLAN_ONLY",
+  "authoringReleased": false,
+  "executionReleased": false,
+  "head": "d4f3f4be88c7837b71d6646518ca3589d464ba3d",
+  "worktree": "/Users/dbox/repos/wt/vickie/vickie-parser-refusal",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-author/successor-1/source-binding.json",
+    "sha256": "409312a502d66281858c8e0e82eb57ed8c0abd8a6793abeeb0327249adb4224f"
+  },
+  "verifiedTrackedFiles": 679,
+  "sourcePins": {
+    "docs/specs/bdp.md": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+    "packages/server/src/transaction-http.ts": "9ee59d7b2f5ecf6bb1ace7bacb70fd5124343dc9320439afeb3c28cf2f174584",
+    "packages/server/src/transaction-service.ts": "b6f9584d67992ddd3a08304a6b76563318252c316b09afd991e49a3304d3af05",
+    "packages/server/src/transaction-store.ts": "f7fe71da918c135eb43cb4659f186df6cd442aed9c42c2835e95cde05c782a9e",
+    "packages/server/src/transaction-consistency.ts": "ad51311d6098db32fd47849e0b78d3118162cdf1e80ee9ef4d46324bfa9f436f",
+    "packages/server/src/transaction-events.ts": "6c5ab4482f0b00110a71a96b16d44ca5fe713cb5f397ff78778cc6646f632a3a",
+    "packages/server/src/transaction-events.test.ts": "0152561cdf096a48b0b01ec0e0d8bc81208a905bb5bf71dad411694387b58b27",
+    "packages/server/src/transaction-service.test.ts": "32010b6fb1107076534c544f2bbb93e62cc39c89cd0fbc3c482f0736cc28cfe2",
+    "packages/server/src/read-http.ts": "31934105eff6fff8ded8ce2ca9e3c19028991ca7c3d5f51b848004177e8c9268",
+    "apps/bdptest/src/transactional-event-missing-context-installed.test.ts": "828c05f358ae5863c992f93194da15a31df9a200e073e5e3525531ba39fe7d0d",
+    "apps/bdptest/test-support/transactional-execution-binding.ts": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+    "scripts/transaction-installed-observation.mjs": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b"
+  },
+  "contextPins": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-next-serving-audit/audit.md": "d577c1774034363e96691673d560ff7425f4ca973e38621373a0de35b33c7f0b",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-next-serving-audit/binding.json": "ce4f128bbae1b6b2ed3408140236b46a5f60b271d613ffe375203e0eddc2ac7e",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-code-review/root-disposition.md": "515f5016aee72dbf848ba76d8b2ae31f437dd586e25e60742a3d647537dda4c6",
+    "/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md": "c5ab2d5bd89cf576cee9213460ee82000a73fd77bcd7038d4c423374f7b9a961"
+  },
+  "planSha256": "ed79a2d59e5ffae867789d123db8d57ef9b65b4ca959d27d4d9fe1edc4b81e26"
+}

@@ -1,0 +1,78 @@
+--- before/packages/server/src/transaction-changefeed.test.ts
++++ after/packages/server/src/transaction-changefeed.test.ts
+@@ -1028,7 +1028,6 @@
+     throw new AggregateError(failures, "changefeed context observation and cleanup failed");
+ }, 60000);
+ 
+-
+ it.each(["unknown", "pos-01"])(
+   "waits for fresh finite changefeed opaque minimum without recapturing admission: %s",
+   async (opaque) => {
+@@ -1261,9 +1260,7 @@
+     },
+   };
+   let instance: ReturnType<typeof service> | undefined;
+-  let observed:
+-    | Promise<{ ok: true } | { ok: false; error: unknown }>
+-    | undefined;
++  let observed: Promise<{ ok: true } | { ok: false; error: unknown }> | undefined;
+   let closing: Promise<{ ok: true } | { ok: false; error: unknown }> | undefined;
+   try {
+     expect(f.run([create("a")]).status).toBe("completed");
+@@ -1423,19 +1420,21 @@
+     if (label === "already-aborted") controller.abort();
+     let errorName: string | null = null;
+     try {
+-      const outcome = await instance.changes(
+-        { start: "now" },
+-        {
+-          scopeEpoch: config.scopeEpoch,
+-          authorizationView: config.authorizationView,
+-          minimumPosition: "unknown",
+-        },
+-        controller.signal,
+-        "finite-start-now",
+-      ).then(
+-        () => ({ ok: true as const }),
+-        (error: unknown) => ({ ok: false as const, error }),
+-      );
++      const outcome = await instance
++        .changes(
++          { start: "now" },
++          {
++            scopeEpoch: config.scopeEpoch,
++            authorizationView: config.authorizationView,
++            minimumPosition: "unknown",
++          },
++          controller.signal,
++          "finite-start-now",
++        )
++        .then(
++          () => ({ ok: true as const }),
++          (error: unknown) => ({ ok: false as const, error }),
++        );
+       if (outcome.ok) throw new Error("preflight unexpectedly succeeded");
+       errorName = outcome.error instanceof Error ? outcome.error.name : "non-Error";
+       if (label === "already-aborted")
+@@ -1596,7 +1595,6 @@
+   }
+   if (failures.length) throw new AggregateError(failures, "changefeed boundaries failed");
+ });
+-
+ 
+ it("serves finite start-now opaque minima before HTTP shortcuts", async () => {
+   const controller = new AbortController();
+--- before/apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts
++++ after/apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts
+@@ -778,7 +778,10 @@
+         processEvents.close?.code !== 0 ||
+         processEvents.close.signal !== null
+       )
+-        fail("unclean-close", new Error("installed opaque changefeed clean exit was not established"));
++        fail(
++          "unclean-close",
++          new Error("installed opaque changefeed clean exit was not established"),
++        );
+       else cleanClose = true;
+     } catch (error) {
+       fail("cleanup", error);

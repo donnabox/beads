@@ -1,0 +1,1158 @@
+diff --git a/apps/bdptest/src/transactional-alias-installed.test.ts b/apps/bdptest/src/transactional-alias-installed.test.ts
+index 93e20d6..d1e6bf8 100644
+--- a/apps/bdptest/src/transactional-alias-installed.test.ts
++++ b/apps/bdptest/src/transactional-alias-installed.test.ts
+@@ -1,7 +1,7 @@
+ /** Bounded private installed alias observations, not discovery or profile qualification. */
+ import { execFileSync, type ChildProcess } from "node:child_process";
+ import { createHash, randomBytes } from "node:crypto";
+-import { mkdtempSync, readFileSync, realpathSync, rmSync } from "node:fs";
++import { existsSync, mkdtempSync, readFileSync, realpathSync, rmSync } from "node:fs";
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+ import { fileURLToPath } from "node:url";
+@@ -483,3 +483,395 @@ it("installed sequence aliases resolve at turns and retain targets/misses across
+   if (failures.length)
+     throw new AggregateError(failures, "installed alias observation or cleanup failed");
+ }, 120000);
++
++it("observes installed live alias opaque minima without redirect shortcuts", async () => {
++  const controller = new AbortController();
++  const directory = mkdtempSync(path.join(tmpdir(), "bdp-alias-opaque-installed-"));
++  const ownedDirectory = realpathSync(directory);
++  const token = randomBytes(32).toString("base64url");
++  const failures: unknown[] = [];
++  const failureCategories: string[] = [];
++  function fail(category: string, error: unknown) {
++    if (!failures.includes(error)) {
++      failures.push(error);
++      failureCategories.push(category);
++    }
++  }
++  let deadlineFired = false;
++  const workTimer = setTimeout(() => {
++    deadlineFired = true;
++    const error = new Error("installed opaque alias work deadline");
++    fail("work-deadline", error);
++    controller.abort(error);
++  }, 45000);
++  let child: Awaited<ReturnType<typeof launchInstalledTransaction>> | undefined;
++  let binding: ReturnType<typeof installedTransactionBinding> | undefined;
++  let launchAttempted = false,
++    attempted = 0,
++    settledExchanges = 0,
++    cleanClose = false,
++    cleanupDeadlineExceeded = false,
++    pendingDrained = false,
++    directoryRemoved = false,
++    assertionsCompleted = false;
++  const processEvents: {
++    exit: { code: number | null; signal: NodeJS.Signals | null } | undefined;
++    close: { code: number | null; signal: NodeJS.Signals | null } | undefined;
++  } = { exit: undefined, close: undefined };
++  let childDrain: Promise<void> | undefined;
++  let lateCleanupRejectionObserved = false;
++  const pending = new Set<Promise<unknown>>();
++  const responses: {
++    method: string;
++    url: string;
++    status: number;
++    bodyOctets: number;
++    bodySha256: string;
++    wireSha256: string;
++    headers: Record<string, string | null>;
++  }[] = [];
++  const safeHeaders = [
++    "bdp-scope-epoch",
++    "bdp-authorization-view",
++    "bdp-scope-position",
++    "content-length",
++    "content-type",
++    "cache-control",
++    "retry-after",
++    "location",
++    "etag",
++    "x-bdp-development",
++  ];
++  const routes = [
++    { method: "POST" as const, url: `${scope}operations/batch` },
++    { method: "POST" as const, url: `${scope}operations/put-alias` },
++    { method: "GET" as const, url: `${scope}alias/work` },
++    { method: "HEAD" as const, url: `${scope}alias/work` },
++    { method: "GET" as const, url: `${scope}alias/missing` },
++  ];
++  try {
++    launchAttempted = true;
++    child = await launchInstalledTransaction(
++      entry,
++      {
++        scope,
++        directory,
++        create: true,
++        artifacts,
++        credentials: [{ token, principal: "writer", canMutate: true }],
++      },
++      controller.signal,
++    );
++    child.child.once("exit", (code, signal) => {
++      processEvents.exit = { code, signal };
++    });
++    const ownedProcess = child.child;
++    childDrain = new Promise<void>((resolve) => {
++      ownedProcess.once("close", (code, signal) => {
++        processEvents.close = { code, signal };
++        resolve();
++      });
++    });
++    expect(child.ready.scope).toBe(scope);
++    expect(child.ready.claimEligible).toBe(false);
++    expect(child.ready.profile).toBe("transactional");
++    expect(child.ready.history).toBe(false);
++    binding = installedTransactionBinding(child.ready, source, fixture);
++    const address = new URL(child.ready.listenUrl as string);
++    // Exactly one executor owns this callback's closed route set. It never follows redirects.
++    const execute = createRawHttpExchangeExecutor(
++      { transport: "plain", host: address.hostname, port: Number(address.port) },
++      {
++        requestTimeoutMs: 5000,
++        maximumBodyBytes: 131072,
++        exactMode: {
++          scope,
++          profile: "transactional",
++          routes,
++          maximumRequestHeaderBytes: 16384,
++          maximumRequestBodyBytes: 65536,
++          defaultCredentialRef: "writer",
++          credentialHandles: [{ id: "writer", headerNames: ["authorization"] }],
++          resolveCredentials: () => ({ authorization: `Bearer ${token}` }),
++        },
++      },
++    );
++    async function exchange(
++      method: "GET" | "HEAD" | "POST",
++      suffix: string,
++      status: number,
++      headers: Record<string, string> = {},
++      input?: unknown,
++      schemaName?: string,
++    ) {
++      const url = `${scope}${suffix}`;
++      if (!routes.some((route) => route.method === method && route.url === url) || attempted >= 6)
++        throw new Error("unbound or excess installed opaque alias request");
++      controller.signal.throwIfAborted();
++      attempted++;
++      const operation = execute({
++        method,
++        url,
++        signal: controller.signal,
++        credentialRef: "writer",
++        raw: {
++          headerLines: Object.entries(headers).map(([name, value]) => ({ name, value })),
++          ...(input === undefined ? {} : { bodyBytes: Buffer.from(JSON.stringify(input)) }),
++        },
++      });
++      pending.add(operation);
++      void operation.then(
++        () => {
++          pending.delete(operation);
++          settledExchanges++;
++        },
++        () => {
++          pending.delete(operation);
++          settledExchanges++;
++        },
++      );
++      const response = await operation;
++      expect(response.exactRequest?.writeState).toBe("complete");
++      expect(
++        response.exactRequest?.headerLines.find((h) => h.name.toLowerCase() === "host")?.value,
++      ).toBe("reference.invalid");
++      if (!response.wireResponseBytes?.length) throw new Error("missing actual wire response");
++      if (
++        response.bodyOctets === undefined ||
++        !Number.isSafeInteger(response.bodyOctets) ||
++        response.bodyOctets < 0
++      )
++        throw new Error("completed body octets unavailable");
++      responses.push({
++        method,
++        url,
++        status: response.status,
++        bodyOctets: response.bodyOctets,
++        bodySha256: hash(response.bodyText),
++        wireSha256: hash(response.wireResponseBytes),
++        headers: Object.fromEntries(
++          safeHeaders.map((name) => [name, response.headers[name] ?? null]),
++        ),
++      });
++      expect(response.url).toBe(url);
++      expect(response.status, response.bodyText).toBe(status);
++      expect(response.headers["x-bdp-development"]).toBe("non-attesting");
++      const value: unknown = response.bodyText === "" ? undefined : JSON.parse(response.bodyText);
++      if (schemaName) {
++        const validate = validators[schemaName];
++        if (!validate) throw new Error("missing schema");
++        expect(validate(value), JSON.stringify(validate.errors)).toBe(true);
++      }
++      return { response, value };
++    }
++    const seeded = await exchange(
++      "POST",
++      "operations/batch",
++      200,
++      { "content-type": "application/json", "idempotency-key": "opaque-alias-seed" },
++      {
++        operations: [{ operation: "createBead", id: "beads/a", type: bead, properties: { n: 0 } }],
++      },
++      "mutationReceipt",
++    );
++    expect(seeded.value).toMatchObject({ status: "completed", effectPosition: "pos-1" });
++    const current = Object.fromEntries(
++      ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"].map((name) => {
++        const value = seeded.response.headers[name];
++        if (!value) throw new Error("missing actual installed context");
++        return [name, value];
++      }),
++    );
++    expect(current["bdp-scope-position"]).toBe("pos-1");
++    const aliased = await exchange(
++      "POST",
++      "operations/put-alias",
++      200,
++      { "content-type": "application/json", "idempotency-key": "opaque-alias-put" },
++      { alias: "alias/work", target: "beads/a" },
++      "mutationReceipt",
++    );
++    expect(aliased.value).toMatchObject({ status: "completed", requiredPosition: "pos-1" });
++    function assertContext(response: typeof seeded.response) {
++      for (const [name, value] of Object.entries(current))
++        expect(response.headers[name]).toBe(value);
++    }
++    assertContext(aliased.response);
++    function currentHeader(name: string): string {
++      const value = current[name];
++      if (value === undefined) throw new Error("missing captured installed context");
++      return value;
++    }
++    const minimum: Record<string, string> = {
++      "bdp-scope-epoch": currentHeader("bdp-scope-epoch"),
++      "bdp-authorization-view": currentHeader("bdp-authorization-view"),
++      "bdp-minimum-scope-position": currentHeader("bdp-scope-position"),
++    };
++    const eligible = await exchange("GET", "alias/work", 307, minimum);
++    assertContext(eligible.response);
++    expect(eligible.response.headers.location).toBe(`${scope}beads/a`);
++    expect(eligible.response.headers["cache-control"]).toBe("private, no-store");
++    expect(eligible.response.headers["content-length"]).toBe("0");
++    expect(eligible.response.headers.etag).toBeUndefined();
++    expect(eligible.response.bodyOctets).toBe(0);
++    expect(eligible.response.bodyText).toBe("");
++    const opaque = {
++      ...minimum,
++      "bdp-minimum-scope-position": "unknown",
++      "if-none-match": "*",
++      "if-match": '"different"',
++      accept: "text/plain",
++    };
++    const get = await exchange(
++      "GET",
++      "alias/work",
++      503,
++      opaque,
++      undefined,
++      "transactionalProblem",
++    );
++    expect(get.value).toMatchObject({ code: "catch-up-timeout", status: 503, retry: "after-delay" });
++    assertContext(get.response);
++    expect(get.response.bodyOctets).toBeGreaterThan(0);
++    expect(get.response.headers["content-length"]).toBe(String(get.response.bodyOctets));
++    const head = await exchange("HEAD", "alias/work", 503, opaque);
++    assertContext(head.response);
++    expect(head.response.bodyOctets).toBe(0);
++    expect(head.response.bodyText).toBe("");
++    for (const response of [get.response, head.response]) {
++      expect(response.headers["retry-after"]).toBe("1");
++      expect(response.headers["cache-control"]).toBe("private, no-store");
++      expect(response.headers.location).toBeUndefined();
++      expect(response.headers.etag).toBeUndefined();
++    }
++    for (const name of ["content-type", "content-length", "cache-control", "retry-after"])
++      expect(head.response.headers[name]).toBe(get.response.headers[name]);
++    const missing = await exchange(
++      "GET",
++      "alias/missing",
++      404,
++      { ...minimum, "bdp-minimum-scope-position": "unknown" },
++      undefined,
++      "transactionalProblem",
++    );
++    assertContext(missing.response);
++    expect(missing.value).toMatchObject({ code: "resource-not-found", status: 404 });
++    expect(missing.response.headers.location).toBeUndefined();
++    expect(attempted).toBe(6);
++    expect(responses).toHaveLength(6);
++    expect(settledExchanges).toBe(6);
++    controller.signal.throwIfAborted();
++    assertionsCompleted = true;
++  } catch (error) {
++    fail("work", error);
++  } finally {
++    clearTimeout(workTimer);
++    controller.abort();
++    let cleanupTimer: ReturnType<typeof setTimeout> | undefined;
++    const cleaning = (async () => {
++      await Promise.allSettled([...pending]);
++      pendingDrained = pending.size === 0;
++      if (!pendingDrained) throw new Error("raw exchanges remain pending");
++      // Executor settlement destroys the socket; it does not expose a socket-close census.
++      if (child) {
++        await child.close();
++        if (!childDrain) throw new Error("child close observer unavailable");
++        await childDrain;
++      } else if (launchAttempted) throw new Error("pre-ready child ownership remains unknown");
++    })();
++    void cleaning.catch((error: unknown) => {
++      lateCleanupRejectionObserved = cleanupDeadlineExceeded;
++      fail(cleanupDeadlineExceeded ? "late-cleanup" : "cleanup", error);
++    });
++    try {
++      await Promise.race([
++        cleaning,
++        new Promise<never>((_, reject) => {
++          cleanupTimer = setTimeout(() => {
++            cleanupDeadlineExceeded = true;
++            child?.child.kill("SIGKILL");
++            reject(new Error("installed opaque alias total cleanup deadline"));
++          }, 10000);
++        }),
++      ]);
++      if (
++        cleanupDeadlineExceeded ||
++        !child ||
++        child.child.exitCode !== 0 ||
++        child.child.signalCode !== null ||
++        processEvents.exit?.code !== 0 ||
++        processEvents.exit.signal !== null ||
++        processEvents.close?.code !== 0 ||
++        processEvents.close.signal !== null
++      )
++        fail("unclean-close", new Error("installed opaque alias clean exit was not established"));
++      else cleanClose = true;
++    } catch (error) {
++      fail("cleanup", error);
++    } finally {
++      if (cleanupTimer !== undefined) clearTimeout(cleanupTimer);
++    }
++    try {
++      if (cleanClose && pendingDrained && assertionsCompleted && failures.length === 0) {
++        if (!existsSync(directory) || realpathSync(directory) !== ownedDirectory) {
++          fail(
++            "directory-ownership",
++            new Error("installed opaque alias directory ownership changed"),
++          );
++        } else {
++          rmSync(directory, { recursive: true, force: false });
++          directoryRemoved = !existsSync(directory);
++          if (!directoryRemoved)
++            fail("directory-cleanup", new Error("installed opaque alias directory remains"));
++        }
++      }
++    } catch (error) {
++      fail("directory-cleanup", error);
++    }
++    const lifecycleAtReport = {
++      launchAttempted,
++      returnedChild: child !== undefined,
++      pid: child?.child.pid ?? null,
++      exitCode: child?.child.exitCode ?? null,
++      signalCode: child?.child.signalCode ?? null,
++      observedExit: processEvents.exit ?? null,
++      observedClose: processEvents.close ?? null,
++      childStdioDrainObserved: processEvents.close !== undefined,
++      closure: cleanupDeadlineExceeded || !cleanClose ? "unknown-or-failed" : "clean",
++      cleanClose,
++      cleanupDeadlineExceeded,
++      pendingExchanges: pending.size,
++      pendingDrained,
++      settledExchanges,
++      socketCloseCensusAvailable: false,
++      transportSettlementContract: "executor destroys socket before exchange settles",
++      lateCleanupRejectionObserved,
++      directory,
++      directoryRemoved,
++      directoryPresent: existsSync(directory),
++    };
++    console.log(
++      JSON.stringify({
++        observation: "private-installed-alias-opaque-minimum",
++        declaredSourceCommit: source,
++        workspaceDirty,
++        entry,
++        entrySha256: hash(readFileSync(entry)),
++        artifactSha256: hash(JSON.stringify(artifacts)),
++        binding,
++        attempted,
++        exchanges: responses.length,
++        completedResponses: responses,
++        assertionsCompleted,
++        deadlineFired,
++        lifecycleAtReport,
++        failureCategories,
++        outcome: failures.length ? "failed" : "passed",
++        claimEligible: false,
++      }),
++    );
++  }
++  if (failures.length === 1) throw failures[0];
++  if (failures.length)
++    throw new AggregateError(failures, "installed opaque alias observation or cleanup failed");
++}, 60000);
+diff --git a/packages/server/src/transaction-http.test.ts b/packages/server/src/transaction-http.test.ts
+index 2583aa7..bc0d46b 100644
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -3074,18 +3074,75 @@ it("serves canonical current Type and incident minimums with truthful context an
+ });
+ 
+ it("serves conditioned live aliases and preserves bodyless redirects, refusal context and receiving boundaries", async () => {
+-  let tick = 0;
++  let tick = 0,
++    waits = 0,
++    attempted = 0;
+   const f = await fixture({
+-    minimumReads: { budgetMs: 2, now: () => tick++, wait: async () => {} },
++    minimumReads: {
++      budgetMs: 2,
++      now: () => tick++,
++      wait: async () => {
++        waits++;
++      },
++    },
+   });
+-  const created = await f.post(batch([create("a"), create("b")]), "alias-min-seed");
++  const allowed = new Set([
++    "POST operations/batch",
++    "POST operations/put-alias",
++    "GET alias/work",
++    "HEAD alias/work",
++    "GET alias/missing",
++    "GET alias/work?invalid=1",
++    "DELETE alias/work",
++  ]);
++  const responses: {
++    method: string;
++    route: string;
++    status: number;
++    bodyOctets: number;
++    context: ReturnType<typeof context>;
++    headers: Record<string, string | null>;
++  }[] = [];
++  async function observe(method: string, target: string, send: () => Promise<Response>) {
++    if (!target.startsWith(f.runtime.scope)) throw new Error("unbound alias HTTP scope");
++    const route = target.slice(f.runtime.scope.length);
++    if (!allowed.has(`${method} ${route}`) || attempted >= 28)
++      throw new Error("unbound or excess alias HTTP request");
++    attempted++;
++    const response = await send();
++    responses.push({
++      method,
++      route,
++      status: response.status,
++      bodyOctets: Buffer.byteLength(await response.clone().text()),
++      context: context(response),
++      headers: Object.fromEntries(
++        [
++          "location",
++          "etag",
++          "content-length",
++          "cache-control",
++          "retry-after",
++          "x-bdp-development-limit",
++        ].map((name) => [name, response.headers.get(name)]),
++      ),
++    });
++    return response;
++  }
++  const get = (target: string, init: RequestInit = {}) =>
++    observe(init.method ?? "GET", target, () => f.get(target, init));
++  const created = await observe("POST", f.runtime.targets.batch, () =>
++    f.post(batch([create("a"), create("b")]), "alias-min-seed"),
++  );
+   expect(created.status).toBe(200);
+   const headers = minimumHeaders(created, "pos-1"),
+     target = `${f.runtime.scope}alias/work`;
+-  const put = await f.post(
+-    JSON.stringify({ alias: "alias/work", target: "beads/a" }),
+-    "alias-min-put",
+-    "putAlias",
++  const put = await observe("POST", f.runtime.targets.putAlias, () =>
++    f.post(
++      JSON.stringify({ alias: "alias/work", target: "beads/a" }),
++      "alias-min-put",
++      "putAlias",
++    ),
+   );
+   expect(put.status).toBe(200);
+   expect(await body(put)).toMatchObject({ status: "completed", requiredPosition: "pos-1" });
+@@ -3094,7 +3151,7 @@ it("serves conditioned live aliases and preserves bodyless redirects, refusal co
+       {},
+       { "if-none-match": "*", "if-match": '"different"', accept: "text/plain" },
+     ]) {
+-      const response = await f.get(target, {
++      const response = await get(target, {
+         method,
+         headers: { ...headers, ...extra, authorization: `Bearer ${readToken}` },
+       });
+@@ -3111,48 +3168,60 @@ it("serves conditioned live aliases and preserves bodyless redirects, refusal co
+     [{ "bdp-minimum-scope-position": "pos-2" }, 503, "catch-up-timeout"],
+     [{ "bdp-authorization-view": "foreign" }, 409, "foreign-view"],
+     [{ "bdp-scope-epoch": "foreign" }, 410, "cursor-expired"],
++    [{ "bdp-minimum-scope-position": "unknown" }, 503, "catch-up-timeout"],
++    [{ "bdp-minimum-scope-position": "pos-01" }, 503, "catch-up-timeout"],
+   ] as const) {
+-    let getLength: string | null = null;
++    let getLength: string | null = null,
++      getType: string | null = null;
+     for (const method of ["GET", "HEAD"] as const) {
+-      const response = await f.get(target, {
++      const response = await get(target, {
+         method,
+-        headers: { ...headers, ...patch, "if-none-match": "*" },
++        headers: {
++          ...headers,
++          ...patch,
++          "if-none-match": "*",
++          "if-match": '"different"',
++          accept: "text/plain",
++        },
+       });
+       expect(response.status).toBe(status);
+       expect(response.headers.has("location")).toBe(false);
++      expect(response.headers.has("etag")).toBe(false);
++      expect(response.headers.get("cache-control")).toBe("private, no-store");
+       expect(context(response)).toEqual(context(created));
+       if (status === 503) expect(response.headers.get("retry-after")).toBe("1");
+       if (method === "GET") {
+-        expect(checkedProblem(await body(response))).toMatchObject({
++        const text = await response.text();
++        expect(Buffer.byteLength(text)).toBeGreaterThan(0);
++        getLength = response.headers.get("content-length");
++        getType = response.headers.get("content-type");
++        expect(getLength).toBe(String(Buffer.byteLength(text)));
++        expect(checkedProblem(record(JSON.parse(text)))).toMatchObject({
+           status,
+           code,
+           retry: status === 503 ? "after-delay" : "after-state-change",
+         });
+-        getLength = response.headers.get("content-length");
+       } else {
+         expect(await response.text()).toBe("");
+         expect(response.headers.get("content-length")).toBe(getLength);
++        expect(response.headers.get("content-type")).toBe(getType);
+       }
+     }
+   }
+-  const missing = await f.get(`${f.runtime.scope}alias/missing`, { headers });
++  const missing = await get(`${f.runtime.scope}alias/missing`, { headers });
+   expect(missing.status).toBe(404);
+   expect(context(missing)).toEqual(context(created));
+   expect(checkedProblem(await body(missing))).toMatchObject({ code: "resource-not-found" });
+-  for (const [suffix, supplied, status, marker] of [
+-    ["alias/missing", { ...headers, "bdp-minimum-scope-position": "pos-2" }, 404, null],
+-    ["alias/work?invalid=1", { ...headers, "bdp-minimum-scope-position": "pos-2" }, 404, null],
+-    ["alias/work", { "bdp-minimum-scope-position": "pos-1" }, 400, null],
+-    [
+-      "alias/work",
+-      { ...headers, "bdp-minimum-scope-position": "unknown" },
+-      500,
+-      "minimum-position",
+-    ],
++  for (const [suffix, supplied, status] of [
++    ["alias/missing", { ...headers, "bdp-minimum-scope-position": "pos-2" }, 404],
++    ["alias/work?invalid=1", { ...headers, "bdp-minimum-scope-position": "pos-2" }, 404],
++    ["alias/work", { "bdp-minimum-scope-position": "pos-1" }, 400],
++    ["alias/missing", { ...headers, "bdp-minimum-scope-position": "unknown" }, 404],
++    ["alias/work?invalid=1", { ...headers, "bdp-minimum-scope-position": "unknown" }, 404],
+   ] as const) {
+-    const response = await f.get(`${f.runtime.scope}${suffix}`, { headers: supplied });
++    const response = await get(`${f.runtime.scope}${suffix}`, { headers: supplied });
+     expect(response.status).toBe(status);
+-    expect(response.headers.get("x-bdp-development-limit")).toBe(marker);
++    expect(response.headers.has("x-bdp-development-limit")).toBe(false);
+     if (status === 400)
+       expect(checkedProblem(await body(response))).toMatchObject({
+         code: "malformed-request",
+@@ -3168,13 +3237,46 @@ it("serves conditioned live aliases and preserves bodyless redirects, refusal co
+         expect(response.headers.has(name)).toBe(false);
+     }
+   }
+-  const anonymous = await fetch(target, { headers, redirect: "manual" });
++  // Unsupported private foreign-opaque gaps, not qualified foreign-view/expiry results.
++  for (const patch of [
++    { "bdp-scope-epoch": "foreign" },
++    { "bdp-authorization-view": "foreign" },
++  ]) {
++    for (const method of ["GET", "HEAD"] as const) {
++      const response = await get(target, {
++        method,
++        headers: { ...headers, ...patch, "bdp-minimum-scope-position": "unknown" },
++      });
++      expect(response.status).toBe(500);
++      expect(response.headers.get("x-bdp-development-limit")).toBe("minimum-position");
++      expect(response.headers.has("location")).toBe(false);
++      expect(response.headers.has("etag")).toBe(false);
++      expect(await response.text()).toBe("");
++      for (const name of Object.keys(context(created)))
++        expect(response.headers.has(name)).toBe(false);
++    }
++  }
++  const anonymous = await observe("GET", target, () =>
++    fetch(target, { headers, redirect: "manual" }),
++  );
+   expect(anonymous.status).toBe(401);
+   expect(anonymous.headers.has("location")).toBe(false);
+   for (const name of Object.keys(context(created))) expect(anonymous.headers.has(name)).toBe(false);
+-  const method = await f.get(target, { method: "DELETE", headers });
++  const method = await get(target, { method: "DELETE", headers });
+   expect(method.status).toBe(405);
+   expect(method.headers.get("allow")).toBe("GET, HEAD");
++  expect(attempted).toBe(28);
++  expect(responses).toHaveLength(28);
++  expect(waits).toBe(6);
++  console.log(
++    JSON.stringify({
++      observation: "alias-minimum-http",
++      attempted,
++      responses,
++      waits,
++      outcome: "passed",
++    }),
++  );
+ });
+ 
+ it("carries current owner context on direct conflict, operation-limit and both negotiation refusals", async () => {
+diff --git a/packages/server/src/transaction-read.test.ts b/packages/server/src/transaction-read.test.ts
+index ff68e43..5f7db35 100644
+--- a/packages/server/src/transaction-read.test.ts
++++ b/packages/server/src/transaction-read.test.ts
+@@ -10,12 +10,18 @@ import {
+   type ReadRequest,
+ } from "@bdp/protocol";
+ import { prepareTransaction, prepareTransactionSingleton } from "./transaction-batch.js";
+-import { openTransactionStore } from "./transaction-store.js";
++import { openTransactionStore, type TransactionReadContext } from "./transaction-store.js";
+ import {
+   createTransactionReadPlane,
++  currentReadMinimumKind,
+   transactionReadContexts,
+   TransactionMinimumVisibilityGap,
+ } from "./transaction-read.js";
++import {
++  TransactionMinimumFailure,
++  TransactionMinimumUnproved,
++  TransactionMinimumUnsupported,
++} from "./transaction-consistency.js";
+ import { createTransactionService } from "./transaction-service.js";
+ import { createTransactionHttpHandler } from "./transaction-http.js";
+ import {
+@@ -1708,7 +1714,7 @@ describe("current Type and incident-Link minimums", () => {
+ 
+ describe("current alias minimum subset", () => {
+   const principal = { kind: "anonymous" as const };
+-  function prepared() {
++  function prepared(onCompletedWrite?: () => void) {
+     const f = fixture();
+     expect(
+       f.write(
+@@ -1720,9 +1726,11 @@ describe("current alias minimum subset", () => {
+         })),
+       ).status,
+     ).toBe("completed");
++    onCompletedWrite?.();
+     expect(f.alias("putAlias", { alias: "alias/work", target: "beads/a" }).status).toBe(
+       "completed",
+     );
++    onCompletedWrite?.();
+     const minimum = (minimumPosition = "pos-1") => ({
+       scopeEpoch: f.store.scopeEpoch,
+       authorizationView: "development-all-visible",
+@@ -2107,6 +2115,439 @@ describe("current alias minimum subset", () => {
+       target: url("beads/a"),
+     });
+   });
++  function observedAliases() {
++    let writes = 0;
++    const f = prepared(() => {
++      writes++;
++    });
++    const write = (operations: unknown[]) => {
++      const receipt = f.write(operations);
++      expect(receipt.status).toBe("completed");
++      writes++;
++      return receipt;
++    };
++    const alias = (operation: "putAlias" | "deleteAlias", input: unknown) => {
++      const receipt = f.alias(operation, input);
++      expect(receipt.status).toBe("completed");
++      writes++;
++      return receipt;
++    };
++    type Reader = Parameters<typeof f.store.captureReadAuthorization>[0];
++    const originalReaders = new WeakMap<Reader, Reader>();
++    const entries: TransactionReadContext[] = [];
++    const mappings: { target: ReturnType<Reader["alias"]>; context: TransactionReadContext }[] = [];
++    const unproved: TransactionReadContext[] = [];
++    const owner: typeof f.store = {
++      ...f.store,
++      captureReadAuthorization: (reader, admitted) =>
++        f.store.captureReadAuthorization(originalReaders.get(reader) ?? reader, admitted),
++      withRead: (callback) =>
++        f.store.withRead((reader, captured) => {
++          entries.push(captured);
++          const exposed: Reader = {
++            ...reader,
++            alias: (...args) => {
++              const target = reader.alias(...args);
++              mappings.push({ target, context: captured });
++              return target;
++            },
++          };
++          originalReaders.set(exposed, reader);
++          try {
++            return callback(exposed, captured);
++          } catch (error) {
++            if (error instanceof TransactionMinimumUnproved) unproved.push(error.context);
++            throw error;
++          } finally {
++            originalReaders.delete(exposed);
++          }
++        }),
++    };
++    return {
++      ...f,
++      store: owner,
++      rawStore: f.store,
++      write,
++      alias,
++      entries,
++      mappings,
++      unproved,
++      reset: () => {
++        entries.length = 0;
++        mappings.length = 0;
++        unproved.length = 0;
++      },
++      get writes() {
++        return writes;
++      },
++    };
++  }
++  it.each(["unknown", "pos-01"] as const)(
++    "captures %s alias minima while resolving each retry against the live owner",
++    async (row) => {
++      const f = observedAliases();
++      const plane = createTransactionReadPlane(f.store, f.readOptions);
++      cleanup.push(() => plane.close());
++      let waits = 0,
++        clockCalls = 0;
++      const mutable = f.minimum(row);
++      const service = serviceFor(f, {
++        budgetMs: 3,
++        now: () => clockCalls++,
++        wait: async () => {
++          waits++;
++          if (waits === 1) {
++            Object.assign(mutable, {
++              scopeEpoch: "foreign",
++              authorizationView: "foreign",
++              minimumPosition: "pos-0",
++            });
++            expect(f.alias("putAlias", { alias: "alias/work", target: "beads/b" })).toMatchObject({
++              requiredPosition: "pos-1",
++            });
++          } else {
++            expect(waits).toBe(2);
++            expect(
++              f.write([
++                {
++                  operation: "updateBead",
++                  bead: "beads/b",
++                  propertiesChange: [{ op: "replace", path: "/title", value: "updated" }],
++                },
++              ]),
++            ).toMatchObject({ effectPosition: "pos-2" });
++          }
++        },
++      });
++      const captured = service.readAtMinimum(principal, mutable);
++      const direct = plane.minimumFor(principal, f.minimum(row));
++      f.reset();
++      let apiCalls = 0;
++      apiCalls++;
++      const directError = await direct
++        .resolveAlias(url("alias/work"))
++        .catch((error: unknown) => error);
++      expect(directError).toBeInstanceOf(TransactionMinimumUnproved);
++      if (!(directError instanceof TransactionMinimumUnproved))
++        throw new Error("expected Unproved");
++      expect(directError.context.scopePosition).toBe("pos-1");
++      apiCalls++;
++      const timeout = await captured
++        .resolveAlias(url("alias/work"))
++        .catch((error: unknown) => error);
++      expect(timeout).toBeInstanceOf(TransactionMinimumFailure);
++      if (!(timeout instanceof TransactionMinimumFailure)) throw new Error("expected timeout");
++      expect(timeout).toMatchObject({
++        reason: "catch-up-timeout",
++        context: { scopePosition: "pos-2" },
++      });
++      apiCalls++;
++      const positive = await service
++        .readAtMinimum(principal, f.minimum("pos-2"))
++        .resolveAlias(url("alias/work"));
++      expect(positive).toMatchObject({ kind: "target", target: url("beads/b") });
++      expect(contexts(positive).current.scopePosition).toBe("pos-2");
++      expect(f.mappings.map((attempt) => attempt.target)).toEqual([
++        "beads/a",
++        "beads/a",
++        "beads/b",
++        "beads/b",
++        "beads/b",
++      ]);
++      expect(f.entries.map((entry) => entry.scopePosition)).toEqual([
++        "pos-1",
++        "pos-1",
++        "pos-1",
++        "pos-2",
++        "pos-2",
++      ]);
++      expect(f.unproved).toHaveLength(4);
++      expect([apiCalls, f.entries.length, f.mappings.length, waits, clockCalls, f.writes]).toEqual([
++        3, 5, 5, 2, 5, 4,
++      ]);
++      console.log(
++        JSON.stringify({
++          observation: "alias-minimum-capture",
++          row,
++          apiCalls,
++          attempts: f.mappings,
++          contexts: f.entries,
++          unproved: f.unproved,
++          directContext: directError.context,
++          timeoutContext: timeout.context,
++          positiveContext: contexts(positive).current,
++          waits,
++          clockCalls,
++          writes: f.writes,
++          outcome: "passed",
++        }),
++      );
++    },
++  );
++  it.each(["absent", "deleted", "dangling", "hidden"] as const)(
++    "preserves %s alias nondisclosure before opaque minimum waiting",
++    async (row) => {
++      const f = observedAliases();
++      if (row === "deleted") f.alias("deleteAlias", { alias: "alias/work" });
++      if (row === "dangling") f.write([{ operation: "deleteBead", bead: "beads/a" }]);
++      let waits = 0,
++        clockCalls = 0,
++        policyReplacements = 0;
++      const service = serviceFor(f, {
++        budgetMs: 2,
++        now: () => clockCalls++,
++        wait: async () => {
++          waits++;
++        },
++      });
++      if (row === "hidden") {
++        await service.replaceAuthorizationPolicy({ timeoutMs: 1000 });
++        policyReplacements++;
++      }
++      f.reset();
++      const target = url(row === "absent" ? "alias/never" : "alias/work");
++      let apiCalls = 0,
++        probeCalls = 0;
++      apiCalls++;
++      probeCalls++;
++      const ordinary = await service.readFor(principal).resolveAlias(target);
++      expect(ordinary).toMatchObject({
++        kind: "problem",
++        problem: { status: 404, code: "resource-not-found" },
++      });
++      const actual = contexts(ordinary).current;
++      const results = [];
++      for (const authorizationView of [actual.authorizationView, "foreign"]) {
++        apiCalls++;
++        const result = await service
++          .readAtMinimum(principal, {
++            scopeEpoch: actual.scopeEpoch,
++            authorizationView,
++            minimumPosition: "unknown",
++          })
++          .resolveAlias(target);
++        expect(result).toEqual(ordinary);
++        results.push(contexts(result).current);
++      }
++      expect([apiCalls, f.entries.length, f.mappings.length, waits, clockCalls]).toEqual([
++        3, 3, 3, 0, 2,
++      ]);
++      expect(f.writes).toBe(row === "deleted" || row === "dangling" ? 3 : 2);
++      console.log(
++        JSON.stringify({
++          observation: "alias-minimum-missing",
++          row,
++          apiCalls,
++          probeCalls,
++          conditionedCalls: results.length,
++          entries: f.entries,
++          mappings: f.mappings,
++          ordinaryContext: actual,
++          conditionedContexts: results,
++          waits,
++          clockCalls,
++          writes: f.writes,
++          policyReplacements,
++          outcome: "passed",
++        }),
++      );
++    },
++  );
++  it("returns current alias absence when an admitted opaque wait loses its mapping", async () => {
++    const f = observedAliases();
++    let waits = 0,
++      clockCalls = 0;
++    const service = serviceFor(f, {
++      budgetMs: 2,
++      now: () => clockCalls++,
++      wait: async () => {
++        waits++;
++        f.alias("deleteAlias", { alias: "alias/work" });
++      },
++    });
++    const facet = service.readAtMinimum(principal, f.minimum("unknown"));
++    f.reset();
++    let apiCalls = 0;
++    apiCalls++;
++    const result = await facet.resolveAlias(url("alias/work"));
++    expect(result).toMatchObject({
++      kind: "problem",
++      problem: { status: 404, code: "resource-not-found" },
++    });
++    expect(contexts(result).current.scopePosition).toBe("pos-1");
++    expect(f.mappings.map((attempt) => attempt.target)).toEqual(["beads/a", undefined]);
++    expect(f.unproved).toHaveLength(1);
++    expect([f.entries.length, f.mappings.length, waits, clockCalls, f.writes]).toEqual([
++      2, 2, 1, 2, 3,
++    ]);
++    console.log(
++      JSON.stringify({
++        observation: "alias-minimum-transition",
++        apiCalls,
++        attempts: f.mappings,
++        contexts: f.entries,
++        unproved: f.unproved,
++        resultContext: contexts(result).current,
++        terminalStatus: result.kind === "problem" ? result.problem.status : null,
++        waits,
++        clockCalls,
++        writes: f.writes,
++        outcome: "passed",
++      }),
++    );
++  });
++  it("drains an aborted opaque alias wait before releasing its owner", async () => {
++    const f = observedAliases(),
++      entered = Promise.withResolvers<void>(),
++      release = Promise.withResolvers<void>();
++    let waits = 0,
++      clockCalls = 0,
++      apiCalls = 0,
++      handlerRequests = 0,
++      postCloseProbes = 0,
++      closed = false;
++    const service = serviceFor(f, {
++      budgetMs: 2,
++      now: () => {
++        clockCalls++;
++        return 0;
++      },
++      wait: async () => {
++        waits++;
++        entered.resolve();
++        await release.promise;
++      },
++    });
++    cleanup.push(() => release.resolve());
++    const handler = createTransactionHttpHandler(service, scope);
++    f.reset();
++    const spy = vi.spyOn(DatabaseSync.prototype, "prepare");
++    apiCalls++;
++    handlerRequests++;
++    await expect(
++      handler.handle(
++        new Request(url("alias/work"), {
++          signal: AbortSignal.abort(),
++          headers: {
++            "bdp-scope-epoch": f.store.scopeEpoch,
++            "bdp-authorization-view": "development-all-visible",
++            "bdp-minimum-scope-position": "unknown",
++          },
++        }),
++        { kind: "authenticated", principal: "reader", canMutate: false },
++      ),
++    ).rejects.toThrow("abort");
++    expect(spy).not.toHaveBeenCalled();
++    expect(f.entries).toHaveLength(0);
++    spy.mockRestore();
++    const controller = new AbortController();
++    apiCalls++;
++    const pending = service
++      .readAtMinimum(principal, f.minimum("unknown"))
++      .resolveAlias(url("alias/work"), { signal: controller.signal });
++    const observed = pending.then(
++      (value) => ({ kind: "resolved" as const, value }),
++      (error: unknown) => ({ kind: "rejected" as const, error }),
++    );
++    let closing: Promise<void> | undefined;
++    const failures: unknown[] = [];
++    try {
++      await Promise.race([
++        entered.promise,
++        observed.then(() => {
++          throw new Error("alias wait was not entered");
++        }),
++      ]);
++      expect(f.entries).toHaveLength(1);
++      closing = service.close().then(() => {
++        closed = true;
++      });
++      // Observe cleanup rejection even if an earlier assertion fails.
++      void closing.catch(() => {});
++      expect(closed).toBe(false);
++      expect(() => service.readAtMinimum(principal, f.minimum())).toThrow("closing");
++      controller.abort();
++    } catch (error) {
++      failures.push(error);
++    } finally {
++      controller.abort();
++      release.resolve();
++      const drained = await observed;
++      if (drained.kind === "rejected") {
++        try {
++          expect(drained.error).toMatchObject({ code: "operation-aborted" });
++        } catch (error) {
++          failures.push(error);
++        }
++      } else failures.push(new Error("aborted alias unexpectedly resolved"));
++      for (const result of await Promise.allSettled([closing ?? service.close()]))
++        if (result.status === "rejected") failures.push(result.reason);
++    }
++    if (failures.length) throw new AggregateError(failures, "opaque alias abort/drain failed");
++    expect(closed).toBe(true);
++    postCloseProbes++;
++    expect(() => f.rawStore.inspect()).toThrow("closed");
++    expect([apiCalls, f.entries.length, f.mappings.length, waits, clockCalls, f.writes]).toEqual([
++      2, 1, 1, 1, 3, 2,
++    ]);
++    console.log(
++      JSON.stringify({
++        observation: "alias-minimum-drain",
++        apiCalls,
++        handlerRequests,
++        entries: f.entries,
++        mappings: f.mappings,
++        waits,
++        clockCalls,
++        writes: f.writes,
++        closed,
++        postCloseProbes,
++        outcome: "passed",
++      }),
++    );
++  });
++  it("preserves incident-Link opaque exclusions beside alias minima", async () => {
++    const f = observedAliases();
++    let waits = 0,
++      clockCalls = 0;
++    const service = serviceFor(f, {
++      budgetMs: 2,
++      now: () => clockCalls++,
++      wait: async () => {
++        waits++;
++      },
++    });
++    const request: ReadRequest = { kind: "bead-links", bead: url("beads/a") };
++    expect(currentReadMinimumKind(request)).toBe("missing");
++    const facet = service.readAtMinimum(principal, f.minimum("unknown"));
++    f.reset();
++    let performCalls = 0;
++    performCalls++;
++    await expect(facet.perform(request)).rejects.toBeInstanceOf(TransactionMinimumUnsupported);
++    performCalls++;
++    const missing = await facet.perform({ kind: "bead-links", bead: url("beads/missing") });
++    expect(missing).toMatchObject({
++      kind: "problem",
++      problem: { status: 404, code: "resource-not-found" },
++    });
++    expect(contexts(missing).current.scopePosition).toBe("pos-1");
++    expect([f.entries.length, f.mappings.length, waits, clockCalls, f.writes]).toEqual([
++      2, 0, 0, 2, 2,
++    ]);
++    console.log(
++      JSON.stringify({
++        observation: "alias-minimum-incident-fence",
++        performCalls,
++        entries: f.entries,
++        aliasLookups: f.mappings.length,
++        waits,
++        clockCalls,
++        writes: f.writes,
++        missingContext: contexts(missing).current,
++        outcome: "passed",
++      }),
++    );
++  });
+ });
+ 
+ describe("current minimum perform receiving", () => {
+diff --git a/packages/server/src/transaction-read.ts b/packages/server/src/transaction-read.ts
+index df0707c..7dc2c20 100644
+--- a/packages/server/src/transaction-read.ts
++++ b/packages/server/src/transaction-read.ts
+@@ -108,7 +108,7 @@ export function currentReadMinimumKind(
+ }
+ type MinimumCondition = Readonly<{
+   minimum: TransactionMinimum;
+-  kind: ReturnType<typeof currentReadMinimumKind>;
++  kind: ReturnType<typeof currentReadMinimumKind> | "alias";
+ }>;
+ const minimumConditions = new WeakSet<object>();
+ function minimumCondition(
+@@ -213,7 +213,7 @@ export function createTransactionReadPlane(
+       const { minimum, kind } = capturedCondition(condition);
+       const current = transactionReadContexts(observation).current;
+       if (refusal?.code === "resource-not-found") {
+-        if (kind === "resource" || kind === "missing") return;
++        if (kind === "resource" || kind === "missing" || kind === "alias") return;
+         try {
+           checkCurrentReadMinimum(minimum, current, false);
+           return;
+@@ -234,7 +234,7 @@ export function createTransactionReadPlane(
+       checkCurrentReadMinimum(
+         minimum,
+         current,
+-        kind === "resource" || kind === "initial-collection",
++        kind === "resource" || kind === "initial-collection" || kind === "alias",
+       );
+     },
+     captureReadAuthorization: (reader, principal) => {
+@@ -328,7 +328,7 @@ export function createTransactionReadPlane(
+           );
+         },
+         resolveAlias: (url, options) => {
+-          const condition = minimumCondition(minimum, "missing");
++          const condition = minimumCondition(minimum, "alias");
+           let captured: AuthorityReadDeliveryOptions | undefined;
+           try {
+             captured = captureTransactionReadDeliveryOptions(options);

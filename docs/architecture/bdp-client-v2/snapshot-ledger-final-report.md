@@ -1,0 +1,13 @@
+# Snapshot ledger exact-source validation
+
+Exact frozen **f72566bed6f9a9cd7c9ca2ae05759c5a3f26d4e6**, direct successor of dc15bc92bc83253da1d3d1fc7f47df6ef3b4924b, checkout `/Users/dbox/repos/wt/vickie/vickie-snapshot-ledger-closure`, branch `codex/vickie-snapshot-ledger-closure`. Source branch pushed and remotely verified; PR88 advancement is authorized after completed council disposition. Ordinary ancestry contains reviewed Snapshot core/settings and current published4a; no evidence source relabeling.
+
+Full suite **8,496 passed/149 files/1 optional skip**, no failures; full process111.72s. Build, pre-build typecheck, boundaries, format, lint, both smokes, preflight7 and original Read89 verifier all exit0. Format retains the existing matrix-size warning and lint retains warnings; not a warning-free claim. Logs and actual process exits are in results.json and per-stage logs.
+
+Fresh packed **134 tests/4 files pass**, against newly installed tarballs built from this exact clean source. Actual 45 RU sessions/781 client-transport observations plus442 raw HTTP exchanges/44 setup/21 native Read observations. Required129/authored45/whole26/uncovered103; claimEligible:false. Exact payload **78ed45b267061ad47ce2ba91edd97de34879c44ced73639908c8d379b9e7a3be**, configuration **1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5**, routes **092b9ac9abf64dcd02f592059bc6333b0a6dfc69efe9d50332086335474c8f3c**. Compact summary binds original progress.json SHA256; raw credentials remain local. These inherited RU observations are regression evidence, not served Snapshot or full Transactional qualification.
+
+Author closure306 focused tests/eight files; independent native review209 tests/four files plus three ordering/epoch probes and actual SQL evaluation/index instrumentation accepts all six bounded followups. Claude closure69670 completed: all six prior findings closed, no Medium/High defect. Nonblocking test-name/linear duplicate-check/comment corrections are assigned to the S1b successor. Populated-detail index-scan cost is disclosed; external timing used Node26 and is not pinned-runtime qualification. Native initial probe-only assertion mismatch is disclosed in its separate report; no product edit was needed. Root source remained unchanged throughout validation.
+
+No Snapshot HTTP route, public profile advertisement or main merge occurs through this validation. Next S1b uses an isolated successor after final acceptance; Q1 consistency controls remain an explicit unsupported branch.
+
+Exact published-head CI38403579487/job115317201416 passed at13:22:27Z. The781 count is the recorded client-transport category, not the total including442 raw manifest HTTP exchanges; setup44 and nativeRead21 are separately reported categories.
