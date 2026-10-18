@@ -1,0 +1,3 @@
+Running: go test -p 4 -parallel 4 -timeout 25m -run ^TestLegacyImport(JSONCloneOmissionCoverage|LabelSetAndInternalState|UTF8ShapeCoverage)$ -count 1 -json ./internal/storage/graphstore
+Skipping: 
+

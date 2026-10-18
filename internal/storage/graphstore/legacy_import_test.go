@@ -82,10 +82,7 @@ func TestLegacyImportLabelSetAndInternalState(t *testing.T) {
 	if err != nil || !reflect.DeepEqual(prepared.Issues[0].Labels, []string{"one", "two", "three"}) || !reflect.DeepEqual(issue.Labels, []string{"one", "two", "one", "three"}) {
 		t.Fatalf("label set or caller changed: %+v %+v %v", prepared, issue, err)
 	}
-	plane := false
-	for field, internal := range map[string]*types.Issue{
-		"WispPlaneOverride": {WispPlaneOverride: &plane}, "IDPrefix": {IDPrefix: "custom"}, "PrefixOverride": {PrefixOverride: "other"}, "SourceRepo": {SourceRepo: "another"}, "IsLitePartial": {IsLitePartial: true},
-	} {
+	for field, internal := range legacyImportOmittedStateFixtures() {
 		tag, ok := reflect.TypeOf(types.Issue{}).FieldByName(field)
 		if !ok || tag.Tag.Get("json") != "-" {
 			t.Fatalf("internal field %s entered legacy JSON: %v", field, tag)
@@ -94,6 +91,13 @@ func TestLegacyImportLabelSetAndInternalState(t *testing.T) {
 		if _, err := prepareLegacyImport(legacyimport.Batch{Issues: []*types.Issue{internal}}, "importer"); !errors.Is(err, storage.ErrValidation) || !strings.Contains(err.Error(), field) {
 			t.Fatalf("nonserialized state silently ignored: %+v", internal)
 		}
+	}
+}
+
+func legacyImportOmittedStateFixtures() map[string]*types.Issue {
+	plane := false
+	return map[string]*types.Issue{
+		"WispPlaneOverride": {WispPlaneOverride: &plane}, "IDPrefix": {IDPrefix: "custom"}, "PrefixOverride": {PrefixOverride: "other"}, "SourceRepo": {SourceRepo: "another"}, "IsLitePartial": {IsLitePartial: true},
 	}
 }
 
