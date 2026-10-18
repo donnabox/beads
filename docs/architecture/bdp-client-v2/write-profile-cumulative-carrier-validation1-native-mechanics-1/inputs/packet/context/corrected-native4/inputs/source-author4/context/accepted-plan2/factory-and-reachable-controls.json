@@ -1,0 +1,75 @@
+{
+  "branchLimits": [
+    "RU carrier duplicate/membership/order/prerequisite defenses cannot be driven by these invalid factory inputs and stay defensive/unexecuted here.",
+    "TX raw coverage is not the RU factory brand; its independent malformed coverage equality is genuinely reachable through assembleProfileEvidence.",
+    "TX last/self prerequisite manifest remains generic-schema valid, while carrier earlier-position rule rejects it; cannot fabricate RU cross-shard execution."
+  ],
+  "cases": [
+    {
+      "RUcarrier": "One explicitly separate unbranded {...ruSet()} control still invalid-source at brand boundary; never invalid-ownership credit",
+      "RUmutation": "copy baseline first scenario read.discovery.scope-service-desc to front of reference-continuation manifest",
+      "TXassemblerCalls": 1,
+      "TXcarrierRefusal": "invalid-ownership at profile-evidence.ts260-264 exact coverage/manifest ordered IDs",
+      "TXmutation": "original raw TX coverage rows[1].id = rows[0].id; manifest/fixture untouched",
+      "directFactoryCalls": 1,
+      "factory": "createReadUpdateArtifactSet",
+      "firstRefusal": "read-update-artifact-set.ts:187 duplicate scenario owner: read.discovery.scope-service-desc",
+      "id": "R14",
+      "unbrandedAssemblerCalls": 1
+    },
+    {
+      "RUmutation": "baseline first scenario.id = actual ruSelection.retiredIds[0] (assert nonempty)",
+      "TXassemblerCalls": 1,
+      "TXcarrierRefusal": "invalid-ownership at ordered coverage/manifest equality",
+      "TXmutation": "original raw TX coverage rows[0].id = same actual retired ID; manifest/fixture untouched",
+      "directFactoryCalls": 1,
+      "factory": "createReadUpdateArtifactSet -> createCumulativeReadUpdateArtifactBundle",
+      "firstRefusal": "artifact-bundle.ts221-226: manifest row is not a cumulative requirement: <the actual selected retired ID>; type ConformanceArtifactBundleError",
+      "id": "R15"
+    },
+    {
+      "RUmutation": "baseline first scenario.id = unknown.requirement",
+      "TXassemblerCalls": 1,
+      "TXcarrierRefusal": "invalid-ownership at ordered coverage/manifest equality",
+      "TXmutation": "original raw TX coverage rows[0].id = unknown.requirement",
+      "directFactoryCalls": 1,
+      "factory": "createReadUpdateArtifactSet -> createCumulativeReadUpdateArtifactBundle",
+      "firstRefusal": "artifact-bundle.ts221-226: manifest row is not a cumulative requirement: unknown.requirement; type ConformanceArtifactBundleError",
+      "id": "R16"
+    },
+    {
+      "RUmutation": "reverse all51 baseline scenario rows; preserve each body/action",
+      "TXassemblerCalls": 1,
+      "TXcarrierRefusal": "invalid-ownership at ordered coverage/manifest equality",
+      "TXmutation": "reverse raw TX coverage.rows only, original manifest untouched",
+      "directFactoryCalls": 1,
+      "factory": "createReadUpdateArtifactSet",
+      "firstRefusal": "read-update-artifact-set.ts185: shard scenarios must follow canonical required order",
+      "id": "R17"
+    },
+    {
+      "RUmutation": "baseline first scope action.prerequisiteScenario = baseline last ID, then reference-continuation first ID in two separate fresh source copies; the second discovery action stays own, so generic manifest own-action rule holds",
+      "TXassemblerCalls": 2,
+      "TXcarrierRefusal": "invalid-prerequisite at profile-evidence.ts294-299 positions(last/self)>=positions(first)",
+      "TXfactoryPrecondition": "Each modified raw manifest+original fixture must genuinely pass unchanged createCumulativeTransactionalArtifactBundle before assembler; no fabricated brand",
+      "TXmutation": "TX first scenario read-update.idempotency.principal-isolation first action pk-a-create prerequisiteScenario = TX last transactional.http.conditional-reads, then self ID; remaining six own actions unchanged, coverage assertion names unchanged",
+      "directFactoryCalls": 2,
+      "directTXFactoryCalls": 2,
+      "factory": "createReadUpdateArtifactSet",
+      "firstRefusal": "read-update-artifact-set.ts198-210 prerequisite must be earlier and implemented in the same shard; assert exact fixed known id -> actual target string per subcase",
+      "id": "R18"
+    }
+  ],
+  "diagnostics": "Factory tests assert exact known static message/type for these authored source IDs; module refusals retain fixed generic ProfileEvidenceError message/code. Never report caller/credential text.",
+  "directCalls": {
+    "RUfactories": 6,
+    "RUunbrandedAssembler": 1,
+    "TXcoverageAssemblers": 4,
+    "TXprerequisiteAssemblers": 2,
+    "TXprerequisiteFactories": 2,
+    "total": 15
+  },
+  "factoryAuthority": "unchanged factories remain authoritative/WeakMap-branded and frozen; no factory edits, brand forging, new invalid-input API or exported model seam",
+  "historicalExpected": "R14-R17 invalid-ownership and R18 invalid-prerequisite originally assigned indiscriminately to RU inputs; preserved original bytes in context. Current source asserts only invalid-source after a separate unbranded-copy rejection. Neither is relabelled as coverage of unreachable RU model branches.",
+  "state": "PROPOSED explicit private DATA-contract boundary clarification; native precision and root acceptance REQUIRED before source release"
+}

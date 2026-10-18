@@ -1,0 +1,25 @@
+--- a/clock-and-ownership-contract.json
++++ b/clock-and-ownership-contract.json
+@@ -27,5 +27,22 @@
+     "rows": 256,
+     "runnerCallsAdded": 0,
+     "sessions": 24
++  },
++  "childCreationUmask": {
++    "requiredChildUmask": "0o077",
++    "bindingPoint": "Future independently reviewed supervisor creates the single positive test child with inherited umask077 installed by the owned launch mechanism before exec and before ANY child output creation; Vitest workers and installed descendants inherit that same mask. Not an environment variable or delayed script statement.",
++    "retainedPrecondition": "Before release/launch, freeze exact supervisor implementation/control and its child umask077 setting. Retain same-attempt authenticated launch receipt identifying exact child, pre-exec setting and reviewed control; auditor verifies this prerequisite along with actual file modes. Setting remains UNIMPLEMENTED/UNVERIFIED until separately authored/reviewed concrete supervisor and actual receipts.",
++    "requiredActualModes": "At final acquired-descriptor reads, require actual ordinary nonsymlink mode0600 for original legacy wrapper and both final sidecars, with lstat/fstat/read identity binding and current ownership checks unchanged.",
++    "refusal": "Missing/unknown/mismatched launch-mask prerequisite or any actual mode mismatch fails validation separately even if product passes. Preserve bounded truthful evidence; do not upgrade by assumed ambient umask.",
++    "prohibited": [
++      "precreate the legacy destination",
++      "post-hoc chmod of observed files",
++      "rewrite or normalize captured evidence",
++      "product/source edit",
++      "weaken sidecar first-creation wx ownership",
++      "relax actual0600 grammar"
++    ],
++    "clock": "All precondition/control/receipt checking and actual file acquisition remain within the existing whole-stage120000/TERM115000/KILL119000 clock from before first gate/setup; no additional stage or off-clock check.",
++    "executionReleased": false
+   }
+ }

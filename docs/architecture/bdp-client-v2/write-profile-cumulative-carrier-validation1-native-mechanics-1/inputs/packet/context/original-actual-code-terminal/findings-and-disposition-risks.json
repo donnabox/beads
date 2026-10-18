@@ -1,0 +1,72 @@
+{
+  "authority": "Exact actual raw review findings; notes are auditor static precision cautions, not root disposition",
+  "findings": [
+    {
+      "id": "F1",
+      "reviewerSeverity": "Medium",
+      "title": "`R14`\u2013`R18` assert the wrong refusal code; `invalid-ownership` and `invalid-prerequisite` are never exercised.",
+      "actualText": "**1. [Medium] `R14`\u2013`R18` assert the wrong refusal code; `invalid-ownership` and `invalid-prerequisite` are never exercised.**\n`packages/conformance/test-support/profile-evidence.test.ts:488-505` (`sourceMutation`) and its five callers at `:799-839`.\n`source-data-cases.json` fixes R14/R15/R16/R17 \u2192 `invalid-ownership` and R18 \u2192 `invalid-prerequisite`. Every one of the five instead asserts `\"invalid-source\"`, because `sourceMutation` mutates the *sources*, confirms the pinned factory rejects them (`expect(() => createReadUpdateArtifactSet(...)).toThrow()`), and then calls `assembleProfileEvidence` with an **unbranded** set lookalike `{ ...ruSet() }`, which dies in `assertReadUpdateArtifactSet` (`read-update-artifact-set.ts:310`) before `model()` runs. A grep of the test file finds zero occurrences of either contracted code. Consequently the five cases are five identical copies of one brand check, and the module's own ownership/prerequisite logic \u2014 `profile-evidence.ts:281-283`, `:290`, `:293`, `:296-299`, plus the TX `invalid-ownership` refusals at `:252-265` \u2014 has no coverage at all; 2 of the 10 contracted error codes are untested. **Impact:** a regression that drops or mis-codes duplicate-owner, retired-ID, unknown-ID, out-of-order or later/cross-shard-prerequisite detection passes silently. **Smallest fix:** in each case, feed the mutated manifest/coverage through a *factory-created* set (as `prerequisiteData(\u2026, true)` already does at `:351-365`) so `model()` is reached, and assert the contracted code.",
+      "auditDispositionRisk": "Concrete static test mismatch: five tests all end at unbranded invalid-source. Do not automatically adopt the suggested factory-created invalid input fix: factory already rejects these mutations. Root must preserve factory-authoritative validation/brands, distinguish reachable module paths from factory-owned refusals and review meaningful controls/error-contract disposition without an unbranded bypass.",
+      "rootDisposition": "PENDING",
+      "sourceCorrectionReleasedByAudit": false
+    },
+    {
+      "id": "F2",
+      "reviewerSeverity": "Medium",
+      "title": "`packages/conformance` now imports from `apps/bdptest`, inverting the workspace dependency direction and violating the plan.",
+      "actualText": "**2. [Medium] `packages/conformance` now imports from `apps/bdptest`, inverting the workspace dependency direction and violating the plan.**\n`packages/conformance/test-support/profile-evidence.ts:29`:\n`import { installedContractsDigest } from \"../../../apps/bdptest/test-support/installed-contract-identity.js\";`\n`effective-plan4/plan.md` \u00b65 states explicitly: \"New module imports only existing private conformance internals.\" This is the only `packages/** \u2192 apps/**` import in the repo, and it is the reverse of the sanctioned direction that `vitest.config.ts:16-21` deliberately enforces (\"`apps/*` \u2026 aliasing them would register a target that does not exist and mask a misconfigured import\"). It also forms a package-level cycle with `apps/bdptest/test-support/read-update-artifact-execution.ts:28-31`. It does not break `tsc -b` only because `packages/conformance/tsconfig.json:7` excludes `test-support`. **Impact:** the conformance package's test-support surface is no longer self-contained; any boundary/project-reference tightening or a move of the app file breaks it. **Smallest fix:** drop the import. `profile-evidence.ts:401` already validates `/^development-schema5-[a-f0-9]{64}$/` immediately before the call, so `:411` can be `artifact.slice(\"development-schema5-\".length)` with identical behavior.",
+      "auditDispositionRisk": "Concrete import direction conflicts with original plan private-internals-only seam. Any local digest extraction must retain exact installedContractsDigest behavior and prior artifact format refusal, not introduce a different identity.",
+      "rootDisposition": "PENDING",
+      "sourceCorrectionReleasedByAudit": false
+    },
+    {
+      "id": "F3",
+      "reviewerSeverity": "Medium",
+      "title": "The opt-in TX carrier path is unobservable: every failure is swallowed and nothing asserts the carrier retained its observation.",
+      "actualText": "**3. [Medium] The opt-in TX carrier path is unobservable: every failure is swallowed and nothing asserts the carrier retained its observation.**\n`apps/bdptest/src/transactional-matrix.test.ts:404-433`, `:481-483`, `:806-812`.\nThe handoff copy/hash/parse/projection block ends in `catch { carrierRefused = true; }`, `publishCarrier` ends in `catch { carrierRefused = true; }`, and the `finally` at `:807-812` only calls `carrier?.passed()`/`failed()`. No assertion anywhere checks `carrierRefused`, `evidence === \"retained\"`, or that a sidecar was written. So a writer refusal, a `baseline`/`sessions`/`result` representation mismatch, or a budget overrun all produce `[null]` observations with `evidence: \"absent\"` / `failureStages: [\"execution\"]` while the test still passes. This is not hypothetical: `effective-plan4/plan.md` \u00b629 records the predecessor sizing as **74,378 nodes / 2,936,736 wrapper bytes** against the `parseBoundedJson` cap of 100,000 nodes and the `copySourceBytes` cap of 4,194,304 bytes used at `:408` and `:411`; the current wrapper is the *seventeen*-contract run (256 rows, 234 exchanges, 24 sessions \u2014 `:582`, `:587`, `:789`), i.e. materially larger with ~26% node headroom. Note the asymmetry: the RU adapter lets the same refusals escape `ledger()` (`read-update-artifact-execution.ts:581`), so RU fails loud and TX fails silent. **Impact:** the only positive TX carrier run can ship an evidence-absent sidecar indistinguishably from success. **Smallest fix:** when `carrierPath` is set, expose the final envelope (or `carrierRefused`) and add one assertion in the existing `finally` that `attempt.owners[0].evidence === \"retained\"`.",
+      "auditDispositionRisk": "The absence of a positive retained-evidence assertion is material to future carrier validation, but isolation of NEW TX carrier refusals from original product/hooks is an explicit accepted contract. Do not blindly add a throwing finally assertion that replaces primary product/cleanup errors or makes opt-in carrier failure alter original result. Preserve raw failures; validate fresh sidecar presence/shape/digest externally or expose safe explicit state through a reviewed seam. Report-size/100knode overflow is a risk inferred from historical sizing, not an actual measured current run failure.",
+      "rootDisposition": "PENDING",
+      "sourceCorrectionReleasedByAudit": false
+    },
+    {
+      "id": "F4",
+      "reviewerSeverity": "Low",
+      "title": "`String(...)` coercion for `runtimeConfigurationIdentity` contradicts the accepted N3 contract.",
+      "actualText": "**4. [Low] `String(...)` coercion for `runtimeConfigurationIdentity` contradicts the accepted N3 contract.**\n`apps/bdptest/test-support/read-update-artifact-execution.ts:644-646`.\n`accepted-correction-plan1/primitive-and-cache-contract.json` N3 `primitiveSlots.runtimeConfigurationIdentity` says \"primitive lower64hex string \u2026 **never `String(value)` coercion**\". A non-string/absent `configurationIdentity` becomes `\"undefined\"`/`\"[object Object]\"`, which then fails `primitiveHash` as `invalid-source` instead of being rejected as a shape error at the adapter, and the throw escapes `ledger()` and fails the whole RU run. **Smallest fix:** read the value, require `typeof === \"string\"`, and pass it through unmodified.",
+      "auditDispositionRisk": "Actual String(...) present in RU primitive runtime identity path; primitive checks should preserve fixed refusal and no coercion/behavior injection. Final root disposition must decide handling of missing/nonprimitive metadata while preserving legacy RU behavior.",
+      "rootDisposition": "PENDING",
+      "sourceCorrectionReleasedByAudit": false
+    },
+    {
+      "id": "F5",
+      "reviewerSeverity": "Low",
+      "title": "Three contracted subassertions are vacuous \u2014 they assert JavaScript semantics, not subject behavior.",
+      "actualText": "**5. [Low] Three contracted subassertions are vacuous \u2014 they assert JavaScript semantics, not subject behavior.**\n- `profile-evidence.test.ts:632-636` compares `canonicalJson(JSON.parse(JSON.stringify(value)))` against `canonicalJson(actual)` where `actual` is the *same* round-trip of the *same* literal; it can never fail and demonstrates nothing about V06's contracted \"undefined object-member omission and undefined array-item null\" representation rule. Fix: assert the literal expected string, e.g. `'{\"array\":[null,1],\"field\":\"result\"}'`.\n- `:1400`/`:1421`: `genuine` is a local literal never passed to the module, so `expect(genuine.result.real).toBe(true)` cannot detect replacement of genuine data (L03's subassertion).\n- `:1463-1474`: a `try { try { throw original } finally {} } catch` block asserting `observed === original` \u2014 pure language semantics, standing in for L05's \"original legacy errors remain original\" obligation.",
+      "auditDispositionRisk": "Three cited subcontrols are local equality/language semantics, not subject behavior. Future meaningful controls should exercise actual handoff/adapter or accepted source-data seam within48 existing callbacks, preserving original-hook/cleanup isolation; no test run occurred.",
+      "rootDisposition": "PENDING",
+      "sourceCorrectionReleasedByAudit": false
+    },
+    {
+      "id": "F6",
+      "reviewerSeverity": "Low",
+      "title": "`reports[]` rows are structurally heterogeneous.",
+      "actualText": "**6. [Low] `reports[]` rows are structurally heterogeneous.**\n`profile-evidence.ts:820-827` (absent) vs `:970-980` (present). Absent rows carry 6 keys and **omit** `runtimeConfigurationIdentity`, `exactConfigurationDigest` and `reportedCleanupState`, while nulling the other four \u2014 inconsistent with the same object's own `null` convention and with `output-schema.json`'s \"missing is null/unobserved rather than\" rule. Consumers cannot apply one closed-key schema to `reports`. **Smallest fix:** emit the three fields as `null` in the absent branch.",
+      "auditDispositionRisk": "Absent reports omit three present-branch fields; review exact closed output schema/null convention before changing projection. A projection/schema change needs corresponding controls, no automatic whole credit.",
+      "rootDisposition": "PENDING",
+      "sourceCorrectionReleasedByAudit": false
+    },
+    {
+      "id": "F7",
+      "reviewerSeverity": "Low",
+      "title": "The new N5 guard bounds traversal but not capture cost.",
+      "actualText": "**7. [Low] The new N5 guard bounds traversal but not capture cost.**\n`profile-evidence.ts:134-135`. The `> 10000` check runs *after* `record(value)`, i.e. after `Object.getOwnPropertyDescriptors` materializes all 10001 descriptors and `ownData`'s `allowed.includes(key)` (`profile-contract-plan.ts:84-91`) performs O(n\u00b2) scans. Supplied `ready`/`exactConfiguration` are caller in-memory objects, not parser-bounded, so ~10 such containers fit under the 100,000-node budget at ~50M comparisons each. The root N5 disposition (\"reject \u2026 before traversing a captured plain record\") is satisfied, so this is cost only, not a contract deviation. **Smallest fix:** test `Object.keys(value).length > 10000` before calling `record(value)`.",
+      "auditDispositionRisk": "Cost-only issue explicitly acknowledged by actual reviewer, not deviation from accepted N5 traversal contract. A pre-capture Object.keys fix must not run before Proxy/accessor/symbol/plain-record protections; preserve intrinsic no-invocation boundary and all node/depth/container limits. No runtime timing/capacity failure was observed.",
+      "rootDisposition": "PENDING",
+      "sourceCorrectionReleasedByAudit": false
+    }
+  ],
+  "medium": 3,
+  "low": 4,
+  "allCurrentSourceUnchanged": true,
+  "noReviewerApprovalInferred": true
+}

@@ -1,0 +1,76 @@
+{
+  "authority": "context/write-profile-cumulative-carrier-code-root-disposition-1/disposition.json",
+  "effectiveCases": "effective-contracts/source-data-cases.json",
+  "findings": [
+    {
+      "contract": "factory-and-reachable-controls.json",
+      "id": "F1",
+      "sourcePaths": [
+        "packages/conformance/test-support/profile-evidence.test.ts"
+      ],
+      "status": "planned; explicit private data-boundary clarification pending native/root"
+    },
+    {
+      "contract": "source-change-map.json",
+      "id": "F2",
+      "sourcePaths": [
+        "packages/conformance/test-support/profile-evidence.ts"
+      ],
+      "status": "planned exact validated-prefix extraction"
+    },
+    {
+      "contract": "validation-only-expectations.json",
+      "id": "F3",
+      "sourcePaths": [
+        "apps/bdptest/src/transactional-matrix.test.ts"
+      ],
+      "status": "planned independent fresh positive retained-sidecar validation only, no throwing product finally"
+    },
+    {
+      "contract": "source-change-map.json",
+      "id": "F4",
+      "sourcePaths": [
+        "apps/bdptest/test-support/read-update-artifact-execution.ts",
+        "packages/conformance/test-support/profile-evidence.test.ts"
+      ],
+      "status": "planned no-coercion primitive guard at adapter"
+    },
+    {
+      "contract": "private-handoff-refactor.json",
+      "id": "F5",
+      "sourcePaths": [
+        "apps/bdptest/test-support/read-update-artifact-execution.ts",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "packages/conformance/test-support/profile-evidence.test.ts"
+      ],
+      "status": "planned genuine production-used private helper controls"
+    },
+    {
+      "contract": "effective-contracts/output-schema.json",
+      "id": "F6",
+      "sourcePaths": [
+        "packages/conformance/test-support/profile-evidence.ts",
+        "packages/conformance/test-support/profile-evidence.test.ts"
+      ],
+      "status": "planned exactly three absent null keys"
+    },
+    {
+      "contract": "cost-preflight-contract.json",
+      "id": "F7",
+      "sourcePaths": [
+        "packages/conformance/test-support/profile-evidence.ts",
+        "packages/conformance/test-support/profile-evidence.test.ts"
+      ],
+      "status": "planned linear intrinsic preflight preserving refusal precedence"
+    }
+  ],
+  "footprint": "footprint.json",
+  "preservation": "budgets-and-preservation.json",
+  "priority": "Current named deltas override only explicitly named private contracts; all other plan4/accepted plan1/source3 facts stay unchanged. No contradictory overlay implied.",
+  "secondActualCODEAllowed": false,
+  "secondActualPLANAllowed": false,
+  "sourceAuthoringReleased": false,
+  "sourceBasis": "basis.json",
+  "state": "CLOSED DATA-only proposed seven-finding correction; no source/helper authored",
+  "validation": "validation-only-expectations.json"
+}

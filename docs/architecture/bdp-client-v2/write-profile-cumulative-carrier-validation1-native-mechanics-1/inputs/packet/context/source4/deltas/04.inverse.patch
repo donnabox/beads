@@ -1,0 +1,76 @@
+--- a/apps/bdptest/src/transactional-matrix.test.ts
++++ b/apps/bdptest/src/transactional-matrix.test.ts
+@@ -6,11 +6,13 @@
+ import { fileURLToPath } from "node:url";
+ import { expect, it } from "vitest";
+ import { canonicalJson } from "../../../packages/conformance/src/canonical-json.js";
++import {
++  copySourceBytes,
++  parseBoundedJson,
++} from "../../../packages/conformance/src/artifact-bundle.js";
++import { ownData } from "../../../packages/conformance/test-support/profile-contract-plan.js";
+ import { assembleProfileEvidence } from "../../../packages/conformance/test-support/profile-evidence.js";
+-import {
+-  createPrivateProfileSidecarWriter,
+-  capturePrivateProfileHandoff,
+-} from "../test-support/read-update-artifact-execution.js";
++import { createPrivateProfileSidecarWriter } from "../test-support/read-update-artifact-execution.js";
+ import {
+   createJsonSchemaValidator,
+   createRawHttpExchangeExecutor,
+@@ -388,15 +390,47 @@
+       target.context,
+     );
+     observed = { result, sessions, baseline };
+-    const captured = control?.carrierPath
+-      ? capturePrivateProfileHandoff(observed, control.onObserved, { sourceCommit, entry })
+-      : undefined;
+-    // Disabled carrier mode keeps the original direct hook and does no new capture work.
+-    if (!control?.carrierPath) control?.onObserved?.(observed);
++    let genuine: InstalledObservation | undefined;
+     if (control?.carrierPath) {
+-      const genuine = captured?.genuine,
+-        wrapperBytes = captured?.wrapperBytes;
+-      if (captured?.refused || !genuine) carrierRefused = true;
++      try {
++        genuine = structuredClone(observed);
++      } catch {
++        carrierRefused = true;
++      }
++    }
++    // Keep ORIGINAL hook exceptions in the original error/cleanup path.
++    const handoff = control?.onObserved?.(observed);
++    if (control?.carrierPath) {
++      let wrapperBytes: Uint8Array | undefined;
++      try {
++        if (!genuine || carrierRefused || !handoff) throw new Error("private carrier unavailable");
++        const fields = ownData(handoff, ["bytes", "rawWrapperSha256"]);
++        const bytes = copySourceBytes({ bytes: fields.bytes as Uint8Array }, "manifest", 4194304);
++        if (createHash("sha256").update(bytes).digest("hex") !== fields.rawWrapperSha256)
++          throw new Error("private carrier mismatch");
++        const parsed = ownData(parseBoundedJson(bytes, "manifest", "private-profile-report"), [
++          "sourceCommit",
++          "entry",
++          "result",
++          "sessions",
++          "baseline",
++          "supplemental",
++          "sequenceMemberSupplemental",
++          "principalSupplemental",
++          "conditionalSupplemental",
++        ]);
++        if (parsed.sourceCommit !== sourceCommit || parsed.entry !== entry)
++          throw new Error("private carrier identity");
++        for (const field of ["result", "sessions", "baseline"] as const)
++          if (
++            canonicalJson(JSON.parse(JSON.stringify(genuine[field]))) !==
++            canonicalJson(parsed[field])
++          )
++            throw new Error("private carrier representation");
++        wrapperBytes = bytes;
++      } catch {
++        carrierRefused = true;
++      }
+       publishCarrier = (stage, final = false, reason) => {
+         if (reason) carrierFailureStages.add(reason);
+         if (stage === "failed") carrierFailureStages.add("cleanup");

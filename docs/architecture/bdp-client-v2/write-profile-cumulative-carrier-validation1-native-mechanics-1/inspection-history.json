@@ -1,0 +1,16 @@
+{
+  "readErrors": [
+    {
+      "path": "binding.json",
+      "error": "FileNotFoundError; actual enumerated packet file is preparation-binding.json, read immediately afterward in full",
+      "candidateTouched": false
+    }
+  ],
+  "staticInspectionError": {
+    "error": "First pure-data checker compared raw digests to wrapped index objects, producing false mismatch list; actual index values are {bytes,sha256}.",
+    "corrected": "Every837 index row verified by both exact bytes and sha256; no candidate/index changes",
+    "candidateTouched": false
+  },
+  "pythonReadOnlySyntaxWarning": "A search pattern string used an invalid escape sequence warning; data read completed, no candidate execution.",
+  "runtimeInvocations": 0
+}

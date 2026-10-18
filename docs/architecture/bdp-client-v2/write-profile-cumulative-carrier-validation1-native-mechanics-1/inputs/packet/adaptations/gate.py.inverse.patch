@@ -1,0 +1,178 @@
+--- gate.py
++++ templates/D4-helper4/gate.py
+@@ -1,13 +1,13 @@
+-"""CLOSED carrier681 gate. Root owns all releases and fresh measured proofs. WIP."""
++"""D4 one-owned/678-protected closed gates. Root owns all releases/measured pins."""
+ from pathlib import Path
+-import hashlib,json,subprocess,os,math,shutil
++import hashlib,json,subprocess,os,math
+ P=Path(__file__).resolve().parent
+-W=Path('/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-correction-minimum')
++W=Path('/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum')
+ GUARD=P/'guarded-action-session-20261018-021624-549f.py'
+-MODE=os.environ.get('CARRIER_VALIDATION_PHASE','final')
++MODE=os.environ.get('D4_VALIDATION_PHASE','final')
+ assert MODE=='final'
+ E=P/'run'
+-REVIEWED_BASE_HEAD='2834151544ca6bdc105191665f466c58eee7930f'
++INTEGRATION='cce884ccea1db97cbc6fd7bff876d4d6091f9081'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def require(ok,message):
+  if not ok:raise RuntimeError(message)
+@@ -21,35 +21,24 @@
+ def invalid_constant(value):raise RuntimeError('Invalid JSON constant '+value)
+ def read(p):return json.loads(Path(p).read_text(),object_pairs_hook=unique_object,parse_constant=invalid_constant)
+ def write(n,v):
+- fd=os.open(E/n,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_CLOEXEC,0o600)
+- with os.fdopen(fd,'w') as f:f.write(json.dumps(v,indent=2)+'\n')
++ with (E/n).open('x') as f:f.write(json.dumps(v,indent=2)+'\n')
+ def guarded():subprocess.run([str(Path('/opt/homebrew/opt/python@3.14/bin/python3.14')),str(GUARD),'/usr/bin/true'],check=True,timeout=30)
+ def document(record):
+  require(type(record) is dict and set(record)=={'path','sha256'},'Unknown/missing document pin key')
+  p=Path(record['path']);require(p.is_absolute() and p.is_file() and not p.is_symlink() and sha(p.read_bytes())==record['sha256'],'Document absent/changed '+str(p));return read(p)
+ def source_check(b):
+- expected=read(P/'expected-source-map.json');semantic=read(P/'semantic-source-scope.json')
+- require(b['worktree']==str(W)and git('branch','--show-current').decode().strip()==b['branch'],'Wrong source binding')
+- require(git('rev-parse','HEAD').decode().strip()==b['head']and git('rev-parse','HEAD^{tree}').decode().strip()==b['tree'],'Actual Git identity changed')
+- paths=git('ls-files','-z').decode().split('\0');paths=[n for n in paths if n]
+- require(len(paths)==len(set(paths))==681 and set(paths)==set(expected),'Exact tracked source681')
+- bytes_by_path={n:(W/n).read_bytes()for n in paths};actual={n:sha(data)for n,data in bytes_by_path.items()};require(actual==expected==b['trackedSourceFiles'],'Exact reviewed source bytes differ')
+- require(sha(json.dumps(actual,sort_keys=True).encode())=='78e11962df1a744c685c9911d13c0bff3fa42fcdec9310b75ec8f83a17996c7f','Canonical source identity changed')
+- dirty=sorted(git('diff','--name-only','HEAD').decode().splitlines());require(dirty==b['dirtyPaths']==sorted(b['ownedFiles'])and (dirty==[]or dirty==sorted(semantic['allowedPaths'])),'Only exact reviewed source scope is permitted')
+- require(not git('ls-files','--others','--exclude-standard').strip()and not git('diff','--cached','--binary').strip(),'Untracked or staged source forbidden')
+- require(sha(git('diff','--binary','HEAD'))==b['binaryDiffSha256'],'Actual root-bound source binary patch changed')
+- if dirty:require(b['head']==REVIEWED_BASE_HEAD,'Dirty candidate must retain exact reviewed base')
+- tree={}
+- for item in git('ls-tree','-r','-z','HEAD').split(b'\0'):
+-  if not item:continue
+-  meta,path=item.split(b'\t',1);mode,kind,identity=meta.split();require(kind==b'blob'and mode in [b'100644',b'100755'],'Nonordinary tracked source')
+-  tree[path.decode()]={'gitBlob':identity.decode(),'mode':mode.decode()}
+- require(set(tree)==set(actual),'HEAD source inventory differs')
+- for n,data in bytes_by_path.items():
+-  if n in b['ownedFiles']:
+-   owned=b['ownedFiles'][n];require(owned=={'beforeSha256':semantic['before'][n],'afterSha256':expected[n]}and sha(git('show','HEAD:'+n))==owned['beforeSha256'],'Owned before/after differs')
+-  else:
+-   blob=hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest();require(blob==tree[n]['gitBlob'],'Protected source differs from actual HEAD')
++ require(b['worktree']==str(W) and b['head']==INTEGRATION and git('branch','--show-current').decode().strip()==b['branch'],'Wrong source binding')
++ require(git('rev-parse','HEAD').decode().strip()==b['head'] and git('rev-parse','HEAD^{tree}').decode().strip()==b['tree'],'Git identity changed')
++ actual={p:sha((W/p).read_bytes()) for p in git('ls-files').decode().splitlines()}
++ require(actual==b['trackedSourceFiles'],'Source files changed')
++ require(sorted(git('diff','--name-only','HEAD').decode().splitlines())==b['dirtyPaths']==sorted(b['ownedFiles']) and not git('ls-files','--others','--exclude-standard').strip(),'Source scope differs')
++ require(all(actual[p]==v['afterSha256'] and sha(git('show','HEAD:'+p))==v['beforeSha256'] for p,v in b['ownedFiles'].items()),'Owned source binding differs')
++ require(not git('diff','--cached','--binary').strip(),'Staged source is forbidden')
++ require(len(actual)==679 and len(b['ownedFiles'])==1,'Exact tracked/owned counts')
++ require(sha(git('diff','--binary','HEAD'))==b['binaryDiffSha256'],'Source patch changed')
++ base=read(P/'context/write-profile-D4-source-authoring-3/base-map.json')
++ require(len(base)==679 and set(base)==set(actual),'Base map scope')
++ require(all(base[f]==v for f,v in actual.items() if f not in b['ownedFiles']),'Other678 source differs from pinned cce base')
+  return sha(json.dumps(actual,sort_keys=True).encode())
+ def tools_check(t):
+  for name,binding in t.items():
+@@ -80,9 +69,8 @@
+  v=read(E/(name+'.exit.json'))
+  watched=read(E/(name+'.watchdog.json'));require(watched.get('accepted') is True and watched.get('attemptId')==v['attemptId'] and watched.get('ownershipUnknown') is False and watched.get('sourceBindingSha256')==g['sourceBinding']['sha256'],'Watchdog terminal refused '+name)
+  outer=document(g['outerExitReceipts'].get(name,{}))
+- elapsed=outer.get('wholeParentElapsedSeconds');require(type(elapsed)in [int,float] and math.isfinite(elapsed) and 0<=elapsed<115,'Whole parent terminal clock absent/late '+name)
++ elapsed=outer.get('wholeParentElapsedSeconds');require(type(elapsed)in [int,float] and math.isfinite(elapsed) and 0<=elapsed<(145 if name=='installed-owned-set'else 115),'Whole parent terminal clock absent/late '+name)
+  require(outer.get('accepted') is True and outer.get('rawExit')==0 and outer.get('stage')==name and outer.get('attemptId')==v['attemptId'] and outer.get('sourceBindingSha256')==g['sourceBinding']['sha256'] and outer.get('stageExitSha256')==sha((E/(name+'.exit.json')).read_bytes()) and outer.get('watchdogSha256')==sha((E/(name+'.watchdog.json')).read_bytes()),'Actual outer receipt absent/mismatch '+name)
+- require(v.get('stdioEOF')is True,'Child stdio EOF missing '+name)
+  require(v['accepted'] and v['exit'] in read(P/'commands.json')['commands'][name].get('acceptedRawExitCodes',[0]) and not v['forcedCleanup'] and not v['errors'] and not v['remainingProcesses'] and not v['runtimeDirectoriesStillPresent'],'Prior stage failed '+name)
+  require(v['sourceIdentity']==g['_sourceIdentity'] and v['sourceUnchanged'],'Prior source differs '+name)
+  require(sha((E/(name+'.log')).read_bytes())==v['logSha256'],'Prior log changed '+name)
+@@ -102,48 +90,59 @@
+  for name,data in tar['packages'].items():require(sha(Path(data['archive']).read_bytes())==proof['packages'][name]['archiveSha256'],'Archive changed')
+  entry=Path(proof['entryRealpath']);require(entry.resolve(strict=True).is_relative_to((E/'consumer').resolve()) and sha(entry.read_bytes())==proof['entrySha256'],'External entry changed')
+  return proof
+-def verify_private_emit(g):
+- proof=document(g['privateEmitProof']);accepted=document(g['rootPrivateEmitAcceptance'])
+- require(proof['sourceIdentity']==g['_sourceIdentity']and proof['sourceBindingSha256']==g['sourceBinding']['sha256'],'Private compiler proof source differs')
+- complete('private-verifier-emit',g);complete('prove-private-graph',g)
+- require(accepted.get('accepted')is True and accepted.get('privateEmitProof')==g['privateEmitProof']and accepted.get('sourceBindingSha256')==g['sourceBinding']['sha256'],'Private emit/graph not root accepted')
+- for record in proof['files']:
+-  q=Path(record['path']);require(q.is_file()and not q.is_symlink()and str(q.resolve(strict=True))==record['realpath']and sha(q.read_bytes())==record['sha256'],'Private emit dependency/catalog changed')
+- return proof
+ def load_gate(name,child=False):
+  require(__debug__,'Assertions required')
+- g=read(P/'execution-gate.json');expected=set(read(P/'gate-keys.json'))
+- require(type(g)is dict and set(g)==expected,'Missing/extra root execution gate key')
+- require(g['released']is True and g['rootExactSourceAccepted']is True and g['staticValidationAuthorized']is True and g['session']=='2026-10-18T02:16:24Z-549f'and g['mode']=='final','Root execution release absent')
+- cfg=read(P/'commands.json');require(cfg.get('configurationFinalized')is True,'Incomplete draft configuration');order=cfg['finalOrder'];approved=g['approvedStages'];require(type(approved)is list and approved==order[:len(approved)]and name in approved,'Fresh ordered prefix not released')
+- require(g['bootstrapReuse']==[],'No bootstrap/old execution reuse')
+- idx=P/'implementation-hashes.json';require(sha(idx.read_bytes())==g['implementationIndexSha256'],'Implementation index differs')
+- for n,h in read(idx)['files'].items():require(sha((P/n).read_bytes())==h,'Implementation changed')
+- for n,h in read(P/'reference-pins.json').items():require(sha(Path(n).read_bytes())==h,'Reference input changed')
++ g=read(P/'execution-gate.json')
++ require(set(g)=={'rootExactSourceAccepted', 'session', 'rootArchiveAcceptance', 'knownOriginalActualCodeTerminal', 'consumerInventory', 'consumerLockSha256', 'workspaceTools', 'implementationIndexSha256', 'approvedStages', 'sourceBinding', 'actualClaudeReviewDisposed', 'installedProvenance', 'actualCodeDisposition', 'staticValidationAuthorized', 'released', 'baseTools', 'rootConsumerProofAcceptance', 'mode', 'bootstrapReuse', 'rootConsumerLockAcceptance', 'nativeCodeDisposition', 'rootPlanAccepted', 'rootDisposition', 'rootBuildAcceptance', 'knownCorrectedSourceFreeze', 'nativeCodeReviewDisposed', 'outerExitReceipts', 'nativeHelperDisposition', 'syntheticControlsAcceptance', 'rootD4TerminalAcceptance'},'Unknown/missing gate key')
++ require(all(type(g[k]) is bool for k in ['released','rootPlanAccepted','rootExactSourceAccepted','actualClaudeReviewDisposed','nativeCodeReviewDisposed','staticValidationAuthorized']),'Gate boolean type')
++ require(read(P/'commands.json').get('configurationFinalized') is True,'Authored D4 source/selection not finalized')
++ require(read(P/'audit-expectations.json').get('finalized') is True,'Actual D4 observation contracts not finalized')
++ require(g['released'] is True and g['rootPlanAccepted'] is True and g['rootExactSourceAccepted'] is True and g['session']=='2026-10-18T02:16:24Z-549f','Root release absent')
++ require(g['mode']==MODE,'Wrong phase')
++ if child:
++  record=E/(name+'.started.json')
++  require(os.environ.get('D4_VALIDATION_STAGE')==name and record.is_file() and sha(record.read_bytes())==os.environ.get('D4_VALIDATION_ATTEMPT'),'Helper requires supervised attempt')
++  require(read(record)['rootGateSha256']==sha((P/('bootstrap-gate.json' if MODE=='bootstrap' else 'execution-gate.json')).read_bytes()),'Gate changed during attempt')
++ idx=P/'implementation-hashes.json';require(sha(idx.read_bytes())==g['implementationIndexSha256'],'Implementation index changed')
++ for f,h in read(idx).items():require(sha((P/f).read_bytes())==h,'Implementation changed '+f)
++ for f,h in read(P/'reference-pins.json').items():require(sha(Path(f).read_bytes())==h,'Reference changed '+f)
+  b=document(g['sourceBinding']);sid=source_check(b);g={**g,'finalHead':b['head'],'finalTree':b['tree'],'sourceLockSha256':b['trackedSourceFiles']['pnpm-lock.yaml'],'_sourceIdentity':sid,'_sourceBinding':b}
+- root=document(g['rootDisposition']);require(root.get('accepted')is True and root.get('sourceBindingSha256')==g['sourceBinding']['sha256']and root.get('implementationIndexSha256')==g['implementationIndexSha256']and root.get('freshPipelineRequired')is True,'Root current source/mechanics disposition differs')
+- require(root.get('originalActualCodeReviewDispositionAccepted')is True and root.get('laterCorrectedSourceNativeAccepted')is True,'Original actual CODE + corrected-source native/root dispositions required; no future-byte review inference')
+- native=document(g['nativeHelperDisposition']);require(native.get('accepted')is True and native.get('implementationIndexSha256')==g['implementationIndexSha256'],'Independent full helper mechanics absent')
+- spec=cfg['commands'][name]
+- if spec.get('evaluatesSourceOrProduct')is True:require(g['runtimeValidationAuthorized']is True and root.get('runtimeValidationAuthorized')is True,'Source/private/product evaluator stage not released')
+- require((spec['outerSeconds'],spec['termAtSeconds'],spec['killAtSeconds'],spec['workCutoffSeconds'],spec['automaticRetries'])==(120,115,119,105,0),'Fixed clock/retry policy differs')
+- require(all(type(a)is str and 'UNRESOLVED'not in a and '${'not in a for a in spec['argv']),'Command argv not concrete')
+- if child:
+-  started=E/(name+'.started.json');require(os.environ.get('CARRIER_VALIDATION_STAGE')==name and started.is_file()and sha(started.read_bytes())==os.environ.get('CARRIER_VALIDATION_ATTEMPT'),'Helper requires current supervised attempt')
+-  require(read(started)['rootGateSha256']==sha((P/'execution-gate.json').read_bytes()),'Gate changed during attempt')
+- base=document(g['baseTools']);tools_check(base['tools']);require(str(Path(shutil.which('gh')or'').resolve(strict=True))==base['tools']['/opt/homebrew/bin/gh']['realpath'],'Guard must resolve exact pinned gh');require(base['sourceLockSha256']==g['sourceLockSha256'],'Base tool source lock differs')
++ disposition=document(g['rootDisposition']);require(disposition['accepted'] is True and disposition['sourceBindingSha256']==g['sourceBinding']['sha256'],'Root disposition differs')
++ cfg=read(P/'commands.json');order=cfg[MODE+'Order'];approved=g['approvedStages']
++ require(type(approved) is list and all(type(n) is str for n in approved),'Approved stage list type')
++ require(approved==order[:len(approved)] and name in approved,'Stage not released')
++ spec=cfg['commands'][name];require((spec['outerSeconds'],spec.get('termAtSeconds'))==((150,145) if name=='installed-owned-set' else (120,115)) and spec['automaticRetries']==0,'Limits changed')
++ require(not any('UNRESOLVED' in arg or ('$'+'{') in arg or 'PENDING_SUCCESSOR' in arg for arg in spec['argv']),'Unbound command')
++ if 'selectedFullNames' in spec:require(isinstance(spec['selectedFullNames'],list) and len(spec['selectedFullNames'])>0 and isinstance(spec['prospectiveWorkload'],dict),'Unbound callback selection/workload')
++ base=document(g['baseTools']);tools_check(base['tools'])
++ require(base['sourceLockSha256']==g['sourceLockSha256'],'Base lock differs')
+  if order.index(name)>order.index('bind-workspace-tools'):
+-  fresh=document(g['workspaceTools']);tools_check(fresh['tools']);require(fresh['sourceIdentity']==sid and fresh['sourceLockSha256']==g['sourceLockSha256'],'Fresh workspace tool source differs')
++  workspace=document(g['workspaceTools']);tools_check(workspace['tools'])
++  require(workspace['sourceIdentity']==g['_sourceIdentity'] and workspace['sourceLockSha256']==g['sourceLockSha256'],'Fresh workspace tool binding differs')
++ require(g.get('bootstrapReuse')==[] and disposition.get('freshPipelineRequired') is True,'Only fresh pipeline is allowed')
++ require(g['actualClaudeReviewDisposed'] is True and g['nativeCodeReviewDisposed'] is True,'Both CODE review dispositions remain required before validation')
++ for label in ['nativeCodeDisposition','actualCodeDisposition']:
++  d=document(g[label]);require(d.get('accepted') is True and d.get('sourceBindingSha256')==g['sourceBinding']['sha256'],'CODE disposition differs '+label)
++ require(disposition['staticValidationAuthorized'] is True if name in ['typecheck','format-check','lint'] else disposition['runtimeValidationAuthorized'] is True,'Root disposition does not authorize this stage')
+  for prior in order[:order.index(name)]:complete(prior,g)
+- if order.index(name)>order.index('bind-fresh-build'):
+-  verify_build(g);a=document(g['rootBuildAcceptance']);require(a.get('accepted')is True and a.get('sourceBindingSha256')==g['sourceBinding']['sha256']and a.get('buildMapSha256')==sha((E/'build-artifacts.json').read_bytes()),'Root fresh build acceptance absent')
++ if MODE=='final' and order.index(name)>order.index('bind-fresh-build'):
++  verify_build(g);accepted=document(g['rootBuildAcceptance'])
++  require(accepted.get('accepted') is True and accepted.get('sourceBindingSha256')==g['sourceBinding']['sha256'] and accepted.get('buildMapSha256')==sha((E/'build-artifacts.json').read_bytes()),'Root actual build acceptance missing')
+  if order.index(name)>=order.index('prepare-consumer'):
+-  a=document(g['rootArchiveAcceptance']);require(a.get('accepted')is True and a.get('sourceBindingSha256')==g['sourceBinding']['sha256']and a.get('tarProvenanceSha256')==sha((E/'tar-source-provenance.json').read_bytes()),'Root actual archive acceptance absent')
++  accepted=document(g['rootArchiveAcceptance'])
++  require(accepted.get('accepted') is True and accepted.get('sourceBindingSha256')==g['sourceBinding']['sha256'] and accepted.get('tarProvenanceSha256')==sha((E/'tar-source-provenance.json').read_bytes()),'Root actual archive acceptance missing')
+  if name=='verify-installed-consumer':
+-  a=document(g['rootConsumerLockAcceptance']);require(a.get('accepted')is True and a.get('sourceBindingSha256')==g['sourceBinding']['sha256'],'Root actual generated lock acceptance absent')
+-  require(sha((E/'consumer/pnpm-lock.yaml').read_bytes())==g['consumerLockSha256']==a['consumerLockSha256']and a['consumerManifestSha256']==sha((E/'consumer/package.json').read_bytes())and a['consumerSettingsSha256']==sha((E/'consumer/pnpm-workspace.yaml').read_bytes()),'Actual consumer lock/manifest/settings differ')
+- if spec.get('requiresConsumerProof')is True:
+-  proof=verify_consumer(g);a=document(g['rootConsumerProofAcceptance']);require(a.get('accepted')is True and a.get('sourceBindingSha256')==g['sourceBinding']['sha256']and a.get('installedProvenance')==g['installedProvenance']and a.get('consumerInventory')==g['consumerInventory'],'Root actual consumer proof absent')
+-  spec={**spec,'environment':{**spec.get('environment',{}),'BDP_TRANSACTIONAL_INSTALLED_ENTRY':proof['entryRealpath'],'BDP_TRANSACTIONAL_SOURCE_COMMIT':b['head']}}
+- if spec.get('requiresPrivateEmitProof')is True:verify_private_emit(g)
++  lock=document(g['rootConsumerLockAcceptance'])
++  require(lock.get('accepted') is True and lock.get('sourceBindingSha256')==g['sourceBinding']['sha256'],'Root actual lock acceptance missing')
++  require(isinstance(g.get('consumerLockSha256'),str) and sha((E/'consumer/pnpm-lock.yaml').read_bytes())==g['consumerLockSha256']==lock['consumerLockSha256'],'Consumer lock not root-pinned')
++  require(lock.get('consumerManifestSha256')==sha((E/'consumer/package.json').read_bytes()) and lock.get('consumerSettingsSha256')==sha((E/'consumer/pnpm-workspace.yaml').read_bytes()),'Root actual consumer manifest/settings acceptance missing')
++ if spec.get('requiresConsumerProof') is True:
++  proof=verify_consumer(g)
++  accepted=document(g['rootConsumerProofAcceptance']);require(accepted.get('accepted') is True and accepted.get('sourceBindingSha256')==g['sourceBinding']['sha256'] and accepted.get('installedProvenance')==g['installedProvenance'] and accepted.get('consumerInventory')==g['consumerInventory'],'Root actual proof acceptance missing')
++  spec={**spec,'environment':{'BDP_TRANSACTIONAL_INSTALLED_ENTRY':proof['entryRealpath'],'BDP_TRANSACTIONAL_SOURCE_COMMIT':b['head']}}
++ mechanics=document(g['nativeHelperDisposition']);require(mechanics.get('accepted') is True and mechanics.get('implementationIndexSha256')==g['implementationIndexSha256'],'Independent helper mechanics absent')
++ if name=='installed-owned-set':
++  controls=document(g['syntheticControlsAcceptance']);require(controls.get('accepted') is True and controls.get('implementationIndexSha256')==g['implementationIndexSha256'],'Actual synthetic controls not accepted')
++ if order.index(name)>order.index('installed-owned-set'):
++  terminal=document(g['rootD4TerminalAcceptance']);require(terminal.get('accepted') is True and terminal.get('sourceBindingSha256')==g['sourceBinding']['sha256'],'Independent actual D4 terminal acceptance absent')
+  guarded();return g,spec

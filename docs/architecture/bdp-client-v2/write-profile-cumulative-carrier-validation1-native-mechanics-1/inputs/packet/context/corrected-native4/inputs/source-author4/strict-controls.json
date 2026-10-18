@@ -1,0 +1,178 @@
+{
+  "F1": {
+    "RUDefensiveAssemblerBranches": "unexecuted; no manufactured brand or coverage",
+    "RUFactoryCalls": 6,
+    "TXCoverageAssemblerCalls": 4,
+    "TXPrerequisiteAssemblerCalls": 2,
+    "TXPrerequisiteFactoryCalls": 2,
+    "exactFactoryTypeMessageAssertions": true,
+    "total": 15,
+    "unbrandedAssemblerCalls": 1
+  },
+  "F4": {
+    "environmentsRestoredInFinally": true,
+    "objectAndAbsentIdentity": true,
+    "realWriterWrongTypeControls": 2,
+    "sourceDataOnly": true
+  },
+  "F5": {
+    "L03RealProductionHelperCalls": 6,
+    "L05RealProductionHelperCalls": 2,
+    "exactReturnedBytesCompared": true,
+    "noExtraRunnerCalls": true,
+    "originalHookReferenceCountAndErrorCauseIdentityCompared": true,
+    "prehookCloneCompared": true,
+    "sourceUnitNineKeyWrapper": true
+  },
+  "F6": {
+    "V01V02V06Asserted": true,
+    "absentNewNullFields": 3,
+    "exactClosedKeys": 9
+  },
+  "F7": {
+    "Proxy": 1,
+    "callable": 1,
+    "controls": 8,
+    "exactAndOneOverNested": 2,
+    "getterAndProxyTrapCountsExpectedZero": true,
+    "hardAllocationTimingBoundClaim": false,
+    "oldMalformedPrecedencePreserved": true,
+    "overwideMalformed": 4
+  },
+  "anchors": {
+    "apps/bdptest/src/transactional-matrix.test.ts": {
+      "120000": [
+        779,
+        805,
+        859,
+        1240,
+        1273,
+        1297,
+        1319,
+        1393,
+        1428,
+        1496,
+        1710,
+        2049,
+        2471,
+        3058,
+        3554,
+        4253,
+        4311,
+        4825
+      ],
+      "63000": [
+        756
+      ],
+      "const captured = control?.carrierPath": [
+        391
+      ],
+      "publishCarrier =": [
+        400
+      ]
+    },
+    "apps/bdptest/test-support/read-update-artifact-execution.ts": {
+      "const handoff =": [
+        54
+      ],
+      "export function capturePrivateProfileHandoff": [
+        39
+      ],
+      "typeof runtimeConfigurationIdentity": [
+        696
+      ]
+    },
+    "packages/conformance/test-support/profile-evidence.test.ts": {
+      "  L03()": [
+        1566
+      ],
+      "  L05()": [
+        1639
+      ],
+      "  L10()": [
+        1756
+      ],
+      "  R14()": [
+        870
+      ],
+      "  R18()": [
+        940
+      ],
+      "  R24()": [
+        1398
+      ],
+      "function closedReports": [
+        536
+      ],
+      "function sourceMutation": [
+        493
+      ],
+      "function txCoverageMutation": [
+        509
+      ]
+    },
+    "packages/conformance/test-support/profile-evidence.ts": {
+      "artifact.slice": [
+        422
+      ],
+      "function safeData": [
+        128
+      ],
+      "runtimeConfigurationIdentity: null": [
+        837
+      ]
+    }
+  },
+  "caseCount": 48,
+  "ids": [
+    "V01",
+    "V02",
+    "V03",
+    "V04",
+    "V05",
+    "V06",
+    "R01",
+    "R02",
+    "R03",
+    "R04",
+    "R05",
+    "R06",
+    "R07",
+    "R08",
+    "R09",
+    "R10",
+    "R11",
+    "R12",
+    "R13",
+    "R14",
+    "R15",
+    "R16",
+    "R17",
+    "R18",
+    "R19",
+    "R20",
+    "R21",
+    "R22",
+    "R23",
+    "R24",
+    "S01",
+    "S02",
+    "S03",
+    "S04",
+    "S05",
+    "S06",
+    "S07",
+    "S08",
+    "L01",
+    "L02",
+    "L03",
+    "L04",
+    "L05",
+    "L06",
+    "L07",
+    "L08",
+    "L09",
+    "L10"
+  ],
+  "state": "Authored controls only; NONE executed/collected"
+}

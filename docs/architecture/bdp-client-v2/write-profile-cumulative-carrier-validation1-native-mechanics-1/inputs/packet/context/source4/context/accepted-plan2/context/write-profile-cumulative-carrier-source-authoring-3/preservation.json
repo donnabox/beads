@@ -1,0 +1,34 @@
+{
+  "sourceFiles": 681,
+  "protectedOtherCandidateFiles": 679,
+  "protectedCceFiles": 677,
+  "bothAdaptersByteIdentical": true,
+  "changedPaths": [
+    "packages/conformance/test-support/profile-evidence.test.ts",
+    "packages/conformance/test-support/profile-evidence.ts"
+  ],
+  "originalCceFootprint": [
+    "apps/bdptest/src/transactional-matrix.test.ts",
+    "apps/bdptest/test-support/read-update-artifact-execution.ts",
+    "packages/conformance/test-support/profile-evidence.test.ts",
+    "packages/conformance/test-support/profile-evidence.ts"
+  ],
+  "newFiles": 0,
+  "pureFunctionExports": 3,
+  "dataCallbackIds": 48,
+  "defaultCallbackMs": 5000,
+  "TXPositiveBudgetMs": 63000,
+  "extraWireChildrenRunnerCallsOrCallbacks": 0,
+  "sourceByteCap": 4194304,
+  "summaryByteCap": 1048576,
+  "nodeCap": 100000,
+  "depthCap": 128,
+  "containerCap": 10000,
+  "maxOwners": 2,
+  "inputOutputSchemasAndEligibilityUnchanged": true,
+  "preformatEqualsFinal": true,
+  "formatterInvocations": 1,
+  "formatOnlyExit": 0,
+  "formatNoFixesApplied": true,
+  "testsAndChecks": "UNRUN; formatter is not a validation result"
+}

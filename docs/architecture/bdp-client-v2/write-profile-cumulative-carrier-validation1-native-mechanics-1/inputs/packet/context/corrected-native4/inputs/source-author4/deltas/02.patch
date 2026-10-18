@@ -1,0 +1,525 @@
+--- a/packages/conformance/test-support/profile-evidence.test.ts
++++ b/packages/conformance/test-support/profile-evidence.test.ts
+@@ -54,7 +54,10 @@
+   bindServedProfileConfiguration,
+   loadProfileContractSelection,
+ } from "./profile-contract-plan.js";
+-import { createCumulativeTransactionalArtifactBundle } from "../src/artifact-bundle.js";
++import {
++  createCumulativeTransactionalArtifactBundle,
++  ConformanceArtifactBundleError,
++} from "../src/artifact-bundle.js";
+ import { canonicalJson } from "../src/canonical-json.js";
+ import { createJsonSchemaValidator } from "../src/schema-validator.js";
+ import schema from "../../../schemas/bdp-v0.schema.json" with { type: "json" };
+@@ -63,6 +66,8 @@
+ import {
+   createPrivateProfileSidecarWriter,
+   createArtifactEvidenceWriter,
++  capturePrivateProfileHandoff,
++  type ArtifactObservation,
+   artifactRoutes,
+ } from "../../../apps/bdptest/test-support/read-update-artifact-execution.js";
+ 
+@@ -486,28 +491,64 @@
+   };
+ }
+ function sourceMutation(
+-  edit: (sources: ReturnType<typeof copyReadUpdateArtifactSetSources>) => void,
++  edit: (sources: ReturnType<typeof copyReadUpdateArtifactSetSources>) => string,
++  expectedType: new (message: string) => Error = Error,
+ ) {
+   const sources = copyReadUpdateArtifactSetSources(ruSet());
+-  edit(sources);
+-  expect(() => createReadUpdateArtifactSet(ruSelection, sources)).toThrow();
++  const message = edit(sources);
++  let caught: unknown;
++  try {
++    createReadUpdateArtifactSet(ruSelection, sources);
++  } catch (error) {
++    caught = error;
++  }
++  expect(caught).toBeInstanceOf(expectedType);
++  expect((caught as Error).constructor).toBe(expectedType);
++  expect((caught as Error).message).toBe(message);
++}
++function txCoverageMutation(edit: (rows: Data[]) => void) {
++  const c = context("transactional"),
++    coverage = JSON.parse(txSources.coverage.bytes.toString());
++  edit(coverage.rows);
+   code(
+     () =>
+       assembleProfileEvidence(
+-        ruSelection,
+-        configuration("read-update"),
+-        { kind: "read-update", set: { ...ruSet() } },
+-        [null, null],
+-        attempt(context()),
++        c.selection,
++        c.configuration,
++        { kind: "transactional", ...txSources, coverage: json(coverage) },
++        absent(c),
++        attempt(c),
+       ),
+-    "invalid-source",
++    "invalid-ownership",
+   );
++}
++const reportKeys = [
++  "ownerId",
++  "rawWrapperSha256",
++  "canonicalResultSha256",
++  "selectedIds",
++  "resultIds",
++  "runtimeConfigurationIdentity",
++  "exactConfigurationDigest",
++  "reportedCleanupState",
++  "ownershipVerification",
++].sort();
++function closedReports(envelope: ReturnType<typeof assembleProfileEvidence>) {
++  for (const report of envelope.reports as Data[]) {
++    expect(Object.keys(report).sort()).toEqual(reportKeys);
++    if (report.rawWrapperSha256 === null) {
++      expect(report.runtimeConfigurationIdentity).toBeNull();
++      expect(report.exactConfigurationDigest).toBeNull();
++      expect(report.reportedCleanupState).toBeNull();
++    }
++  }
+ }
+ const dataCases: Record<string, () => void | Promise<void>> = {
+   V01() {
+     const c = context(),
+       e = assemble(c),
+       rs = e.requirements as Data[];
++    closedReports(e);
+     expect(rs).toHaveLength(130);
+     expect(rs.filter((r) => r.ownerId !== null)).toHaveLength(56);
+     expect(rs.filter((r) => r.ownerId === null)).toHaveLength(74);
+@@ -521,6 +562,7 @@
+     const c = context("transactional"),
+       e = assemble(c),
+       rs = e.requirements as Data[];
++    closedReports(e);
+     expect(rs).toHaveLength(251);
+     expect(rs.filter((r) => r.ownerId !== null)).toHaveLength(17);
+     expect(rs.filter((r) => r.ownerId === null)).toHaveLength(234);
+@@ -629,10 +671,11 @@
+       rec((e.requirements as Data[]).find((r) => r.observation !== null)!.observation)
+         .rawWrapperSha256,
+     ).toBe(o.expectedReportSha256);
++    closedReports(e);
+     for (const field of ["result", "sessions", "baseline"]) {
+       const value = { field, omitted: undefined, array: [undefined, 1] };
+       const actual = JSON.parse(JSON.stringify(value));
+-      expect(canonicalJson(JSON.parse(JSON.stringify(value)))).toBe(canonicalJson(actual));
++      expect(canonicalJson(actual)).toBe(`{"array":[null,1],"field":"${field}"}`);
+     }
+     const wrapper = {
+       sourceCommit: "a".repeat(40),
+@@ -743,6 +786,15 @@
+       ])
+         code(() => assemble(unit, withObservation(unit, { ...o, ready })), "invalid-source");
+     }
++    const callable = Object.defineProperty(() => {}, "private", {
++      enumerable: true,
++      get() {
++        calls++;
++        throw new Error("unit-callable-tripwire");
++      },
++    });
++    const o = observation(c);
++    code(() => assemble(c, withObservation(c, { ...o, ready: [callable] })), "invalid-source");
+     expect(calls).toBe(0);
+   },
+   R13() {
+@@ -794,48 +846,135 @@
+           "invalid-source",
+         );
+     }
++    const wideProxy = new Proxy(
++      Object.fromEntries(Array.from({ length: 10001 }, (_, n) => [`unit-${n}`, null])),
++      {
++        ownKeys() {
++          calls++;
++          throw new Error("unit-proxy-keys");
++        },
++        get() {
++          calls++;
++          throw new Error("unit-proxy-get");
++        },
++        getPrototypeOf() {
++          calls++;
++          throw new Error("unit-proxy-prototype");
++        },
++      },
++    );
++    const o = observation(c);
++    code(() => assemble(c, withObservation(c, { ...o, ready: [wideProxy] })), "invalid-source");
+     expect(calls).toBe(0);
+   },
+   R14() {
+-    sourceMutation((s) => {
+-      const a = JSON.parse(Buffer.from(s.manifests[index.shards[0]!.source]!.bytes).toString());
+-      const b = JSON.parse(Buffer.from(s.manifests[index.shards[1]!.source]!.bytes).toString());
++    sourceMutation((sources) => {
++      const a = JSON.parse(
++          Buffer.from(sources.manifests[index.shards[0]!.source]!.bytes).toString(),
++        ),
++        b = JSON.parse(Buffer.from(sources.manifests[index.shards[1]!.source]!.bytes).toString());
+       b.scenarios.unshift(a.scenarios[0]);
+-      (s.manifests as Record<string, { bytes: Uint8Array }>)[index.shards[1]!.source] = json(b);
++      (sources.manifests as Record<string, { bytes: Uint8Array }>)[index.shards[1]!.source] =
++        json(b);
++      return "duplicate scenario owner: read.discovery.scope-service-desc";
+     });
++    // This separate unbranded-copy guard proves only brand refusal, not ownership coverage.
++    code(
++      () =>
++        assembleProfileEvidence(
++          ruSelection,
++          configuration("read-update"),
++          { kind: "read-update", set: { ...ruSet() } },
++          [null, null],
++          attempt(context()),
++        ),
++      "invalid-source",
++    );
++    txCoverageMutation((rows) => {
++      rows[1]!.id = rows[0]!.id;
++    });
+   },
+   R15() {
+-    sourceMutation((s) => {
+-      const p = JSON.parse(Buffer.from(s.manifests[index.shards[0]!.source]!.bytes).toString());
++    sourceMutation((sources) => {
++      const manifest = JSON.parse(
++        Buffer.from(sources.manifests[index.shards[0]!.source]!.bytes).toString(),
++      );
+       expect(ruSelection.retiredIds.length).toBeGreaterThan(0);
+-      p.scenarios[0].id = ruSelection.retiredIds[0];
+-      (s.manifests as Record<string, { bytes: Uint8Array }>)[index.shards[0]!.source] = json(p);
++      manifest.scenarios[0].id = ruSelection.retiredIds[0];
++      (sources.manifests as Record<string, { bytes: Uint8Array }>)[index.shards[0]!.source] =
++        json(manifest);
++      return `manifest row is not a cumulative requirement: ${ruSelection.retiredIds[0]}`;
++    }, ConformanceArtifactBundleError);
++    txCoverageMutation((rows) => {
++      rows[0]!.id = ruSelection.retiredIds[0];
+     });
+   },
+   R16() {
+-    sourceMutation((s) => {
+-      const p = JSON.parse(Buffer.from(s.manifests[index.shards[0]!.source]!.bytes).toString());
+-      p.scenarios[0].id = "unknown.requirement";
+-      (s.manifests as Record<string, { bytes: Uint8Array }>)[index.shards[0]!.source] = json(p);
++    sourceMutation((sources) => {
++      const manifest = JSON.parse(
++        Buffer.from(sources.manifests[index.shards[0]!.source]!.bytes).toString(),
++      );
++      manifest.scenarios[0].id = "unknown.requirement";
++      (sources.manifests as Record<string, { bytes: Uint8Array }>)[index.shards[0]!.source] =
++        json(manifest);
++      return "manifest row is not a cumulative requirement: unknown.requirement";
++    }, ConformanceArtifactBundleError);
++    txCoverageMutation((rows) => {
++      rows[0]!.id = "unknown.requirement";
+     });
+   },
+   R17() {
+-    sourceMutation((s) => {
+-      const p = JSON.parse(Buffer.from(s.manifests[index.shards[0]!.source]!.bytes).toString());
+-      p.scenarios.reverse();
+-      (s.manifests as Record<string, { bytes: Uint8Array }>)[index.shards[0]!.source] = json(p);
++    sourceMutation((sources) => {
++      const manifest = JSON.parse(
++        Buffer.from(sources.manifests[index.shards[0]!.source]!.bytes).toString(),
++      );
++      manifest.scenarios.reverse();
++      (sources.manifests as Record<string, { bytes: Uint8Array }>)[index.shards[0]!.source] =
++        json(manifest);
++      return "shard scenarios must follow canonical required order";
++    });
++    txCoverageMutation((rows) => {
++      rows.reverse();
+     });
+   },
+   R18() {
+     for (const cross of [false, true])
+-      sourceMutation((s) => {
+-        const p = JSON.parse(Buffer.from(s.manifests[index.shards[0]!.source]!.bytes).toString()),
+-          other = JSON.parse(Buffer.from(s.manifests[index.shards[1]!.source]!.bytes).toString());
+-        (p.scenarios[0].actions ?? p.scenarios[0].requests)[0].prerequisiteScenario = cross
+-          ? other.scenarios[0].id
+-          : p.scenarios.at(-1).id;
+-        (s.manifests as Record<string, { bytes: Uint8Array }>)[index.shards[0]!.source] = json(p);
++      sourceMutation((sources) => {
++        const manifest = JSON.parse(
++            Buffer.from(sources.manifests[index.shards[0]!.source]!.bytes).toString(),
++          ),
++          other = JSON.parse(
++            Buffer.from(sources.manifests[index.shards[1]!.source]!.bytes).toString(),
++          ),
++          target = cross ? other.scenarios[0].id : manifest.scenarios.at(-1).id;
++        manifest.scenarios[0].actions[0].prerequisiteScenario = target;
++        (sources.manifests as Record<string, { bytes: Uint8Array }>)[index.shards[0]!.source] =
++          json(manifest);
++        return `prerequisite must be earlier and implemented in the same shard: read.discovery.scope-service-desc -> ${target}`;
+       });
++    for (const self of [false, true]) {
++      const c = context("transactional"),
++        manifest = JSON.parse(txSources.manifest.bytes.toString());
++      manifest.scenarios[0].actions[0].prerequisiteScenario = self
++        ? manifest.scenarios[0].id
++        : manifest.scenarios.at(-1).id;
++      const sources = { ...txSources, manifest: json(manifest) };
++      // Genuine generic factory acceptance precedes the stricter carrier prerequisite boundary.
++      expect(
++        createCumulativeTransactionalArtifactBundle(c.selection, sources).manifest.scenarios[0]!.id,
++      ).toBe("read-update.idempotency.principal-isolation");
++      code(
++        () =>
++          assembleProfileEvidence(
++            c.selection,
++            c.configuration,
++            { kind: "transactional", ...sources },
++            absent(c),
++            attempt(c),
++          ),
++        "invalid-prerequisite",
++      );
++    }
+   },
+   R19() {
+     const c = context(),
+@@ -1286,6 +1425,35 @@
+         ),
+       "invalid-source",
+     );
++    let shapeGetterCalls = 0;
++    for (const kind of ["nonplain", "accessor", "symbol", "nonenumerable"]) {
++      const supplied = Object.fromEntries(
++        Array.from({ length: 10001 }, (_, n) => [`unit-${n}`, null]),
++      );
++      if (kind === "nonplain") Object.setPrototypeOf(supplied, {});
++      else if (kind === "accessor")
++        Object.defineProperty(supplied, "unit-0", {
++          enumerable: true,
++          get() {
++            shapeGetterCalls++;
++            throw new Error("unit-shape-tripwire");
++          },
++        });
++      else if (kind === "symbol") Object.defineProperty(supplied, Symbol("unit"), { value: null });
++      else Object.defineProperty(supplied, "unit-0", { value: null, enumerable: false });
++      code(
++        () =>
++          assemble(
++            c,
++            withObservation(c, {
++              ...o,
++              exactConfiguration: { ...exact(c), supplemental: supplied },
++            }),
++          ),
++        "invalid-source",
++      );
++    }
++    expect(shapeGetterCalls).toBe(0);
+     // These supplied records are deliberately not valid transport metadata. At10000 keys,
+     // capture completes and the ordinary configuration comparison refuses; at10001 keys,
+     // the container bound must refuse before visiting even the final nested child.
+@@ -1396,34 +1564,66 @@
+     expect(decoded.configuration).toBeNull();
+   },
+   L03() {
+-    const c = context("transactional"),
+-      genuine = { result: { real: true }, sessions: [1], baseline: { real: true } };
+-    for (const input of [
+-      undefined,
+-      { bytes: Buffer.from("bad"), rawWrapperSha256: "0".repeat(64) },
+-    ]) {
+-      let failed = false;
+-      try {
+-        if (!input) throw Error();
+-        const o = observation(c);
+-        assemble(
++    const c = context("transactional");
++    for (const variant of ["valid", "missing", "bad", "result", "sessions", "baseline"] as const) {
++      const o = observation(c),
++        raw = JSON.parse(Buffer.from(o.reportSource.bytes).toString()),
++        observed = { result: raw.result, sessions: raw.sessions, baseline: raw.baseline },
++        before = structuredClone(observed);
++      let calls = 0;
++      let originalBytes: Uint8Array | undefined;
++      const captured = capturePrivateProfileHandoff(
++        observed,
++        (actual) => {
++          calls++;
++          expect(actual).toBe(observed);
++          if (variant === "missing") return;
++          if (variant === "bad")
++            return { bytes: Buffer.from("bad"), rawWrapperSha256: "0".repeat(64) };
++          if (variant === "result") actual.result.unitMutation = true;
++          if (variant === "sessions") actual.sessions.push({ unitMutation: true });
++          if (variant === "baseline") actual.baseline.unitMutation = true;
++          // Honest source-unit data; these supplemental placeholders are not installed observations.
++          originalBytes = json({
++            sourceCommit: c.configuration.sourceCommit,
++            entry: "synthetic-unit-data-not-installed",
++            ...actual,
++            supplemental: {},
++            sequenceMemberSupplemental: {},
++            principalSupplemental: {},
++            conditionalSupplemental: {},
++          }).bytes;
++          return { bytes: originalBytes, rawWrapperSha256: sha(originalBytes) };
++        },
++        { sourceCommit: c.configuration.sourceCommit, entry: "synthetic-unit-data-not-installed" },
++      );
++      expect(calls).toBe(1);
++      expect(captured.genuine).not.toBe(observed);
++      expect(captured.genuine).toEqual(before);
++      expect(captured.refused).toBe(variant !== "valid");
++      if (variant === "valid") {
++        expect(Array.from(captured.wrapperBytes!)).toEqual(Array.from(originalBytes!));
++        expect(captured.wrapperBytes).not.toBe(originalBytes);
++        const bytes = captured.wrapperBytes!;
++        const e = assemble(
+           c,
+           withObservation(c, {
+             ...o,
+-            reportSource: { bytes: input.bytes },
+-            expectedReportSha256: input.rawWrapperSha256,
++            reportSource: { bytes },
++            expectedReportSha256: sha(bytes),
+           }),
+         );
+-      } catch {
+-        failed = true;
++        expect(rec((e.reports as Data[])[0]).rawWrapperSha256).toBe(sha(bytes));
++      } else expect(captured.wrapperBytes).toBeUndefined();
++      if (variant === "valid" || variant === "missing" || variant === "bad")
++        expect(observed).toEqual(before);
++      if (variant === "missing" || variant === "bad") {
++        const a = attempt(c, "failed");
++        a.failureStages.push("credential-check");
++        const e = assemble(c, absent(c), a);
++        expect(rec((e.reports as Data[])[0]).rawWrapperSha256).toBeNull();
++        expect(e.qualificationReady).toBe(false);
+       }
+-      expect(failed).toBe(true);
+-      expect(genuine.result.real).toBe(true);
+-      const a = attempt(c, "failed");
+-      a.failureStages.push("credential-check");
+-      const e = assemble(c, absent(c), a);
+-      expect(rec((e.reports as unknown[])[0]).rawWrapperSha256).toBeNull();
+-      expect(e.qualificationReady).toBe(false);
+     }
+   },
+   L04() {
+@@ -1460,18 +1660,37 @@
+     expect(rec((assertionEvidence.reports as Data[])[0]).reportedCleanupState).toBe(
+       "reported-complete",
+     );
+-    const original = new Error("unit-original-legacy");
+-    let observed: unknown;
+-    try {
++    const causes = [new Error("unit-original-one"), new Error("unit-original-two")];
++    for (const original of [
++      new Error("unit-original-legacy"),
++      new AggregateError(causes, "unit-original-aggregate"),
++    ]) {
++      let calls = 0;
++      let caught: unknown;
++      const observed = { result: {}, sessions: [], baseline: {} };
+       try {
+-        throw original;
+-      } finally {
+-        /* Actual original hook errors are not carrier refusals. */
++        capturePrivateProfileHandoff(
++          observed,
++          (actual) => {
++            calls++;
++            expect(actual).toBe(observed);
++            throw original;
++          },
++          {
++            sourceCommit: c.configuration.sourceCommit,
++            entry: "synthetic-unit-data-not-installed",
++          },
++        );
++      } catch (error) {
++        caught = error;
+       }
+-    } catch (x) {
+-      observed = x;
+-    }
+-    expect(observed).toBe(original);
++      expect(caught).toBe(original);
++      expect(calls).toBe(1);
++      if (original instanceof AggregateError) {
++        expect(original.errors[0]).toBe(causes[0]);
++        expect(original.errors[1]).toBe(causes[1]);
++      }
++    }
+   },
+   L06() {
+     const v = unbound("failed");
+@@ -1536,6 +1755,8 @@
+   },
+   L10() {
+     const directory = mkdtempSync(path.join(tmpdir(), "profile-data-"));
++    const previousCumulativePath = process.env.BDP_CUMULATIVE_REPORT_PATH,
++      previousProfilePath = process.env.BDP_PRIVATE_PROFILE_EVIDENCE_PATH;
+     try {
+       const base = path.join(directory, "fresh");
+       for (const profile of ["read-update", "transactional"] as const) {
+@@ -1635,12 +1856,49 @@
+             ).toBe(true);
+         }
+       }
++      for (const missing of [false, true]) {
++        const c = context(),
++          o = observation(c),
++          raw = JSON.parse(Buffer.from(o.reportSource.bytes).toString()),
++          filename = path.join(directory, `ru-identity-${missing}`),
++          profileBase = `${filename}-private`;
++        process.env.BDP_CUMULATIVE_REPORT_PATH = filename;
++        process.env.BDP_PRIVATE_PROFILE_EVIDENCE_PATH = profileBase;
++        const baselineReceipt = { ...raw.baselineReceipt };
++        if (missing) delete baselineReceipt.configurationIdentity;
++        else baselineReceipt.configurationIdentity = {};
++        const report: ArtifactObservation = {
++          sourceCommit: c.configuration.sourceCommit,
++          configuration: c.configuration,
++          baselineReceipt,
++          sessions: [],
++          result: raw.result,
++          exactConfiguration: o.exactConfiguration as ArtifactObservation["exactConfiguration"],
++          plannedManifestDigest: c.owners[0]!.bundle.digests.manifestDigest,
++          catalogSources: {},
++          plannedIds: [...c.owners[0]!.ids],
++          requiredIds: c.selection.required.map((r) => r.id),
++          cleanupComplete: false,
++        };
++        const writer = createArtifactEvidenceWriter(
++          ruSet(),
++          c.configuration.sourceCommit,
++          filename,
++          [],
++        );
++        code(() => writer.returned(0, report), "invalid-source");
++        expect(existsSync(`${profileBase}.read-update.profile.json`)).toBe(false);
++      }
+       const legacy = path.join(directory, "legacy");
+       writeFileSync(legacy, "original");
+       expect(() => createArtifactEvidenceWriter(ruSet(), "a".repeat(40), legacy, [])).toThrow();
+       expect(readFileSync(legacy, "utf8")).toBe("original");
+       expect(existsSync(`${base}.profile.json`)).toBe(false);
+     } finally {
++      if (previousCumulativePath === undefined) delete process.env.BDP_CUMULATIVE_REPORT_PATH;
++      else process.env.BDP_CUMULATIVE_REPORT_PATH = previousCumulativePath;
++      if (previousProfilePath === undefined) delete process.env.BDP_PRIVATE_PROFILE_EVIDENCE_PATH;
++      else process.env.BDP_PRIVATE_PROFILE_EVIDENCE_PATH = previousProfilePath;
+       ioFaults.write = false;
+       ioFaults.rename = false;
+       ioFaults.cleanup = false;
