@@ -1,0 +1,26 @@
+{
+  "state": "PROPOSED PRIVATE writer IO only; existing legacy writer unchanged",
+  "ownerFile": "apps/bdptest/test-support/read-update-artifact-execution.ts",
+  "export": "one source-private createPrivateProfileSidecarWriter helper in existing file, shared by RU integration and TX test; no package export",
+  "activation": {
+    "RU": "existing writer filename is nonempty AND exactly BDP_CUMULATIVE_REPORT_PATH AND BDP_PRIVATE_PROFILE_EVIDENCE_PATH nonempty; preserve original signature/callers",
+    "TX": "existing positive callback only passes optional carrierPath from same opt-in base; negative controls omit it",
+    "absent": "no new IO, serialization, state or changed legacy behavior"
+  },
+  "destinations": {
+    "read-update": [
+      "${base}.read-update.profile.attempt.json",
+      "${base}.read-update.profile.json"
+    ],
+    "transactional": [
+      "${base}.transactional.profile.attempt.json",
+      "${base}.transactional.profile.json"
+    ]
+  },
+  "preflight": "Check BOTH exact selected-profile destinations before any new output; any existing file/directory/symlink refuses fixed persistence. Other profile destinations are distinct and may exist. Never infer ownership from absence or existence. Preserve legacy outputs and stale attempts. No generic .profile suffix fallback.",
+  "firstCreation": "Each destination FIRST created by openSync(destination, wx, 0600), writes through that acquired descriptor, captures its identity, closes in finally. Never temp+rename into an unowned destination. A race-created destination causes wx refusal, not replacement. Record ownership only for a path actually created by this writer instance; on failed write it is failed partial evidence, never success. Only its acquired temp/file can be cleaned.",
+  "replacement": "Later atomic replacement allowed ONLY for an in-memory owned path of THIS writer/attempt. Check the recorded destination file identity (dev/ino and last successful bytes/digest), refuse missing/replaced/symlink/unknown before replacement. Exclusive0600 own temporary file, then atomic rename over that own prior output, refresh owned identity. Never call legacy replaceFile on a never-owned sidecar path; never acquire ownership from preexisting bytes matching a digest. Temp cleanup errors aggregate fixed persistence without erasing previous genuine output.",
+  "ownershipScope": "Per-attempt cooperating writer ownership, not a claim of atomic compare-and-swap protection against arbitrary same-UID filesystem mutation. The first-create race is prevented by wx; two cooperating attempts cannot acquire the same existing path. Identity checks reject observed replacement. No filesystem/lock framework or adversarial filesystem semantics is added.",
+  "errors": "New sidecar initialization/write/replacement failure is fixed persistence; preserve genuine run evidence/legacy failure independently, withhold new success. In TX new carrier failures never escape observe. If no new safe file can be persisted, missing artifact is explicit failure to later validation, not a success envelope.",
+  "secretGate": "Validate closed schema, safe projection, credential guard and summary cap before every new output; exact auth/file commitments remain protected0600, never diagnostics."
+}

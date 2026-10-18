@@ -1,0 +1,23 @@
+{
+  "effects": "Read-only discovery; no source/helper/product execution",
+  "records": [
+    {
+      "command": "rg guessed reference-installed-process.ts alongside actual transaction-installed-process.ts",
+      "result": "absent guessed file reported, current installed-reference-process.ts then discovered/read"
+    },
+    {
+      "command": "rg guessed transaction-configuration.ts; subsequent runtime import read",
+      "result": "absent guessed file; actual transaction-runtime-configuration.ts imported and read"
+    },
+    {
+      "command": "unmatched reference*.ts shell glob after successful source reads",
+      "exit": 1,
+      "result": "No matches; exact installed-reference-process.ts then read"
+    },
+    {
+      "command": "sed author copied actual-interface-map.json (not copied into author active contract subset)",
+      "exit": 1,
+      "result": "Original plan4 actual-interface-map.json exists; copied/read as predecessor-plan4 context"
+    }
+  ]
+}

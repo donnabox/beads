@@ -1,0 +1,19 @@
+{
+  "accepted": true,
+  "utc": "2026-10-18T08:44:46.160397+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "scope": "Routine implementation reuse clarification; unchanged four-file authoring footprint, no new behavior or semantics",
+  "sourceReleaseSha256": "07f3227cd0407b059501ac9be8216237e1f015512230fa9190c051dacdbab4c8",
+  "helper": "/Users/dbox/repos/wt/vickie/vickie-cumulative-evidence-carrier-minimum/apps/bdptest/test-support/installed-contract-identity.ts",
+  "helperSha256": "d33f6d1ca8a3691bbc2529129bbe85260cdd38f09c8895304a870ec8cf7c4165",
+  "newModuleRelativeImport": "../../../apps/bdptest/test-support/installed-contract-identity.js",
+  "function": "installedContractsDigest(identity:unknown):string",
+  "rootReadWholeHelper": true,
+  "reason": "Existing pure side-effect-free five-line versioned identity parser has no imports, validates exact development-schema5-64hex and slices prefix. Reuse exact existing interpretation instead of duplicating it; helper remains unchanged and imports no carrier, so this edge introduces no cycle. Both endpoints source-private test-support; no production export/config/emitted root change. Wrap refusal in fixed carrier error, never reflect data.",
+  "planTextPrecision": "The existing listed new-module privateConformance-only import statement yields narrowly to this ONE existing pure source-private app helper edge; every other plan/footprint/API/export/budget/case/identity contract unchanged. Original plan4 and prior native review are immutable; neither is claimed to have reviewed this later import choice.",
+  "helperEditsAllowed": false,
+  "futureNativeCodeAndOneActualCodeMustInspectEdge": true,
+  "compilerTestsBuildInstallRuntimeReleased": false,
+  "newSemanticsAdopted": false,
+  "newOwnedPaths": 0
+}

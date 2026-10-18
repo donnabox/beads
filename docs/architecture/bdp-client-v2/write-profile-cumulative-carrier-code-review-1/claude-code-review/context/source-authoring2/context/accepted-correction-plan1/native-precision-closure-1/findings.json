@@ -1,0 +1,31 @@
+{
+  "findings": [],
+  "acceptedStaticPrecision": true,
+  "originalNativeN1N4": [
+    {
+      "id": "N1",
+      "closedAtPlanPrecision": true,
+      "evidence": "primitive-and-cache-contract.json.N1; source profile-evidence.ts428/559-560/585-586",
+      "assessment": "Compute exact raw wrapper SHA and canonical result SHA once per present owner per assembly; reuse values without persistent cache, normalization or budget claim."
+    },
+    {
+      "id": "N2",
+      "closedAtPlanPrecision": true,
+      "evidence": "wrapper-comparison-matrix.json; actual RU helper213-228/635-650; TX matrix300-314/392-429/450-461; TX binding21-90 and IPC49-55",
+      "assessment": "Actual RU baseline8/session9 excludes absent listenUrl; actual TX baseline4/served11/session13+3 with exact12 targets. Ordered raw-to-trusted sequences and full configuration/exact transport comparisons preserve partial empty arrays, per-launch physical URL, source/fixture/runtime/payload/contracts/policy/auth identity. No fabricated entry authority or installed truth."
+    },
+    {
+      "id": "N3",
+      "closedAtPlanPrecision": true,
+      "evidence": "primitive-and-cache-contract.json.N3; actual ownData/safeData96-137, unchecked equal416-429 and shallow ready484-513; canonical-json Object.entries traversal",
+      "assessment": "Primitive typing before canonical comparison plus bounded intrinsic nested ready/served/session/exact capture prevents getter/Proxy/function behavior. Configuration retains original brand, no structural-copy authority; fixed errors and existing48 subcontrols."
+    },
+    {
+      "id": "N4",
+      "closedAtPlanPrecision": true,
+      "evidence": "prerequisite-and-stop-matrix.json; actual runner383-402/448-469/2986-3055/actions attachment789; missing-executor1026-1041",
+      "assessment": "Initial prerequisite skip remains local, recheck may retain exchanges/actions and continue absent stop category/cleanupError. Exact real stop predicate constrains suffix; plain stopped suffix allowed at index0 or between rows without an invented abort cause. Known absent-executor action marker is narrow source-derived exception, preserves prefix/null credit and does not invent support."
+    }
+  ],
+  "scope": "FULL correction plan/effective base composition against exact frozen681 source; no source or runtime pass"
+}

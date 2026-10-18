@@ -1,0 +1,86 @@
+{
+  "rawSha256": "f760a8970146c9a9561e47663d2b2a67200eb23f7099ce309abe60b5044012e4",
+  "rawBytes": 2660603,
+  "validJSONLRecords": 4561,
+  "parseErrors": 0,
+  "finalNewline": true,
+  "resultCount": 1,
+  "resultIsLastRecord": true,
+  "terminalSubtype": "success",
+  "terminalError": false,
+  "terminalReason": "completed",
+  "stopReason": "end_turn",
+  "permissionDenials": [],
+  "subagentsSpawned": 0,
+  "actualFinalReviewSha256": "73672c3b81463e1f951f8ebea9aab9d1b53949c1afcd681cc535c8294d41ac94",
+  "actualFinalReviewBytes": 12666,
+  "finalReviewEqualsRawResult": true,
+  "terminalResultsEqualRawResult": true,
+  "progressOrdinals1Through4561": true,
+  "toolAttempts": {
+    "Glob": 21,
+    "Read": 56,
+    "Grep": 24
+  },
+  "toolResults": 101,
+  "toolErrorCount": 9,
+  "toolErrors": [
+    {
+      "tool": "Glob",
+      "toolUseId": "toolu_01LgJ1PGkb9sRqMoLynmfvyE",
+      "content": "Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern."
+    },
+    {
+      "tool": "Glob",
+      "toolUseId": "toolu_01PxCUKWUfekHCELxrKLQnGr",
+      "content": "Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern."
+    },
+    {
+      "tool": "Glob",
+      "toolUseId": "toolu_01Chg4AcgC3mqVioX6pRatyM",
+      "content": "Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern."
+    },
+    {
+      "tool": "Glob",
+      "toolUseId": "toolu_01Uo2uhHBYYcgjqxkLrVn4U4",
+      "content": "Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern."
+    },
+    {
+      "tool": "Glob",
+      "toolUseId": "toolu_012qAh9zrWRYv6Qd27QNaJXk",
+      "content": "Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern."
+    },
+    {
+      "tool": "Glob",
+      "toolUseId": "toolu_015nQWUDAFyLXSguXFpYEH1Y",
+      "content": "Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern."
+    },
+    {
+      "tool": "Read",
+      "toolUseId": "toolu_01BbBArdTEAXFBcH4LivpYyV",
+      "content": "File does not exist. Note: your current working directory is /Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum."
+    },
+    {
+      "tool": "Grep",
+      "toolUseId": "toolu_01QCGBdR8Lyp1WMZRV7NZVcp",
+      "content": "Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern."
+    },
+    {
+      "tool": "Glob",
+      "toolUseId": "toolu_01PEUxRL1ayKHVdCpyYbDKqo",
+      "content": "<tool_use_error>InputValidationError: Glob failed due to the following issue:\nAn unexpected parameter `head_limit` was provided</tool_use_error>"
+    }
+  ],
+  "toolErrorLimit": "Seven Grep20s timeouts, missing-file Read, unsupported head_limit Glob. Incomplete searches not treated as successful coverage; no overall stream/permission failure.",
+  "recordTypes": {
+    "system": 626,
+    "rate_limit_event": 4,
+    "stream_event": 3660,
+    "assistant": 169,
+    "user": 101,
+    "result": 1
+  },
+  "stderrBytes": 0,
+  "wrapperStderrBytes": 0,
+  "model": "configured default, no override/agents/turncaps; raw provider modelUsage preserved"
+}

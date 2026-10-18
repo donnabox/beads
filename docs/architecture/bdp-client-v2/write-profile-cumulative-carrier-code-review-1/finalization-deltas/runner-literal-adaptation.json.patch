@@ -1,0 +1,19 @@
+--- scaffold/runner-literal-adaptation.json
++++ final/runner-literal-adaptation.json
+@@ -14,7 +14,7 @@
+     },
+     {
+       "before": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+-      "after": "UNRESOLVED_CLEAN_HEAD",
++      "after": "2834151544ca6bdc105191665f466c58eee7930f",
+       "occurrences": 1
+     }
+   ],
+@@ -22,5 +22,6 @@
+   "parserArgumentsGuardByteIdentical": true,
+   "supervisor5Sha256": "791e5a566561798aa3352f19b021e6db9beeddb033ae5725c7d031d51716f95c",
+   "supervisorUnchanged": true,
+-  "headLiteralPending": "The final source head MUST be supplied by root after independent native; later replace exactly UNRESOLVED_CLEAN_HEAD once, preserve scaffold snapshot and rehash full packet. No inferred head/tree/parents/status."
++  "scaffoldPendingHeadFinalizationOnlyOneLiteral": true,
++  "headAuthority": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-root-clean-candidate-3/candidate.json"
+ }

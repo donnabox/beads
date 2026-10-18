@@ -1,0 +1,11 @@
+--- final/runner-adaptation-inverse.patch
++++ scaffold/runner-adaptation-inverse.patch
+@@ -16,7 +16,7 @@
+  def git(*args):return subprocess.check_output(["git",*args],cwd=w)
+  def merge_snapshot():
+      head=git("rev-parse","HEAD").decode().strip()
+--    assert head=="2834151544ca6bdc105191665f466c58eee7930f", "Candidate changed"
++-    assert head=="UNRESOLVED_CLEAN_HEAD", "Candidate changed"
+ +    assert head=="cce884ccea1db97cbc6fd7bff876d4d6091f9081", "Candidate changed"
+      assert git("status","--porcelain=v1","--untracked-files=all").decode()==b["expectedGitStatus"]=="", "Frozen clean source changed"
+      assert set(git("ls-files").decode().splitlines())==set(b["files"]), "Tracked scope changed"

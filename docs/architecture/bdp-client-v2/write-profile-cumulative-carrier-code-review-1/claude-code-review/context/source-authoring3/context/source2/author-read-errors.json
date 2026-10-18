@@ -1,0 +1,17 @@
+{
+  "errors": [
+    {
+      "kind": "FileNotFoundError",
+      "operation": "read-only planning contract locator",
+      "path": "effective-contracts/outcome-taxonomy.json",
+      "resolution": "Listed actual contracts; read effective-contracts/outcome-join-contract.json and error-contract.json instead."
+    },
+    {
+      "kind": "rg absent path",
+      "operation": "read-only runner/prerequisite inventory",
+      "path": "packages/conformance/test-support/read-update-extension-v1.json",
+      "resolution": "Actual RU manifest paths will be read from current branded-set source index; runner/transactional search results retained."
+    }
+  ],
+  "sourceOrRuntimeAction": false
+}

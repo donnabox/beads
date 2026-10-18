@@ -1,0 +1,54 @@
+{
+  "state": "CLOSED plan4; root separate four-file author release only after independent full native precision/root acceptance",
+  "name": "write-profile-cumulative-evidence-carrier-plan-4",
+  "objective": "Implement private same-source RU/TX evidence plumbing after separate release; every output always eligibilityfalse/qualificationfalse. No public admission or complete clause credit.",
+  "futureOwnedFiles": [
+    "packages/conformance/test-support/profile-evidence.ts",
+    "packages/conformance/test-support/profile-evidence.test.ts",
+    "apps/bdptest/test-support/read-update-artifact-execution.ts",
+    "apps/bdptest/src/transactional-matrix.test.ts"
+  ],
+  "inputSchema": "input-schema.json",
+  "outputSchema": "output-schema.json",
+  "actualInterfaces": "actual-interface-map.json",
+  "verificationOrder": "verification-order.json",
+  "lifecycle": "lifecycle-and-adapters.json",
+  "sourceDataCases": {
+    "file": "source-data-cases.json",
+    "count": 48,
+    "groups": [
+      6,
+      24,
+      8,
+      10
+    ]
+  },
+  "budgetsSecrecy": "budgets-and-secrecy.json",
+  "validation": "validation-plan.json",
+  "profileCounts": {
+    "Read": 44,
+    "RU": 130,
+    "TX": 251
+  },
+  "nonRequiredDiagnosticsInUnfilteredReports": 5,
+  "declaredWholeFlagsAreNotProof": true,
+  "qualificationReady": false,
+  "sourceAuthoringReleased": false,
+  "reviewLaunchReleased": false,
+  "runtimeReleased": false,
+  "finalCombinedRebind": "UNRESOLVED; cce source planning only, startup515e and D3a authoring not adopted",
+  "precisionCorrections": [
+    "N1 distinct unbound RU early attempt and precise first-return binding transition",
+    "N2 exact single legacy TX serialization optional byte handoff, genuine pre-hook comparison, no legacy-file dependency",
+    "N3 actual stopped not-run suffix vs reached missing-plan not-implemented; no vacuous assertions"
+  ],
+  "actualPlan": "ONE complete/8 findings disposed; no second actual PLAN",
+  "planAuthority": "This directory active full plan/tables; predecessor-effective all86 immutable history, not active overrides",
+  "previousNativePrecisionHistory": {
+    "predecessorIndexSha256": "92f4b0c0b0fbe1fbdc1ff4d42b50db4d2b35c7088a0de8acae7d1cdcde4f41ad",
+    "nativeFindingsClosureSha256": "727b809d74d6a507c6b1951ad98b6758c7cf764ba939d92c9689c260befef5b9",
+    "rootDispositionSha256": "710297a3b6a04dc186b0f40315f827460d934e70e5ed145b8f20cd24eff02dcf"
+  },
+  "rootActualDispositionSha256": "61a52673b8f0d91758b4845de4dc8dc0674d758fd98723a9d5f22d11f9e66545",
+  "nextAuthoringAuthority": "UNRESOLVED; full native precision/root plus named source release"
+}
