@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+G09 FIRST4 ACTUAL STOPPED on node-version observation: [actual failed evidence census](write-profile-G09-first4-actual-evidence-census-1/census.json) preserves Atool5ea19f raw0/inner0/actualv24.16.0, root8.939865s/inner4.187879s/complete root477stdout+0stderr; Btoolbb9332 exited1 atguardassert BEFOREcensus because ROOT global tool-ID replacement changed both assignment and protective inequality. [ROOT STOP91bc68d5](write-profile-G09-first4-root-failure-1/stop.json) preserves actualwrongsource/tool observations and RECLOSES livegateec0d; originalactivation remainshistorical. Cnotinvoked/alllater33UNATTEMPTED; no stage qualification or sameattempt retry. A FULL actual failure audit+separate administrative closure census pending; B bounded assignment-only/inverse DATA correction-next-plan underway, C independent planprecision afterfreeze. Frozenprotocol/helper/productsource unchanged; rootinstantiationerror requires separatelynamed CLOSEDsuccessor and precise native/root/durable release, never repair/relabelthefailedattempt.
+
+
 [Exact first4 gate activation](write-profile-G09-first4-root-activation-1/activation.json) copies approvedb931 only after complete authority publication/readbackf19c3541. All444 implementation members and source679 unchanged; prepared closed snapshot retained. Execution still waits separate activation publication/readback; no stages invoked yet.
 
 
