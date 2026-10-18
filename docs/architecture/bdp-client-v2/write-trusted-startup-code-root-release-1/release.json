@@ -1,0 +1,42 @@
+{
+  "releasedAt": "2026-10-18T04:31:56.888253+00:00",
+  "expectedSession": "2026-10-18T02:16:24Z-549f",
+  "target": "FIRST twelve-file trusted-startup CODE review; not PLAN retry",
+  "sourcePatchSha256": "00fa952644ab1725e4bfb8fc8c642683a39f60dd45f6a08de8881d590150a0b4",
+  "rootSourceAcceptanceSha256": "a013638538a24e2e0bf20d61327be83e0bd00863a54a5658fbe7fcc3cfd2c829",
+  "rootMechanicalInspectionSha256": "84a5bfc74bf216279688d341fc9031aeb7acf8efb6385e5884aa8b8a05ee24d8",
+  "independentFinalMechanicalClosureSha256": "651acbf8f10ec424636d33533d6ad0f942e2f1543585d635a7a3e26afa1d4b81",
+  "closedPreparationIndexSha256": "92ad271d0d6f548db4cc3aed26f1f8e152ab41243ad7fb5f61ccb6ab221f273c",
+  "releaseDeltas": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-code-review-1/claude-code-review/binding.json",
+      "closedSha256": "9eb833a457b3dd00826600ffdc5fab2bd6b487c17162b6789294fc2a663f0a54",
+      "releasedSha256": "6ea47b256474100a113743bc9a7e989d76416125227dea708b57fb8960469eaa",
+      "onlyChange": "rootLaunchReleased false to true"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-code-review-1/launch-supervision/control.json",
+      "closedSha256": "ee59f919bac185394e307f0150aab2d34bcb009a6cb166bd985766adcec9549c",
+      "releasedSha256": "307a4ee3f88cefb0a5e845ef815809063499384fee3316df8ef030d50a99032f",
+      "onlyChange": "rootLaunchReleased false to true"
+    }
+  ],
+  "singleAttempt": true,
+  "noRetry": true,
+  "defaultModel": true,
+  "tools": [
+    "Read",
+    "Glob",
+    "Grep"
+  ],
+  "termSeconds": 1790,
+  "killSeconds": 1798,
+  "totalSeconds": 1800,
+  "requiresAfter": [
+    "independent actual terminal/source/packet/process audit",
+    "root substantive findings disposition"
+  ],
+  "runtimeValidationReleased": false,
+  "sourceMutationReleased": false,
+  "commitPushReleased": false
+}
