@@ -1,0 +1,158 @@
+Bounded repair review, native Codex and actual Claude receive this same self-contained prompt. Gemini excluded. Review only the diff below, no tools or additional repository traversal, no files modified, no tests/DB/delegation/network. Output findings only in stdout: severity, location, concrete defect/impact/fix. Explicitly state if no confirmed blocker. Runtime evidence is pending, never assume it passed.
+
+Your frozen implementation review had no confirmed code blocker. Prior actual-context cancellation and --source-prefix examples were already repaired; config cause now has two %w. This final diff adopts StrictInfraTypes (API reads GetConfigInTx, returns errors on DB failure, preserves defaults for absent config), discloses adopted prefix in human summary, dedups labels on cloned input preserving source caller, refuses nonserialized routing/plane/partial-record SDK fields before cloning, and asserts late-cancel error uncertainty agrees with sql.ErrTxDone while retaining cancellation identity. Docs explicitly disclose uncertain rollback cleanup as outcome_unknown6. Existing CLI pure classification test asserts outcome_unknown precedence over cancellation. Look for defects introduced by these changes, including test assertions. No shared core changes; import-only calls existing strict helper. Repeated owned-Link reads deliberately retained as independent post-write verification until engine cost measured (bounded1000 resources/5min).
+
+diff --git a/cmd/bd/graph_preview_assignee_error_test.go b/cmd/bd/graph_preview_assignee_error_test.go
+index 76b66017a..c787c5a22 100644
+--- a/cmd/bd/graph_preview_assignee_error_test.go
++++ b/cmd/bd/graph_preview_assignee_error_test.go
+@@ -100,3 +100,14 @@ func TestGraphPreviewImportDeadlineDisposition(t *testing.T) {
+ 		}
+ 	}
+ }
++
++func TestGraphPreviewLegacyImportSummaryPrefix(t *testing.T) {
++	withPrefix := graphPreviewLegacyImportSummary("Imported", "source.jsonl", graphstore.LegacyImportResult{IssuePrefix: "web-app", Issues: 1})
++	if !strings.Contains(withPrefix, "Workspace Issue prefix: web-app.") {
++		t.Fatalf("adopted prefix not disclosed: %s", withPrefix)
++	}
++	memories := graphPreviewLegacyImportSummary("Would import", "stdin", graphstore.LegacyImportResult{Memories: 1})
++	if strings.Contains(memories, "Issue prefix:") {
++		t.Fatalf("memory-only prefix invented: %s", memories)
++	}
++}
+diff --git a/cmd/bd/graph_preview_import.go b/cmd/bd/graph_preview_import.go
+index b7970988c..2762fbbb7 100644
+--- a/cmd/bd/graph_preview_import.go
++++ b/cmd/bd/graph_preview_import.go
+@@ -51,8 +51,16 @@ func runGraphPreviewImportReader(reader io.Reader, source string) error {
+ 		if importDryRun {
+ 			action = "Would import"
+ 		}
+-		return result, fmt.Sprintf("%s %d Issues, %d Memories, %d Dependencies and %d comments from %s. Source history is not present in legacy exports.", action, result.Issues, result.Memories, result.Dependencies, result.Comments, source), nil
++		return result, graphPreviewLegacyImportSummary(action, source, result), nil
+ 	}, func(result any, human string) error {
+ 		return graphPrint(result, human, quietFlag)
+ 	})
+ }
++
++func graphPreviewLegacyImportSummary(action, source string, result graphstore.LegacyImportResult) string {
++	prefix := ""
++	if result.IssuePrefix != "" {
++		prefix = fmt.Sprintf(" Workspace Issue prefix: %s.", result.IssuePrefix)
++	}
++	return fmt.Sprintf("%s %d Issues, %d Memories, %d Dependencies and %d comments from %s.%s Source history is not present in legacy exports.", action, result.Issues, result.Memories, result.Dependencies, result.Comments, source, prefix)
++}
+diff --git a/docs/reference/graph-legacy-import.md b/docs/reference/graph-legacy-import.md
+index 8f21e644f..b4df31786 100644
+--- a/docs/reference/graph-legacy-import.md
++++ b/docs/reference/graph-legacy-import.md
+@@ -73,9 +73,9 @@ sizes: persisted payloads, relations and retained snapshots must also fit the
+ it; the entire transaction rolls back. Byte/resource ceilings use
+ `capability_unavailable`; malformed JSON, including excessive nesting, uses
+ `invalid_properties`. Import does not split a large input into partially
+-committed chunks. Engine errors and timeout roll back before commit;
+-an uncertain commit outcome is reported as `outcome_unknown`, without automatic
+-replay. Inspect the destination before deciding what to do after that error.
++committed chunks. Definite failures and dry-runs roll back before commit. If commit or rollback
++cleanup is uncertain, including cancellation after the driver has ended the
++transaction, import reports `outcome_unknown` (exit 6), without automatic replay. Inspect the destination before deciding what to do after that error.
+ 
+ This is a fresh-workspace interchange operation. It does not migrate an
+ existing workspace in place or carry full backup/restore history.
+diff --git a/internal/storage/graphstore/legacy_import.go b/internal/storage/graphstore/legacy_import.go
+index 30801e04a..27c029aff 100644
+--- a/internal/storage/graphstore/legacy_import.go
++++ b/internal/storage/graphstore/legacy_import.go
+@@ -83,7 +83,10 @@ func (s *Store) ImportLegacyWithPrefix(ctx context.Context, input legacyimport.B
+ 				return err
+ 			}
+ 		}
+-		infra := issueops.ResolveInfraTypesInTx(ctx, tx)
++		infra, err := issueops.ResolveInfraTypesStrictInTx(ctx, tx)
++		if err != nil {
++			return err
++		}
+ 		for _, issue := range batch.Issues {
+ 			if infra[string(issue.IssueType.Normalize())] {
+ 				return fmt.Errorf("%w: infrastructure Issue %s is unsupported", storage.ErrValidation, issue.ID)
+@@ -243,6 +246,11 @@ func prepareLegacyImportWithPrefix(input legacyimport.Batch, actor, sourcePrefix
+ 	if !legacyImportStringsValid(reflect.ValueOf(input)) {
+ 		return invalid("legacy Issue and Memory strings must be UTF-8")
+ 	}
++	for _, issue := range input.Issues {
++		if issue != nil && (issue.WispPlaneOverride != nil || issue.IDPrefix != "" || issue.PrefixOverride != "" || issue.SourceRepo != "" || issue.IsLitePartial) {
++			return invalid("Issue %s has unsupported in-memory storage-plane, routing or partial-record state", issue.ID)
++		}
++	}
+ 	// encoding/json replaces invalid UTF-8 strings. Check keys/values before
+ 	// cloning so a direct caller cannot accidentally import replacement text.
+ 	for _, memory := range input.Memories {
+@@ -293,6 +301,17 @@ func prepareLegacyImportWithPrefix(input legacyimport.Batch, actor, sourcePrefix
+ 		if issue.Status == "tombstone" {
+ 			return invalid("tombstone %s is unsupported", issue.ID)
+ 		}
++		// Labels are a set in native storage. Normalize the isolated copy so
++		// duplicate source spellings cannot be mistaken for storage loss.
++		seenLabels := make(map[string]bool, len(issue.Labels))
++		labels := issue.Labels[:0]
++		for _, label := range issue.Labels {
++			if !seenLabels[label] {
++				labels = append(labels, label)
++				seenLabels[label] = true
++			}
++		}
++		issue.Labels = labels
+ 		issue.SetDefaults()
+ 		now := time.Now().UTC().Truncate(time.Second)
+ 		if issue.CreatedAt.IsZero() {
+diff --git a/internal/storage/graphstore/legacy_import_test.go b/internal/storage/graphstore/legacy_import_test.go
+index 8be0a350e..292623ca2 100644
+--- a/internal/storage/graphstore/legacy_import_test.go
++++ b/internal/storage/graphstore/legacy_import_test.go
+@@ -5,6 +5,7 @@ package graphstore
+ import (
+ 	"context"
+ 	"crypto/sha256"
++	"database/sql"
+ 	"encoding/json"
+ 	"errors"
+ 	"fmt"
+@@ -73,6 +74,23 @@ func TestLegacyImportPrefixAdmission(t *testing.T) {
+ 	}
+ }
+ 
++func TestLegacyImportLabelSetAndInternalState(t *testing.T) {
++	issue := &types.Issue{ID: "old-a", Title: "Imported", Labels: []string{"two", "one", "two"}}
++	prepared, err := prepareLegacyImport(legacyimport.Batch{Issues: []*types.Issue{issue}}, "importer")
++	if err != nil || !reflect.DeepEqual(prepared.Issues[0].Labels, []string{"two", "one"}) || !reflect.DeepEqual(issue.Labels, []string{"two", "one", "two"}) {
++		t.Fatalf("label set or caller changed: %+v %+v %v", prepared, issue, err)
++	}
++	plane := false
++	for _, internal := range []*types.Issue{
++		{WispPlaneOverride: &plane}, {IDPrefix: "custom"}, {PrefixOverride: "other"}, {SourceRepo: "another"}, {IsLitePartial: true},
++	} {
++		internal.ID, internal.Title = "old-a", "Imported"
++		if _, err := prepareLegacyImport(legacyimport.Batch{Issues: []*types.Issue{internal}}, "importer"); err == nil {
++			t.Fatalf("nonserialized state silently ignored: %+v", internal)
++		}
++	}
++}
++
+ func TestLegacyImportCommentBudgetAndOriginalUTF8(t *testing.T) {
+ 	issue := &types.Issue{ID: "old-a", Title: "Imported"}
+ 	for i := range LegacyImportCommentLimit {
+@@ -339,7 +357,12 @@ func TestLegacyImportAtomicityAndPersistence(t *testing.T) {
+ 					s.afterWrite = nil
+ 					// Inspect through the independent live context, after driver
+ 					// cancellation and transaction cleanup have completed.
+-					if !reached || !errors.Is(err, expected) || !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
++					// A driver watcher may already have rolled back the transaction.
++					// That cleanup uncertainty must keep outcome_unknown precedence;
++					// a clean explicit rollback keeps the ordinary canceled refusal.
++					unknown := errors.Is(err, ErrOutcomeUnknown)
++					alreadyDone := errors.Is(err, sql.ErrTxDone)
++					if !reached || !errors.Is(err, expected) || unknown != alreadyDone || !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
+ 						t.Fatalf("late context cancellation/deadline did not roll back: reached=%v err=%v", reached, err)
+ 					}
+ 				})

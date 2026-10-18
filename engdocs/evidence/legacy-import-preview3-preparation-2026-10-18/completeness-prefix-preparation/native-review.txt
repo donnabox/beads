@@ -1,0 +1,17 @@
+Native read-only review, October18.
+
+Initial finding: Dependency-map comparison can pass vacuously. Matching maps
+pass if every result omits the map; the stored endpoint oracle did not bind the
+Link identity to the result mapping. Requested one mapping at literal key
+web-app-b2c -> web-app-a1b equal to the independently read Link ID.
+
+Disposition: repaired. The result must contain exactly one dependency mapping;
+the literal expected key must map to the independently read nonempty Link ID.
+
+Final reviewer confirmation: repair confirmed; closes the vacuity. No further
+actionable findings in reviewed delta. File inspection only; patch inactive.
+No runtime, full council or installed two-mode qualification claimed.
+
+Inferred/explicit full-result comparison is meaningful: deterministic counts,
+maps/history text, subsequent anchored expected prefix/counts. Existing active
+basic workflow retains inferred apply coverage.

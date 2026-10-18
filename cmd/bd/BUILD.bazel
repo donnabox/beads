@@ -187,6 +187,7 @@ go_library(
         "graph_preview_generic.go",
         "graph_preview_generic_projection.go",
         "graph_preview_help.go",
+        "graph_preview_import.go",
         "graph_preview_issue.go",
         "graph_preview_issue_claim.go",
         "graph_preview_issue_due.go",
@@ -481,6 +482,7 @@ go_library(
         "//internal/httpclient",
         "//internal/httpclient/wire",
         "//internal/jira",
+        "//internal/legacyimport",
         "//internal/linear",
         "//internal/lockfile",
         "//internal/memoryapi",
@@ -924,6 +926,7 @@ go_test(
         "graph_preview_generic_test.go",
         "graph_preview_help_test.go",
         "graph_preview_if_revision_test.go",
+        "graph_preview_import_workflow_test.go",
         "graph_preview_issue_append_notes_test.go",
         "graph_preview_issue_append_workflow_test.go",
         "graph_preview_issue_assignment_workflow_test.go",
@@ -1955,6 +1958,17 @@ exports_files(
         "version.go",
         "winres/manifest.xml",
         "winres/winres.json",
+    ],
+    visibility = ["//:__pkg__"],
+)
+
+# Synthetic legacy export fixtures linked from the qualification report.
+exports_files(
+    [
+        "testdata/legacy-import-complete/ordinary.jsonl",
+        "testdata/legacy-import-complete/producer.json",
+        "testdata/legacy-import/ordinary.jsonl",
+        "testdata/legacy-import/producer.json",
     ],
     visibility = ["//:__pkg__"],
 )
