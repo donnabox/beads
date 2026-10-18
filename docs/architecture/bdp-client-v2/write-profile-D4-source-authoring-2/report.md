@@ -1,0 +1,7 @@
+# D4 source correction freeze2
+
+Exactly the four root-authorized local corrections are implemented in the one existing owned file: real non-null PID is required for clean closure; workspace diff hashes its single raw Buffer capture with unchanged2s/1MiB limits; pending-drain and28-response labels are distinct; existing launch-failed phase assignment moves immediately after successful metadata capture. Existing external mode still performs no Git. No production source/API, wire operation, count, payload, oracle, limit or budget changed.
+
+All679 source hashes are frozen, only the owned path changes and all678 other paths remain byte-identical, including shared launcher and other22 importers. Original reviewed65f source is retained alongside exact cce base/final copies, genuine correction and cumulative forward/inverse patches and full maps. The ONE authorized pinned Biomeformat --write invocation exited0 with no fixes; final bytes exactly equal preformat authored bytes. No formatter check, compiler, test, build, install, runtime, reviewer or Git command ran.
+
+Root disposition/release and original actual CODE terminal remain immutable evidence. The actual reviewer read original bytes, never these corrections. Root fresh Git identity inspection and independent full corrected native review are still required before any subsequent release. F6 startup/flush/drain/collector gate and product validation remain CLOSED; no second actual CODE/PLAN or full Write qualification is claimed.

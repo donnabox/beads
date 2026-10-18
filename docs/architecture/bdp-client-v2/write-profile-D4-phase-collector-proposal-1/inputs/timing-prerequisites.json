@@ -1,0 +1,31 @@
+{
+  "state": "UNRESOLVED / F6 CLOSED",
+  "requiredMilliseconds": {
+    "outer": 150000,
+    "TERM": 145000,
+    "KILL": 149000,
+    "callback": 120000,
+    "possibleDetachedDrain": 10000,
+    "startupPlusFlushAvailable": 15000
+  },
+  "inequality": "S_bound +120000 +F_bound +10000 <=145000, hence S_bound+F_bound<=15000. No measured sample is a bound.",
+  "existingRunnerFacts": [
+    "run.py23 starts monotonic clock beforePopen47; stdout+stderr go directly to exclusive full log46\u201347; no tool-display truncation is raw-log truncation.",
+    "Current proven run.py52 uses TERM115/120outer and119KILL, not the future D4 proposed145/150/149. Its process census can block up to2s and final source/build/consumer checks occur after child loop; elapsed failure classification75 is not independent hard wrapper termination.",
+    "Separate child process-group census observes actual members; normal exit alone does not prove detached launcher drain complete. Do not infer descendant closure from callback cleanup metadata.",
+    "Source65f work timer90s and local cleanup10s cannot bound synchronousAJV/fs/assertion/JSON work or guarantee finally/report after Vitest120s timeout. Launcher bounded10s may start another10s drain after failure; local wait can abandon its promise."
+  ],
+  "VitestFacts": [
+    "Pinned4.1.10 JsonReporter onInit3530\u20133533 sets Date.now start AFTERprocess startup.",
+    "onTestRunEnd3538 derives perfile start=min actual test result.startTime3556 and end=max start+duration3558; selected-only callback can give retrospective approximate test boundary, not callback-function-only phase or monotonic live boundary.",
+    "assertion result3567\u20133583 has duration but no individual startTime. Skipped tests/suites must not supply selected timing.",
+    "writeReport3620\u20133628 awaits JSON file write; report has no flush-complete timestamp. Result file/runner terminal can give later observed bound only, with clock-domain/clock-adjustment limitations.",
+    "Existing JSON reporter provides no live callback-start/deadline handshake. Existing stdout report has no such marker."
+  ],
+  "conclusion": "Existing posthoc timestamps + absolute total wrapper cutoff are insufficient to establish prospective separate S/F maxima while guaranteeing a full120s callback +possible10s drain before145s. They can validate actual accepted elapsed facts, but cannot turn one success into a maximum.",
+  "minimalDecisionRequired": [
+    "Root must explicitly approve and independently review a concrete phase-admission/deadline mechanism using an existing supported seam if available, establishing enforced startup+flush share<=15s with exact selected callback boundary, full120callback unchanged and10drain reserved; no such seam is adopted here.",
+    "Alternatively retain F6 CLOSED and defer product execution. A purely retrospective-fit acceptance must be explicitly re-dispositioned as different from the prospective bound and must never claim guaranteed report/finally completion.",
+    "Any future named same-runner adaptation must preserve no retry, raw logs/partial evidence, source/build/consumer proofs, actual exit+close/pending/directory and root descendant audit, and strict145/149/150 absolute limits. No new reporter/framework or helper5 reuse implicitly authorized."
+  ]
+}
