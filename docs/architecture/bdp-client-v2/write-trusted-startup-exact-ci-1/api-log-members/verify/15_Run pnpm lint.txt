@@ -1,0 +1,399 @@
+﻿2026-10-18T07:01:15.1983056Z ##[group]Run pnpm lint
+2026-10-18T07:01:15.1983394Z [36;1mpnpm lint[0m
+2026-10-18T07:01:15.2047156Z shell: /usr/bin/bash -e {0}
+2026-10-18T07:01:15.2047419Z env:
+2026-10-18T07:01:15.2047686Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2026-10-18T07:01:15.2048226Z   GOTOOLCHAIN: local
+2026-10-18T07:01:15.2048444Z ##[endgroup]
+2026-10-18T07:01:15.6693793Z $ biome lint .
+2026-10-18T07:01:17.5697958Z apps/bdptest/src/read-update-artifact-execution.test.ts:298:25 lint/style/useTemplate  FIXABLE  ━━━━━━━━━━
+2026-10-18T07:01:17.5698863Z 
+2026-10-18T07:01:17.5699339Z   i Template literals are preferred over string concatenation.
+2026-10-18T07:01:17.5699981Z   
+2026-10-18T07:01:17.5700453Z     296 │         ],
+2026-10-18T07:01:17.5700936Z     297 │       });
+2026-10-18T07:01:17.5701867Z   > 298 │       expect(existsSync(files.filename + ".shard-1.json")).toBe(false);
+2026-10-18T07:01:17.5703404Z         │                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-18T07:01:17.5704729Z     299 │       expect(() => writer.succeeded({ outcome: "observed" })).toThrow("incomplete");
+2026-10-18T07:01:17.5706006Z     300 │       expect(existsSync(files.filename)).toBe(false);
+2026-10-18T07:01:17.5706556Z   
+2026-10-18T07:01:17.5707015Z   i Unsafe fix: Use a template literal.
+2026-10-18T07:01:17.5707461Z   
+2026-10-18T07:01:17.5707893Z     296 296 │           ],
+2026-10-18T07:01:17.5708380Z     297 297 │         });
+2026-10-18T07:01:17.5709856Z     298     │ - ······expect(existsSync(files.filename·+·".shard-1.json")).toBe(false);
+2026-10-18T07:01:17.5711339Z         298 │ + ······expect(existsSync(`${files.filename}.shard-1.json`)).toBe(false);
+2026-10-18T07:01:17.5712951Z     299 299 │         expect(() => writer.succeeded({ outcome: "observed" })).toThrow("incomplete");
+2026-10-18T07:01:17.5714243Z     300 300 │         expect(existsSync(files.filename)).toBe(false);
+2026-10-18T07:01:17.5714805Z   
+2026-10-18T07:01:17.5714974Z 
+2026-10-18T07:01:17.5715966Z apps/bdptest/src/installed-schema-cohort.test.ts:44:23 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+2026-10-18T07:01:17.5716742Z 
+2026-10-18T07:01:17.5717003Z   ! Forbidden non-null assertion.
+2026-10-18T07:01:17.5717418Z   
+2026-10-18T07:01:17.5718463Z     42 │     const schema = additions.schemas.find((s) => s.retrievalUri === d.propertiesSchema);
+2026-10-18T07:01:17.5719498Z     43 │     expect(schema).toBeDefined();
+2026-10-18T07:01:17.5720447Z   > 44 │     expect(JSON.parse(schema!.utf8).$id).toBe(d.propertiesSchema);
+2026-10-18T07:01:17.5721312Z        │                       ^^^^^^^
+2026-10-18T07:01:17.5722186Z     45 │     expect(schema!.retrievalUri).toBe(d.propertiesSchema);
+2026-10-18T07:01:17.5723752Z     46 │     expect(JSON.parse(schema!.utf8)).not.toHaveProperty("additionalProperties");
+2026-10-18T07:01:17.5724477Z   
+2026-10-18T07:01:17.5725827Z   i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+2026-10-18T07:01:17.5726939Z   
+2026-10-18T07:01:17.5728043Z     42 42 │       const schema = additions.schemas.find((s) => s.retrievalUri === d.propertiesSchema);
+2026-10-18T07:01:17.5729105Z     43 43 │       expect(schema).toBeDefined();
+2026-10-18T07:01:17.5730185Z     44    │ - ····expect(JSON.parse(schema!.utf8).$id).toBe(d.propertiesSchema);
+2026-10-18T07:01:17.5731480Z        44 │ + ····expect(JSON.parse(schema?.utf8).$id).toBe(d.propertiesSchema);
+2026-10-18T07:01:17.5732587Z     45 45 │       expect(schema!.retrievalUri).toBe(d.propertiesSchema);
+2026-10-18T07:01:17.5734076Z     46 46 │       expect(JSON.parse(schema!.utf8)).not.toHaveProperty("additionalProperties");
+2026-10-18T07:01:17.5734792Z   
+2026-10-18T07:01:17.5734954Z 
+2026-10-18T07:01:17.5735936Z apps/bdptest/src/installed-schema-cohort.test.ts:45:12 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+2026-10-18T07:01:17.5736667Z 
+2026-10-18T07:01:17.5736917Z   ! Forbidden non-null assertion.
+2026-10-18T07:01:17.5737339Z   
+2026-10-18T07:01:17.5737882Z     43 │     expect(schema).toBeDefined();
+2026-10-18T07:01:17.5739394Z     44 │     expect(JSON.parse(schema!.utf8).$id).toBe(d.propertiesSchema);
+2026-10-18T07:01:17.5740407Z   > 45 │     expect(schema!.retrievalUri).toBe(d.propertiesSchema);
+2026-10-18T07:01:17.5741381Z        │            ^^^^^^^
+2026-10-18T07:01:17.5742429Z     46 │     expect(JSON.parse(schema!.utf8)).not.toHaveProperty("additionalProperties");
+2026-10-18T07:01:17.5743531Z     47 │   }
+2026-10-18T07:01:17.5743845Z   
+2026-10-18T07:01:17.5745187Z   i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+2026-10-18T07:01:17.5746310Z   
+2026-10-18T07:01:17.5746886Z     43 43 │       expect(schema).toBeDefined();
+2026-10-18T07:01:17.5747939Z     44 44 │       expect(JSON.parse(schema!.utf8).$id).toBe(d.propertiesSchema);
+2026-10-18T07:01:17.5749086Z     45    │ - ····expect(schema!.retrievalUri).toBe(d.propertiesSchema);
+2026-10-18T07:01:17.5750247Z        45 │ + ····expect(schema?.retrievalUri).toBe(d.propertiesSchema);
+2026-10-18T07:01:17.5751562Z     46 46 │       expect(JSON.parse(schema!.utf8)).not.toHaveProperty("additionalProperties");
+2026-10-18T07:01:17.5752381Z     47 47 │     }
+2026-10-18T07:01:17.5752892Z   
+2026-10-18T07:01:17.5753074Z 
+2026-10-18T07:01:17.5754064Z apps/bdptest/src/installed-schema-cohort.test.ts:46:23 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+2026-10-18T07:01:17.5754803Z 
+2026-10-18T07:01:17.5755057Z   ! Forbidden non-null assertion.
+2026-10-18T07:01:17.5755469Z   
+2026-10-18T07:01:17.5756289Z     44 │     expect(JSON.parse(schema!.utf8).$id).toBe(d.propertiesSchema);
+2026-10-18T07:01:17.5757365Z     45 │     expect(schema!.retrievalUri).toBe(d.propertiesSchema);
+2026-10-18T07:01:17.5758539Z   > 46 │     expect(JSON.parse(schema!.utf8)).not.toHaveProperty("additionalProperties");
+2026-10-18T07:01:17.5759487Z        │                       ^^^^^^^
+2026-10-18T07:01:17.5759990Z     47 │   }
+2026-10-18T07:01:17.5761033Z     48 │   const captured = module.captureInstalledReferenceConfiguration(configuration);
+2026-10-18T07:01:17.5761808Z   
+2026-10-18T07:01:17.5763439Z   i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+2026-10-18T07:01:17.5764587Z   
+2026-10-18T07:01:17.5765447Z     44 44 │       expect(JSON.parse(schema!.utf8).$id).toBe(d.propertiesSchema);
+2026-10-18T07:01:17.5766564Z     45 45 │       expect(schema!.retrievalUri).toBe(d.propertiesSchema);
+2026-10-18T07:01:17.5767883Z     46    │ - ····expect(JSON.parse(schema!.utf8)).not.toHaveProperty("additionalProperties");
+2026-10-18T07:01:17.5769432Z        46 │ + ····expect(JSON.parse(schema?.utf8)).not.toHaveProperty("additionalProperties");
+2026-10-18T07:01:17.5770247Z     47 47 │     }
+2026-10-18T07:01:17.5771327Z     48 48 │     const captured = module.captureInstalledReferenceConfiguration(configuration);
+2026-10-18T07:01:17.5772090Z   
+2026-10-18T07:01:17.5772260Z 
+2026-10-18T07:01:17.5773533Z apps/bdptest/src/read-update-artifact-execution.test.ts:138:26 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+2026-10-18T07:01:17.5774341Z 
+2026-10-18T07:01:17.5774605Z   ! Forbidden non-null assertion.
+2026-10-18T07:01:17.5775032Z   
+2026-10-18T07:01:17.5775643Z     136 │       scenarios: selected.map((id) => ({
+2026-10-18T07:01:17.5776235Z     137 │         id,
+2026-10-18T07:01:17.5777355Z   > 138 │         requiredProfile: selection.catalog.scenarios.find((r) => r.id === id)!.requiredProfile,
+2026-10-18T07:01:17.5778799Z         │                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-18T07:01:17.5779930Z     139 │         state: shard.scenarioIds.includes(id) ? "pass" : "harness-error",
+2026-10-18T07:01:17.5781364Z     140 │         ...(shard.scenarioIds.includes(id) ? {} : { category: "not-implemented" as const }),
+2026-10-18T07:01:17.5782115Z   
+2026-10-18T07:01:17.5783635Z   i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+2026-10-18T07:01:17.5785035Z   
+2026-10-18T07:01:17.5785701Z     136 136 │         scenarios: selected.map((id) => ({
+2026-10-18T07:01:17.5786537Z     137 137 │           id,
+2026-10-18T07:01:17.5787854Z     138     │ - ········requiredProfile:·selection.catalog.scenarios.find((r)·=>·r.id·===·id)!.requiredProfile,
+2026-10-18T07:01:17.5789794Z         138 │ + ········requiredProfile:·selection.catalog.scenarios.find((r)·=>·r.id·===·id)?.requiredProfile,
+2026-10-18T07:01:17.5791275Z     139 139 │           state: shard.scenarioIds.includes(id) ? "pass" : "harness-error",
+2026-10-18T07:01:17.5792950Z     140 140 │           ...(shard.scenarioIds.includes(id) ? {} : { category: "not-implemented" as const }),
+2026-10-18T07:01:17.5793707Z   
+2026-10-18T07:01:17.5793871Z 
+2026-10-18T07:01:17.5794957Z apps/bdptest/src/read-update-artifact-execution.test.ts:164:5 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+2026-10-18T07:01:17.5795781Z 
+2026-10-18T07:01:17.5796037Z   ! Forbidden non-null assertion.
+2026-10-18T07:01:17.5796444Z   
+2026-10-18T07:01:17.5797424Z     162 │   it("retains separate reports and explicit unplanned required witnesses", () => {
+2026-10-18T07:01:17.5798488Z     163 │     const { set, observations } = setup();
+2026-10-18T07:01:17.5799622Z   > 164 │     observations[0]!.baselineReceipt.arbitraryChildStderr = "secret sentinel";
+2026-10-18T07:01:17.5800558Z         │     ^^^^^^^^^^^^^^^^
+2026-10-18T07:01:17.5801671Z     165 │     const summary = associateArtifactObservations(set, sourceCommit, observations);
+2026-10-18T07:01:17.5803305Z     166 │     expect(JSON.stringify(summary)).not.toContain("secret sentinel");
+2026-10-18T07:01:17.5803946Z   
+2026-10-18T07:01:17.5805303Z   i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+2026-10-18T07:01:17.5806420Z   
+2026-10-18T07:01:17.5807478Z     162 162 │     it("retains separate reports and explicit unplanned required witnesses", () => {
+2026-10-18T07:01:17.5808606Z     163 163 │       const { set, observations } = setup();
+2026-10-18T07:01:17.5809886Z     164     │ - ····observations[0]!.baselineReceipt.arbitraryChildStderr·=·"secret·sentinel";
+2026-10-18T07:01:17.5811563Z         164 │ + ····observations[0]?.baselineReceipt.arbitraryChildStderr·=·"secret·sentinel";
+2026-10-18T07:01:17.5813298Z     165 165 │       const summary = associateArtifactObservations(set, sourceCommit, observations);
+2026-10-18T07:01:17.5814783Z     166 166 │       expect(JSON.stringify(summary)).not.toContain("secret sentinel");
+2026-10-18T07:01:17.5815445Z   
+2026-10-18T07:01:17.5815613Z 
+2026-10-18T07:01:17.5816613Z apps/bdptest/src/read-update-artifact-execution.test.ts:174:22 lint/style/noNonNullAssertion ━━━━━━━━━━
+2026-10-18T07:01:17.5817361Z 
+2026-10-18T07:01:17.5817614Z   ! Forbidden non-null assertion.
+2026-10-18T07:01:17.5818020Z   
+2026-10-18T07:01:17.5818975Z     172 │     expect(summary.uncoveredIds).toEqual(selection.required.map((r) => r.id));
+2026-10-18T07:01:17.5820182Z     173 │     for (const mapped of summary.requiredObservations) {
+2026-10-18T07:01:17.5821267Z   > 174 │       const owning = observations[mapped.owner === "shard-1" ? 1 : 0]!;
+2026-10-18T07:01:17.5822473Z         │                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-18T07:01:17.5823520Z     175 │       const observation = mapped.observation!;
+2026-10-18T07:01:17.5824261Z     176 │       expect(observation.resultDigest).toBe(hash(owning.result));
+2026-10-18T07:01:17.5824636Z   
+2026-10-18T07:01:17.5824735Z 
+2026-10-18T07:01:17.5825297Z apps/bdptest/src/read-update-artifact-execution.test.ts:175:27 lint/style/noNonNullAssertion ━━━━━━━━━━
+2026-10-18T07:01:17.5825854Z 
+2026-10-18T07:01:17.5826110Z   ! Forbidden non-null assertion.
+2026-10-18T07:01:17.5826531Z   
+2026-10-18T07:01:17.5827268Z     173 │     for (const mapped of summary.requiredObservations) {
+2026-10-18T07:01:17.5828766Z     174 │       const owning = observations[mapped.owner === "shard-1" ? 1 : 0]!;
+2026-10-18T07:01:17.5829759Z   > 175 │       const observation = mapped.observation!;
+2026-10-18T07:01:17.5830649Z         │                           ^^^^^^^^^^^^^^^^^^^
+2026-10-18T07:01:17.5831843Z     176 │       expect(observation.resultDigest).toBe(hash(owning.result));
+2026-10-18T07:01:17.5833329Z     177 │       expect(owning.result.scenarios[observation.rowIndex]!.id).toBe(mapped.id);
+2026-10-18T07:01:17.5834037Z   
+2026-10-18T07:01:17.5834202Z 
+2026-10-18T07:01:17.5835260Z apps/bdptest/src/read-update-artifact-execution.test.ts:177:14 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+2026-10-18T07:01:17.5836055Z 
+2026-10-18T07:01:17.5836246Z   ! Forbidden non-null assertion.
+2026-10-18T07:01:17.5836491Z   
+2026-10-18T07:01:17.5836867Z     175 │       const observation = mapped.observation!;
+2026-10-18T07:01:17.5837463Z     176 │       expect(observation.resultDigest).toBe(hash(owning.result));
+2026-10-18T07:01:17.5838297Z   > 177 │       expect(owning.result.scenarios[observation.rowIndex]!.id).toBe(mapped.id);
+2026-10-18T07:01:17.5839489Z         │              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-18T07:01:17.5840818Z     178 │       expect(observation.state).toBe(owning.result.scenarios[observation.rowIndex]!.state);
+2026-10-18T07:01:17.5842330Z     179 │       if (mapped.owner === null) expect(mapped).toMatchObject({ reason: "not-planned" });
+2026-10-18T07:01:17.5843226Z   
+2026-10-18T07:01:17.5844605Z   i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+2026-10-18T07:01:17.5845715Z   
+2026-10-18T07:01:17.5846411Z     175 175 │         const observation = mapped.observation!;
+2026-10-18T07:01:17.5847505Z     176 176 │         expect(observation.resultDigest).toBe(hash(owning.result));
+2026-10-18T07:01:17.5848568Z     177     │ - ······expect(owning.result.scenarios[observation.rowIndex]!.id).toBe(mapped.id);
+2026-10-18T07:01:17.5849505Z         177 │ + ······expect(owning.result.scenarios[observation.rowIndex]?.id).toBe(mapped.id);
+2026-10-18T07:01:17.5850793Z     178 178 │         expect(observation.state).toBe(owning.result.scenarios[observation.rowIndex]!.state);
+2026-10-18T07:01:17.5852403Z     179 179 │         if (mapped.owner === null) expect(mapped).toMatchObject({ reason: "not-planned" });
+2026-10-18T07:01:17.5853341Z   
+2026-10-18T07:01:17.5853515Z 
+2026-10-18T07:01:17.5854595Z apps/bdptest/src/read-update-artifact-execution.test.ts:178:38 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+2026-10-18T07:01:17.5855379Z 
+2026-10-18T07:01:17.5855628Z   ! Forbidden non-null assertion.
+2026-10-18T07:01:17.5855947Z   
+2026-10-18T07:01:17.5856804Z     176 │       expect(observation.resultDigest).toBe(hash(owning.result));
+2026-10-18T07:01:17.5858086Z     177 │       expect(owning.result.scenarios[observation.rowIndex]!.id).toBe(mapped.id);
+2026-10-18T07:01:17.5859418Z   > 178 │       expect(observation.state).toBe(owning.result.scenarios[observation.rowIndex]!.state);
+2026-10-18T07:01:17.5860240Z         │                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-18T07:01:17.5860965Z     179 │       if (mapped.owner === null) expect(mapped).toMatchObject({ reason: "not-planned" });
+2026-10-18T07:01:17.5861495Z     180 │     }
+2026-10-18T07:01:17.5861819Z   
+2026-10-18T07:01:17.5863291Z   i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+2026-10-18T07:01:17.5864450Z   
+2026-10-18T07:01:17.5865315Z     176 176 │         expect(observation.resultDigest).toBe(hash(owning.result));
+2026-10-18T07:01:17.5866615Z     177 177 │         expect(owning.result.scenarios[observation.rowIndex]!.id).toBe(mapped.id);
+2026-10-18T07:01:17.5868181Z     178     │ - ······expect(observation.state).toBe(owning.result.scenarios[observation.rowIndex]!.state);
+2026-10-18T07:01:17.5870230Z         178 │ + ······expect(observation.state).toBe(owning.result.scenarios[observation.rowIndex]?.state);
+2026-10-18T07:01:17.5871213Z     179 179 │         if (mapped.owner === null) expect(mapped).toMatchObject({ reason: "not-planned" });
+2026-10-18T07:01:17.5871883Z     180 180 │       }
+2026-10-18T07:01:17.5872086Z   
+2026-10-18T07:01:17.5872187Z 
+2026-10-18T07:01:17.5873231Z apps/bdptest/src/read-update-artifact-execution.test.ts:183:12 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+2026-10-18T07:01:17.5874037Z 
+2026-10-18T07:01:17.5874294Z   ! Forbidden non-null assertion.
+2026-10-18T07:01:17.5874720Z   
+2026-10-18T07:01:17.5875751Z     181 │     expect(summary.omittedRequiredIds).toHaveLength(selection.required.length - 2);
+2026-10-18T07:01:17.5876890Z     182 │     expect(summary.reviewedWholeIds).toEqual([]);
+2026-10-18T07:01:17.5877768Z   > 183 │     expect(summary.shards[0]!.resultIds).toContain(ids[1]);
+2026-10-18T07:01:17.5878625Z         │            ^^^^^^^^^^^^^^^^^^
+2026-10-18T07:01:17.5879524Z     184 │     expect(summary.shards[1]!.resultIds).toEqual([ids[1]]);
+2026-10-18T07:01:17.5880802Z     185 │     expect(summary.shards[0]!.routes.some((r) => r.url.endsWith("unused"))).toBe(false);
+2026-10-18T07:01:17.5881533Z   
+2026-10-18T07:01:17.5883028Z   i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+2026-10-18T07:01:17.5884126Z   
+2026-10-18T07:01:17.5885245Z     181 181 │       expect(summary.omittedRequiredIds).toHaveLength(selection.required.length - 2);
+2026-10-18T07:01:17.5886438Z     182 182 │       expect(summary.reviewedWholeIds).toEqual([]);
+2026-10-18T07:01:17.5887582Z     183     │ - ····expect(summary.shards[0]!.resultIds).toContain(ids[1]);
+2026-10-18T07:01:17.5888786Z         183 │ + ····expect(summary.shards[0]?.resultIds).toContain(ids[1]);
+2026-10-18T07:01:17.5889856Z     184 184 │       expect(summary.shards[1]!.resultIds).toEqual([ids[1]]);
+2026-10-18T07:01:17.5891148Z     185 185 │       expect(summary.shards[0]!.routes.some((r) => r.url.endsWith("unused"))).toBe(false);
+2026-10-18T07:01:17.5891892Z   
+2026-10-18T07:01:17.5892054Z 
+2026-10-18T07:01:17.5893255Z apps/bdptest/src/read-update-artifact-execution.test.ts:184:12 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+2026-10-18T07:01:17.5894060Z 
+2026-10-18T07:01:17.5894293Z   ! Forbidden non-null assertion.
+2026-10-18T07:01:17.5894537Z   
+2026-10-18T07:01:17.5894928Z     182 │     expect(summary.reviewedWholeIds).toEqual([]);
+2026-10-18T07:01:17.5895500Z     183 │     expect(summary.shards[0]!.resultIds).toContain(ids[1]);
+2026-10-18T07:01:17.5896051Z   > 184 │     expect(summary.shards[1]!.resultIds).toEqual([ids[1]]);
+2026-10-18T07:01:17.5896518Z         │            ^^^^^^^^^^^^^^^^^^
+2026-10-18T07:01:17.5897156Z     185 │     expect(summary.shards[0]!.routes.some((r) => r.url.endsWith("unused"))).toBe(false);
+2026-10-18T07:01:17.5897923Z     186 │     expect(summary.shards[0]!.resultDigest).toBe(hash(observations[0]!.result));
+2026-10-18T07:01:17.5898332Z   
+2026-10-18T07:01:17.5899085Z   i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+2026-10-18T07:01:17.5899744Z   
+2026-10-18T07:01:17.5900164Z     182 182 │       expect(summary.reviewedWholeIds).toEqual([]);
+2026-10-18T07:01:17.5900778Z     183 183 │       expect(summary.shards[0]!.resultIds).toContain(ids[1]);
+2026-10-18T07:01:17.5901420Z     184     │ - ····expect(summary.shards[1]!.resultIds).toEqual([ids[1]]);
+2026-10-18T07:01:17.5902094Z         184 │ + ····expect(summary.shards[1]?.resultIds).toEqual([ids[1]]);
+2026-10-18T07:01:17.5903120Z     185 185 │       expect(summary.shards[0]!.routes.some((r) => r.url.endsWith("unused"))).toBe(false);
+2026-10-18T07:01:17.5903966Z     186 186 │       expect(summary.shards[0]!.resultDigest).toBe(hash(observations[0]!.result));
+2026-10-18T07:01:17.5904388Z   
+2026-10-18T07:01:17.5904493Z 
+2026-10-18T07:01:17.5905283Z apps/bdptest/src/read-update-artifact-execution.test.ts:185:12 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+2026-10-18T07:01:17.5905740Z 
+2026-10-18T07:01:17.5905894Z   ! Forbidden non-null assertion.
+2026-10-18T07:01:17.5906265Z   
+2026-10-18T07:01:17.5906702Z     183 │     expect(summary.shards[0]!.resultIds).toContain(ids[1]);
+2026-10-18T07:01:17.5907291Z     184 │     expect(summary.shards[1]!.resultIds).toEqual([ids[1]]);
+2026-10-18T07:01:17.5907973Z   > 185 │     expect(summary.shards[0]!.routes.some((r) => r.url.endsWith("unused"))).toBe(false);
+2026-10-18T07:01:17.5908544Z         │            ^^^^^^^^^^^^^^^^^^
+2026-10-18T07:01:17.5909155Z     186 │     expect(summary.shards[0]!.resultDigest).toBe(hash(observations[0]!.result));
+2026-10-18T07:01:17.5909909Z     187 │     expect(summary.shards[1]!.resultDigest).toBe(hash(observations[1]!.result));
+2026-10-18T07:01:17.5910313Z   
+2026-10-18T07:01:17.5911068Z   i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+2026-10-18T07:01:17.5911719Z   
+2026-10-18T07:01:17.5912173Z     183 183 │       expect(summary.shards[0]!.resultIds).toContain(ids[1]);
+2026-10-18T07:01:17.5913081Z     184 184 │       expect(summary.shards[1]!.resultIds).toEqual([ids[1]]);
+2026-10-18T07:01:17.5913926Z     185     │ - ····expect(summary.shards[0]!.routes.some((r)·=>·r.url.endsWith("unused"))).toBe(false);
+2026-10-18T07:01:17.5914875Z         185 │ + ····expect(summary.shards[0]?.routes.some((r)·=>·r.url.endsWith("unused"))).toBe(false);
+2026-10-18T07:01:17.5915688Z     186 186 │       expect(summary.shards[0]!.resultDigest).toBe(hash(observations[0]!.result));
+2026-10-18T07:01:17.5916483Z     187 187 │       expect(summary.shards[1]!.resultDigest).toBe(hash(observations[1]!.result));
+2026-10-18T07:01:17.5916891Z   
+2026-10-18T07:01:17.5916992Z 
+2026-10-18T07:01:17.5917580Z apps/bdptest/src/read-update-artifact-execution.test.ts:186:12 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+2026-10-18T07:01:17.5918048Z 
+2026-10-18T07:01:17.5918199Z   ! Forbidden non-null assertion.
+2026-10-18T07:01:17.5918441Z   
+2026-10-18T07:01:17.5918862Z     184 │     expect(summary.shards[1]!.resultIds).toEqual([ids[1]]);
+2026-10-18T07:01:17.5919602Z     185 │     expect(summary.shards[0]!.routes.some((r) => r.url.endsWith("unused"))).toBe(false);
+2026-10-18T07:01:17.5920346Z   > 186 │     expect(summary.shards[0]!.resultDigest).toBe(hash(observations[0]!.result));
+2026-10-18T07:01:17.5920893Z         │            ^^^^^^^^^^^^^^^^^^
+2026-10-18T07:01:17.5921496Z     187 │     expect(summary.shards[1]!.resultDigest).toBe(hash(observations[1]!.result));
+2026-10-18T07:01:17.5921940Z     188 │   });
+2026-10-18T07:01:17.5922132Z   
+2026-10-18T07:01:17.5923144Z   i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+2026-10-18T07:01:17.5923795Z   
+2026-10-18T07:01:17.5924264Z     184 184 │       expect(summary.shards[1]!.resultIds).toEqual([ids[1]]);
+2026-10-18T07:01:17.5925049Z     185 185 │       expect(summary.shards[0]!.routes.some((r) => r.url.endsWith("unused"))).toBe(false);
+2026-10-18T07:01:17.5925882Z     186     │ - ····expect(summary.shards[0]!.resultDigest).toBe(hash(observations[0]!.result));
+2026-10-18T07:01:17.5926753Z         186 │ + ····expect(summary.shards[0]?.resultDigest).toBe(hash(observations[0]!.result));
+2026-10-18T07:01:17.5927541Z     187 187 │       expect(summary.shards[1]!.resultDigest).toBe(hash(observations[1]!.result));
+2026-10-18T07:01:17.5928007Z     188 188 │     });
+2026-10-18T07:01:17.5928210Z   
+2026-10-18T07:01:17.5928310Z 
+2026-10-18T07:01:17.5928905Z apps/bdptest/src/read-update-artifact-execution.test.ts:186:55 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+2026-10-18T07:01:17.5929355Z 
+2026-10-18T07:01:17.5929507Z   ! Forbidden non-null assertion.
+2026-10-18T07:01:17.5929749Z   
+2026-10-18T07:01:17.5930176Z     184 │     expect(summary.shards[1]!.resultIds).toEqual([ids[1]]);
+2026-10-18T07:01:17.5931073Z     185 │     expect(summary.shards[0]!.routes.some((r) => r.url.endsWith("unused"))).toBe(false);
+2026-10-18T07:01:17.5931807Z   > 186 │     expect(summary.shards[0]!.resultDigest).toBe(hash(observations[0]!.result));
+2026-10-18T07:01:17.5932795Z         │                                                       ^^^^^^^^^^^^^^^^
+2026-10-18T07:01:17.5933471Z     187 │     expect(summary.shards[1]!.resultDigest).toBe(hash(observations[1]!.result));
+2026-10-18T07:01:17.5933913Z     188 │   });
+2026-10-18T07:01:17.5934269Z   
+2026-10-18T07:01:17.5935063Z   i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+2026-10-18T07:01:17.5935708Z   
+2026-10-18T07:01:17.5936171Z     184 184 │       expect(summary.shards[1]!.resultIds).toEqual([ids[1]]);
+2026-10-18T07:01:17.5936939Z     185 185 │       expect(summary.shards[0]!.routes.some((r) => r.url.endsWith("unused"))).toBe(false);
+2026-10-18T07:01:17.5937781Z     186     │ - ····expect(summary.shards[0]!.resultDigest).toBe(hash(observations[0]!.result));
+2026-10-18T07:01:17.5938655Z         186 │ + ····expect(summary.shards[0]!.resultDigest).toBe(hash(observations[0]?.result));
+2026-10-18T07:01:17.5939447Z     187 187 │       expect(summary.shards[1]!.resultDigest).toBe(hash(observations[1]!.result));
+2026-10-18T07:01:17.5939924Z     188 188 │     });
+2026-10-18T07:01:17.5940134Z   
+2026-10-18T07:01:17.5940232Z 
+2026-10-18T07:01:17.5940825Z apps/bdptest/src/read-update-artifact-execution.test.ts:187:12 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+2026-10-18T07:01:17.5941279Z 
+2026-10-18T07:01:17.5941431Z   ! Forbidden non-null assertion.
+2026-10-18T07:01:17.5941686Z   
+2026-10-18T07:01:17.5942265Z     185 │     expect(summary.shards[0]!.routes.some((r) => r.url.endsWith("unused"))).toBe(false);
+2026-10-18T07:01:17.5956993Z     186 │     expect(summary.shards[0]!.resultDigest).toBe(hash(observations[0]!.result));
+2026-10-18T07:01:17.5958019Z   > 187 │     expect(summary.shards[1]!.resultDigest).toBe(hash(observations[1]!.result));
+2026-10-18T07:01:17.5958606Z         │            ^^^^^^^^^^^^^^^^^^
+2026-10-18T07:01:17.5958929Z     188 │   });
+2026-10-18T07:01:17.5959194Z     189 │   it.each([
+2026-10-18T07:01:17.5959413Z   
+2026-10-18T07:01:17.5960206Z   i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+2026-10-18T07:01:17.5960855Z   
+2026-10-18T07:01:17.5961476Z     185 185 │       expect(summary.shards[0]!.routes.some((r) => r.url.endsWith("unused"))).toBe(false);
+2026-10-18T07:01:17.5962314Z     186 186 │       expect(summary.shards[0]!.resultDigest).toBe(hash(observations[0]!.result));
+2026-10-18T07:01:17.5963451Z     187     │ - ····expect(summary.shards[1]!.resultDigest).toBe(hash(observations[1]!.result));
+2026-10-18T07:01:17.5964351Z         187 │ + ····expect(summary.shards[1]?.resultDigest).toBe(hash(observations[1]!.result));
+2026-10-18T07:01:17.5964847Z     188 188 │     });
+2026-10-18T07:01:17.5965132Z     189 189 │     it.each([
+2026-10-18T07:01:17.5965363Z   
+2026-10-18T07:01:17.5965468Z 
+2026-10-18T07:01:17.5966096Z apps/bdptest/src/read-update-artifact-execution.test.ts:187:55 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+2026-10-18T07:01:17.5966560Z 
+2026-10-18T07:01:17.5966709Z   ! Forbidden non-null assertion.
+2026-10-18T07:01:17.5966955Z   
+2026-10-18T07:01:17.5967545Z     185 │     expect(summary.shards[0]!.routes.some((r) => r.url.endsWith("unused"))).toBe(false);
+2026-10-18T07:01:17.5968356Z     186 │     expect(summary.shards[0]!.resultDigest).toBe(hash(observations[0]!.result));
+2026-10-18T07:01:17.5969079Z   > 187 │     expect(summary.shards[1]!.resultDigest).toBe(hash(observations[1]!.result));
+2026-10-18T07:01:17.5969788Z         │                                                       ^^^^^^^^^^^^^^^^
+2026-10-18T07:01:17.5970144Z     188 │   });
+2026-10-18T07:01:17.5970633Z     189 │   it.each([
+2026-10-18T07:01:17.5970851Z   
+2026-10-18T07:01:17.5971623Z   i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+2026-10-18T07:01:17.5972405Z   
+2026-10-18T07:01:17.5973214Z     185 185 │       expect(summary.shards[0]!.routes.some((r) => r.url.endsWith("unused"))).toBe(false);
+2026-10-18T07:01:17.5974054Z     186 186 │       expect(summary.shards[0]!.resultDigest).toBe(hash(observations[0]!.result));
+2026-10-18T07:01:17.5974866Z     187     │ - ····expect(summary.shards[1]!.resultDigest).toBe(hash(observations[1]!.result));
+2026-10-18T07:01:17.5975729Z         187 │ + ····expect(summary.shards[1]!.resultDigest).toBe(hash(observations[1]?.result));
+2026-10-18T07:01:17.5976200Z     188 188 │     });
+2026-10-18T07:01:17.5976479Z     189 189 │     it.each([
+2026-10-18T07:01:17.5976701Z   
+2026-10-18T07:01:17.5976802Z 
+2026-10-18T07:01:17.5977358Z apps/bdptest/src/read-update-artifact-execution.test.ts:218:18 lint/suspicious/noExplicitAny ━━━━━━━━━━
+2026-10-18T07:01:17.5977799Z 
+2026-10-18T07:01:17.5977987Z   ! Unexpected any. Specify a different type.
+2026-10-18T07:01:17.5978274Z   
+2026-10-18T07:01:17.5978856Z     216 │     // Keep genuinely branded served configuration objects; mutate plain observation
+2026-10-18T07:01:17.5979597Z     217 │     // metadata only, exactly where the association boundary compares it.
+2026-10-18T07:01:17.5980169Z   > 218 │     const input: any[] = observations.map((r) => ({
+2026-10-18T07:01:17.5980603Z         │                  ^^^
+2026-10-18T07:01:17.5980950Z     219 │       ...structuredClone(r),
+2026-10-18T07:01:17.5981367Z     220 │       configuration: r.configuration,
+2026-10-18T07:01:17.5981651Z   
+2026-10-18T07:01:17.5982010Z   i any disables many type checking rules. Its use should be avoided.
+2026-10-18T07:01:17.5982358Z   
+2026-10-18T07:01:17.5982457Z 
+2026-10-18T07:01:17.5983325Z apps/bdptest/src/read-update-artifact-execution.test.ts:272:21 lint/style/noNonNullAssertion ━━━━━━━━━━
+2026-10-18T07:01:17.5983778Z 
+2026-10-18T07:01:17.5983934Z   ! Forbidden non-null assertion.
+2026-10-18T07:01:17.5984183Z   
+2026-10-18T07:01:17.5984574Z     270 │       const secret = "unit-credential-sentinel";
+2026-10-18T07:01:17.5985367Z     271 │       const writer = createArtifactEvidenceWriter(set, sourceCommit, files.filename, [secret]);
+2026-10-18T07:01:17.5985974Z   > 272 │       const first = observations[0]!;
+2026-10-18T07:01:17.5986421Z         │                     ^^^^^^^^^^^^^^^^
+2026-10-18T07:01:17.5986916Z     273 │       first.baselineReceipt.arbitraryStderr = secret;
+2026-10-18T07:01:17.5987588Z     274 │       Object.assign(first, { exception: secret, targetEntry: secret });
+2026-10-18T07:01:17.5987961Z   
+2026-10-18T07:01:17.5988058Z 
+2026-10-18T07:01:17.5988629Z scripts/transaction-installed-observation.mjs:84:9 lint/complexity/useOptionalChain  FIXABLE  ━━━━━━━━━━
+2026-10-18T07:01:17.5989059Z 
+2026-10-18T07:01:17.5989205Z   ! Change to an optional chain.
+2026-10-18T07:01:17.5989463Z   
+2026-10-18T07:01:17.5989684Z     82 │     );
+2026-10-18T07:01:17.5990004Z     83 │     signal?.throwIfAborted();
+2026-10-18T07:01:17.5990658Z   > 84 │     if (!ready || ready.event !== "qualification.ready" || JSON.stringify(ready).length > 65536)
+2026-10-18T07:01:17.5991505Z        │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-18T07:01:17.5992018Z     85 │       throw new Error("invalid installed ready message");
+2026-10-18T07:01:17.5992477Z     86 │     return { child, ready, close };
+2026-10-18T07:01:17.5993037Z   
+2026-10-18T07:01:17.5993323Z   i Unsafe fix: Change to an optional chain.
+2026-10-18T07:01:17.5993598Z   
+2026-10-18T07:01:17.5993841Z     82 82 │       );
+2026-10-18T07:01:17.5994188Z     83 83 │       signal?.throwIfAborted();
+2026-10-18T07:01:17.5994957Z     84    │ - ····if·(!ready·||·ready.event·!==·"qualification.ready"·||·JSON.stringify(ready).length·>·65536)
+2026-10-18T07:01:17.5995905Z        84 │ + ····if·(ready?.event·!==·"qualification.ready"·||·JSON.stringify(ready).length·>·65536)
+2026-10-18T07:01:17.5996830Z     85 85 │         throw new Error("invalid installed ready message");
+2026-10-18T07:01:17.5997318Z     86 86 │       return { child, ready, close };
+2026-10-18T07:01:17.5997613Z   
+2026-10-18T07:01:17.5997710Z 
+2026-10-18T07:01:17.5998135Z The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
+2026-10-18T07:01:17.5998634Z Diagnostics not shown: 1206.
+2026-10-18T07:01:17.5998988Z Checked 457 files in 1851ms. No fixes applied.
+2026-10-18T07:01:17.5999306Z Found 1136 warnings.
+2026-10-18T07:01:17.5999527Z Found 90 infos.

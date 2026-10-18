@@ -1,0 +1,28 @@
+﻿2026-10-18T07:01:11.7766053Z ##[group]Run pnpm install --frozen-lockfile
+2026-10-18T07:01:11.7766470Z [36;1mpnpm install --frozen-lockfile[0m
+2026-10-18T07:01:11.7828708Z shell: /usr/bin/bash -e {0}
+2026-10-18T07:01:11.7828974Z env:
+2026-10-18T07:01:11.7829235Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2026-10-18T07:01:11.7829575Z   GOTOOLCHAIN: local
+2026-10-18T07:01:11.7829793Z ##[endgroup]
+2026-10-18T07:01:12.2461899Z Scope: all 12 workspace projects
+2026-10-18T07:01:12.2830452Z ? Verifying lockfile against supply-chain policies (110 entries)...
+2026-10-18T07:01:12.2923207Z Lockfile is up to date, resolution step is skipped
+2026-10-18T07:01:12.4023813Z Progress: resolved 1, reused 0, downloaded 0, added 0
+2026-10-18T07:01:12.4183693Z Packages: +60
+2026-10-18T07:01:12.4191243Z ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+2026-10-18T07:01:12.7914369Z Packages are hard linked from the content-addressable store to the virtual store.
+2026-10-18T07:01:12.7916212Z   Content-addressable store is at: /home/runner/setup-pnpm/node_modules/.bin/store/v11
+2026-10-18T07:01:12.7936961Z   Virtual store is at:             node_modules/.pnpm
+2026-10-18T07:01:12.9312505Z Progress: resolved 60, reused 60, downloaded 0, added 60, done
+2026-10-18T07:01:13.6080740Z ✓ Lockfile passes supply-chain policies (110 entries in 1.3s)
+2026-10-18T07:01:13.6472425Z 
+2026-10-18T07:01:13.6473183Z devDependencies:
+2026-10-18T07:01:13.6473525Z + @babel/parser 8.0.4
+2026-10-18T07:01:13.6473803Z + @biomejs/biome 2.5.7
+2026-10-18T07:01:13.6474051Z + @types/node 24.13.3
+2026-10-18T07:01:13.6474274Z + ajv 8.17.1
+2026-10-18T07:01:13.6474494Z + typescript 7.0.2
+2026-10-18T07:01:13.6474711Z + vitest 4.1.10
+2026-10-18T07:01:13.6474833Z 
+2026-10-18T07:01:13.6746230Z Done in 1.8s using pnpm v11.20.0

@@ -1,0 +1,24 @@
+﻿2026-10-18T06:58:05.3997355Z ##[group]Run pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+2026-10-18T06:58:05.3998639Z with:
+2026-10-18T06:58:05.3999111Z   version: 11.20.0
+2026-10-18T06:58:05.3999661Z   dest: ~/setup-pnpm
+2026-10-18T06:58:05.4000232Z   run_install: null
+2026-10-18T06:58:05.4000842Z   cache: false
+2026-10-18T06:58:05.4001423Z   cache_dependency_path: pnpm-lock.yaml
+2026-10-18T06:58:05.4002267Z   package_json_file: package.json
+2026-10-18T06:58:05.4003357Z   standalone: false
+2026-10-18T06:58:05.4003946Z ##[endgroup]
+2026-10-18T06:58:05.5488206Z ##[group]Running self-installer...
+2026-10-18T06:58:05.9639528Z (node:2336) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-18T06:58:05.9643998Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-18T06:58:06.1459251Z Progress: resolved 1, reused 0, downloaded 0, added 0
+2026-10-18T06:58:06.1559249Z Packages: +1
+2026-10-18T06:58:06.1560848Z +
+2026-10-18T06:58:06.6199855Z Progress: resolved 1, reused 0, downloaded 1, added 1, done
+2026-10-18T06:58:06.6555759Z 
+2026-10-18T06:58:06.6556805Z dependencies:
+2026-10-18T06:58:06.6558426Z + pnpm 11.20.0 (12.14.0 is available)
+2026-10-18T06:58:06.6559905Z 
+2026-10-18T06:58:06.6581848Z Done in 929ms
+2026-10-18T06:58:06.7507188Z ##[endgroup]
+2026-10-18T06:58:06.7508190Z Installation Completed!

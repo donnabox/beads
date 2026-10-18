@@ -1,0 +1,51 @@
+{
+  "accepted": false,
+  "status": "revisions_required",
+  "findings": [
+    {
+      "id": "N1",
+      "severity": "Medium",
+      "title": "Define pre-binding RU attempt output separately from a bound carrier",
+      "location": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-evidence-carrier-plan-1/lifecycle-and-adapters.json:5-6",
+      "related": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-evidence-carrier-plan-1/input-schema.json:9",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-evidence-carrier-plan-1/source-data-cases.json:353-406",
+        "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/apps/bdptest/test-support/read-update-artifact-execution.ts:338-344,460-468,571",
+        "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/apps/bdptest/src/read-update-matrix.test.ts:2578-2598,2315-2343"
+      ],
+      "problem": "The plan requires a factory-bound configuration for every pure carrier input while promising .profile.attempt output from start/acquired and failure before returned, preserving existing RU signatures/callers. The actual writer constructor has only set/sourceCommit/filename/credentials; start and acquired receive only an index. No bound configuration is available through this seam until returned(index, report). A pre-return failure may never supply one.",
+      "impact": "The early-attempt and L01/L02/L06 contract cannot be implemented as the proposed bound ProfileEvidenceV1 without inventing a target binding, dropping promised partial evidence, or silently changing a forbidden caller/signature. These are the failures for which truthful partial output matters.",
+      "fix": "Specify a finite distinct unbound attempt envelope in the existing writer (configuration absent/null and explicitly unbound, observations null, no carrier/qualification claim), with a precise transition to bound ProfileEvidenceV1 only after a genuine returned configuration exists. Alternatively explicitly defer bound carrier emission while retaining the existing legacy attempt and fixed safe pre-binding sidecar metadata. Keep the four paths, RU callers/signatures, product workload and deadlines; define corresponding data-case expectations."
+    },
+    {
+      "id": "N2",
+      "severity": "Medium",
+      "title": "Name the TX exact-wrapper byte capture seam",
+      "location": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-evidence-carrier-plan-1/input-schema.json:23-24",
+      "related": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-evidence-carrier-plan-1/lifecycle-and-adapters.json:11",
+        "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/apps/bdptest/src/transactional-matrix.test.ts:358-359,401-419"
+      ],
+      "problem": "The report contract binds expected SHA of exact existing wrapper bytes, while the TX adapter gets only carrierPath and captures before onObserved. The existing observe value is only {result,sessions,baseline}; the actual legacy wrapper is constructed inside the positive onObserved closure with sourceCommit, entry and four supplemental summaries, and only serialized when the legacy output environment variable is set. Its exact byte string is not returned to observe. No concrete data flow in the plan lets the pre-hook adapter obtain those exact bytes.",
+      "impact": "An implementation can hash an invented minimal/reformatted wrapper or canonical result and label it rawWrapperSha256, or require an undeclared legacy output path. That breaks the plan's raw-versus-derived byte provenance even though qualification remains false.",
+      "fix": "Declare a concrete narrow handoff within the owned TX file: capture genuine observed data before the hook, serialize the exact legacy wrapper once in its existing owner, and hand those exact bytes plus their digest to the private adapter while checking .result against the pre-hook snapshot. Define behavior when the legacy output path is absent; do not reread a guessed file or duplicate/reformat an authority result. A small explicit optional hook-return/data handoff is one option; preserve legacy field layout/no-opt-in behavior, four-file footprint and all product requests/deadlines."
+    },
+    {
+      "id": "N3",
+      "severity": "Low",
+      "title": "Make missing-plan row validation depend on whether the matrix stopped",
+      "location": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-evidence-carrier-plan-1/verification-order.json:33",
+      "related": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-evidence-carrier-plan-1/source-data-cases.json:29-45",
+        "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum/packages/conformance/src/runner.ts:385-388,2962-2985"
+      ],
+      "problem": "Verification step8 specifies genuine harness-error/not-implemented placeholders for missing plans, but V03/V04 deliberately use an already-aborted actual runner. The actual loop checks abort before checking whether each plan exists, then returns stoppedScenarioResult: harness-error/not-run for every remaining selected row, including absent plans and diagnostics.",
+      "impact": "A literal implementation of step8 rejects the exact genuine partial runner reports required as valid cases, or rewrites their actual category to not-implemented. Both contradict the retention/no-credit policy.",
+      "fix": "Explicitly distinguish reached missingPlanResult (not-implemented) from actual stopped remainder (not-run), preserving exact ID/order/empty exchanges and original row index/category. Keep them no-credit and avoid vacuous all-assertions-passed credit on unexecuted rows. No runner or case-count change."
+    }
+  ],
+  "counts": {
+    "Medium": 2,
+    "Low": 1
+  }
+}
