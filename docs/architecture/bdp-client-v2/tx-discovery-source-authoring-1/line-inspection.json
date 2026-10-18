@@ -1,0 +1,146 @@
+{
+  "coldOracleHasNoProvisioningArtifactOrIPCTargetInputs": true,
+  "locations": {
+    "apps/bdptest/src/transactional-discovery-installed.test.ts": {
+      "anchors": {
+        "async function d3CloseKnown": [
+          463
+        ],
+        "async function d3Command": [
+          1030
+        ],
+        "async function d3FinalHeads": [
+          1106
+        ],
+        "async function d3Installed(": [
+          480
+        ],
+        "async function d3InstalledFixture": [
+          571
+        ],
+        "async function d3Navigate": [
+          946
+        ],
+        "async function d3Types": [
+          1000
+        ],
+        "function d3ObservedChild": [
+          414
+        ],
+        "function localRaw(": [
+          740
+        ],
+        "it(\"private installed cold resource-alias\"": [
+          1125
+        ],
+        "it(\"private installed cold transactional-carriers\"": [
+          1302
+        ],
+        "it(\"private installed discovery methods": [
+          1539
+        ],
+        "it(\"private installed discovery owner regression successor\"": [
+          87
+        ],
+        "it(\"private installed raw receiving": [
+          1489
+        ],
+        "it(`private installed discovery close": [
+          1733
+        ],
+        "it(`private installed discovery minimum": [
+          1620
+        ]
+      },
+      "lines": 1779,
+      "sha256": "d668891114fc196be9917ba92ef6a5cb0d77d6ed3ede83108d23a0d34e38d32d"
+    },
+    "packages/server/src/transaction-http.test.ts": {
+      "anchors": {
+        "async function d3Bounded": [
+          6510
+        ],
+        "async function d3Raw": [
+          7079
+        ],
+        "async function d3Source": [
+          6623
+        ],
+        "const baseline = {": [
+          6729
+        ],
+        "function d3SourceOracle": [
+          7267
+        ],
+        "it(\"D3 source cold oracle counterfactual": [
+          7289
+        ],
+        "it(\"D3 source raw receiving": [
+          7188
+        ],
+        "it(\"D3 source target transport boundary": [
+          7217
+        ],
+        "it(`D3 source abort": [
+          7007
+        ],
+        "it(`D3 source catch-up": [
+          6975
+        ],
+        "it(`D3 source close-drain": [
+          7026
+        ],
+        "it(`D3 source minimum order": [
+          6930
+        ],
+        "it(`D3 source projection": [
+          6846
+        ],
+        "it(`D3 source receiving": [
+          6882
+        ]
+      },
+      "lines": 7379,
+      "sha256": "172d4e61365710fe2884479a36f46bb51a327273ce02864a1285dccefd6ca09f"
+    },
+    "packages/server/src/transaction-http.ts": {
+      "anchors": {
+        "// Specialised Snapshot": [
+          587
+        ],
+        "? applyReadHttpSemantics": [
+          692
+        ],
+        "const observed = await service.discoveryObserved": [
+          597
+        ],
+        "discover: async () =>": [
+          212
+        ],
+        "if (error instanceof ScopeServerOperationAbortedError)": [
+          651
+        ],
+        "if (result.kind === \"discovery\")": [
+          243
+        ]
+      },
+      "lines": 698,
+      "sha256": "09e5ba9cd3203af9bffebc1db1e7840eae732dc4b506bed5d11ac9730bd0c015"
+    }
+  },
+  "method": "Static text/byte inspection only; no TypeScript compiler, Node, test collection, product helper or runtime executed.",
+  "noRawRequestTargetEscape": true,
+  "oldRawMethodTwoSecondHelperByteIdentical": true,
+  "ownedPaths": [
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-discovery-installed.test.ts"
+  ],
+  "plan4FrozenInputsRehashed": 210,
+  "readConfigurationDelegatesAndRecordsConstructionCaptureBaseline": true,
+  "retainedLegacyBindingCalls": 1,
+  "sourceFinalErrorTagSemanticsStartPumpRegionByteIdentical": true,
+  "sourceReaderClockCountersProspective": true,
+  "sourceSpecialisedSnapshotChangefeedEventReceiptRegionByteIdentical": true,
+  "unowned676ByteIdentical": true
+}

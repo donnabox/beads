@@ -1,0 +1,94 @@
+{
+  "accepted": false,
+  "status": "revisions_required",
+  "kind": "independent-native-D3a-CODE-review",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "authorIndexSha256": "d9d35ff6f24ad71f0daea95cd8eec81faca097c0876e2ac1a905805a617b95d7",
+  "sourceBindingSha256": "2bceb342d76c7727151d2bf9977e5c373309cd1c89962d7da0a5d95da497de98",
+  "sourceMapSha256": "f55e40725115eae0475b85af47d5d4eda0bbdd2897d1ecfd9a6672903a157dae",
+  "sourcePatchSha256": "25b3d83ff00df794cc68c5ca1c97297b5423e210375fb8ff366c5d6967eb0e2a",
+  "rootActualBinaryPatchSha256": "039db9f45657c4e065af1b91b1c61ca9aefb2f90b5613f6dca67a696f4ea40f1",
+  "basisCommit": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "effectivePlan4IndexSha256": "991e4ecd87aba8b08b6eda9f2ba7c0637a1ecdefe1f0aedddff5bbafe00a1083",
+  "plan5IndexSha256": "d9214f08a3f41e5ebf7743556c1dd4ae780e87c3154cd13901693ba9cc639540",
+  "compositionSha256": "28199eab6d3b99cab759e242854c0503f0f1c4b4da4f0fd3ac0e70922d96a3ea",
+  "rootActualPlanDispositionSha256": "367b3bea6a4ccb21b0faec463e526cf8fc0d155c89a4855ff91bdbbf38ebf126",
+  "findings": [
+    {
+      "id": "N1",
+      "severity": "Medium",
+      "priority": 2,
+      "title": "Keep raw readiness and credentials outside the cold-client argument",
+      "file": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/apps/bdptest/src/transactional-discovery-installed.test.ts",
+      "startLine": 483,
+      "endLine": 489,
+      "relatedLocations": [
+        {
+          "startLine": 907,
+          "endLine": 929
+        },
+        {
+          "startLine": 946,
+          "endLine": 946
+        },
+        {
+          "startLine": 1129,
+          "endLine": 1131
+        },
+        {
+          "startLine": 1306,
+          "endLine": 1309
+        }
+      ],
+      "problem": "d3Installed passes the entire D3Fixture to work; that object includes child.ready (including targets), metadata and actual tokens. d3Navigate/d3Types and all positive cold helpers accept that same full fixture. The removed artifact lookup is gone and no present positive lookup of targets is alleged, but raw readiness still crosses the explicitly forbidden oracle input seam.",
+      "requirement": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/cold-input-contract.json:55-69; effective plan4 Cold inputs and target provenance",
+      "impact": "The positive witness cannot claim the promised restricted cold input boundary; source-known target/token capabilities remain available inside the supposed cold oracle and can silently become navigation authority.",
+      "smallestCorrection": "Construct a real narrow runtime client projection before invoking positive cold work, exposing only the bound send transport/allowed Scope, credential references, dial mapping and bounds as needed. Make navigation/Type/command/afterstate helpers accept that projection; keep child/raw-ready/targets/tokens/metadata/lifecycle in sibling fixture/report/cleanup lane. Merely narrowing the TypeScript type or promising not to read fields is insufficient. No additional HTTP request or provisioning/schema lookup."
+    },
+    {
+      "id": "N2",
+      "severity": "Medium",
+      "priority": 2,
+      "title": "Assert captured context for installed minimum failures",
+      "file": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/apps/bdptest/src/transactional-discovery-installed.test.ts",
+      "startLine": 1713,
+      "endLine": 1728,
+      "problem": "The minimum-order loop calls d3Context only in the success else branch. Its seven error cases per route (410/409/503, including HEAD) verify status/code/length/retry but can pass with missing or incorrect BDP-Scope-Epoch, BDP-Authorization-View or BDP-Scope-Position headers. f.send does not assert those fields.",
+      "requirement": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/plan.md:75 requires actual epoch/view/contextpos1 for ordering cases",
+      "impact": "A private installed projection that drops or misbinds error context can satisfy this witness even though captured same-entry failure context is the law under test. Source tests do not substitute for installed wire validation.",
+      "smallestCorrection": "Assert d3Context(response, nav.epoch, nav.view, \"pos-1\") for every case, before or in both branches, including foreign input tuples and timeout/bodyless HEAD failures. Keep exact current status/problem/retry/length assertions and the same15 requests per callback."
+    },
+    {
+      "id": "N3",
+      "severity": "Low",
+      "priority": 3,
+      "title": "Include CRLFCRLF in both local raw header ceilings",
+      "file": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/apps/bdptest/src/transactional-discovery-installed.test.ts",
+      "startLine": 818,
+      "endLine": 822,
+      "relatedLocations": [
+        {
+          "file": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/src/transaction-http.test.ts",
+          "startLine": 7126,
+          "endLine": 7130
+        },
+        {
+          "file": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/conformance/src/http-executor.ts",
+          "startLine": 1119,
+          "endLine": 1122
+        }
+      ],
+      "problem": "Both newly authored raw readers compare split > 16384 after finding the header terminator. split is its starting index, so complete header sections of16385-16388 bytes can be accepted. The pinned public executor uses end+4 > maximumHeaderBytes.",
+      "requirement": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-next-plan-4/transport-and-lifecycle-contract.json:29 and F10 require same-or-stricter16384-byte raw response headers",
+      "impact": "The callback-local transports have a four-byte weaker capacity fence than the accepted public transport and stated plan, even though body/wire limits are otherwise bounded.",
+      "smallestCorrection": "In both owned test helpers, reject split >= 0 && split + 4 > 16384, preserving the unterminated-header check and all existing body/wire/request caps. No executor change, cap widening or additional product requests."
+    }
+  ],
+  "productionFindingCount": 0,
+  "runtimeValidation": "UNATTEMPTED; no compiler/test collection/tests/build/install/runtime evidence",
+  "actualCODEReviewDisposition": "UNRESOLVED; separate first actual CODE review only, no second actual PLAN",
+  "sourceMutationPerformed": false,
+  "validationReleased": false,
+  "fullWriteQualified": false,
+  "guardCurrentSessionVerified": true
+}

@@ -1,0 +1,22 @@
+{
+  "kind": "independent-native-plan5-N1-receipt-rule-precision-closure",
+  "accepted": true,
+  "decision": "N1-F7 CLOSED; no findings on minimal correction",
+  "reviewedUtc": "2026-10-18T06:22:28.564013+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "findings": [],
+  "closedFinding": "N1-F7",
+  "overlayIndexSha256": "d9214f08a3f41e5ebf7743556c1dd4ae780e87c3154cd13901693ba9cc639540",
+  "compositionSha256": "28199eab6d3b99cab759e242854c0503f0f1c4b4da4f0fd3ac0e70922d96a3ea",
+  "basePlan4IndexSha256": "991e4ecd87aba8b08b6eda9f2ba7c0637a1ecdefe1f0aedddff5bbafe00a1083",
+  "correctedColdPositiveSha256": "cd80851dda5be952c2a3f5c4c19b9ff047a7f14a6d801dff4b21a1f63625756f",
+  "forwardDeltaSha256": "11e8f0e7f04d07cea5c3d6f39acf88c55de0c8f9d8ad912c6015890a67adafc3",
+  "rootDispositionSha256": "078a52144946e0080fae42067940707c78fe1775175a518c20abbb7104b23a57",
+  "priorNativeClosureSha256": "71a3dc3186b1589dc308c6bc5db26e9104e4f619c9908e552c8dfc31a9052143",
+  "scope": "Only broad receiptRules excludes replay commands from an additional receipt.id GET; retained original receipt comparison and all43/28 rows remain exact",
+  "sourceAuthoringReleased": false,
+  "executionReleased": false,
+  "secondActualPlanAllowed": false,
+  "noNewApprovalGates": true,
+  "inputVerificationSha256": "0988d66e32cd7c824b8e8029980276757ca7330593a8898450236af60690cebd"
+}

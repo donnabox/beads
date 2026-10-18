@@ -1,0 +1,102 @@
+{
+  "canonicalScope": "https://reference.invalid/acme/",
+  "store": "one actual absolute mkdtemp directory/transaction.sqlite; identical path create true then false; no copy/reset/new Scope",
+  "descriptors": [
+    {
+      "suffix": "types/bead",
+      "describes": "bead",
+      "conformsTo": [],
+      "propertiesSchema": "schemas/n"
+    },
+    {
+      "suffix": "types/owner",
+      "describes": "bead",
+      "conformsTo": [],
+      "propertiesSchema": "schemas/n",
+      "ownsOutgoing": {
+        "types/owned": {
+          "max": 32
+        }
+      }
+    },
+    {
+      "suffix": "types/link",
+      "describes": "link",
+      "conformsTo": [],
+      "propertiesSchema": "schemas/n",
+      "source": {
+        "conformsTo": [],
+        "external": "none"
+      },
+      "target": {
+        "conformsTo": [],
+        "external": "none"
+      }
+    },
+    {
+      "suffix": "types/owned",
+      "describes": "link",
+      "conformsTo": [],
+      "propertiesSchema": "schemas/n",
+      "source": {
+        "conformsTo": [],
+        "external": "none"
+      },
+      "target": {
+        "conformsTo": [],
+        "external": "none"
+      }
+    }
+  ],
+  "schema": {
+    "relativeId": "schemas/n",
+    "type": "object",
+    "properties": {
+      "n": {
+        "type": "number"
+      }
+    },
+    "required": [
+      "n"
+    ],
+    "additionalProperties": false
+  },
+  "credentials": {
+    "count": 1,
+    "principal": "writer",
+    "canMutate": true,
+    "token": "fresh high-entropy base64url, never emitted; SAME actual token for both children"
+  },
+  "runtimeCapture": {
+    "port": 0,
+    "authorityMode": "canonical",
+    "host": "127.0.0.1",
+    "profile": "transactional",
+    "history": false,
+    "scopeAggregateMaximumEndpointMultiplicity": [],
+    "readPolicy": "existing generation0 all-visible policy; no transition invoked",
+    "testSeams": "none"
+  },
+  "identityChecks": [
+    "initial and reopened installedTransactionBinding must succeed",
+    "full served binding equality and runtimeConfigurationIdentity equality, payload/contracts/policy/auth identities equal",
+    "same actual canonicalScope, directory/store path, four descriptors/schema and credential association; create and physical listen port are lifecycle differences",
+    "actual receipt bodies preserve recorded epoch/view/disposition and exact original next URL; current response header observations remain serving facts"
+  ],
+  "limits": {
+    "exchangeMs": 5000,
+    "responseBodyBytes": 1048576,
+    "responseHeaderBytes": 65536,
+    "derivedResponseWireBytes": 1179648,
+    "requestHeaderBytes": 16384,
+    "requestBodyBytes": 65536,
+    "source": "test143–150; executor156,173–175,898; retain defaults, no widening or new maxWire option"
+  },
+  "nonClaims": [
+    "ownsOutgoing max32 is not a Scope endpoint aggregate",
+    "one actual owned Link is updated; this does not exercise a full 32-owned-Link capacity boundary",
+    "ordinary Link deletion is not owned Link deletion/cascade",
+    "private ready.targets gives ZERO cold-navigation credit",
+    "no arbitrary grant policy, public admission, administrative erasure or logical restore credit"
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "authorIndexSha256": "d9d35ff6f24ad71f0daea95cd8eec81faca097c0876e2ac1a905805a617b95d7",
+  "authorIndexedFiles": 53,
+  "authorMirrorExact": true,
+  "sourceBindingSha256": "2bceb342d76c7727151d2bf9977e5c373309cd1c89962d7da0a5d95da497de98",
+  "beforeMapSha256": "ff8ad56f23c3d7ee6e652724501cdaa16ec9551ea24b1673dc6c74bf5c1c06b7",
+  "afterMapSha256": "f55e40725115eae0475b85af47d5d4eda0bbdd2897d1ecfd9a6672903a157dae",
+  "currentSourceFiles": 679,
+  "ownedChangedFiles": [
+    "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-http.ts"
+  ],
+  "unownedUnchanged": 676,
+  "sourcePatchSha256": "25b3d83ff00df794cc68c5ca1c97297b5423e210375fb8ff366c5d6967eb0e2a",
+  "inverseGenuine": true,
+  "rootScopeInspectionSha256": "3d3a6dd1b7a94e164f84d9d5b11ce6a3d92859ffa6802882f3fe875177dd5145",
+  "actualBinaryPatchSha256": "039db9f45657c4e065af1b91b1c61ca9aefb2f90b5613f6dca67a696f4ea40f1",
+  "contextOrigins": 19,
+  "effectivePlan4IndexedInputs": 210,
+  "plan5IndexedInputs": 12,
+  "specialisedD1SnapshotChangefeedEventReceiptBlockByteIdentical": true,
+  "finalErrorTagAndHttpSemanticsTailByteIdentical": true,
+  "legacy2sRawHelperByteIdentical": true,
+  "protectedSourceCounts": {
+    "D1cce": 679,
+    "originalA562": 679,
+    "separateStartup": 682
+  },
+  "sourceCountsProspective": {
+    "callbacks": 21,
+    "directCalls": 96,
+    "wire": 14,
+    "counterfactualClones": 9
+  },
+  "installedCountsProspective": {
+    "callbacks": 11,
+    "scheduled": 190,
+    "responses": 187,
+    "aborts": 3,
+    "exact": 186,
+    "raw": 4
+  },
+  "execution": "Pure read/hash/patch-in-memory only; no compiler/helper/reviewer/runtime/Git/test collection"
+}

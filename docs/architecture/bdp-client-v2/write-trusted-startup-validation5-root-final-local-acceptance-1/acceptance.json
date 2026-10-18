@@ -1,0 +1,174 @@
+{
+  "accepted": true,
+  "utc": "2026-10-18T06:54:28.273086+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "scope": "Fresh local exact-source validation complete for pure trusted startup configuration loader increment only",
+  "sourceBindingSha256": "0572475970aee5a5466530ad68c4e84b5725947a0d7f3740da9321b6a23f75de",
+  "sourceIdentity": "0c53a6bb33d57133c8fbb43b8787d9251ca4276abcdb18b2a9f434279bfe364b",
+  "sourcePatchSha256": "515e11937c2a89c5e22a696a11a0c01a547a532a02fd645a8994ef12d6d27343",
+  "sourceFiles": 682,
+  "all25ActualStagesPassed": true,
+  "actualStages": {
+    "node-version": {
+      "exit": 0,
+      "elapsedSeconds": 3.7187292091548443,
+      "logSha256": "a8f8f7ba69d43285857a0ea34017ef8dadd3ba012404bb7dd188fc773cf63ee2"
+    },
+    "pnpm-version": {
+      "exit": 0,
+      "elapsedSeconds": 3.926880791783333,
+      "logSha256": "6784d6c924df1c8341f9f841f5b5b20c37255de3d34f923baebc0a557d5d5201"
+    },
+    "workspace-install": {
+      "exit": 0,
+      "elapsedSeconds": 3.992049000225961,
+      "logSha256": "22afcd1754a4446650ca500eb8762c9aaaebb04d77f123a1879fdeb8893b0ba2"
+    },
+    "bind-workspace-tools": {
+      "exit": 0,
+      "elapsedSeconds": 8.191032166127115,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "typecheck": {
+      "exit": 0,
+      "elapsedSeconds": 4.712786290794611,
+      "logSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a"
+    },
+    "format-check": {
+      "exit": 0,
+      "elapsedSeconds": 3.750851540826261,
+      "logSha256": "4d442fb504a03dea91fad2ba27aeae9a3d0286fff815ef41ccd5f252ee7c4f8b"
+    },
+    "lint": {
+      "exit": 0,
+      "elapsedSeconds": 3.7869388326071203,
+      "logSha256": "0a4bebed5de83f19cae848300c47bbfb27ab9400b4def1a674607e7d99423999"
+    },
+    "fresh-build": {
+      "exit": 0,
+      "elapsedSeconds": 4.670122374780476,
+      "logSha256": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208"
+    },
+    "bind-fresh-build": {
+      "exit": 0,
+      "elapsedSeconds": 8.165129667147994,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "focused-source": {
+      "exit": 0,
+      "elapsedSeconds": 5.541687209159136,
+      "logSha256": "c3920a152ff7eefbf2ddba661125d534d0f14944f53c80e082b854742b8c667a"
+    },
+    "audit-focused-source": {
+      "exit": 0,
+      "elapsedSeconds": 7.987578375265002,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "prepare-package-directory": {
+      "exit": 0,
+      "elapsedSeconds": 8.107642624992877,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "pack-protocol": {
+      "exit": 0,
+      "elapsedSeconds": 4.093503667041659,
+      "logSha256": "176fa8b9518b48d6f9ae041bdaf523696861aa1c74f641e3c972fe09a59e91e3"
+    },
+    "pack-server": {
+      "exit": 0,
+      "elapsedSeconds": 4.042919334024191,
+      "logSha256": "867ac2b475ee4a1ce23e8ab42f3188f242d371be6c6c5c9dbd46cec62e7382a1"
+    },
+    "verify-archives": {
+      "exit": 0,
+      "elapsedSeconds": 8.108455542009324,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "prepare-consumer": {
+      "exit": 0,
+      "elapsedSeconds": 8.376801542006433,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "consumer-install": {
+      "exit": 0,
+      "elapsedSeconds": 4.223644040990621,
+      "logSha256": "c89c5a5592eb567a97eac2cdb609480c2d0e97cf47b49db809730419c6de78c0"
+    },
+    "verify-installed-consumer": {
+      "exit": 0,
+      "elapsedSeconds": 8.146688499953598,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "bound-consumer-loader": {
+      "exit": 0,
+      "elapsedSeconds": 5.124623875133693,
+      "logSha256": "ff3e1d43fb862c3dfdcf88fe314504b71b2be9df08dfe2db088f8dd6b2fd89c4"
+    },
+    "audit-bound-consumer-loader": {
+      "exit": 0,
+      "elapsedSeconds": 8.938358916901052,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "required-check-boundaries": {
+      "exit": 0,
+      "elapsedSeconds": 4.3591735837981105,
+      "logSha256": "53f4cd856bde25513486a59799c5a05e0650fbb756bf1580fb07e56c2fdeeef3"
+    },
+    "required-e2e-ready-preflight": {
+      "exit": 0,
+      "elapsedSeconds": 5.12871399987489,
+      "logSha256": "dd6462954cc7890e52e14a1c52376b572865008eaac15b5221ba3ec6f0f5cf9a"
+    },
+    "required-smoke": {
+      "exit": 0,
+      "elapsedSeconds": 8.169984791893512,
+      "logSha256": "ce4b45e546959b36bb6539dd1bb645a6f5881a251d3aaf90500dcb3dfe858571"
+    },
+    "audit-required-smoke": {
+      "exit": 0,
+      "elapsedSeconds": 8.049384292215109,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "required-evidence-verify": {
+      "exit": 0,
+      "elapsedSeconds": 4.137862499803305,
+      "logSha256": "79749014f712bd5d838b93088c70fef4cca1ae63d7738a613716ab37fa1295ba"
+    }
+  },
+  "observedPidsNowAbsent": 405,
+  "observedGroupsNowAbsent": 25,
+  "sourceUnchanged": true,
+  "actualToolFilesRehashed": 11,
+  "buildArtifactRecords": 484,
+  "externalConsumerInventoryFiles": 878,
+  "externalConsumerInventoryLinks": 17,
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/run/installed-provenance.json",
+    "sha256": "0be13365ffc85d58176e051687ffbc96b306b2a80a1a6c8f520d0aa295e5bd2d"
+  },
+  "consumerInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/run/installed-consumer-inventory.json",
+    "sha256": "e647f71298789702bf266b19a3e5645671ca444316be5e89e387afd0dd4b8eee"
+  },
+  "payloadIdentity": "9ae5d1e3231284d4b4dd8bebef59dc0142dc557429a017904242843b5c3224cf",
+  "entrySha256": "6ca64806925227deb8b364037598915979cb7a77e8f5b8c81ea8702c829693bd",
+  "consumerLockSha256": "1a58bce6fe16914678a9eb20981755b601939a0fb1921ef10fe4231aadbeda3f",
+  "sourceSelectedPassed": 44,
+  "sourceUnselectedSkipped": 389,
+  "installedLoaderCalls": 6,
+  "installedAcceptedLoads": 2,
+  "installedContractRefusals": 4,
+  "privateSpecifierRefusals": 71,
+  "stockSmokeConsumer": "Separate internally constructed consumer; external root-bound proof not transferred",
+  "readEvidence": "Historical89Readrows at old e5f7d0c/run and dbaf63a/evidence; not fresh cumulativeWrite",
+  "nativeFinalAudit": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation5-actual-prefix-audit-1/observation-005-final25-terminal/closure.json",
+    "sha256": "d496fa1f8a2668e9a048b59b900a665b8173d2ade0570f4d4ac5d1298c99b6e4"
+  },
+  "actualCodeSupervision": "FAILED preserved; complete substantive result and independent correction closures accepted; CLIexitUNKNOWN/oldmissingoutputs retained",
+  "oldFailedValidations2Through4Preserved": true,
+  "sourcePublicationAndExactCIBranchReleased": true,
+  "mainLandingReleased": false,
+  "publicProfileActivationReleased": false,
+  "fullWriteQualification": false
+}

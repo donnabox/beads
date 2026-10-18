@@ -1,0 +1,66 @@
+{
+  "ownedFutureFiles": [
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-discovery-installed.test.ts"
+  ],
+  "directoryMembers": {
+    "createBead": "create-bead",
+    "updateBead": "update-bead",
+    "deleteBead": "delete-bead",
+    "createLink": "create-link",
+    "updateLink": "update-link",
+    "deleteLink": "delete-link",
+    "putAlias": "put-alias",
+    "deleteAlias": "delete-alias",
+    "sequence": "sequence",
+    "updateWhere": "update-where",
+    "deleteWhere": "delete-where",
+    "batch": "batch"
+  },
+  "directoryValuesArePinnedSchemaConstants": true,
+  "coldOracleMayUseNamesForCompleteness": true,
+  "coldOracleMayUseDirectoryConstantsToConstructRequests": false,
+  "dispatchSource": {
+    "path": "packages/server/src/transaction-discovery.ts",
+    "constant": "TRANSACTION_HTTP_OPERATIONS",
+    "lines": "8-21"
+  },
+  "dispatchReceiver": {
+    "path": "packages/server/src/transaction-http.ts",
+    "targetsAndNames": "175-183",
+    "operationDispatch": "274-402",
+    "authAndMinimumSyntax": "403-405",
+    "existingCurrentChangefeed": "468-501",
+    "selectedDiscoveryInsertion": "immediately before586; after special Snapshot/changefeed/Events/receipt branches",
+    "currentReadGate": "586-603",
+    "discoveryRefusal": "604-611",
+    "finalSemantics": "667-679"
+  },
+  "schemas": [
+    "transactionalDiscovery",
+    "transactionalOperationDirectory",
+    "typeDescriptor",
+    "mutationReceipt",
+    "transactionalSequenceResponse",
+    "transactionalProblem",
+    "currentBeadRecord",
+    "currentLinkRecord",
+    "currentBeadCollection",
+    "currentLinkCollection",
+    "snapshotManifest",
+    "changefeedPage",
+    "eventPage"
+  ],
+  "protocolParsers": "packages/protocol/src/transaction-discovery-values.ts:63-81",
+  "projection": "packages/server/src/transaction-discovery.ts:26-67",
+  "observation": "packages/server/src/transaction-service.ts:267-293",
+  "noSchemaOrDispatcherEdits": true,
+  "activeSourceCommit": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "retainedCallbackSites": {
+    "readRouteDiscover": "required member212 becomes unreachable; retain async function throwing fixed Error(\"unreachable Transactional discovery route\")",
+    "performDiscoveryUnionArm": "already unreachable parser union arm244-245 is retained as a narrowing branch that throws same fixed invariant Error before non-discovery result.body use",
+    "noNonownedInterfaceEdit": true,
+    "noSecondObservation": true
+  }
+}

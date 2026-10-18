@@ -1,0 +1,33 @@
+{
+  "rootLaunchReleased": false,
+  "packet": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-code-review-1/claude-code-review",
+  "expectedSession": "2026-10-18T02:16:24Z-549f",
+  "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+  "reviewerArgv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--disable-slash-commands",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--no-session-persistence",
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    "--include-partial-messages"
+  ],
+  "outerTotalSeconds": 1800,
+  "termAtSeconds": 1790,
+  "killAtSeconds": 1798,
+  "noRetry": true,
+  "authority": "CLOSED FIRST D3a exact three-file dirty CODE preparation. Source identity root-accepted; independent native packet/source review and separate root one-attempt release pending. No second PLAN/retry/validation authority.",
+  "predecessorIndexSha256": "7cd5029dc67647cc9020b15e8335938e6f7b9a05791593ef75ebf9378f1c2e89",
+  "rootDispositionSha256": "864603ad6f8e5fecc82b5b19986320b7311477b241c90cb28b647bbac92a046c",
+  "genericSupervision5IndexSha256": "6fcca98a7c50dde057f4994c5b352702f992ec5879fb0bc0706872689b29b5b1",
+  "genericSupervision5CodeSha256": "791e5a566561798aa3352f19b021e6db9beeddb033ae5725c7d031d51716f95c"
+}

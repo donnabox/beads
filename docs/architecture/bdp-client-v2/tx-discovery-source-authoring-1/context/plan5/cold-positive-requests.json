@@ -1,0 +1,756 @@
+{
+  "countsAreProspective": true,
+  "twoFreshIndependentProcessesAndStores": true,
+  "callbacks": [
+    {
+      "callback": "private installed cold resource-alias",
+      "requests": 43,
+      "rows": [
+        {
+          "id": "N1",
+          "method": "GET",
+          "target": "@canonicalScope",
+          "status": 204,
+          "assert": "empty body; parse ACTUAL service-desc Link, never body metadata; Link must equal <new URL(\"bdp.json\",canonicalScope).href>; rel=\"service-desc\"; type=\"application/json\" using the existing emitter; navigate by parsed actual Link"
+        },
+        {
+          "id": "N2",
+          "method": "GET",
+          "target": "@N1.actualServiceDesc resolved against Scope",
+          "status": 200,
+          "assert": "parseTransactionalDiscovery; scope/version0/profiletransactional; body epoch/view/head equal response headers"
+        },
+        {
+          "id": "N3",
+          "method": "GET",
+          "target": "@N2.discovery.operations",
+          "status": 200,
+          "assert": "parseTransactionalOperationDirectory; exact12 names; resolve ACTUAL values against N3 document URL"
+        },
+        {
+          "id": "T1",
+          "method": "GET",
+          "target": "@discovery.types",
+          "status": 200,
+          "assert": "two actual summaries/nextnull; select actual Type ids by describes"
+        },
+        {
+          "id": "T2",
+          "method": "GET",
+          "target": "@T1.items[describes=bead].id",
+          "status": 200,
+          "assert": "parse actual descriptor to select B; number n schema closure"
+        },
+        {
+          "id": "T3",
+          "method": "GET",
+          "target": "@T1.items[describes=link].id",
+          "status": 200,
+          "assert": "parse actual descriptor to select L with B endpoint closure"
+        },
+        {
+          "id": "create-a",
+          "method": "POST",
+          "target": "@directoryResolved.createBead",
+          "status": 200,
+          "body": {
+            "id": "@newBead(a)",
+            "type": "@B",
+            "properties": {
+              "n": 1
+            }
+          },
+          "idempotencyKey": "cold-resource-alias-create-a",
+          "scopePosition": "pos-1",
+          "assert": "created a n1"
+        },
+        {
+          "id": "create-a-receipt",
+          "method": "GET",
+          "target": "@create-a.receipt.id",
+          "status": 200,
+          "assert": "validate mutationReceipt; exact retained body equality; confine actual id to discovered receipts root"
+        },
+        {
+          "id": "create-a-after-1",
+          "method": "GET",
+          "target": "@result.resource.id",
+          "status": 200,
+          "assert": "actual a n1"
+        },
+        {
+          "id": "create-b",
+          "method": "POST",
+          "target": "@directoryResolved.createBead",
+          "status": 200,
+          "body": {
+            "id": "@newBead(b)",
+            "type": "@B",
+            "properties": {
+              "n": 2
+            }
+          },
+          "idempotencyKey": "cold-resource-alias-create-b",
+          "scopePosition": "pos-2",
+          "assert": "created b n2"
+        },
+        {
+          "id": "create-b-receipt",
+          "method": "GET",
+          "target": "@create-b.receipt.id",
+          "status": 200,
+          "assert": "validate mutationReceipt; exact retained body equality; confine actual id to discovered receipts root"
+        },
+        {
+          "id": "create-b-after-1",
+          "method": "GET",
+          "target": "@result.resource.id",
+          "status": 200,
+          "assert": "actual b n2"
+        },
+        {
+          "id": "update-a",
+          "method": "POST",
+          "target": "@directoryResolved.updateBead",
+          "status": 200,
+          "body": {
+            "bead": "@a.id",
+            "propertiesChange": [
+              {
+                "op": "replace",
+                "path": "/n",
+                "value": 10
+              }
+            ]
+          },
+          "idempotencyKey": "cold-resource-alias-update-a",
+          "scopePosition": "pos-3",
+          "assert": "updated a n10, new revision"
+        },
+        {
+          "id": "update-a-receipt",
+          "method": "GET",
+          "target": "@update-a.receipt.id",
+          "status": 200,
+          "assert": "validate mutationReceipt; exact retained body equality; confine actual id to discovered receipts root"
+        },
+        {
+          "id": "update-a-after-1",
+          "method": "GET",
+          "target": "@result.resource.id",
+          "status": 200,
+          "assert": "equal updated a"
+        },
+        {
+          "id": "create-l",
+          "method": "POST",
+          "target": "@directoryResolved.createLink",
+          "status": 200,
+          "body": {
+            "id": "@newLink(l)",
+            "type": "@L",
+            "source": "@a.id",
+            "target": "@b.id",
+            "properties": {
+              "n": 1
+            }
+          },
+          "idempotencyKey": "cold-resource-alias-create-l",
+          "scopePosition": "pos-4",
+          "assert": "created l a\u2192b"
+        },
+        {
+          "id": "create-l-receipt",
+          "method": "GET",
+          "target": "@create-l.receipt.id",
+          "status": 200,
+          "assert": "validate mutationReceipt; exact retained body equality; confine actual id to discovered receipts root"
+        },
+        {
+          "id": "create-l-after-1",
+          "method": "GET",
+          "target": "@result.resource.id",
+          "status": 200,
+          "assert": "Link schema, exact actual endpoints and n1"
+        },
+        {
+          "id": "update-l",
+          "method": "POST",
+          "target": "@directoryResolved.updateLink",
+          "status": 200,
+          "body": {
+            "link": "@l.id",
+            "propertiesChange": [
+              {
+                "op": "replace",
+                "path": "/n",
+                "value": 11
+              }
+            ]
+          },
+          "idempotencyKey": "cold-resource-alias-update-l",
+          "scopePosition": "pos-5",
+          "assert": "updated l n11, new revision"
+        },
+        {
+          "id": "update-l-receipt",
+          "method": "GET",
+          "target": "@update-l.receipt.id",
+          "status": 200,
+          "assert": "validate mutationReceipt; exact retained body equality; confine actual id to discovered receipts root"
+        },
+        {
+          "id": "update-l-after-1",
+          "method": "GET",
+          "target": "@result.resource.id",
+          "status": 200,
+          "assert": "equal updated Link"
+        },
+        {
+          "id": "put-alias",
+          "method": "POST",
+          "target": "@directoryResolved.putAlias",
+          "status": 200,
+          "body": {
+            "alias": "@newAlias(work)",
+            "target": "@a.id"
+          },
+          "idempotencyKey": "cold-resource-alias-put-alias",
+          "scopePosition": "pos-5",
+          "assert": "alias created; no Scope advance"
+        },
+        {
+          "id": "put-alias-receipt",
+          "method": "GET",
+          "target": "@put-alias.receipt.id",
+          "status": 200,
+          "assert": "validate mutationReceipt; exact retained body equality; confine actual id to discovered receipts root"
+        },
+        {
+          "id": "put-alias-after-1",
+          "method": "GET",
+          "target": "@result.alias",
+          "status": 307,
+          "assert": "actual Location equals a.id"
+        },
+        {
+          "id": "put-alias-after-2",
+          "method": "GET",
+          "target": "@actual alias Location",
+          "status": 200,
+          "assert": "a n10"
+        },
+        {
+          "id": "delete-alias",
+          "method": "POST",
+          "target": "@directoryResolved.deleteAlias",
+          "status": 200,
+          "body": {
+            "alias": "@alias.work"
+          },
+          "idempotencyKey": "cold-resource-alias-delete-alias",
+          "scopePosition": "pos-5",
+          "assert": "alias deleted; no Scope advance"
+        },
+        {
+          "id": "delete-alias-receipt",
+          "method": "GET",
+          "target": "@delete-alias.receipt.id",
+          "status": 200,
+          "assert": "validate mutationReceipt; exact retained body equality; confine actual id to discovered receipts root"
+        },
+        {
+          "id": "delete-alias-after-1",
+          "method": "GET",
+          "target": "@previous alias result.alias",
+          "status": 404,
+          "assert": "resource-not-found, no Location"
+        },
+        {
+          "id": "delete-l",
+          "method": "POST",
+          "target": "@directoryResolved.deleteLink",
+          "status": 200,
+          "body": {
+            "link": "@l.id"
+          },
+          "idempotencyKey": "cold-resource-alias-delete-l",
+          "scopePosition": "pos-6",
+          "assert": "deleted latest actual Link revision"
+        },
+        {
+          "id": "delete-l-receipt",
+          "method": "GET",
+          "target": "@delete-l.receipt.id",
+          "status": 200,
+          "assert": "validate mutationReceipt; exact retained body equality; confine actual id to discovered receipts root"
+        },
+        {
+          "id": "delete-l-after-1",
+          "method": "GET",
+          "target": "@previous l.id",
+          "status": 404,
+          "assert": "resource-not-found"
+        },
+        {
+          "id": "delete-b",
+          "method": "POST",
+          "target": "@directoryResolved.deleteBead",
+          "status": 200,
+          "body": {
+            "bead": "@b.id"
+          },
+          "idempotencyKey": "cold-resource-alias-delete-b",
+          "scopePosition": "pos-7",
+          "assert": "delete b after explicit Link delete"
+        },
+        {
+          "id": "delete-b-receipt",
+          "method": "GET",
+          "target": "@delete-b.receipt.id",
+          "status": 200,
+          "assert": "validate mutationReceipt; exact retained body equality; confine actual id to discovered receipts root"
+        },
+        {
+          "id": "delete-b-after-1",
+          "method": "GET",
+          "target": "@previous b.id",
+          "status": 404,
+          "assert": "resource-not-found"
+        },
+        {
+          "id": "delete-a",
+          "method": "POST",
+          "target": "@directoryResolved.deleteBead",
+          "status": 200,
+          "body": {
+            "bead": "@a.id"
+          },
+          "idempotencyKey": "cold-resource-alias-delete-a",
+          "scopePosition": "pos-8",
+          "assert": "delete a; Resource state empty"
+        },
+        {
+          "id": "delete-a-receipt",
+          "method": "GET",
+          "target": "@delete-a.receipt.id",
+          "status": 200,
+          "assert": "validate mutationReceipt; exact retained body equality; confine actual id to discovered receipts root"
+        },
+        {
+          "id": "delete-a-after-1",
+          "method": "GET",
+          "target": "@previous a.id",
+          "status": 404,
+          "assert": "resource-not-found"
+        },
+        {
+          "id": "replay-create",
+          "method": "POST",
+          "target": "@directoryResolved.createBead",
+          "body": {
+            "id": "@newBead(a)",
+            "type": "@B",
+            "properties": {
+              "n": 1
+            }
+          },
+          "idempotencyKey": "cold-resource-alias-create-a",
+          "status": 200,
+          "assert": "same retained pos1 receipt even after delete; current responsepos8"
+        },
+        {
+          "id": "replay-after-a",
+          "method": "GET",
+          "target": "@previous a.id",
+          "status": 404,
+          "assert": "not recreated"
+        },
+        {
+          "id": "refresh-descriptor",
+          "method": "GET",
+          "target": "@N1.actualServiceDesc",
+          "status": 200,
+          "assert": "body/context finalpos8 advanced from originalpos0, same epoch/view"
+        },
+        {
+          "id": "head-descriptor",
+          "method": "HEAD",
+          "target": "@N1.actualServiceDesc",
+          "status": 200,
+          "assert": "zero body, serialized preceding GET Content-Length, current context"
+        },
+        {
+          "id": "head-directory",
+          "method": "HEAD",
+          "target": "@discovery.operations",
+          "status": 200,
+          "assert": "zero body, original canonical Directory JSON octet length, current context"
+        },
+        {
+          "id": "head-scope",
+          "method": "HEAD",
+          "target": "@canonicalScope",
+          "status": 204,
+          "assert": "zero body, actual service-desc Link, current context; Link must equal <new URL(\"bdp.json\",canonicalScope).href>; rel=\"service-desc\"; type=\"application/json\" using the existing emitter; navigate by parsed actual Link"
+        }
+      ],
+      "distinctOperationNames": [
+        "createBead",
+        "createLink",
+        "deleteAlias",
+        "deleteBead",
+        "deleteLink",
+        "putAlias",
+        "updateBead",
+        "updateLink"
+      ],
+      "commandPosts": 11,
+      "receiptGets": 10,
+      "workMs": 45000,
+      "cleanupMs": 10000,
+      "callbackMs": 60000,
+      "requestMs": 5000,
+      "outerMs": 120000,
+      "termAtMs": 115000,
+      "automaticRetries": 0
+    },
+    {
+      "callback": "private installed cold transactional-carriers",
+      "requests": 28,
+      "rows": [
+        {
+          "id": "N1",
+          "method": "GET",
+          "target": "@canonicalScope",
+          "status": 204,
+          "assert": "empty body; parse ACTUAL service-desc Link, never body metadata; Link must equal <new URL(\"bdp.json\",canonicalScope).href>; rel=\"service-desc\"; type=\"application/json\" using the existing emitter; navigate by parsed actual Link"
+        },
+        {
+          "id": "N2",
+          "method": "GET",
+          "target": "@N1.actualServiceDesc resolved against Scope",
+          "status": 200,
+          "assert": "parseTransactionalDiscovery; scope/version0/profiletransactional; body epoch/view/head equal response headers"
+        },
+        {
+          "id": "N3",
+          "method": "GET",
+          "target": "@N2.discovery.operations",
+          "status": 200,
+          "assert": "parseTransactionalOperationDirectory; exact12 names; resolve ACTUAL values against N3 document URL"
+        },
+        {
+          "id": "T1",
+          "method": "GET",
+          "target": "@discovery.types",
+          "status": 200,
+          "assert": "two actual summaries/nextnull; select actual Type ids by describes"
+        },
+        {
+          "id": "T2",
+          "method": "GET",
+          "target": "@T1.items[describes=bead].id",
+          "status": 200,
+          "assert": "parse actual descriptor to select B; number n schema closure"
+        },
+        {
+          "id": "T3",
+          "method": "GET",
+          "target": "@T1.items[describes=link].id",
+          "status": 200,
+          "assert": "parse actual descriptor to select L with B endpoint closure"
+        },
+        {
+          "id": "batch-seed",
+          "method": "POST",
+          "target": "@directoryResolved.batch",
+          "status": 200,
+          "body": {
+            "operations": [
+              {
+                "operation": "createBead",
+                "id": "@newBead(a)",
+                "type": "@B",
+                "properties": {
+                  "n": 1
+                }
+              },
+              {
+                "operation": "createBead",
+                "id": "@newBead(b)",
+                "type": "@B",
+                "properties": {
+                  "n": 2
+                }
+              },
+              {
+                "operation": "createBead",
+                "id": "@newBead(c)",
+                "type": "@B",
+                "properties": {
+                  "n": 3
+                }
+              }
+            ]
+          },
+          "idempotencyKey": "cold-transactional-carriers-batch-seed",
+          "scopePosition": "pos-1",
+          "assert": "three created, one group"
+        },
+        {
+          "id": "batch-seed-receipt",
+          "method": "GET",
+          "target": "@batch-seed.receipt.id",
+          "status": 200,
+          "assert": "validate mutationReceipt; exact retained body equality; confine actual id to discovered receipts root"
+        },
+        {
+          "id": "batch-seed-after-1",
+          "method": "GET",
+          "target": "@discovery.beads + ?limit=32",
+          "status": 200,
+          "assert": "a,b,c n1,2,3; nextnull"
+        },
+        {
+          "id": "sequence-turns",
+          "method": "POST",
+          "target": "@directoryResolved.sequence",
+          "status": 200,
+          "body": {
+            "operations": [
+              {
+                "operation": "createBead",
+                "id": "@newBead(d)",
+                "type": "@B",
+                "properties": {
+                  "n": 4
+                },
+                "name": "made",
+                "idempotencyKey": "cold-seq-create"
+              },
+              {
+                "operation": "deleteBead",
+                "bead": "@newBead(missing)",
+                "idempotencyKey": "cold-seq-missing"
+              },
+              {
+                "operation": "updateBead",
+                "bead": "@made",
+                "propertiesChange": [
+                  {
+                    "op": "replace",
+                    "path": "/n",
+                    "value": 5
+                  }
+                ],
+                "idempotencyKey": "cold-seq-update"
+              }
+            ]
+          },
+          "idempotencyKey": null,
+          "scopePosition": "pos-3",
+          "assert": "sequence envelope created/actual404/updated; two committed member groups; no outer receipt"
+        },
+        {
+          "id": "sequence-turns-after-1",
+          "method": "GET",
+          "target": "@sequence actual result d.id",
+          "status": 200,
+          "assert": "d n5"
+        },
+        {
+          "id": "sequence-turns-after-2",
+          "method": "GET",
+          "target": "@newBead(missing)",
+          "status": 404,
+          "assert": "resource-not-found"
+        },
+        {
+          "id": "set-update",
+          "method": "POST",
+          "target": "@directoryResolved.updateWhere",
+          "status": 200,
+          "body": {
+            "collection": "beads",
+            "selector": "$[?@.id]",
+            "change": [
+              {
+                "op": "replace",
+                "path": "/n",
+                "value": 9
+              }
+            ]
+          },
+          "idempotencyKey": "cold-transactional-carriers-set-update",
+          "scopePosition": "pos-4",
+          "assert": "matched4 + four updated entries, one group"
+        },
+        {
+          "id": "set-update-receipt",
+          "method": "GET",
+          "target": "@set-update.receipt.id",
+          "status": 200,
+          "assert": "validate mutationReceipt; exact retained body equality; confine actual id to discovered receipts root"
+        },
+        {
+          "id": "set-update-after-1",
+          "method": "GET",
+          "target": "@discovery.beads + ?limit=32",
+          "status": 200,
+          "assert": "a,b,c,d all n9; nextnull"
+        },
+        {
+          "id": "set-delete",
+          "method": "POST",
+          "target": "@directoryResolved.deleteWhere",
+          "status": 200,
+          "body": {
+            "collection": "beads",
+            "selector": "$[?@.id == \"@b.id\"]"
+          },
+          "idempotencyKey": "cold-transactional-carriers-set-delete",
+          "scopePosition": "pos-5",
+          "assert": "substitute JSON-quoted actual b.id, matched1+deleted b, one group"
+        },
+        {
+          "id": "set-delete-receipt",
+          "method": "GET",
+          "target": "@set-delete.receipt.id",
+          "status": 200,
+          "assert": "validate mutationReceipt; exact retained body equality; confine actual id to discovered receipts root"
+        },
+        {
+          "id": "set-delete-after-1",
+          "method": "GET",
+          "target": "@previous b.id",
+          "status": 404,
+          "assert": "resource-not-found"
+        },
+        {
+          "id": "replay-batch",
+          "method": "POST",
+          "target": "@directoryResolved.batch",
+          "body": {
+            "operations": [
+              {
+                "operation": "createBead",
+                "id": "@newBead(a)",
+                "type": "@B",
+                "properties": {
+                  "n": 1
+                }
+              },
+              {
+                "operation": "createBead",
+                "id": "@newBead(b)",
+                "type": "@B",
+                "properties": {
+                  "n": 2
+                }
+              },
+              {
+                "operation": "createBead",
+                "id": "@newBead(c)",
+                "type": "@B",
+                "properties": {
+                  "n": 3
+                }
+              }
+            ]
+          },
+          "idempotencyKey": "cold-transactional-carriers-batch-seed",
+          "status": 200,
+          "assert": "same original pos1 receipt, current response pos5; no recreation"
+        },
+        {
+          "id": "replay-after-b",
+          "method": "GET",
+          "target": "@previous b.id",
+          "status": 404,
+          "assert": "not recreated"
+        },
+        {
+          "id": "final-state",
+          "method": "GET",
+          "target": "@discovery.beads + ?limit=32",
+          "status": 200,
+          "assert": "a,c,d only, all n9, nextnull"
+        },
+        {
+          "id": "refresh-descriptor",
+          "method": "GET",
+          "target": "@N1.actualServiceDesc",
+          "status": 200,
+          "assert": "body/context finalpos5 advanced from originalpos0, same epoch/view"
+        },
+        {
+          "id": "head-descriptor",
+          "method": "HEAD",
+          "target": "@N1.actualServiceDesc",
+          "status": 200,
+          "assert": "zero body, serialized preceding GET Content-Length, current context"
+        },
+        {
+          "id": "head-directory",
+          "method": "HEAD",
+          "target": "@discovery.operations",
+          "status": 200,
+          "assert": "zero body, original canonical Directory JSON octet length, current context"
+        },
+        {
+          "id": "head-scope",
+          "method": "HEAD",
+          "target": "@canonicalScope",
+          "status": 204,
+          "assert": "zero body, actual service-desc Link, current context; Link must equal <new URL(\"bdp.json\",canonicalScope).href>; rel=\"service-desc\"; type=\"application/json\" using the existing emitter; navigate by parsed actual Link"
+        },
+        {
+          "id": "snapshot-root",
+          "method": "GET",
+          "target": "@discovery.snapshot",
+          "status": 200,
+          "assert": "snapshotManifest/context currentpos5; confined actual links; no continuation minimum claim"
+        },
+        {
+          "id": "changes-root",
+          "method": "GET",
+          "target": "@discovery.changes + ?start=now",
+          "status": 200,
+          "assert": "changefeedPage emptygroups/current actual head checkpoint; no invented CP"
+        },
+        {
+          "id": "events-root",
+          "method": "GET",
+          "target": "@discovery.events",
+          "status": 200,
+          "assert": "eventPage actual discovered source; leave next unrequested; finite root navigation only"
+        }
+      ],
+      "distinctOperationNames": [
+        "batch",
+        "deleteWhere",
+        "sequence",
+        "updateWhere"
+      ],
+      "commandPosts": 5,
+      "receiptGets": 3,
+      "workMs": 45000,
+      "cleanupMs": 10000,
+      "callbackMs": 60000,
+      "requestMs": 5000,
+      "outerMs": 120000,
+      "termAtMs": 115000,
+      "automaticRetries": 0
+    }
+  ],
+  "totalRequests": 71,
+  "operationTargetsFromActualDirectoryOnly": true,
+  "resourceConstruction": "newBead/newLink/newAlias mean client-chosen local identifiers under ACTUAL descriptor collection roots, never operation suffix construction",
+  "receiptRules": "Every non-sequence, non-replay command validates mutationReceipt and follows actual receipt.id. Sequence validates transactionalSequenceResponse with per-member keys and no outer header; follows actual created/updated Resource refs. Canonical schema validations and exact actual afterstate, not hashes alone.",
+  "selectorConstruction": "JSON-quote actual b.id inside equality Selector; no artifact/IPC Resource URL.",
+  "tableNotation": {
+    "@made": "test-table placeholder for the client-chosen d identifier used in sequence updateBead, not a BDP named-result reference; name=made only supplies operationName",
+    "replayReceipt": "nonsequence nonreplay commands follow actual receipt.id; replay bodies compare original retained receipt without another GET"
+  }
+}

@@ -1,0 +1,23 @@
+--- clean-startup-plan/run.py
++++ D4-plan/run.py
+@@ -1,9 +1,9 @@
+ from pathlib import Path
+ import subprocess,time,json,hashlib,os,signal,datetime,runpy
+ p=Path(__file__).parent
+-w=Path("/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum")
++w=Path("/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum")
+ b=json.loads((p/"binding.json").read_text());sha=lambda x:hashlib.sha256(x).hexdigest()
+-def guard(): subprocess.run(["/opt/homebrew/opt/python@3.14/bin/python3.14","/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/claude-plan-review/guarded-action-session-20261018-021624-549f.py","/usr/bin/true"],check=True)
++def guard(): subprocess.run(["/opt/homebrew/opt/python@3.14/bin/python3.14","/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-owned-set-plan-review-1/claude-plan-review/guarded-action-session-20261018-021624-549f.py","/usr/bin/true"],check=True)
+ assert b["rootLaunchReleased"] is True, "Closed: root must release this one review"
+ assert b["sourceBindingFinalized"] is True, "Closed: actual plan/source context has not been frozen"
+ outputs=["source-before.json","source-after.json","process.json","stream.jsonl","progress.jsonl","stderr.txt","exit.json","final-review.txt","terminal-results.json"]
+@@ -11,7 +11,7 @@
+ def git(*args):return subprocess.check_output(["git",*args],cwd=w)
+ def merge_snapshot():
+     head=git("rev-parse","HEAD").decode().strip()
+-    assert head=="a56254d682cf4623cab22a552e3d2f695f691795", "Candidate changed"
++    assert head=="cce884ccea1db97cbc6fd7bff876d4d6091f9081", "Candidate changed"
+     assert git("status","--porcelain=v1","--untracked-files=all").decode()==b["expectedGitStatus"]=="", "Frozen clean source changed"
+     assert set(git("ls-files").decode().splitlines())==set(b["files"]), "Tracked scope changed"
+     return {"head":head,"tree":git("rev-parse","HEAD^{tree}").decode().strip(),"parents":git("show","-s","--format=%P","HEAD").decode().split()}
