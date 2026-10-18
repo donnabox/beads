@@ -1,0 +1,201 @@
+# DATA-ONLY fixed one-off root capture proposal. NEVER execute this .txt artifact.
+# This origin precedes every gate/source/hash/setup/child import and child spawn below.
+# This first root target-invocation clock is before the child interpreter, imports,
+# gate/source/hash/setup. Actual collector terminal and the later independent
+# same-clock census/receipt witness are ordinary-tool observations B/C below.
+# No claim is made to measure the already-running observer before its first sample.
+import time
+ORIGIN = time.monotonic()
+import os, json, hashlib, subprocess, select
+from pathlib import Path
+STAGE = 'bind-workspace-tools'
+ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py', 'final', 'bind-workspace-tools']
+CWD = '/Users/dbox/repos/wt/vickie/vickie-schema-minimum'
+P = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3')
+# Root must prepare/review/publish these exact replacements in a future literal
+# command before invoking; this CLOSED proposal refuses unbound placeholders.
+APPROVED_GATE_SHA256 = '9088a3b9616271f3b5db19568b5b4fab2a49fceb3770359a60698582c5f00681'
+EXPECTED_IMPLEMENTATION_SHA256 = '8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6'
+EXPECTED_SOURCE_BINDING_SHA256 = '712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714'
+EXPECTED_COMMANDS_SHA256 = 'd7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7'
+OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/bind-workspace-tools'
+# Additive exact externally pinned root execution acceptance; charged to ORIGIN.
+APPROVED_EXECUTION_ACCEPTANCE_SHA256 = '0318099cddf2a84e307113cc16f4a352737e05c519d2e333e7a4d191b656d984'
+EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-execution-acceptance-1/acceptance.json')
+assert type(APPROVED_EXECUTION_ACCEPTANCE_SHA256) is str and len(APPROVED_EXECUTION_ACCEPTANCE_SHA256)==64 and all(c in '0123456789abcdef' for c in APPROVED_EXECUTION_ACCEPTANCE_SHA256)
+assert EXECUTION_ACCEPTANCE_PATH.is_file() and not EXECUTION_ACCEPTANCE_PATH.is_symlink()
+execution_acceptance_raw = EXECUTION_ACCEPTANCE_PATH.read_bytes()
+assert hashlib.sha256(execution_acceptance_raw).hexdigest() == APPROVED_EXECUTION_ACCEPTANCE_SHA256
+execution_acceptance = json.loads(execution_acceptance_raw, object_pairs_hook=lambda pairs: dict(pairs) if len(pairs)==len(dict(pairs)) else (_ for _ in ()).throw(ValueError('duplicate-root-execution-acceptance-key')), parse_constant=lambda _: (_ for _ in ()).throw(ValueError('nonfinite-root-execution-acceptance')))
+assert type(execution_acceptance) is dict
+assert execution_acceptance['accepted'] is True
+assert execution_acceptance['session'] == '2026-10-18T02:16:24Z-549f'
+assert execution_acceptance['mode'] == 'final'
+assert execution_acceptance['sourceBindingSha256'] == '712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714'
+assert execution_acceptance['implementationIndexSha256'] == '8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6'
+assert execution_acceptance['commandsSha256'] == 'd7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7'
+assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version','pnpm-version','workspace-install','bind-workspace-tools']
+assert STAGE in execution_acceptance['approvedStages']
+assert type(execution_acceptance['activeGate']) is dict and set(execution_acceptance['activeGate']) == {'path','sha256'}
+assert execution_acceptance['activeGate'] == {'path':str(P/'execution-gate.json'),'sha256':APPROVED_GATE_SHA256}
+assert time.monotonic()-ORIGIN<115
+# End additive authority-only checks; every original A/B/C byte follows unchanged.
+proc = None
+handles = []
+streams = []
+failure = None
+forced = False
+root = None
+root_acquired = False
+pipe_close_succeeded = False
+inner = None
+registry = {"pids": [], "pgids": [], "origins": []}
+try:
+    assert len(APPROVED_GATE_SHA256) == 64 and OWNED_ROOT_OUTPUT.startswith('/')
+    assert time.monotonic() - ORIGIN < 115
+    assert hashlib.sha256((P/'execution-gate.json').read_bytes()).hexdigest() == APPROVED_GATE_SHA256
+    assert hashlib.sha256((P/'implementation-hashes.json').read_bytes()).hexdigest() == EXPECTED_IMPLEMENTATION_SHA256
+    assert hashlib.sha256((P/'source-binding.json').read_bytes()).hexdigest() == EXPECTED_SOURCE_BINDING_SHA256
+    assert hashlib.sha256((P/'commands.json').read_bytes()).hexdigest() == EXPECTED_COMMANDS_SHA256
+    root = Path(OWNED_ROOT_OUTPUT)
+    if STAGE == 'node-version': root.parent.mkdir(mode=0o700, exist_ok=False)
+    else: assert root.parent.is_dir() and not root.parent.is_symlink()
+    root.mkdir(mode=0o700, exist_ok=False)  # exclusive; any prior attempt blocks
+    root_acquired = True
+    with (root/'origin.json').open('x') as origin_file:
+        origin_file.write(json.dumps({'session':'2026-10-18T02:16:24Z-549f','stage':STAGE,'originMonotonic':ORIGIN,'collectorPid':os.getpid(),'collectorPgid':os.getpgrp(),'argv':ARGV,'cwd':CWD,'rootGateSha256':APPROVED_GATE_SHA256,'implementationSha256':EXPECTED_IMPLEMENTATION_SHA256,'sourceBindingSha256':EXPECTED_SOURCE_BINDING_SHA256,'commandsSha256':EXPECTED_COMMANDS_SHA256},allow_nan=False)+'\n')
+    registry['pids'].append(os.getpid()); registry['pgids'].append(os.getpgrp())
+    registry['origins'].append({'role':'collector','pid':os.getpid(),'pgid':os.getpgrp(),'basis':'actual local getpid/getpgrp; no signal authority'})
+    for suffix in ('stdout','stderr'):
+        path = root/(STAGE+'.'+suffix)
+        fd = os.open(path, os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_CLOEXEC, 0o600)
+        streams.append(dict(path=str(path), fd=fd, received=0, saved=0, hashed=0,
+                            digest=hashlib.sha256(), hashKnown=True, eof=False,
+                            rawClosed=False, error=None))
+    assert time.monotonic() - ORIGIN < 115
+    proc = subprocess.Popen(ARGV, cwd=CWD, stdin=subprocess.DEVNULL,
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                            start_new_session=True)
+    handles.append(proc)  # FIRST action after return; no fallible metadata first
+    creation_pid = proc.pid
+    creation_pgid = proc.pid  # actual start_new_session creation basis
+    registry["pids"].append(creation_pid); registry["pgids"].append(creation_pgid)
+    registry["origins"].append({"role":"direct-wrapper","pid":creation_pid,"pgid":creation_pgid,"basis":"actual retained Popen start_new_session"})
+    for pipe in (proc.stdout, proc.stderr):
+        os.set_blocking(pipe.fileno(), False)
+    while time.monotonic() - ORIGIN < 120:
+        if time.monotonic() - ORIGIN >= 115:
+            failure = failure or 'root-normal-deadline'
+            if proc.returncode is None and not forced:
+                proc.terminate()  # unreaped direct handle only; no group-ID kill
+                forced = True
+        for state, pipe in zip(streams, (proc.stdout, proc.stderr)):
+            if state['eof']: continue
+            try: chunk = os.read(pipe.fileno(), 65536)
+            except BlockingIOError: continue
+            if not chunk:
+                state['eof'] = True
+                continue
+            state['received'] += len(chunk)
+            offset = 0
+            while offset < len(chunk):
+                assert time.monotonic() - ORIGIN < 120
+                try:
+                    written = os.write(state['fd'], chunk[offset:])
+                except BaseException as write_error:
+                    state['error'] = type(write_error).__name__
+                    raise
+                assert written > 0
+                state['saved'] += written
+                try:
+                    state['digest'].update(chunk[offset:offset+written])
+                    state['hashed'] += written
+                except BaseException:
+                    state['hashKnown'] = False
+                    raise
+                offset += written
+        proc.poll()  # actual terminal, never inferred from a receipt or EOF alone
+        if proc.returncode is not None and all(s['eof'] for s in streams): break
+        select.select([], [], [], 0.002)
+    assert proc.returncode is not None and all(s['eof'] for s in streams)
+    assert proc.returncode == 0 and not forced and failure is None
+except BaseException as exc:
+    failure = failure or type(exc).__name__
+    if proc is not None and proc.returncode is None and not forced:
+        try: proc.terminate(); forced = True
+        except OSError: pass
+    # No fabricated EOF/wait, unsafe historical group signal, off-clock grace,
+    # retry, or presumed escaped-task closure. Root recovery remains UNKNOWN.
+finally:
+    for state in streams:
+        try:
+            st = os.fstat(state['fd'])
+            state['identity'] = dict(device=st.st_dev, inode=st.st_ino, mode=st.st_mode,
+                                     uid=st.st_uid, bytes=st.st_size)
+            os.close(state['fd']); state['rawClosed'] = True
+            if (st.st_mode & 0o777) != 0o600 or st.st_uid != os.getuid(): failure = failure or 'raw-mode-or-owner'
+        except BaseException as exc:
+            state['error'] = type(exc).__name__; failure = failure or 'raw-close-or-identity'
+    if proc is not None:
+        pipe_close_succeeded = True
+        for pipe in (proc.stdout, proc.stderr):
+            try: pipe.close()
+            except BaseException:
+                pipe_close_succeeded = False
+                failure = failure or 'pipe-close'
+    # Retain exact received/saved/hashed counts and digest-as-prefix, even on failure.
+    # A COMPLETE stream additionally requires actual EOF, actual child terminal,
+    # actual raw close, hashKnown and received==saved==hashed==fstat.bytes.
+    # Same-clock, best-effort original observed prefix publication; never expected facts.
+    # Actual inner process rows remain raw in P/run and are bound by hashes here.
+    inner_pins = {}
+    try:
+        for suffix in ('started.json','processes.jsonl','exit.json'):
+            item = P/'run'/(STAGE+'.'+suffix)
+            if item.is_file():
+                raw = item.read_bytes()
+                inner_pins[suffix] = {'path':str(item),'sha256':hashlib.sha256(raw).hexdigest()}
+                if suffix == 'processes.jsonl':
+                    assert not raw or raw.endswith(b'\n')
+                    for line in raw.splitlines():
+                        sample = json.loads(line)
+                        for row in sample['group']:
+                            assert type(row) is list and len(row)==4
+                            pid,pgid=int(row[0]),int(row[2])
+                            assert pid>0 and pgid>0
+                            registry['pids'].append(pid); registry['pgids'].append(pgid)
+                            registry['origins'].append({'role':'actual-inner-sample','pid':pid,'pgid':pgid,'receipt':str(item)})
+                if suffix == 'exit.json':
+                    inner = json.loads(raw)
+                    for pid in inner['sampledPids']:
+                        assert type(pid) is int and pid>0
+                        registry['pids'].append(pid)
+                        registry['origins'].append({'role':'actual-inner-sampledPid','pid':pid,'pgid':None,'receipt':str(item)})
+        if inner is None: failure = failure or 'inner-terminal-unavailable'
+        elif not (inner['exit']==0 and inner['accepted'] is True and inner['sourceUnchanged'] is True and inner['sourceIdentity']=='f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65' and inner['forcedCleanup'] is False and inner['errors']==[] and inner['remainingProcesses']==[] and inner['runtimeDirectoriesStillPresent']==[]): failure = failure or 'inner-not-accepted'
+    except BaseException as exc:
+        failure = failure or type(exc).__name__
+    facts = []
+    for state in streams:
+        identity = state.get('identity')
+        full = (proc is not None and proc.returncode is not None and state['eof'] and state['rawClosed'] and state['hashKnown'] and state['error'] is None and identity is not None and state['received']==state['saved']==state['hashed']==identity['bytes'])
+        facts.append({'path':state['path'],'receivedBytes':state['received'],'savedBytes':state['saved'],'hashedPrefixBytes':state['hashed'],'savedPrefixSha256':state['digest'].hexdigest() if state['hashKnown'] else None,'hashKnown':state['hashKnown'],'actualEOF':state['eof'],'rawDescriptorClosed':state['rawClosed'],'fileIdentity':identity,'writeOrCloseError':state['error'],'fullStreamSha256':state['digest'].hexdigest() if full else None,'fullStreamState':'COMPLETE_ACTUAL_CAPTURE' if full else 'UNKNOWN_PREFIX_ONLY'})
+    registry['pids']=sorted(set(registry['pids'])); registry['pgids']=sorted(set(registry['pgids']))
+    if root_acquired:
+        try:
+            assert time.monotonic()-ORIGIN<120
+            with (root/'collector-provisional.json').open('x') as metadata:
+                metadata.write(json.dumps({'stage':STAGE,'originMonotonic':ORIGIN,'collectorPid':os.getpid(),'collectorPgid':os.getpgrp(),'rootWrapperArgv':ARGV,'rootWrapperCwd':CWD,'sourceBindingSha256':EXPECTED_SOURCE_BINDING_SHA256,'implementationIndexSha256':EXPECTED_IMPLEMENTATION_SHA256,'rootGateSha256':APPROVED_GATE_SHA256,'creationPid':proc.pid if proc is not None else None,'creationPgid':proc.pid if proc is not None else None,'directHandleRegistered':proc is not None and proc in handles,'rawExit':proc.returncode if proc is not None else None,'forcedTermination':forced,'pipeCloseSucceeded':pipe_close_succeeded,'streams':facts,'innerReceipts':inner_pins,'knownTaskRegistry':registry,'failure':failure,'elapsedAtProvisionalPublication':time.monotonic()-ORIGIN,'actualCollectorToolTerminal':None,'freshSelectedCensus':None,'finalClockWitness':None,'accepted':False,'requiresIndependentOrdinaryToolObservations':True},allow_nan=False)+'\n')
+        except BaseException as exc:
+            failure = failure or type(exc).__name__
+    # No normal status after115; metadata is still provisional until real terminal.
+    if time.monotonic()-ORIGIN>=115: failure = failure or 'root-normal-deadline'
+    if proc is None or proc.returncode != 0 or forced or not all(s['eof'] and s['rawClosed'] and s['hashKnown'] and s['error'] is None for s in streams): failure = failure or 'incomplete-or-failed-capture'
+    if failure is not None: raise SystemExit(1)
+
+# Provisional until actual root terminal AND separate root post-terminal selected
+# census/source/tool/audit facts. Parent self-events cannot prove their own terminal.
+# A root record cannot become PASS unless ALL schema predicates hold and actual
+# earliest root invocation through final observation is strictly below115.
+# Any late/nonzero/missing/partial/unknown => STOP, failed or UNKNOWN, no next stage.
+
