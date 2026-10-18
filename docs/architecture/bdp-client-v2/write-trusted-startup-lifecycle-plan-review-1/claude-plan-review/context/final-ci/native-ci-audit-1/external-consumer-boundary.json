@@ -1,0 +1,31 @@
+{
+  "localAcceptancePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation5-root-final-local-acceptance-1/acceptance.json",
+  "localAcceptanceSha256": "720f0764f9364b695076b59132ec7ee744a4d4ae2c86f6fa025f51003cf68d97",
+  "localProofArtifacts": {
+    "installedProvenance": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/run/installed-provenance.json",
+      "sha256": "0be13365ffc85d58176e051687ffbc96b306b2a80a1a6c8f520d0aa295e5bd2d"
+    },
+    "consumerInventory": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/run/installed-consumer-inventory.json",
+      "sha256": "e647f71298789702bf266b19a3e5645671ca444316be5e89e387afd0dd4b8eee"
+    },
+    "nativeFinalAudit": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation5-actual-prefix-audit-1/observation-005-final25-terminal/closure.json",
+      "sha256": "d496fa1f8a2668e9a048b59b900a665b8173d2ade0570f4d4ac5d1298c99b6e4"
+    }
+  },
+  "localConsumerFilesRehashed": 878,
+  "localConsumerLinksVerified": 17,
+  "localArchivesRehashed": {
+    "protocol": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+    "server": "4ab4aabb375eacc4c52c9ca7a4b104c1f82a6ea8c5580a558d06e31f0d6a3d8e"
+  },
+  "localEntrySha256": "6ca64806925227deb8b364037598915979cb7a77e8f5b8c81ea8702c829693bd",
+  "localLockSha256": "1a58bce6fe16914678a9eb20981755b601939a0fb1921ef10fe4231aadbeda3f",
+  "localPayloadIdentity": "9ae5d1e3231284d4b4dd8bebef59dc0142dc557429a017904242843b5c3224cf",
+  "localPrivateRefusalAttempts": 71,
+  "ciStockSmokeConsumer": "Separate internally created and removed consumer; exact consumer lock/proof UNKNOWN and local proof is not transferred",
+  "digestLimitations": "Read-only independent fixed dependency closure hash and loader entry. The pure loader does not attest this digest; no child/service identity claim. Not source attestation or Node/TLS/deployment identity.",
+  "actualCIBinaryDigests": "UNKNOWN"
+}

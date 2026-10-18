@@ -1,0 +1,9 @@
+{
+  "operation": "Role guard invocation only, before further repo action",
+  "failedCommand": "/opt/homebrew/opt/python@3.14/bin/python3.14 /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-code-review-1/claude-plan-review/guarded-action-session-20261018-021624-549f.py /usr/bin/true",
+  "exitCode": 2,
+  "reason": "Auditor path typo: claude-plan-review directory does not exist under this CODE packet; Python could not open the guard.",
+  "capturedError": "[Errno 2] No such file or directory",
+  "effect": "No guard script or dependent repo action executed from that failed invocation. The next action first ran the actual claude-code-review guard successfully, confirming549f. This is not reviewer execution, review retry, role supersession or evidence about the completed D4 attempt.",
+  "correctGuardPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-code-review-1/claude-code-review/guarded-action-session-20261018-021624-549f.py"
+}

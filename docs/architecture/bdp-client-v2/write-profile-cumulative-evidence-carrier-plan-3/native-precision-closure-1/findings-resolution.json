@@ -1,0 +1,55 @@
+{
+  "P2-N1": {
+    "resolved": true,
+    "effectiveFile": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-evidence-carrier-plan-3/output-schema.json",
+    "line": 53,
+    "correction": "configuration added once to exact unbound closedKeys; explicit value remains null; all other JSON identical"
+  },
+  "originalN1": {
+    "resolved": true,
+    "evidence": [
+      "lifecycle-and-adapters.json RU.earlyUnbound/RU.firstBoundTransition",
+      "L01/L02/L06",
+      "output-schema.json unboundAttemptSchema"
+    ],
+    "reason": "Constructor/start/acquired lack served configuration; distinct unbound attempt with configuration null and all130 observations null remains until genuine safe first returned branded configuration. Invalid/no returned binding never becomes bound."
+  },
+  "originalN2": {
+    "resolved": true,
+    "evidence": [
+      "lifecycle-and-adapters.json TX.singleSerialization",
+      "V06/R20",
+      "actual copied TX onObserved401–419"
+    ],
+    "reason": "Positive closure owns one exact legacy serialization including supplemental fields. Optional byte/digest return is checked against detached genuine pre-hook result/sessions/baseline/source/entry; no guessed file, second raw copy or digest relabel. Legacy-only bytes and absent-opt-in behavior remain unchanged."
+  },
+  "originalN3": {
+    "resolved": true,
+    "evidence": [
+      "verification-order.json steps8/9",
+      "V03/V04",
+      "output-schema.json stoppedRows"
+    ],
+    "reason": "Reached absent plan is not-implemented; actual stopped suffix remains not-run including diagnostics, preserving order/index/empty exchanges and null authored execution credit. No legacy succeeded-summary admission."
+  },
+  "unchanged": {
+    "futurePaths": [
+      "packages/conformance/test-support/profile-evidence.ts",
+      "packages/conformance/test-support/profile-evidence.test.ts",
+      "apps/bdptest/test-support/read-update-artifact-execution.ts",
+      "apps/bdptest/src/transactional-matrix.test.ts"
+    ],
+    "cases": 48,
+    "groups": {
+      "validData": 6,
+      "rejectMutations": 24,
+      "encodedCredential": 8,
+      "lifecycleData": 10
+    },
+    "unitCaseBudgetMs": 5000,
+    "productHTTP": 0,
+    "productChildren": 0,
+    "boundsSha256": "3d5fb05a1778b9300d6cc52667a5f00b34864bb085d3ba049d8ab600d2ec3947",
+    "selectionAndNoCredit": "No adoption of startup/D3a; all whole-clause credit unestablished, eligibility/qualification false, reported cleanup ownership unverified."
+  }
+}
