@@ -1,0 +1,2080 @@
+{
+  "_comment": "Local F0 regression cases. schemaValid marks deliberate stricter rejection of trailing-newline format-checker bugs. Status is optional nonblank open-string data; applicability and former primary fields are uninterpreted extensions.",
+  "cases": [
+    {
+      "label": "memory inherits body requirement",
+      "type": "memory",
+      "properties": {
+        "title": "x"
+      },
+      "valid": false,
+      "path": "/properties/body"
+    },
+    {
+      "label": "memory accepts extensions without mutation",
+      "type": "memory",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "extension": {
+          "unknown": [
+            null,
+            {},
+            123456789012345678901234567890
+          ]
+        }
+      },
+      "valid": true
+    },
+    {
+      "label": "memory null body is not empty",
+      "type": "memory",
+      "properties": {
+        "title": "Title",
+        "body": null
+      },
+      "valid": false,
+      "path": "/properties/body"
+    },
+    {
+      "label": "observation inherits body requirement",
+      "type": "observation",
+      "properties": {
+        "title": "x"
+      },
+      "valid": false,
+      "path": "/properties/body"
+    },
+    {
+      "label": "observation accepts extensions without mutation",
+      "type": "observation",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "extension": {
+          "unknown": [
+            null,
+            {},
+            123456789012345678901234567890
+          ]
+        }
+      },
+      "valid": true
+    },
+    {
+      "label": "observation null body is not empty",
+      "type": "observation",
+      "properties": {
+        "title": "Title",
+        "body": null
+      },
+      "valid": false,
+      "path": "/properties/body"
+    },
+    {
+      "label": "decision inherits body requirement",
+      "type": "decision",
+      "properties": {
+        "title": "x"
+      },
+      "valid": false,
+      "path": "/properties/body"
+    },
+    {
+      "label": "decision accepts extensions without mutation",
+      "type": "decision",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "extension": {
+          "unknown": [
+            null,
+            {},
+            123456789012345678901234567890
+          ]
+        }
+      },
+      "valid": true
+    },
+    {
+      "label": "decision null body is not empty",
+      "type": "decision",
+      "properties": {
+        "title": "Title",
+        "body": null
+      },
+      "valid": false,
+      "path": "/properties/body"
+    },
+    {
+      "label": "procedure inherits body requirement",
+      "type": "procedure",
+      "properties": {
+        "title": "x"
+      },
+      "valid": false,
+      "path": "/properties/body"
+    },
+    {
+      "label": "procedure accepts extensions without mutation",
+      "type": "procedure",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "extension": {
+          "unknown": [
+            null,
+            {},
+            123456789012345678901234567890
+          ]
+        }
+      },
+      "valid": true
+    },
+    {
+      "label": "procedure null body is not empty",
+      "type": "procedure",
+      "properties": {
+        "title": "Title",
+        "body": null
+      },
+      "valid": false,
+      "path": "/properties/body"
+    },
+    {
+      "label": "policy inherits body requirement",
+      "type": "policy",
+      "properties": {
+        "title": "x"
+      },
+      "valid": false,
+      "path": "/properties/body"
+    },
+    {
+      "label": "policy accepts extensions without mutation",
+      "type": "policy",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "extension": {
+          "unknown": [
+            null,
+            {},
+            123456789012345678901234567890
+          ]
+        }
+      },
+      "valid": true
+    },
+    {
+      "label": "policy null body is not empty",
+      "type": "policy",
+      "properties": {
+        "title": "Title",
+        "body": null
+      },
+      "valid": false,
+      "path": "/properties/body"
+    },
+    {
+      "label": "lesson inherits body requirement",
+      "type": "lesson",
+      "properties": {
+        "title": "x"
+      },
+      "valid": false,
+      "path": "/properties/body"
+    },
+    {
+      "label": "lesson accepts extensions without mutation",
+      "type": "lesson",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "extension": {
+          "unknown": [
+            null,
+            {},
+            123456789012345678901234567890
+          ]
+        }
+      },
+      "valid": true
+    },
+    {
+      "label": "lesson null body is not empty",
+      "type": "lesson",
+      "properties": {
+        "title": "Title",
+        "body": null
+      },
+      "valid": false,
+      "path": "/properties/body"
+    },
+    {
+      "label": "empty",
+      "type": "observation",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "observedAt": ""
+      },
+      "valid": false,
+      "path": "/properties/observedAt"
+    },
+    {
+      "label": "lowercase valid leap date",
+      "type": "observation",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "observedAt": "2024-02-29t12:00:00z"
+      },
+      "valid": true
+    },
+    {
+      "label": "bad date",
+      "type": "observation",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "observedAt": "2023-02-29T12:00:00Z"
+      },
+      "valid": false,
+      "path": "/properties/observedAt"
+    },
+    {
+      "label": "24 hour",
+      "type": "observation",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "observedAt": "2024-01-01T24:00:00Z"
+      },
+      "valid": false,
+      "path": "/properties/observedAt"
+    },
+    {
+      "label": "bad offset hour",
+      "type": "observation",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "observedAt": "2024-01-01T00:00:00+24:00"
+      },
+      "valid": false,
+      "path": "/properties/observedAt"
+    },
+    {
+      "label": "bad offset minute",
+      "type": "observation",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "observedAt": "2024-01-01T00:00:00+00:60"
+      },
+      "valid": false,
+      "path": "/properties/observedAt"
+    },
+    {
+      "label": "comma fraction",
+      "type": "observation",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "observedAt": "2024-01-01T00:00:00,1Z"
+      },
+      "valid": false,
+      "path": "/properties/observedAt"
+    },
+    {
+      "label": "missing zone",
+      "type": "observation",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "observedAt": "2024-01-01T00:00:00"
+      },
+      "valid": false,
+      "path": "/properties/observedAt"
+    },
+    {
+      "label": "arbitrary fraction",
+      "type": "observation",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "observedAt": "2024-01-01T00:00:00.12345678901234567890Z"
+      },
+      "valid": true
+    },
+    {
+      "label": "leap second rejected by pinned checker",
+      "type": "observation",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "observedAt": "2016-12-31T23:59:60Z"
+      },
+      "valid": false,
+      "path": "/properties/observedAt"
+    },
+    {
+      "label": "authority urn:example:opaque",
+      "type": "policy",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "authority": "urn:example:opaque"
+      },
+      "valid": true
+    },
+    {
+      "label": "authority mailto:person@example.com",
+      "type": "policy",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "authority": "mailto:person@example.com"
+      },
+      "valid": true
+    },
+    {
+      "label": "authority https://example.com/a%20b#part",
+      "type": "policy",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "authority": "https://example.com/a%20b#part"
+      },
+      "valid": true
+    },
+    {
+      "label": "authority https://example.com/a b",
+      "type": "policy",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "authority": "https://example.com/a b"
+      },
+      "valid": false,
+      "path": "/properties/authority"
+    },
+    {
+      "label": "authority urn:example:%QQ",
+      "type": "policy",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "authority": "urn:example:%QQ"
+      },
+      "valid": false,
+      "path": "/properties/authority"
+    },
+    {
+      "label": "authority /relative",
+      "type": "policy",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "authority": "/relative"
+      },
+      "valid": false,
+      "path": "/properties/authority"
+    },
+    {
+      "label": "authority https://[notipv6]/",
+      "type": "policy",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "authority": "https://[notipv6]/"
+      },
+      "valid": false,
+      "path": "/properties/authority"
+    },
+    {
+      "label": "authority https://example.com/\u00e9",
+      "type": "policy",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "authority": "https://example.com/\u00e9"
+      },
+      "valid": false,
+      "path": "/properties/authority"
+    },
+    {
+      "label": "closed pointer escaping",
+      "type": "policy",
+      "properties": {
+        "title": "Title",
+        "body": "",
+        "authority": {
+          "uri": "urn:example:authority",
+          "revision": "r1",
+          "a/b~c": false
+        }
+      },
+      "valid": false,
+      "path": "/properties/authority/a~1b~0c"
+    },
+    {
+      "label": "Unicode whitespace",
+      "type": "memory",
+      "properties": {
+        "title": "\u00a0\u2003",
+        "body": ""
+      },
+      "valid": false,
+      "path": "/properties/title"
+    },
+    {
+      "label": "link null note",
+      "type": "link",
+      "properties": {
+        "note": null
+      },
+      "valid": false,
+      "path": "/properties/note"
+    },
+    {
+      "label": "link extension",
+      "type": "link",
+      "properties": {
+        "future": [
+          1,
+          null,
+          {}
+        ]
+      },
+      "valid": true
+    },
+    {
+      "label": "URI grammar https://[v1.test]/",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "authority": "https://[v1.test]/"
+      },
+      "valid": true
+    },
+    {
+      "label": "URI grammar urn:test:a[b]",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "authority": "urn:test:a[b]"
+      },
+      "valid": false,
+      "path": "/properties/authority"
+    },
+    {
+      "label": "URI grammar https://host/path?x=[y]",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "authority": "https://host/path?x=[y]"
+      },
+      "valid": false,
+      "path": "/properties/authority"
+    },
+    {
+      "label": "URI grammar https://a[b]@host/",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "authority": "https://a[b]@host/"
+      },
+      "valid": false,
+      "path": "/properties/authority"
+    },
+    {
+      "label": "URI grammar https://[2001:db8::1]/",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "authority": "https://[2001:db8::1]/"
+      },
+      "valid": true
+    },
+    {
+      "label": "Python whitespace controls",
+      "type": "memory",
+      "properties": {
+        "title": "\u001c",
+        "body": ""
+      },
+      "valid": false,
+      "path": "/properties/title"
+    },
+    {
+      "label": "URI components https://%41.example/",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "authority": "https://%41.example/"
+      },
+      "valid": true
+    },
+    {
+      "label": "URI components https://host/#x#y",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "authority": "https://host/#x#y"
+      },
+      "valid": false,
+      "path": "/properties/authority"
+    },
+    {
+      "label": "URI components http://[fe80::1%25eth0]/",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "authority": "http://[fe80::1%25eth0]/"
+      },
+      "valid": false,
+      "path": "/properties/authority"
+    },
+    {
+      "label": "URI components http://host:/",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "authority": "http://host:/"
+      },
+      "valid": true
+    },
+    {
+      "label": "URI components urn:",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "authority": "urn:"
+      },
+      "valid": true
+    },
+    {
+      "label": "URI components http://host:abc/",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "authority": "http://host:abc/"
+      },
+      "valid": false,
+      "path": "/properties/authority"
+    },
+    {
+      "label": "observedAt trailing newline checker divergence",
+      "type": "observation",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "observedAt": "2024-01-01T00:00:00Z\n"
+      },
+      "valid": false,
+      "schemaValid": true,
+      "path": "/properties/observedAt"
+    },
+    {
+      "label": "authority trailing newline checker divergence",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "authority": "https://example.com/a\n"
+      },
+      "valid": false,
+      "schemaValid": true,
+      "path": "/properties/authority"
+    },
+    {
+      "label": "uninterpreted root extensions 59",
+      "type": "memory",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "kind": null,
+        "inception": 42
+      },
+      "valid": true
+    },
+    {
+      "label": "uninterpreted root extensions 60",
+      "type": "memory",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "kind": {
+          "future": [
+            "x"
+          ]
+        },
+        "inception": {
+          "method": "not-an-admission-field",
+          "future": null
+        }
+      },
+      "valid": true
+    },
+    {
+      "label": "authority neither reference branch 42",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "authority": 42
+      },
+      "valid": false,
+      "path": "/properties/authority"
+    },
+    {
+      "label": "authority neither reference branch None",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "authority": null
+      },
+      "valid": false,
+      "path": "/properties/authority"
+    },
+    {
+      "label": "authority neither reference branch []",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "authority": []
+      },
+      "valid": false,
+      "path": "/properties/authority"
+    },
+    {
+      "label": "memory permits empty body without duplicate primary field",
+      "type": "memory",
+      "properties": {
+        "title": "Explicit title",
+        "body": ""
+      },
+      "valid": true
+    },
+    {
+      "label": "memory does not interpret old primary-field extensions",
+      "type": "memory",
+      "properties": {
+        "title": "Explicit title",
+        "body": "",
+        "statement": null,
+        "choice": 42,
+        "steps": {
+          "not": "steps"
+        },
+        "rule": false,
+        "takeaway": []
+      },
+      "valid": true
+    },
+    {
+      "label": "observation permits empty body without duplicate primary field",
+      "type": "observation",
+      "properties": {
+        "title": "Explicit title",
+        "body": ""
+      },
+      "valid": true
+    },
+    {
+      "label": "observation does not interpret old primary-field extensions",
+      "type": "observation",
+      "properties": {
+        "title": "Explicit title",
+        "body": "",
+        "statement": null,
+        "choice": 42,
+        "steps": {
+          "not": "steps"
+        },
+        "rule": false,
+        "takeaway": []
+      },
+      "valid": true
+    },
+    {
+      "label": "decision permits empty body without duplicate primary field",
+      "type": "decision",
+      "properties": {
+        "title": "Explicit title",
+        "body": ""
+      },
+      "valid": true
+    },
+    {
+      "label": "decision does not interpret old primary-field extensions",
+      "type": "decision",
+      "properties": {
+        "title": "Explicit title",
+        "body": "",
+        "statement": null,
+        "choice": 42,
+        "steps": {
+          "not": "steps"
+        },
+        "rule": false,
+        "takeaway": []
+      },
+      "valid": true
+    },
+    {
+      "label": "procedure permits empty body without duplicate primary field",
+      "type": "procedure",
+      "properties": {
+        "title": "Explicit title",
+        "body": ""
+      },
+      "valid": true
+    },
+    {
+      "label": "procedure does not interpret old primary-field extensions",
+      "type": "procedure",
+      "properties": {
+        "title": "Explicit title",
+        "body": "",
+        "statement": null,
+        "choice": 42,
+        "steps": {
+          "not": "steps"
+        },
+        "rule": false,
+        "takeaway": []
+      },
+      "valid": true
+    },
+    {
+      "label": "policy permits empty body without duplicate primary field",
+      "type": "policy",
+      "properties": {
+        "title": "Explicit title",
+        "body": ""
+      },
+      "valid": true
+    },
+    {
+      "label": "policy does not interpret old primary-field extensions",
+      "type": "policy",
+      "properties": {
+        "title": "Explicit title",
+        "body": "",
+        "statement": null,
+        "choice": 42,
+        "steps": {
+          "not": "steps"
+        },
+        "rule": false,
+        "takeaway": []
+      },
+      "valid": true
+    },
+    {
+      "label": "lesson permits empty body without duplicate primary field",
+      "type": "lesson",
+      "properties": {
+        "title": "Explicit title",
+        "body": ""
+      },
+      "valid": true
+    },
+    {
+      "label": "lesson does not interpret old primary-field extensions",
+      "type": "lesson",
+      "properties": {
+        "title": "Explicit title",
+        "body": "",
+        "statement": null,
+        "choice": 42,
+        "steps": {
+          "not": "steps"
+        },
+        "rule": false,
+        "takeaway": []
+      },
+      "valid": true
+    },
+    {
+      "label": "memory preserves uninterpreted applicability None",
+      "type": "memory",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "applicability": null
+      },
+      "valid": true
+    },
+    {
+      "label": "requirement preserves uninterpreted applicability None",
+      "type": "requirement",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "applicability": null
+      },
+      "valid": true
+    },
+    {
+      "label": "memory preserves uninterpreted applicability False",
+      "type": "memory",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "applicability": false
+      },
+      "valid": true
+    },
+    {
+      "label": "requirement preserves uninterpreted applicability False",
+      "type": "requirement",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "applicability": false
+      },
+      "valid": true
+    },
+    {
+      "label": "memory preserves uninterpreted applicability 42",
+      "type": "memory",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "applicability": 42
+      },
+      "valid": true
+    },
+    {
+      "label": "requirement preserves uninterpreted applicability 42",
+      "type": "requirement",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "applicability": 42
+      },
+      "valid": true
+    },
+    {
+      "label": "memory preserves uninterpreted applicability 'free form'",
+      "type": "memory",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "applicability": "free form"
+      },
+      "valid": true
+    },
+    {
+      "label": "requirement preserves uninterpreted applicability 'free form'",
+      "type": "requirement",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "applicability": "free form"
+      },
+      "valid": true
+    },
+    {
+      "label": "memory preserves uninterpreted applicability []",
+      "type": "memory",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "applicability": []
+      },
+      "valid": true
+    },
+    {
+      "label": "requirement preserves uninterpreted applicability []",
+      "type": "requirement",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "applicability": []
+      },
+      "valid": true
+    },
+    {
+      "label": "memory preserves uninterpreted applicability {}",
+      "type": "memory",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "applicability": {}
+      },
+      "valid": true
+    },
+    {
+      "label": "requirement preserves uninterpreted applicability {}",
+      "type": "requirement",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "applicability": {}
+      },
+      "valid": true
+    },
+    {
+      "label": "memory preserves uninterpreted applicability {'description': None, 'validFrom': 'not a timestamp', 'validUntil': []}",
+      "type": "memory",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "applicability": {
+          "description": null,
+          "validFrom": "not a timestamp",
+          "validUntil": []
+        }
+      },
+      "valid": true
+    },
+    {
+      "label": "requirement preserves uninterpreted applicability {'description': None, 'validFrom': 'not a timestamp', 'validUntil': []}",
+      "type": "requirement",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "applicability": {
+          "description": null,
+          "validFrom": "not a timestamp",
+          "validUntil": []
+        }
+      },
+      "valid": true
+    },
+    {
+      "label": "memory open status None",
+      "type": "memory",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": null
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "memory open status ''",
+      "type": "memory",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": ""
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "memory open status ' \\n\\t'",
+      "type": "memory",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": " \n\t"
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "memory open status 42",
+      "type": "memory",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": 42
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "memory open status False",
+      "type": "memory",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": false
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "memory open status []",
+      "type": "memory",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": []
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "memory open status {}",
+      "type": "memory",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": {}
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "memory open status 'ratified'",
+      "type": "memory",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "ratified"
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "memory open status '  Awaiting / team-specific decision \ud83e\uddea  '",
+      "type": "memory",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "  Awaiting / team-specific decision \ud83e\uddea  "
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "memory open status 'COMPLETED'",
+      "type": "memory",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "COMPLETED"
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "memory open status 'not an Issue enum'",
+      "type": "memory",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "not an Issue enum"
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "observation open status None",
+      "type": "observation",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": null
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "observation open status ''",
+      "type": "observation",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": ""
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "observation open status ' \\n\\t'",
+      "type": "observation",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": " \n\t"
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "observation open status 42",
+      "type": "observation",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": 42
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "observation open status False",
+      "type": "observation",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": false
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "observation open status []",
+      "type": "observation",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": []
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "observation open status {}",
+      "type": "observation",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": {}
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "observation open status 'ratified'",
+      "type": "observation",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "ratified"
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "observation open status '  Awaiting / team-specific decision \ud83e\uddea  '",
+      "type": "observation",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "  Awaiting / team-specific decision \ud83e\uddea  "
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "observation open status 'COMPLETED'",
+      "type": "observation",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "COMPLETED"
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "observation open status 'not an Issue enum'",
+      "type": "observation",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "not an Issue enum"
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "decision open status None",
+      "type": "decision",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": null
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "decision open status ''",
+      "type": "decision",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": ""
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "decision open status ' \\n\\t'",
+      "type": "decision",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": " \n\t"
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "decision open status 42",
+      "type": "decision",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": 42
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "decision open status False",
+      "type": "decision",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": false
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "decision open status []",
+      "type": "decision",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": []
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "decision open status {}",
+      "type": "decision",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": {}
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "decision open status 'ratified'",
+      "type": "decision",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "ratified"
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "decision open status '  Awaiting / team-specific decision \ud83e\uddea  '",
+      "type": "decision",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "  Awaiting / team-specific decision \ud83e\uddea  "
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "decision open status 'COMPLETED'",
+      "type": "decision",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "COMPLETED"
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "decision open status 'not an Issue enum'",
+      "type": "decision",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "not an Issue enum"
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "procedure open status None",
+      "type": "procedure",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": null
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "procedure open status ''",
+      "type": "procedure",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": ""
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "procedure open status ' \\n\\t'",
+      "type": "procedure",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": " \n\t"
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "procedure open status 42",
+      "type": "procedure",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": 42
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "procedure open status False",
+      "type": "procedure",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": false
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "procedure open status []",
+      "type": "procedure",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": []
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "procedure open status {}",
+      "type": "procedure",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": {}
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "procedure open status 'ratified'",
+      "type": "procedure",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "ratified"
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "procedure open status '  Awaiting / team-specific decision \ud83e\uddea  '",
+      "type": "procedure",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "  Awaiting / team-specific decision \ud83e\uddea  "
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "procedure open status 'COMPLETED'",
+      "type": "procedure",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "COMPLETED"
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "procedure open status 'not an Issue enum'",
+      "type": "procedure",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "not an Issue enum"
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "policy open status None",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": null
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "policy open status ''",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": ""
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "policy open status ' \\n\\t'",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": " \n\t"
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "policy open status 42",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": 42
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "policy open status False",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": false
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "policy open status []",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": []
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "policy open status {}",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": {}
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "policy open status 'ratified'",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "ratified"
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "policy open status '  Awaiting / team-specific decision \ud83e\uddea  '",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "  Awaiting / team-specific decision \ud83e\uddea  "
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "policy open status 'COMPLETED'",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "COMPLETED"
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "policy open status 'not an Issue enum'",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "not an Issue enum"
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "lesson open status None",
+      "type": "lesson",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": null
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "lesson open status ''",
+      "type": "lesson",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": ""
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "lesson open status ' \\n\\t'",
+      "type": "lesson",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": " \n\t"
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "lesson open status 42",
+      "type": "lesson",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": 42
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "lesson open status False",
+      "type": "lesson",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": false
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "lesson open status []",
+      "type": "lesson",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": []
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "lesson open status {}",
+      "type": "lesson",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": {}
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "lesson open status 'ratified'",
+      "type": "lesson",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "ratified"
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "lesson open status '  Awaiting / team-specific decision \ud83e\uddea  '",
+      "type": "lesson",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "  Awaiting / team-specific decision \ud83e\uddea  "
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "lesson open status 'COMPLETED'",
+      "type": "lesson",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "COMPLETED"
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "lesson open status 'not an Issue enum'",
+      "type": "lesson",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "not an Issue enum"
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "requirement open status None",
+      "type": "requirement",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": null
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "requirement open status ''",
+      "type": "requirement",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": ""
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "requirement open status ' \\n\\t'",
+      "type": "requirement",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": " \n\t"
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "requirement open status 42",
+      "type": "requirement",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": 42
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "requirement open status False",
+      "type": "requirement",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": false
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "requirement open status []",
+      "type": "requirement",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": []
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "requirement open status {}",
+      "type": "requirement",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": {}
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "requirement open status 'ratified'",
+      "type": "requirement",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "ratified"
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "requirement open status '  Awaiting / team-specific decision \ud83e\uddea  '",
+      "type": "requirement",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "  Awaiting / team-specific decision \ud83e\uddea  "
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "requirement open status 'COMPLETED'",
+      "type": "requirement",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "COMPLETED"
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "requirement open status 'not an Issue enum'",
+      "type": "requirement",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "status": "not an Issue enum"
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "link open status None",
+      "type": "link",
+      "properties": {
+        "status": null
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "link open status ''",
+      "type": "link",
+      "properties": {
+        "status": ""
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "link open status ' \\n\\t'",
+      "type": "link",
+      "properties": {
+        "status": " \n\t"
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "link open status 42",
+      "type": "link",
+      "properties": {
+        "status": 42
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "link open status False",
+      "type": "link",
+      "properties": {
+        "status": false
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "link open status []",
+      "type": "link",
+      "properties": {
+        "status": []
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "link open status {}",
+      "type": "link",
+      "properties": {
+        "status": {}
+      },
+      "valid": false,
+      "path": "/properties/status"
+    },
+    {
+      "label": "link open status 'ratified'",
+      "type": "link",
+      "properties": {
+        "status": "ratified"
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "link open status '  Awaiting / team-specific decision \ud83e\uddea  '",
+      "type": "link",
+      "properties": {
+        "status": "  Awaiting / team-specific decision \ud83e\uddea  "
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "link open status 'COMPLETED'",
+      "type": "link",
+      "properties": {
+        "status": "COMPLETED"
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "link open status 'not an Issue enum'",
+      "type": "link",
+      "properties": {
+        "status": "not an Issue enum"
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "requirement missing title",
+      "type": "requirement",
+      "properties": {
+        "body": ""
+      },
+      "valid": false,
+      "path": "/properties/title"
+    },
+    {
+      "label": "requirement missing body",
+      "type": "requirement",
+      "properties": {
+        "title": "x"
+      },
+      "valid": false,
+      "path": "/properties/body"
+    },
+    {
+      "label": "requirement empty body",
+      "type": "requirement",
+      "properties": {
+        "title": "x",
+        "body": ""
+      },
+      "valid": true
+    },
+    {
+      "label": "requirement arbitrary old fields",
+      "type": "requirement",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "kind": "issue-decision",
+        "statement": null,
+        "choice": 42,
+        "steps": false,
+        "rule": {},
+        "takeaway": []
+      },
+      "valid": true
+    },
+    {
+      "label": "authority object URI missing",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "authority": {
+          "revision": "r1"
+        }
+      },
+      "valid": false,
+      "path": "/properties/authority/uri"
+    },
+    {
+      "label": "authority object URI nonstring",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "authority": {
+          "uri": 42,
+          "revision": "r1"
+        }
+      },
+      "valid": false,
+      "path": "/properties/authority/uri"
+    },
+    {
+      "label": "authority object URI relative",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "authority": {
+          "uri": "/relative",
+          "revision": "r1"
+        }
+      },
+      "valid": false,
+      "path": "/properties/authority/uri"
+    },
+    {
+      "label": "authority component regression https://host/p?q=1&r=2",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "authority": "https://host/p?q=1&r=2"
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "authority component regression https://user:pw@host/p",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "authority": "https://user:pw@host/p"
+      },
+      "valid": true,
+      "path": ""
+    },
+    {
+      "label": "authority component regression https://[::1",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "authority": "https://[::1"
+      },
+      "valid": false,
+      "path": "/properties/authority"
+    },
+    {
+      "label": "authority component regression https://[::1]x/",
+      "type": "policy",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "authority": "https://[::1]x/"
+      },
+      "valid": false,
+      "path": "/properties/authority"
+    },
+    {
+      "label": "observedAt zero calendar component 0000-01-01T00:00:00Z",
+      "type": "observation",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "observedAt": "0000-01-01T00:00:00Z"
+      },
+      "valid": false,
+      "path": "/properties/observedAt"
+    },
+    {
+      "label": "observedAt zero calendar component 2024-00-01T00:00:00Z",
+      "type": "observation",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "observedAt": "2024-00-01T00:00:00Z"
+      },
+      "valid": false,
+      "path": "/properties/observedAt"
+    },
+    {
+      "label": "observedAt zero calendar component 2024-01-00T00:00:00Z",
+      "type": "observation",
+      "properties": {
+        "title": "x",
+        "body": "",
+        "observedAt": "2024-01-00T00:00:00Z"
+      },
+      "valid": false,
+      "path": "/properties/observedAt"
+    },
+    {
+      "label": "requirement null body is not empty",
+      "type": "requirement",
+      "properties": {
+        "title": "x",
+        "body": null
+      },
+      "valid": false,
+      "path": "/properties/body"
+    }
+  ]
+}
