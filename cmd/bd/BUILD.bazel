@@ -1963,6 +1963,8 @@ exports_files(
 # Synthetic legacy export fixtures linked from the qualification report.
 exports_files(
     [
+        "testdata/legacy-import-complete/ordinary.jsonl",
+        "testdata/legacy-import-complete/producer.json",
         "testdata/legacy-import/ordinary.jsonl",
         "testdata/legacy-import/producer.json",
     ],

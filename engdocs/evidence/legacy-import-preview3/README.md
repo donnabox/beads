@@ -43,15 +43,13 @@ New storage tests cover applied/reopened field families, actual late context
 cancellation/deadline, and normalized comment IDs/times and late dedup refusal;
 these need both engines. No pending test is claimed to have passed.
 
-The [prepared installed completeness test](completeness-workflow.patch) is retained
-as a patch until genuine producer fixtures exist; it is not registered as a
-mandatory test with missing data. After Janet explicitly hands back the engine slot, apply this patch
-and run the committed [producer generator](../../../scripts/legacy-import-fixture.py)
-with its completeness profile, the clean canonical producer at
-`76fde9c9cb0865d430bf12d76fc473490f51128a`, and prefix `web-app`. The intended corpus
-has four Issues and 16 Memory keys. Do not handwrite the ordinary export. Add the
-generated fixture/receipt exports and docsync runfiles, freeze/install the exact
-new source, and execute both installed modes without skips before readiness.
+The [prepared installed completeness test](completeness-workflow.patch) has now
+been activated using Janet's genuine four-Issue/sixteen-Memory producer corpus.
+[Activation and frozen evidence](../legacy-import-preview3-preparation-2026-10-18/producer-completeness/README.md)
+pin exact source, binary, generator, export and receipt hashes. The patch remains
+a historical artifact; do not apply it twice. Production source is unchanged.
+Fresh activated-source review and exact-source installed embedded/shared-server
+proof with zero required skips remain open; producer success is not import proof.
 
 ## Council and open gates
 
