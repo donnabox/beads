@@ -1,0 +1,112 @@
+{
+  "stageSummary": {
+    "node-version": {
+      "rawExit": 0,
+      "accepted": true,
+      "elapsedSeconds": 3.8489435841329396,
+      "logSha256": "a8f8f7ba69d43285857a0ea34017ef8dadd3ba012404bb7dd188fc773cf63ee2",
+      "logBytes": 9,
+      "rootGateSha256": "65b874a60358f8a89224e656432679d1c92756688863672b8d29f0c12a7033bd"
+    },
+    "pnpm-version": {
+      "rawExit": 0,
+      "accepted": true,
+      "elapsedSeconds": 4.128280375152826,
+      "logSha256": "6784d6c924df1c8341f9f841f5b5b20c37255de3d34f923baebc0a557d5d5201",
+      "logBytes": 8,
+      "rootGateSha256": "65b874a60358f8a89224e656432679d1c92756688863672b8d29f0c12a7033bd"
+    },
+    "workspace-install": {
+      "rawExit": 0,
+      "accepted": true,
+      "elapsedSeconds": 4.525795875117183,
+      "logSha256": "4d7f73f3ee7f3ccfd6ac8ab0e182d3cfed51b4217f862b48a1f5eade02baa3d7",
+      "logBytes": 86,
+      "rootGateSha256": "65b874a60358f8a89224e656432679d1c92756688863672b8d29f0c12a7033bd"
+    },
+    "bind-workspace-tools": {
+      "rawExit": 0,
+      "accepted": true,
+      "elapsedSeconds": 8.557451459113508,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logBytes": 0,
+      "rootGateSha256": "65b874a60358f8a89224e656432679d1c92756688863672b8d29f0c12a7033bd"
+    },
+    "typecheck": {
+      "rawExit": 0,
+      "accepted": true,
+      "elapsedSeconds": 4.862430165987462,
+      "logSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+      "logBytes": 29,
+      "rootGateSha256": "243a21f87d8d1622cdfba7a6ffdacdfd3c8adb63980500ee11c91f401a4e1361"
+    },
+    "format-check": {
+      "rawExit": 0,
+      "accepted": true,
+      "elapsedSeconds": 4.217156250029802,
+      "logSha256": "24acf49fe6ddc79f3953805a53f642526d7e22101df6aa6e7e40137025ac1cc6",
+      "logBytes": 43,
+      "rootGateSha256": "243a21f87d8d1622cdfba7a6ffdacdfd3c8adb63980500ee11c91f401a4e1361"
+    },
+    "lint": {
+      "rawExit": 0,
+      "accepted": true,
+      "elapsedSeconds": 4.177292624954134,
+      "logSha256": "e8661f9a64548a9f8fa872f02ef254bf73c8da3047f16a74586d0884b1008507",
+      "logBytes": 16852,
+      "rootGateSha256": "243a21f87d8d1622cdfba7a6ffdacdfd3c8adb63980500ee11c91f401a4e1361"
+    },
+    "fresh-build": {
+      "rawExit": 0,
+      "accepted": true,
+      "elapsedSeconds": 5.1611510422080755,
+      "logSha256": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208",
+      "logBytes": 72,
+      "rootGateSha256": "243a21f87d8d1622cdfba7a6ffdacdfd3c8adb63980500ee11c91f401a4e1361"
+    },
+    "bind-fresh-build": {
+      "rawExit": 0,
+      "accepted": true,
+      "elapsedSeconds": 8.916089458856732,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "logBytes": 0,
+      "rootGateSha256": "243a21f87d8d1622cdfba7a6ffdacdfd3c8adb63980500ee11c91f401a4e1361"
+    }
+  },
+  "currentSourceFilesRehashed": 679,
+  "currentSourceIdentity": "9b7d3a753bc22a3188f5dda7199fdb7321f65dfa0fa745cce082f3f82a837a9f",
+  "sourceMapDefaultSortedEncodingVerified": true,
+  "toolsVerified": 11,
+  "buildInventoryEntriesVerified": 476,
+  "buildInventoryHasNoMissingExtraOrSymlinks": true,
+  "sourcePreparationFixedMembersVerified": 955,
+  "authorizedMutableExceptions": [
+    {
+      "path": "execution-gate.json",
+      "frozenSha256": "6f6b28fbdf2cde235e25ed49947c2d6df76126f2e011752e91ba1e98355f7631",
+      "actualSha256": "76ef4b0b8df1b2a3d08add6fae19e401cc799ecda22ca6803f2742e7ebbe4c3e",
+      "authority": "separate exact root gate epochs bound below"
+    }
+  ],
+  "implementationMembersVerified": 946,
+  "observation001FilesUnchanged": 46,
+  "allObservedPidsAbsent": 97,
+  "allObservedGroupsAbsent": 9,
+  "rootBuildAcceptanceSha256": "0f2730f5ecff2f1ba7063b697f3a5e4f057075b742d3f50274e79100010e28e3",
+  "buildMapSha256": "909ff1d2f982a4d35bc8b36a5b6357f27267760d9e1f596d518855894b944e7f",
+  "lintSummary": {
+    "rawExit": 0,
+    "warnings": 70,
+    "infos": 21,
+    "diagnosticsNotShownByTool": 71,
+    "rawLogRetainedCompletely": true
+  },
+  "actualNewStagesOnly": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build"
+  ],
+  "testsArchiveConsumerInstalledCredit": false
+}

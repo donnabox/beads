@@ -1,0 +1,14 @@
+{
+  "module": {
+    "135": "  if (Object.keys(captured).length > 10000) return refuse(\"capacity\");"
+  },
+  "test": {
+    "1289": "    // These supplied records are deliberately not valid transport metadata. At10000 keys,",
+    "1292": "    let nestedVisits = 0;",
+    "1296": "        nestedVisits++;",
+    "1300": "    for (const length of [10000, 10001]) {",
+    "1313": "              exactConfiguration: { ...exact(c), supplemental: suppliedRecord },",
+    "1316": "        length === 10000 ? \"configuration-mismatch\" : \"capacity\",",
+    "1319": "    expect(nestedVisits).toBe(0);"
+  }
+}

@@ -1,0 +1,29 @@
+--- a/packages/conformance/test-support/profile-evidence.test.ts
++++ b/packages/conformance/test-support/profile-evidence.test.ts
+@@ -1206,9 +1206,6 @@
+         r.actions = [];
+       },
+       (r: Data) => {
+-        (r.exchanges as Data[])[0]!.transportError = { category: "deadline" };
+-      },
+-      (r: Data) => {
+         delete (r.actions as Data[]).at(-1)!.executionError;
+       },
+       (r: Data) => {
+--- a/packages/conformance/test-support/profile-evidence.ts
++++ b/packages/conformance/test-support/profile-evidence.ts
+@@ -660,14 +660,6 @@
+     const error = reportRecord(last.executionError, ["category", "message"]);
+     if (error.category !== "not-implemented") refuse("invalid-report");
+     reportText(error.message);
+-    // An earlier action failure cannot precede a newly reached missing executor.
+-    for (const value of actions.slice(0, -1))
+-      if (record(value).executionError !== undefined) refuse("invalid-report");
+-    for (const value of exchanges) {
+-      const exchange = record(value);
+-      if (exchange.transportError !== undefined || exchange.harnessError !== undefined)
+-        refuse("invalid-report");
+-    }
+     for (const lane of [exchanges, actions])
+       for (const value of lane) {
+         const r = record(value),

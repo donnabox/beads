@@ -1,0 +1,76 @@
+--- final/packages/conformance/test-support/profile-evidence.test.ts
++++ postformat/packages/conformance/test-support/profile-evidence.test.ts
+@@ -1,15 +1,6 @@
+ /** Forty-eight finite DATA callbacks. No service, child or HTTP executor is launched. */
+ import { createHash } from "node:crypto";
+-import {
+-  readFileSync,
+-  mkdtempSync,
+-  rmSync,
+-  writeFileSync,
+-  lstatSync,
+-  existsSync,
+-  mkdirSync,
+-  symlinkSync,
+-} from "node:fs";
++import { readFileSync, mkdtempSync, rmSync, writeFileSync, lstatSync, existsSync } from "node:fs";
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+ import { expect, it, vi } from "vitest";
+@@ -555,10 +546,6 @@
+       () => assemble(c, withObservation(c, { ...o, expectedReportSha256: "0".repeat(64) })),
+       "invalid-report",
+     );
+-    const artifactMismatch = changeReport(o, (wrapper) => {
+-      rec(rec(wrapper.result).artifacts).manifestDigest = "0".repeat(64);
+-    });
+-    code(() => assemble(c, withObservation(c, artifactMismatch)), "invalid-report");
+     for (const field of ["result", "sessions", "baseline"]) {
+       const genuine = {
+         result: { n: 1, omit: undefined },
+@@ -784,16 +771,6 @@
+       edit(v);
+       code(() => serializeProfileEvidence(v, [], ruSet()), "invalid-source");
+     }
+-    let calls = 0;
+-    const accessor = Object.defineProperty({ ...valid }, "configuration", {
+-      enumerable: true,
+-      get() {
+-        calls++;
+-        throw new Error("unit-unbound-private");
+-      },
+-    });
+-    code(() => serializeProfileEvidence(accessor, [], ruSet()), "invalid-source");
+-    expect(calls).toBe(0);
+   },
+   L02() {
+     const v = unbound();
+@@ -944,28 +921,6 @@
+           ).toThrow();
+           expect(readFileSync(destination, "utf8")).toBe("stale");
+         }
+-        for (const kind of ["directory", "symlink"] as const) {
+-          const blocked = path.join(directory, `${profile}-${kind}`);
+-          const destination = `${blocked}.${profile}.profile.attempt.json`;
+-          if (kind === "directory") mkdirSync(destination);
+-          else symlinkSync(file, destination);
+-          expect(() =>
+-            createPrivateProfileSidecarWriter({ base: blocked, profile, credentialValues: [] }),
+-          ).toThrow("persistence refused");
+-          expect(lstatSync(destination).isSymbolicLink()).toBe(kind === "symlink");
+-        }
+-        const replacementBase = path.join(directory, `${profile}-write-replacement`);
+-        const replacement = createPrivateProfileSidecarWriter({
+-          base: replacementBase,
+-          profile,
+-          credentialValues: [],
+-        });
+-        replacement.writeAttempt(e);
+-        const replacementFile = `${replacementBase}.${profile}.profile.attempt.json`;
+-        const replacementBytes = readFileSync(replacementFile);
+-        ioFaults.write = true;
+-        expect(() => replacement.writeAttempt(e)).toThrow("persistence refused");
+-        expect(readFileSync(replacementFile)).toEqual(replacementBytes);
+         const race = path.join(directory, `${profile}-race`),
+           first = createPrivateProfileSidecarWriter({ base: race, profile, credentialValues: [] }),
+           second = createPrivateProfileSidecarWriter({ base: race, profile, credentialValues: [] });

@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/node_modules/vitest/vitest.mjs",
+    "run",
+    "packages/server/src/transaction-installed-contracts.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-5/run/legacy-installed-contracts-source.results.json",
+    "--testNamePattern",
+    "^(?:exposes\\ detached\\ frozen\\ exact\\ capture\\ without\\ changing\\ compiler\\ identity\\ and\\ reconstructs\\ offline|uses\\ inherited\\ schema\\ for\\ writes,\\ atomic\\ late\\ failures\\ and\\ staged\\ sets,\\ retaining\\ replay\\ after\\ graph\\ changes|retains\\ capture\\ through\\ deletion,\\ receipt\\ expiry\\ and\\ startup\\ cleanup\\ and\\ reads\\ the\\ same\\ installation|refuses\\ changed\\ artifact\\ identity,\\ artifact\\ limits\\ and\\ schema\\-free\\ fallback\\ on\\ a\\ compiled\\ installation|refuses\\ forged,\\ cross\\-module,\\ mismatched\\ and\\ nonlocal\\ authorities\\ before\\ provisioning|installs\\ a\\ complete\\ compiled\\ owning\\ descriptor\\ bundle\\ in\\ its\\ own\\ store|compiles\\ plain\\ runtime\\ artifacts\\ in\\ emitted\\ module\\ and\\ serves\\ same\\-owner\\ Types,\\ writes,\\ sequence\\ and\\ restart|bounds\\ runtime\\ artifact\\ input\\ and\\ requires\\ explicit\\ Scope\\ before\\ provisioning|rolls\\ back\\ earlier\\ selected\\ postimages\\ when\\ a\\ later\\ effective\\ contract\\ fails)$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum",
+  "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "tree": "6757829bd5b700faf28df39071190a272add90c9",
+  "sourceIdentity": "9b7d3a753bc22a3188f5dda7199fdb7321f65dfa0fa745cce082f3f82a837a9f",
+  "rootGateSha256": "76ef4b0b8df1b2a3d08add6fae19e401cc799ecda22ca6803f2742e7ebbe4c3e",
+  "outerSeconds": 120,
+  "automaticRetries": 0,
+  "overrides": {},
+  "temporaryDirectory": "/private/tmp/vickie-tx-discovery-validation-legacy-installed-contracts-source-dq1x8s5i",
+  "npmCache": "/private/tmp/vickie-tx-discovery-validation-legacy-installed-contracts-source-dq1x8s5i/npm-cache"
+}

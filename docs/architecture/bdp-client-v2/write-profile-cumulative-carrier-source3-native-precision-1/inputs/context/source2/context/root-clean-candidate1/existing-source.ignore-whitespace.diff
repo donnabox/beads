@@ -1,0 +1,543 @@
+diff --git a/apps/bdptest/src/transactional-matrix.test.ts b/apps/bdptest/src/transactional-matrix.test.ts
+index 89ceeb5..199e2c1 100644
+--- a/apps/bdptest/src/transactional-matrix.test.ts
++++ b/apps/bdptest/src/transactional-matrix.test.ts
+@@ -5,6 +5,14 @@ import { tmpdir } from "node:os";
+ import path from "node:path";
+ import { fileURLToPath } from "node:url";
+ import { expect, it } from "vitest";
++import { canonicalJson } from "../../../packages/conformance/src/canonical-json.js";
++import {
++  copySourceBytes,
++  parseBoundedJson,
++} from "../../../packages/conformance/src/artifact-bundle.js";
++import { ownData } from "../../../packages/conformance/test-support/profile-contract-plan.js";
++import { assembleProfileEvidence } from "../../../packages/conformance/test-support/profile-evidence.js";
++import { createPrivateProfileSidecarWriter } from "../test-support/read-update-artifact-execution.js";
+ import {
+   createJsonSchemaValidator,
+   createRawHttpExchangeExecutor,
+@@ -100,6 +108,7 @@ type InstalledObservation = {
+   sessions: Record<string, unknown>[];
+   baseline: ReturnType<typeof installedTransactionBinding>;
+ };
++const carrierCompletions = new WeakMap<InstalledObservation, { passed(): void; failed(): void }>();
+ async function observe(control?: {
+   readonly budgetMs?: number;
+   /** Negative-test deadline begins after the first real exchange, with startup still bounded. */
+@@ -108,7 +117,10 @@ async function observe(control?: {
+   readonly collapsePrincipalB?: boolean;
+   readonly onDispatch?: (request: PrincipalDispatchInput, session: ObservationSession) => void;
+   /** Retain genuine returned evidence before cleanup can fail; never replace it. */
+-  readonly onObserved?: (observed: InstalledObservation) => void;
++  readonly onObserved?: (
++    observed: InstalledObservation,
++  ) => void | { bytes: Uint8Array; rawWrapperSha256: string };
++  readonly carrierPath?: string;
+   readonly invalidReceiptCredentials?: boolean | "set-update" | "set-delete";
+   /** Negative-only removal of one already declared canonical set route. */
+   readonly omitRoute?: {
+@@ -163,6 +175,28 @@ async function observe(control?: {
+     principalB: randomBytes(32).toString("base64url"),
+   };
+   const roles = principalCredentialRoles(tokens, control?.collapsePrincipalB ?? false);
++  let carrierWriter: ReturnType<typeof createPrivateProfileSidecarWriter> | undefined;
++  let carrierRefused = false;
++  if (control?.carrierPath) {
++    try {
++      carrierWriter = createPrivateProfileSidecarWriter({
++        base: control.carrierPath,
++        profile: "transactional",
++        credentialValues: Object.values(tokens),
++      });
++    } catch {
++      carrierRefused = true;
++    }
++  }
++  let carrierCleanup: "pending" | "reported-complete" | "failed" = "pending";
++  const carrierFailureStages = new Set<"execution" | "assertion" | "cleanup">();
++  let publishCarrier:
++    | ((
++        stage: "pending" | "reported-complete" | "failed",
++        final?: boolean,
++        reason?: "execution" | "assertion",
++      ) => void)
++    | undefined;
+   const configuration = {
+     scope,
+     directory: path.join(directory, "bootstrap"),
+@@ -356,7 +390,104 @@ async function observe(control?: {
+       target.context,
+     );
+     observed = { result, sessions, baseline };
+-    control?.onObserved?.(observed);
++    let genuine: InstalledObservation | undefined;
++    if (control?.carrierPath) {
++      try {
++        genuine = structuredClone(observed);
++      } catch {
++        carrierRefused = true;
++      }
++    }
++    // Keep ORIGINAL hook exceptions in the original error/cleanup path.
++    const handoff = control?.onObserved?.(observed);
++    if (control?.carrierPath) {
++      let wrapperBytes: Uint8Array | undefined;
++      try {
++        if (!genuine || carrierRefused || !handoff) throw new Error("private carrier unavailable");
++        const fields = ownData(handoff, ["bytes", "rawWrapperSha256"]);
++        const bytes = copySourceBytes({ bytes: fields.bytes as Uint8Array }, "manifest", 4194304);
++        if (createHash("sha256").update(bytes).digest("hex") !== fields.rawWrapperSha256)
++          throw new Error("private carrier mismatch");
++        const parsed = ownData(parseBoundedJson(bytes, "manifest", "private-profile-report"), [
++          "sourceCommit",
++          "entry",
++          "result",
++          "sessions",
++          "baseline",
++          "supplemental",
++          "sequenceMemberSupplemental",
++          "principalSupplemental",
++          "conditionalSupplemental",
++        ]);
++        if (parsed.sourceCommit !== sourceCommit || parsed.entry !== entry)
++          throw new Error("private carrier identity");
++        for (const field of ["result", "sessions", "baseline"] as const)
++          if (
++            canonicalJson(JSON.parse(JSON.stringify(genuine[field]))) !==
++            canonicalJson(parsed[field])
++          )
++            throw new Error("private carrier representation");
++        wrapperBytes = bytes;
++      } catch {
++        carrierRefused = true;
++      }
++      publishCarrier = (stage, final = false, reason) => {
++        if (reason) carrierFailureStages.add(reason);
++        if (stage === "failed") carrierFailureStages.add("cleanup");
++        if (carrierRefused) carrierFailureStages.add("execution");
++        if (!carrierWriter) return;
++        try {
++          const failed = carrierFailureStages.size > 0;
++          const envelope = assembleProfileEvidence(
++            loadProfileContractSelection("transactional"),
++            baseline.served,
++            {
++              kind: "transactional",
++              manifest: manifestSource,
++              fixture: fixtureSource,
++              coverage: source("coverage-v1.json"),
++            },
++            wrapperBytes && !carrierRefused
++              ? [
++                  {
++                    ownerId: "transactional-baseline",
++                    sourceCommit,
++                    configuration: baseline.served,
++                    runtimeConfigurationIdentity: baseline.runtimeConfigurationIdentity,
++                    exactConfiguration: target!.target.exactConfiguration,
++                    ready: [genuine!.baseline, ...genuine!.sessions],
++                    reportSource: { bytes: wrapperBytes },
++                    expectedReportSha256: createHash("sha256").update(wrapperBytes).digest("hex"),
++                    lifecycle: { cleanup: stage === "failed" ? "failed" : stage },
++                  },
++                ]
++              : [null],
++            {
++              outcome: failed ? "failed" : final ? "observed" : "running",
++              failureStages: [...carrierFailureStages],
++              owners: [
++                {
++                  id: "transactional-baseline",
++                  status: failed ? "failed" : "returned",
++                  cleanup: stage,
++                  evidence: wrapperBytes && !carrierRefused ? "retained" : "absent",
++                },
++              ],
++              sourceDirty: null,
++            },
++          );
++          carrierWriter.writeAttempt(envelope);
++          if (final && !failed) carrierWriter.writeSummary(envelope);
++        } catch {
++          carrierRefused = true;
++        }
++      };
++      publishCarrier("pending");
++      carrierCompletions.set(observed, {
++        passed: () => publishCarrier?.(carrierCleanup, true),
++        failed: () => publishCarrier?.(carrierCleanup, false, "assertion"),
++      });
++    }
+   } catch (error) {
+     failure = error;
+   } finally {
+@@ -370,8 +501,16 @@ async function observe(control?: {
+     } finally {
+       clearTimeout(timer);
+       clearTimeout(firstExchangeTimer);
++      if (control?.carrierPath) {
++        try {
+           rmSync(directory, { recursive: true, force: true });
++        } catch (cleanup) {
++          cleanupFailures.push(cleanup);
++        }
++      } else rmSync(directory, { recursive: true, force: true });
+     }
++    carrierCleanup = cleanupFailures.length === 0 ? "reported-complete" : "failed";
++    publishCarrier?.(carrierCleanup, false, failure === undefined ? undefined : "execution");
+   }
+   if (cleanupFailures.length) {
+     const causes = [...new Set([...(failure === undefined ? [] : [failure]), ...cleanupFailures])];
+@@ -395,13 +534,16 @@ it("observes seventeen partial Transactional contracts through packed-capable ac
+     principalWire.onDispatch,
+     withPrincipalWire(principalWire, composedMemberWire(crossWire, minimumWire, memberWire)),
+   );
++  const carrierPath = process.env.BDP_PRIVATE_PROFILE_EVIDENCE_PATH;
+   const observed = await observe({
++    ...(carrierPath ? { carrierPath } : {}),
+     children,
+     ...conditionalRouting,
+     onObserved(observed) {
+-      if (process.env.BDP_TRANSACTIONAL_OBSERVATION_OUTPUT)
+-        writeFileSync(
+-          process.env.BDP_TRANSACTIONAL_OBSERVATION_OUTPUT,
++      const legacy = process.env.BDP_TRANSACTIONAL_OBSERVATION_OUTPUT;
++      if (!legacy && !carrierPath) return;
++      const serialize = () =>
++        Buffer.from(
+           JSON.stringify(
+             {
+               sourceCommit,
+@@ -416,8 +558,25 @@ it("observes seventeen partial Transactional contracts through packed-capable ac
+             2,
+           ) + "\n",
+         );
++      // Legacy serialization/write errors remain genuine hook errors.
++      if (legacy) {
++        const bytes = serialize();
++        writeFileSync(legacy, bytes);
++        if (carrierPath)
++          return { bytes, rawWrapperSha256: createHash("sha256").update(bytes).digest("hex") };
++      } else {
++        // The NEW carrier-only handoff can fail without replacing actual product evidence.
++        try {
++          const bytes = serialize();
++          return { bytes, rawWrapperSha256: createHash("sha256").update(bytes).digest("hex") };
++        } catch {
++          return;
++        }
++      }
+     },
+   });
++  let productAssertionsComplete = false;
++  try {
+     const implemented = new Set(bundle.manifest.scenarios.map((s) => s.id));
+     expect(loadProfileContractSelection("transactional").required).toHaveLength(251);
+     expect(observed.result.scenarios).toHaveLength(256); // Includes five optional catalog rows.
+@@ -440,7 +599,9 @@ it("observes seventeen partial Transactional contracts through packed-capable ac
+     expect(
+       dynamic.every(
+         (e) =>
+-        e.request.exact?.writeState === "complete" && e.sourceReceiptObservation && e.servedSession,
++          e.request.exact?.writeState === "complete" &&
++          e.sourceReceiptObservation &&
++          e.servedSession,
+       ),
+     ).toBe(true);
+     expect(dynamic.every((e) => e.request.exact?.bodyDigest === undefined)).toBe(true);
+@@ -616,7 +777,8 @@ it("observes seventeen partial Transactional contracts through packed-capable ac
+         expect(exchange.request.exact!.bodyOctets).toBeLessThanOrEqual(2048);
+       expect(exchange.response!.decodedBodyBytes).toBeLessThanOrEqual(8192);
+     }
+-  for (const action of cross.actions!) expect(action.assertions.every((a) => a.passed)).toBe(true);
++    for (const action of cross.actions!)
++      expect(action.assertions.every((a) => a.passed)).toBe(true);
+     expect(cross.state).toBe("pass");
+     expect(cross.exchanges.at(-1)!.request.id).toBe("x-events");
+     crossWire.finish();
+@@ -641,6 +803,13 @@ it("observes seventeen partial Transactional contracts through packed-capable ac
+         claimEligible: false,
+       }),
+     );
++    productAssertionsComplete = true;
++  } finally {
++    const carrier = carrierCompletions.get(observed);
++    if (productAssertionsComplete) carrier?.passed();
++    else carrier?.failed();
++    carrierCompletions.delete(observed);
++  }
+ }, 120000);
+ 
+ it.each([
+diff --git a/apps/bdptest/test-support/read-update-artifact-execution.ts b/apps/bdptest/test-support/read-update-artifact-execution.ts
+index 867379f..80d0c97 100644
+--- a/apps/bdptest/test-support/read-update-artifact-execution.ts
++++ b/apps/bdptest/test-support/read-update-artifact-execution.ts
+@@ -1,6 +1,16 @@
+ /** Private installed-test association only. Never a ConformanceRunResult or admission artifact. */
+ import { createHash, randomUUID } from "node:crypto";
+-import { existsSync, renameSync, rmSync, writeFileSync } from "node:fs";
++import {
++  existsSync,
++  renameSync,
++  rmSync,
++  writeFileSync,
++  openSync,
++  closeSync,
++  fstatSync,
++  lstatSync,
++  readFileSync,
++} from "node:fs";
+ import { isDeepStrictEqual } from "node:util";
+ import {
+   canonicalJson,
+@@ -15,6 +25,116 @@ import {
+   type ReadUpdateArtifactSet,
+ } from "@bdp/conformance/testing";
+ import { installedContractsDigest } from "./installed-contract-identity.js";
++import {
++  assembleProfileEvidence,
++  serializeProfileEvidence,
++} from "../../../packages/conformance/test-support/profile-evidence.js";
++
++/** Separate private sidecars. First creation is exclusive; ownership is never inferred. */
++export function createPrivateProfileSidecarWriter(options: {
++  readonly base: string;
++  readonly profile: "read-update" | "transactional";
++  readonly credentialValues: readonly string[];
++  readonly unboundSet?: ReadUpdateArtifactSet;
++}) {
++  const paths = {
++    attempt: `${options.base}.${options.profile}.profile.attempt.json`,
++    summary: `${options.base}.${options.profile}.profile.json`,
++  };
++  const owned = new Map<string, { dev: number; ino: number; bytes: number; digest: string }>();
++  const failure = () =>
++    Object.assign(new Error("private profile evidence persistence refused"), {
++      code: "persistence",
++    });
++  for (const destination of Object.values(paths)) {
++    try {
++      lstatSync(destination);
++      throw failure();
++    } catch (error) {
++      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw failure();
++    }
++  }
++  function write(destination: string, envelope: unknown) {
++    const bytes = serializeProfileEvidence(envelope, options.credentialValues, options.unboundSet);
++    const captured = JSON.parse(Buffer.from(bytes).toString("utf8")) as {
++      profile?: unknown;
++      requestedProfile?: unknown;
++    };
++    if ((captured.profile ?? captured.requestedProfile) !== options.profile) throw failure();
++    const hash = createHash("sha256").update(bytes).digest("hex");
++    const previous = owned.get(destination);
++    if (!previous) {
++      let fd: number | undefined;
++      try {
++        fd = openSync(destination, "wx", 0o600);
++        writeFileSync(fd, bytes);
++        const stat = fstatSync(fd);
++        owned.set(destination, {
++          dev: stat.dev,
++          ino: stat.ino,
++          bytes: bytes.byteLength,
++          digest: hash,
++        });
++      } catch {
++        throw failure();
++      } finally {
++        if (fd !== undefined) {
++          try {
++            closeSync(fd);
++          } catch {
++            throw failure();
++          }
++        }
++      }
++      return;
++    }
++    const temporary = `${destination}.pending-${randomUUID()}`;
++    let created = false;
++    try {
++      const stat = lstatSync(destination);
++      if (
++        !stat.isFile() ||
++        stat.dev !== previous.dev ||
++        stat.ino !== previous.ino ||
++        stat.size !== previous.bytes ||
++        createHash("sha256").update(readFileSync(destination)).digest("hex") !== previous.digest
++      )
++        throw failure();
++      const fd = openSync(temporary, "wx", 0o600);
++      created = true;
++      try {
++        writeFileSync(fd, bytes);
++      } finally {
++        closeSync(fd);
++      }
++      renameSync(temporary, destination);
++      created = false;
++      const current = lstatSync(destination);
++      owned.set(destination, {
++        dev: current.dev,
++        ino: current.ino,
++        bytes: bytes.byteLength,
++        digest: hash,
++      });
++    } catch {
++      if (created) {
++        try {
++          rmSync(temporary);
++        } catch {
++          throw new AggregateError(
++            [failure(), failure()],
++            "private profile evidence persistence refused",
++          );
++        }
++      }
++      throw failure();
++    }
++  }
++  return Object.freeze({
++    writeAttempt: (envelope: unknown) => write(paths.attempt, envelope),
++    writeSummary: (envelope: unknown) => write(paths.summary, envelope),
++  });
++}
+ 
+ type Bundle = ReadUpdateArtifactSet["shards"][number]["bundle"];
+ export function artifactRoutes(bundle: Bundle, scope: string) {
+@@ -374,6 +494,21 @@ export function createArtifactEvidenceWriter(
+       | undefined,
+   }));
+   const snapshots = new Map<number, Record<string, unknown>>();
++  const profilePath =
++    filename && filename === process.env.BDP_CUMULATIVE_REPORT_PATH
++      ? process.env.BDP_PRIVATE_PROFILE_EVIDENCE_PATH
++      : undefined;
++  const sidecar = profilePath
++    ? createPrivateProfileSidecarWriter({
++        base: profilePath,
++        profile: "read-update",
++        credentialValues: credentials,
++        unboundSet: set,
++      })
++    : undefined;
++  let profileConfiguration: ArtifactObservation["configuration"] | undefined;
++  const profileBindings = new Map<number, ArtifactObservation["configuration"]>();
++  const profileBytes = new Map<number, Uint8Array>();
+   let failed = false;
+   type FailureStage = "execution" | "assertion" | "cleanup" | "credential-check";
+   const failureStages: FailureStage[] = [];
+@@ -443,6 +578,7 @@ export function createArtifactEvidenceWriter(
+     };
+     const encoded = safeJson(value);
+     if (filename) replaceFile(`${filename}.attempt.json`, encoded);
++    if (sidecar) sidecar.writeAttempt(profileEvidence(value.outcome));
+     return value;
+   }
+   function persist(index: number) {
+@@ -452,10 +588,79 @@ export function createArtifactEvidenceWriter(
+     snapshot.cleanupComplete = rows[index]!.cleanup === "complete";
+     const encoded = safeJson(snapshot);
+     if (filename) replaceFile(`${filename}.${rows[index]!.id}.json`, encoded);
++    if (sidecar) profileBytes.set(index, Buffer.from(encoded));
+     rows[index]!.evidence = "retained";
+     rows[index]!.writtenReportDigest = createHash("sha256").update(encoded).digest("hex");
+     rows[index]!.writtenReportBytes = Buffer.byteLength(encoded);
+   }
++  function profileEvidence(outcome: "running" | "failed" | "observed") {
++    const attempt = {
++      outcome,
++      failureStages: [...failureStages],
++      owners: rows.map((r) => ({
++        id: r.id,
++        status: r.status,
++        cleanup: r.cleanup === "complete" ? "reported-complete" : r.cleanup,
++        evidence: r.evidence,
++      })),
++      sourceDirty:
++        typeof snapshots.get(0)?.sourceDirty === "boolean"
++          ? (snapshots.get(0)!.sourceDirty as boolean)
++          : null,
++    };
++    if (!profileConfiguration)
++      return {
++        attemptVersion: 1,
++        kind: "private-profile-attempt-unbound",
++        bindingStatus: "unbound",
++        configuration: null,
++        claimEligible: false,
++        qualificationReady: false,
++        requestedProfile: "read-update",
++        declaredSourceCommit: sourceCommit,
++        artifactDigests: set.digests,
++        requiredIds: set.requirements.map((r) => r.id),
++        owners: set.requirements,
++        observations: set.requirements.map(() => null),
++        attempt,
++        limitations: [
++          "no returned served configuration yet",
++          "not a bound carrier, target observation, admission or qualification",
++        ],
++      };
++    return assembleProfileEvidence(
++      set.selection,
++      profileConfiguration,
++      { kind: "read-update", set },
++      set.shards.map((shard, index) => {
++        const bytes = profileBytes.get(index),
++          snapshot = snapshots.get(index),
++          configuration = profileBindings.get(index);
++        if (!bytes || !snapshot || !configuration) return null;
++        return {
++          ownerId: shard.id,
++          sourceCommit,
++          configuration,
++          runtimeConfigurationIdentity: String(
++            (snapshot.baselineReceipt as Record<string, unknown>).configurationIdentity,
++          ),
++          exactConfiguration: snapshot.exactConfiguration,
++          ready: [snapshot.baselineReceipt, ...(snapshot.sessions as unknown[])],
++          reportSource: { bytes },
++          expectedReportSha256: createHash("sha256").update(bytes).digest("hex"),
++          lifecycle: {
++            cleanup:
++              rows[index]!.cleanup === "complete"
++                ? ("reported-complete" as const)
++                : rows[index]!.cleanup === "failed"
++                  ? ("failed" as const)
++                  : ("pending" as const),
++          },
++        };
++      }),
++      attempt,
++    );
++  }
+   const api = {
+     start(index: number) {
+       rows[index]!.status = "running";
+@@ -510,6 +715,13 @@ export function createArtifactEvidenceWriter(
+         ledger("failed", "credential-check");
+         throw error;
+       }
++      if (sidecar) {
++        assertSameServedProfileConfiguration(report.configuration, report.configuration);
++        if (profileConfiguration)
++          assertSameServedProfileConfiguration(profileConfiguration, report.configuration);
++        else profileConfiguration = report.configuration;
++        profileBindings.set(index, report.configuration);
++      }
+       snapshots.set(index, captured);
+       rows[index]!.status = "returned";
+       rows[index]!.resultDigest = digest(report.result);
+@@ -566,6 +778,7 @@ export function createArtifactEvidenceWriter(
+       });
+       ledger("observed");
+       if (filename) replaceFile(filename, encoded);
++      if (sidecar) sidecar.writeSummary(profileEvidence("observed"));
+     },
+   };
+   ledger("running");
