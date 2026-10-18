@@ -1,0 +1,24 @@
+{
+  "status": "UNPREPARED_FUTURE_MANIFEST_AND_PROTOCOL_REQUIREMENT",
+  "currentLivePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/execution-gate.json",
+  "preparedClosedSha256": "f6724552f8d880dcf1481c05aba6e616451e9607e0ecedcfd5d8f77e5559d655",
+  "onlyPermittedFutureCandidateSha256": "9088a3b9616271f3b5db19568b5b4fab2a49fceb3770359a60698582c5f00681",
+  "candidateReferencePinsHasLiveClosedSnapshot": true,
+  "helperOwnReferencePinsHasItsOwnLiveControl": false,
+  "candidateReferencePinCount": 2278,
+  "helperOwnReferencePinCount": 2215,
+  "requiredBeforeAnyActivation": [
+    "Exact future protocol/manifest must bind current f672 snapshot and separately approved literal transition of this one live file to9088.",
+    "Retain unchanged closed-copyf672, original prepared index,121 implementation members and every other applicable pin; do not edit history or ignore mismatches.",
+    "Separate preactivation verification from postactivation verification with an explicit one-file exact-value exception. Candidate historical reference-pins bytes themselves remain unchanged.",
+    "Activation and its exception evidence must be root-owned exact reviewed bytes with required separate publication/readbacks, never inferred from candidate flags.",
+    "No root authority is supplied by this review; actual protocol/manifest/rendered source must independently close their own remaining requirements."
+  ],
+  "forbidden": [
+    "Blindly verify f672 as current after activation",
+    "Drop/alias the live-control record or any other changed pin",
+    "Rewrite candidate snapshot pins to manufacture current equality",
+    "Execute on candidate receipt alone"
+  ],
+  "notAHelperSelfPinBug": "gate.py102 consumes helper3 own2215 references, which do not self-pin helper3 live gate; external candidate2278 snapshot includes that gate and needs explicit historical transition semantics."
+}

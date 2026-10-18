@@ -1,0 +1,146 @@
+{
+  "all34Fresh": true,
+  "commands": [
+    {
+      "actualInvocationAuthorized": false,
+      "executableHelper": false,
+      "futureOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/node-version",
+      "innerStageExactCurrentP3": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "--version"
+        ],
+        "automaticRetries": 0,
+        "configurationFinalized": true,
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+        "expectedStdout": "v24.16.0",
+        "id": "node-version",
+        "kind": "supervised-command",
+        "outerSeconds": 120,
+        "termAtSeconds": 115
+      },
+      "rootCwd": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+      "rootWrapperArgv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py",
+        "final",
+        "node-version"
+      ],
+      "stage": "node-version",
+      "template": "proposals/node-version.capture.txt",
+      "templateSha256": "9622a32504d70deae15cab955c34ac4f79cddc0e55d8e4ed46652c5bedeb532f"
+    },
+    {
+      "actualInvocationAuthorized": false,
+      "executableHelper": false,
+      "futureOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/pnpm-version",
+      "innerStageExactCurrentP3": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "--version"
+        ],
+        "automaticRetries": 0,
+        "configurationFinalized": true,
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+        "expectedStdout": "11.20.0",
+        "id": "pnpm-version",
+        "kind": "supervised-command",
+        "outerSeconds": 120,
+        "termAtSeconds": 115
+      },
+      "rootCwd": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+      "rootWrapperArgv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py",
+        "final",
+        "pnpm-version"
+      ],
+      "stage": "pnpm-version",
+      "template": "proposals/pnpm-version.capture.txt",
+      "templateSha256": "05f370d55248a2f0d017aacbf1e645b6003b97fc925327dd62664b7b5b6b2cfe"
+    },
+    {
+      "actualInvocationAuthorized": false,
+      "executableHelper": false,
+      "futureOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/workspace-install",
+      "innerStageExactCurrentP3": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+          "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+          "install",
+          "--offline",
+          "--frozen-lockfile"
+        ],
+        "automaticRetries": 0,
+        "configurationFinalized": true,
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+        "expectedSourceChange": "none; install outputs/tool maps separately measured",
+        "id": "workspace-install",
+        "kind": "supervised-command",
+        "outerSeconds": 120,
+        "termAtSeconds": 115
+      },
+      "rootCwd": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+      "rootWrapperArgv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py",
+        "final",
+        "workspace-install"
+      ],
+      "stage": "workspace-install",
+      "template": "proposals/workspace-install.capture.txt",
+      "templateSha256": "ec6b8f14b5054311f3cb984c8f00a0a37ee3e5b7d9e6ba6fd4cf04024533cef9"
+    },
+    {
+      "actualInvocationAuthorized": false,
+      "executableHelper": false,
+      "futureOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/bind-workspace-tools",
+      "innerStageExactCurrentP3": {
+        "acceptedRawExitCodes": [
+          0
+        ],
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/audit.py",
+          "tools"
+        ],
+        "automaticRetries": 0,
+        "contract": "Bind actual completed install log/exit plus Biome/TypeScript/Vitest/package-manager tool identities and full dependency input invariance. Failure/timeout means stop, no online retry.",
+        "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+        "id": "bind-workspace-tools",
+        "kind": "supervised-readonly-helper",
+        "mustCompleteBeforeNextStage": true,
+        "outerSeconds": 120,
+        "termAtSeconds": 115
+      },
+      "rootCwd": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+      "rootWrapperArgv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py",
+        "final",
+        "bind-workspace-tools"
+      ],
+      "stage": "bind-workspace-tools",
+      "template": "proposals/bind-workspace-tools.capture.txt",
+      "templateSha256": "4c2434393c537f142fb14e36b951644bb75dbb4e2ef2079d648487b454277440"
+    }
+  ],
+  "noArbitraryCommandInterface": true,
+  "order": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "stopFirstNonzeroMissingUnknownLatePartial": true
+}
