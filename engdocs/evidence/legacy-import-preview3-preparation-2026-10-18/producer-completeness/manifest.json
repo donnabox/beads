@@ -1,0 +1,260 @@
+{
+  "owner": "Janet",
+  "scope": "ordinary producer only; import unqualified",
+  "producerSource": "76fde9c9cb0865d430bf12d76fc473490f51128a",
+  "expectedFiles": {
+    "corpus/ordinary.jsonl": "66ac6ad8816605b084d2daae65911ca4655b17a937184d98a80e142df1e4d23e",
+    "corpus/producer.json": "b8087261f6e9107e9de362d87ac32eb5f76e9499b68d59e16a990d55f6d64eee",
+    "RESULT.md": "0f6514e77b1f0989475c78786c1caf99c2fbefc627766a9b1681e5257a588513",
+    "generator.py": "fa0335aa8fd098ee0c8459f5d36ca4937a8689bb852a2c4eaabaf5512549aa43",
+    "install/bd": "733b2a93b408ee318560146339c97ab3277f98df6c443c8797b1e6e490a715b3"
+  },
+  "archive": [
+    {
+      "source": "RESULT.md",
+      "archive": "RESULT.md.gz",
+      "expandedSHA256": "0f6514e77b1f0989475c78786c1caf99c2fbefc627766a9b1681e5257a588513"
+    },
+    {
+      "source": "run.py",
+      "archive": "run.py.gz",
+      "expandedSHA256": "adfe03752f085ef88fca0bba45032e112b154409a68632f7a6005a15ab373b63"
+    },
+    {
+      "source": "verify_frozen.py",
+      "archive": "verify_frozen.py.gz",
+      "expandedSHA256": "f92b0c0b45f366ebe4f6c9ca28351f3ed98b99f9a8b4ac3c12abe37cecb93126"
+    },
+    {
+      "source": "generator.py",
+      "archive": "generator.py.gz",
+      "expandedSHA256": "fa0335aa8fd098ee0c8459f5d36ca4937a8689bb852a2c4eaabaf5512549aa43"
+    },
+    {
+      "source": "runner-receipts.json",
+      "archive": "runner-receipts.json.gz",
+      "expandedSHA256": "fa5420c4fc5516c440260ed210ee981e67ad076d42b42f7545eaab2b4e1d9c9e"
+    },
+    {
+      "source": "runner-result.json",
+      "archive": "runner-result.json.gz",
+      "expandedSHA256": "2ca3f9f478ae4d6d771904f7d81bef375bb115899df4327ff6f328d3bba7b050"
+    },
+    {
+      "source": "go.mod",
+      "archive": "go.mod.gz",
+      "expandedSHA256": "3ce31ddbda2ac45d0edbeb31733f4b0ad362d3381ee4dc0af844a80e7b6986ef"
+    },
+    {
+      "source": "go.sum",
+      "archive": "go.sum.gz",
+      "expandedSHA256": "9e3b1ae46948c3ababd6b4df63865e907ae5afbf00a4ee560a576ac9265e4c71"
+    },
+    {
+      "source": "environment.json",
+      "archive": "environment.json.gz",
+      "expandedSHA256": "00c5237532a3e8116e2eb575dee005edce77d169b882abd6974d351c4e75282f"
+    },
+    {
+      "source": "logs/abbrev-config.stderr",
+      "archive": "logs__abbrev-config.stderr.gz",
+      "expandedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "logs/abbrev-config.stdout",
+      "archive": "logs__abbrev-config.stdout.gz",
+      "expandedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "logs/abbrev.stderr",
+      "archive": "logs__abbrev.stderr.gz",
+      "expandedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "logs/abbrev.stdout",
+      "archive": "logs__abbrev.stdout.gz",
+      "expandedSHA256": "369a35726ec81815218a31afcc4ef9180c6b16b5595f0dc9c312c0c99b0f947b"
+    },
+    {
+      "source": "logs/binary-buildinfo.stderr",
+      "archive": "logs__binary-buildinfo.stderr.gz",
+      "expandedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "logs/binary-buildinfo.stdout",
+      "archive": "logs__binary-buildinfo.stdout.gz",
+      "expandedSHA256": "106404fbed803e738fdf9b10c2646c130d59faf6985500035de2a754913200c9"
+    },
+    {
+      "source": "logs/binary-version.stderr",
+      "archive": "logs__binary-version.stderr.gz",
+      "expandedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "logs/binary-version.stdout",
+      "archive": "logs__binary-version.stdout.gz",
+      "expandedSHA256": "70fb2cd1fd567ab9a44a45e8e1fd9ff22d27beca90b1e9f092a11c139fb4e801"
+    },
+    {
+      "source": "logs/checkout.stderr",
+      "archive": "logs__checkout.stderr.gz",
+      "expandedSHA256": "890c56d7101a4c7cc752f0f4298dca679184578c8a0098e571e83abc02898e13"
+    },
+    {
+      "source": "logs/checkout.stdout",
+      "archive": "logs__checkout.stdout.gz",
+      "expandedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "logs/clone.stderr",
+      "archive": "logs__clone.stderr.gz",
+      "expandedSHA256": "73204d4f788b1246f1b5beea8a2de5d87999e4fc07ba157967b9286bcff407a8"
+    },
+    {
+      "source": "logs/clone.stdout",
+      "archive": "logs__clone.stdout.gz",
+      "expandedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "logs/compiler.stderr",
+      "archive": "logs__compiler.stderr.gz",
+      "expandedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "logs/compiler.stdout",
+      "archive": "logs__compiler.stdout.gz",
+      "expandedSHA256": "b2fdffd04ae5a836eca9bfdd1d3d10c524b2920dcd5aca393f80258a93a3f0f4"
+    },
+    {
+      "source": "logs/fetch.stderr",
+      "archive": "logs__fetch.stderr.gz",
+      "expandedSHA256": "dce1252729939961e9ace5cc066f445e3884429d769ac92425df9806a3dbbbfa"
+    },
+    {
+      "source": "logs/fetch.stdout",
+      "archive": "logs__fetch.stdout.gz",
+      "expandedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "logs/generator-blob.stderr",
+      "archive": "logs__generator-blob.stderr.gz",
+      "expandedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "logs/generator-blob.stdout",
+      "archive": "logs__generator-blob.stdout.gz",
+      "expandedSHA256": "fa0335aa8fd098ee0c8459f5d36ca4937a8689bb852a2c4eaabaf5512549aa43"
+    },
+    {
+      "source": "logs/generator.stderr",
+      "archive": "logs__generator.stderr.gz",
+      "expandedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "logs/generator.stdout",
+      "archive": "logs__generator.stdout.gz",
+      "expandedSHA256": "b2d74cffa053c1e4d64c5c222b9cf22effa3b1f7ad982941da4c8a4e62c1baa1"
+    },
+    {
+      "source": "logs/make-install-force.stderr",
+      "archive": "logs__make-install-force.stderr.gz",
+      "expandedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "logs/make-install-force.stdout",
+      "archive": "logs__make-install-force.stdout.gz",
+      "expandedSHA256": "059023148f4c74684fd53d570df768f819e3226f8180945a71163c63e7c3b662"
+    },
+    {
+      "source": "logs/source-clean-after.stderr",
+      "archive": "logs__source-clean-after.stderr.gz",
+      "expandedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "logs/source-clean-after.stdout",
+      "archive": "logs__source-clean-after.stdout.gz",
+      "expandedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "logs/source-clean-before.stderr",
+      "archive": "logs__source-clean-before.stderr.gz",
+      "expandedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "logs/source-clean-before.stdout",
+      "archive": "logs__source-clean-before.stdout.gz",
+      "expandedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "logs/source-clean-final.stderr",
+      "archive": "logs__source-clean-final.stderr.gz",
+      "expandedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "logs/source-clean-final.stdout",
+      "archive": "logs__source-clean-final.stdout.gz",
+      "expandedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "logs/source-head-after.stderr",
+      "archive": "logs__source-head-after.stderr.gz",
+      "expandedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "logs/source-head-after.stdout",
+      "archive": "logs__source-head-after.stdout.gz",
+      "expandedSHA256": "38c789feabb3a83ff5fae29595e74eb4398cedc61825fce3b93508cbe78ef5fe"
+    },
+    {
+      "source": "logs/source-head-final.stderr",
+      "archive": "logs__source-head-final.stderr.gz",
+      "expandedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "logs/source-head-final.stdout",
+      "archive": "logs__source-head-final.stdout.gz",
+      "expandedSHA256": "38c789feabb3a83ff5fae29595e74eb4398cedc61825fce3b93508cbe78ef5fe"
+    },
+    {
+      "source": "logs/source-head.stderr",
+      "archive": "logs__source-head.stderr.gz",
+      "expandedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "logs/source-head.stdout",
+      "archive": "logs__source-head.stdout.gz",
+      "expandedSHA256": "38c789feabb3a83ff5fae29595e74eb4398cedc61825fce3b93508cbe78ef5fe"
+    },
+    {
+      "source": "logs/source-tree-after.stderr",
+      "archive": "logs__source-tree-after.stderr.gz",
+      "expandedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "logs/source-tree-after.stdout",
+      "archive": "logs__source-tree-after.stdout.gz",
+      "expandedSHA256": "7b9c08e8c4a6df3eba462166b705d32d1102f5ce5dd69d167670b21c8fe2dd29"
+    },
+    {
+      "source": "logs/source-tree-final.stderr",
+      "archive": "logs__source-tree-final.stderr.gz",
+      "expandedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "logs/source-tree-final.stdout",
+      "archive": "logs__source-tree-final.stdout.gz",
+      "expandedSHA256": "7b9c08e8c4a6df3eba462166b705d32d1102f5ce5dd69d167670b21c8fe2dd29"
+    },
+    {
+      "source": "logs/source-tree.stderr",
+      "archive": "logs__source-tree.stderr.gz",
+      "expandedSHA256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "logs/source-tree.stdout",
+      "archive": "logs__source-tree.stdout.gz",
+      "expandedSHA256": "7b9c08e8c4a6df3eba462166b705d32d1102f5ce5dd69d167670b21c8fe2dd29"
+    }
+  ],
+  "irisOfflineVerification": "PASS exact bytes, record content, all command/log hashes and empty owned temporary directory; no bd/Go/DB process executed"
+}

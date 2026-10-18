@@ -1,0 +1,16 @@
+==> gofmt check
+Checking Go formatting...
+Using gofmt go1.26.7 (/Users/dbox/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.7.darwin-arm64/bin/gofmt)
+All Go files are properly formatted
+<== gofmt check succeeded in 0s
+==> golangci-lint (native + windows/darwin non-CGO)
+==> golangci-lint (native)
+0 issues.
+<== golangci-lint (native) succeeded
+==> golangci-lint (windows/amd64, non-CGO)
+0 issues.
+<== golangci-lint (windows/amd64, non-CGO) succeeded
+==> golangci-lint (darwin/arm64, non-CGO)
+0 issues.
+<== golangci-lint (darwin/arm64, non-CGO) succeeded
+<== golangci-lint (native + windows/darwin non-CGO) succeeded in 21s

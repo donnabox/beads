@@ -18,6 +18,7 @@ go_test(
         "//:.golangci.yml",
         "//:beads.go",
         "//:docs/docs.json",
+        "//:docsync_files",
         "//:repo_doc_files",
         "//:repo_go_test_srcs",
         "//cmd/bd:capability_registry.go",

@@ -1,0 +1,91 @@
+## Findings
+
+### F1 — HIGH · `internal/storage/graphstore/legacy_import_test.go:345-346` (frozen copy) · test cannot pass; two new guard rows go unverified
+
+**Issue.** The `wisp-comment` and `wisp-label` fixtures are declared `orphan: false`, i.e. inserted *without* `FOREIGN_KEY_CHECKS=0`. Both tables carry an FK to `wisps(id)`:
+`fk_wisp_comments_issue` and `fk_wisp_labels_issue`, added by `internal/storage/schema/migrations/ignored/0004_add_wisp_aux_fks.up.sql:11,35`. The ignored lane is a real applied series (`ignoredSource` at `internal/storage/schema/schema.go:385-409`, executed at `schema.go:957` from `MigrateUp`), and `graphstore.Init` runs `schema.MigrateUp` (`internal/storage/graphstore/backend.go:146`) against a brand-new database, so the cursor is empty and 0004 executes. Independent in-tree confirmation: `internal/storage/dolt/wisp_delete_cascade_integration_test.go:74-102` must *drop* those four FKs to simulate the production store, with the comment "A freshly bootstrapped store picks up FK constraints on the four wisp aux tables" — and its `ALTER TABLE … DROP FOREIGN KEY` would `t.Fatalf` if they were absent.
+
+**Impact.** `INSERT INTO wisp_comments(... issue_id='absent' ...)` and the `wisp_labels` equivalent violate the FK, `legacyImportContaminate` returns the error, and `t.Fatal` fires in the parent subtest — so the `dry=true`/`dry=false` subtests never run. Two of the five newly guarded native tables (`wisp_comments`, `wisp_labels`) get zero coverage, and the suite fails on both backends. `labels` and `wisp_dependencies` are correctly `orphan: true` (`fk_labels_issue` in `0003_create_labels.up.sql`, `fk_wisp_dep_issue` in `0021_create_wisp_auxiliary.up.sql`); `graph_preview_payloads`/`graph_preview_links` are correctly `orphan: false` (no FKs in `previewDDL`, `graphstore/schema.go:23-42`), and the supplied columns satisfy every `NOT NULL`.
+
+**Fix.** Set `orphan: true` on both fixtures. The `remove` statements need no bypass — `DELETE` of a child row never trips a parent FK.
+
+---
+
+### F2 — HIGH (review integrity) · `/Users/dbox/.local/state/iris/freshness-review/legacy_import_test.go` · frozen copy is stale
+
+**Issue.** At review start all three SHA256s matched. `legacy_import_test.go` has since changed underneath the review: working tree `eaedab58a72e50d23cfa860a6b9021fd997bec506530e91a681297aacce67ba5` vs frozen `5c86115a8a9969ccd4d5db9e953a4e24aa635caa7ccf415f3e041e1f7181d8c5` (file mtime 21:37:01, freeze 21:36:30). `legacy_import.go` (`6ac1fcb9…`) and `graph-legacy-import.md` (`2491b3e0…`) still match.
+
+**Impact.** Two frozen-copy findings are already addressed live, and reporting them as open would send someone to fix fixed code: the working copy now sets `orphan: true` for `wisp-comment`/`wisp-label` (F1) and adds a `conn.Raw(func(any) error { return driver.ErrBadConn })` discard on a failed FK restore (F5). Every other finding below is present in **both** copies. The frozen-copy contract was broken mid-review, so no later freeze-based claim about this file is trustworthy without re-hashing.
+
+**Fix.** Re-freeze `legacy_import_test.go` and re-hash before the next pass; treat F1/F5 as confirmed-and-already-landed rather than open.
+
+---
+
+### F3 — MEDIUM · `internal/storage/graphstore/legacy_import.go:212` · guard covers 4 of the 11 native planes its own contract names
+
+**Issue.** `issueops.DeleteCascadeTables` (`internal/storage/issueops/wisp_routing.go:200-252`) is the in-tree authority on "every table a DELETE of one issue (or wisp) row removes rows from." Its union is `issues, dependencies, labels, comments, events, provenance_events, child_counters, issue_snapshots, compaction_snapshots, wisps, wisp_labels, wisp_events, wisp_comments, wisp_child_counters, wisp_dependencies`. The repaired literal list adds `labels`, `wisp_dependencies`, `wisp_comments`, `wisp_labels` and still omits `events`, `provenance_events`, `child_counters`, `issue_snapshots`, `compaction_snapshots`, `wisp_events`, `wisp_child_counters`. The omission is not hypothetical: the `wisp_events`/`wisp_child_counters` orphan class is the same incident that produced "3.03M orphan rows" on the production store per `wisp_delete_cascade_integration_test.go:74-81`, where the aux FKs are absent and no bypass is needed to create them.
+
+**Impact.** A destination that is "fresh" by this guard can still carry `events`/`issue_snapshots`/`compaction_snapshots` rows keyed to an ID the import is about to allocate (e.g. leftover rows for `old-b`). `verifyLegacyIssue` (`legacy_import.go:551`) inspects only the Issue payload, comments and dependencies, so nothing catches it: the import commits, reports `History: "current data only; new initial graph versions"`, and the imported Bead silently inherits a stale event feed and stale compaction snapshots. The hand-maintained literal is also the drift vector — the next schema addition will not be covered and nothing will fail.
+
+Docs are overstated against the same gap: `docs/reference/graph-legacy-import.md:38` claims "wisp auxiliary rows", but two of the four wisp auxiliary tables created by `0021_create_wisp_auxiliary.up.sql` / `ignored/0002` are admitted.
+
+**Fix.** Derive the native half of the list from the existing seam rather than restating it — dedupe `issueops.DeleteCascadeTables(false)` with `issueops.DeleteCascadeTables(true)` and append the graph-preview tables and `issue_versions` explicitly. One caveat worth an inline note: every added table except `wisp_child_counters` is main-lane; `wisp_child_counters` comes only from `ignored/0002`, so either probe its existence or state why the ignored lane is assumed present (today's guard queries no ignored-lane-only table). If the list is intentionally held at the current four, narrow `docs/reference/graph-legacy-import.md:38` from "wisp auxiliary rows" to the three tables actually guarded, and extend `legacyImportState`'s dump (`legacy_import_test.go:249`) in step with whichever set wins.
+
+---
+
+### F4 — MEDIUM · `internal/storage/graphstore/legacy_import.go:225` · fourth spelling of the memory-key prefix, plus a magic length
+
+**Issue.** `"SELECT COUNT(*) FROM config WHERE LEFT(\`key\`,10)='kv.memory.'"` hardcodes both the prefix literal and its byte length. `internal/storage/kvkeys/kvkeys.go` exists specifically to end that duplication — its package doc names the three structurally-forced copies it replaced and `memoryops` restates it: "A second copy of `kvkeys.Prefix + kvkeys.MemoryPrefix + key` is the drift kvkeys was created to end." There is also already a canonical prefix-scoped config read: `issueops.ConfigPrefixLikeQuery` + `issueops.ConfigPrefixPattern` (`internal/storage/issueops/config_metadata.go:56-68`), which escapes `%`/`_` with an explicit `ESCAPE '!'` — the exact `_`-wildcard hazard `memoryops.ListInTx` warns about and that the `LEFT()` form sidesteps by hand.
+
+**Impact.** Renaming `kvkeys.MemoryConfigKeyPrefix` leaves this guard matching nothing, with no compile error and no test failure (`kvkeys_test.go` pins only the constant, not tree-wide literals): legacy KV Memories would silently pass as a fresh destination again, re-opening the dual-memory-plane defect this repair closes. The literal `10` is the worse half — it must be kept in lockstep with a string it does not reference, and an off-by-one in either direction either admits every `kv.memory.*` row or counts unrelated `kv.*` keys as memories.
+
+**Fix.** Use both seams:
+
+```go
+rows, err := tx.QueryContext(ctx, issueops.ConfigPrefixLikeQuery,
+    issueops.ConfigPrefixPattern(kvkeys.MemoryConfigKeyPrefix))
+```
+
+then refuse if any row comes back (row presence, not value, which preserves the empty-value requirement). `graphstore` already imports `issueops`, and no `.golangci.yml` depguard rule restricts `kvkeys` or `issueops`. A minimal alternative that keeps the current query shape is to bind both operands: `LEFT(\`key\`,?)=?` with `len(kvkeys.MemoryConfigKeyPrefix)` and `kvkeys.MemoryConfigKeyPrefix`.
+
+---
+
+### F5 — LOW · `legacy_import_test.go:307-317` (frozen copy) · failed FK restore returns a permissive session to the pool
+
+**Issue.** In the frozen copy the deferred `SET FOREIGN_KEY_CHECKS=1` joins its error into the return value but still lets `conn.Close()` hand the connection back to the pool. **Already fixed in the working tree** (F2) by discarding the connection via `conn.Raw(… driver.ErrBadConn)`.
+
+**Impact.** On a reset failure, a pooled connection with FK enforcement off serves every later statement in the same store — including the `ImportLegacy` under test and the `legacyImportState` dumps. Later subtests would then pass for the wrong reason, and the `t.Fatal` from the joined error could land in a different subtest than the one that broke the session.
+
+**Fix.** Keep the working tree's `driver.ErrBadConn` discard. Defer ordering in both copies is correct — the restore is registered after `conn.Close()` and therefore runs before it, matching the comment.
+
+---
+
+### F6 — LOW · `internal/storage/graphstore/legacy_import.go:229` · KV refusal is not actionable
+
+**Issue.** The table refusals name the occupied table and explain the repeat-import rule; the memory refusal says only "legacy KV Memories are present". `engdocs/ERROR_HANDLING.md:374` lists "Error messages provide actionable hints when possible" as a PR gate.
+
+**Impact.** An operator who hits this has no way to find the blocking rows from the message. The likely real-world cause is invisible to them: `memoryops.ForgetInTx` treats an empty value as not-found and deliberately does **not** delete the row, so `bd forget` over every memory leaves `kv.memory.*` rows behind — the exact case the guard now catches, and the one hardest to self-diagnose from this text.
+
+**Fix.** Include the count and point at the owning command, without echoing values, e.g. `… %d legacy KV Memories are present; list them with 'bd memories' and import into a workspace that has none`.
+
+---
+
+### F7 — LOW · `legacy_import_test.go:343, 359, 374-383` · two assertions weaker than they read
+
+**Issue.** (a) The `label` case asserts `strings.Contains(err.Error(), "labels")`, which is also satisfied by a refusal naming `wisp_labels` — so a mis-attributed or mis-ordered refusal still passes. (b) The ordinary-config control runs dry-run only, so the apply path's interaction between allowed config rows and the `UPDATE config SET value=? WHERE \`key\`='issue_prefix'` write (`legacy_import.go:79`) is never exercised.
+
+**Impact.** Both are false-confidence rather than wrong behavior: the guard is shared between apply and dry-run, and each fixture contaminates exactly one table. But the table-attribution assertion is the one thing distinguishing "refused for the right reason" from "refused", and it is the one that is substring-ambiguous.
+
+**Fix.** Assert the full refusal clause (`"; labels is occupied"`) instead of the bare table name, and add an apply run to the control block after the dry-run — confirming the ordinary `kv.memoryx.retained` / `iris.test.setting` rows survive a successful import alongside the rewritten `issue_prefix`.
+
+---
+
+## Validation of defect and repair
+
+**Original defect is real, on both halves.** Pre-repair, `requireEmptyLegacyTarget` checked `graph_preview_catalog` but neither payload table, so a workspace whose catalog had been emptied — or whose payload rows were written bypassing the graph writers, which is the threat model the function's own comment states — passed as fresh. Orphan rows there are invisible to readers (`currentLinkInTx` gates on the catalog, `graphstore/dependencies.go:188`) but still occupy their primary-key paths, so a later create at the same path fails after its catalog insert succeeds. The config half is the sharper defect: classic `kv.memory.*` Memories survived an import that advertised a fresh destination, leaving `bd recall` serving the old plane while graph Memories existed separately.
+
+**Repair is correct where it acts.** The guard runs inside the single `withTx` before any write and before the prefix `UPDATE`, so apply and dry-run refuse identically and nothing is reserved (`legacy_import.go:61-67`). Every newly listed table exists on the main migration lane and is empty in a freshly `Init`-ed workspace — `0016_default_config.up.sql` seeds only compaction keys, and `0035_migrate_infra_to_wisps` is a no-op with no `issues` rows — so there is no false-refusal path. Counting rows rather than non-empty values is the right call and is load-bearing, for the `ForgetInTx` reason in F6. `LEFT(…)=` over `LIKE` correctly avoids the `_`-wildcard trap inside `kv.memory.`; the control fixture `kv.memoryx.retained` is the right boundary case and would catch a `LIKE 'kv.memory%'` regression. On collation: a case-insensitive `config.key` collation could only over-refuse, never miss a real memory, so the comparison is safe in the direction that matters.
+
+**Test shape is sound.** `legacyImportState` sorts every table dump, so the `reflect.DeepEqual` state comparisons are order-stable, and `workflowState` (`workflow_test.go:242`) already covers `graph_preview_payloads`/`graph_preview_links`, which is what makes the preservation assertion real for the orphan fixtures. Adding `config` to the dump is safe — `touchCoordination` writes only `graph_preview_scope` (`records.go:111`), so no existing before/after comparison in this file starts failing. The zero-result assertion holds (`legacy_import.go:204` returns `LegacyImportResult{}`; nil maps compare equal). F1 is the one thing standing between the authored test and a meaningful run.
+
+**Not run:** no builds, tests, engine, server or CLI invocations; no files written. Everything above is from the frozen copies, the real migration and DDL sources, and the existing graphstore/dolt test seams. The runtime tests remain unrun — Janet owns the engine slot.
