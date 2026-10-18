@@ -1,0 +1,44 @@
+{
+  "utc": "2026-10-18T16:23:09.849927+00:00",
+  "accepted": true,
+  "scope": "Root accepts exact independently reviewed14-key ONE availability execution proposal only",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "proposedIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-execution-proposed-authority-1/index.json",
+    "sha256": "2fd270b231e5c24a013e2457ec9cacbb09870cd66047a33cd2bca3d5aace5c39"
+  },
+  "proposedRelease": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-execution-proposed-authority-1/release.proposed.json",
+    "sha256": "8f0d8cdda1fb64173ff604d4f950c5669aaba04b5df4ccbd8377293e29c62263"
+  },
+  "nativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-execution-native-precision-1/index.json",
+    "sha256": "01619de78a9e3088a3d96722b4406edb5e68753b84c844a10d4d14f9921c5e24"
+  },
+  "nativeClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-execution-native-precision-1/closure.json",
+    "sha256": "2113e0c121ebb734da64d86b7dfb912b4d70e98da067464fb4bb0ee7840fca31"
+  },
+  "nativeReport": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-root-execution-native-precision-1/report.md",
+    "sha256": "a2de635127ee712ef646b2f32fa556579bb06674efae01206ba669f34df1f5de"
+  },
+  "nativeIndexedFilesAndMirrorVerified": 21,
+  "all14ActualCallerKeyPredicatesAccepted": true,
+  "foundationPublicationReadback": "25d0a0d18b5f83645f09d772322054969df26479",
+  "foundationIsNotSelfReferentialFinalReleasePublication": true,
+  "finalReleaseStillAbsent": true,
+  "activationPerformed": false,
+  "executionDispatched": false,
+  "availabilityMeasured": false,
+  "clockDomainVerified": false,
+  "syntheticReleased": false,
+  "productReleased": false,
+  "noRetry": true,
+  "conditions": [
+    "Publish/readback exact proposal+native+root acceptance BEFORE final activation",
+    "Byteexact14keycopy to final externalrelease and separately publish/readback BEFORE ONE actualcaller invocation; outer dispatch pins LATER release-publication commit",
+    "Root captures actual caller raw terminal,bothstdoutstderrEOF,wholeelapsedstrict<115; late/nonzero/unknown failed/no retry",
+    "Independent original native/owner/peer/raw/journal/mask/clock/source/tool/ALLrecordedPIDPGIDabsence audit BEFORE measured root availability; no automatic controls/product"
+  ]
+}

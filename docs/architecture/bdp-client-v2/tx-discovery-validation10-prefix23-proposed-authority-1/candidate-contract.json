@@ -1,0 +1,27 @@
+{
+  "utc": "2026-10-18T16:24:44.424044+00:00",
+  "state": "CLOSED exact23 authority proposal only",
+  "candidateGate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix23-proposed-authority-1/execution-gate.proposed.json",
+    "sha256": "f78f325ad0f20d25b33c526f43dc4b3867469cab05660a4f9268f7601315fb69"
+  },
+  "candidateDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix23-proposed-authority-1/disposition.json",
+    "sha256": "4c37223e48ca8a66d3bcb4e13674e1c084f3561365ca2906d2707cc37a3fa36e"
+  },
+  "onlyChangedKeys": [
+    "approvedStages",
+    "rootDisposition",
+    "rootArchiveAcceptance"
+  ],
+  "actualRootArchiveTopLevelTarProvenanceSha256": "e1a0cb5870060c594b2d0fafed44999022f87c701ddd2a4a2d10a2b65ffe1a49",
+  "next2": [
+    "prepare-consumer",
+    "consumer-install"
+  ],
+  "actualLockManifestSettingsStillUnknown": true,
+  "noRetry": true,
+  "fullIndependent26Key59PredicatePrecisionBeforeActivation": true,
+  "publicationReadbackBeforeExactActivationAndDispatch": true,
+  "executionAuthorized": false
+}

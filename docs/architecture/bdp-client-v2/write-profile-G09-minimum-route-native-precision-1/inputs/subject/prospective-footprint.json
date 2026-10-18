@@ -1,0 +1,44 @@
+{
+  "paths": [
+    {
+      "path": "packages/server/src/transaction-service.ts",
+      "beforeSha256": "d34b28787b70e5a14c38f1295a7cacc3bd2425768245ace46484f882987e9568"
+    },
+    {
+      "path": "packages/server/src/transaction-schema-http.ts",
+      "beforeSha256": "1082e8483848794971eae3eb8dfb3b7006749fc4e3b9c17c2cca1adbd94a6130"
+    },
+    {
+      "path": "packages/server/src/transaction-http.ts",
+      "beforeSha256": "4a59ac8079853c2931e39088949c49b9fdca67929fdc6fc86e89ad382ba7bb87"
+    },
+    {
+      "path": "packages/server/src/transaction-service.test.ts",
+      "beforeSha256": "e66f4384e7e6f4fb10b2072e298093991fffcfae606d005b54dda97dbf250705"
+    },
+    {
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "beforeSha256": "eee33a0948c9a0981a2a963cec5a8f16102ae5bab32128f83c39956abe0a952b"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-schema-installed.test.ts",
+      "beforeSha256": "f2ba22fb0824f405699e9157584d3ba700efae323d795783092266cf38bfcc18"
+    }
+  ],
+  "count": 6,
+  "newFiles": 0,
+  "other673ProtectedAgainstCurrentA61": true,
+  "futureCombinedBase": "UNKNOWN, root must rebind after current increment; do not author in frozen current worktree",
+  "currentDirtyPaths": [
+    "apps/bdptest/src/transactional-discovery-installed.test.ts",
+    "apps/bdptest/src/transactional-schema-installed.test.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-installed-contracts.test.ts"
+  ],
+  "futureCceCumulativeDirtyCountIfNoOtherChanges": 10,
+  "reason": "two proposed files overlap existing six dirty D3 files; six future author-owned files is not six total cumulative dirty paths",
+  "packageExports": "UNCHANGED; new optional module-internal formatter export is not package/public startup API",
+  "sourceAuthoring": false
+}

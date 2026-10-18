@@ -1,0 +1,123 @@
+{
+  "captureCases": 4,
+  "drainCases": 2,
+  "historicalCaptureCases": 2,
+  "historicalNotFreshCumulativeWriteCredit": true,
+  "historicalPreflightCases": 4,
+  "legacyOpaqueHttpRows": 10,
+  "legacyParameterRows": 12,
+  "legacyProtocolsPreserved": true,
+  "ownerRows": 18,
+  "preflightControls": 4,
+  "reportCount": 18,
+  "reports": [
+    {
+      "fieldsVerified": "exact source-bound shape, typed failure/cleanup/no-credit fields plus family semantic rows below",
+      "label": null,
+      "observation": "private-source-changefeed-parameter-context",
+      "outcome": "passed"
+    },
+    {
+      "fieldsVerified": "exact source-bound shape, typed failure/cleanup/no-credit fields plus family semantic rows below",
+      "label": "unknown",
+      "observation": "changefeed-opaque-capture",
+      "outcome": "passed"
+    },
+    {
+      "fieldsVerified": "exact source-bound shape, typed failure/cleanup/no-credit fields plus family semantic rows below",
+      "label": "pos-01",
+      "observation": "changefeed-opaque-capture",
+      "outcome": "passed"
+    },
+    {
+      "fieldsVerified": "exact source-bound shape, typed failure/cleanup/no-credit fields plus family semantic rows below",
+      "label": null,
+      "observation": "changefeed-opaque-abort",
+      "outcome": "passed"
+    },
+    {
+      "fieldsVerified": "exact source-bound shape, typed failure/cleanup/no-credit fields plus family semantic rows below",
+      "label": "already-aborted",
+      "observation": "changefeed-opaque-preflight",
+      "outcome": "passed"
+    },
+    {
+      "fieldsVerified": "exact source-bound shape, typed failure/cleanup/no-credit fields plus family semantic rows below",
+      "label": "invalid-policy",
+      "observation": "changefeed-opaque-preflight",
+      "outcome": "passed"
+    },
+    {
+      "fieldsVerified": "exact source-bound shape, typed failure/cleanup/no-credit fields plus family semantic rows below",
+      "label": "throwing-clock",
+      "observation": "changefeed-opaque-preflight",
+      "outcome": "passed"
+    },
+    {
+      "fieldsVerified": "exact source-bound shape, typed failure/cleanup/no-credit fields plus family semantic rows below",
+      "label": "nonfinite-clock",
+      "observation": "changefeed-opaque-preflight",
+      "outcome": "passed"
+    },
+    {
+      "fieldsVerified": "exact source-bound shape, typed failure/cleanup/no-credit fields plus family semantic rows below",
+      "label": null,
+      "observation": "changefeed-opaque-boundaries",
+      "outcome": "passed"
+    },
+    {
+      "fieldsVerified": "exact source-bound shape, typed failure/cleanup/no-credit fields plus family semantic rows below",
+      "label": null,
+      "observation": "changefeed-opaque-http",
+      "outcome": "passed"
+    },
+    {
+      "fieldsVerified": "exact source-bound shape, typed failure/cleanup/no-credit fields plus family semantic rows below",
+      "label": null,
+      "observation": "current-changefeed-minimum-owner",
+      "outcome": "passed"
+    },
+    {
+      "fieldsVerified": "exact source-bound shape, typed failure/cleanup/no-credit fields plus family semantic rows below",
+      "label": "start-now-unknown",
+      "observation": "current-changefeed-minimum-capture",
+      "outcome": "passed"
+    },
+    {
+      "fieldsVerified": "exact source-bound shape, typed failure/cleanup/no-credit fields plus family semantic rows below",
+      "label": "genesis-unknown",
+      "observation": "current-changefeed-minimum-capture",
+      "outcome": "passed"
+    },
+    {
+      "fieldsVerified": "exact source-bound shape, typed failure/cleanup/no-credit fields plus family semantic rows below",
+      "label": "retained-unknown",
+      "observation": "current-changefeed-minimum-capture",
+      "outcome": "passed"
+    },
+    {
+      "fieldsVerified": "exact source-bound shape, typed failure/cleanup/no-credit fields plus family semantic rows below",
+      "label": "retained-pos-01",
+      "observation": "current-changefeed-minimum-capture",
+      "outcome": "passed"
+    },
+    {
+      "fieldsVerified": "exact source-bound shape, typed failure/cleanup/no-credit fields plus family semantic rows below",
+      "label": "start-now",
+      "observation": "current-changefeed-minimum-drain",
+      "outcome": "passed"
+    },
+    {
+      "fieldsVerified": "exact source-bound shape, typed failure/cleanup/no-credit fields plus family semantic rows below",
+      "label": "retained",
+      "observation": "current-changefeed-minimum-drain",
+      "outcome": "passed"
+    },
+    {
+      "fieldsVerified": "exact source-bound shape, typed failure/cleanup/no-credit fields plus family semantic rows below",
+      "label": null,
+      "observation": "current-changefeed-minimum-preflight",
+      "outcome": "passed"
+    }
+  ]
+}

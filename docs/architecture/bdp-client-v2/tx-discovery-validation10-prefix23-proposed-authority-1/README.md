@@ -1,0 +1,1 @@
+CLOSED prefix23 proposal. Only fresh consumer preparation/install. Actual generated lock/manifest/settings and8versions must be independently root accepted before separate exact reviewed prefix24 verify-installed-consumer. No installed callbacks/wholeWrite authority.

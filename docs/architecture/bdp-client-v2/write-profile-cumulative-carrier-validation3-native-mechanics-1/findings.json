@@ -1,0 +1,26 @@
+{
+  "reviewComplete": true,
+  "mechanicsAccepted": false,
+  "findings": [
+    {
+      "id": "CV3-N1",
+      "severity": "Medium",
+      "title": "Mandatory private compiler preparation opens an absent local template",
+      "location": "private_emit.py:13; worker.py:43-45; commands.json private-verifier-emit stage",
+      "evidence": {
+        "resolvedMissingPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/context/accepted-contract2/private-emit-project.template.json",
+        "exists": false,
+        "existingPinnedOriginal": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-1/context/accepted-contract2/private-emit-project.template.json",
+        "originalSha256": "99ddab2e2e51f3ca82933bcef9cb266cfc454a4f9ee94f5a3f81f7a87bc47183",
+        "originalIsReferencePinned": true,
+        "privateEmitHelperByteExact2": true
+      },
+      "impact": "If legitimately released after prior successful stages, private-verifier-emit invokes prepare_emit before compiler spawn; its unconditional read_text on this missing file raises FileNotFoundError. Gate remains fail-closed, no false acceptance or observed runtime failure claimed. Full pipeline cannot reach private graph/positive evidence as prepared.",
+      "minimumCorrection": "In a separately released named successor, provide the exact already-pinned template as a bounded context copy at the existing relative path, or explicitly rebind the literal to its existing immutable pinned origin. Preserve compiler project/options/9 other helpers/current source/selection/caps/clocks/strict gate. Reindex, mirror and independently review the concrete new bytes; do not mutate3 or run it to demonstrate the predicted failure.",
+      "validation": "Static path/bytes/pin comparison only; no helper import/evaluation, compiler invocation or schema execution."
+    }
+  ],
+  "CV2_N1": "Statically closed as described in correction-assessment.json; not a blanket helper acceptance",
+  "runtimeFailureObserved": false,
+  "executionReleased": false
+}

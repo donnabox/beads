@@ -1,0 +1,70 @@
+{
+  "utc": "2026-10-18T16:16:54.057641+00:00",
+  "accepted": true,
+  "sourceBindingSha256": "9bb16e9c984f7c259c6f4cb42ddad2886234771a90f4421c3fddec57c5079a41",
+  "scope": "Root accepted complete proposed prefix21 DATA; only next4 archive producers/verifier, no consumer",
+  "nativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix21-authority-native-precision-1/index.json",
+    "sha256": "0481c68c029f0bc38e05ef2b9cf3e6e07344acfdb85b95d440f2c35da661d822"
+  },
+  "nativeClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix21-authority-native-precision-1/closure.json",
+    "sha256": "de7fbb6552e831fddcde7261e3ab299486c044cb5c432d2b046bb893e23f2c62"
+  },
+  "nativeReport": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix21-authority-native-precision-1/report.md",
+    "sha256": "6c4a3a4d54d3910c0801fa45cb0394ef46354832ff7ddd5c35150bcc43f36edb"
+  },
+  "nativeIndexedFilesAndMirrorVerified": 84,
+  "nativeErratumIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix21-authority-native-precision-erratum-1/index.json",
+    "sha256": "e19f7518b7623243b48930b7384fb709c993744e4195c936d62ec9f28d05f302"
+  },
+  "nativeErratum": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix21-authority-native-precision-erratum-1/erratum.json",
+    "sha256": "c5ff72d30d4e4ac8e86f82f9ef6d9b4697ffec7238765dba705b78746dc75c33"
+  },
+  "proposedIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix21-proposed-authority-1/index.json",
+    "sha256": "918634e57b8dd6294d1f0bfed51ea886d92eb9d2030c757b1736744245d85e45"
+  },
+  "proposedGate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix21-proposed-authority-1/execution-gate.proposed.json",
+    "sha256": "f539663c6ae2bffacbd38e2ded28328843d66e234fa884e4ec23d029aaa4c429"
+  },
+  "proposedDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix21-proposed-authority-1/disposition.json",
+    "sha256": "7a1575c97023ea90937c509f051013b764eebd05f313830a0a0e8a704924d5d8"
+  },
+  "full26Keys59PredicatesAccepted": true,
+  "rootActual17NativeAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-root-prefix17-native-acceptance-1/acceptance.json",
+    "sha256": "316b782128699b785c3f52aaa3faf7ad7c4f0a6c139d15f9687546f5ee391d55"
+  },
+  "approvedStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "audit-focused-source",
+    "legacy-changefeed-source",
+    "audit-legacy-changefeed-source",
+    "legacy-installed-contracts-source",
+    "audit-legacy-installed-contracts-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives"
+  ],
+  "archiveRootBarrierStillMandatoryAtPrepareConsumer": true,
+  "activationPerformed": false,
+  "noRetry": true
+}

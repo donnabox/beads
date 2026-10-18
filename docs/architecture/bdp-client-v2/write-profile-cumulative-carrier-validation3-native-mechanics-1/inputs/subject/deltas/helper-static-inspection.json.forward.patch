@@ -1,0 +1,118 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-2/helper-static-inspection.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-validation-preparation-3/helper-static-inspection.json
+@@ -1,26 +1,14 @@
+ {
+-  "MJS": "Three bodies BYTEEXACT1; no Node parse/evaluation",
++  "MJSByteExact": 3,
++  "all681SourceRehashed": true,
+   "allActualOutcomes": "UNKNOWN",
+-  "commandAndMatrixInverseNamespaceByteExact": true,
+-  "execution": false,
+-  "gateFunctionsASTUnchanged": [
+-    "consumer_inventory",
+-    "document",
+-    "git",
+-    "guarded",
+-    "invalid_constant",
+-    "inventory",
+-    "load_gate",
+-    "read",
+-    "require",
+-    "source_check",
+-    "tools_check",
+-    "unique_object",
+-    "verify_build",
+-    "verify_consumer",
+-    "verify_private_emit",
+-    "write"
++  "allOtherGateFunctionsASTExact": true,
++  "byteExactOtherHelpers": 9,
++  "changedExecutableBodies": [
++    "run.py",
++    "gate.py"
+   ],
++  "helperImportEvaluationOrCompilation": false,
+   "helpers": {
+     "audit-common.mjs": {
+       "ASTParsedOnly": false,
+@@ -42,9 +30,9 @@
+     },
+     "gate.py": {
+       "ASTParsedOnly": true,
+-      "beforeSha256": "511a026aae90d1cf12aab032e4a7ae7870b23e1efb0e93f5c442fd6551ea952e",
++      "beforeSha256": "c05831b7949b383a4bc7550a33e453d102fa12d2111583522ca009dfc69707c4",
+       "byteExactPredecessor": false,
+-      "sha256": "c05831b7949b383a4bc7550a33e453d102fa12d2111583522ca009dfc69707c4"
++      "sha256": "4f724009f01cad60171ad47e321f188be7d03d56af2192f2a13841c498b53191"
+     },
+     "guarded-action-session-20261018-021624-549f.py": {
+       "ASTParsedOnly": true,
+@@ -54,8 +42,8 @@
+     },
+     "packages.py": {
+       "ASTParsedOnly": true,
+-      "beforeSha256": "793d67582611907c0116b635eb2f6d9fe911d0e98495a6a095fa7b4d69047dcd",
+-      "byteExactPredecessor": false,
++      "beforeSha256": "acda7bcaee8b9a7422bb78ecca5b6dd895437f2aed6357de0e2be7508acb0345",
++      "byteExactPredecessor": true,
+       "sha256": "acda7bcaee8b9a7422bb78ecca5b6dd895437f2aed6357de0e2be7508acb0345"
+     },
+     "private-graph.mjs": {
+@@ -72,9 +60,9 @@
+     },
+     "run.py": {
+       "ASTParsedOnly": true,
+-      "beforeSha256": "61fe235c073b0e50d316eda26dc64eb161bb208464eeaf9dc023bb7197832291",
++      "beforeSha256": "f2d08b5e5d0ac4b60be436944ccb81cd3ce2ddf82967ac8061e6745b40078d2f",
+       "byteExactPredecessor": false,
+-      "sha256": "f2d08b5e5d0ac4b60be436944ccb81cd3ce2ddf82967ac8061e6745b40078d2f"
++      "sha256": "76c384af408a3184df3256ee3568898a60126633328b82f292887f5367485335"
+     },
+     "scanner.py": {
+       "ASTParsedOnly": true,
+@@ -89,18 +77,9 @@
+       "sha256": "3a41999eaea1edccc37097e59e1a37516a283db79283a10bb00ca34cae56da76"
+     }
+   },
+-  "packagesExactReversal": "Only clean and sourceAttribution expression reverse to byte-exact1",
+-  "pythonASTOnly": [
+-    "run.py",
+-    "worker.py",
+-    "gate.py",
+-    "packages.py",
+-    "scanner.py",
+-    "audit.py",
+-    "private_emit.py",
+-    "guarded-action-session-20261018-021624-549f.py"
+-  ],
+-  "runFunctionsASTUnchanged": [
++  "namespaceInverseCommandsAndMatrixByteExact": true,
++  "protected677AndOwned4Unchanged": true,
++  "protectedRunFunctionsASTExact": [
+     "birth_epoch",
+     "identity_matches",
+     "observe",
+@@ -108,19 +87,9 @@
+     "signal_owned",
+     "interrupt",
+     "enqueue",
+-    "refuse"
++    "refuse",
++    "retain_prefix"
+   ],
+-  "semanticOwned4Protected677": true,
+-  "source681ActualRehashed": true,
+-  "state": "Author static preparation only; not independent approval or test",
+-  "unchanged8Helpers": [
+-    "worker.py",
+-    "scanner.py",
+-    "audit.py",
+-    "private_emit.py",
+-    "audit-common.mjs",
+-    "private-graph.mjs",
+-    "carrier-audit.mjs",
+-    "guarded-action-session-20261018-021624-549f.py"
+-  ]
++  "pythonASTOnly": 8,
++  "state": "Author static source/data preparation only; not independent approval or evaluated control"
+ }
