@@ -1,0 +1,66 @@
+{
+  "state": "OPEN findings; root disposition required",
+  "findings": [
+    {
+      "id": "SH-N1",
+      "priority": "Medium",
+      "title": "Refuse IPC EOF in the real peer instead of spinning after parent closure",
+      "file": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-1/host_peer.py",
+      "lines": [
+        38,
+        43
+      ],
+      "facts": [
+        "receive() sets a socket timeout then repeatedly appends channel.recv(4096) without checking an empty block.",
+        "After EOF recv returns empty bytes immediately; raw does not grow and the configured socket timeout cannot fire.",
+        "The helper is currently gated closed, so this is a future executable-path defect, not an observed escaped process."
+      ],
+      "impact": "Lost acknowledgement/parent-channel closure can busy-loop through the remaining host budget rather than settle with an explicit control failure; current code does not implement the design requirement that a closed channel exits.",
+      "smallestCorrection": "In a separately released immutable successor, reject an empty recv immediately with a fixed reason, preserve received bytes, enforce the existing remaining deadline, and retain a zero-product close-before-ack host control under the same outer clock. No retry or new grace period.",
+      "runtimeReproduction": "NOT RUN; follows directly from EOF socket semantics and the loop body.",
+      "blocksFutureEvaluation": true
+    },
+    {
+      "id": "SH-N2",
+      "priority": "Medium",
+      "title": "Make isolated full-auditor counterfactuals prove their positive baseline and intended refusal",
+      "file": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-1/report_controls.py",
+      "lines": [
+        78,
+        123
+      ],
+      "facts": [
+        "D03, D04 and D06 build positive() data but do not first call full(o); positive() is only a constructor. D01 and D05 separately do call full(o).",
+        "Their full-auditor negative calls use refusal() without an expected reason. refusal() accepts any RuntimeError, UnicodeError or ValueError.",
+        "The command matrix permits each case independently, has no prerequisite on a prior observed D01, and disallows automatic suite/reuse."
+      ],
+      "impact": "An unrelated baseline refusal can satisfy the negative assertion, so these isolated cases cannot establish the named wire/postimage/ownership/provenance discriminator even if a future invocation returns zero. This is a validation-control precision defect; no such pass has been observed.",
+      "smallestCorrection": "For each applicable isolated case, call the unchanged full auditor on the same genuine authored Python baseline before mutation, then bind each negative to its actual intended predicate (wire-base64-type, wire-body, owned-inline-metadata; typed-report-value/actual-child-pid; typed-report-value/fixture-proof/same-live-configuration as applicable). Keep protocol-AJV and installed provenance limitations explicit, do not turn the fixture into product evidence. These are finite subassertions inside existing IDs, not new product calls/callbacks/budgets.",
+      "runtimeReproduction": "NOT RUN; static call-path/oracle analysis only.",
+      "blocksFutureAcceptanceOfAffectedControls": true
+    },
+    {
+      "id": "SH-N3",
+      "priority": "Low",
+      "title": "Keep partially modeled scope explicit for the null/late/flush controls",
+      "file": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-1/control-matrix.json",
+      "relatedFiles": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-1/scanner_controls.py",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-1/watchdog_controls.py",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-1/host_controls.py"
+      ],
+      "facts": [
+        "M03 executes collector null-ID refusal only; it does not execute the source ordinary no-environment behavior named in its predicate. M04 documents that same source boundary explicitly.",
+        "P03 permits any model failure and host first failure start-missing OR start-late; a missing-start deadline can win before the scheduled late marker is received.",
+        "P05 host-normal emits synthetic phase/verified messages and a pipe receipt, with no actual console-RPC/results artifact path. Its unit is an absent-verified model. These are useful controls but do not establish that complete named artifact path.",
+        "All three rows currently have remainingUnsupported=[], and harness.child derives per-case status from that list. Global acceptanceReady=false still safely prevents aggregate execution approval."
+      ],
+      "impact": "The later observed control status could overstate a named sub-obligation even though current report and overall gates are honest about partial preparation.",
+      "smallestCorrection": "In the successor, record the exact reached predicate/receipt scope and explicit residual source/late-receipt/artifact obligations for these rows, or implement separately reviewed zero-product fixtures that actually exercise those paths. Do not infer source/AJV/worker-chain truth from Python model data.",
+      "runtimeReproduction": "NOT RUN; matrix/call-path comparison only.",
+      "blocksCurrentExecutionAlready": true
+    }
+  ],
+  "count": 3,
+  "runtimeEvaluated": false
+}
