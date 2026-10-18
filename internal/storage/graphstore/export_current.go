@@ -187,6 +187,8 @@ func checkExportPlanes(ctx context.Context, tx *sql.Tx) error {
 	// COUNT/EXISTS only; refused planes never allocate their payloads. Events
 	// and child counters (including historical wisp ones) are explicitly out
 	// of scope. Current wisp payload/relations/comments/labels are not History.
+	// With intact foreign keys, wisps refuses before wisp_dependencies can be
+	// reached; that separate probe defends against FK-bypassed corruption.
 	for _, plane := range []struct{ name, query string }{
 		{"wisps", "SELECT EXISTS(SELECT 1 FROM wisps)"},
 		{"wisp_dependencies", "SELECT EXISTS(SELECT 1 FROM wisp_dependencies)"},
