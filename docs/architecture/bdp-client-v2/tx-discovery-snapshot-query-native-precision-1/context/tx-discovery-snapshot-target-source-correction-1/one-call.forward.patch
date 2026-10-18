@@ -1,0 +1,11 @@
+--- before/apps/bdptest/src/transactional-discovery-installed.test.ts
++++ after/apps/bdptest/src/transactional-discovery-installed.test.ts
+@@ -1477,7 +1477,7 @@
+         scopePosition: "pos-5",
+       });
+       d3String(manifest.checkpoint);
+-      d3Safe(manifest.id);
++      d3Safe(manifest.id, scope, true);
+       for (const name of ["beads", "links"]) {
+         const collection = d3Object(manifest[name]);
+         if (collection.next !== null) d3Safe(collection.next, scope, true);
