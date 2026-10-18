@@ -1,0 +1,125 @@
+{
+  "utc": "2026-10-18T09:58:11.876511+00:00",
+  "purpose": "Frozen hash-map-only integration preflight; no source/branch/tree mutation/merge/build/runtime/spec adoption",
+  "pinnedCommonBase": "a56254d682cf4623cab22a552e3d2f695f691795",
+  "baseKnownFiles": 679,
+  "readyD1vsLoaderChangedPathIntersection": [],
+  "orderedInputs": [
+    {
+      "lane": "readyD1",
+      "origin": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+      "changedPaths": [
+        "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+        "packages/server/src/transaction-changefeed.test.ts",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-service.ts",
+        "packages/server/src/transaction-sse.test.ts",
+        "packages/server/src/transaction-store.ts"
+      ],
+      "changedCount": 6,
+      "conflictingBeforeBytes": [],
+      "prospectiveKnownFilesAfter": 679
+    },
+    {
+      "lane": "readyPureLoader",
+      "origin": "fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10",
+      "changedPaths": [
+        "docs/design/startup-configuration.md",
+        "packages/config/src/index.test.ts",
+        "packages/config/src/index.ts",
+        "packages/server/package.json",
+        "packages/server/src/read-sequence-lifecycle.test.ts",
+        "packages/server/src/reference-deployment-state.ts",
+        "packages/server/src/reference-deployment.test.ts",
+        "packages/server/src/reference-deployment.ts",
+        "packages/server/src/transaction-snapshot.test.ts",
+        "scripts/smoke-executables.mjs",
+        "scripts/smoke-safety.mjs",
+        "scripts/smoke-safety.test.mjs"
+      ],
+      "changedCount": 12,
+      "conflictingBeforeBytes": [],
+      "prospectiveKnownFilesAfter": 682
+    },
+    {
+      "lane": "TXdiscoveryAnnotation",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-typecheck-correction-1/source-after-map.json",
+      "changedPaths": [
+        "apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "apps/bdptest/src/transactional-schema-installed.test.ts",
+        "packages/server/src/transaction-changefeed.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-installed-contracts.test.ts"
+      ],
+      "changedCount": 6,
+      "conflictingBeforeBytes": [],
+      "prospectiveKnownFilesAfter": 682
+    },
+    {
+      "lane": "lifecycleOriginalUncorrected",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-source-authoring-1/source-after-map.json",
+      "changedPaths": [
+        "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+        "docs/design/startup-configuration.md",
+        "packages/server/src/development-authority.ts",
+        "packages/server/src/development-runtime.ts",
+        "packages/server/src/reference-deployment-process.ts",
+        "packages/server/src/reference-deployment-runtime.test.ts",
+        "packages/server/src/reference-deployment-runtime.ts",
+        "packages/server/src/transaction-runtime.ts",
+        "scripts/smoke-executables.mjs"
+      ],
+      "changedCount": 9,
+      "conflictingBeforeBytes": [],
+      "prospectiveKnownFilesAfter": 686
+    },
+    {
+      "lane": "ownedSetBeforeMarkers",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-source-authoring-2/after-map.json",
+      "changedPaths": [
+        "apps/bdptest/src/transactional-set-installed.test.ts"
+      ],
+      "changedCount": 1,
+      "conflictingBeforeBytes": [],
+      "prospectiveKnownFilesAfter": 686
+    },
+    {
+      "lane": "carrierOriginalUncorrected",
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-source-authoring-1/after-map.json",
+      "changedPaths": [
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "apps/bdptest/test-support/read-update-artifact-execution.ts",
+        "packages/conformance/test-support/profile-evidence.test.ts",
+        "packages/conformance/test-support/profile-evidence.ts"
+      ],
+      "changedCount": 4,
+      "conflictingBeforeBytes": [],
+      "prospectiveKnownFilesAfter": 688
+    }
+  ],
+  "conflicts": [],
+  "prospectiveKnownFiles": 688,
+  "notFinalSourceIdentity": true,
+  "unresolved": "Lifecycle original needs3native corrections+FIRSTactualCODE; carrier original needs4native corrections+FIRSTactualCODE; D4 source3 markers/helper incomplete; D3a corrected compiler/freshvalidation pending. Every final input must be rebound before real assembly.",
+  "qualification": "No byte-map combination grants config/runtime coverage. Need final same actual installed target/configuration ordinary Read/RU/TX coldstartup/fullapplicableevidence; current fixtures differ and cannot be pooled.",
+  "workflowOption": "After source review, use a private implementation integration branch on these pinned descendants, separate from Trish spec-proposal/integration lane. Main sequencing remains Trish/operator-owned. Incoming main/spec stays excluded. Branch is proposed, not created.",
+  "inputs": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-typecheck-correction-1/source-after-map.json",
+      "sha256": "c5b25b6303366f53cf33c121293e3a9253cc40c030eea27b9fcbc29e213b63a0"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-source-authoring-1/source-after-map.json",
+      "sha256": "250806b0d943331816a139ff2c409c60f2c1e9112667af7dd1b4f327d1e00b6a"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-source-authoring-2/after-map.json",
+      "sha256": "0f96d0a3f2cc0920598cd20eca3926a2fcca4fbab31fe509e1a3dd32e2316c93"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-source-authoring-1/after-map.json",
+      "sha256": "d4de365ddc6822fd31828cbe01984175057111697f852b17d4308298c3bff4a8"
+    }
+  ]
+}
