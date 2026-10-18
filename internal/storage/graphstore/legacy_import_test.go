@@ -623,7 +623,7 @@ func TestLegacyImportAtomicityAndPersistence(t *testing.T) {
 						// A driver watcher may already have rolled back the transaction.
 						// ErrTxDone cleanup must keep outcome_unknown precedence;
 						// other driver cleanup errors may also be uncertain.
-						if err != nil && strings.Contains(err.Error(), "exceeds the current-read budget") {
+						if errors.Is(err, ErrLimitExceeded) {
 							t.Fatalf("cancellation was mislabeled as a size overflow: %v", err)
 						}
 						unknown := errors.Is(err, ErrOutcomeUnknown)

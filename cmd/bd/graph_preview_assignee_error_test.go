@@ -159,6 +159,8 @@ func TestGraphPreviewImportDeadlineDisposition(t *testing.T) {
 			{"invalid-store", graphstore.ErrInvalidStore, "capability_unavailable", 5},
 			{"uncertain", graphstore.ErrOutcomeUnknown, "outcome_unknown", 6},
 			{"uncertain-invalid-store", errors.Join(graphstore.ErrOutcomeUnknown, graphstore.ErrInvalidStore), "outcome_unknown", 6},
+			{"uncertain-limit", errors.Join(graphstore.ErrOutcomeUnknown, graphstore.ErrLimitExceeded), "outcome_unknown", 6},
+			{"uncertain-capability", errors.Join(graphstore.ErrOutcomeUnknown, graphstore.ErrCapabilityUnavailable), "outcome_unknown", 6},
 		} {
 			name := fmt.Sprintf("%v/%s", cancellation, test.name)
 			t.Run(name, func(t *testing.T) {
@@ -173,7 +175,7 @@ func TestGraphPreviewImportDeadlineDisposition(t *testing.T) {
 				if test.wrap != nil {
 					input = errors.Join(test.wrap, cancellation)
 				}
-				result := graphStorageError(input)
+				result := graphLegacyImportError(input)
 				var failure *exitError
 				if !errors.As(result, &failure) || failure.Code != test.exit {
 					t.Fatalf("error=%v want exit=%d", result, test.exit)
@@ -193,6 +195,158 @@ func TestGraphPreviewImportDeadlineDisposition(t *testing.T) {
 				}
 			})
 		}
+	}
+}
+
+func TestGraphPreviewOutcomeUnknownPrecedence(t *testing.T) {
+	candidateIDs := []string{"https://example.invalid/work/links/a", "https://example.invalid/work/links/b"}
+	reported := &exitError{Code: 2}
+	for _, test := range []struct {
+		name  string
+		cause error
+	}{
+		{"limit", graphstore.ErrLimitExceeded},
+		{"capability", graphstore.ErrCapabilityUnavailable},
+		{"ambiguous", &graphstore.ErrAmbiguousLink{CandidateIDs: candidateIDs}},
+		// Defensive composition: current transaction constructors do not return
+		// exitError, but the shared mapper must not erase a supplied uncertainty.
+		{"reported-defensive", reported},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			stderr, err := os.CreateTemp(t.TempDir(), "stderr")
+			if err != nil {
+				t.Fatal(err)
+			}
+			oldStderr, oldJSON, oldOutput := os.Stderr, jsonOutput, graphFailureOutput
+			os.Stderr, jsonOutput, graphFailureOutput = stderr, true, nil
+			defer func() { os.Stderr, jsonOutput, graphFailureOutput = oldStderr, oldJSON, oldOutput; _ = stderr.Close() }()
+			result := graphStorageError(errors.Join(test.cause, graphstore.ErrOutcomeUnknown))
+			var failure *exitError
+			if !errors.As(result, &failure) || failure.Code != 6 {
+				t.Fatalf("uncertainty was hidden: %v", result)
+			}
+			raw, err := os.ReadFile(stderr.Name())
+			if err != nil {
+				t.Fatal(err)
+			}
+			var envelope struct {
+				Code      string `json:"code"`
+				Message   string `json:"message"`
+				Retryable bool   `json:"retryable"`
+			}
+			if err := json.Unmarshal(raw, &envelope); err != nil || envelope.Code != "outcome_unknown" || envelope.Retryable || !strings.Contains(envelope.Message, "do not automatically replay") || !strings.Contains(envelope.Message, "inspect the canonical ID") {
+				t.Fatalf("missing single uncertainty diagnostic or recovery guidance: %q (%v)", raw, err)
+			}
+		})
+	}
+}
+
+func TestGraphPreviewDefiniteErrorShortcuts(t *testing.T) {
+	candidateIDs := []string{"https://example.invalid/work/links/a", "https://example.invalid/work/links/b"}
+	reported := &exitError{Code: 2}
+	for _, test := range []struct {
+		name  string
+		input error
+	}{
+		{"reported", reported},
+		{"ambiguous", &graphstore.ErrAmbiguousLink{CandidateIDs: candidateIDs}},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			stderr, err := os.CreateTemp(t.TempDir(), "stderr")
+			if err != nil {
+				t.Fatal(err)
+			}
+			oldStderr, oldJSON, oldOutput := os.Stderr, jsonOutput, graphFailureOutput
+			os.Stderr, jsonOutput, graphFailureOutput = stderr, true, nil
+			defer func() { os.Stderr, jsonOutput, graphFailureOutput = oldStderr, oldJSON, oldOutput; _ = stderr.Close() }()
+			result := graphStorageError(test.input)
+			raw, err := os.ReadFile(stderr.Name())
+			if err != nil {
+				t.Fatal(err)
+			}
+			if test.name == "reported" {
+				if result != reported || len(raw) != 0 {
+					t.Fatalf("reported error changed or emitted a second diagnostic: result=%v raw=%q", result, raw)
+				}
+				return
+			}
+			var failure *exitError
+			if !errors.As(result, &failure) || failure.Code != 4 {
+				t.Fatalf("definite ambiguity exit changed: %v", result)
+			}
+			var envelope struct {
+				Code         string   `json:"code"`
+				Retryable    bool     `json:"retryable"`
+				CandidateIDs []string `json:"candidateIDs"`
+			}
+			if err := json.Unmarshal(raw, &envelope); err != nil || envelope.Code != "ambiguous_link" || envelope.Retryable || len(envelope.CandidateIDs) != len(candidateIDs) {
+				t.Fatalf("definite ambiguity diagnostic changed: %q (%v)", raw, err)
+			}
+			for i, want := range candidateIDs {
+				if envelope.CandidateIDs[i] != want {
+					t.Fatalf("ambiguity candidates changed: %v", envelope.CandidateIDs)
+				}
+			}
+		})
+	}
+}
+
+func TestGraphPreviewNonImportCancellationDisposition(t *testing.T) {
+	for _, cancellation := range []error{context.DeadlineExceeded, context.Canceled} {
+		for _, test := range []struct {
+			name string
+			wrap error
+			code string
+			exit int
+		}{
+			{"plain", nil, "graph_not_initialized", 5},
+			{"invalid-store", graphstore.ErrInvalidStore, "invalid_store", 5},
+			{"uncertain", graphstore.ErrOutcomeUnknown, "outcome_unknown", 6},
+		} {
+			t.Run(fmt.Sprintf("%v/%s", cancellation, test.name), func(t *testing.T) {
+				stderr, err := os.CreateTemp(t.TempDir(), "stderr")
+				if err != nil {
+					t.Fatal(err)
+				}
+				oldStderr, oldJSON, oldOutput := os.Stderr, jsonOutput, graphFailureOutput
+				os.Stderr, jsonOutput, graphFailureOutput = stderr, true, nil
+				defer func() { os.Stderr, jsonOutput, graphFailureOutput = oldStderr, oldJSON, oldOutput; _ = stderr.Close() }()
+				input := cancellation
+				if test.wrap != nil {
+					input = errors.Join(test.wrap, cancellation)
+				}
+				result := graphStorageError(input)
+				var failure *exitError
+				if !errors.As(result, &failure) || failure.Code != test.exit {
+					t.Fatalf("non-import error changed: %v, want exit%d", result, test.exit)
+				}
+				raw, err := os.ReadFile(stderr.Name())
+				if err != nil {
+					t.Fatal(err)
+				}
+				var envelope struct {
+					Code      string `json:"code"`
+					Retryable bool   `json:"retryable"`
+				}
+				if err := json.Unmarshal(raw, &envelope); err != nil || envelope.Code != test.code || envelope.Retryable {
+					t.Fatalf("non-import diagnostic changed: %q (%v)", raw, err)
+				}
+			})
+		}
+	}
+}
+
+func TestGraphPreviewImportPreservesReportedError(t *testing.T) {
+	oldJSON, oldOutput := jsonOutput, graphFailureOutput
+	var diagnostic bytes.Buffer
+	jsonOutput, graphFailureOutput = true, &diagnostic
+	defer func() { jsonOutput, graphFailureOutput = oldJSON, oldOutput }()
+	reported := &exitError{Code: 2}
+	// Defensive wrapping control: a previously reported refusal must not emit
+	// another diagnostic merely because cleanup also supplies cancellation.
+	result := graphLegacyImportError(errors.Join(reported, context.Canceled))
+	if result != reported || diagnostic.Len() != 0 {
+		t.Fatalf("reported import refusal changed or was printed twice: result=%v diagnostic=%q", result, diagnostic.String())
 	}
 }
 

@@ -42,7 +42,7 @@ func runGraphPreviewImportReader(reader io.Reader, source string) error {
 		}
 		return graphFailure("invalid_properties", err.Error(), 2)
 	}
-	return withGraphStoreBudget(5*time.Minute, func(ctx context.Context, s *graphstore.Store) (any, string, error) {
+	return withGraphStoreErrorMapper(5*time.Minute, func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 		result, err := s.ImportLegacyWithPrefix(ctx, batch, getActorWithGit(), importDryRun, importSourcePrefix)
 		if err != nil {
 			return nil, "", err
@@ -54,7 +54,23 @@ func runGraphPreviewImportReader(reader io.Reader, source string) error {
 		return result, graphPreviewLegacyImportSummary(action, source, result), nil
 	}, func(result any, human string) error {
 		return graphPrint(result, human, quietFlag)
-	})
+	}, graphLegacyImportError)
+}
+
+// Import inspections use a bounded-operation refusal for cancellation. Keep
+// uncertainty and already-reported errors ahead of this route-local mapping.
+func graphLegacyImportError(err error) error {
+	if errors.Is(err, graphstore.ErrOutcomeUnknown) {
+		return graphStorageError(err)
+	}
+	var reported *exitError
+	if errors.As(err, &reported) {
+		return reported
+	}
+	if errors.Is(err, context.DeadlineExceeded) || errors.Is(err, context.Canceled) {
+		return graphFailure("capability_unavailable", err.Error(), 5)
+	}
+	return graphStorageError(err)
 }
 
 func graphPreviewLegacyImportSummary(action, source string, result graphstore.LegacyImportResult) string {

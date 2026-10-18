@@ -571,17 +571,23 @@ func withGraphStoreOutput(fn func(context.Context, *graphstore.Store) (any, stri
 }
 
 func withGraphStoreBudget(budget time.Duration, fn func(context.Context, *graphstore.Store) (any, string, error), output func(any, string) error) error {
+	return withGraphStoreErrorMapper(budget, fn, output, graphStorageError)
+}
+
+// The mapper receives the raw open or joined operation/cleanup error before
+// any diagnostic is emitted. Ordinary graph routes keep graphStorageError.
+func withGraphStoreErrorMapper(budget time.Duration, fn func(context.Context, *graphstore.Store) (any, string, error), output func(any, string) error, mapError func(error) error) error {
 	ctx, cancel := context.WithTimeout(getRootContext(), budget)
 	defer cancel()
 	s, err := graphstore.OpenExisting(ctx, graphOptions(graphPreviewConfig))
 	if err != nil {
-		return graphStorageError(err)
+		return mapError(err)
 	}
 	defer func() { _ = s.Close() }() // Panic fallback; ordinary cleanup is checked below.
 	result, human, opErr := fn(ctx, s)
 	closeErr := s.Close()
 	if opErr != nil {
-		return graphStorageError(errors.Join(opErr, closeErr))
+		return mapError(errors.Join(opErr, closeErr))
 	}
 	if closeErr != nil {
 		return graphFailure("route_unavailable", "operation completed but store cleanup failed: "+closeErr.Error(), 5)
@@ -808,6 +814,11 @@ func graphPrintTo(out io.Writer, result any, human string, quiet, structured boo
 }
 
 func graphStorageError(err error) error {
+	// Failed rollback may join uncertainty to a definite refusal. Keep the
+	// inspect/no-replay boundary ahead of every individual error shortcut.
+	if errors.Is(err, graphstore.ErrOutcomeUnknown) {
+		return graphFailure("outcome_unknown", err.Error()+"; do not automatically replay; inspect the canonical ID before deciding the next action", 6)
+	}
 	// A graph route may validate a selected Type only after reading it inside
 	// withGraphStore. graphFailure has already reported this typed CLI refusal.
 	var reported *exitError
@@ -832,10 +843,6 @@ func graphStorageError(err error) error {
 	case errors.Is(err, graphstore.ErrGone):
 		return graphFailure("gone", err.Error(), 3)
 	case errors.Is(err, graphstore.ErrCapabilityUnavailable), errors.Is(err, graphstore.ErrLimitExceeded):
-		return graphFailure("capability_unavailable", err.Error(), 5)
-	case errors.Is(err, graphstore.ErrOutcomeUnknown):
-		return graphFailure("outcome_unknown", err.Error()+"; do not automatically replay; inspect the canonical ID before deciding the next action", 6)
-	case errors.Is(err, context.DeadlineExceeded), errors.Is(err, context.Canceled):
 		return graphFailure("capability_unavailable", err.Error(), 5)
 	case errors.Is(err, graphstore.ErrInvalidStore):
 		return graphFailure("invalid_store", err.Error(), 5)
