@@ -1,0 +1,24 @@
+{
+  "AExactRenderedBaseline": true,
+  "B": {
+    "actualATerminal0": true,
+    "after": "ACTUAL_A_TOOL_ID = 'exec_command/terminal-chunk:4c7852'\n",
+    "before": "ACTUAL_A_TOOL_ID = 'UNRESOLVED_ACTUAL_TOOL_ID'\n",
+    "count": 1,
+    "fullInverse": true
+  },
+  "C": {
+    "actualBTerminal0": true,
+    "after": "ACTUAL_B_TOOL_ID = 'exec_command/terminal-chunk:2054e3'\n",
+    "before": "ACTUAL_B_TOOL_ID = 'UNRESOLVED_ACTUAL_B_TOOL_ID'\n",
+    "count": 1,
+    "fullInverse": true
+  },
+  "actualSourceSha256": {
+    "A": "53b899335bce111e4f8412220dc7fe51c47d3ac5027a889559f33bc9423cb625",
+    "B": "ffea1fbb1eb5d562bee9cb0c504dd2893b8a2458af7512eb12cb0305782696bf",
+    "C": "92677873192fa97480f0e0618de777fc2af006d19f97d6af9852cd15c30dae48"
+  },
+  "allGuardsAndOtherBytesExact": true,
+  "conditionalRAW_EXIT0PrepublishedNotLateChanged": true
+}

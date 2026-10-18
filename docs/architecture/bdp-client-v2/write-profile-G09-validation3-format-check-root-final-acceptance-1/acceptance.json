@@ -1,0 +1,56 @@
+{
+  "accepted": true,
+  "actualCommonClockSeconds": 10.164673416875303,
+  "actualEvidencePublication": "2f394ee2bf908762dd7580775e04b328ef821636",
+  "actualFormatLog": "Checked 10 files in 32ms. No fixes applied.\n",
+  "actualToolExitCodes": [
+    0,
+    0,
+    0
+  ],
+  "actualToolIds": [
+    "4c7852",
+    "2054e3",
+    "a92e9c"
+  ],
+  "administrativeIdentities": "UNRETAINED; trusted-root attribution only",
+  "allCensusRows": 1380,
+  "allLater28Unattempted": true,
+  "earlierStageReinvocationAuthorized": false,
+  "evidenceIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-format-check-root-tool-evidence-1/index.json",
+    "sha256": "5285c63651901f1eca9e5ba99a502f687578f3ddfb20e0bc1f8843f5369ece8e"
+  },
+  "findings": [],
+  "finiteTaskPGIDs": 3,
+  "finiteTaskPIDs": 4,
+  "firstCompleteAuthorityPublication": "21be5a99c0e2f6d234860b6ee09586550a9ba351",
+  "innerElapsedSeconds": 4.786675458773971,
+  "innerRawExit": 0,
+  "later25Authorized": false,
+  "native": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-format-check-actual-native-audit-1/closure.json",
+    "sha256": "9aedfec4229784b3accabe2c1e1a54b36245536822d7ef84575c763d61ee9211"
+  },
+  "nativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-format-check-actual-native-audit-1/index.json",
+    "sha256": "db4a45d11cf88d004687aee347c8834c85c98b478e5c1d2aac3e294745b482e4"
+  },
+  "nextStage": "lint",
+  "nextStageCondition": "Only after this exact FULL native/root acceptance is committed/pushed/allraw+modes+remote readback; then ONE new lint A/B/C from unchanged prepublished next5 baselines under current779d/57d5. Full actual independent/root/durable barrier before fresh-build. Nonzero/late/partial/UNKNOWN STOP/no retry.",
+  "noEmptyRootPredicateCleanupGlobalOrHardRealtimeClaim": true,
+  "originalRawToolReceiptsIndependentlyDecoded": false,
+  "priorTypecheckFullAcceptancePublication": "9ab8652a5984f0edc08390e4941ae8e0f9cb9f5b",
+  "publicOrWholeWriteCredit": false,
+  "rootInspection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-format-check-root-final-acceptance-1/inspection.json",
+    "sha256": "bd42e124945b8045b8c69c975488262eab3a0cd96178f88fe86d0c921d9469b1"
+  },
+  "scope": "EXACT_ONE_ACTUAL_P3_FORMAT_CHECK_ONLY_TEN_OWNED_CHANGED_FILES_FINITE_RECORDED_DOMAIN",
+  "secondActivationPublication": "32ddcc8e8ccc697e8987ead5b333cb6391eef407",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "sourceIdentity": "f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65",
+  "stage": "format-check",
+  "strictUnder115": true,
+  "temporaryRootRetained": true
+}

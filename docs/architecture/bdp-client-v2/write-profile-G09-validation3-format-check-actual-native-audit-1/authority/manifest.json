@@ -1,0 +1,430 @@
+{
+  "accepted": true,
+  "activationEvidenceFuturePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-activation-1/activation.json",
+  "activeGate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/execution-gate.json",
+    "sha256": "779d31312b8333304fdae310ecaf4d4ca0f23f9f05307fb5be4534428adcdafc"
+  },
+  "acyclicity": "Manifest pins exact placeholder templates, rules and upstream accepted authority, never its own digest or rendered source containing its digest. Separate immutable rendering record binds actual raw manifest digest and all15 baseline cells after manifest freeze. Only future actual terminal0 permits whole-assignment TOOL_ID binding; original raw toolreceipt is not invented.",
+  "allowedSubstitutions": {
+    "beforeFirstA": [
+      "Exactly one complete LF APPROVED_GATE_SHA256 assignment to activeGate.sha256; every other byte preserved.",
+      "Exactly one complete LF APPROVED_EXECUTION_ACCEPTANCE_SHA256 assignment to actual raw SHA256 of THIS frozen manifest, supplied externally after freeze; its SHA is not stored in itself."
+    ],
+    "identityRule": "Actual trusted tool ID safe singlequoted literal without quote/backslash/LF/CR; count1 before/after and whole-cell inverse equals prepublished rendered cell. Any unavailable/unsafe/nonzero/unknown/partial/late/equalityfailure STOP; no nextcell/retry.",
+    "neverLateChanged": [
+      "Prepublished RAW_EXIT0 remains conditional expectation; never edit it after terminal. Protective unresolved comparison guards, body, imports, clock, output, delimiters and final LF unchanged."
+    ],
+    "onlyAfterActualTerminal0": [
+      "Only one complete LF ACTUAL_A_TOOL_ID assignment in B after actual A terminal0.",
+      "Only one complete LF ACTUAL_B_TOOL_ID assignment in C after actual B terminal0."
+    ]
+  },
+  "approvedStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build"
+  ],
+  "at": "2026-10-18T22:34:21.878148+00:00",
+  "automaticRetries": 0,
+  "bootstrapReuse": [],
+  "commandsSha256": "d7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7",
+  "completedMandatoryPriorStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "concretePreparationReleasedBy": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-fixed-protocol-root-static-acceptance-1/acceptance.json",
+    "sha256": "534082ff830fe2e550c043683470e65b4ff462dd7122bcdda973581b7c1e21e4"
+  },
+  "exactGateCandidate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-proposed-authority-1/execution-gate.proposed.json",
+    "sha256": "779d31312b8333304fdae310ecaf4d4ca0f23f9f05307fb5be4534428adcdafc"
+  },
+  "first4ReinvocationAuthorized": false,
+  "fixedProtocol": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-fixed-protocol-preparation-1/index.json",
+    "sha256": "d1597e644a700c8dc0e66e3f016741abf3ad0b1b85f62fac2c42ae351a2716bc"
+  },
+  "fixedProtocolNative": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-fixed-protocol-native-mechanics-1/closure.json",
+    "sha256": "b77762177d7562631577282d8cd5fe6f054709b11395015376db93b64d3295d8"
+  },
+  "fixedProtocolRoot": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-fixed-protocol-root-static-acceptance-1/acceptance.json",
+    "sha256": "534082ff830fe2e550c043683470e65b4ff462dd7122bcdda973581b7c1e21e4"
+  },
+  "implementationIndexSha256": "8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6",
+  "kind": "ROOT_P3_EXACT_NEXT5_MANIFEST_FIRST4_PRIOR_ACCEPTED_CONDITIONAL_ON_FINAL_PRECISION_AND_TWO_PUBLICATION_BARRIERS",
+  "later25Authorized": false,
+  "limitations": [
+    "Original actual CODE eeb distinct from correctedf6 native55c/roota9; omissions retained; no second actual review.",
+    "No runtimefit/fullsuite/exactCI/finalconfiguration/all251laws/public/fullWrite/globalcontainment/hard-real-time proof.",
+    "Trusted root actual toolterminal attribution narrower than independently decoded rawtoolreceipt.",
+    "P2 FAILED/STOP remains final, no repair/retry/result reuse. D2/D4/D5 and combined incomplete review remain open."
+  ],
+  "mode": "final",
+  "newInvocationStages": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build"
+  ],
+  "noNewStreamCap": true,
+  "normalStrictSeconds": 115,
+  "outerFailureBoundarySeconds": 120,
+  "perStageBarrier": "ONE new stage in fixed order only; actual A/B/C terminal+streams+finite census+same-kernel Cfirst strict115, FULL independent actual audit/root acceptance and exact durable publication/readback before next new stage. Nonzero/partial/missing/late/UNKNOWN STOP; no automatic retry or skipped gate.",
+  "positiveConjunction": [
+    "Actual manifest rawhash/strictJSON/requiredfields +activegate/source/implementation/commands BEFORE output/child creation.",
+    "Actual Atool0 +wrapper/inner0/no force/errors/sourcechange; sourcechecked prior P3 stage receipts only.",
+    "BOTH separate root PIPE actualEOF/fullreceived-saved-hashed/fileidentity/close; inner workload mergedlog distinct.",
+    "Actual Btool0 after literalps PIPE/PIPE/directhandle/raw0/BOTHEOF/directreap/fullraw/receiptclose/empty stderr/all actually recorded finite task PID+PGID absence; no selfabsence/globalclaim.",
+    "C first samekernel sample only AFTER actual B terminal; witness-origin strict<115 covers completed target/receipt/census runtime. Later static witnesspublication/forensicaudit/Git outside measured interval; no runtime work deferred.",
+    "Independent actual full conjunction and root disposition for each exact selected compiler/build/binding stage; all first4 prior accepted fresh P3 receipts remain mandatory; no single provisional/witness/PASS surrogate."
+  ],
+  "preparationReleaseDurableAt": "878b9b30f0524d848c0f921a2e05beae37e3768d",
+  "preparedSnapshotLiveControl": {
+    "afterSha256": "779d31312b8333304fdae310ecaf4d4ca0f23f9f05307fb5be4534428adcdafc",
+    "beforeSha256": "9088a3b9616271f3b5db19568b5b4fab2a49fceb3770359a60698582c5f00681",
+    "candidatePreactivationReferences": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-proposed-authority-1/reference-pins.json",
+      "sha256": "83d0a8265cb011fde633633d8aefc8300083af6e2f9e1b172dac577f5b41eb8d"
+    },
+    "closedCopy": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/execution-gate.closed.json",
+      "sha256": "f6724552f8d880dcf1481c05aba6e616451e9607e0ecedcfd5d8f77e5559d655"
+    },
+    "contract": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-proposed-authority-1/live-control-lineage.json",
+      "sha256": "810f058f2bf03ab224fbf1efa646b8a27f353c3c51604cc2621d3b91f9d0c393"
+    },
+    "historicalPreparedClosedSha256": "f6724552f8d880dcf1481c05aba6e616451e9607e0ecedcfd5d8f77e5559d655",
+    "historicalReferenceTables": [
+      {
+        "entries": 2215,
+        "soleHistoricalLiveControlProjection": null,
+        "table": {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/reference-pins.json",
+          "sha256": "3d60df502967735e6f836b7412a11bef0b0527702fc54064e71fe64f82a6b909"
+        }
+      },
+      {
+        "entries": 2278,
+        "soleHistoricalLiveControlProjection": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/execution-gate.json",
+        "table": {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-proposed-authority-1/reference-pins.json",
+          "sha256": "055a1d4f5c68c5d7120821206ba4fbfbe9b2ef53243afa4fa9210b04595a8513"
+        }
+      },
+      {
+        "entries": 2571,
+        "soleHistoricalLiveControlProjection": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/execution-gate.json",
+        "table": {
+          "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-fixed-protocol-preparation-1/reference-pins.json",
+          "sha256": "699e02d379dfefe4365c3eba28794d27877348bdf5c6e69e92bfe9f9270aec03"
+        }
+      }
+    ],
+    "preparedIndex": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/preparation-index.json",
+      "sha256": "bf105b842dffc26d8083850d53fc4df6902335ed8301ee48eff611042ee8632a"
+    },
+    "protocolPreparedReferences": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-fixed-protocol-preparation-1/reference-pins.json",
+      "sha256": "dd026b2b5605d8bbe7987af8e1e30ab5bf98971fbbcb14f605cd3df94ce5cd0e"
+    },
+    "rule": "Before activation all new candidate2675 and protocol26 pins exactly current9088; original olderf672 snapshots remain historical and use ONLY prior reviewed concrete live-path9088 phase projection. After reviewed/published ROOT activation ONLY this exact livePath is checked against779d instead of its prior historical/current snapshot value. Every other pin, all closedcopies, indices,121implementation,679source and prior17run remain unchanged; no skip/alias/reindex. New actual records separately indexed.",
+    "soleLivePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/execution-gate.json"
+  },
+  "priorFailedAttemptDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-first4-root-failed-disposition-1/disposition.json",
+    "sha256": "ed89eca81b2fc467f4eb5fa3f142eeac5aa47bbcf1231ed75b0bdbff5d9b9756"
+  },
+  "priorFirst4Accepted": {
+    "bind-workspace-tools": {
+      "actualInnerExit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/bind-workspace-tools.exit.json",
+        "sha256": "b781dd13ef57c8b195f1658a2e3260b72b38cd981ab44ed464945523309e3f3c"
+      },
+      "native": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-bind-workspace-tools-actual-native-audit-1/closure.json",
+        "sha256": "5ae13f0d630b268ded61df14a41334c6a01b0d533fa21df8e57123e3880f0705"
+      },
+      "newInvocationAuthorized": false,
+      "role": "completed mandatory earlier step in same fresh P3; never old P2 or bootstrap reuse",
+      "root": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-bind-workspace-tools-root-final-acceptance-1/acceptance.json",
+        "sha256": "b00242069ea83e0bedace2337ed673fe8cd268671a57b58453829f6f07264208"
+      }
+    },
+    "node-version": {
+      "actualInnerExit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/node-version.exit.json",
+        "sha256": "9d86d85fba3b1f2450948e0eeede848a68ddaf7498991f65ab90bc1f05fc6b54"
+      },
+      "native": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-node-version-actual-native-audit-1/closure.json",
+        "sha256": "3cd389a0f29324071044ed55055b8ff5cabaefddc4f625caa420ab945bcf2f9d"
+      },
+      "newInvocationAuthorized": false,
+      "role": "completed mandatory earlier step in same fresh P3; never old P2 or bootstrap reuse",
+      "root": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-node-version-root-final-acceptance-1/acceptance.json",
+        "sha256": "7987121fce55f25e67510a63be1a3328b17f658bdad3ec970043b0fb2697a8a8"
+      }
+    },
+    "pnpm-version": {
+      "actualInnerExit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/pnpm-version.exit.json",
+        "sha256": "6d863235a5630b4b447a55c5e38507c255241ba66e48cb18b448c6f461b45670"
+      },
+      "native": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-pnpm-version-actual-native-audit-1/closure.json",
+        "sha256": "c791ceeb136d3d2a21a960ba8ddd45d692ca6ff7162a139528214d06bc38efb0"
+      },
+      "newInvocationAuthorized": false,
+      "role": "completed mandatory earlier step in same fresh P3; never old P2 or bootstrap reuse",
+      "root": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-pnpm-version-root-final-acceptance-1/acceptance.json",
+        "sha256": "c5720ae880dc3dbed389d68b7fca91a7ee3f9a80b113414fd51953b4ded2e249"
+      }
+    },
+    "workspace-install": {
+      "actualInnerExit": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/workspace-install.exit.json",
+        "sha256": "820aabaf1aec0b9cfbcf7600ea14d8a3a39fa26147b2e135cf4c32082001ffa7"
+      },
+      "native": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-workspace-install-actual-native-audit-1/closure.json",
+        "sha256": "6159b1b279e0c8558400bbbd5d51d8974745bf6390655ae51c305c5906f01385"
+      },
+      "newInvocationAuthorized": false,
+      "role": "completed mandatory earlier step in same fresh P3; never old P2 or bootstrap reuse",
+      "root": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-workspace-install-root-final-acceptance-1/acceptance.json",
+        "sha256": "84f51200f51b82b24fe9ba36d866f0cdaf94013d249ae061431eaa53fe4cd6a3"
+      }
+    }
+  },
+  "publicOrWholeWriteCredit": false,
+  "renderedSourceFutureRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-instantiated-source-1",
+  "requiredBeforeActiveGateWrite": [
+    "FULL OTHERnative THIS exact manifest+all15 rendered baseline source+sole live9088to779d control-transition precision, then ROOT final acceptance.",
+    "Complete source/helper/protocol/candidate/allnative/root/manifest/renderedsource bytes committed/pushed/exactremote+readback BEFORE activation."
+  ],
+  "requiredBeforeFirstA": [
+    "ROOT exact one-file live9088to779d activation only; closedf672/all historical snapshots/all121implementation/source679 unchanged.",
+    "Separate ROOT activation evidence pins first complete durable authority publication and this actual raw manifest SHA/native/root final acceptance.",
+    "Activation+evidence separately committed/pushed/exactremote+activegate readback verified before first actual typecheck."
+  ],
+  "rootAuthorityCandidateAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-candidate-static-acceptance-1/acceptance.json",
+    "sha256": "cd737d92d231b3da72cd85e0bf04083ea7825466530b8214552d4e72d4f36360"
+  },
+  "rootAuthorityNative": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-candidate-native-precision-1/closure.json",
+    "sha256": "b40803e021b9c2bdc66f0dbe41cfc8ef1899f026133e4f2d6792429d4a31ca55"
+  },
+  "rootBridges": {
+    "actualCodeDisposition": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-proposed-authority-1/actual-code-disposition.json",
+      "sha256": "0320697ad97ad0c0478ee2bbed1e039ad9f22de3450dce0a3695350686418c39"
+    },
+    "nativeCodeDisposition": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-proposed-authority-1/native-code-disposition.json",
+      "sha256": "182dd0ea09e001bc42c61e90c6369e11c4e7f9a99c3364800d08d3a20661f966"
+    },
+    "rootDisposition": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-root-proposed-authority-1/root-disposition.json",
+      "sha256": "01e1db2619271c5e667d915701268da5e372b279da53a63d0d55032f49488033"
+    }
+  },
+  "rootOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1",
+  "rootProtocolInspection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-fixed-protocol-root-static-acceptance-1/inspection.json",
+    "sha256": "9bd51b422d417f6929a3ce6d3afbef7aba479e731f46475cc50384ada3f8c6ad"
+  },
+  "runtimeAuthorityEffectiveNow": false,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "sourceAndHelperAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-static-acceptance-1/acceptance.json",
+    "sha256": "2381755eec2437e5d8f81bfb3c7e2728f897288d33fc93a1c882b8adff802aa2"
+  },
+  "sourceAndHelperNative": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-native-mechanics-1/closure.json",
+    "sha256": "c6c364831d70c6caa05c6008ab3ef69ed4de35129245fbf81377f9d8c947abea"
+  },
+  "sourceBindingSha256": "712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714",
+  "sourceIdentity": "f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65",
+  "templateRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-fixed-protocol-preparation-1",
+  "templateSubstitutionContract": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-next5-fixed-protocol-preparation-1/substitution-and-framing-contract.json",
+    "sha256": "230d14cc2f0ff937437a5dc4f5b92698d2cb5bb12044042f8526643b39cb235b"
+  },
+  "templatesWithPlaceholders": [
+    {
+      "futureOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/typecheck",
+      "guardAndBodyExactAfterOnlyNamedBindingAndConditionalExpectationInverse": true,
+      "rootArgv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py",
+        "final",
+        "typecheck"
+      ],
+      "sections": {
+        "A": {
+          "bytes": 15003,
+          "sha256": "22c25d1010285f27e0974152d0b5912c92b1c45060929d91bcf1950b71e88174"
+        },
+        "B": {
+          "bytes": 6694,
+          "sha256": "66674a8e0f3ffe0dddd23e54567fabe0fd23c6fa623537c7d38c45db9fee6544"
+        },
+        "C": {
+          "bytes": 1775,
+          "sha256": "c26cf591ffcca6ce4e6388978d42fcce9a19890a2c9992489c84b56d321a1eab"
+        }
+      },
+      "stage": "typecheck",
+      "template": "proposals/typecheck.capture.txt",
+      "templateBytes": 28569,
+      "templateSha256": "6d1e09a60095e8b964c3c459d4d8353cfef1775aa5ef84132838db849b04b07b"
+    },
+    {
+      "futureOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/format-check",
+      "guardAndBodyExactAfterOnlyNamedBindingAndConditionalExpectationInverse": true,
+      "rootArgv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py",
+        "final",
+        "format-check"
+      ],
+      "sections": {
+        "A": {
+          "bytes": 15012,
+          "sha256": "b4567b982eb7989d626db7a716700823c4e57410a29047903c2cdde68153acc8"
+        },
+        "B": {
+          "bytes": 6703,
+          "sha256": "2c6e3244f69a00d0e5ebf6083c095cd63bbf00c4c6f9c5250d2b6805a498d377"
+        },
+        "C": {
+          "bytes": 1784,
+          "sha256": "c85578e40de16dfe7fe654ae6e6f1587033ab5e48aea4e04358734d150b01ef6"
+        }
+      },
+      "stage": "format-check",
+      "template": "proposals/format-check.capture.txt",
+      "templateBytes": 28596,
+      "templateSha256": "690c9ed622baaa18cb58e02b0ecdd6e96eb74e34256f76fae980f522b4a03038"
+    },
+    {
+      "futureOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/lint",
+      "guardAndBodyExactAfterOnlyNamedBindingAndConditionalExpectationInverse": true,
+      "rootArgv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py",
+        "final",
+        "lint"
+      ],
+      "sections": {
+        "A": {
+          "bytes": 14988,
+          "sha256": "0604cf17182e2d69785a5ebdad1d09d426b4f8b4c1b0c0ef66e169c8332016db"
+        },
+        "B": {
+          "bytes": 6679,
+          "sha256": "9b6e6f7ece10fcffa27b16e0d61ce8ff049ebf3fe6f26ace7a15fdff7afc1185"
+        },
+        "C": {
+          "bytes": 1760,
+          "sha256": "4311da95e62a2217cc2605f92cb8afd9b2ee1f66fb40edbde04de8d19251dddb"
+        }
+      },
+      "stage": "lint",
+      "template": "proposals/lint.capture.txt",
+      "templateBytes": 28524,
+      "templateSha256": "815af1db1afa389933d756f82556470c2597e1c3eb341bff1a95c57274b2e787"
+    },
+    {
+      "futureOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/fresh-build",
+      "guardAndBodyExactAfterOnlyNamedBindingAndConditionalExpectationInverse": true,
+      "rootArgv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py",
+        "final",
+        "fresh-build"
+      ],
+      "sections": {
+        "A": {
+          "bytes": 15009,
+          "sha256": "530b9e60879409a54bd21199991dadc454418035336799ad53fd0ccfd7d0fe76"
+        },
+        "B": {
+          "bytes": 6700,
+          "sha256": "152ab75000cac68da1c822ac072ab0f4e04d13046c6ff130bd0a3fb277bea139"
+        },
+        "C": {
+          "bytes": 1781,
+          "sha256": "98b1ab72e6bed8b936e8ac3c685c99a1d909212ebbbe52f01099c509f9b3944c"
+        }
+      },
+      "stage": "fresh-build",
+      "template": "proposals/fresh-build.capture.txt",
+      "templateBytes": 28587,
+      "templateSha256": "c25f4bd4e2e187c60e8ce4dc6436c4d53a5fe60d04b4f6e000991769a02d941f"
+    },
+    {
+      "futureOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-next5-dispatch-1/bind-fresh-build",
+      "guardAndBodyExactAfterOnlyNamedBindingAndConditionalExpectationInverse": true,
+      "rootArgv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py",
+        "final",
+        "bind-fresh-build"
+      ],
+      "sections": {
+        "A": {
+          "bytes": 15024,
+          "sha256": "94d85935affd2a5c52a1b8de6fac14705e098e34ee93c3013dffde58df46e5ed"
+        },
+        "B": {
+          "bytes": 6715,
+          "sha256": "b3678945496036a37db01480d643b12a95bf9dcf80c0950064ab4397dc531133"
+        },
+        "C": {
+          "bytes": 1796,
+          "sha256": "29baef8bef13febc9acfcb274ee676fea12930dcf4b1384aa7e2b17b2f3c60f4"
+        }
+      },
+      "stage": "bind-fresh-build",
+      "template": "proposals/bind-fresh-build.capture.txt",
+      "templateBytes": 28632,
+      "templateSha256": "ee0bf4fd7b89b532e7cb5828a0cdf94bcff4b2e8debb3d09df6560691f5d4cf0"
+    }
+  ],
+  "workspaceToolBinding": {
+    "map": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/workspace-tools.json",
+      "sha256": "30468c88674a41a54f8a366ca78c84dffc07f3e035a0d9bf32430300b6503552"
+    },
+    "native": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-bind-workspace-tools-actual-native-audit-1/closure.json",
+      "sha256": "5ae13f0d630b268ded61df14a41334c6a01b0d533fa21df8e57123e3880f0705"
+    },
+    "root": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-bind-workspace-tools-root-final-acceptance-1/acceptance.json",
+      "sha256": "b00242069ea83e0bedace2337ed673fe8cd268671a57b58453829f6f07264208"
+    },
+    "toolFiles": 11
+  }
+}
