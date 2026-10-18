@@ -1,0 +1,27 @@
+--- templates/D4-helper4/run.py
++++ run.py
+@@ -10,7 +10,7 @@
+ def main():
+  begin=ORIGIN # includes all remaining module imports and watchdog setup.
+  if len(sys.argv)!=3 or sys.argv[1]!='final':return 1
+- stage=sys.argv[2];product=stage=='installed-owned-set';term=145 if product else 115;kill=149 if product else 119;outer=150 if product else 120
++ stage=sys.argv[2];product=False;term=115;kill=119;outer=120 # carrier stages retain ordinary strict bounds, no D4 exception
+  here=Path(__file__).parent;parent,child=socket.socketpair();parent.setblocking(False)
+  blocked=signal.pthread_sigmask(signal.SIG_BLOCK,{signal.SIGTERM,signal.SIGINT})
+  worker=subprocess.Popen([sys.executable,str(here/'worker.py'),str(child.fileno()),stage,str(begin)],pass_fds=[child.fileno()],start_new_session=True,stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL);child.close()
+@@ -164,6 +164,7 @@
+         if product and not primary['observed']:refuse('product-leader-never-authenticated')
+       elif event=='need-quiet':need_quiet=True
+       elif event=='verified':
++       if now>=begin+105:refuse('verified-after-work-cutoff') # actual receipt, not worker pre-write timestamp
+        if verified or (product and (end is None or len(checks)!=1 or not all(c['settled']and c['exit']==0 for c in checks.values()))):refuse('verified-order')
+        verified=True;flush=now
+        if product and now>=min(end+5,begin+135):refuse('flush-late')
+@@ -177,6 +178,7 @@
+     elif start is not None and end is None and now>=min(start+120,begin+130):refuse('end-missing')
+     elif end is not None and not verified and now>=min(end+5,begin+135):refuse('flush-incomplete')
+     elif verified and now>=min(flush+10,begin+145):refuse('drain-incomplete')
++   if elapsed>=105 and not verified:refuse('work-cutoff') # all gate/setup/hash/proof/parse work is inside this origin
+    if elapsed>=term:refuse('TERM-boundary')
+    if failure and not kill_sent and (not term_sent or now-last_term>=.2):signal_owned(signal.SIGTERM);term_sent=True;last_term=now
+    if failure and now>=min(begin+kill,failure_at+4) and (not kill_sent or now-last_kill>=.2):signal_owned(signal.SIGKILL);kill_sent=True;last_kill=now

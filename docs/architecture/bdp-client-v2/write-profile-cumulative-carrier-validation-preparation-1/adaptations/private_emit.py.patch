@@ -1,0 +1,48 @@
+--- /dev/null
++++ private_emit.py
+@@ -0,0 +1,45 @@
++"""Owned native strict-emission preparation/binding. WIP, never evaluated during authorship."""
++import os,json
++from pathlib import Path
++from gate import P,W,E,require,read,sha,write
++MAX_FILES=512
++MAX_BYTES=67108864
++def create(path,data):
++ fd=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_CLOEXEC,0o600)
++ with os.fdopen(fd,'wb')as out:out.write(data)
++def prepare_emit(g,owned):
++ require(owned==E/'attempt-private-verifier-emit'and owned.is_dir()and not owned.is_symlink(),'Exact owned compiler attempt')
++ root=owned/'private-emit';root.mkdir(mode=0o700,exist_ok=False)
++ raw=(P/'context/accepted-contract2/private-emit-project.template.json').read_text().replace('${FROZEN_SOURCE_ROOT}',str(W)).replace('${OWNED_ATTEMPT_ROOT}',str(owned));project=json.loads(raw)
++ require(set(project)=={'extends','files','include','exclude','compilerOptions'}and project['extends']==str(W/'tsconfig.check.json')and project['files']==[str(W/'packages/conformance/test-support/profile-evidence.ts')]and project['include']==[]and project['exclude']==[],'Strict single-entry project differs')
++ require(project['compilerOptions']=={'composite':False,'declaration':False,'declarationMap':False,'emitDeclarationOnly':False,'incremental':False,'noEmit':False,'noEmitOnError':True,'outDir':str(root),'rootDir':str(W),'sourceMap':False},'Only accepted emission overrides')
++ create(owned/'compiler-project.json',(json.dumps(project,indent=2,sort_keys=True)+'\n').encode());create(root/'package.json',b'{"type":"module"}')
++ expected=read(P/'expected-source-map.json');catalogs=sorted(n for n in expected if n.startswith('packages/conformance/catalog/')and n.endswith('.json'));require(len(catalogs)==6,'Exact six classified catalogs')
++ copied=[]
++ for n in catalogs:
++  source=W/n;data=source.read_bytes();require(sha(data)==expected[n],'Catalog source changed');target=root/n;target.parent.mkdir(mode=0o700,parents=True,exist_ok=True);create(target,data);copied.append({'source':str(source),'sourceSha256':expected[n],'path':str(target),'sha256':sha(data),'bytes':len(data)})
++ dependency=W/'node_modules';require(dependency.is_dir(),'Fresh workspace dependency directory absent');os.symlink(str(dependency),root/'node_modules',target_is_directory=True)
++ write('private-emit-preparation.json',{'sourceIdentity':g['_sourceIdentity'],'sourceBindingSha256':g['sourceBinding']['sha256'],'ownedRoot':str(root),'project':{'path':str(owned/'compiler-project.json'),'sha256':sha((owned/'compiler-project.json').read_bytes())},'marker':{'path':str(root/'package.json'),'sha256':sha(b'{"type":"module"}')},'catalogs':copied,'nodeModulesLink':{'path':str(root/'node_modules'),'link':os.readlink(root/'node_modules'),'realpath':str(dependency.resolve(strict=True))},'compiler':{'argv':read(P/'commands.json')['commands']['private-verifier-emit']['argv'],'actualFreshToolIdentity':'Required gate-bound workspace-tools.json'},'privateRuntimeImportProof':'UNRESOLVED; no runtime claim from compiler inventory alone'})
++def bind_emit(g,owned):
++ root=owned/'private-emit';setup=read(E/'private-emit-preparation.json');require(setup['sourceIdentity']==g['_sourceIdentity']and setup['sourceBindingSha256']==g['sourceBinding']['sha256'],'Compiler setup source differs')
++ require(sha((owned/'compiler-project.json').read_bytes())==setup['project']['sha256']and(root/'package.json').read_bytes()==b'{"type":"module"}','Compiler project/marker changed')
++ require((root/'node_modules').is_symlink()and os.readlink(root/'node_modules')==setup['nodeModulesLink']['link']and str((root/'node_modules').resolve(strict=True))==setup['nodeModulesLink']['realpath'],'Only exact fresh workspace link permitted')
++ files=[];total=0
++ for directory,dirs,names in os.walk(root,followlinks=False):
++  for n in dirs+names:
++   q=Path(directory)/n
++   if q==root/'node_modules':continue
++   require(not q.is_symlink(),'Unexpected emitted link')
++   if q.is_file():
++    size=q.stat().st_size;total+=size;require(total<=MAX_BYTES and len(files)<MAX_FILES,'Private emit acceptance capacity exceeded')
++    data=q.read_bytes();require(len(data)==size,'Emitted bytes changed');files.append({'path':str(q),'realpath':str(q.resolve(strict=True)),'sha256':sha(data),'bytes':len(data)})
++ for item in setup['catalogs']:require(sha(Path(item['source']).read_bytes())==sha(Path(item['path']).read_bytes())==item['sha256'],'Exact catalog copy differs')
++ text=(E/'private-verifier-emit.log').read_text(encoding='utf-8',errors='strict');emitted=[]
++ for line in text.splitlines():
++  if not line.startswith('TSFILE: '):continue
++  q=Path(line[len('TSFILE: '):]);require(q.is_absolute()and q.is_relative_to(root)and not q.is_symlink()and q.is_file(),'Compiler emitted-file identity invalid');emitted.append(str(q))
++ require(emitted and len(emitted)==len(set(emitted)),'Missing/duplicate actual emitted inventory')
++ authored={item['path']for item in setup['catalogs']}|{str(root/'package.json')};require({item['path']for item in files}==set(emitted)|authored,'Unaccounted/missing compiler output')
++ required=[root/'packages/conformance/test-support/profile-evidence.js',root/'packages/conformance/test-support/profile-contract-plan.js',root/'packages/conformance/src/artifact-bundle.js']
++ require(all(str(q)in emitted for q in required),'Private verifier/factory/bundle not emitted')
++ write('private-emit-inventory.json',{'sourceIdentity':g['_sourceIdentity'],'sourceBindingSha256':g['sourceBinding']['sha256'],'root':str(root),'files':sorted(files,key=lambda x:x['path']),'actualCompilerEmittedFiles':sorted(emitted),'catalogs':setup['catalogs'],'workspaceNodeModules':setup['nodeModulesLink'],'project':setup['project'],'preparationSha256':sha((E/'private-emit-preparation.json').read_bytes()),'compilerStartSha256':sha((E/'private-verifier-emit.started.json').read_bytes()),'compilerLogSha256':sha((E/'private-verifier-emit.log').read_bytes()),'fileCount':len(files),'bytes':total,'runtimeGraph':'UNRESOLVED; separately actual resolved private graph proof + root acceptance required','capacity':'Acceptance policy only, not a measured product maximum or fit guarantee'})

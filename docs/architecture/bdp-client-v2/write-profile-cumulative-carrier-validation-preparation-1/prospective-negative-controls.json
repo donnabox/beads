@@ -1,0 +1,233 @@
+{
+  "controls": [
+    {
+      "expected": "fixed duplicate-json-key refusal before full tree acceptance",
+      "id": "C01",
+      "input": "duplicate root or nested key",
+      "observed": "UNEXECUTED",
+      "target": "scanner.strict_json"
+    },
+    {
+      "expected": "refuse and preserve raw",
+      "id": "C02",
+      "input": "invalid UTF8 or trailing JSON",
+      "observed": "UNEXECUTED",
+      "target": "scanner.strict_json"
+    },
+    {
+      "expected": "refuse before full tree allocation",
+      "id": "C03",
+      "input": "nonfinite numeric or >128 container depth",
+      "observed": "UNEXECUTED",
+      "target": "scanner.strict_json"
+    },
+    {
+      "expected": "refuse bounded structure",
+      "id": "C04",
+      "input": "100001 values or10001-entry object/array",
+      "observed": "UNEXECUTED",
+      "target": "scanner.strict_json"
+    },
+    {
+      "expected": "no positive acquisition/no chmod",
+      "id": "C05",
+      "input": "preexisting destination/symlink/directory/mode0644/wronguid",
+      "observed": "UNEXECUTED",
+      "target": "scanner.secure_read"
+    },
+    {
+      "expected": "refuse identity race",
+      "id": "C06",
+      "input": "inode/mode/time/bytes change during read",
+      "observed": "UNEXECUTED",
+      "target": "scanner.secure_read"
+    },
+    {
+      "expected": "refuse no guessed terminal",
+      "id": "C07",
+      "input": "two summaries or incomplete final line",
+      "observed": "UNEXECUTED",
+      "target": "SummaryScanner"
+    },
+    {
+      "expected": "retain partial raw and fail, no truncated acceptance",
+      "id": "C08",
+      "input": "summary object>1MiB or combined log>64MiB",
+      "observed": "UNEXECUTED",
+      "target": "SummaryScanner"
+    },
+    {
+      "expected": "refuse exact multiset",
+      "id": "C09",
+      "input": "missing/extra/duplicate fullName or wrong source file",
+      "observed": "UNEXECUTED",
+      "target": "selected_results"
+    },
+    {
+      "expected": "refuse even with process0",
+      "id": "C10",
+      "input": "root or case failed/mandatory typedzero absent/boolzero",
+      "observed": "UNEXECUTED",
+      "target": "selected_results"
+    },
+    {
+      "expected": "no positive credit",
+      "id": "C11",
+      "input": "unselected passed callback/snapshot changed/Unhandled diagnostic",
+      "observed": "UNEXECUTED",
+      "target": "selected_results"
+    },
+    {
+      "expected": "responsive parent original105/115/119/120 boundaries",
+      "id": "C12",
+      "input": "gate/hash/compiler/private parser blocks",
+      "observed": "UNEXECUTED",
+      "target": "run.py"
+    },
+    {
+      "expected": "register direct handle and preserve worker anchor, no group-wide quiet exclusion",
+      "id": "C13",
+      "input": "worker/primary/group spawn before ack and descendant quiet race",
+      "observed": "UNEXECUTED",
+      "target": "run.py"
+    },
+    {
+      "expected": "zombie is not absence; fresh known-group absence before root acceptance",
+      "id": "C14",
+      "input": "prior-live authenticated zombie then reaped leader",
+      "observed": "UNEXECUTED",
+      "target": "run.py"
+    },
+    {
+      "expected": "sticky unknown/refuse, no unsafe historical barePGID signaling",
+      "id": "C15",
+      "input": "unknown birth/changed livecomm/census failure/known group unanchored",
+      "observed": "UNEXECUTED",
+      "target": "run.py"
+    },
+    {
+      "expected": "bounded repeated owned escalation; raw failure or UNKNOWN, never retry",
+      "id": "C16",
+      "input": "SIGTERM ignored/slow closure/publisher failure",
+      "observed": "UNEXECUTED",
+      "target": "run.py"
+    },
+    {
+      "expected": "refuse downstream prefix",
+      "id": "C17",
+      "input": "missing/stale outer receipt/late elapsed or wrong watchdog/exit SHA",
+      "observed": "UNEXECUTED",
+      "target": "gate.complete"
+    },
+    {
+      "expected": "refuse before stage product child",
+      "id": "C18",
+      "input": "unknown/missing gate key or out-of-order approvals/bootstrap reuse",
+      "observed": "UNEXECUTED",
+      "target": "gate.load_gate"
+    },
+    {
+      "expected": "refuse exact source mapping",
+      "id": "C19",
+      "input": "source681/HEAD/tree/dirty/staged/untracked/binary/tool drift",
+      "observed": "UNEXECUTED",
+      "target": "gate.source_check"
+    },
+    {
+      "expected": "same strict top-level refusal; no alias",
+      "id": "C20",
+      "input": "root archive leaf only nested or wrong new tar hash",
+      "observed": "UNEXECUTED",
+      "target": "gate.load_gate"
+    },
+    {
+      "expected": "refuse full membership/provenance",
+      "id": "C21",
+      "input": "unsafe/duplicate/missing/extra archive member or altered built bytes",
+      "observed": "UNEXECUTED",
+      "target": "packages.py"
+    },
+    {
+      "expected": "refuse proof before installed callback",
+      "id": "C22",
+      "input": "wrong generated consumer lock/manifest/settings/graph/link/entry/payload",
+      "observed": "UNEXECUTED",
+      "target": "packages.py"
+    },
+    {
+      "expected": "no private runtime projection",
+      "id": "C23",
+      "input": "compiler nonzero/missing actual TSFILE output/newlink/sourcecatalog drift",
+      "observed": "UNEXECUTED",
+      "target": "private_emit.py"
+    },
+    {
+      "expected": "refuse before factory imports",
+      "id": "C24",
+      "input": "unresolved dynamic import/require alias/conditional resolver/unpinned dependency",
+      "observed": "UNEXECUTED",
+      "target": "private-graph.mjs"
+    },
+    {
+      "expected": "refuse graph proof",
+      "id": "C25",
+      "input": "actual CJS cache/import file not in graph or runtime bytes differ from consumer",
+      "observed": "UNEXECUTED",
+      "target": "private-graph.mjs"
+    },
+    {
+      "expected": "refuse original-byte audit even callback0",
+      "id": "C26",
+      "input": "missing umask receipt/actual mode/stdio EOF/authenticated primary/group terminal",
+      "observed": "UNEXECUTED",
+      "target": "prepare_carrier_audit"
+    },
+    {
+      "expected": "refuse same full wrapper/fresh trusted binding",
+      "id": "C27",
+      "input": "wrapper9 keys/order/session count or metadata/artifact/source/entry mismatch",
+      "observed": "UNEXECUTED",
+      "target": "carrier-audit.mjs"
+    },
+    {
+      "expected": "real same-module verifier refuses, no rebuilt evidence",
+      "id": "C28",
+      "input": "attempt/summary bytes differ/missing summary/invalid canonical/envelope/row omission",
+      "observed": "UNEXECUTED",
+      "target": "carrier-audit.mjs"
+    },
+    {
+      "expected": "refuse raw-vs-derived/256row/full verifier proof",
+      "id": "C29",
+      "input": "normalized raw digest/result-only digest/17-row substitution",
+      "observed": "UNEXECUTED",
+      "target": "carrier-audit.mjs"
+    },
+    {
+      "expected": "refuse claim/qualification/ownership changes; retain reported-complete/unverified and explicit no offline token regeneration limitation",
+      "id": "C30",
+      "input": "claim true/qualification ready/cleanupownership upgraded",
+      "observed": "UNEXECUTED",
+      "target": "carrier-audit.mjs"
+    },
+    {
+      "expected": "preserve failed attempt; no retry or widening",
+      "id": "C31",
+      "input": "existing attempt directory/receipts or postwork nofit",
+      "observed": "UNEXECUTED",
+      "target": "all stages"
+    },
+    {
+      "expected": "outer failure only; missing stage fields remain UNKNOWN, never reconstruct",
+      "id": "C32",
+      "input": "failure during setup before stage receipt",
+      "observed": "UNEXECUTED",
+      "target": "all stages"
+    }
+  ],
+  "executionReleased": false,
+  "harness": "UNPREPARED; separate concrete zero-product harness and OTHER-native/root acceptance required before any synthetic evaluation",
+  "noNewProductCallbacks": true,
+  "noProductCalls": true,
+  "state": "FINITE DATA ONLY; no executable synthetic harness prepared/approved or evaluated. These descriptions are not passing tests."
+}

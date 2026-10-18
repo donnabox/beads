@@ -1,0 +1,6 @@
+{
+  "action": "data-only final freeze verification before closure/index/mirror",
+  "failure": "AssertionError: incorrectly equated authored HTTP-family actions with234 actual exchanges",
+  "effects": "No closure/index/mirror written; no source/evaluator/runtime invocation",
+  "resolution": "Inspect actual action families/methods and runner lifecycle semantics, distinguish authored actions from actual exchanges before freeze"
+}

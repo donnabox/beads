@@ -1,0 +1,40 @@
+{
+  "utc": "2026-10-18T10:59:04.821866+00:00",
+  "accepted": true,
+  "phase": "FIRST actual carrier CODE ONLY",
+  "sourceHead": "2834151544ca6bdc105191665f466c58eee7930f",
+  "sourceTree": "9b17333ffa91c888c73b5243d55299541464c8a4",
+  "knownSourceFiles": 681,
+  "sourceMapSha256": "5e22e3fd6fdace97ef8d7e651f7dadcfb8d72bdc5a79831a24da8172f64df232",
+  "preparationIndexSha256": "64592108cdc7181b70b9a8a05b250b8bcb11ec04c096e9c030e6a223de3ad24d",
+  "nativeMechanicsClosureSha256": "8f836c464ef8d64cec6ad3ae0c0876f5a43f72d6386bd124eceeb848d4d9d05a",
+  "rootMechanicsInspectionSha256": "e8465a9cace7c3dc79f34dd45c95b25af095258281a992d03c80436db7b038e0",
+  "rootFullNativeReportRead": true,
+  "releasedFlags": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-code-review-1/claude-code-review/binding.json",
+      "beforeSha256": "73172072fd1de8bb8cd8b232db4eee2e4e93f7e38e0d994ab780ec00beb6039c",
+      "afterSha256": "f7b94ecaa63a9a5576cb843695c3da8ff6ac7049b433550d7c606da568f90427",
+      "soleChangedField": "rootLaunchReleased false -> true"
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-code-review-1/launch-supervision/control.json",
+      "beforeSha256": "300495c0f5d8143d90bd11531b39cc2c5b9ae907bf1449ba0dd9d829f2188c11",
+      "afterSha256": "6d8c96b6083cb4cad8b03ca597373288ef4ed3d5385ce63a91af54b49c05453d",
+      "soleChangedField": "rootLaunchReleased false -> true"
+    }
+  ],
+  "allOtherBytesPreserved": true,
+  "absolutePromptPathsVerifiedFromActualCwd": 42,
+  "durablePushReadbackRequiredBeforeExecution": true,
+  "launchArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-cumulative-carrier-code-review-1/launch-supervision/supervise.py"
+  ],
+  "defaultExternalReviewOnly": true,
+  "singleAttemptNoRetry": true,
+  "limits": "1800total/TERM1790/KILL1798 unchanged",
+  "requiredAfterAttempt": "Inspect actual terminal/processes, independent native actual audit + rootfindings disposition BEFORE corrections/productvalidation. Failed/unknown/missing retained; no secondactualCODE orPLAN.",
+  "productValidationReleased": false,
+  "mainLandingReleased": false
+}

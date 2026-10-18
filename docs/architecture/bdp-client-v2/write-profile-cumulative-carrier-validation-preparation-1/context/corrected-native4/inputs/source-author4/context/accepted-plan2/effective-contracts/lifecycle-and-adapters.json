@@ -1,0 +1,104 @@
+{
+  "RU": {
+    "IO": {
+      "activation": {
+        "RU": "existing writer filename is nonempty AND exactly BDP_CUMULATIVE_REPORT_PATH AND BDP_PRIVATE_PROFILE_EVIDENCE_PATH nonempty; preserve original signature/callers",
+        "TX": "existing positive callback only passes optional carrierPath from same opt-in base; negative controls omit it",
+        "absent": "no new IO, serialization, state or changed legacy behavior"
+      },
+      "destinations": {
+        "read-update": [
+          "${base}.read-update.profile.attempt.json",
+          "${base}.read-update.profile.json"
+        ],
+        "transactional": [
+          "${base}.transactional.profile.attempt.json",
+          "${base}.transactional.profile.json"
+        ]
+      },
+      "errors": "New sidecar initialization/write/replacement failure is fixed persistence; preserve genuine run evidence/legacy failure independently, withhold new success. In TX new carrier failures never escape observe. If no new safe file can be persisted, missing artifact is explicit failure to later validation, not a success envelope.",
+      "export": "one source-private createPrivateProfileSidecarWriter helper in existing file, shared by RU integration and TX test; no package export",
+      "firstCreation": "Each destination FIRST created by openSync(destination, wx, 0600), writes through that acquired descriptor, captures its identity, closes in finally. Never temp+rename into an unowned destination. A race-created destination causes wx refusal, not replacement. Record ownership only for a path actually created by this writer instance; on failed write it is failed partial evidence, never success. Only its acquired temp/file can be cleaned.",
+      "ownerFile": "apps/bdptest/test-support/read-update-artifact-execution.ts",
+      "ownershipScope": "Per-attempt cooperating writer ownership, not a claim of atomic compare-and-swap protection against arbitrary same-UID filesystem mutation. The first-create race is prevented by wx; two cooperating attempts cannot acquire the same existing path. Identity checks reject observed replacement. No filesystem/lock framework or adversarial filesystem semantics is added.",
+      "preflight": "Check BOTH exact selected-profile destinations before any new output; any existing file/directory/symlink refuses fixed persistence. Other profile destinations are distinct and may exist. Never infer ownership from absence or existence. Preserve legacy outputs and stale attempts. No generic .profile suffix fallback.",
+      "replacement": "Later atomic replacement allowed ONLY for an in-memory owned path of THIS writer/attempt. Check the recorded destination file identity (dev/ino and last successful bytes/digest), refuse missing/replaced/symlink/unknown before replacement. Exclusive0600 own temporary file, then atomic rename over that own prior output, refresh owned identity. Never call legacy replaceFile on a never-owned sidecar path; never acquire ownership from preexisting bytes matching a digest. Temp cleanup errors aggregate fixed persistence without erasing previous genuine output.",
+      "secretGate": "Validate closed schema, safe projection, credential guard and summary cap before every new output; exact auth/file commitments remain protected0600, never diagnostics.",
+      "state": "PROPOSED PRIVATE writer IO only; existing legacy writer unchanged"
+    },
+    "capture": "at returned snapshot genuine report before later mutation/cleanup; new evidence pending initially. After original cleaned callback record reported-complete or failed, never verified ownership. Emit final partial carrier only after existing legacy association/succeeded succeeds; retain attempt sidecar on any failure.",
+    "earlyUnbound": "At constructor/start/acquired, build only UnboundRUAttemptV1 from existing branded set/source and safe stage facts: configuration:null, bindingStatus:unbound, all130 observations:null. No bound assembler invocation or invented capture. L01/L02/L06 use this envelope. No RU caller/signature edits.",
+    "firstBoundTransition": "At first returned(index,report), existing safe capture must succeed, report.configuration must retain its real factory brand and agree with source/profile/fixture and set. Keep that genuine configuration privately in memory, then assemble partial bound ProfileEvidenceV1 with only genuinely returned reports. A pre-return failure or invalid first binding remains unbound/failed; subsequent changed config fails while retaining prior real report. No new ready or credential mapping.",
+    "legacy": "createArtifactEvidenceWriter/associateArtifactObservations signatures/default behavior and all existing output paths/JSON fields unchanged when new output opt-in absent. Existing files stay immutable.",
+    "newOptIn": "existing writer filename is nonempty AND exactly BDP_CUMULATIVE_REPORT_PATH AND BDP_PRIVATE_PROFILE_EVIDENCE_PATH nonempty; preserve original signature/callers; mandatory .read-update.profile.attempt.json/.read-update.profile.json from opt-in base. No generic suffix; other unit/negative writer paths stay outside opt-in."
+  },
+  "TX": {
+    "adaptation": "Positive-only optional carrierPath. Original hook returns void or exact byte handoff. New capture/validation/IO failures are isolated by handoff-contract and cannot escape observe; original legacy errors remain original.",
+    "credentials": "transient Object.values(tokens) passed solely to private safety check; never persisted/returned as part of report/config or leaked by errors. Guard new sidecar and opt-in new serialization before writing. Source code never treats hash commitments as harmless diagnostics.",
+    "existing": "observe returns genuine observed before finally; onObserved legacy env output currently occurs before final cleanup. Existing first callback remains same17-partial workload/25children24sessions256returned rows and all assertions/oracles.",
+    "finally": "record actual target.close/rm outcomes via narrow try/catch aggregation, preserving original thrown failure; do not change listener/store close behavior or add extra product calls. Sidecar attempt returned/pending must be retained if cleanup later fails. A final report says reported-complete only when existing cleanup operations settled without error, ownershipVerification still unverified. New sidecar failure cannot replace genuine result or original error; safe state may remain missing if persistence unavailable, later evidence validation fails.",
+    "limits": "No new exit/close/PID telemetry fabricated. Existing unconditional rm is not proof of child/owner release; real lifecycle repair/full installed cleanup qualification is separate. If that unknown remains, carrier faithfully stays unready.",
+    "productionUsedHandoffRefactor": "private-handoff-refactor.json is the complete proposed production-used app-private extraction; true original hook stays outside new failure catch, exactly once; no disabled-path extra work or runner changes",
+    "requiredRetainedPositiveValidation": "validation-only-expectations.json requires independently supervised fresh attempt+summary+actual legacy wrapper on the same existing positive invocation. Missing/refused sidecar fails validation independently, never throws from product finally or replaces primary errors.",
+    "singleSerialization": {
+      "acceptanceBoundary": "Invoke original hook under its original error path. Separately catch ONLY new handoff capture/validation/assembly/sidecar operations. Missing/malformed/oversize/digest mismatch/JSON projection refusal creates sticky failed carrier with rawWrapperSha256:null; no return replacement or throw. On valid handoff retain exact bytes only transiently, no new raw wrapper output. Sidecar IO refusal likewise never converts to carrier success or escapes observe.",
+      "carrierOnlyHookError": "If no legacy output was requested, failure of the NEW carrier-only serialization/return is caught in that new branch; return void and fixed carrier unavailable state. It must not throw out of observe or prevent genuine assertions. Never catch an original legacy error with this new branch.",
+      "caseBindings": [
+        "V06",
+        "R20",
+        "L03",
+        "L05",
+        "L10"
+      ],
+      "failureVisibility": "Fixed code/stage only, no raw message/cause/path/token. Safe attempt failure retained when writable; absent sidecar remains an explicit failing validation observation. Return unchanged genuine observed; caller product assertions proceed. Later exact evidence validation rejects missing/invalid carrier independently. Cleanup failure is sticky, original genuine result preserved. Ownership remains unverified.",
+      "genuineCapture": "Immediately before original onObserved invocation detach genuine result/sessions/baseline plus actual source/entry. The returned genuine observed object and existing product assertions are not replaced by carrier state.",
+      "hookType": "existing private onObserved void | {bytes:Uint8Array,rawWrapperSha256:string}; optional carrierPath remains positive-only",
+      "jsonRepresentationComparison": {
+        "actual": "canonicalJson(parsedActualField)",
+        "fields": [
+          "result",
+          "sessions",
+          "baseline"
+        ],
+        "preHook": "canonicalJson(JSON.parse(JSON.stringify(preHookField)))",
+        "rawIdentity": "Raw wrapper digest is SHA256 of exact handoff bytes, unchanged by JSON comparison. canonicalResultSha256 remains separate derived result-data identity. No normalization/exclusion/fixedpoint/source/config/payload identity changes.",
+        "rule": "Require all three own actual fields and successful projections. Compare explicit JSON representation, including normal omission of undefined object members and null array representation. Fixed evidence failure for missing/refused projection. sourceCommit/entry still match actual fixed provenance."
+      },
+      "legacyErrors": "Original serialization/write errors when legacy output requested remain genuine hook exceptions and propagate through original observe try/catch/finally cleanup aggregation. Do not catch/reclassify them as carrier-only failure or suppress product errors. Legacy-only default behavior/bytes unchanged.",
+      "singleSerialization": "Existing positive closure owns EXACT original literal field order sourceCommit,entry,...observed,supplemental,sequenceMemberSupplemental,principalSupplemental,conditionalSupplemental. If legacy output OR carrierPath: ONE JSON.stringify(wrapper,null,2)+newline, ONE UTF8 encoding. Legacy file uses these exact bytes; carrier receives these same bytes/digest. Neither path: original void/no new work. Carrier-only: same in-memory wrapper, no legacy path/readback dependency.",
+      "sourceFile": "apps/bdptest/src/transactional-matrix.test.ts",
+      "state": "FULL active TX handoff/error isolation contract"
+    }
+  },
+  "reuse": "Existing RU hooks feed separate opt-in private sidecars; shared new sidecar IO functions in SAME RU helper only. Legacy replaceFile and signatures/layout remain unchanged. Pure module has exactly3 exports; no new framework.",
+  "states": {
+    "cleanup": [
+      "not-started",
+      "pending",
+      "reported-complete",
+      "failed",
+      "unknown"
+    ],
+    "evidence": [
+      "absent",
+      "retained",
+      "withheld-credential"
+    ],
+    "globalOutcome": [
+      "running",
+      "failed",
+      "observed"
+    ],
+    "ownerRun": [
+      "unobserved",
+      "running",
+      "returned",
+      "failed",
+      "aborted"
+    ],
+    "ownership": [
+      "unverified"
+    ]
+  },
+  "transitionPolicy": "reuse existing state ordering; first failure sticky; returned genuine result remains retained after later assertion/cleanup failure; acquired\u2260attempted\u2260ready; no fabricated counts/clean flags, no automatic retries or overwriting prior attempt."
+}

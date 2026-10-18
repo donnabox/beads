@@ -1,0 +1,64 @@
+{
+  "common": {
+    "documentPin": [
+      "exact path/sha256 keys",
+      "absolute nonsymlink existing actual file with exact raw SHA"
+    ],
+    "nativeHelperDisposition": [
+      "accepted=true",
+      "implementationIndexSha256 exact; OTHER-native full mechanics, not author closure"
+    ],
+    "rootDisposition": [
+      "accepted=true",
+      "sourceBindingSha256 exact current external source binding",
+      "implementationIndexSha256 exact prepared implementation",
+      "freshPipelineRequired=true",
+      "originalActualCodeReviewDispositionAccepted=true",
+      "laterCorrectedSourceNativeAccepted=true",
+      "runtimeValidationAuthorized=true for evaluator stages"
+    ]
+  },
+  "downstream": {
+    "rootArchiveAcceptance": [
+      "accepted=true",
+      "sourceBindingSha256",
+      "TOP-LEVEL tarProvenanceSha256 actual run/tar-source-provenance.json"
+    ],
+    "rootBuildAcceptance": [
+      "accepted=true",
+      "sourceBindingSha256",
+      "buildMapSha256 actual run/build-artifacts.json"
+    ],
+    "rootConsumerLockAcceptance": [
+      "accepted=true",
+      "sourceBindingSha256",
+      "consumerLockSha256 actual new consumer lock and gate",
+      "consumerManifestSha256",
+      "consumerSettingsSha256"
+    ],
+    "rootConsumerProofAcceptance": [
+      "accepted=true",
+      "sourceBindingSha256",
+      "installedProvenance exact active-gate pin object",
+      "consumerInventory exact active-gate pin object"
+    ],
+    "rootPrivateEmitAcceptance": [
+      "accepted=true",
+      "sourceBindingSha256",
+      "privateEmitProof exact active-gate pin object"
+    ]
+  },
+  "everyPriorStageRootOuterReceipt": [
+    "accepted=true",
+    "rawExit=0",
+    "stage exact",
+    "attemptId exact",
+    "sourceBindingSha256 exact",
+    "stageExitSha256 actual",
+    "watchdogSha256 actual",
+    "wholeParentElapsedSeconds finite >=0 and STRICTLY<115, measured from before wrapper launch; successful inner record alone is insufficient"
+  ],
+  "noAliasesOrOldPassReuse": true,
+  "publication": "Independently inspect full actual objects and file/provenance/process facts; freeze/index/mirror/publish/readback actual root acceptances BEFORE active gate references/prefix release. Field shape alone is never semantic or ownership acceptance.",
+  "state": "Existing concrete gate.py interface; future actual records remain UNRESOLVED; no execution"
+}

@@ -1,0 +1,140 @@
+{
+  "bounds": {
+    "depth": 128,
+    "eachContainerEntries": 10000,
+    "eachSidecarBytes": 1048576,
+    "largeOutput": "Stop preserving bounded partial/error records; never truncate then accept. Proposed results/log caps require helper native/root approval.",
+    "nodes": 100000,
+    "prospectiveRawStdoutStderrCombinedBytes": 67108864,
+    "prospectiveVitestResultsBytes": 16777216,
+    "rawWrapperBytes": 4194304
+  },
+  "digestSeparation": {
+    "artifactCatalogConfigurationDigests": "exact source/fixture/catalog bytes and existing identity encodings; no hash-cycle exclusions or normalized installed payload",
+    "canonicalResultSha256": "SHA256 canonicalJson(parsedActualWrapper.result), derived once for independent cross-check",
+    "rawWrapperSha256": "exact original legacy wrapper bytes",
+    "sidecarSha256": "exact canonical sidecar bytes, separate from either report identity"
+  },
+  "failureAcceptance": "Failed/partial records remain truthful retained evidence, NEVER accepted positive. No missing/null/refused/stale/oversize/unknown closure can count as positive even if callback exits0.",
+  "fileAcquisition": {
+    "files": "lstat and acquired descriptor must be ordinary nonsymlink0600 source-written sidecar/legacy files inside exact own root, size checked before full bounded read, identity rechecked around read; do not accept a preexisting file or own by matching hash",
+    "root": "unique supervisor-owned0700 attempt root with predeclared absolute paths; all selected outputs absent before invocation",
+    "terminalOnly": "Read final bytes after actual product wrapper terminal+stdio and owned-process closure receipt. During-run presence is partial only; capture final immutable bytes/inventory before audit."
+  },
+  "rawWrapper": {
+    "JSON": "fatal UTF8, finite JSON bounded under source4 private parser limits; no missing/extra root fields; actual result reportVersion4, claimEligiblefalse, no scenarioFilter; entry absolute and exact released consumer entry; sourceCommit exact released declared field with separate source-map/patch provenance",
+    "baselineKeys": [
+      "served",
+      "operationTargets",
+      "runtimeConfigurationIdentity",
+      "authorityMode"
+    ],
+    "exactKeysInOriginalSerializationOrder": [
+      "sourceCommit",
+      "entry",
+      "result",
+      "sessions",
+      "baseline",
+      "supplemental",
+      "sequenceMemberSupplemental",
+      "principalSupplemental",
+      "conditionalSupplemental"
+    ],
+    "rawDigest": "SHA256 of original exact UTF8 bytes including indentation/newline/complete supplemental objects. Never regenerate/normalize/exclude keys or substitute result-only digest. Preserve exact bytes protected; no extra raw copy to diagnostics.",
+    "servedClosedKeys": [
+      "scope",
+      "profile",
+      "history",
+      "sourceCommit",
+      "installedPayloadDigest",
+      "installedContractsDigest",
+      "policyDigest",
+      "authenticationDigest",
+      "fixtureDigest",
+      "fixtureId",
+      "capabilities"
+    ],
+    "sessionClosedKeys": [
+      "event",
+      "authorityMode",
+      "runtimeConfigurationIdentity",
+      "artifactIdentity",
+      "policyIdentity",
+      "authenticationIdentity",
+      "scope",
+      "profile",
+      "history",
+      "claimEligible",
+      "listenUrl",
+      "targets",
+      "payloadIdentity",
+      "scenario",
+      "reopen",
+      "sessionOrdinal"
+    ],
+    "sessionOrder": "exact source-derived24 rows in expected-session-order.json, same runtime/configuration/targets/profile/History; current physical listenUrls actual loopback0-assigned values not predicted or replaced",
+    "supplemental": "Retain all four existing exact actual wire-summary objects unchanged; callback PASS proves original semantic assertions ran. Carrier verifier does not replace or independently re-run those semantic wire assertions."
+  },
+  "sidecars": {
+    "allWholeClauseQualification": "unestablished",
+    "bothFinalFiles": "Source4 passed completion writes same final envelope to attempt then summary. Require both exact captured byte arrays identical; verify the summary with existing verifier, hence same exact canonical bytes for attempt. Missing summary after final attempt write is failure.",
+    "carrierVersion": 1,
+    "claimEligible": false,
+    "exactReportKeys": [
+      "ownerId",
+      "rawWrapperSha256",
+      "canonicalResultSha256",
+      "selectedIds",
+      "resultIds",
+      "runtimeConfigurationIdentity",
+      "exactConfigurationDigest",
+      "reportedCleanupState",
+      "ownershipVerification"
+    ],
+    "exactRootKeys": [
+      "carrierVersion",
+      "kind",
+      "claimEligible",
+      "qualificationReady",
+      "profile",
+      "history",
+      "configuration",
+      "catalogDigests",
+      "artifactDigests",
+      "requiredIds",
+      "retiredIds",
+      "requirements",
+      "nonRequiredReportRows",
+      "reports",
+      "attempt",
+      "unresolvedConditions",
+      "limitations"
+    ],
+    "history": false,
+    "kind": "private-profile-evidence",
+    "missingOwnerCount": 234,
+    "nonRequiredCount": 5,
+    "ownedCount": 17,
+    "owner": "transactional-baseline",
+    "positiveFinalAttempt": {
+      "failureStages": [],
+      "outcome": "observed",
+      "owners": [
+        {
+          "cleanup": "reported-complete",
+          "evidence": "retained",
+          "id": "transactional-baseline",
+          "status": "returned"
+        }
+      ],
+      "sourceDirty": null
+    },
+    "profile": "transactional",
+    "qualificationReady": false,
+    "requiredCount": 251,
+    "returnedLifecycle": "Keep reported-complete and ownershipVerification unverified. Outer tool process-group proof is separate; never rewrite the carrier as ownership verified.",
+    "rootAndNestedStrictness": "verifyProfileEvidence reconstructs every field from fresh canonical factories, trusted configuration/exact input, actual original wrapper and independently established positive terminal/cleanup facts. Reject missing/extra/invalid candidate keys by full deep and canonical-byte equality; explicit checks cover exact root/report keys before verification. No counters-only success.",
+    "selectedResultCount": 256
+  },
+  "state": "Finite DATA contract for future auditor, not executable schema/helper"
+}

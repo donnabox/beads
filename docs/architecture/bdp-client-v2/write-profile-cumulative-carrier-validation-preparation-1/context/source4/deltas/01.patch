@@ -1,0 +1,55 @@
+--- a/packages/conformance/test-support/profile-evidence.ts
++++ b/packages/conformance/test-support/profile-evidence.ts
+@@ -26,7 +26,6 @@
+   copyReadUpdateArtifactSetSources,
+   type ReadUpdateArtifactSet,
+ } from "./read-update-artifact-set.js";
+-import { installedContractsDigest } from "../../../apps/bdptest/test-support/installed-contract-identity.js";
+ 
+ type Data = Record<string, unknown>;
+ type Artifacts =
+@@ -131,10 +130,22 @@
+   if (value === null || typeof value === "string" || typeof value === "boolean") return value;
+   if (typeof value === "number" && Number.isFinite(value)) return value;
+   if (Array.isArray(value)) return array(value).map((x) => safeData(x, depth + 1, budget));
+-  const captured = record(value);
+-  if (Object.keys(captured).length > 10000) return refuse("capacity");
++  // Shape precedes capacity, but never materialize all descriptors or traverse an overwide record.
++  if (!value || typeof value !== "object" || types.isProxy(value)) return refuse();
++  const prototype = Object.getPrototypeOf(value);
++  if (prototype !== Object.prototype && prototype !== null) return refuse();
++  const keys = Reflect.ownKeys(value);
++  for (const key of keys) {
++    if (typeof key !== "string") return refuse();
++    const descriptor = Object.getOwnPropertyDescriptor(value, key);
++    if (!descriptor || !("value" in descriptor) || !descriptor.enumerable) return refuse();
++  }
++  if (keys.length > 10000) return refuse("capacity");
+   return Object.fromEntries(
+-    Object.entries(captured).map(([k, x]) => [k, safeData(x, depth + 1, budget)]),
++    keys.map((key) => [
++      key,
++      safeData(Object.getOwnPropertyDescriptor(value, key)!.value, depth + 1, budget),
++    ]),
+   );
+ }
+ function source(input: unknown) {
+@@ -408,7 +419,7 @@
+       r.profile,
+       r.history,
+       r.payloadIdentity,
+-      installedContractsDigest(artifact),
++      artifact.slice("development-schema5-".length),
+       r.policyIdentity,
+       r.authenticationIdentity,
+       actualRuntime,
+@@ -823,6 +834,9 @@
+           canonicalResultSha256: null,
+           selectedIds: null,
+           resultIds: null,
++          runtimeConfigurationIdentity: null,
++          exactConfigurationDigest: null,
++          reportedCleanupState: null,
+           ownershipVerification: "unverified",
+         });
+         return;

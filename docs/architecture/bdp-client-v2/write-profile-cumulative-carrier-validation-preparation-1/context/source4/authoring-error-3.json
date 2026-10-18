@@ -1,0 +1,8 @@
+{
+  "correction": "Check absence of reverse installed-contract-identity app import and absence of installedContractsDigest( invocation; keep existing configuration property names unchanged",
+  "executionResultInvented": false,
+  "failure": "First packaging pass checked that installedContractsDigest substring was wholly absent from pure module; assertion failed because this legitimate configuration field remains",
+  "kind": "own static packaging assertion, not candidate failure",
+  "partialArtifactState": "Only before/source/maps/diffs/context files written; no index/mirror/complete claim existed at failure",
+  "sourceEditsAfterFormatter": false
+}

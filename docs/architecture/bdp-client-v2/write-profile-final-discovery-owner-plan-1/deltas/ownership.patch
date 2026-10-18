@@ -1,0 +1,125 @@
+--- ownership.before.json
++++ ownership.proposed.json
+@@ -2,43 +2,106 @@
+   "rows": [
+     {
+       "id": "read.discovery.scope-service-desc",
+-      "currentManifestOwner": null,
+-      "sourceAuthoringReleased": false
++      "prospectiveManifestOwner": "read.discovery.scope-service-desc",
++      "actionIds": [
++        "d01-scope",
++        "d01-descriptor",
++        "d01-scope-head"
++      ],
++      "wholeContract": false,
++      "authoringReleased": false
+     },
+     {
+       "id": "read.discovery.canonical-navigation",
+-      "currentManifestOwner": null,
+-      "sourceAuthoringReleased": false
++      "prospectiveManifestOwner": "read.discovery.canonical-navigation",
++      "actionIds": [
++        "d02-scope",
++        "d02-descriptor",
++        "d02-beads",
++        "d02-links",
++        "d02-types"
++      ],
++      "wholeContract": false,
++      "authoringReleased": false
+     },
+     {
+       "id": "read.discovery.optional-limits",
+-      "currentManifestOwner": null,
+-      "sourceAuthoringReleased": false
++      "prospectiveManifestOwner": "read.discovery.optional-limits",
++      "actionIds": [
++        "d03-scope",
++        "d03-descriptor",
++        "d03-page-bound",
++        "d03-page-zero",
++        "d03-page-over",
++        "d03-selector-bound",
++        "d03-selector-over"
++      ],
++      "wholeContract": false,
++      "authoringReleased": false
+     },
+     {
+       "id": "read-update.discovery.aliases",
+-      "currentManifestOwner": null,
+-      "sourceAuthoringReleased": false
++      "prospectiveManifestOwner": "read-update.discovery.aliases",
++      "actionIds": [
++        "d04-scope",
++        "d04-descriptor",
++        "d04-directory",
++        "d04-create",
++        "d04-before",
++        "d04-put",
++        "d04-resolve",
++        "d04-after-put",
++        "d04-delete",
++        "d04-missing",
++        "d04-after-delete"
++      ],
++      "wholeContract": false,
++      "authoringReleased": false
+     },
+     {
+       "id": "transactional.discovery.document",
+-      "currentManifestOwner": null,
+-      "sourceAuthoringReleased": false
++      "prospectiveManifestOwner": "transactional.discovery.document",
++      "actionIds": [
++        "d05-scope",
++        "d05-descriptor",
++        "d05-descriptor-head",
++        "d05-descriptor-again"
++      ],
++      "wholeContract": false,
++      "authoringReleased": false
+     },
+     {
+       "id": "transactional.discovery.operation-directory",
+-      "currentManifestOwner": null,
+-      "sourceAuthoringReleased": false
++      "prospectiveManifestOwner": "transactional.discovery.operation-directory",
++      "actionIds": [
++        "d06-scope",
++        "d06-descriptor",
++        "d06-directory",
++        "d06-directory-head",
++        "d06-wrong-target-method"
++      ],
++      "wholeContract": false,
++      "authoringReleased": false
+     },
+     {
+       "id": "transactional.discovery.limits",
+-      "currentManifestOwner": null,
+-      "sourceAuthoringReleased": false
++      "prospectiveManifestOwner": "transactional.discovery.limits",
++      "actionIds": [
++        "d07-scope",
++        "d07-descriptor"
++      ],
++      "wholeContract": false,
++      "authoringReleased": false
+     },
+     {
+       "id": "transactional.discovery.no-idempotency-retention",
+-      "currentManifestOwner": null,
+-      "sourceAuthoringReleased": false
++      "prospectiveManifestOwner": "transactional.discovery.no-idempotency-retention",
++      "actionIds": [
++        "d08-scope",
++        "d08-descriptor"
++      ],
++      "wholeContract": false,
++      "authoringReleased": false
+     }
+   ]
+ }
