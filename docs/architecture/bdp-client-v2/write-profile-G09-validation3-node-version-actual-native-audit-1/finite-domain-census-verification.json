@@ -1,0 +1,73 @@
+{
+  "additionalCensusByAuditor": 0,
+  "directProbe": {
+    "basis": "Exact executed B source/retained receipt plus trusted B terminal0",
+    "bothEOF": true,
+    "directReaped": true,
+    "pgid": 35805,
+    "pid": 35805,
+    "rawCensusContainsProbeWithObserverParent": true,
+    "rawExit": 0
+  },
+  "noGlobalAllTaskOrHardContainmentClaim": true,
+  "observer": {
+    "laterTrustedToolTerminal": "d1f0a5 exit0",
+    "notClaimedAbsentByOwnCensus": true,
+    "pgid": 35804,
+    "pid": 35804,
+    "rawCensusContainsObserver": true
+  },
+  "rawCensusRows": 1393,
+  "retainedRaw": {
+    "bytes": 206411,
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/node-version/postterminal-census.stdout",
+    "sha256": "4fa616a7b3a81c2168bec7fc33ae01e39c35db03a103d6b49aa9494a91885eb8"
+  },
+  "selectedMatches": [],
+  "selectionOrigins": [
+    {
+      "basis": "actual local getpid/getpgrp; no signal authority",
+      "pgid": 33372,
+      "pid": 33372,
+      "role": "collector"
+    },
+    {
+      "basis": "actual retained Popen start_new_session",
+      "pgid": 33373,
+      "pid": 33373,
+      "role": "direct-wrapper"
+    },
+    {
+      "pgid": 34088,
+      "pid": 34088,
+      "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/node-version.processes.jsonl",
+      "role": "actual-inner-sample"
+    },
+    {
+      "pgid": null,
+      "pid": 34088,
+      "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run/node-version.exit.json",
+      "role": "actual-inner-sampledPid"
+    }
+  ],
+  "stderr": {
+    "bytes": 0,
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/node-version/postterminal-census.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "taskPGIDs": [
+    33372,
+    33373,
+    34088
+  ],
+  "taskPIDs": [
+    33372,
+    33373,
+    34088
+  ],
+  "unknowns": [
+    "Individual guard toolreceipts/PIDs UNRETAINED",
+    "Finite inline DATA checker PIDs UNRETAINED",
+    "Unseen transient/escaped process domain UNKNOWN"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "errors": [
+    {
+      "cause": "Own verifier permitted documented changed live-gate SHA but incorrectly still required old2282-byte size. Actual sole gate transition is2895bytes/9088.",
+      "correction": "Read exact mismatch and checked actual one named file against concrete manifest/candidate old/new pins and bytes; all other prepared entries exact. No subject/helper/control evaluation, retry, gate/source mutation or census occurred.",
+      "error": "AssertionError in own original-preparation-index verifier",
+      "rawExit": 1,
+      "toolChunk": "71e5ed"
+    }
+  ]
+}
