@@ -1,6 +1,6 @@
 # Preview 3 planning and execution
 
-Last checked: October 17, 2026, 8:38 PM PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
+Last checked: October 17, 2026, 9:06 PM PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
 
 This tracker covers the release plan and its execution. The active first phase is establishing a qualified Preview 3 integration branch. The integration-base milestones below are only what we need to begin producing Preview 3 builds; they are not the complete release plan. The Memory outcomes below are candidates to stage across previews toward V2, not a claim that every one is a Preview 3 cutline or has passed qualification; workstreams enter a preview cutline only by explicit decision.
 
@@ -357,3 +357,7 @@ Donna renamed the first supported, release-quality, broadly default-on combined 
 Donna directly selected optional, nonblank, open-string `status` on both the common Memory and Association bases in Melinda’s third review. Every proposed specialization inherits it; no closed enum, default, implicit workflow, approval, scheduling, activation or visibility effect follows. Example strings are conventions, not ratified values. Existing Issue workflow status and Dependency behavior remain separate. The public [#7656 decision register](https://github.com/gastownhall/beads/issues/7656) records this as **MEM-DEC-006**, with Melinda’s [published handoff receipt](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6243480309) and [draft PR143 at `c064cc33`](https://github.com/gastownhall/bdp/pull/143).
 
 PR143’s seven proposed Bead and six proposed Link Types, per-Type examples, literal search/order and command spellings remain design review material; 102 property cases validate draft schemas only. Trish reconciles the single F0 lane before any adoption. No source activation, Memory V2 scenario completion, **Memory V1** default-on proof, qualified feature merge or release action follows from this decision.
+
+## 2026-10-17 21:06 PDT — PR110 docs tracker hosted result
+
+The status-only PR110 head `0fce8f3d8de30da4549f70d920797fc13983e88d` [run 39094471975](https://github.com/donnabox/beads/actions/runs/39094471975) settled **RED**: 41 successful checks, 10 conditional skips and four failures. Doc flags freshness and PR Policy directly failed on the same four stale reference-document review dates; those dates were not advanced without review. The separate Docker-backed `Test (storage domain + uow)` job began passing tests, then reported an unexpected MySQL EOF, an indeterminate Dolt write-commit result, and subsequent connection refusals. Its underlying cause is undetermined. `CI Gate / Required` failed consequentially. Janet froze raw run/check snapshots and failed-job logs in `hosted-pr110-attempt07/RESULT.md`, keeping the older failed attempts separate. This docs-only tracker result does not change qualified PR113 or establish hosted qualification for local-only `c67855b4`.
