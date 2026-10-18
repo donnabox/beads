@@ -1,0 +1,1 @@
+CLOSED prefix24 proposal. Only full installed consumer verifier producer next. Actual lock/manifest/settings source-bound; full inventory/provenance/recursive payload/entry still UNKNOWN until actual verification+root/native acceptance. No installed callbacks or required checks/wholeWrite authority.

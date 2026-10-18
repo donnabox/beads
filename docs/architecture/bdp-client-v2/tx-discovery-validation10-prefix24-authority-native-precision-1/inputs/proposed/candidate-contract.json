@@ -1,0 +1,31 @@
+{
+  "utc": "2026-10-18T16:38:14.977980+00:00",
+  "state": "CLOSED exact24 authority proposal only",
+  "candidateGate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix24-proposed-authority-1/execution-gate.proposed.json",
+    "sha256": "51bbb118604339c7a2cb029343b751112827e8122c7aca858d5b1b05e98829be"
+  },
+  "candidateDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix24-proposed-authority-1/disposition.json",
+    "sha256": "0485bae8b2c963a8c8fd9dc33e40100898cb1c7e4b0e7868d0c3a92a5ff24544"
+  },
+  "changedKeys": [
+    "approvedStages",
+    "rootDisposition",
+    "rootConsumerLockAcceptance",
+    "consumerLockSha256"
+  ],
+  "actualRootLockAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-root-lock-acceptance-1/acceptance.json",
+    "sha256": "0c7c38612ce58932fb181f99b9b92e90f8e096648b457741ac45dd13336d6f63"
+  },
+  "next1": [
+    "verify-installed-consumer"
+  ],
+  "fullConsumerProofStillUnknown": true,
+  "installedProvenanceConsumerInventoryRootProofAcceptanceStillUnresolvedBeyond24": true,
+  "noRetry": true,
+  "fullIndependent26Keys59PredicatesBeforeActivation": true,
+  "publicationReadbackBeforeExactActivationAndDispatch": true,
+  "executionAuthorized": false
+}

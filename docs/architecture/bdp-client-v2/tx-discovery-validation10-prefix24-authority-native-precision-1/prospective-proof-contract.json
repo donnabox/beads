@@ -1,0 +1,30 @@
+{
+  "actualInstalledPayloadIdentity": "UNKNOWN",
+  "consumerInventory": "UNKNOWN",
+  "entryProof": "UNKNOWN",
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "inputLockSha256": "c1e500a7a72cac54ef471d26fb1ce7b15291a949ca4c288b5687c8035e612e11",
+  "inputManifestSha256": "4429953e6dcfaa61e6dc293628310f00f1ebd6fb883574a444f0d4777dde2aae",
+  "inputSettingsSha256": "727ca6b6c0690a2469e374c23033125e103b0fff88ba7122c80e35de0c26d17f",
+  "outputHashes": "UNKNOWN until actual normal producer terminal and independent root/native proof",
+  "producer": "verify-installed-consumer",
+  "productImportsOrEntryExecution": false,
+  "prospectiveOutputs": [
+    "installed-provenance.json",
+    "installed-consumer-inventory.json"
+  ],
+  "resolutionScope": "Only the actual fixed8-name ASCII consumer closure; broader/general Node resolver equivalence is not claimed",
+  "runtimePayloadSource": {
+    "path": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/src/installed-payload.ts",
+    "sha256": "d1095a8fa641c77ddef32b1d432273572f46b14499c526dbb0a85cfde82113f9"
+  }
+}

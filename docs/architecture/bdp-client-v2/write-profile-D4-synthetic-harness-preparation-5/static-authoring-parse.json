@@ -1,0 +1,44 @@
+{
+  "method": "Literal source/bytes comparison only; no Python/Perl subject import/evaluation/compilecheck",
+  "pythonHelpersNamespaceReversedByteExact": [
+    "availability_owner.py",
+    "availability_peer.py",
+    "bootstrap.py",
+    "gate_controls.py",
+    "harness.py",
+    "host_controls.py",
+    "host_peer.py",
+    "outer_host.py",
+    "outer_worker.py",
+    "owned_spawn.py",
+    "report_controls.py",
+    "scanner_controls.py",
+    "watchdog_controls.py"
+  ],
+  "pythonHelpersCount": 13,
+  "other12PythonBodiesUnchanged": true,
+  "PerlSourceCorrection": [
+    {
+      "path": "availability_limit.pl",
+      "beforeSha256": "a417085647b6617674d8dc839222ab85c45dcbf6e62e6440e9f76b63bc49ca14",
+      "afterSha256": "9b85dcfc35879341070ee0692cffd4bcfd8a8f2d1a0d9b505ce2be4e7f15bae1",
+      "sameLiteralArgvAfterNamespace": "'/opt/homebrew/opt/python@3.14/bin/python3.14','-I','-B','/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/availability_owner.py',\"$ORIGIN\",$release,\"$limiter\"",
+      "beforePattern": "exec LIST; then unconditional POSIX::_exit(126)",
+      "afterPattern": "exec(SAME LIST) or POSIX::_exit(126)",
+      "availabilityWarningObservedOnly": true,
+      "evaluatedOrCompileChecked": false
+    },
+    {
+      "path": "hard_limit.pl",
+      "beforeSha256": "fa2c5e9a26bb6cb1fd8d3ca2bec89f58f3136412e15330e1d93184e1b21f8c7e",
+      "afterSha256": "f18dc1a43814dbe6040545f8665adee4533e326434b65e644081b85d72bf3f91",
+      "sameLiteralArgvAfterNamespace": "'/opt/homebrew/opt/python@3.14/bin/python3.14','-I','-B','/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/outer_host.py','--limited-owner',\"$ORIGIN\",$case,$variant,$release,\"$limiter\"",
+      "beforePattern": "exec LIST; then unconditional POSIX::_exit(126)",
+      "afterPattern": "exec(SAME LIST) or POSIX::_exit(126)",
+      "availabilityWarningObservedOnly": false,
+      "evaluatedOrCompileChecked": false
+    }
+  ],
+  "PerlStatementRemainderReverseByteExact": true,
+  "allActualH5Outcomes": "UNKNOWN"
+}

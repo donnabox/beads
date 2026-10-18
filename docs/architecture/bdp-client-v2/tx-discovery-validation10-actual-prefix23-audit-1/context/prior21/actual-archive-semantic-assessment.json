@@ -1,0 +1,1958 @@
+{
+  "actualMembers": 321,
+  "actualPayloadBytes": 2481837,
+  "consumerProof": "UNRESOLVED/UNATTEMPTED",
+  "extractionPerformed": false,
+  "packages": {
+    "protocol": {
+      "actualCompleteSourcePayloadEquality": true,
+      "archive": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/packages/bdp-protocol-0.0.0.tgz",
+      "archiveBytes": 68665,
+      "archiveSha256": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+      "members": {
+        "LICENSE": {
+          "bytes": 1070,
+          "sha256": "1bc5a9f778e62e7383078d5588aed7296f6e266934de1cb9bff35fc9ee240816",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/LICENSE",
+          "sourceSha256": "1bc5a9f778e62e7383078d5588aed7296f6e266934de1cb9bff35fc9ee240816"
+        },
+        "dist/history-values.d.ts": {
+          "bytes": 4831,
+          "sha256": "332bdd418d06a66207d7d42e22d5c19662b0054439fb9718fd5c60c07febaa7f",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/history-values.d.ts",
+          "sourceSha256": "332bdd418d06a66207d7d42e22d5c19662b0054439fb9718fd5c60c07febaa7f"
+        },
+        "dist/history-values.d.ts.map": {
+          "bytes": 3744,
+          "sha256": "82576288aa1c8a61f1594df92457bddd9cb6c10a0c3a1bfc0def922a96082188",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/history-values.d.ts.map",
+          "sourceSha256": "82576288aa1c8a61f1594df92457bddd9cb6c10a0c3a1bfc0def922a96082188"
+        },
+        "dist/history-values.js": {
+          "bytes": 6653,
+          "sha256": "06928d65b343c2c3e45dbb1ed96c2dd0c31cd7973145bc15a385ec667bb1134b",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/history-values.js",
+          "sourceSha256": "06928d65b343c2c3e45dbb1ed96c2dd0c31cd7973145bc15a385ec667bb1134b"
+        },
+        "dist/history-values.js.map": {
+          "bytes": 6136,
+          "sha256": "2b4e060660eccc01fec82ce2c1b74287e5f4fec36be3ca961fc197935b38c187",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/history-values.js.map",
+          "sourceSha256": "2b4e060660eccc01fec82ce2c1b74287e5f4fec36be3ca961fc197935b38c187"
+        },
+        "dist/index.d.ts": {
+          "bytes": 17182,
+          "sha256": "883fdd539de137503c655c3f158d7eb7e44a8df5117d8cdb4481a21fc678af7b",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/index.d.ts",
+          "sourceSha256": "883fdd539de137503c655c3f158d7eb7e44a8df5117d8cdb4481a21fc678af7b"
+        },
+        "dist/index.d.ts.map": {
+          "bytes": 11098,
+          "sha256": "3c58455cb83d7f770e1cdd016dda9916bdd40151e1f29e0d5a662d6b5e9b2130",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/index.d.ts.map",
+          "sourceSha256": "3c58455cb83d7f770e1cdd016dda9916bdd40151e1f29e0d5a662d6b5e9b2130"
+        },
+        "dist/index.js": {
+          "bytes": 7634,
+          "sha256": "1554d12e06f39934809b0546aaa667ca682594b5a8597c82a36e7e80285b4a36",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/index.js",
+          "sourceSha256": "1554d12e06f39934809b0546aaa667ca682594b5a8597c82a36e7e80285b4a36"
+        },
+        "dist/index.js.map": {
+          "bytes": 6027,
+          "sha256": "38751e8255e7c06f9ade5a1da0368460181e72015bf11eb2831621cc58a8cf0c",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/index.js.map",
+          "sourceSha256": "38751e8255e7c06f9ade5a1da0368460181e72015bf11eb2831621cc58a8cf0c"
+        },
+        "dist/json-admission.d.ts": {
+          "bytes": 3400,
+          "sha256": "80a8c06d828c84495df46cd999eb09ad4c724c960265c28a971854eae8cf7429",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/json-admission.d.ts",
+          "sourceSha256": "80a8c06d828c84495df46cd999eb09ad4c724c960265c28a971854eae8cf7429"
+        },
+        "dist/json-admission.d.ts.map": {
+          "bytes": 1792,
+          "sha256": "6f083d5ea1694cd826c051ae6c8fd1461e348943a40b7fb54ab70b9f3e4a9ea3",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/json-admission.d.ts.map",
+          "sourceSha256": "6f083d5ea1694cd826c051ae6c8fd1461e348943a40b7fb54ab70b9f3e4a9ea3"
+        },
+        "dist/json-admission.js": {
+          "bytes": 12513,
+          "sha256": "4eb14f77a22b9d47939becad6912993ddf988cc6fc3aa6532245a4a525b1389e",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/json-admission.js",
+          "sourceSha256": "4eb14f77a22b9d47939becad6912993ddf988cc6fc3aa6532245a4a525b1389e"
+        },
+        "dist/json-admission.js.map": {
+          "bytes": 11130,
+          "sha256": "afb807d90257c0ee8069365e61ff18e335c0c480361f7e7e6cf75f549ba3853f",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/json-admission.js.map",
+          "sourceSha256": "afb807d90257c0ee8069365e61ff18e335c0c480361f7e7e6cf75f549ba3853f"
+        },
+        "dist/json-values.d.ts": {
+          "bytes": 1523,
+          "sha256": "4960fbaee826b5a53ac0361237e40a9c44be931183be3ea83d5afaf64d130121",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/json-values.d.ts",
+          "sourceSha256": "4960fbaee826b5a53ac0361237e40a9c44be931183be3ea83d5afaf64d130121"
+        },
+        "dist/json-values.d.ts.map": {
+          "bytes": 345,
+          "sha256": "d732aa80681451e02cf6914fdaaf1d19c90a86bc35925cdb65dea55ed56e3222",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/json-values.d.ts.map",
+          "sourceSha256": "d732aa80681451e02cf6914fdaaf1d19c90a86bc35925cdb65dea55ed56e3222"
+        },
+        "dist/json-values.js": {
+          "bytes": 5969,
+          "sha256": "c68b1d5abf4fd4d35122c9bff408e27359fbb12790d23d5562e0e12e8b370289",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/json-values.js",
+          "sourceSha256": "c68b1d5abf4fd4d35122c9bff408e27359fbb12790d23d5562e0e12e8b370289"
+        },
+        "dist/json-values.js.map": {
+          "bytes": 5281,
+          "sha256": "1ba8c7ddff07620dc9f13401e1d5b645ed142d936a6de8887743a34cf128debb",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/json-values.js.map",
+          "sourceSha256": "1ba8c7ddff07620dc9f13401e1d5b645ed142d936a6de8887743a34cf128debb"
+        },
+        "dist/link-header.d.ts": {
+          "bytes": 530,
+          "sha256": "a1a525758e85bfbebd5579295fc7b322bf8e48a8d75462b5153bd4b3bf9d968b",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/link-header.d.ts",
+          "sourceSha256": "a1a525758e85bfbebd5579295fc7b322bf8e48a8d75462b5153bd4b3bf9d968b"
+        },
+        "dist/link-header.d.ts.map": {
+          "bytes": 437,
+          "sha256": "9bfc82371786206b92258ba19887e845d69ed2f0ffa748c85e1195f69d8f89df",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/link-header.d.ts.map",
+          "sourceSha256": "9bfc82371786206b92258ba19887e845d69ed2f0ffa748c85e1195f69d8f89df"
+        },
+        "dist/link-header.js": {
+          "bytes": 2825,
+          "sha256": "b1daae38417b979869487bcd7e1c0d09834976bdd1ffc7fe8f7b4709c46cebbf",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/link-header.js",
+          "sourceSha256": "b1daae38417b979869487bcd7e1c0d09834976bdd1ffc7fe8f7b4709c46cebbf"
+        },
+        "dist/link-header.js.map": {
+          "bytes": 3151,
+          "sha256": "2050be2cfcbad1bc1882c3934a5819d8dc626a04fd95fe857b38684f04739614",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/link-header.js.map",
+          "sourceSha256": "2050be2cfcbad1bc1882c3934a5819d8dc626a04fd95fe857b38684f04739614"
+        },
+        "dist/property-validation.d.ts": {
+          "bytes": 1651,
+          "sha256": "3f3f01bf9597417535f50872947f283a44ba84df7080cf26ebc9c25429040c3a",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/property-validation.d.ts",
+          "sourceSha256": "3f3f01bf9597417535f50872947f283a44ba84df7080cf26ebc9c25429040c3a"
+        },
+        "dist/property-validation.d.ts.map": {
+          "bytes": 694,
+          "sha256": "3d5739d5f46e3d7a1a4e274d1e015f19e5d029d13d65046e2770f87afd4b8500",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/property-validation.d.ts.map",
+          "sourceSha256": "3d5739d5f46e3d7a1a4e274d1e015f19e5d029d13d65046e2770f87afd4b8500"
+        },
+        "dist/property-validation.js": {
+          "bytes": 58,
+          "sha256": "b785b92ab97b9f1b4168cd700c659e313fd962fdd4cd444e9d34a4e4975800e2",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/property-validation.js",
+          "sourceSha256": "b785b92ab97b9f1b4168cd700c659e313fd962fdd4cd444e9d34a4e4975800e2"
+        },
+        "dist/property-validation.js.map": {
+          "bytes": 130,
+          "sha256": "64d17d9c9523ec6c8d0970dcf45d6e15a339752b889e340413ed766692b04856",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/property-validation.js.map",
+          "sourceSha256": "64d17d9c9523ec6c8d0970dcf45d6e15a339752b889e340413ed766692b04856"
+        },
+        "dist/protocol-errors.d.ts": {
+          "bytes": 240,
+          "sha256": "e0d793997aa5bdde114187294195483ccf91dd50eff7f80dac41ad5c5c0e206b",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/protocol-errors.d.ts",
+          "sourceSha256": "e0d793997aa5bdde114187294195483ccf91dd50eff7f80dac41ad5c5c0e206b"
+        },
+        "dist/protocol-errors.d.ts.map": {
+          "bytes": 222,
+          "sha256": "0973d0744e883ae7a7c5cd616157533ddbbd735cafe73e90d497d9bb6927e335",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/protocol-errors.d.ts.map",
+          "sourceSha256": "0973d0744e883ae7a7c5cd616157533ddbbd735cafe73e90d497d9bb6927e335"
+        },
+        "dist/protocol-errors.js": {
+          "bytes": 307,
+          "sha256": "01953c4f785548b510cfb0af188ebec6eb2fcd887108713aa5f9e9747622ffec",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/protocol-errors.js",
+          "sourceSha256": "01953c4f785548b510cfb0af188ebec6eb2fcd887108713aa5f9e9747622ffec"
+        },
+        "dist/protocol-errors.js.map": {
+          "bytes": 298,
+          "sha256": "f7b695f11b18c0b07062c504bcbf4f24a7d172ba051106eef79d82b86f879453",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/protocol-errors.js.map",
+          "sourceSha256": "f7b695f11b18c0b07062c504bcbf4f24a7d172ba051106eef79d82b86f879453"
+        },
+        "dist/read-update-preflight.d.ts": {
+          "bytes": 1755,
+          "sha256": "193fcb7b397cb6da5dd9a3aaf9a5badb80c24bd064f1b5c9919d1308d0ccec6e",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/read-update-preflight.d.ts",
+          "sourceSha256": "193fcb7b397cb6da5dd9a3aaf9a5badb80c24bd064f1b5c9919d1308d0ccec6e"
+        },
+        "dist/read-update-preflight.d.ts.map": {
+          "bytes": 912,
+          "sha256": "050d77da70972a3ac14ad85c5e270f0efd2edef9e12cf7236fdd68987082e4e5",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/read-update-preflight.d.ts.map",
+          "sourceSha256": "050d77da70972a3ac14ad85c5e270f0efd2edef9e12cf7236fdd68987082e4e5"
+        },
+        "dist/read-update-preflight.js": {
+          "bytes": 6350,
+          "sha256": "1c7594da5cfa2520673df23aceabf8edb414b60a97b1baf86f1009bc472180ae",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/read-update-preflight.js",
+          "sourceSha256": "1c7594da5cfa2520673df23aceabf8edb414b60a97b1baf86f1009bc472180ae"
+        },
+        "dist/read-update-preflight.js.map": {
+          "bytes": 4963,
+          "sha256": "e594ce5130c993d4d180f06eaf8808ac47fe8a1c30dcbe345197257f663e3ee2",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/read-update-preflight.js.map",
+          "sourceSha256": "e594ce5130c993d4d180f06eaf8808ac47fe8a1c30dcbe345197257f663e3ee2"
+        },
+        "dist/read-update-problems.d.ts": {
+          "bytes": 1738,
+          "sha256": "f10a42bdc478b08dd02d6977c3d00e7b4fd82fe9432f174acc0e378f9b575426",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/read-update-problems.d.ts",
+          "sourceSha256": "f10a42bdc478b08dd02d6977c3d00e7b4fd82fe9432f174acc0e378f9b575426"
+        },
+        "dist/read-update-problems.d.ts.map": {
+          "bytes": 1338,
+          "sha256": "f2ba49bb563300461a236a2c9d63298e120c0aa68926177d9d1d704b31bc195a",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/read-update-problems.d.ts.map",
+          "sourceSha256": "f2ba49bb563300461a236a2c9d63298e120c0aa68926177d9d1d704b31bc195a"
+        },
+        "dist/read-update-problems.js": {
+          "bytes": 342,
+          "sha256": "53e20c0f8fdf4429a9b718a84c68e2655d172240d6204b8b0c1da5e4b6a47643",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/read-update-problems.js",
+          "sourceSha256": "53e20c0f8fdf4429a9b718a84c68e2655d172240d6204b8b0c1da5e4b6a47643"
+        },
+        "dist/read-update-problems.js.map": {
+          "bytes": 364,
+          "sha256": "89d5258e5130dc6c5bc154d13b0b9a14085b77cbc58ba8612c730c811bcde9fc",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/read-update-problems.js.map",
+          "sourceSha256": "89d5258e5130dc6c5bc154d13b0b9a14085b77cbc58ba8612c730c811bcde9fc"
+        },
+        "dist/read-update-values.d.ts": {
+          "bytes": 7973,
+          "sha256": "4ec3f708dac69f50e4d599f669f9833e43e0e669a6480e8fcbfd75cf1c4864af",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/read-update-values.d.ts",
+          "sourceSha256": "4ec3f708dac69f50e4d599f669f9833e43e0e669a6480e8fcbfd75cf1c4864af"
+        },
+        "dist/read-update-values.d.ts.map": {
+          "bytes": 5508,
+          "sha256": "5d215775dfea93d5ea63b428da991875c633d5fc641415ea3f79156c4b95d7ec",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/read-update-values.d.ts.map",
+          "sourceSha256": "5d215775dfea93d5ea63b428da991875c633d5fc641415ea3f79156c4b95d7ec"
+        },
+        "dist/read-update-values.js": {
+          "bytes": 14023,
+          "sha256": "f79cbfd230d85242763e7f946a0d58934195cdf7d8ebed269c805fd79939b89a",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/read-update-values.js",
+          "sourceSha256": "f79cbfd230d85242763e7f946a0d58934195cdf7d8ebed269c805fd79939b89a"
+        },
+        "dist/read-update-values.js.map": {
+          "bytes": 11682,
+          "sha256": "7ae49cf7585062c36994372669599d9b897d536a58662f06527578e66d8aee0c",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/read-update-values.js.map",
+          "sourceSha256": "7ae49cf7585062c36994372669599d9b897d536a58662f06527578e66d8aee0c"
+        },
+        "dist/read-values.d.ts": {
+          "bytes": 4551,
+          "sha256": "c7f147b2386189d75eb39628d6e7c6593c50114a6110b37fd7d15147f661f006",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/read-values.d.ts",
+          "sourceSha256": "c7f147b2386189d75eb39628d6e7c6593c50114a6110b37fd7d15147f661f006"
+        },
+        "dist/read-values.d.ts.map": {
+          "bytes": 2211,
+          "sha256": "4751725d0cd3a7aa81d4416edaf396d28dd13faa45ccf506ff579afe5d925679",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/read-values.d.ts.map",
+          "sourceSha256": "4751725d0cd3a7aa81d4416edaf396d28dd13faa45ccf506ff579afe5d925679"
+        },
+        "dist/read-values.js": {
+          "bytes": 19997,
+          "sha256": "117a54e6cabeff81ba4a7e3290a8d41652cf8c58915d7a082e20f6279e432b60",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/read-values.js",
+          "sourceSha256": "117a54e6cabeff81ba4a7e3290a8d41652cf8c58915d7a082e20f6279e432b60"
+        },
+        "dist/read-values.js.map": {
+          "bytes": 17433,
+          "sha256": "18ff43e68deb7df99a05b11c6413d5678f5da5b6df7f59dac511f6549f41d52b",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/read-values.js.map",
+          "sourceSha256": "18ff43e68deb7df99a05b11c6413d5678f5da5b6df7f59dac511f6549f41d52b"
+        },
+        "dist/reference-domain.d.ts": {
+          "bytes": 1238,
+          "sha256": "0ef42b36ddabd35672bda4b6b41613ce0c432dd2034b1ceaae227e99b8e8e515",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/reference-domain.d.ts",
+          "sourceSha256": "0ef42b36ddabd35672bda4b6b41613ce0c432dd2034b1ceaae227e99b8e8e515"
+        },
+        "dist/reference-domain.d.ts.map": {
+          "bytes": 669,
+          "sha256": "bd937ea84f04f6f828cc30e45caf829ac52c9ea6c09c515ee84a067cf0dd2149",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/reference-domain.d.ts.map",
+          "sourceSha256": "bd937ea84f04f6f828cc30e45caf829ac52c9ea6c09c515ee84a067cf0dd2149"
+        },
+        "dist/reference-domain.js": {
+          "bytes": 2958,
+          "sha256": "640962f3d4490e90bd89071655671a4507b4626c86eb1adc38c951f46a59feeb",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/reference-domain.js",
+          "sourceSha256": "640962f3d4490e90bd89071655671a4507b4626c86eb1adc38c951f46a59feeb"
+        },
+        "dist/reference-domain.js.map": {
+          "bytes": 2240,
+          "sha256": "60bb012e965da232e7e35d15b7a5c906dd8900f7ffe9984c03bd5107c98d6505",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/reference-domain.js.map",
+          "sourceSha256": "60bb012e965da232e7e35d15b7a5c906dd8900f7ffe9984c03bd5107c98d6505"
+        },
+        "dist/schema-formats.d.ts": {
+          "bytes": 568,
+          "sha256": "678c0289a3d1ff529f65009c8340713e0133e3b1b5184b9b619f9a5166b51cc8",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/schema-formats.d.ts",
+          "sourceSha256": "678c0289a3d1ff529f65009c8340713e0133e3b1b5184b9b619f9a5166b51cc8"
+        },
+        "dist/schema-formats.d.ts.map": {
+          "bytes": 256,
+          "sha256": "90153da56410e76324b080463ed24426118bcfc99c9a801d48ad3a4d514f9f7b",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/schema-formats.d.ts.map",
+          "sourceSha256": "90153da56410e76324b080463ed24426118bcfc99c9a801d48ad3a4d514f9f7b"
+        },
+        "dist/schema-formats.js": {
+          "bytes": 1485,
+          "sha256": "fba76af9b124c8de74b7dd1f2b2cc01cfe6628f9ead6f8b5d496da73691d2f8a",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/schema-formats.js",
+          "sourceSha256": "fba76af9b124c8de74b7dd1f2b2cc01cfe6628f9ead6f8b5d496da73691d2f8a"
+        },
+        "dist/schema-formats.js.map": {
+          "bytes": 853,
+          "sha256": "c26b601a6f5da7f849721a1e9de21fcac3e6c7d497ef3c27bc3964649008bde6",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/schema-formats.js.map",
+          "sourceSha256": "c26b601a6f5da7f849721a1e9de21fcac3e6c7d497ef3c27bc3964649008bde6"
+        },
+        "dist/transaction-discovery-values.d.ts": {
+          "bytes": 911,
+          "sha256": "3f63ddea66b91fd80f9c6261e5230fba406589ae1220a8f905e26115c64685a6",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/transaction-discovery-values.d.ts",
+          "sourceSha256": "3f63ddea66b91fd80f9c6261e5230fba406589ae1220a8f905e26115c64685a6"
+        },
+        "dist/transaction-discovery-values.d.ts.map": {
+          "bytes": 837,
+          "sha256": "3c6faa621db513792060992739168716430b51e985b34ee86f297db3e3f95557",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/transaction-discovery-values.d.ts.map",
+          "sourceSha256": "3c6faa621db513792060992739168716430b51e985b34ee86f297db3e3f95557"
+        },
+        "dist/transaction-discovery-values.js": {
+          "bytes": 2308,
+          "sha256": "26341c6e6c3e1e11e212b6e8d827572e343dea1287abfaf0d7de7dee7ac3efed",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/transaction-discovery-values.js",
+          "sourceSha256": "26341c6e6c3e1e11e212b6e8d827572e343dea1287abfaf0d7de7dee7ac3efed"
+        },
+        "dist/transaction-discovery-values.js.map": {
+          "bytes": 2077,
+          "sha256": "7d979440777252c4c1846a3999baaf563c06ab86d7d77373fa8c4fb96fcc3c13",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/transaction-discovery-values.js.map",
+          "sourceSha256": "7d979440777252c4c1846a3999baaf563c06ab86d7d77373fa8c4fb96fcc3c13"
+        },
+        "dist/type-conformance.d.ts": {
+          "bytes": 1431,
+          "sha256": "7a60398c4a5aea6ed5ceb027e8ddc07b85d88d67b4d5223689fc21646755c9be",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/type-conformance.d.ts",
+          "sourceSha256": "7a60398c4a5aea6ed5ceb027e8ddc07b85d88d67b4d5223689fc21646755c9be"
+        },
+        "dist/type-conformance.d.ts.map": {
+          "bytes": 945,
+          "sha256": "78c3067885e05e6360edacfd2be6a5f30ece7e7d873b50a055ce2eaea5fc9b17",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/type-conformance.d.ts.map",
+          "sourceSha256": "78c3067885e05e6360edacfd2be6a5f30ece7e7d873b50a055ce2eaea5fc9b17"
+        },
+        "dist/type-conformance.js": {
+          "bytes": 4269,
+          "sha256": "a4cd37710d9daeb504d6ba116c3070e349f2a9f413dd3b671d3b9b8209393718",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/type-conformance.js",
+          "sourceSha256": "a4cd37710d9daeb504d6ba116c3070e349f2a9f413dd3b671d3b9b8209393718"
+        },
+        "dist/type-conformance.js.map": {
+          "bytes": 4261,
+          "sha256": "18995a63045a8f7358e00497d34a4a4a5316a68309d1f5713ace717427d18eb7",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/dist/type-conformance.js.map",
+          "sourceSha256": "18995a63045a8f7358e00497d34a4a4a5316a68309d1f5713ace717427d18eb7"
+        },
+        "package.json": {
+          "bytes": 428,
+          "sha256": "2415a9a929050fc642fceceb15dce1084debaf1bf7b05f1602ba034afa57f17f",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/package.json",
+          "sourceSha256": "80e6aef5232de49581cc14ba75ab780b41145a54d5754596297dcf22d38ad5e2"
+        },
+        "schemas/bdp-v0.schema.json": {
+          "bytes": 133208,
+          "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/protocol/schemas/bdp-v0.schema.json",
+          "sourceSha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227"
+        }
+      },
+      "metadataRewrite": "NONE",
+      "regularSafeMembers": 63
+    },
+    "server": {
+      "actualCompleteSourcePayloadEquality": true,
+      "archive": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/packages/bdp-server-0.0.0.tgz",
+      "archiveBytes": 444443,
+      "archiveSha256": "78f014af635f0903886be31f467447d45b72750ac8a7cbc7ba6cabe32cc7ee30",
+      "members": {
+        "LICENSE": {
+          "bytes": 1070,
+          "sha256": "1bc5a9f778e62e7383078d5588aed7296f6e266934de1cb9bff35fc9ee240816",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/LICENSE",
+          "sourceSha256": "1bc5a9f778e62e7383078d5588aed7296f6e266934de1cb9bff35fc9ee240816"
+        },
+        "dist/alias-evaluator.d.ts": {
+          "bytes": 2553,
+          "sha256": "48847dc8fd56b586912325dc969d9a65bd1ed7e8aae6232cb9f4d41320d1e8a0",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/alias-evaluator.d.ts",
+          "sourceSha256": "48847dc8fd56b586912325dc969d9a65bd1ed7e8aae6232cb9f4d41320d1e8a0"
+        },
+        "dist/alias-evaluator.d.ts.map": {
+          "bytes": 1399,
+          "sha256": "4d58d5422acba04f14b1786b5195a542c27cd266d653f1b7ccd8b286ad60b957",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/alias-evaluator.d.ts.map",
+          "sourceSha256": "4d58d5422acba04f14b1786b5195a542c27cd266d653f1b7ccd8b286ad60b957"
+        },
+        "dist/alias-evaluator.js": {
+          "bytes": 6645,
+          "sha256": "7a03692769d46e735c775f75152a0b73c10863c811469584eea23ed7820fe447",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/alias-evaluator.js",
+          "sourceSha256": "7a03692769d46e735c775f75152a0b73c10863c811469584eea23ed7820fe447"
+        },
+        "dist/alias-evaluator.js.map": {
+          "bytes": 5279,
+          "sha256": "586068a8a7f76318d86d8b75158176e0e775386fb3f8d04b1d0de01638509a3f",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/alias-evaluator.js.map",
+          "sourceSha256": "586068a8a7f76318d86d8b75158176e0e775386fb3f8d04b1d0de01638509a3f"
+        },
+        "dist/authority-read.d.ts": {
+          "bytes": 7267,
+          "sha256": "7fc50b93641debbfae050accf882b839f6cea5ff8494d21395c237036dfeac4c",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/authority-read.d.ts",
+          "sourceSha256": "7fc50b93641debbfae050accf882b839f6cea5ff8494d21395c237036dfeac4c"
+        },
+        "dist/authority-read.d.ts.map": {
+          "bytes": 5260,
+          "sha256": "be5b4034a0a1919fa89d25f11315ed3eb9ab3cf8143f35f6d1d6ef617c284c11",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/authority-read.d.ts.map",
+          "sourceSha256": "be5b4034a0a1919fa89d25f11315ed3eb9ab3cf8143f35f6d1d6ef617c284c11"
+        },
+        "dist/authority-read.js": {
+          "bytes": 37413,
+          "sha256": "0d579df0ede780551c369679dbfce6727433e15bfbfbea49c39baac76851f7fe",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/authority-read.js",
+          "sourceSha256": "0d579df0ede780551c369679dbfce6727433e15bfbfbea49c39baac76851f7fe"
+        },
+        "dist/authority-read.js.map": {
+          "bytes": 32226,
+          "sha256": "2d0ce8c6a1f8f0bada98b884b728ac721560e895a3ab8fd99793cd987dc092da",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/authority-read.js.map",
+          "sourceSha256": "2d0ce8c6a1f8f0bada98b884b728ac721560e895a3ab8fd99793cd987dc092da"
+        },
+        "dist/development-authority.d.ts": {
+          "bytes": 14454,
+          "sha256": "e4bf27b9c39784ae7bd044064b4f408dce62348b5f0eb5252ecbad4b5095da69",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/development-authority.d.ts",
+          "sourceSha256": "e4bf27b9c39784ae7bd044064b4f408dce62348b5f0eb5252ecbad4b5095da69"
+        },
+        "dist/development-authority.d.ts.map": {
+          "bytes": 1621,
+          "sha256": "c3baad05dbff5f8cc315e2b1143a06a74a757a4b5b21355c0fdeec5341c8c303",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/development-authority.d.ts.map",
+          "sourceSha256": "c3baad05dbff5f8cc315e2b1143a06a74a757a4b5b21355c0fdeec5341c8c303"
+        },
+        "dist/development-authority.js": {
+          "bytes": 14655,
+          "sha256": "adcd555997c226a428baf4c5514579e611fab8f9e08a604ec2d72ad9ed77bba1",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/development-authority.js",
+          "sourceSha256": "adcd555997c226a428baf4c5514579e611fab8f9e08a604ec2d72ad9ed77bba1"
+        },
+        "dist/development-authority.js.map": {
+          "bytes": 11209,
+          "sha256": "5e9fc07f23e23d0c3489b3a338b9b525f96744691b450dafac90ea8109487cd4",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/development-authority.js.map",
+          "sourceSha256": "5e9fc07f23e23d0c3489b3a338b9b525f96744691b450dafac90ea8109487cd4"
+        },
+        "dist/development-composition.d.ts": {
+          "bytes": 230,
+          "sha256": "1923a827cb2024181ed95c20da754c33ec08b632e473513b121d9900da98eb8e",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/development-composition.d.ts",
+          "sourceSha256": "1923a827cb2024181ed95c20da754c33ec08b632e473513b121d9900da98eb8e"
+        },
+        "dist/development-composition.d.ts.map": {
+          "bytes": 247,
+          "sha256": "03125637d5dfc62653b244b2ed16024c99eb15e14ed36b3fa51abe3cf7618c08",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/development-composition.d.ts.map",
+          "sourceSha256": "03125637d5dfc62653b244b2ed16024c99eb15e14ed36b3fa51abe3cf7618c08"
+        },
+        "dist/development-composition.js": {
+          "bytes": 3953,
+          "sha256": "54db32e28c39c656bbb7d3f8580472f6d38c82e37694a89f68a77e951c8cc318",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/development-composition.js",
+          "sourceSha256": "54db32e28c39c656bbb7d3f8580472f6d38c82e37694a89f68a77e951c8cc318"
+        },
+        "dist/development-composition.js.map": {
+          "bytes": 2965,
+          "sha256": "3ceac4b2732353e57707d1d504fade853b5368ca18500a9bfc9324e7c5f8f898",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/development-composition.js.map",
+          "sourceSha256": "3ceac4b2732353e57707d1d504fade853b5368ca18500a9bfc9324e7c5f8f898"
+        },
+        "dist/development-contracts.d.ts": {
+          "bytes": 2705,
+          "sha256": "45b4b907753bf5cb0583b75ca7109da32bc6a3e67eeb65d9828c652ba96d8119",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/development-contracts.d.ts",
+          "sourceSha256": "45b4b907753bf5cb0583b75ca7109da32bc6a3e67eeb65d9828c652ba96d8119"
+        },
+        "dist/development-contracts.d.ts.map": {
+          "bytes": 1886,
+          "sha256": "f46cd61c60e43bd1120a86cbd31300d39c157d8136e45a8794c959f5122d0fcd",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/development-contracts.d.ts.map",
+          "sourceSha256": "f46cd61c60e43bd1120a86cbd31300d39c157d8136e45a8794c959f5122d0fcd"
+        },
+        "dist/development-contracts.js": {
+          "bytes": 9970,
+          "sha256": "038a7144b879ee3b89b6cf1ec670af92c47a2d01073ab5f24c922c3c121863cd",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/development-contracts.js",
+          "sourceSha256": "038a7144b879ee3b89b6cf1ec670af92c47a2d01073ab5f24c922c3c121863cd"
+        },
+        "dist/development-contracts.js.map": {
+          "bytes": 9399,
+          "sha256": "990aa315a171f06d84e13e5fe5bae128aff1227a8f0f1cd5b16c44714ba37e70",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/development-contracts.js.map",
+          "sourceSha256": "990aa315a171f06d84e13e5fe5bae128aff1227a8f0f1cd5b16c44714ba37e70"
+        },
+        "dist/development-runtime.d.ts": {
+          "bytes": 1955,
+          "sha256": "5bbf3438a65bc2c1d8ea2ecbf25483368d68e2d999dbbe4d7fb5219f61c6d56f",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/development-runtime.d.ts",
+          "sourceSha256": "5bbf3438a65bc2c1d8ea2ecbf25483368d68e2d999dbbe4d7fb5219f61c6d56f"
+        },
+        "dist/development-runtime.d.ts.map": {
+          "bytes": 1470,
+          "sha256": "013041faaeddcbf87ae6616c830f76345602e54d9c99e8b2c3fd5798887e763f",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/development-runtime.d.ts.map",
+          "sourceSha256": "013041faaeddcbf87ae6616c830f76345602e54d9c99e8b2c3fd5798887e763f"
+        },
+        "dist/development-runtime.js": {
+          "bytes": 24324,
+          "sha256": "e1f7571f43ed5ad3d7155f866c0142d07a09772ba8ad668e1b55393a75003431",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/development-runtime.js",
+          "sourceSha256": "e1f7571f43ed5ad3d7155f866c0142d07a09772ba8ad668e1b55393a75003431"
+        },
+        "dist/development-runtime.js.map": {
+          "bytes": 21700,
+          "sha256": "e0cd6a2b9220d85aa4d6d18abc5a54663761460f73f488fd714ca92bfc07e205",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/development-runtime.js.map",
+          "sourceSha256": "e0cd6a2b9220d85aa4d6d18abc5a54663761460f73f488fd714ca92bfc07e205"
+        },
+        "dist/development.d.ts": {
+          "bytes": 527,
+          "sha256": "1b65d503f500cf24314295c7275a4ab4ae627a87d92feb977bf25ca1f2813b1f",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/development.d.ts",
+          "sourceSha256": "1b65d503f500cf24314295c7275a4ab4ae627a87d92feb977bf25ca1f2813b1f"
+        },
+        "dist/development.d.ts.map": {
+          "bytes": 330,
+          "sha256": "3f1df29915c4cd2eb0b5c9f910e51f082a6bdd172e7ab7691f3df028a7906ab4",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/development.d.ts.map",
+          "sourceSha256": "3f1df29915c4cd2eb0b5c9f910e51f082a6bdd172e7ab7691f3df028a7906ab4"
+        },
+        "dist/development.js": {
+          "bytes": 407,
+          "sha256": "101188d34f75d6ba9976d4097c6cd7e7141efff4ec1b6f4f4ba937218eff907f",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/development.js",
+          "sourceSha256": "101188d34f75d6ba9976d4097c6cd7e7141efff4ec1b6f4f4ba937218eff907f"
+        },
+        "dist/development.js.map": {
+          "bytes": 311,
+          "sha256": "7aa8ce2d3c7628c619fa2e67636f577588f2b992bafc0c31a422768190bdd70d",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/development.js.map",
+          "sourceSha256": "7aa8ce2d3c7628c619fa2e67636f577588f2b992bafc0c31a422768190bdd70d"
+        },
+        "dist/index.d.ts": {
+          "bytes": 10090,
+          "sha256": "c54e4439316798fa5630b157a297e4ab884ed1f814c92446a71a157d875ef7a2",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/index.d.ts",
+          "sourceSha256": "c54e4439316798fa5630b157a297e4ab884ed1f814c92446a71a157d875ef7a2"
+        },
+        "dist/index.d.ts.map": {
+          "bytes": 6248,
+          "sha256": "215b408cac7370ed0780e8f397462fdefd9d5375c5bdfdb973978e3467a58ef1",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/index.d.ts.map",
+          "sourceSha256": "215b408cac7370ed0780e8f397462fdefd9d5375c5bdfdb973978e3467a58ef1"
+        },
+        "dist/index.js": {
+          "bytes": 46910,
+          "sha256": "7145b97293f4a0ec307cd32b98b69c4487c1fd9cefb15a5c4bb643a1dca70f59",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/index.js",
+          "sourceSha256": "7145b97293f4a0ec307cd32b98b69c4487c1fd9cefb15a5c4bb643a1dca70f59"
+        },
+        "dist/index.js.map": {
+          "bytes": 39779,
+          "sha256": "544aefec78c82b9a45a267882e48a1654b0de3311a0749ed81547c7296395f2e",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/index.js.map",
+          "sourceSha256": "544aefec78c82b9a45a267882e48a1654b0de3311a0749ed81547c7296395f2e"
+        },
+        "dist/installed-contract-artifact.d.ts": {
+          "bytes": 3100,
+          "sha256": "b04aba733095bc4fb9bb70fdea7aabd140139879aca7509921444b23ed1b8f78",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-contract-artifact.d.ts",
+          "sourceSha256": "b04aba733095bc4fb9bb70fdea7aabd140139879aca7509921444b23ed1b8f78"
+        },
+        "dist/installed-contract-artifact.d.ts.map": {
+          "bytes": 1845,
+          "sha256": "49bcac633bc4548d94d7016f7c980219bcf1bc216c501d4ad3f3e881c3b3404b",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-contract-artifact.d.ts.map",
+          "sourceSha256": "49bcac633bc4548d94d7016f7c980219bcf1bc216c501d4ad3f3e881c3b3404b"
+        },
+        "dist/installed-contract-artifact.js": {
+          "bytes": 16274,
+          "sha256": "d30354c471c34d24b5567b5a950d59952705765ba2b8aa5a7c853dcc3979bdcb",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-contract-artifact.js",
+          "sourceSha256": "d30354c471c34d24b5567b5a950d59952705765ba2b8aa5a7c853dcc3979bdcb"
+        },
+        "dist/installed-contract-artifact.js.map": {
+          "bytes": 15078,
+          "sha256": "abed46f15eaa688eb695c497f54c9d57d166ce6cd6b858cc4f794eee3c1aaeed",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-contract-artifact.js.map",
+          "sourceSha256": "abed46f15eaa688eb695c497f54c9d57d166ce6cd6b858cc4f794eee3c1aaeed"
+        },
+        "dist/installed-payload.d.ts": {
+          "bytes": 199,
+          "sha256": "98b94ba37d2eb1215234da6fb578da14d370c5366facfd83f8df0cec69706bd8",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-payload.d.ts",
+          "sourceSha256": "98b94ba37d2eb1215234da6fb578da14d370c5366facfd83f8df0cec69706bd8"
+        },
+        "dist/installed-payload.d.ts.map": {
+          "bytes": 167,
+          "sha256": "a0e14479605288f8189e46db4a8a99071b8f865fe12080c717e8d6f402dcf949",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-payload.d.ts.map",
+          "sourceSha256": "a0e14479605288f8189e46db4a8a99071b8f865fe12080c717e8d6f402dcf949"
+        },
+        "dist/installed-payload.js": {
+          "bytes": 3928,
+          "sha256": "dc0da1f44913d3f9c3839c5f21d3f17a33ca7a97dac1da1434e0e6565f0a57a5",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-payload.js",
+          "sourceSha256": "dc0da1f44913d3f9c3839c5f21d3f17a33ca7a97dac1da1434e0e6565f0a57a5"
+        },
+        "dist/installed-payload.js.map": {
+          "bytes": 3453,
+          "sha256": "c37fc102d2bcdbc71973953a2adc394337c91f2af5e93cbff5e0e9c08c975ec4",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-payload.js.map",
+          "sourceSha256": "c37fc102d2bcdbc71973953a2adc394337c91f2af5e93cbff5e0e9c08c975ec4"
+        },
+        "dist/installed-reference-configuration.d.ts": {
+          "bytes": 1197,
+          "sha256": "3025fe8c2dc50dc9b7f3bdd8b4ca131b81140f78c3a8a8491e2b402fb04ae78c",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-reference-configuration.d.ts",
+          "sourceSha256": "3025fe8c2dc50dc9b7f3bdd8b4ca131b81140f78c3a8a8491e2b402fb04ae78c"
+        },
+        "dist/installed-reference-configuration.d.ts.map": {
+          "bytes": 346,
+          "sha256": "cecbd98da318d3e26f727085ea9554ef3a5c7687256e3bba8150b9decc63d9a3",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-reference-configuration.d.ts.map",
+          "sourceSha256": "cecbd98da318d3e26f727085ea9554ef3a5c7687256e3bba8150b9decc63d9a3"
+        },
+        "dist/installed-reference-configuration.js": {
+          "bytes": 7992,
+          "sha256": "9ca2071ccd43e0eba1a512bdbc3a5edd9b3a24912b14b487d4886e45002b4c79",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-reference-configuration.js",
+          "sourceSha256": "9ca2071ccd43e0eba1a512bdbc3a5edd9b3a24912b14b487d4886e45002b4c79"
+        },
+        "dist/installed-reference-configuration.js.map": {
+          "bytes": 7507,
+          "sha256": "cd573608226508cb1ef2e252ef503e9ebd69d51c23d1e744022dfb8f67e6d83d",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-reference-configuration.js.map",
+          "sourceSha256": "cd573608226508cb1ef2e252ef503e9ebd69d51c23d1e744022dfb8f67e6d83d"
+        },
+        "dist/installed-reference-process.d.ts": {
+          "bytes": 68,
+          "sha256": "f434b3f838d5b855178117c19a3385668a2723a3255641e32c705b6b3ea481da",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-reference-process.d.ts",
+          "sourceSha256": "f434b3f838d5b855178117c19a3385668a2723a3255641e32c705b6b3ea481da"
+        },
+        "dist/installed-reference-process.d.ts.map": {
+          "bytes": 148,
+          "sha256": "0a87caae52ef1bcd90df3f4767454032d04536026e2a1693156a9a1d35935f2b",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-reference-process.d.ts.map",
+          "sourceSha256": "0a87caae52ef1bcd90df3f4767454032d04536026e2a1693156a9a1d35935f2b"
+        },
+        "dist/installed-reference-process.js": {
+          "bytes": 3241,
+          "sha256": "3eb9a6bc8df1237d78ba4aae7e95589df6fb7f4781f572e04adda583f359c71d",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-reference-process.js",
+          "sourceSha256": "3eb9a6bc8df1237d78ba4aae7e95589df6fb7f4781f572e04adda583f359c71d"
+        },
+        "dist/installed-reference-process.js.map": {
+          "bytes": 3072,
+          "sha256": "658adce28f16f3ea6f2be062942a7d675e0a902dca4a742a1007387c29d4b03c",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-reference-process.js.map",
+          "sourceSha256": "658adce28f16f3ea6f2be062942a7d675e0a902dca4a742a1007387c29d4b03c"
+        },
+        "dist/installed-reference.d.ts": {
+          "bytes": 430,
+          "sha256": "e4bb74603c7b0096f21627af1ad4f37350529cb0ee07761c2e45ccbbf2bbaf36",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-reference.d.ts",
+          "sourceSha256": "e4bb74603c7b0096f21627af1ad4f37350529cb0ee07761c2e45ccbbf2bbaf36"
+        },
+        "dist/installed-reference.d.ts.map": {
+          "bytes": 187,
+          "sha256": "3d0d3b7eccf04ff51b23b20cc9ad1c3f21c1b1e3d6aca13e312d7ddb2b8ef3db",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-reference.d.ts.map",
+          "sourceSha256": "3d0d3b7eccf04ff51b23b20cc9ad1c3f21c1b1e3d6aca13e312d7ddb2b8ef3db"
+        },
+        "dist/installed-reference.js": {
+          "bytes": 1644,
+          "sha256": "be57131fe4af37b30ee94c332436d18db889ff454c2a680b05fdf1308b94737c",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-reference.js",
+          "sourceSha256": "be57131fe4af37b30ee94c332436d18db889ff454c2a680b05fdf1308b94737c"
+        },
+        "dist/installed-reference.js.map": {
+          "bytes": 1342,
+          "sha256": "99260facf34b15591b17e3dce32ea09eb9241ae8f81ba1989e420495f1223170",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-reference.js.map",
+          "sourceSha256": "99260facf34b15591b17e3dce32ea09eb9241ae8f81ba1989e420495f1223170"
+        },
+        "dist/installed-schema-builtins.d.ts": {
+          "bytes": 1675,
+          "sha256": "34f1eac4ce18563423002be61a9773ecee1d3b10abe24312571518e2ad86f817",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-builtins.d.ts",
+          "sourceSha256": "34f1eac4ce18563423002be61a9773ecee1d3b10abe24312571518e2ad86f817"
+        },
+        "dist/installed-schema-builtins.d.ts.map": {
+          "bytes": 260,
+          "sha256": "f8d70b4f71bbf3606d4595f6739a9e5f2fd0ec06afb7811043f1be26e16ea89f",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-builtins.d.ts.map",
+          "sourceSha256": "f8d70b4f71bbf3606d4595f6739a9e5f2fd0ec06afb7811043f1be26e16ea89f"
+        },
+        "dist/installed-schema-builtins.js": {
+          "bytes": 15616,
+          "sha256": "bcb55ba8d30780fc183d77f4f68c8d547783808d3a5abba44742428ea3f60235",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-builtins.js",
+          "sourceSha256": "bcb55ba8d30780fc183d77f4f68c8d547783808d3a5abba44742428ea3f60235"
+        },
+        "dist/installed-schema-builtins.js.map": {
+          "bytes": 1032,
+          "sha256": "e733e9675dade037df43bb460198e851f1061c9de8d2c06d070fd97a1f547a14",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-builtins.js.map",
+          "sourceSha256": "e733e9675dade037df43bb460198e851f1061c9de8d2c06d070fd97a1f547a14"
+        },
+        "dist/installed-schema-decimal.d.ts": {
+          "bytes": 956,
+          "sha256": "f3f734737a563a4b0bb5abe08941b626afb388ee576d2a47c71c6408f1c75f12",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-decimal.d.ts",
+          "sourceSha256": "f3f734737a563a4b0bb5abe08941b626afb388ee576d2a47c71c6408f1c75f12"
+        },
+        "dist/installed-schema-decimal.d.ts.map": {
+          "bytes": 965,
+          "sha256": "9b4260165c1f35ae016cb87d0081d03cb71a327c41044aa2287359fa81cb1ed8",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-decimal.d.ts.map",
+          "sourceSha256": "9b4260165c1f35ae016cb87d0081d03cb71a327c41044aa2287359fa81cb1ed8"
+        },
+        "dist/installed-schema-decimal.js": {
+          "bytes": 6055,
+          "sha256": "4d18c4125c509703e849b336623a08344b981207f89918b3410182950373a74d",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-decimal.js",
+          "sourceSha256": "4d18c4125c509703e849b336623a08344b981207f89918b3410182950373a74d"
+        },
+        "dist/installed-schema-decimal.js.map": {
+          "bytes": 9112,
+          "sha256": "321b205c478ce70a6fa1fb410ac430245bf249bae46f1be2366a809aa994052e",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-decimal.js.map",
+          "sourceSha256": "321b205c478ce70a6fa1fb410ac430245bf249bae46f1be2366a809aa994052e"
+        },
+        "dist/installed-schema-evaluator.d.ts": {
+          "bytes": 3527,
+          "sha256": "b5949ee917a568d518c16cf9edde6ec97eed58b81645b2be378585fa337a7bfe",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-evaluator.d.ts",
+          "sourceSha256": "b5949ee917a568d518c16cf9edde6ec97eed58b81645b2be378585fa337a7bfe"
+        },
+        "dist/installed-schema-evaluator.d.ts.map": {
+          "bytes": 2425,
+          "sha256": "6d4b6e113699cfeb1781bca8373d1621c11f1073e65a73e27e36dd24e102b019",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-evaluator.d.ts.map",
+          "sourceSha256": "6d4b6e113699cfeb1781bca8373d1621c11f1073e65a73e27e36dd24e102b019"
+        },
+        "dist/installed-schema-evaluator.js": {
+          "bytes": 45318,
+          "sha256": "56e4b0fb6d71504744f62868f05346b43335d062ecdf62ecfd93ccced0f5d6ca",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-evaluator.js",
+          "sourceSha256": "56e4b0fb6d71504744f62868f05346b43335d062ecdf62ecfd93ccced0f5d6ca"
+        },
+        "dist/installed-schema-evaluator.js.map": {
+          "bytes": 41065,
+          "sha256": "d5507ff2cb21190dba1c8ed94a78ff1419fdda280360253b01f6b9d23f969100",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-evaluator.js.map",
+          "sourceSha256": "d5507ff2cb21190dba1c8ed94a78ff1419fdda280360253b01f6b9d23f969100"
+        },
+        "dist/installed-schema-graph.d.ts": {
+          "bytes": 3682,
+          "sha256": "7f54a4e0617cf85a7818883830c750eb5f02249bc6390ef02e6f467eb3157459",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-graph.d.ts",
+          "sourceSha256": "7f54a4e0617cf85a7818883830c750eb5f02249bc6390ef02e6f467eb3157459"
+        },
+        "dist/installed-schema-graph.d.ts.map": {
+          "bytes": 3153,
+          "sha256": "c56e5afed626f485da5b8d25e369a319ec64fee334029d7ebf636d88e832e204",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-graph.d.ts.map",
+          "sourceSha256": "c56e5afed626f485da5b8d25e369a319ec64fee334029d7ebf636d88e832e204"
+        },
+        "dist/installed-schema-graph.js": {
+          "bytes": 19700,
+          "sha256": "a5fa3ad25207824da1dafda2df268ed328a46609bccf7c4cfb1b46116bca268d",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-graph.js",
+          "sourceSha256": "a5fa3ad25207824da1dafda2df268ed328a46609bccf7c4cfb1b46116bca268d"
+        },
+        "dist/installed-schema-graph.js.map": {
+          "bytes": 18680,
+          "sha256": "2e7ca44436188dc954c0a2d887adad0e874edfc8d0877d426535ef36a079288c",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-graph.js.map",
+          "sourceSha256": "2e7ca44436188dc954c0a2d887adad0e874edfc8d0877d426535ef36a079288c"
+        },
+        "dist/installed-schema-pattern.d.ts": {
+          "bytes": 1443,
+          "sha256": "5f30e7235cf2caa5ad3a79621247452a19a92960c842c7172d2a61a8bb4decc2",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-pattern.d.ts",
+          "sourceSha256": "5f30e7235cf2caa5ad3a79621247452a19a92960c842c7172d2a61a8bb4decc2"
+        },
+        "dist/installed-schema-pattern.d.ts.map": {
+          "bytes": 894,
+          "sha256": "f548a00d8f66c57f997f6083015094b1ccf9cdfc3705d711bfc404bde9fd9970",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-pattern.d.ts.map",
+          "sourceSha256": "f548a00d8f66c57f997f6083015094b1ccf9cdfc3705d711bfc404bde9fd9970"
+        },
+        "dist/installed-schema-pattern.js": {
+          "bytes": 20924,
+          "sha256": "7d44816cea2b104c4001b14263a561815f4b169dddc89203d0bcaed02f565299",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-pattern.js",
+          "sourceSha256": "7d44816cea2b104c4001b14263a561815f4b169dddc89203d0bcaed02f565299"
+        },
+        "dist/installed-schema-pattern.js.map": {
+          "bytes": 24709,
+          "sha256": "9a4ff11dc03168a1ba93c09a86e9df7c8536ef64e055c283e61a8aa6a5b8ec2c",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-pattern.js.map",
+          "sourceSha256": "9a4ff11dc03168a1ba93c09a86e9df7c8536ef64e055c283e61a8aa6a5b8ec2c"
+        },
+        "dist/installed-schema-recursion.d.ts": {
+          "bytes": 2924,
+          "sha256": "1c68a30b07441d8139c02e0229f5f1aca7e8969f064e0a2ce4e7c31eb39675f8",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-recursion.d.ts",
+          "sourceSha256": "1c68a30b07441d8139c02e0229f5f1aca7e8969f064e0a2ce4e7c31eb39675f8"
+        },
+        "dist/installed-schema-recursion.d.ts.map": {
+          "bytes": 1817,
+          "sha256": "ccc151b20bdf01fbe5502226192b25f3bcd2426cb15eab70e77857121ef2ec3f",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-recursion.d.ts.map",
+          "sourceSha256": "ccc151b20bdf01fbe5502226192b25f3bcd2426cb15eab70e77857121ef2ec3f"
+        },
+        "dist/installed-schema-recursion.js": {
+          "bytes": 16521,
+          "sha256": "5c060c5b5e1a6fa6fdb26e59751d4eedd2de39f57fb0b51f10067c1a35b04d0c",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-recursion.js",
+          "sourceSha256": "5c060c5b5e1a6fa6fdb26e59751d4eedd2de39f57fb0b51f10067c1a35b04d0c"
+        },
+        "dist/installed-schema-recursion.js.map": {
+          "bytes": 16302,
+          "sha256": "7f6eb4c77bb1aef748fe7d39fe76dcb583f2908ca0ace3e1a3acda2efc612003",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-recursion.js.map",
+          "sourceSha256": "7f6eb4c77bb1aef748fe7d39fe76dcb583f2908ca0ace3e1a3acda2efc612003"
+        },
+        "dist/installed-schema-shape.d.ts": {
+          "bytes": 2338,
+          "sha256": "8041ca80e68f68d92fb9eabe5cb6f68b2fe589ae44de9105e52739b2a38fa5ac",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-shape.d.ts",
+          "sourceSha256": "8041ca80e68f68d92fb9eabe5cb6f68b2fe589ae44de9105e52739b2a38fa5ac"
+        },
+        "dist/installed-schema-shape.d.ts.map": {
+          "bytes": 1833,
+          "sha256": "9a3d17c8986e1892b8c4e3ae37d68138edc6a11d1cc2226d489ce3e032439600",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-shape.d.ts.map",
+          "sourceSha256": "9a3d17c8986e1892b8c4e3ae37d68138edc6a11d1cc2226d489ce3e032439600"
+        },
+        "dist/installed-schema-shape.js": {
+          "bytes": 9547,
+          "sha256": "5774c022d1a45569e4983fdfb86006282579d45e8ab40f8e3634945c661e5bb5",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-shape.js",
+          "sourceSha256": "5774c022d1a45569e4983fdfb86006282579d45e8ab40f8e3634945c661e5bb5"
+        },
+        "dist/installed-schema-shape.js.map": {
+          "bytes": 9823,
+          "sha256": "92d2ad1ce609e3b693a8fa00f51e113a059362c5ae17136ec3e367a6a5dbbaa8",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-shape.js.map",
+          "sourceSha256": "92d2ad1ce609e3b693a8fa00f51e113a059362c5ae17136ec3e367a6a5dbbaa8"
+        },
+        "dist/installed-schema-uri.d.ts": {
+          "bytes": 585,
+          "sha256": "08bfd18a032b700262b18128982781d45d1d6bf54c8a5fe298563abaa4b3193f",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-uri.d.ts",
+          "sourceSha256": "08bfd18a032b700262b18128982781d45d1d6bf54c8a5fe298563abaa4b3193f"
+        },
+        "dist/installed-schema-uri.d.ts.map": {
+          "bytes": 562,
+          "sha256": "e710cb937f1c4562e4fe0ec3b7cfb9004f9404023159b1f6cd446d196e2c41c0",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-uri.d.ts.map",
+          "sourceSha256": "e710cb937f1c4562e4fe0ec3b7cfb9004f9404023159b1f6cd446d196e2c41c0"
+        },
+        "dist/installed-schema-uri.js": {
+          "bytes": 7647,
+          "sha256": "5c2b746f2db51b586beeba4b816cf9364546399ef129d2a90ceac5f3548705fe",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-uri.js",
+          "sourceSha256": "5c2b746f2db51b586beeba4b816cf9364546399ef129d2a90ceac5f3548705fe"
+        },
+        "dist/installed-schema-uri.js.map": {
+          "bytes": 7835,
+          "sha256": "f533a6d7d49669cbc054f5b1bec26720da76cae62173ea613d658b01f4f5a3c7",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-uri.js.map",
+          "sourceSha256": "f533a6d7d49669cbc054f5b1bec26720da76cae62173ea613d658b01f4f5a3c7"
+        },
+        "dist/installed-schema-value.d.ts": {
+          "bytes": 4361,
+          "sha256": "81d445abc2cccf1d987ce8ff952f3d2be5b9f18a03ce85c2e7bd6e23cb440ec0",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-value.d.ts",
+          "sourceSha256": "81d445abc2cccf1d987ce8ff952f3d2be5b9f18a03ce85c2e7bd6e23cb440ec0"
+        },
+        "dist/installed-schema-value.d.ts.map": {
+          "bytes": 2277,
+          "sha256": "3c229d7611b9de7775fe90e4cd251c205362550ae58c05e1a90f1788675e3378",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-value.d.ts.map",
+          "sourceSha256": "3c229d7611b9de7775fe90e4cd251c205362550ae58c05e1a90f1788675e3378"
+        },
+        "dist/installed-schema-value.js": {
+          "bytes": 13954,
+          "sha256": "82ac8756bae5b324093857b41dc54796ece46d0b1963a2d6bf132b9adc489754",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-value.js",
+          "sourceSha256": "82ac8756bae5b324093857b41dc54796ece46d0b1963a2d6bf132b9adc489754"
+        },
+        "dist/installed-schema-value.js.map": {
+          "bytes": 14380,
+          "sha256": "d35b7e046d1a2398d065b9651a9a001bc8fb739a84b480690e1ee6594dc6f497",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/installed-schema-value.js.map",
+          "sourceSha256": "d35b7e046d1a2398d065b9651a9a001bc8fb739a84b480690e1ee6594dc6f497"
+        },
+        "dist/json-value-equality.d.ts": {
+          "bytes": 295,
+          "sha256": "14478945f622e30c5c3036a7af5931e49279fb5ca4115cde6cf3f33f91a4f540",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/json-value-equality.d.ts",
+          "sourceSha256": "14478945f622e30c5c3036a7af5931e49279fb5ca4115cde6cf3f33f91a4f540"
+        },
+        "dist/json-value-equality.d.ts.map": {
+          "bytes": 218,
+          "sha256": "cdaa3a109602a8a01f511cf2215d21026c75a83b7e736a93b4017b2a4da11495",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/json-value-equality.d.ts.map",
+          "sourceSha256": "cdaa3a109602a8a01f511cf2215d21026c75a83b7e736a93b4017b2a4da11495"
+        },
+        "dist/json-value-equality.js": {
+          "bytes": 1004,
+          "sha256": "2ae52de7dfc7bf5d73b5df0e68087e843004cd7885bbf39ec3008ae5c62489bc",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/json-value-equality.js",
+          "sourceSha256": "2ae52de7dfc7bf5d73b5df0e68087e843004cd7885bbf39ec3008ae5c62489bc"
+        },
+        "dist/json-value-equality.js.map": {
+          "bytes": 1093,
+          "sha256": "b10c196a6946783ecf369794ea42efa2ba4f6293320708c86a57293225f2fa57",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/json-value-equality.js.map",
+          "sourceSha256": "b10c196a6946783ecf369794ea42efa2ba4f6293320708c86a57293225f2fa57"
+        },
+        "dist/member-executor.d.ts": {
+          "bytes": 3769,
+          "sha256": "47ad4631ff221f21cf031c19c78c23b90daaebf062be75495caa84ad31146687",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/member-executor.d.ts",
+          "sourceSha256": "47ad4631ff221f21cf031c19c78c23b90daaebf062be75495caa84ad31146687"
+        },
+        "dist/member-executor.d.ts.map": {
+          "bytes": 2299,
+          "sha256": "5bbf2f34e851fe33391e0ae2d49376bd78a2aa2e9bea26577582b29902b7e171",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/member-executor.d.ts.map",
+          "sourceSha256": "5bbf2f34e851fe33391e0ae2d49376bd78a2aa2e9bea26577582b29902b7e171"
+        },
+        "dist/member-executor.js": {
+          "bytes": 29174,
+          "sha256": "3d39cad981b60b62fbea36f380e28b4b9ac0bd2b0af11b7a9738cd13734d6c1b",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/member-executor.js",
+          "sourceSha256": "3d39cad981b60b62fbea36f380e28b4b9ac0bd2b0af11b7a9738cd13734d6c1b"
+        },
+        "dist/member-executor.js.map": {
+          "bytes": 25996,
+          "sha256": "3df26cda7984c47c85d8bda8f06fc58cdf0b12390031c1c1aae40ea52f7daead",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/member-executor.js.map",
+          "sourceSha256": "3df26cda7984c47c85d8bda8f06fc58cdf0b12390031c1c1aae40ea52f7daead"
+        },
+        "dist/member-identity.d.ts": {
+          "bytes": 6812,
+          "sha256": "63b2bdbe92d3db1f0625207d829fb5db2826b59f5c7addfdbb3a4b191c774649",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/member-identity.d.ts",
+          "sourceSha256": "63b2bdbe92d3db1f0625207d829fb5db2826b59f5c7addfdbb3a4b191c774649"
+        },
+        "dist/member-identity.d.ts.map": {
+          "bytes": 3764,
+          "sha256": "4fc0c8ac4f56cace12fa0ef711303574da30ebf9f6d64881f650ff5c373cece6",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/member-identity.d.ts.map",
+          "sourceSha256": "4fc0c8ac4f56cace12fa0ef711303574da30ebf9f6d64881f650ff5c373cece6"
+        },
+        "dist/member-identity.js": {
+          "bytes": 21748,
+          "sha256": "0d44888e873a7b421c7408c8f619f82c02608966166f5a1d396b29ad8dfe360f",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/member-identity.js",
+          "sourceSha256": "0d44888e873a7b421c7408c8f619f82c02608966166f5a1d396b29ad8dfe360f"
+        },
+        "dist/member-identity.js.map": {
+          "bytes": 19400,
+          "sha256": "b2006bfad7d897344387417211ab54c224b84979eabf96f2a70d039b47a2b632",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/member-identity.js.map",
+          "sourceSha256": "b2006bfad7d897344387417211ab54c224b84979eabf96f2a70d039b47a2b632"
+        },
+        "dist/member-numeric-diagnostics.d.ts": {
+          "bytes": 374,
+          "sha256": "3a8ce95108ca1757e780a843124ca4c452d8182e1ff51e5f898ca6ffe0621b52",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/member-numeric-diagnostics.d.ts",
+          "sourceSha256": "3a8ce95108ca1757e780a843124ca4c452d8182e1ff51e5f898ca6ffe0621b52"
+        },
+        "dist/member-numeric-diagnostics.d.ts.map": {
+          "bytes": 303,
+          "sha256": "469778f48c736522609c9489648e22ccbe92d8eebe58b08dc24b6550d7227820",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/member-numeric-diagnostics.d.ts.map",
+          "sourceSha256": "469778f48c736522609c9489648e22ccbe92d8eebe58b08dc24b6550d7227820"
+        },
+        "dist/member-numeric-diagnostics.js": {
+          "bytes": 2735,
+          "sha256": "b26abb89fe14dcf8c84df49dc45bdb192da3262104e37e08274120c3b6f3612a",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/member-numeric-diagnostics.js",
+          "sourceSha256": "b26abb89fe14dcf8c84df49dc45bdb192da3262104e37e08274120c3b6f3612a"
+        },
+        "dist/member-numeric-diagnostics.js.map": {
+          "bytes": 2062,
+          "sha256": "3de735597e4d4f5a2103227b9667eeede9e5839a0a88a3811fb9d2ee61fff4cf",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/member-numeric-diagnostics.js.map",
+          "sourceSha256": "3de735597e4d4f5a2103227b9667eeede9e5839a0a88a3811fb9d2ee61fff4cf"
+        },
+        "dist/node-http-disconnect.d.ts": {
+          "bytes": 521,
+          "sha256": "ff9537f26060442d8204d11edb52695421194871845f0ae7768e0ea759023965",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/node-http-disconnect.d.ts",
+          "sourceSha256": "ff9537f26060442d8204d11edb52695421194871845f0ae7768e0ea759023965"
+        },
+        "dist/node-http-disconnect.d.ts.map": {
+          "bytes": 453,
+          "sha256": "759f7e98d7139b774c834826ffc430a09c386949b55a131f8e21164351d6b94c",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/node-http-disconnect.d.ts.map",
+          "sourceSha256": "759f7e98d7139b774c834826ffc430a09c386949b55a131f8e21164351d6b94c"
+        },
+        "dist/node-http-disconnect.js": {
+          "bytes": 491,
+          "sha256": "195f6a6ca6205d4f307a443401ae7a2ea15c0babab64c59e8365bd920769e5bd",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/node-http-disconnect.js",
+          "sourceSha256": "195f6a6ca6205d4f307a443401ae7a2ea15c0babab64c59e8365bd920769e5bd"
+        },
+        "dist/node-http-disconnect.js.map": {
+          "bytes": 536,
+          "sha256": "9158335f2512421ebb7c4b36a699d275ce33d17d2e5ecaebb71acd6920a3d507",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/node-http-disconnect.js.map",
+          "sourceSha256": "9158335f2512421ebb7c4b36a699d275ce33d17d2e5ecaebb71acd6920a3d507"
+        },
+        "dist/node-http-target.d.ts": {
+          "bytes": 139,
+          "sha256": "3934f50d99e33ac9d1d1ecb90291a4074d44cd0d2c97b500ae8ec308476c5b78",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/node-http-target.d.ts",
+          "sourceSha256": "3934f50d99e33ac9d1d1ecb90291a4074d44cd0d2c97b500ae8ec308476c5b78"
+        },
+        "dist/node-http-target.d.ts.map": {
+          "bytes": 191,
+          "sha256": "6d02721cdba6c523e5c2a3fa4fe7bf3abcf21c251f6be623f5fb6cc8d28185e3",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/node-http-target.d.ts.map",
+          "sourceSha256": "6d02721cdba6c523e5c2a3fa4fe7bf3abcf21c251f6be623f5fb6cc8d28185e3"
+        },
+        "dist/node-http-target.js": {
+          "bytes": 2687,
+          "sha256": "7085b22ad2eab1cb9d1590b744f5948df8f27122cf48304c83ff2782c93ad1fc",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/node-http-target.js",
+          "sourceSha256": "7085b22ad2eab1cb9d1590b744f5948df8f27122cf48304c83ff2782c93ad1fc"
+        },
+        "dist/node-http-target.js.map": {
+          "bytes": 2988,
+          "sha256": "859bbddd6837091010d9bba2b8454df8f35bd6287eb5a90b2494c1464dd8275b",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/node-http-target.js.map",
+          "sourceSha256": "859bbddd6837091010d9bba2b8454df8f35bd6287eb5a90b2494c1464dd8275b"
+        },
+        "dist/read-conformance-capability.d.ts": {
+          "bytes": 718,
+          "sha256": "728a3a028b35fce14c679ec542d763b4dbcbb45651f9be789720918b8423519b",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-conformance-capability.d.ts",
+          "sourceSha256": "728a3a028b35fce14c679ec542d763b4dbcbb45651f9be789720918b8423519b"
+        },
+        "dist/read-conformance-capability.d.ts.map": {
+          "bytes": 348,
+          "sha256": "87ff5d63986622ad3dc61de64d7bd6731ce6880073ee2d6dd0d3ac06deef2292",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-conformance-capability.d.ts.map",
+          "sourceSha256": "87ff5d63986622ad3dc61de64d7bd6731ce6880073ee2d6dd0d3ac06deef2292"
+        },
+        "dist/read-conformance-capability.js": {
+          "bytes": 2833,
+          "sha256": "8448816d732fb0b49be124bac2c403876ebaf135e4ed913d8495170d861817d1",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-conformance-capability.js",
+          "sourceSha256": "8448816d732fb0b49be124bac2c403876ebaf135e4ed913d8495170d861817d1"
+        },
+        "dist/read-conformance-capability.js.map": {
+          "bytes": 871,
+          "sha256": "0d42cae6ddc1f8dc01f9f1656a02a451cac80925c21873ca6b191d909fdd93f9",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-conformance-capability.js.map",
+          "sourceSha256": "0d42cae6ddc1f8dc01f9f1656a02a451cac80925c21873ca6b191d909fdd93f9"
+        },
+        "dist/read-http-routing.d.ts": {
+          "bytes": 1078,
+          "sha256": "116068f1b563bb5457e71c8a67afe8c83c4906f7b0c0468a6594fca2150285fe",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-http-routing.d.ts",
+          "sourceSha256": "116068f1b563bb5457e71c8a67afe8c83c4906f7b0c0468a6594fca2150285fe"
+        },
+        "dist/read-http-routing.d.ts.map": {
+          "bytes": 936,
+          "sha256": "11dae087d2a77a100d14f256175273882122cceb9eb3275b15a6f6c5d0b69290",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-http-routing.d.ts.map",
+          "sourceSha256": "11dae087d2a77a100d14f256175273882122cceb9eb3275b15a6f6c5d0b69290"
+        },
+        "dist/read-http-routing.js": {
+          "bytes": 2586,
+          "sha256": "13b49961facf8eb468a5ea2038dc640285268cb664ac9c5392e2577b3d2bad49",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-http-routing.js",
+          "sourceSha256": "13b49961facf8eb468a5ea2038dc640285268cb664ac9c5392e2577b3d2bad49"
+        },
+        "dist/read-http-routing.js.map": {
+          "bytes": 2240,
+          "sha256": "9e1a32a5d80cb69b78c164c05d863f7af8b0d328a689f42fa417e048a55a4b30",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-http-routing.js.map",
+          "sourceSha256": "9e1a32a5d80cb69b78c164c05d863f7af8b0d328a689f42fa417e048a55a4b30"
+        },
+        "dist/read-http.d.ts": {
+          "bytes": 1017,
+          "sha256": "3a5c0e3e7cee53bfd55e3d170970bddd784a252928c452311cac46cb5bcfab91",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-http.d.ts",
+          "sourceSha256": "3a5c0e3e7cee53bfd55e3d170970bddd784a252928c452311cac46cb5bcfab91"
+        },
+        "dist/read-http.d.ts.map": {
+          "bytes": 571,
+          "sha256": "5b7ad3c1ba3b25a19687032ab56d5411a71ee2bb492ca0b347ae73c155f943e8",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-http.d.ts.map",
+          "sourceSha256": "5b7ad3c1ba3b25a19687032ab56d5411a71ee2bb492ca0b347ae73c155f943e8"
+        },
+        "dist/read-http.js": {
+          "bytes": 9418,
+          "sha256": "39a3dd43650c30f84a8100af1a36c158b863cda7added8810df7251ff467c0b2",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-http.js",
+          "sourceSha256": "39a3dd43650c30f84a8100af1a36c158b863cda7added8810df7251ff467c0b2"
+        },
+        "dist/read-http.js.map": {
+          "bytes": 8336,
+          "sha256": "91d509204d507a138bec61a56d95ccc3991d33f256d7c387abc30914af600193",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-http.js.map",
+          "sourceSha256": "91d509204d507a138bec61a56d95ccc3991d33f256d7c387abc30914af600193"
+        },
+        "dist/read-pagination.d.ts": {
+          "bytes": 4621,
+          "sha256": "4b60ce459e72aa07abc7041f2a5e4b642aba29b6a2c80ba1dce258930f36ea8a",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-pagination.d.ts",
+          "sourceSha256": "4b60ce459e72aa07abc7041f2a5e4b642aba29b6a2c80ba1dce258930f36ea8a"
+        },
+        "dist/read-pagination.d.ts.map": {
+          "bytes": 2878,
+          "sha256": "cf869f0cafa1518cd193c374089ea94b5863e90471dca0f5a9f02721076fd8ab",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-pagination.d.ts.map",
+          "sourceSha256": "cf869f0cafa1518cd193c374089ea94b5863e90471dca0f5a9f02721076fd8ab"
+        },
+        "dist/read-pagination.js": {
+          "bytes": 28225,
+          "sha256": "a87360206f50ace4a8cd3cba6497d8075746189f681cefe112d3057d6c5496b2",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-pagination.js",
+          "sourceSha256": "a87360206f50ace4a8cd3cba6497d8075746189f681cefe112d3057d6c5496b2"
+        },
+        "dist/read-pagination.js.map": {
+          "bytes": 22534,
+          "sha256": "de22a1a07433b30bcf8d11592d93adcfb7b69f187647c017997be9cd1316245f",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-pagination.js.map",
+          "sourceSha256": "de22a1a07433b30bcf8d11592d93adcfb7b69f187647c017997be9cd1316245f"
+        },
+        "dist/read-request.d.ts": {
+          "bytes": 4932,
+          "sha256": "dd658fb26c1c3a3429ef1632acb0e9dea1b523353cbf39a8efc806b00bf1ad1b",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-request.d.ts",
+          "sourceSha256": "dd658fb26c1c3a3429ef1632acb0e9dea1b523353cbf39a8efc806b00bf1ad1b"
+        },
+        "dist/read-request.d.ts.map": {
+          "bytes": 3409,
+          "sha256": "9e6f170b0da3f953a8b29602d5e1d6897d39185d425b5f94d6388e748d3bdee1",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-request.d.ts.map",
+          "sourceSha256": "9e6f170b0da3f953a8b29602d5e1d6897d39185d425b5f94d6388e748d3bdee1"
+        },
+        "dist/read-request.js": {
+          "bytes": 30808,
+          "sha256": "be23340bb132331fd3bcdae33eca90d6c85f18bbf2d8c004ca963f52cb8be624",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-request.js",
+          "sourceSha256": "be23340bb132331fd3bcdae33eca90d6c85f18bbf2d8c004ca963f52cb8be624"
+        },
+        "dist/read-request.js.map": {
+          "bytes": 27584,
+          "sha256": "fcf0507fb790df3f8eb209b60e0fa3ffba6af51798a9ea241956a1e64bdbf707",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-request.js.map",
+          "sourceSha256": "fcf0507fb790df3f8eb209b60e0fa3ffba6af51798a9ea241956a1e64bdbf707"
+        },
+        "dist/read-selector.d.ts": {
+          "bytes": 1805,
+          "sha256": "99244075da47d84397cd7239ba78cf54c2df92aee387c02aa8e8c173e4f3fb9c",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-selector.d.ts",
+          "sourceSha256": "99244075da47d84397cd7239ba78cf54c2df92aee387c02aa8e8c173e4f3fb9c"
+        },
+        "dist/read-selector.d.ts.map": {
+          "bytes": 1088,
+          "sha256": "2918fc5b69de0a1981604408481af630556fa706dfb264baf94c86978d394e9a",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-selector.d.ts.map",
+          "sourceSha256": "2918fc5b69de0a1981604408481af630556fa706dfb264baf94c86978d394e9a"
+        },
+        "dist/read-selector.js": {
+          "bytes": 29703,
+          "sha256": "b4a69b8934eb039387137ba016ffbeab03cbdc59da19ebc5b26b4120732258f8",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-selector.js",
+          "sourceSha256": "b4a69b8934eb039387137ba016ffbeab03cbdc59da19ebc5b26b4120732258f8"
+        },
+        "dist/read-selector.js.map": {
+          "bytes": 29057,
+          "sha256": "df473221f92f74cf5d34bf17e7dce4f97a5cd64ae944768d154e264c9d5ea240",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-selector.js.map",
+          "sourceSha256": "df473221f92f74cf5d34bf17e7dce4f97a5cd64ae944768d154e264c9d5ea240"
+        },
+        "dist/read-sequence-lifecycle.d.ts": {
+          "bytes": 2729,
+          "sha256": "475fb874eaaa9bf6698f1179c71355d631636fe2f50906c2d434529e251391ef",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-sequence-lifecycle.d.ts",
+          "sourceSha256": "475fb874eaaa9bf6698f1179c71355d631636fe2f50906c2d434529e251391ef"
+        },
+        "dist/read-sequence-lifecycle.d.ts.map": {
+          "bytes": 1944,
+          "sha256": "4ae0df27419d4cad2e0052a605a31f78b6213f9a65d45ac18583a289464936a9",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-sequence-lifecycle.d.ts.map",
+          "sourceSha256": "4ae0df27419d4cad2e0052a605a31f78b6213f9a65d45ac18583a289464936a9"
+        },
+        "dist/read-sequence-lifecycle.js": {
+          "bytes": 14335,
+          "sha256": "d10315f9bccb80d994c7b67b27716f5a84d174a53f817eb207e46cab75828b2b",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-sequence-lifecycle.js",
+          "sourceSha256": "d10315f9bccb80d994c7b67b27716f5a84d174a53f817eb207e46cab75828b2b"
+        },
+        "dist/read-sequence-lifecycle.js.map": {
+          "bytes": 11665,
+          "sha256": "aa8ff6175fb4f26916ff7a40d1304385d6bc68be931924dc78233c51ada2171f",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-sequence-lifecycle.js.map",
+          "sourceSha256": "aa8ff6175fb4f26916ff7a40d1304385d6bc68be931924dc78233c51ada2171f"
+        },
+        "dist/read-update-runtime-limits.d.ts": {
+          "bytes": 2024,
+          "sha256": "4175601fa4f4132d156bcb644c9c82e932f40eb19a6e4ba2532ebab75c0475e3",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-update-runtime-limits.d.ts",
+          "sourceSha256": "4175601fa4f4132d156bcb644c9c82e932f40eb19a6e4ba2532ebab75c0475e3"
+        },
+        "dist/read-update-runtime-limits.d.ts.map": {
+          "bytes": 627,
+          "sha256": "7870291024179732fd8f819ae4c954ca6a5b7f9496b411d052e92b61ed270aba",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-update-runtime-limits.d.ts.map",
+          "sourceSha256": "7870291024179732fd8f819ae4c954ca6a5b7f9496b411d052e92b61ed270aba"
+        },
+        "dist/read-update-runtime-limits.js": {
+          "bytes": 3525,
+          "sha256": "7483588c18a447d310cbe32baababf7d866f82f164687ec310c1ee8ad0430608",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-update-runtime-limits.js",
+          "sourceSha256": "7483588c18a447d310cbe32baababf7d866f82f164687ec310c1ee8ad0430608"
+        },
+        "dist/read-update-runtime-limits.js.map": {
+          "bytes": 1857,
+          "sha256": "840d89361127c4d69660e469592bbdf58ef81614e46277d9aefd91c75d6fa466",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/read-update-runtime-limits.js.map",
+          "sourceSha256": "840d89361127c4d69660e469592bbdf58ef81614e46277d9aefd91c75d6fa466"
+        },
+        "dist/recovery-store.d.ts": {
+          "bytes": 8884,
+          "sha256": "314033927198c0dea3d79d44ddaf81bd07fc4e126cb07443f67e756478278c75",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/recovery-store.d.ts",
+          "sourceSha256": "314033927198c0dea3d79d44ddaf81bd07fc4e126cb07443f67e756478278c75"
+        },
+        "dist/recovery-store.d.ts.map": {
+          "bytes": 5547,
+          "sha256": "e1bfae49851b52a2f10e1539cdc01df94d718d26c47ddc710283c5eccb8ac880",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/recovery-store.d.ts.map",
+          "sourceSha256": "e1bfae49851b52a2f10e1539cdc01df94d718d26c47ddc710283c5eccb8ac880"
+        },
+        "dist/recovery-store.js": {
+          "bytes": 34994,
+          "sha256": "eb75b6a8e7e4a8272f869978d8ead8829c14ab2c13e9d2e78ebde3061b4bfee0",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/recovery-store.js",
+          "sourceSha256": "eb75b6a8e7e4a8272f869978d8ead8829c14ab2c13e9d2e78ebde3061b4bfee0"
+        },
+        "dist/recovery-store.js.map": {
+          "bytes": 24677,
+          "sha256": "a14fca98ab57bb746cede38a25f15a3a5b918a063b1c79ec032253b442ea9571",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/recovery-store.js.map",
+          "sourceSha256": "a14fca98ab57bb746cede38a25f15a3a5b918a063b1c79ec032253b442ea9571"
+        },
+        "dist/resource-evaluator.d.ts": {
+          "bytes": 6195,
+          "sha256": "23bd07f581abeb577cb4dd547184b422403adae083b17e0bc82c3a3ed4dbdaa1",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/resource-evaluator.d.ts",
+          "sourceSha256": "23bd07f581abeb577cb4dd547184b422403adae083b17e0bc82c3a3ed4dbdaa1"
+        },
+        "dist/resource-evaluator.d.ts.map": {
+          "bytes": 3832,
+          "sha256": "4a94eacca4a30ed2d8951d3b64ca81b0713d9fdcd80504eef21d31cc7ded8b7a",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/resource-evaluator.d.ts.map",
+          "sourceSha256": "4a94eacca4a30ed2d8951d3b64ca81b0713d9fdcd80504eef21d31cc7ded8b7a"
+        },
+        "dist/resource-evaluator.js": {
+          "bytes": 40678,
+          "sha256": "c6da6640df847ddb011d299f9d99f0612a4306f01cb540812e3759e06de60a7e",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/resource-evaluator.js",
+          "sourceSha256": "c6da6640df847ddb011d299f9d99f0612a4306f01cb540812e3759e06de60a7e"
+        },
+        "dist/resource-evaluator.js.map": {
+          "bytes": 36978,
+          "sha256": "f81f1b7ef1819ca4fee2389518681a3c742095bda4404ab52eeaac150142e566",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/resource-evaluator.js.map",
+          "sourceSha256": "f81f1b7ef1819ca4fee2389518681a3c742095bda4404ab52eeaac150142e566"
+        },
+        "dist/retained-disclosure.d.ts": {
+          "bytes": 603,
+          "sha256": "1f5e46640b957728f421268cc1cdb6d6af1aa9d483de6edf4e05a091abad1427",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/retained-disclosure.d.ts",
+          "sourceSha256": "1f5e46640b957728f421268cc1cdb6d6af1aa9d483de6edf4e05a091abad1427"
+        },
+        "dist/retained-disclosure.d.ts.map": {
+          "bytes": 403,
+          "sha256": "9ea6ec3b3dbcb3752f18863c803e0660f1719188f8c272c3a19bc4a11d53bf5c",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/retained-disclosure.d.ts.map",
+          "sourceSha256": "9ea6ec3b3dbcb3752f18863c803e0660f1719188f8c272c3a19bc4a11d53bf5c"
+        },
+        "dist/retained-disclosure.js": {
+          "bytes": 1667,
+          "sha256": "3ce3d9909a47d78a20b256a0d0affe605224938e5ed92e35d63b3a3d7e517100",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/retained-disclosure.js",
+          "sourceSha256": "3ce3d9909a47d78a20b256a0d0affe605224938e5ed92e35d63b3a3d7e517100"
+        },
+        "dist/retained-disclosure.js.map": {
+          "bytes": 1366,
+          "sha256": "3e7ca3cf46476bbac5d96db8fe99f6f4f2f14973fe768ca3b675eb9d40041f76",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/retained-disclosure.js.map",
+          "sourceSha256": "3e7ca3cf46476bbac5d96db8fe99f6f4f2f14973fe768ca3b675eb9d40041f76"
+        },
+        "dist/semantic-identity.d.ts": {
+          "bytes": 1549,
+          "sha256": "4ecde3eb0a17cd5171e4ddb6ba2b3fab73b1239fee451b8aa68aa95b95009263",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/semantic-identity.d.ts",
+          "sourceSha256": "4ecde3eb0a17cd5171e4ddb6ba2b3fab73b1239fee451b8aa68aa95b95009263"
+        },
+        "dist/semantic-identity.d.ts.map": {
+          "bytes": 513,
+          "sha256": "144aaa850d51d9a626648dcc73478e5c67af3c05731a26763eddd1b2e1812038",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/semantic-identity.d.ts.map",
+          "sourceSha256": "144aaa850d51d9a626648dcc73478e5c67af3c05731a26763eddd1b2e1812038"
+        },
+        "dist/semantic-identity.js": {
+          "bytes": 6509,
+          "sha256": "4e9baff204a18846bfd25d9ee33d3dd25078d2c226e08692c75870fb0c159b72",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/semantic-identity.js",
+          "sourceSha256": "4e9baff204a18846bfd25d9ee33d3dd25078d2c226e08692c75870fb0c159b72"
+        },
+        "dist/semantic-identity.js.map": {
+          "bytes": 5366,
+          "sha256": "eeeb9f27dc559d72736a2ab1aed49278979a096e57cac2925bd38843584183ed",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/semantic-identity.js.map",
+          "sourceSha256": "eeeb9f27dc559d72736a2ab1aed49278979a096e57cac2925bd38843584183ed"
+        },
+        "dist/sequence-executor.d.ts": {
+          "bytes": 4011,
+          "sha256": "9a2432e679a0be8fcbc331bbb16933fa6ea9f14fcd84044fc4360b750e87e296",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/sequence-executor.d.ts",
+          "sourceSha256": "9a2432e679a0be8fcbc331bbb16933fa6ea9f14fcd84044fc4360b750e87e296"
+        },
+        "dist/sequence-executor.d.ts.map": {
+          "bytes": 2873,
+          "sha256": "1cc3a17574d8cfbc4e78a2be0645707df58078433aded11d64f2b93322cca4ff",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/sequence-executor.d.ts.map",
+          "sourceSha256": "1cc3a17574d8cfbc4e78a2be0645707df58078433aded11d64f2b93322cca4ff"
+        },
+        "dist/sequence-executor.js": {
+          "bytes": 22535,
+          "sha256": "c3820c429ad7e622b7cc501e601a8ac02d28d5042c8b39d94572c2016799ce16",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/sequence-executor.js",
+          "sourceSha256": "c3820c429ad7e622b7cc501e601a8ac02d28d5042c8b39d94572c2016799ce16"
+        },
+        "dist/sequence-executor.js.map": {
+          "bytes": 18148,
+          "sha256": "28e698e164652391e55c1c132159943313fbea60e96158e59e9e76e8aeea0ff5",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/sequence-executor.js.map",
+          "sourceSha256": "28e698e164652391e55c1c132159943313fbea60e96158e59e9e76e8aeea0ff5"
+        },
+        "dist/transaction-authorization.d.ts": {
+          "bytes": 1508,
+          "sha256": "688a396490112547207aed11489349d5ab68a6d208ff553b0903dd0f8b8d6974",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-authorization.d.ts",
+          "sourceSha256": "688a396490112547207aed11489349d5ab68a6d208ff553b0903dd0f8b8d6974"
+        },
+        "dist/transaction-authorization.d.ts.map": {
+          "bytes": 1109,
+          "sha256": "65af120cbd211d690deb4682071707401b5e2c95d713cdee2eb368af32dbf78e",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-authorization.d.ts.map",
+          "sourceSha256": "65af120cbd211d690deb4682071707401b5e2c95d713cdee2eb368af32dbf78e"
+        },
+        "dist/transaction-authorization.js": {
+          "bytes": 4054,
+          "sha256": "cb46be5cae5397451466341a919da18fec36f21ab571d51ca87c187308165edc",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-authorization.js",
+          "sourceSha256": "cb46be5cae5397451466341a919da18fec36f21ab571d51ca87c187308165edc"
+        },
+        "dist/transaction-authorization.js.map": {
+          "bytes": 3671,
+          "sha256": "ca5c98180d08d151e036abb6a6e8e1fc01bd6352ce8550321c7d046542aa9a33",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-authorization.js.map",
+          "sourceSha256": "ca5c98180d08d151e036abb6a6e8e1fc01bd6352ce8550321c7d046542aa9a33"
+        },
+        "dist/transaction-batch.d.ts": {
+          "bytes": 8556,
+          "sha256": "c3298254d450f667fb85f25a5efb3ace3378fde77667d0194d19adb3c7db0bed",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-batch.d.ts",
+          "sourceSha256": "c3298254d450f667fb85f25a5efb3ace3378fde77667d0194d19adb3c7db0bed"
+        },
+        "dist/transaction-batch.d.ts.map": {
+          "bytes": 5742,
+          "sha256": "2de88ab15d611f66ca0243dea672b246c45bfa122bed0fe913c506220126e287",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-batch.d.ts.map",
+          "sourceSha256": "2de88ab15d611f66ca0243dea672b246c45bfa122bed0fe913c506220126e287"
+        },
+        "dist/transaction-batch.js": {
+          "bytes": 41898,
+          "sha256": "c312e6544cbc41a329f33f261e3a016a8e41a89c12dc56a87ed60d8d83243013",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-batch.js",
+          "sourceSha256": "c312e6544cbc41a329f33f261e3a016a8e41a89c12dc56a87ed60d8d83243013"
+        },
+        "dist/transaction-batch.js.map": {
+          "bytes": 34623,
+          "sha256": "65fbbf9a480caff5872e70724de21a900372cc0afca0efcdfcbded107a51453a",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-batch.js.map",
+          "sourceSha256": "65fbbf9a480caff5872e70724de21a900372cc0afca0efcdfcbded107a51453a"
+        },
+        "dist/transaction-changefeed.d.ts": {
+          "bytes": 2478,
+          "sha256": "e22a62a1580d368d939e7ca902b377925fc748342c03bcea1e482d12b4a4ba4a",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-changefeed.d.ts",
+          "sourceSha256": "e22a62a1580d368d939e7ca902b377925fc748342c03bcea1e482d12b4a4ba4a"
+        },
+        "dist/transaction-changefeed.d.ts.map": {
+          "bytes": 2242,
+          "sha256": "38fce14b2cb6604c14942863645918072aa60a227738b3cd143f0477350cb0d7",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-changefeed.d.ts.map",
+          "sourceSha256": "38fce14b2cb6604c14942863645918072aa60a227738b3cd143f0477350cb0d7"
+        },
+        "dist/transaction-changefeed.js": {
+          "bytes": 6176,
+          "sha256": "6e462db3447f9d6565e8b22d7698de0b730e17cc1cba89768512f8317090d426",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-changefeed.js",
+          "sourceSha256": "6e462db3447f9d6565e8b22d7698de0b730e17cc1cba89768512f8317090d426"
+        },
+        "dist/transaction-changefeed.js.map": {
+          "bytes": 5745,
+          "sha256": "394f19ca1670ed8f409ec8ea3fddaf3869f61569cc6dac8c88e8f285cb2563f3",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-changefeed.js.map",
+          "sourceSha256": "394f19ca1670ed8f409ec8ea3fddaf3869f61569cc6dac8c88e8f285cb2563f3"
+        },
+        "dist/transaction-comparison.d.ts": {
+          "bytes": 1509,
+          "sha256": "2b61b8022f64142874ba6dba2952e95270b2db2b11fc604f4fa3c9fe02d3a480",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-comparison.d.ts",
+          "sourceSha256": "2b61b8022f64142874ba6dba2952e95270b2db2b11fc604f4fa3c9fe02d3a480"
+        },
+        "dist/transaction-comparison.d.ts.map": {
+          "bytes": 1222,
+          "sha256": "e9f2f2371a84e525181f91a86eb017229445431245e26723c9f90af49868fb4a",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-comparison.d.ts.map",
+          "sourceSha256": "e9f2f2371a84e525181f91a86eb017229445431245e26723c9f90af49868fb4a"
+        },
+        "dist/transaction-comparison.js": {
+          "bytes": 2214,
+          "sha256": "7ffe623ec7d78f61f74431acd5fc58d0a03ba92aed757a8f035ca33cd8878466",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-comparison.js",
+          "sourceSha256": "7ffe623ec7d78f61f74431acd5fc58d0a03ba92aed757a8f035ca33cd8878466"
+        },
+        "dist/transaction-comparison.js.map": {
+          "bytes": 1845,
+          "sha256": "efa16f479186585e8832583b2f80f81991b55e71a700fe2d9ad2c5a2ec16683a",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-comparison.js.map",
+          "sourceSha256": "efa16f479186585e8832583b2f80f81991b55e71a700fe2d9ad2c5a2ec16683a"
+        },
+        "dist/transaction-consistency.d.ts": {
+          "bytes": 2280,
+          "sha256": "ef5c7daa326e0921e7e2caf6dda089b2e290ea8e467acec02d3effdce048dd4e",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-consistency.d.ts",
+          "sourceSha256": "ef5c7daa326e0921e7e2caf6dda089b2e290ea8e467acec02d3effdce048dd4e"
+        },
+        "dist/transaction-consistency.d.ts.map": {
+          "bytes": 1591,
+          "sha256": "981e1c27b9f2e62c8635131845d9d6024689ee22226e3951e1011f53d7f5937c",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-consistency.d.ts.map",
+          "sourceSha256": "981e1c27b9f2e62c8635131845d9d6024689ee22226e3951e1011f53d7f5937c"
+        },
+        "dist/transaction-consistency.js": {
+          "bytes": 6893,
+          "sha256": "fad929d0561c6f4a30cbcda852ce80ef9de5edb422e016604621a8f56cc6106a",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-consistency.js",
+          "sourceSha256": "fad929d0561c6f4a30cbcda852ce80ef9de5edb422e016604621a8f56cc6106a"
+        },
+        "dist/transaction-consistency.js.map": {
+          "bytes": 5825,
+          "sha256": "9cfddfdbb941d99b30a250abf5eb520a1aca499d3407f134ab6ef086798aa343",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-consistency.js.map",
+          "sourceSha256": "9cfddfdbb941d99b30a250abf5eb520a1aca499d3407f134ab6ef086798aa343"
+        },
+        "dist/transaction-dependencies.d.ts": {
+          "bytes": 2148,
+          "sha256": "3e9a37bfe41b38425457f48164c6e74a81bcb17928fee93fd7d20f376d4d4c3a",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-dependencies.d.ts",
+          "sourceSha256": "3e9a37bfe41b38425457f48164c6e74a81bcb17928fee93fd7d20f376d4d4c3a"
+        },
+        "dist/transaction-dependencies.d.ts.map": {
+          "bytes": 1657,
+          "sha256": "1f2eed9b5b1385913cc75eb932438d6ac16bb9a26dcf469310f89fae935f8ab5",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-dependencies.d.ts.map",
+          "sourceSha256": "1f2eed9b5b1385913cc75eb932438d6ac16bb9a26dcf469310f89fae935f8ab5"
+        },
+        "dist/transaction-dependencies.js": {
+          "bytes": 12938,
+          "sha256": "0d16fc892bb0cfef17ed013a511a11a251cf30c7589c2cf0f448d1f33c0688e8",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-dependencies.js",
+          "sourceSha256": "0d16fc892bb0cfef17ed013a511a11a251cf30c7589c2cf0f448d1f33c0688e8"
+        },
+        "dist/transaction-dependencies.js.map": {
+          "bytes": 12904,
+          "sha256": "83c10692b52062f9afb1fdbbf1560a533e5b0a2e484fc2859d3db6f83bba53c8",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-dependencies.js.map",
+          "sourceSha256": "83c10692b52062f9afb1fdbbf1560a533e5b0a2e484fc2859d3db6f83bba53c8"
+        },
+        "dist/transaction-discovery.d.ts": {
+          "bytes": 1254,
+          "sha256": "8617c1e150f224561ddfa6feed38f656750acfeba376ebd4bf3ceccdc838d529",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-discovery.d.ts",
+          "sourceSha256": "8617c1e150f224561ddfa6feed38f656750acfeba376ebd4bf3ceccdc838d529"
+        },
+        "dist/transaction-discovery.d.ts.map": {
+          "bytes": 525,
+          "sha256": "7251a8b7a0ea5f0ff0aa23d69d0c87307fa36b43e0c9a401768fc691037a0cd8",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-discovery.d.ts.map",
+          "sourceSha256": "7251a8b7a0ea5f0ff0aa23d69d0c87307fa36b43e0c9a401768fc691037a0cd8"
+        },
+        "dist/transaction-discovery.js": {
+          "bytes": 2720,
+          "sha256": "2cf8c1519d05eb3f9d402db7e59f1db02e12ae79e165c5876f888712233fab71",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-discovery.js",
+          "sourceSha256": "2cf8c1519d05eb3f9d402db7e59f1db02e12ae79e165c5876f888712233fab71"
+        },
+        "dist/transaction-discovery.js.map": {
+          "bytes": 1820,
+          "sha256": "2c701469e27ac4cdef15136f78eeaeb04139f1dc0f167bb89d2104daae78864d",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-discovery.js.map",
+          "sourceSha256": "2c701469e27ac4cdef15136f78eeaeb04139f1dc0f167bb89d2104daae78864d"
+        },
+        "dist/transaction-events.d.ts": {
+          "bytes": 2910,
+          "sha256": "f0ee255f13d6befb05e2bcdd4169fc4e07011bbfe2470c9c57c72cc730d7dd7a",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-events.d.ts",
+          "sourceSha256": "f0ee255f13d6befb05e2bcdd4169fc4e07011bbfe2470c9c57c72cc730d7dd7a"
+        },
+        "dist/transaction-events.d.ts.map": {
+          "bytes": 2235,
+          "sha256": "1073674b11963b7b2501b550769ae8f6aed1d203ea50d78e21b0fcc48d5671a9",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-events.d.ts.map",
+          "sourceSha256": "1073674b11963b7b2501b550769ae8f6aed1d203ea50d78e21b0fcc48d5671a9"
+        },
+        "dist/transaction-events.js": {
+          "bytes": 10793,
+          "sha256": "320880e4b8047074cdfdcb58045bdb45556d629940ab953f0d05065d9792b971",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-events.js",
+          "sourceSha256": "320880e4b8047074cdfdcb58045bdb45556d629940ab953f0d05065d9792b971"
+        },
+        "dist/transaction-events.js.map": {
+          "bytes": 10226,
+          "sha256": "d0a2e8c2ded2acf9294451915b2bd055419a1e671e7e29e48f355ff72fefd9b3",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-events.js.map",
+          "sourceSha256": "d0a2e8c2ded2acf9294451915b2bd055419a1e671e7e29e48f355ff72fefd9b3"
+        },
+        "dist/transaction-http.d.ts": {
+          "bytes": 2321,
+          "sha256": "57ba63ce3b98719180245d5e5cb87f5e40130cfc9d0ca3bf89b16047b577093f",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-http.d.ts",
+          "sourceSha256": "57ba63ce3b98719180245d5e5cb87f5e40130cfc9d0ca3bf89b16047b577093f"
+        },
+        "dist/transaction-http.d.ts.map": {
+          "bytes": 1633,
+          "sha256": "9faef33b2075f8052a36784cc9e3edf582f5ef2ecbd344507cdc7dd83a901be3",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-http.d.ts.map",
+          "sourceSha256": "9faef33b2075f8052a36784cc9e3edf582f5ef2ecbd344507cdc7dd83a901be3"
+        },
+        "dist/transaction-http.js": {
+          "bytes": 29450,
+          "sha256": "0aa06ff5fe2a1c31fcf39f42b5d6a4848ecea18eee905db58eea1e6ebb985f3c",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-http.js",
+          "sourceSha256": "0aa06ff5fe2a1c31fcf39f42b5d6a4848ecea18eee905db58eea1e6ebb985f3c"
+        },
+        "dist/transaction-http.js.map": {
+          "bytes": 23416,
+          "sha256": "dde6141feaa71b18bd5faa0246024a7365582fc72bc591bf45e61bfd9fd34372",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-http.js.map",
+          "sourceSha256": "dde6141feaa71b18bd5faa0246024a7365582fc72bc591bf45e61bfd9fd34372"
+        },
+        "dist/transaction-installed-configuration.d.ts": {
+          "bytes": 249,
+          "sha256": "a8540a94e51d903eaebaf2a9f0f6de96f11e8db81b223ac6f2f7a627e4ffbb89",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-installed-configuration.d.ts",
+          "sourceSha256": "a8540a94e51d903eaebaf2a9f0f6de96f11e8db81b223ac6f2f7a627e4ffbb89"
+        },
+        "dist/transaction-installed-configuration.d.ts.map": {
+          "bytes": 272,
+          "sha256": "8115e0c1a4b799bec665361044b802451d3924bc4f10b1f33171f6543dea9378",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-installed-configuration.d.ts.map",
+          "sourceSha256": "8115e0c1a4b799bec665361044b802451d3924bc4f10b1f33171f6543dea9378"
+        },
+        "dist/transaction-installed-configuration.js": {
+          "bytes": 2946,
+          "sha256": "786a945b8ab3609a9d1ed6e4cd0c5f6e94b502f7ae945f173c40fd979254aea9",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-installed-configuration.js",
+          "sourceSha256": "786a945b8ab3609a9d1ed6e4cd0c5f6e94b502f7ae945f173c40fd979254aea9"
+        },
+        "dist/transaction-installed-configuration.js.map": {
+          "bytes": 2943,
+          "sha256": "564e853c4a5a941e48fca53b715567ea513db00ac7d1bfe42067e0fb91c04d30",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-installed-configuration.js.map",
+          "sourceSha256": "564e853c4a5a941e48fca53b715567ea513db00ac7d1bfe42067e0fb91c04d30"
+        },
+        "dist/transaction-installed-process.d.ts": {
+          "bytes": 70,
+          "sha256": "77ec0edad5e55fa71000c996b2ff41861558630c1238b35620f3ddf353e07898",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-installed-process.d.ts",
+          "sourceSha256": "77ec0edad5e55fa71000c996b2ff41861558630c1238b35620f3ddf353e07898"
+        },
+        "dist/transaction-installed-process.d.ts.map": {
+          "bytes": 152,
+          "sha256": "c6a126901e1d9f26b612870fd6b09e3a46c5a38f6ee6f5a41c0025fb12a19d8d",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-installed-process.d.ts.map",
+          "sourceSha256": "c6a126901e1d9f26b612870fd6b09e3a46c5a38f6ee6f5a41c0025fb12a19d8d"
+        },
+        "dist/transaction-installed-process.js": {
+          "bytes": 2971,
+          "sha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-installed-process.js",
+          "sourceSha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c"
+        },
+        "dist/transaction-installed-process.js.map": {
+          "bytes": 2911,
+          "sha256": "f470646bf4232d0abdd5df9e163f6290ca71fae69b0055907961cec32b9d4971",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-installed-process.js.map",
+          "sourceSha256": "f470646bf4232d0abdd5df9e163f6290ca71fae69b0055907961cec32b9d4971"
+        },
+        "dist/transaction-installed.d.ts": {
+          "bytes": 1047,
+          "sha256": "d0f5aa8eed6c3144dbdbb97e659f08770dc0be0a831391cebdbd6155f5ba2b0e",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-installed.d.ts",
+          "sourceSha256": "d0f5aa8eed6c3144dbdbb97e659f08770dc0be0a831391cebdbd6155f5ba2b0e"
+        },
+        "dist/transaction-installed.d.ts.map": {
+          "bytes": 201,
+          "sha256": "420a39e5662daf0b88c89aab0b92160abf88a6101688e7640788921a55ede0e4",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-installed.d.ts.map",
+          "sourceSha256": "420a39e5662daf0b88c89aab0b92160abf88a6101688e7640788921a55ede0e4"
+        },
+        "dist/transaction-installed.js": {
+          "bytes": 1222,
+          "sha256": "2dc1386a8a9f38d32c1fbf4ab8413538e86e3d41a20db9b9ab275a73b8c4040f",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-installed.js",
+          "sourceSha256": "2dc1386a8a9f38d32c1fbf4ab8413538e86e3d41a20db9b9ab275a73b8c4040f"
+        },
+        "dist/transaction-installed.js.map": {
+          "bytes": 998,
+          "sha256": "94c75cf5c65773359ea2ac7a4ec3e99b872fcdca91a1bace1b348240a7a38943",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-installed.js.map",
+          "sourceSha256": "94c75cf5c65773359ea2ac7a4ec3e99b872fcdca91a1bace1b348240a7a38943"
+        },
+        "dist/transaction-read.d.ts": {
+          "bytes": 3273,
+          "sha256": "a416b2ed601e80e9999970773368953990936545efac193d89f3fe15840907db",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-read.d.ts",
+          "sourceSha256": "a416b2ed601e80e9999970773368953990936545efac193d89f3fe15840907db"
+        },
+        "dist/transaction-read.d.ts.map": {
+          "bytes": 1327,
+          "sha256": "20e0e94bb1f11083d57e8d2a16804d190f95c41aad365d89e263e6b1a5b6b5c5",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-read.d.ts.map",
+          "sourceSha256": "20e0e94bb1f11083d57e8d2a16804d190f95c41aad365d89e263e6b1a5b6b5c5"
+        },
+        "dist/transaction-read.js": {
+          "bytes": 16333,
+          "sha256": "544f8b897abc1ae99a5bb5a7e981ad43623feef05c2f3de0fafc027c34ca662c",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-read.js",
+          "sourceSha256": "544f8b897abc1ae99a5bb5a7e981ad43623feef05c2f3de0fafc027c34ca662c"
+        },
+        "dist/transaction-read.js.map": {
+          "bytes": 11871,
+          "sha256": "ca111178456c1c65176bb53dee1708d920adb9c106fa602e4f4f39f944ad4f07",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-read.js.map",
+          "sourceSha256": "ca111178456c1c65176bb53dee1708d920adb9c106fa602e4f4f39f944ad4f07"
+        },
+        "dist/transaction-runtime-configuration.d.ts": {
+          "bytes": 6190,
+          "sha256": "832e71cdd2dac399fe9f32003d4071354bd607a7f9556754dca7de5feba9d96b",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-runtime-configuration.d.ts",
+          "sourceSha256": "832e71cdd2dac399fe9f32003d4071354bd607a7f9556754dca7de5feba9d96b"
+        },
+        "dist/transaction-runtime-configuration.d.ts.map": {
+          "bytes": 1263,
+          "sha256": "b005374ff5fc469cfb0d7ad7dab6252c64e261fdc70f3bb284472a9b47861922",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-runtime-configuration.d.ts.map",
+          "sourceSha256": "b005374ff5fc469cfb0d7ad7dab6252c64e261fdc70f3bb284472a9b47861922"
+        },
+        "dist/transaction-runtime-configuration.js": {
+          "bytes": 16466,
+          "sha256": "c78f0bfaa2bdb505d5653cd64c8ddef62c83a2b460231dcc743f820d145c97a8",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-runtime-configuration.js",
+          "sourceSha256": "c78f0bfaa2bdb505d5653cd64c8ddef62c83a2b460231dcc743f820d145c97a8"
+        },
+        "dist/transaction-runtime-configuration.js.map": {
+          "bytes": 13835,
+          "sha256": "12c1c87f08ea7d07c33a499a4018d0e6ed9a686408310435fac2d7033032c797",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-runtime-configuration.js.map",
+          "sourceSha256": "12c1c87f08ea7d07c33a499a4018d0e6ed9a686408310435fac2d7033032c797"
+        },
+        "dist/transaction-runtime.d.ts": {
+          "bytes": 3084,
+          "sha256": "aba61d78fc4b334fd55780a8ced6beb30f7e2dda0f7b5cd89af16871cce077e2",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-runtime.d.ts",
+          "sourceSha256": "aba61d78fc4b334fd55780a8ced6beb30f7e2dda0f7b5cd89af16871cce077e2"
+        },
+        "dist/transaction-runtime.d.ts.map": {
+          "bytes": 1797,
+          "sha256": "56e13db1e71114d3bb1d88abfc3586749a47d864b04c6acc10322f8bb1547c9c",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-runtime.d.ts.map",
+          "sourceSha256": "56e13db1e71114d3bb1d88abfc3586749a47d864b04c6acc10322f8bb1547c9c"
+        },
+        "dist/transaction-runtime.js": {
+          "bytes": 15369,
+          "sha256": "3d9aeb5bc9fc29d823567816af66ce61687c3f6945671f0a3247966575b31418",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-runtime.js",
+          "sourceSha256": "3d9aeb5bc9fc29d823567816af66ce61687c3f6945671f0a3247966575b31418"
+        },
+        "dist/transaction-runtime.js.map": {
+          "bytes": 12912,
+          "sha256": "7e18125d12f8afc994c2f120aa8eab0499fc7f53b71f90ae08a1ccbd7d6adf2b",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-runtime.js.map",
+          "sourceSha256": "7e18125d12f8afc994c2f120aa8eab0499fc7f53b71f90ae08a1ccbd7d6adf2b"
+        },
+        "dist/transaction-schema-http.d.ts": {
+          "bytes": 821,
+          "sha256": "7d876a57c2ebe413d5c62d6326b2576fa939e10e6661df53ea76841ace56401f",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-schema-http.d.ts",
+          "sourceSha256": "7d876a57c2ebe413d5c62d6326b2576fa939e10e6661df53ea76841ace56401f"
+        },
+        "dist/transaction-schema-http.d.ts.map": {
+          "bytes": 620,
+          "sha256": "00539943f8b33a3edcfaa17bb20d70acc58f54d3c1b48a35013d1127113954bf",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-schema-http.d.ts.map",
+          "sourceSha256": "00539943f8b33a3edcfaa17bb20d70acc58f54d3c1b48a35013d1127113954bf"
+        },
+        "dist/transaction-schema-http.js": {
+          "bytes": 2286,
+          "sha256": "62a7f0fb4fc29124e52566646a749ca8c2640f3f1e8d859c7957b87d9c463b3d",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-schema-http.js",
+          "sourceSha256": "62a7f0fb4fc29124e52566646a749ca8c2640f3f1e8d859c7957b87d9c463b3d"
+        },
+        "dist/transaction-schema-http.js.map": {
+          "bytes": 2043,
+          "sha256": "eca3fd8b0b20ed752ac0335bcf745c5c98f1c52b66f81eae1a776589523712c3",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-schema-http.js.map",
+          "sourceSha256": "eca3fd8b0b20ed752ac0335bcf745c5c98f1c52b66f81eae1a776589523712c3"
+        },
+        "dist/transaction-sequence.d.ts": {
+          "bytes": 1256,
+          "sha256": "6cd76a3f87f15cde645ffff350661d1cd8085ac0ff2eca7fc1f960f34d1ae964",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-sequence.d.ts",
+          "sourceSha256": "6cd76a3f87f15cde645ffff350661d1cd8085ac0ff2eca7fc1f960f34d1ae964"
+        },
+        "dist/transaction-sequence.d.ts.map": {
+          "bytes": 796,
+          "sha256": "357ca9aba7726dc1e452321d2eb65a72a5aa0acf79a5840e6908bdea9ffd96c1",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-sequence.d.ts.map",
+          "sourceSha256": "357ca9aba7726dc1e452321d2eb65a72a5aa0acf79a5840e6908bdea9ffd96c1"
+        },
+        "dist/transaction-sequence.js": {
+          "bytes": 5342,
+          "sha256": "8128db5c3846c72c7949527865b36ece9a539162bf569390e3c363854b52584b",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-sequence.js",
+          "sourceSha256": "8128db5c3846c72c7949527865b36ece9a539162bf569390e3c363854b52584b"
+        },
+        "dist/transaction-sequence.js.map": {
+          "bytes": 4509,
+          "sha256": "240c9b53bfc1de18c0faf098e56218cfd26ba28ac16ebd65b2ed3280244c6ff3",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-sequence.js.map",
+          "sourceSha256": "240c9b53bfc1de18c0faf098e56218cfd26ba28ac16ebd65b2ed3280244c6ff3"
+        },
+        "dist/transaction-service.d.ts": {
+          "bytes": 9427,
+          "sha256": "64e96103cc2c32ae336f8a766c728d08fe36d024d0aac47ef486531f6cd4d386",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-service.d.ts",
+          "sourceSha256": "64e96103cc2c32ae336f8a766c728d08fe36d024d0aac47ef486531f6cd4d386"
+        },
+        "dist/transaction-service.d.ts.map": {
+          "bytes": 3720,
+          "sha256": "ee96c38d43de691a61ab200c82f72d1a3157e848c92fe73a4e144573c333269c",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-service.d.ts.map",
+          "sourceSha256": "ee96c38d43de691a61ab200c82f72d1a3157e848c92fe73a4e144573c333269c"
+        },
+        "dist/transaction-service.js": {
+          "bytes": 30745,
+          "sha256": "0bffdc84e193653c25f0cda2dce547f043033ac1fd34c57a4174eb7710bf3495",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-service.js",
+          "sourceSha256": "0bffdc84e193653c25f0cda2dce547f043033ac1fd34c57a4174eb7710bf3495"
+        },
+        "dist/transaction-service.js.map": {
+          "bytes": 23124,
+          "sha256": "620af0028d3ae9c2d2cb5545094124dd3a465017c9275fb34874f97f07fdb795",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-service.js.map",
+          "sourceSha256": "620af0028d3ae9c2d2cb5545094124dd3a465017c9275fb34874f97f07fdb795"
+        },
+        "dist/transaction-set.d.ts": {
+          "bytes": 1707,
+          "sha256": "2147c21dbb9d94077c6c85c57f5b9032e50c94dacdcf0a8b368f8aa54d924a30",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-set.d.ts",
+          "sourceSha256": "2147c21dbb9d94077c6c85c57f5b9032e50c94dacdcf0a8b368f8aa54d924a30"
+        },
+        "dist/transaction-set.d.ts.map": {
+          "bytes": 1128,
+          "sha256": "7eb35279579ac822d5b7d715026539960da915e3d97de46eb9de6afc78cd68f8",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-set.d.ts.map",
+          "sourceSha256": "7eb35279579ac822d5b7d715026539960da915e3d97de46eb9de6afc78cd68f8"
+        },
+        "dist/transaction-set.js": {
+          "bytes": 5762,
+          "sha256": "18851f343b071733eea5dfded6a6e5faaf49998c4c62c9d21d4459f0130deefd",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-set.js",
+          "sourceSha256": "18851f343b071733eea5dfded6a6e5faaf49998c4c62c9d21d4459f0130deefd"
+        },
+        "dist/transaction-set.js.map": {
+          "bytes": 5300,
+          "sha256": "9a0f05c63084468af3bff866e96ea0ea93bdd08fe28ca4cbc7c719ad710c7a50",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-set.js.map",
+          "sourceSha256": "9a0f05c63084468af3bff866e96ea0ea93bdd08fe28ca4cbc7c719ad710c7a50"
+        },
+        "dist/transaction-snapshot.d.ts": {
+          "bytes": 3490,
+          "sha256": "9c97a627c0366163da5c058660dd600fd345669218fb3b2a1b68e279fe8315c8",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-snapshot.d.ts",
+          "sourceSha256": "9c97a627c0366163da5c058660dd600fd345669218fb3b2a1b68e279fe8315c8"
+        },
+        "dist/transaction-snapshot.d.ts.map": {
+          "bytes": 2159,
+          "sha256": "4d0927fa63ec6836e59efd43b8dc09b423514e5f937cf57f98435885cbb7c78c",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-snapshot.d.ts.map",
+          "sourceSha256": "4d0927fa63ec6836e59efd43b8dc09b423514e5f937cf57f98435885cbb7c78c"
+        },
+        "dist/transaction-snapshot.js": {
+          "bytes": 31267,
+          "sha256": "a5188cade47643524e17ff6683335cbc17ae97e34bfb3dfe34e87e7f8800c59b",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-snapshot.js",
+          "sourceSha256": "a5188cade47643524e17ff6683335cbc17ae97e34bfb3dfe34e87e7f8800c59b"
+        },
+        "dist/transaction-snapshot.js.map": {
+          "bytes": 28095,
+          "sha256": "7a891e0f255b28434c770282a92ed444ccdff2569fd46f2ddb500e241e720bb9",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-snapshot.js.map",
+          "sourceSha256": "7a891e0f255b28434c770282a92ed444ccdff2569fd46f2ddb500e241e720bb9"
+        },
+        "dist/transaction-sse.d.ts": {
+          "bytes": 1921,
+          "sha256": "51113550a4ad8552e3418cb60813ad0c5893249b3237e76d017b8f7cb29a7668",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-sse.d.ts",
+          "sourceSha256": "51113550a4ad8552e3418cb60813ad0c5893249b3237e76d017b8f7cb29a7668"
+        },
+        "dist/transaction-sse.d.ts.map": {
+          "bytes": 1671,
+          "sha256": "e89a131a6458c47b881bb3af061aa4aed0a6c34e738f48a1cf25e5399a0f8714",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-sse.d.ts.map",
+          "sourceSha256": "e89a131a6458c47b881bb3af061aa4aed0a6c34e738f48a1cf25e5399a0f8714"
+        },
+        "dist/transaction-sse.js": {
+          "bytes": 5393,
+          "sha256": "93ca231304322cc9e4521e8df0a11f3a050949825d9b2b72ebb880ba1e6b8736",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-sse.js",
+          "sourceSha256": "93ca231304322cc9e4521e8df0a11f3a050949825d9b2b72ebb880ba1e6b8736"
+        },
+        "dist/transaction-sse.js.map": {
+          "bytes": 4667,
+          "sha256": "eae5de472f977b1530977a15590e6011afca1bbd7d994ffbeb7d29456963d78c",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-sse.js.map",
+          "sourceSha256": "eae5de472f977b1530977a15590e6011afca1bbd7d994ffbeb7d29456963d78c"
+        },
+        "dist/transaction-store.d.ts": {
+          "bytes": 13078,
+          "sha256": "94332d6b43a417af422c1cef5c3ca46a85052fc41f25f32f4ffd2c5b8978325c",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-store.d.ts",
+          "sourceSha256": "94332d6b43a417af422c1cef5c3ca46a85052fc41f25f32f4ffd2c5b8978325c"
+        },
+        "dist/transaction-store.d.ts.map": {
+          "bytes": 6391,
+          "sha256": "35cf77db3d65c9082c6aab7be1b9b7df5d192706eabe077ae0d304fc9be8657f",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-store.d.ts.map",
+          "sourceSha256": "35cf77db3d65c9082c6aab7be1b9b7df5d192706eabe077ae0d304fc9be8657f"
+        },
+        "dist/transaction-store.js": {
+          "bytes": 94327,
+          "sha256": "5e347bdaee30fc5f41c43b90cc257f177224954e1a8d827aca9e85a19e70bb80",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-store.js",
+          "sourceSha256": "5e347bdaee30fc5f41c43b90cc257f177224954e1a8d827aca9e85a19e70bb80"
+        },
+        "dist/transaction-store.js.map": {
+          "bytes": 72166,
+          "sha256": "387332f4f69280060dbf852e680397f92dc2a166a428a03dc2795e5d9bd22f11",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-store.js.map",
+          "sourceSha256": "387332f4f69280060dbf852e680397f92dc2a166a428a03dc2795e5d9bd22f11"
+        },
+        "dist/transaction-submission.d.ts": {
+          "bytes": 2734,
+          "sha256": "15e47dfc694d68b3f1cc90b326d009dc79e56f844aff106c3fb8a38219d9b624",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-submission.d.ts",
+          "sourceSha256": "15e47dfc694d68b3f1cc90b326d009dc79e56f844aff106c3fb8a38219d9b624"
+        },
+        "dist/transaction-submission.d.ts.map": {
+          "bytes": 2189,
+          "sha256": "eca260d51339fa9c5a22c1880d57c85bf1784ef802b2673142730bd6275eb2c9",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-submission.d.ts.map",
+          "sourceSha256": "eca260d51339fa9c5a22c1880d57c85bf1784ef802b2673142730bd6275eb2c9"
+        },
+        "dist/transaction-submission.js": {
+          "bytes": 5769,
+          "sha256": "23c616fc3273981c7609f7f6e74539fefcf60e786c2c23cf3ba3eea42974651f",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-submission.js",
+          "sourceSha256": "23c616fc3273981c7609f7f6e74539fefcf60e786c2c23cf3ba3eea42974651f"
+        },
+        "dist/transaction-submission.js.map": {
+          "bytes": 4406,
+          "sha256": "dc55dfc500d80f6786dc68b3e89cd675ccd302aee23fbe85a321d3c2bf6440f6",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/dist/transaction-submission.js.map",
+          "sourceSha256": "dc55dfc500d80f6786dc68b3e89cd675ccd302aee23fbe85a321d3c2bf6440f6"
+        },
+        "package.json": {
+          "bytes": 488,
+          "sha256": "d583f4158c3a393923c37d70a61212f6a716c951a5f3be7ed9bbe3aa8846ca2e",
+          "source": "/Users/dbox/repos/wt/vickie/vickie-tx-discovery-minimum/packages/server/package.json",
+          "sourceSha256": "110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e"
+        }
+      },
+      "metadataRewrite": "ONLY dependencies.@bdp/protocol workspace:* to0.0.0",
+      "regularSafeMembers": 258
+    }
+  },
+  "rootArchiveAcceptanceStillRequiredBeforePrepareConsumer": true,
+  "sourceBindingSha256": "9bb16e9c984f7c259c6f4cb42ddad2886234771a90f4421c3fddec57c5079a41",
+  "sourceIdentity": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
+  "tarProvenanceSha256": "e1a0cb5870060c594b2d0fafed44999022f87c701ddd2a4a2d10a2b65ffe1a49"
+}

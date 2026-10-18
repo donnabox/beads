@@ -1,0 +1,5 @@
+# Carrier validation preparation4 — CLOSED
+
+Author-only CV3-N1 correction under root f4cfb58d/a0022f46, durable readback1dc7764b. The exact pinned existing private compiler DATA template99ddab2e is now local at context/accepted-contract2/private-emit-project.template.json. All11 helper files are BYTEEXACT3. Compiler options, schema, product/source/selection/report/32 control descriptions/caps/clocks are unchanged. Namespace references in active DATA only rebind3 to4.
+
+This is not independent acceptance. Both gates false; approvedStages/bootstrapReuse empty; run absent; all future actual tuple/tools/build/archive/consumer/lock/private graph/outcomes UNKNOWN. Full141+152 immediate and838+850+137+153 inherited histories stay INPLACE with full exact censuses/pins/mirrors. OTHER-native/root FULL mechanics and a separately prepared accepted concrete finite zero-product harness remain necessary before any evaluation. No helper/schema/product/compiler/test/build/install/runtime/Git/reviewer/gate was invoked.
