@@ -1,0 +1,29 @@
+{
+  "state": "DATA-only TX-CONTRACT-N1 minimal order correction",
+  "pairs": [
+    {
+      "path": "execution-contract.json",
+      "before": "history/contract1/execution-contract.json",
+      "beforeSha256": "a64f91838982b6481fc6e17f44123167ae4f2f9729a86bdcc49ac23a12794c06",
+      "after": "execution-contract.json",
+      "afterSha256": "d5bcf99d9e4119c08c9ac003363981c68ee09f1a7c16d71a20805294739be556",
+      "forward": "adaptations/execution-contract.json.patch",
+      "forwardSha256": "6adef3d227403cd4228c7bbdfd7683187ceb2442ee48d2bd890f977dbd7ba5de",
+      "inverse": "adaptations/execution-contract.json.inverse.patch",
+      "inverseSha256": "e05746a529d4bef8f265dcdb78895772e100766c7457b1a1b84ef71784911986"
+    },
+    {
+      "path": "report.md",
+      "before": "history/contract1/report.md",
+      "beforeSha256": "5ab4564b7c1ff345efbaaec9f4052c39fbf5549348f5895ff8028c6946922852",
+      "after": "report.md",
+      "afterSha256": "f6b9aca26738455e8dc0acd5bca23732d4da04d18d8a1f252b08e9a70bee7a51",
+      "forward": "adaptations/report.md.patch",
+      "forwardSha256": "ff63e3ae41923206b2f4967832cb6594e6991b9fa506727958c4513f6c9d1eeb",
+      "inverse": "adaptations/report.md.inverse.patch",
+      "inverseSha256": "3fd9846dc74ac441c19c9dedf7ac71a934731e700fc1e31a10c22aac9a5a3e78"
+    }
+  ],
+  "genuineForwardInverse": true,
+  "noSecondActualReviewOrRetry": true
+}

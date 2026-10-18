@@ -1,0 +1,60 @@
+{
+  "columns": [
+    "family",
+    "actualTargets",
+    "requiredLaw",
+    "sourceAnchors",
+    "boundary"
+  ],
+  "rows": [
+    {
+      "family": "discovery",
+      "actualTargets": "Scope / bdp.json / operations/",
+      "requiredLaw": "Read and replacements for RU/TX",
+      "sourceAnchors": "RU composition11-90; D3a HTTP587-609 and discovery8-66",
+      "boundary": "TX candidate projects own context and twelve targets; startup-source3 standalone preserves old refusal until combined rebind"
+    },
+    {
+      "family": "read",
+      "actualTargets": "beads/, links/, types/; canonical Bead/Link/Type; properties; incident links; aliases",
+      "requiredLaw": "nonretired Read laws inherited by RU/TX",
+      "sourceAnchors": "transaction-http.ts199-257,611-629; transaction-read.ts249-261; read-http-routing.ts14-40/read-request.ts200-241",
+      "boundary": "Source generic route exists with TX principal/context; current manifest no Read owner, minimum/control gaps remain explicit"
+    },
+    {
+      "family": "singleton",
+      "actualTargets": "create/update/delete-bead, create/update/delete-link, put/delete-alias",
+      "requiredLaw": "RU lower contract plus TX explicit receipt replacements",
+      "sourceAnchors": "transaction-discovery.ts8-16; transaction-http.ts290-360",
+      "boundary": "RU returns Resource/alias outcome; TX same owner supplies receipts. Neither response may substitute for the other selected-profile proof"
+    },
+    {
+      "family": "sequence",
+      "actualTargets": "operations/sequence",
+      "requiredLaw": "ordered, separately committing, interleaving per-member retry/local binding laws",
+      "sourceAnchors": "spec129-154,160-163; transaction-http312-344; transaction-service236-261; transaction-sequence75-137",
+      "boundary": "TX sequence uses same store singleton turns with yield, not batch-wide atomic semantics; presence not qualification"
+    },
+    {
+      "family": "transaction",
+      "actualTargets": "operations/batch, update-where, delete-where",
+      "requiredLaw": "TX atomic batch and set laws",
+      "sourceAnchors": "transaction-discovery17-20; transaction-http352-360; D4 source15-54",
+      "boundary": "TX-specific receipt/change/event atomicity; no obligation transplanted to RU"
+    },
+    {
+      "family": "replication",
+      "actualTargets": "receipts/, snapshot, changes/, events/, Resource Event views",
+      "requiredLaw": "TX plus applicable minimum/epoch/view/expiry/authorization laws",
+      "sourceAnchors": "transaction-http407-585 and service/store; prior D4 applicability audit",
+      "boundary": "Current bounded routes and erasures[] framing do not establish applied erasure ledger or logical restore"
+    },
+    {
+      "family": "public-startup",
+      "actualTargets": "ordinary bdptest --serve",
+      "requiredLaw": "advertised selected profile must be admitted; no private bypass",
+      "sourceAnchors": "index.ts288-317; main.ts59-85; reference-deployment-runtime.ts37-47",
+      "boundary": "Read only currently admitted; private handle returns claimEligiblefalse, not a public TX/RU profile capability"
+    }
+  ]
+}
