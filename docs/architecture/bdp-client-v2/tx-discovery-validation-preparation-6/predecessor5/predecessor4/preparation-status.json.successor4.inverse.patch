@@ -1,0 +1,20 @@
+--- predecessor3/preparation-status.json
++++ current4/preparation-status.json
+@@ -1,14 +1,13 @@
+ {
+-  "state": "FROZEN CLOSED preparation4 N1/N2 DATA-only correction; independent mechanics/root execution acceptance pending",
++  "state": "FROZEN CLOSED preparation3 after exact three-annotation source correction; independent native/root mechanics and annotation acceptance required",
+   "accepted": false,
+   "approvedStages": [],
+   "executionReleased": false,
+   "sourceBindingFinalized": true,
+   "originalActualCodeReadCorrectedSource": false,
+   "runExists": false,
+-  "annotationPrecision": "Accepted static0132cf64; no compiler pass",
+-  "nativeMechanics": "PENDING",
+-  "productValidation": "UNRESOLVED",
++  "productValidation": "UNRESOLVED; no helper import or execution",
++  "annotationPrecision": "PENDING",
+   "sameAttemptRetry": false,
+   "allPriorAttemptsPreserved": true
+ }

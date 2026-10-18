@@ -1,0 +1,55 @@
+--- a/installed-witnesses.json
++++ b/installed-witnesses.json
+@@ -1,5 +1,5 @@
+ {
+-  "state": "PROSPECTIVE NOT EXECUTED",
++  "state": "PROSPECTIVE corrected d181 successor; no execution",
+   "callbacks": 21,
+   "plannedHttpDispatches": 126,
+   "requestMs": 5000,
+@@ -18,7 +18,7 @@
+     },
+     {
+       "id": "I02",
+-      "title": "TX cold prepared startup; requires D3a accepted Scope/descriptor/Directory receiver (rows1–3; Type row4 already exists)",
++      "title": "TX cold prepared startup; requires D3a accepted Scope/descriptor/Directory receiver (rows1\u20133; Type row4 already exists)",
+       "scheduledHttp": 13,
+       "candidateGenerations": 1,
+       "D3aDependency": {
+@@ -192,24 +192,29 @@
+     },
+     {
+       "id": "I21",
+-      "title": "TX ordinary bdptest --serve remains refused before intended acquisition",
+-      "scheduledHttp": 0,
+-      "candidateGenerations": 1,
++      "title": "TX ordinary public refusal, invalid initial configuration guard, then ordinary ready generation with invalid post-ready command",
++      "scheduledHttp": 0,
++      "candidateGenerations": 2,
+       "guardHelperChildren": 1,
+       "additionalGuardIds": [
+         "H4"
++      ],
++      "ordinarySubphases": [
++        "Retain publicRefusal() before store initialization, no private ready",
++        "Retain H4 invalid initial configuration IPC guard, no ready",
++        "ONE additional real f.launch(true), six-field ready, exact invalid command stop, exit2/null AND stdio close2/null, fixed stderr, empty stdout, only original ready; then ownerProbe(false)"
+       ]
+     }
+   ],
+   "rawConnectPeers": 2,
+-  "countRules": "126 planned finite HTTP requests; 2 additional raw CONNECT peers. Counts are plans, not observations. Record dispatch, headers/body availability, actual complete responses, partials and cleanup separately; failure never synthesizes scheduled success. Outer bound is per selected callback command, not a claim the whole suite finishes in 120s. Exactly32 original candidate/public generations plus4 owned guard helpers=36 child processes; source code/test counts do not prove any acquisition or callback pass.",
++  "countRules": "21callbacks/126finiteHTTP+2CONNECT unchanged.33 ordinary candidate/public generations (32 prior + ONE explicit I21 addition),4guards,37total. I21=2ordinary+1guard; I20=1ordinary+3guards. All planned, not observed; expected/actual fields reconcile, failure never synthesizes completion.",
+   "additionalRawConnectAttempts": 2,
+   "totalPlannedHttpAttemptsIncludingConnect": 128,
+   "peerObservationRule": "I18/I19 record actual refusal bytes and peer state/close chronology before shutdown. Already normal-closed stays already closed. Claim shutdown-forced destruction only for observed live owned transport plus observed closure; otherwise refusal/cleanstop/reopen only. No sleep/retry/new seam or transport change, and no inference that RU and TX share the same socket lifecycle.",
+-  "originalCandidateOrPublicGenerations": 32,
++  "originalCandidateOrPublicGenerations": 33,
+   "additionalGuardHelperChildren": 4,
+-  "totalOwnedChildProcesses": 36,
+-  "candidateGenerationFieldMeaning": "Existing candidateGenerations values remain the32 original candidate/private or public-executable generations; separate guardHelperChildren add4 processes, never zero processes.",
++  "totalOwnedChildProcesses": 37,
++  "candidateGenerationFieldMeaning": "candidateGenerations and existing report actual.originalGenerations mean all ordinary candidate/public sessions, now33; four guards separate,37total.",
+   "guardHelpers": [
+     {
+       "id": "H1",

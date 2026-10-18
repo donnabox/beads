@@ -1,0 +1,48 @@
+{
+  "rootDecision": "R1 reject false reviewer verified-correct claim; no semantic adoption",
+  "rootDispositionSha256": "fd945f3c76477fa8b000271fb749424f7efb184c7d3a3b0528f6b66ea8be458a",
+  "actualSourceHead": "fdd3d2a4f8753b9d7562dcdb7ba413a33be82a10",
+  "actualSourceMapSha256": "054d825cdc815260f0d4472c4b13fafca0130f1330798c8204a45a8de53f403d",
+  "ScopeDescriptorDirectoryGap": {
+    "path": "packages/server/src/transaction-http.ts",
+    "lines": [
+      607,
+      615
+    ],
+    "sha256": "52a529218f3f999bbc1c86ec3b04b1198b22da7c5104e0d00e87761bb45f4967"
+  },
+  "genericTypeServed": {
+    "path": "packages/server/src/authority-read.ts",
+    "lines": [
+      789,
+      794
+    ],
+    "sha256": "fd6554c4ee0d08b997fb3622c2f21697f02d58b838f4ae0de10aca4707f67734"
+  },
+  "routeBridge": {
+    "path": "packages/server/src/read-http-routing.ts",
+    "lines": [
+      21,
+      40
+    ],
+    "sha256": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42"
+  },
+  "rootOriginalLocator": "transaction-http596–604 preserved verbatim in copied disposition; actual gap block607–615 in exact fdd. This is a locator erratum, not a different decision.",
+  "blockedTXColdCallbacks": [
+    "I02",
+    "I04",
+    "I13",
+    "I15",
+    "I17",
+    "I19"
+  ],
+  "blockedRows": [
+    1,
+    2,
+    3
+  ],
+  "TypeRow4AlreadyImplemented": true,
+  "knownTypeFixtureInputNotOperationOracle": true,
+  "requestCountsUnchanged": true,
+  "sourceEdited": false
+}

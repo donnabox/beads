@@ -1,0 +1,8 @@
+{
+  "operation": "read fixed source line ranges",
+  "exitCode": 1,
+  "error": "IndexError: list index out of range",
+  "sourceMutation": false,
+  "productExecution": false,
+  "correction": "read bounded actual ranges/target anchors instead"
+}

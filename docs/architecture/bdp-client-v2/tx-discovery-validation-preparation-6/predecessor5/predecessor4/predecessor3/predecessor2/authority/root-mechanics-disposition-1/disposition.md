@@ -1,0 +1,1 @@
+Root accepts all three concrete native audit findings. Validation remains CLOSED. The correction belongs in a separately frozen preparation2 with the same product bytes, selections, 52 stages, 16 immediate audit pairs and deadlines. No helper or product execution is released.

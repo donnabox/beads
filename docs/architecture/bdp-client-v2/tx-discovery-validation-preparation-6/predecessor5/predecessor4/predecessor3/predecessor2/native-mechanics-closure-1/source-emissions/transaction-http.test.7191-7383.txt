@@ -1,0 +1,193 @@
+it("D3 source raw receiving", async () =>
+  d3Bounded("D3 source raw receiving", async (budget) => {
+    const runtime = await d3WireRuntime(budget);
+    let requests = 0;
+    for (const route of d3Routes) {
+      const tuple: [string, string][] = [
+        ["bdp-minimum-scope-position", "genesis"],
+        ["bdp-scope-epoch", "epoch"],
+        ["bdp-authorization-view", "view"],
+      ];
+      for (const field of tuple) {
+        const response = await d3Raw(budget, runtime.listenUrl, d3Target(route), "GET", [
+          ...tuple,
+          field,
+        ]);
+        requests++;
+        expect(response.status).toBe(400);
+        d3NoDisclosure(response);
+        expect(JSON.parse(response.body).code).toBe("malformed-request");
+      }
+      const head = await d3Raw(budget, runtime.listenUrl, d3Target(route), "HEAD", [tuple[0]!]);
+      requests++;
+      expect(head.status).toBe(400);
+      d3NoDisclosure(head);
+      expect(head.body).toBe("");
+      expect(Number(head.headers.get("content-length"))).toBeGreaterThan(0);
+    }
+    expect(requests).toBe(12);
+  }));
+it("D3 source target transport boundary", async () =>
+  d3Bounded("D3 source target transport boundary", async (budget) => {
+    const f = await d3Source(budget);
+    for (const route of d3Routes) {
+      const response = await f.call(d3Target(route), "POST");
+      d3Response(response, 405);
+      expect(response.headers.get("allow")).toBe("GET, HEAD");
+      expect(response.body).toBeUndefined();
+    }
+    const operation = f.handler.targets.createBead;
+    for (const method of ["GET", "HEAD", "PUT"]) {
+      const response = await f.call(operation, method);
+      d3Response(response, 405);
+      expect(response.headers.get("allow")).toBe("POST");
+      expect(response.body).toBeUndefined();
+    }
+    for (const url of [
+      new URL("unknown", new URL("operations/", d3Scope)).href,
+      operation.replace("create-bead", "create%2Dbead"),
+      operation + "?x=1",
+      d3Target("descriptor") + "?x=1",
+    ])
+      d3Response(await f.call(url), 404);
+    expect(f.counters).toMatchObject({ direct: 10, discovery: 0 });
+    const runtime = await d3WireRuntime(budget);
+    const host = await d3Raw(budget, runtime.listenUrl, d3Scope, "GET", [], "wrong.invalid", false);
+    expect(host.status).toBe(400);
+    const origin = await d3Raw(budget, runtime.listenUrl, d3Scope, "GET", [
+      ["Origin", "https://browser.invalid"],
+    ]);
+    expect(origin.status).toBe(403);
+    d3NoDisclosure(host);
+    d3NoDisclosure(origin);
+  }));
+function d3Confine(value: unknown, base: string): string {
+  if (typeof value !== "string" || Buffer.byteLength(value) > 8192)
+    throw new Error("unsafe discovery target");
+  const url = new URL(value, base),
+    scope = new URL(d3Scope);
+  if (
+    url.origin !== scope.origin ||
+    !url.pathname.startsWith(scope.pathname) ||
+    url.username ||
+    url.password ||
+    url.search ||
+    url.hash
+  )
+    throw new Error("unsafe discovery target");
+  return url.href;
+}
+function d3SourceOracle(input: {
+  link: string;
+  discovery: unknown;
+  directory: unknown;
+  context: Record<string, string>;
+}) {
+  const link = /^<([^>]+)>; rel="service-desc"; type="application\/json"$/.exec(input.link);
+  if (!link?.[1]) throw new Error("unsafe service Link");
+  d3Confine(link[1], d3Scope);
+  const descriptor = parseTransactionalDiscovery(input.discovery),
+    directory = parseTransactionalOperationDirectory(input.directory);
+  if (
+    descriptor.scope !== d3Scope ||
+    descriptor.scopeEpoch !== input.context["bdp-scope-epoch"] ||
+    descriptor.authorizationView !== input.context["bdp-authorization-view"] ||
+    descriptor.headPosition !== input.context["bdp-scope-position"]
+  )
+    throw new Error("discovery context mismatch");
+  const operations = d3Confine(descriptor.operations, link[1]);
+  for (const value of Object.values(directory)) d3Confine(value, operations);
+  return { descriptor, directory };
+}
+it("D3 source cold oracle counterfactual", async () =>
+  d3Bounded("D3 source cold oracle counterfactual", async (budget) => {
+    const f = await d3Source(budget),
+      probe = await f.call(d3Scope),
+      descriptor = await f.call(d3Target("descriptor")),
+      directory = await f.call(d3Target("directory"));
+    const input = {
+      link: probe.headers.get("link") ?? "",
+      discovery: descriptor.body,
+      directory: directory.body,
+      context: Object.fromEntries(
+        ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"].map((name) => [
+          name,
+          descriptor.headers.get(name) ?? "",
+        ]),
+      ),
+    };
+    d3SourceOracle(input);
+    const mutations: [string, (copy: typeof input) => void][] = [
+      [
+        "missing-updateLink",
+        (copy) => {
+          delete record(copy.directory).updateLink;
+        },
+      ],
+      [
+        "wrong-version",
+        (copy) => {
+          record(copy.discovery).bdpVersion = "wrong";
+        },
+      ],
+      [
+        "wrong-profile",
+        (copy) => {
+          record(copy.discovery).profile = "read";
+        },
+      ],
+      [
+        "wrong-scope",
+        (copy) => {
+          record(copy.discovery).scope = "https://other.invalid/";
+        },
+      ],
+      [
+        "unsafe-service-link",
+        (copy) => {
+          copy.link =
+            '<https://foreign.invalid/bdp.json>; rel="service-desc"; type="application/json"';
+        },
+      ],
+      [
+        "unsafe-directory-target",
+        (copy) => {
+          record(copy.directory).createBead = "https://foreign.invalid/create";
+          expect(() => parseTransactionalOperationDirectory(copy.directory)).toThrow();
+        },
+      ],
+      [
+        "epoch-context-mismatch",
+        (copy) => {
+          record(copy.discovery).scopeEpoch = "foreign";
+        },
+      ],
+      [
+        "head-context-mismatch",
+        (copy) => {
+          record(copy.discovery).headPosition = "pos-999";
+        },
+      ],
+      [
+        "schema-valid-foreign-operations-base",
+        (copy) => {
+          record(copy.discovery).operations = "https://foreign.invalid/operations/";
+          parseTransactionalDiscovery(copy.discovery);
+        },
+      ],
+    ];
+    for (const [name, mutate] of mutations) {
+      const copy = structuredClone(input);
+      mutate(copy);
+      expect(() => d3SourceOracle(copy), name).toThrow();
+      budget.record({ counterfactual: name, rejected: true, wireRequests: 0 });
+    }
+    expect(f.counters).toMatchObject({
+      direct: 3,
+      discovery: 3,
+      entries: 3,
+      assemblies: 3,
+      clocks: 0,
+      waits: 0,
+    });
+  }));

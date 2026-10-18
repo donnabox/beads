@@ -1,0 +1,87 @@
+{
+  "code": "prompt-context-origin-mismatch",
+  "fact": "Prompt primary evidence paths are relative context/... while actual runner subprocess cwd and systeminit cwd are source worktree. Files actually reside under absolute inner review directory/context. Source checkout/context is absent.",
+  "actualSourceCwd": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-lifecycle-minimum",
+  "actualPacketContextRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-lifecycle-code-review-1/claude-code-review/context",
+  "reviewerEvidence": [
+    {
+      "recordLine": 23,
+      "block": {
+        "type": "tool_use",
+        "id": "toolu_01EehFjNL7FMoMmya2jdfiLh",
+        "name": "Read",
+        "input": {
+          "file_path": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-lifecycle-minimum/context/source2/source-binding.json"
+        },
+        "caller": {
+          "type": "direct"
+        }
+      }
+    },
+    {
+      "recordLine": 30,
+      "block": {
+        "type": "tool_use",
+        "id": "toolu_01949qMnQjzP93xBrzESCFBC",
+        "name": "Glob",
+        "input": {
+          "pattern": "context/**/*"
+        },
+        "caller": {
+          "type": "direct"
+        }
+      }
+    },
+    {
+      "recordLine": 193,
+      "block": {
+        "type": "tool_use",
+        "id": "toolu_01AfAKvV6fFw1p9dSGjShudJ",
+        "name": "Glob",
+        "input": {
+          "pattern": "*/context/source2/source-binding.json",
+          "path": "/Users/dbox/repos/wt/vickie"
+        },
+        "caller": {
+          "type": "direct"
+        }
+      }
+    },
+    {
+      "recordLine": 32,
+      "block": {
+        "type": "tool_result",
+        "content": "File does not exist. Note: your current working directory is /Users/dbox/repos/wt/vickie/vickie-trusted-startup-lifecycle-minimum.",
+        "is_error": true,
+        "tool_use_id": "toolu_01EehFjNL7FMoMmya2jdfiLh"
+      }
+    },
+    {
+      "recordLine": 35,
+      "block": {
+        "tool_use_id": "toolu_01949qMnQjzP93xBrzESCFBC",
+        "type": "tool_result",
+        "content": "No files found"
+      }
+    },
+    {
+      "recordLine": 206,
+      "block": {
+        "tool_use_id": "toolu_01AfAKvV6fFw1p9dSGjShudJ",
+        "type": "tool_result",
+        "content": "No files found"
+      }
+    }
+  ],
+  "reviewerStatement": "## Scope and limitation first\n\nI reviewed the nine owned files directly, plus their real dependencies (`reference-deployment.ts`, `reference-deployment-state.ts`, `installed-reference-configuration.ts`, `development-contracts.ts`, `development-composition.ts`, `transaction-runtime-configuration.ts`, `transaction-store.ts`, `transaction-service.ts`, `transaction-http.ts`/`-discovery.ts`, `recovery-store.ts`, `read-update-runtime-limits.ts`, `member-executor.ts`, `read-http.ts`, `read-sequence-lifecycle.ts`, `conformance/http-executor.ts`, `config/index.ts`, `smoke-safety.mjs`, `vitest.config.ts`, both `tsconfig.json`s, `package.json` export maps).\n\n**The declared evidence tree is not present in this worktree.** `context/` does not exist (`Glob context/**/*` \u2192 no files; `context/source2/source-binding.json` \u2192 no such file). I therefore could not cross-check against `source-binding.json`, `cumulative.patch`, `correction2-final.patch`, `context/source2/after/`, `accepted-plan4/*`, `accepted-plan4-native`, `root-PLAN-disposition`, `corrected-native2`, or `root-clean-candidate`. Nothing below depends on those inputs; every finding is read off the nine files and their actual dependencies. I did not run, import, build, or evaluate anything, ran no Git commands, and wrote no files. This is not a diff review \u2014 I could not establish which lines are new, so findings are stated against the candidate as it stands.\n\n",
+  "credit": "candidate-source and actually read dependency review only",
+  "notEstablished": [
+    "diff coverage",
+    "accepted-plan contract coverage",
+    "native/root provenance evidence coverage"
+  ],
+  "preparationErrorAcknowledged": true,
+  "originalPromptAndPacketPreserved": true,
+  "reviewRetried": false,
+  "retroactiveRelabeling": false
+}

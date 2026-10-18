@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-5/audit.py", line 305, in <module>
+    installed_rows(o['records'],schemas['installedExpected'][stage])
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-5/audit.py", line 131, in installed_rows
+    require(same(r['fieldOccurrences'],fields),'Exact source-derived occurrence/order/value grammar')
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-5/gate.py", line 13, in require
+    if not ok:raise RuntimeError(message)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Exact source-derived occurrence/order/value grammar

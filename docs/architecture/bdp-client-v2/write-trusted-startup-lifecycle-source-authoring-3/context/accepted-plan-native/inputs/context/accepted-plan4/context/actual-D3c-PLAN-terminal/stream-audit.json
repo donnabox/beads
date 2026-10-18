@@ -1,0 +1,43 @@
+{
+  "rawSha256": "88f7113de4d61acbe140d152c308d993c77968062bae5a59f691545c6b641fd5",
+  "bytes": 2493551,
+  "validJSONLRecords": 4612,
+  "parseErrors": 0,
+  "finalNewline": true,
+  "resultCount": 1,
+  "resultIsLastRecord": true,
+  "resultSubtype": "success",
+  "resultError": false,
+  "stopReason": "end_turn",
+  "terminalReason": "completed",
+  "permissionDenials": [],
+  "toolCalls": {
+    "Read": 56,
+    "Grep": 22,
+    "Glob": 1
+  },
+  "toolResults": 79,
+  "toolErrors": 1,
+  "toolErrorPreserved": [
+    {
+      "toolUseId": "toolu_01FXxNuHq5JcZrm6VpNLb83G",
+      "content": "Path does not exist: /Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration/packages/server/src/development-store.ts. Note: your current working directory is /Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration."
+    }
+  ],
+  "toolErrorMeaning": "Read of nonexistent development-store.ts; permitted read lookup error, distinct from later supervisor identity failure; no causal connection asserted.",
+  "toolCallResultIdsMatch": true,
+  "subagentsSpawned": 0,
+  "recordOrdinalsExact1Through4612": true,
+  "lastResultElapsedSeconds": 919.7240849579684,
+  "reviewResultBytes": 23751,
+  "reviewResultSha256": "e5bae2d8e820c96723f14ca540ee48eed864515c4ef100a66902344ac23fe6b4",
+  "recordTypes": {
+    "system": 590,
+    "rate_limit_event": 5,
+    "stream_event": 3814,
+    "assistant": 123,
+    "user": 79,
+    "result": 1
+  },
+  "cliExit": "UNKNOWN, no result-status/exit conflation"
+}

@@ -1,0 +1,51 @@
+{
+  "utc": "2026-10-18T09:51:54.376528+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "nativeClosureSha256": "b75f2849c9f39cea09b6814166c84ff04c173c357c9165633ba18b46863394e7",
+  "nativePhysicalVerified": 103,
+  "rootActualSourceInspectionSha256": "e3bb3c3dc3af9810fc8642298f392f2b1c465c6158514b6bc70efa0e81d2330a",
+  "acceptedFindings": [
+    "N1",
+    "N2",
+    "N3"
+  ],
+  "rootIndependentReads": "Actual cohort guard calls/guard assertion, cleanupKnown and removal, parent ownerProbe/initialize/DatabaseSync edit paths, full source hoisted SQLite inventory beforeEach and afterEach; native findings/report read in full.",
+  "sourceOnlyRelease": {
+    "author": "/root/changefeed_native_review",
+    "packet": "write-trusted-startup-lifecycle-source-authoring-2",
+    "worktree": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-lifecycle-minimum",
+    "beforeKnownMapSha256": "250806b0d943331816a139ff2c409c60f2c1e9112667af7dd1b4f327d1e00b6a",
+    "semanticPaths": [
+      "packages/server/src/reference-deployment-runtime.test.ts",
+      "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts"
+    ],
+    "N1": "Pass explicit3/1 guard child counts at I20/I21 only; actual four launches unchanged.",
+    "N2": "Register each returned parent RU/TX owner and raw DatabaseSync immediately in callback-local bounded ownership records, including initialize, ownerProbe and I08/I09 edits; use observed finally-close, preserve primary and cleanup failures, include sticky failed/unknown close in cleanupKnown and retain root. Closure within existing work/cleanup bounds; no new product/HTTP/child/callback or failure-injection runs. Never treat child close or later reopen as earlier parent release.",
+    "N3": "Capture SQLite starting index at each beforeEach; use consistent current-callback slice in all reports/closure checks/S10 and retain previous unknown data and roots independently. No clearing unresolved ownership.",
+    "styleOnlyException": {
+      "executable": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum/node_modules/.pnpm/@biomejs+cli-darwin-arm64@2.5.7/node_modules/@biomejs/cli-darwin-arm64/biome",
+      "sha256": "f71fe80909d2f70f1e051320f5ba9dfd553bc5ef3bacef5cdee1b00ee96a285c",
+      "invocationsAllowed": 1,
+      "args": [
+        "format",
+        "--write",
+        "packages/server/src/development-authority.ts",
+        "packages/server/src/development-runtime.ts",
+        "packages/server/src/transaction-runtime.ts",
+        "packages/server/src/reference-deployment-runtime.ts",
+        "packages/server/src/reference-deployment-runtime.test.ts",
+        "packages/server/src/reference-deployment-process.ts",
+        "apps/bdptest/src/reference-deployment-lifecycle-installed.test.ts",
+        "scripts/smoke-executables.mjs"
+      ],
+      "manualMarkdownOnly": "docs/design/startup-configuration.md"
+    },
+    "styleScope": "One exact formatter invocation on original8 codepaths may format existing post-formatter manual deltas; no semantic changes to other7 paths; preserve formatter before/after/argv/stdout/exit.",
+    "preserve": "686known/677unowned;51source/21installed/126HTTP+2CONNECT/36children; all existing work/request/cleanup/callback limits, legacy shapes/semantics; originalsource1/native immutable",
+    "noOtherExecution": "No compiler/check/tests/build/install/Git/runtime/reviewer/helper/flags",
+    "next": "Fresh correctionfreeze, independentFULL native/root then FIRST actual CODE, no secondPLAN. No validation yet."
+  },
+  "sourceAuthoringReleasedAfterDurablePush": true,
+  "productValidationReleased": false,
+  "firstActualCodeReleased": false
+}

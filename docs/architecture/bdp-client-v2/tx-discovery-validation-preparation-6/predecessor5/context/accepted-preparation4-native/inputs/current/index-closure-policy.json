@@ -1,0 +1,18 @@
+{
+  "historicalIndicesIncluded": true,
+  "implementationExclusions": [
+    "implementation-hashes.json",
+    "preparation-index.json",
+    "execution-gate.json",
+    "execution-gate.closed.json",
+    "execution-gate.json.successor4.patch",
+    "execution-gate.json.successor4.inverse.patch",
+    "execution-gate.closed.json.successor4.patch",
+    "execution-gate.closed.json.successor4.inverse.patch",
+    "implementation-hashes.json.successor4.patch",
+    "implementation-hashes.json.successor4.inverse.patch",
+    "successor-delta.json"
+  ],
+  "reason": "Gate and its deltas, implementation own deltas and successor manifest contain implementation SHA; exact11 named exclusions only. Complete preparation index pins every file except itself, retaining byte counts. Implementation values must be SHA strings for gate.py101.",
+  "onlyReleaseMutationLater": "Only root execution-gate.json through separately attributed durable release; closed snapshot/history immutable"
+}

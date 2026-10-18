@@ -1,0 +1,232 @@
+{
+  "packet": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3",
+  "preparationIndex": {
+    "sha256": "46738a1f1d624f5629af6f3746c21ef34911cf6a726044748bff36375c208843",
+    "bytes": 91184
+  },
+  "implementationIndex": {
+    "sha256": "c06e5f1d2479b3bcb3c9736621a815f46dc56c280e5eb8aba1a7b553dc8198a0",
+    "bytes": 89809
+  },
+  "sourceBinding": {
+    "sha256": "00459b95b289ba42a4da948139516c3039bd81ea2a739b9dceb92c95208f7bfe",
+    "bytes": 92997
+  },
+  "physicalFiles": 495,
+  "implementationFiles": 486,
+  "implementationExclusions": [
+    "implementation-hashes.json",
+    "preparation-index.json",
+    "execution-gate.json",
+    "execution-gate.closed.json",
+    "execution-gate.json.successor3.patch",
+    "execution-gate.json.successor3.inverse.patch",
+    "execution-gate.closed.json.successor3.patch",
+    "execution-gate.closed.json.successor3.inverse.patch",
+    "successor-delta.json"
+  ],
+  "origins": 420,
+  "referencePins": 1865,
+  "predecessorObservedFiles": 347,
+  "historicalOriginalIndexException": [
+    "execution-gate.json"
+  ],
+  "helpers": {
+    "run.py": {
+      "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70",
+      "bytes": 5357
+    },
+    "gate.py": {
+      "sha256": "f3781357733810861cad42b92e667822e7d3ac60e1f214e39e7f22e1bb63bb8e",
+      "bytes": 12588
+    },
+    "audit.py": {
+      "sha256": "1d2bf73e1a35d37b1d1032358ea81c4c5a97ea0fa6304603730f17af96438d2b",
+      "bytes": 34757
+    },
+    "packages.py": {
+      "sha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9",
+      "bytes": 8760
+    },
+    "guarded-action-session-20261018-021624-549f.py": {
+      "sha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+      "bytes": 946
+    }
+  },
+  "deltaPairs": {
+    "run.py": {
+      "changed": false,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    },
+    "gate.py": {
+      "changed": false,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    },
+    "audit.py": {
+      "changed": false,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    },
+    "packages.py": {
+      "changed": false,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    },
+    "guarded-action-session-20261018-021624-549f.py": {
+      "changed": false,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    },
+    "commands.json": {
+      "changed": true,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    },
+    "selection.json": {
+      "changed": false,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    },
+    "selection-capacity.json": {
+      "changed": false,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    },
+    "report-schemas.json": {
+      "changed": false,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    },
+    "source-audit-contract.json": {
+      "changed": false,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    },
+    "installed-audit-contract.json": {
+      "changed": false,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    },
+    "package-consumer-contract.json": {
+      "changed": false,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    },
+    "dependency-inputs.json": {
+      "changed": false,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    },
+    "audit-expectations.json": {
+      "changed": false,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    },
+    "findings-disposition.json": {
+      "changed": false,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    },
+    "source-binding.json": {
+      "changed": true,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    },
+    "base-tools.candidate.json": {
+      "changed": true,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    },
+    "reference-pins.json": {
+      "changed": true,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    },
+    "context-origins.json": {
+      "changed": true,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    },
+    "preparation-status.json": {
+      "changed": true,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    },
+    "unresolved-inputs.json": {
+      "changed": true,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    },
+    "helper-static-inspection.json": {
+      "changed": true,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    },
+    "README.md": {
+      "changed": true,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    },
+    "release-gates.md": {
+      "changed": true,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    },
+    "command-matrix.md": {
+      "changed": true,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    },
+    "execution-gate.json": {
+      "changed": true,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    },
+    "execution-gate.closed.json": {
+      "changed": true,
+      "forwardHunksExact": true,
+      "inverseHunksExact": true
+    }
+  },
+  "sourceFiles": 679,
+  "sourceIdentity": "5964d40af0ced41634e47df86cda7ac01b86768c51970e557b60ffbfc9739907",
+  "sourceAfterMap": {
+    "sha256": "c5b25b6303366f53cf33c121293e3a9253cc40c030eea27b9fcbc29e213b63a0",
+    "bytes": 87874
+  },
+  "changedPathsVsPredecessor": [
+    "packages/server/src/transaction-http.test.ts"
+  ],
+  "unchangedOtherCandidate": 678,
+  "protectedBaseFiles": 673,
+  "annotationExactThreeStringReplacements": true,
+  "sourceContractBinaryHash": "6458c66715de3b6d2e86ae9c0d10efd1b7c146d81ba53da8028037ca9d0e4e89",
+  "actualBinaryHash": "6eea8983e577d393efe2c663bedd3d2becaeac3b4258a49ab7d3f89740174fe1",
+  "implementationValueTypes": [
+    "dict"
+  ],
+  "gateExpectedValueType": "str SHA256 (direct comparison, gate.py line101)",
+  "commands": {
+    "stages": 52,
+    "immediatePairs": 16,
+    "all52FreshRequired": true,
+    "bounds": {
+      "automaticRetries": 0,
+      "installedCallbackMs": 60000,
+      "installedTotalCleanupMs": 10000,
+      "installedWorkMs": 45000,
+      "newDCleanupInclusiveStopMs": 4000,
+      "newDWorkMs": 3000,
+      "outerStageMs": 120000,
+      "recorderMs": 5000,
+      "requestMs": 5000,
+      "sourceDefaultCallbackMs": 5000,
+      "sourceDrainMs": 1000,
+      "sourceLatchMs": 1000,
+      "termAtMs": 115000
+    }
+  },
+  "errors": []
+}

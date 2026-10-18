@@ -1,0 +1,20 @@
+{
+  "classification": "Current late guards traced unreachable; defensive cleanup/comment correction, no observed runtime defect",
+  "RU": {
+    "declaration": "Before try664 declare a typed prepared-only inert facts slot: listenUrl string,history boolean,ownerFacts actual checkedOwner type. No new export/type API.",
+    "insideTry": "After LAST await/checkPrepared690\u2013691, BEFORE serving/published693\u2013694, prepared branch reads actual server.address once, requires object address+checkedOwner, looks up genuine registered state and RU profile, and freezes exact IPv6-aware listenUrl/history/checkedOwner facts. Every potential throw is caught by695\u2013717 startup cleanup. No extra owner/readConfiguration/compiler/composition or awaited gap.",
+    "outsideTry": "Keep completion718,ownerCompletion721 and close function unchanged. Keep legacy {scope,close}/unprepared result exact. Prepared final return spreads the captured plain frozen facts with same terminal.promise; no server.address/state lookup/defensive guard. Successful prepared control flow justifies non-null type assertion, not an outside runtime check.",
+    "comment": "State actual invariant: final check/capture immediately precedes publication with no await; remove incorrect no-asynchronous-work-between-all-address-reads claim."
+  },
+  "TX": {
+    "declaration": "Before try421 declare prepared-only frozen facts slot for history,ownerFacts,actual handler.targets.",
+    "insideTry": "After LAST checkPrepared453 and BEFORE published455 require checkedOwner/configurationMetadata/actual handler in prepared branch. Build same ownerFacts(scope,scopeEpoch,captured.readOptions(scope).advertisedLimits,frozen installedTypeIds), capture history and handler.targets here. No extra readConfiguration/metadata/compiler/owner/service call. Potential failure enters existing456\u2013476 listener/pending/service-or-direct-owner cleanup.",
+    "outsideTry": "Keep completion477 and close489 unchanged. Preserve legacy six keys/order/values and unprepared handler.targets evaluation. Prepared legacy.targets uses captured targets; prepared final return uses only captured history/ownerFacts and same terminal.promise. Remove late guard527 and late readOptions/installed-type traversal. No early return."
+  },
+  "TDZAndOwnership": "Never move successful return before let completion/ownerCompletion initialize. No await/callback between publish and their declarations; close caches remain current. Startup catch owns all acquired listener/pending/service-or-owner; no duplication/new close invocation. Existing fault/cancellation chronology and legacy retry semantics remain.",
+  "wrapper": {
+    "validation": "WeakMap lookup11 stays before handle fields. Same profile dispatch; invalid-result checks17\u201333 additionally require runtime.scope primitive string. Valid shape/order remains.",
+    "cleanup": "Create ONE fixed primary Error(prepared lifecycle unavailable) before ONE await runtime.close(). If close succeeds throw same primary; if it rejects throw AggregateError([primary,cleanup],fixed prepared lifecycle cleanup failure,{cause:primary}). Do not replace primary, retry close, expose cause or create new behavior input.",
+    "witness": "Currently unreachable guards remain source-precision verified; no fabricated execution/fault pass or new mock/framework/export/callback is required."
+  }
+}

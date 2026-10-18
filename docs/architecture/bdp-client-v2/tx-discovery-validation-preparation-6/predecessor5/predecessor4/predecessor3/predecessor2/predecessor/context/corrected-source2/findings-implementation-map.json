@@ -1,0 +1,81 @@
+{
+  "actualCodeReviewedOriginalBytesOnly": true,
+  "findings": [
+    {
+      "id": "F1",
+      "implementation": "Legacy 500 expectations superseded at same 14 exchanges; parsed descriptor/Directory and current phase tuple, exact Scope Link/privacy/bodyless HEAD.",
+      "paths": [
+        "packages/server/src/transaction-changefeed.test.ts",
+        "packages/server/src/transaction-installed-contracts.test.ts",
+        "apps/bdptest/src/transactional-schema-installed.test.ts"
+      ]
+    },
+    {
+      "id": "F2",
+      "implementation": "Received createBead target plus uppercase reserved %2C suffix; same anonymous GET404 through canonical executor.",
+      "paths": [
+        "apps/bdptest/src/transactional-discovery-installed.test.ts"
+      ]
+    },
+    {
+      "id": "F3",
+      "implementation": "Explicit mutable [string,string] map return, no localRaw API change.",
+      "paths": [
+        "apps/bdptest/src/transactional-discovery-installed.test.ts"
+      ]
+    },
+    {
+      "id": "F4/nativeN2",
+      "implementation": "Unconditional d3Context before minimum-order code branch covers all21 error rows.",
+      "paths": [
+        "apps/bdptest/src/transactional-discovery-installed.test.ts"
+      ]
+    },
+    {
+      "id": "F5/nativeN1",
+      "implementation": "Fresh frozen canonicalScope/send client; one real fixture send, explicit detached frozen status/headers/bodyText projection; lifecycle and transport records retained by original wrapper.",
+      "paths": [
+        "apps/bdptest/src/transactional-discovery-installed.test.ts"
+      ]
+    },
+    {
+      "id": "F6/nativeN3",
+      "implementation": "Both new raw helpers count split+4 within16384; all other bounds/old helper unchanged.",
+      "paths": [
+        "packages/server/src/transaction-http.test.ts",
+        "apps/bdptest/src/transactional-discovery-installed.test.ts"
+      ]
+    },
+    {
+      "id": "F7",
+      "implementation": "Scope204 private,no-store with exact original Link; assertions on existing source/installed probes.",
+      "paths": [
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "apps/bdptest/src/transactional-discovery-installed.test.ts"
+      ]
+    },
+    {
+      "id": "F8",
+      "implementation": "Direct parser throw inside unsafe-directory clone, existing general oracle retained.",
+      "paths": [
+        "packages/server/src/transaction-http.test.ts"
+      ]
+    },
+    {
+      "id": "F9",
+      "implementation": "Canonical currentBeadCollection validator on all three existing collection reads.",
+      "paths": [
+        "apps/bdptest/src/transactional-discovery-installed.test.ts"
+      ]
+    },
+    {
+      "id": "F10",
+      "implementation": "Successful reader direct HttpResponse metadata position pos-0; error nondisclosure unchanged, no network-wire claim.",
+      "paths": [
+        "packages/server/src/transaction-http.test.ts"
+      ]
+    }
+  ],
+  "independentCorrectedSourceAcceptance": false
+}

@@ -1,0 +1,272 @@
+{
+  "afterMapSha256": "95bfa5a2e266de76469e54dc43e23f185945f8b19b51226ae8b8a2506eb9623d",
+  "correctionPatchSha256": "192b23df13b8bf1b6535a3e27ab21a39cb3fe7527add4afef2ef0208c741a615",
+  "fileCountExcludingIndex": 65,
+  "files": {
+    "after-map.json": {
+      "bytes": 87874,
+      "sha256": "95bfa5a2e266de76469e54dc43e23f185945f8b19b51226ae8b8a2506eb9623d"
+    },
+    "author-edit-error-1.json": {
+      "bytes": 385,
+      "sha256": "2a0103f236937eba0b58c7f8b895b477a7b1bcb0469da855e4bb2be6524aa71f"
+    },
+    "author-edit-error-2.json": {
+      "bytes": 295,
+      "sha256": "6e061404e7be66f3ce49e912f317522350be6899d1dc996db57f9d0435ab85bc"
+    },
+    "author-read-error-1.json": {
+      "bytes": 243,
+      "sha256": "5532dbf903be4843ab516eee3189dab297469d2626960c708f648078a1a22c60"
+    },
+    "author-read-error-2.json": {
+      "bytes": 251,
+      "sha256": "1856702572ca3639adaeec4b560bb2276b0cfc1cbe7a154033d3085a0533de59"
+    },
+    "author-static-error-1.json": {
+      "bytes": 365,
+      "sha256": "d01fd002f849a8f8c0efd77d5f803b0f4aa093737551539f8a4cdd0156985dff"
+    },
+    "base-map.json": {
+      "bytes": 87874,
+      "sha256": "ff8ad56f23c3d7ee6e652724501cdaa16ec9551ea24b1673dc6c74bf5c1c06b7"
+    },
+    "base/apps/bdptest/src/transactional-discovery-installed.test.ts": {
+      "bytes": 11162,
+      "sha256": "7cf8822108489f3fb2f9c5ca1d97c6d7b832acca95a2f7d891c3413404d90c49"
+    },
+    "base/apps/bdptest/src/transactional-schema-installed.test.ts": {
+      "bytes": 18360,
+      "sha256": "18840119f1ca270d35414f3cb0d44dfe988a44ff9cb1edaa4a405b25b6da4759"
+    },
+    "base/packages/server/src/transaction-changefeed.test.ts": {
+      "bytes": 96265,
+      "sha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3"
+    },
+    "base/packages/server/src/transaction-http.test.ts": {
+      "bytes": 247333,
+      "sha256": "f972c417409302e750f0936c80be5c261de21556d5ca8a883bbe0f713f2049df"
+    },
+    "base/packages/server/src/transaction-http.ts": {
+      "bytes": 28966,
+      "sha256": "be9402cadf5d2888dd42a1904bbd8eeea0b32643bd7d7949f0ae34a8eefdd2e0"
+    },
+    "base/packages/server/src/transaction-installed-contracts.test.ts": {
+      "bytes": 21902,
+      "sha256": "f2dd0993c4fa61742435d3bedb101afb021ca0f1b5904147ab367ba243286bd1"
+    },
+    "before-map.json": {
+      "bytes": 87874,
+      "sha256": "f55e40725115eae0475b85af47d5d4eda0bbdd2897d1ecfd9a6672903a157dae"
+    },
+    "before/apps/bdptest/src/transactional-discovery-installed.test.ts": {
+      "bytes": 64223,
+      "sha256": "d668891114fc196be9917ba92ef6a5cb0d77d6ed3ede83108d23a0d34e38d32d"
+    },
+    "before/apps/bdptest/src/transactional-schema-installed.test.ts": {
+      "bytes": 18360,
+      "sha256": "18840119f1ca270d35414f3cb0d44dfe988a44ff9cb1edaa4a405b25b6da4759"
+    },
+    "before/packages/server/src/transaction-changefeed.test.ts": {
+      "bytes": 96265,
+      "sha256": "834d13d108cb0577cfbf0f7d32b7072a62deeb9db70a5bd72e960d5cfc42b9e3"
+    },
+    "before/packages/server/src/transaction-http.test.ts": {
+      "bytes": 278017,
+      "sha256": "172d4e61365710fe2884479a36f46bb51a327273ce02864a1285dccefd6ca09f"
+    },
+    "before/packages/server/src/transaction-http.ts": {
+      "bytes": 29720,
+      "sha256": "09e5ba9cd3203af9bffebc1db1e7840eae732dc4b506bed5d11ac9730bd0c015"
+    },
+    "before/packages/server/src/transaction-installed-contracts.test.ts": {
+      "bytes": 21902,
+      "sha256": "f2dd0993c4fa61742435d3bedb101afb021ca0f1b5904147ab367ba243286bd1"
+    },
+    "context-origins.json": {
+      "bytes": 7366,
+      "sha256": "3bf405985637870d10e90e284e28761c81d22f213bec4ae7ace20d8a424f8136"
+    },
+    "context/correction-plan2/composition.json": {
+      "bytes": 2856,
+      "sha256": "3be491146ed6253d8d092a4ca817e28a918f460a15cbfe1eb78de29632377f8a"
+    },
+    "context/correction-plan2/effective-correction-matrix.json": {
+      "bytes": 9283,
+      "sha256": "4ab0147ece245b0ae257b775ab1039f11a4dcfb5ff7387108c4d68825c7bfde9"
+    },
+    "context/correction-plan2/effective-plan.md": {
+      "bytes": 11433,
+      "sha256": "352e7d67f02ce7f1df8e816177579119958bf29ef909dfcd5896b6a767a48488"
+    },
+    "context/original-actual-code-review.txt": {
+      "bytes": 20037,
+      "sha256": "009367a6d7c76a1137cfa8f3b7a72232efc251ee94cbe99474194a6c71197c11"
+    },
+    "context/original-actual-code-terminal-closure.json": {
+      "bytes": 1669,
+      "sha256": "28a4f9ce58047194602d3f2385061f18ee9c0e6508543f71e4b4e4880c6e3084"
+    },
+    "context/original-author-index.json": {
+      "bytes": 9029,
+      "sha256": "d9d35ff6f24ad71f0daea95cd8eec81faca097c0876e2ac1a905805a617b95d7"
+    },
+    "context/original-author-prospective-counts.json": {
+      "bytes": 7609,
+      "sha256": "35a6a1de6dcdb6feb4520e6e12a351bd55e258e550e87f0ec3da1eb3f0b409c9"
+    },
+    "context/original-author-protected-source-observation.json": {
+      "bytes": 884,
+      "sha256": "4b4cb1d59dcd3bf180f03c993c1ad01f7fd79e8aaad73af3d827d5e5df405597"
+    },
+    "context/original-author-source-binding.json": {
+      "bytes": 92913,
+      "sha256": "2bceb342d76c7727151d2bf9977e5c373309cd1c89962d7da0a5d95da497de98"
+    },
+    "context/root-disposition-1.json": {
+      "bytes": 5567,
+      "sha256": "4bf597a51f7bbbc872a7ed2e1bcb6ef49942ad4cc6c12f5afe705b2ca73ad705"
+    },
+    "context/root-disposition-2.json": {
+      "bytes": 1407,
+      "sha256": "8a83a9c4a7909c2810fe3643a3452b9474c180eb08a36075f383d8f756fea3ed"
+    },
+    "correction.inverse.patch": {
+      "bytes": 17387,
+      "sha256": "1fff079d7f0995db311f8df39a291f769c77a417b0f04a7e664cdcdac7b3187a"
+    },
+    "correction.patch": {
+      "bytes": 17387,
+      "sha256": "192b23df13b8bf1b6535a3e27ab21a39cb3fe7527add4afef2ef0208c741a615"
+    },
+    "count-budget-preservation.json": {
+      "bytes": 896,
+      "sha256": "22d7eba99dac6fc6112e7386a461b76705df825732b4848ad1b6fa8f617fd292"
+    },
+    "findings-implementation-map.json": {
+      "bytes": 3004,
+      "sha256": "6e147dd3a0300b9279c9c25e7d4200f7ee8e903e800bda7903b8fadba0518bca"
+    },
+    "format-only.inverse.patch": {
+      "bytes": 3509,
+      "sha256": "278ce0e5b75dbbc8a5a00e17a269822b2db2aa8f6c427dcbd45041eb26ab0cec"
+    },
+    "format-only.patch": {
+      "bytes": 3509,
+      "sha256": "545a041e3f53f65b3595cd59d345f72f09965e0b3017a6c9d026432e04a25131"
+    },
+    "formatter-invocation.json": {
+      "bytes": 873,
+      "sha256": "0e7a57df29d451ba20495e8cf838df42db0e8fe548a8fa6c097f1447b9d15daf"
+    },
+    "formatter-result.json": {
+      "bytes": 1115,
+      "sha256": "b4fa242c5cc0177c8f397dae50de3bfaa3aeea35a6993d78737dde15d828bdde"
+    },
+    "formatter.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "formatter.stdout.log": {
+      "bytes": 42,
+      "sha256": "2186f61249c4526cff4a2a19e5df4e4834826bcc4fe7908778fd8607058ec53d"
+    },
+    "freeze-session-guard.json": {
+      "bytes": 143,
+      "sha256": "a90c2f2b67f0550eeb6c1c004e5edf8a64a2ad3deb38968a5033fffe96bb7ba9"
+    },
+    "line-inspection.json": {
+      "bytes": 1223,
+      "sha256": "6234a719cec5cb07a22345c9e8bcea4cdca533b3a7fb16f03620f8afbf807d34"
+    },
+    "preformat-map.json": {
+      "bytes": 752,
+      "sha256": "3d031900573c1dc8b26b72660cd24a7250caa947a1eb5a2dd6eb2939421de1d9"
+    },
+    "preformat/apps/bdptest/src/transactional-discovery-installed.test.ts": {
+      "bytes": 65349,
+      "sha256": "0e06bc29907780f744892f36d5772c3af39f60316d9de1d03601dd202911eb54"
+    },
+    "preformat/apps/bdptest/src/transactional-schema-installed.test.ts": {
+      "bytes": 18590,
+      "sha256": "f2ba22fb0824f405699e9157584d3ba700efae323d795783092266cf38bfcc18"
+    },
+    "preformat/packages/server/src/transaction-changefeed.test.ts": {
+      "bytes": 96730,
+      "sha256": "e57a05adb613c7bfec646e19e282dcc536a20a3d8f0a5fd2858b734e60183da8"
+    },
+    "preformat/packages/server/src/transaction-http.test.ts": {
+      "bytes": 278266,
+      "sha256": "367327ac3ff1ce1f2893b9b2b3b37a80cb586315d3c105c9c85f51ef6a7a5c27"
+    },
+    "preformat/packages/server/src/transaction-http.ts": {
+      "bytes": 29774,
+      "sha256": "4a59ac8079853c2931e39088949c49b9fdca67929fdc6fc86e89ad382ba7bb87"
+    },
+    "preformat/packages/server/src/transaction-installed-contracts.test.ts": {
+      "bytes": 23218,
+      "sha256": "f473f6cf9b7df5ec9f2811f2a55b5324381521f1b778bcdc5d97f6e7fb869cae"
+    },
+    "preservation.json": {
+      "bytes": 89146,
+      "sha256": "2ff36285e4ba36a7b8a8bd63938d82e8a6cd9a8ed69fdebb2b42abb42c6eaab1"
+    },
+    "prospective-counts.json": {
+      "bytes": 7609,
+      "sha256": "35a6a1de6dcdb6feb4520e6e12a351bd55e258e550e87f0ec3da1eb3f0b409c9"
+    },
+    "report.md": {
+      "bytes": 2589,
+      "sha256": "b6a7d38129f45b01b2c7e25fa6cb6b0cd36ced9f35931e754db3fe49f3f209be"
+    },
+    "root-release.json": {
+      "bytes": 3040,
+      "sha256": "accbc47bc2c8733d60657bcc6f8187a98dba2584694c77ce0b67dcb652115b04"
+    },
+    "source-binding.json": {
+      "bytes": 95062,
+      "sha256": "f4319c067c761f45c70ce59f6eb8b38b37b58afdea4e536e335c850faee642d7"
+    },
+    "source.inverse.patch": {
+      "bytes": 104707,
+      "sha256": "41139f46bb3791302ca67d997605fa8501ca137b16825c4deb6f4ad0af3b2468"
+    },
+    "source.patch": {
+      "bytes": 104707,
+      "sha256": "58b88cf2207a0e44bc0e7fa2e1b25a51c3dfc5a0411c74b688a218051db73b0b"
+    },
+    "source/apps/bdptest/src/transactional-discovery-installed.test.ts": {
+      "bytes": 65354,
+      "sha256": "68d1b51f20b2a322231e97d7d720c21826ff2d98ac0ef5bdbf2a0ff8a001fd33"
+    },
+    "source/apps/bdptest/src/transactional-schema-installed.test.ts": {
+      "bytes": 18590,
+      "sha256": "f2ba22fb0824f405699e9157584d3ba700efae323d795783092266cf38bfcc18"
+    },
+    "source/packages/server/src/transaction-changefeed.test.ts": {
+      "bytes": 96730,
+      "sha256": "e57a05adb613c7bfec646e19e282dcc536a20a3d8f0a5fd2858b734e60183da8"
+    },
+    "source/packages/server/src/transaction-http.test.ts": {
+      "bytes": 278266,
+      "sha256": "367327ac3ff1ce1f2893b9b2b3b37a80cb586315d3c105c9c85f51ef6a7a5c27"
+    },
+    "source/packages/server/src/transaction-http.ts": {
+      "bytes": 29774,
+      "sha256": "4a59ac8079853c2931e39088949c49b9fdca67929fdc6fc86e89ad382ba7bb87"
+    },
+    "source/packages/server/src/transaction-installed-contracts.test.ts": {
+      "bytes": 23301,
+      "sha256": "3626cc98357a0eddd4c6629c98d551793a2026f3f86f259c8a1c05ad5911867e"
+    },
+    "static-inspection.json": {
+      "bytes": 1266,
+      "sha256": "b659c652fb1a8dd8808fbae09f80b24e47550d6f54f69443af56381571bc6e90"
+    }
+  },
+  "independentNativeAccepted": false,
+  "kind": "immutable source-authoring2 freeze; validation CLOSED",
+  "patchSha256": "58b88cf2207a0e44bc0e7fa2e1b25a51c3dfc5a0411c74b688a218051db73b0b",
+  "productExecutionReleased": false,
+  "sourceBindingSha256": "f4319c067c761f45c70ce59f6eb8b38b37b58afdea4e536e335c850faee642d7"
+}
