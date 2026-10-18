@@ -1,0 +1,11 @@
+{
+  "kind": "documentation packaging assertion error only",
+  "exitCode": 1,
+  "exceptionType": "KeyError",
+  "missingKey": "sha256",
+  "location": "original26origin verification loop, after62 own new draft files written; no final index/mirror existed",
+  "cause": "Original input-origins uses25 exact-copy records with sha256 and one explicitly line-numbered design excerpt record with originSha256/copySha256/lineRange. Initial loop incorrectly assumed uniform sha256 records.",
+  "preservation": "The exact62 draft file hashes/bytes are frozen in partial-file-inventory.json and stay unchanged in final packet. No original packet/source/design/helper/flag/runtime/Git/reviewer action occurred.",
+  "correction": "Read actual origin record schema. Verify25 exact copies plus complete origin hash/excerpt copy hash and exact original127–144 numbered lines. Continue remaining data packaging without overwriting62 draft bytes.",
+  "actualReviewRetry": false
+}

@@ -8,7 +8,12 @@
     "node-version",
     "pnpm-version",
     "workspace-install",
-    "bind-workspace-tools"
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build"
   ],
   "baseTools": {
     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-5/base-tools.candidate.json",
@@ -69,7 +74,7 @@
   },
   "staticValidationAuthorized": true,
   "workspaceTools": {
-    "path": "UNRESOLVED",
-    "sha256": "UNRESOLVED"
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-5/run/workspace-tools.json",
+    "sha256": "152a247193b1644b804592e0007ed21dc670d26e40c0feca2d1ae243fbce3855"
   }
 }

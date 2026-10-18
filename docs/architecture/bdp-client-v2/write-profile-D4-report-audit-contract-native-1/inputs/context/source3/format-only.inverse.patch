@@ -1,0 +1,12 @@
+--- b/apps/bdptest/src/transactional-set-installed.test.ts
++++ a/apps/bdptest/src/transactional-set-installed.test.ts
+@@ -225,7 +225,8 @@
+   const observeValidationPhase = (phase: "callback-start" | "callback-end") => {
+     try {
+       const value = process.env.BDP_D4_VALIDATION_ATTEMPT_ID;
+-      const attemptId = typeof value === "string" && /^[0-9a-f]{32}$/.test(value) ? value : null;
++      const attemptId =
++        typeof value === "string" && /^[0-9a-f]{32}$/.test(value) ? value : null;
+       const sourceElapsedMilliseconds = performance.now() - started;
+       if (!Number.isFinite(sourceElapsedMilliseconds) || sourceElapsedMilliseconds < 0) return;
+       const line =

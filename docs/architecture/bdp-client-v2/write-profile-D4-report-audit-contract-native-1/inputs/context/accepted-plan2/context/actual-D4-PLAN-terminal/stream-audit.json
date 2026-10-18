@@ -1,0 +1,42 @@
+{
+  "rawSha256": "5de35c680017770107624f82805f05085355e3eb12d34aa6074b8e9fe47451a9",
+  "bytes": 1952970,
+  "validJSONLRecords": 4033,
+  "parseErrors": 0,
+  "finalNewline": true,
+  "recordTypes": {
+    "system": 602,
+    "stream_event": 3296,
+    "rate_limit_event": 4,
+    "assistant": 81,
+    "user": 49,
+    "result": 1
+  },
+  "terminalResultCount": 1,
+  "resultIsLastRecord": true,
+  "terminalSubtype": "success",
+  "terminalError": false,
+  "terminalReason": "completed",
+  "stopReason": "end_turn",
+  "finalReviewBytes": 20982,
+  "finalReviewSha256": "c1fdfa00007ab6e08391ee7e655aa36be882be14b59c03d0d7e4f05566ba0d40",
+  "finalReviewExactlyTerminalResult": true,
+  "terminalResultsExactlyRawResult": true,
+  "progressOrdinalsExact1Through4033": true,
+  "toolCalls": {
+    "Read": 34,
+    "Grep": 14,
+    "Glob": 1
+  },
+  "toolResults": 49,
+  "toolErrors": 0,
+  "toolCallResultIdSetsMatch": true,
+  "permissionDenials": [],
+  "subagentsSpawned": 0,
+  "initModel": "claude-opus-5[1m]",
+  "modelChoice": "configured default; no model override in exact argv. Provider modelUsage retained unmodified in raw terminal record.",
+  "stderrBytes": 0,
+  "outerWrapperStderrBytes": 0,
+  "outerProgressRecords": 855,
+  "oneOuterPreflight": true
+}
