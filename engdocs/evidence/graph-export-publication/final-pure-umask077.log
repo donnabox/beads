@@ -1,0 +1,61 @@
+Running: go test -p 4 -parallel 4 -timeout 25m -v -count 1 ./internal/graphoutput
+Skipping: 
+
+=== RUN   TestPublishFileReplacement
+=== RUN   TestPublishFileReplacement/0
+=== RUN   TestPublishFileReplacement/19
+=== RUN   TestPublishFileReplacement/65543
+--- PASS: TestPublishFileReplacement (0.02s)
+    --- PASS: TestPublishFileReplacement/0 (0.01s)
+    --- PASS: TestPublishFileReplacement/19 (0.01s)
+    --- PASS: TestPublishFileReplacement/65543 (0.01s)
+=== RUN   TestInvalidContextBeforeIO
+=== RUN   TestInvalidContextBeforeIO/nil
+=== RUN   TestInvalidContextBeforeIO/canceled
+=== RUN   TestInvalidContextBeforeIO/expired
+--- PASS: TestInvalidContextBeforeIO (0.00s)
+    --- PASS: TestInvalidContextBeforeIO/nil (0.00s)
+    --- PASS: TestInvalidContextBeforeIO/canceled (0.00s)
+    --- PASS: TestInvalidContextBeforeIO/expired (0.00s)
+=== RUN   TestPublishFileCreateFailure
+--- PASS: TestPublishFileCreateFailure (0.00s)
+=== RUN   TestPublishFileFailurePreservesDestination
+=== RUN   TestPublishFileFailurePreservesDestination/write
+=== RUN   TestPublishFileFailurePreservesDestination/write-and-abort
+=== RUN   TestPublishFileFailurePreservesDestination/close
+=== RUN   TestPublishFileFailurePreservesDestination/close-and-abort
+=== RUN   TestPublishFileFailurePreservesDestination/cancel-after-create
+=== RUN   TestPublishFileFailurePreservesDestination/cancel-between-writes
+=== RUN   TestPublishFileFailurePreservesDestination/cancel-before-finalize
+=== RUN   TestPublishFileFailurePreservesDestination/cancel-and-abort
+--- PASS: TestPublishFileFailurePreservesDestination (0.00s)
+    --- PASS: TestPublishFileFailurePreservesDestination/write (0.00s)
+    --- PASS: TestPublishFileFailurePreservesDestination/write-and-abort (0.00s)
+    --- PASS: TestPublishFileFailurePreservesDestination/close (0.00s)
+    --- PASS: TestPublishFileFailurePreservesDestination/close-and-abort (0.00s)
+    --- PASS: TestPublishFileFailurePreservesDestination/cancel-after-create (0.00s)
+    --- PASS: TestPublishFileFailurePreservesDestination/cancel-between-writes (0.00s)
+    --- PASS: TestPublishFileFailurePreservesDestination/cancel-before-finalize (0.00s)
+    --- PASS: TestPublishFileFailurePreservesDestination/cancel-and-abort (0.00s)
+=== RUN   TestPublishFileRealRenameFailure
+--- PASS: TestPublishFileRealRenameFailure (0.00s)
+=== RUN   TestPublishFileSuccessBoundary
+=== RUN   TestPublishFileSuccessBoundary/during-finalization
+=== RUN   TestPublishFileSuccessBoundary/after-rename
+--- PASS: TestPublishFileSuccessBoundary (0.01s)
+    --- PASS: TestPublishFileSuccessBoundary/during-finalization (0.01s)
+    --- PASS: TestPublishFileSuccessBoundary/after-rename (0.01s)
+=== RUN   TestWriteStreamShortWrite
+--- PASS: TestWriteStreamShortWrite (0.00s)
+=== RUN   TestWriteStreamCancellationAndCompletion
+=== RUN   TestWriteStreamCancellationAndCompletion/17
+=== RUN   TestWriteStreamCancellationAndCompletion/32769
+--- PASS: TestWriteStreamCancellationAndCompletion (0.00s)
+    --- PASS: TestWriteStreamCancellationAndCompletion/17 (0.00s)
+    --- PASS: TestWriteStreamCancellationAndCompletion/32769 (0.00s)
+=== RUN   TestWriteStreamEmptyAndNilWriter
+--- PASS: TestWriteStreamEmptyAndNilWriter (0.00s)
+=== RUN   TestPublishFileEmptyPathBeforeIO
+--- PASS: TestPublishFileEmptyPathBeforeIO (0.00s)
+PASS
+ok  	github.com/steveyegge/beads/internal/graphoutput	0.218s

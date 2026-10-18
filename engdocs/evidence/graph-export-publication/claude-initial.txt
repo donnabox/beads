@@ -1,0 +1,188 @@
+## Scope note
+
+No Critical defects. The real publication path is sound: error/abort ordering in `publishFile` is correct Go (`return err` on the shadowed variable does assign the named result, so the deferred abort fires and its join is observed by the caller), cancellation boundaries match their documentation, and `TestPublishFileRealRenameFailure` genuinely exercises the real `atomicfile` rename-failure path rather than a fake. The findings below are ranked within two separate lists, as requested.
+
+---
+
+# New defects — `publish.go`, `publish_test.go`, `BUILD.bazel`
+
+### 1. High — `publish.go:31-37` (doc), `publish.go:38`
+**Issue:** `PublishFile` documents "caller-selected permissions" and then explicitly enumerates what it does *not* guarantee ("not power loss or missing directory fsync"), which signals the comment is meant to be the complete contract. It omits that `perm` is not enforced on Windows. On Windows, `atomicfile.Close`'s `w.f.Chmod(perm)` only toggles `FILE_ATTRIBUTE_READONLY`; the published file's DACL is whatever `os.CreateTemp` inherited from the parent directory. The native review's fix guarded the test assertion for exactly this, which converted a loud test failure into silent non-enforcement with nothing written down.
+
+**Impact:** A caller selecting `0o600` for an export containing sensitive issue data gets a directory-ACL-inherited file on Windows, with no error and no documented warning. The test suite now asserts nothing there, so no future change can regress it further.
+
+**Fix:** Add to the `PublishFile` doc comment: "`perm` is honored on Unix; on Windows only the read-only attribute is set and the file inherits the parent directory's ACL." If the permission is load-bearing for the caller, also expose it: have `PublishFile` return the actual `os.Stat` mode, or add a `//go:build windows` path that applies an explicit DACL.
+
+---
+
+### 2. Medium — `publish.go:52-58`
+**Issue:** The deferred cleanup only aborts when `err != nil`. A panic (or any non-error unwind) through `WriteStream` → `w.Write` leaves `err == nil`, so `Abort` is never called and the temp file is orphaned. The `publicationWriter` interface is the package's declared extension seam, so the writer passed to `WriteStream` is not guaranteed to be panic-free.
+
+**Impact:** `.~<base>.XXXXXX` residue accumulates permanently in the user's export directory, never reaped by anything. No test covers it.
+
+**Fix:**
+```go
+defer func() {
+    if p := recover(); p != nil {
+        _ = w.Abort()
+        panic(p)
+    }
+    if err != nil { /* existing join */ }
+}()
+```
+Add a case to `TestPublishFileFailurePreservesDestination` with a `write` that panics, asserting `requireNoTemps` and that the panic propagates.
+
+---
+
+### 3. Medium — `publish.go:39-41`
+**Issue:** The factory closure does `return atomicfile.Create(path, perm)`, converting `(*atomicfile.Writer)(nil)` into a **non-nil** `publicationWriter` interface on the failure path. `publishFile` never checks `w == nil`, and `WriteStream`'s `w == nil` guard (line 81) cannot catch a typed nil either.
+
+**Impact:** Currently latent — the `err != nil` early return at lines 49-51 shields it. But any factory that returns `(nil, nil)` (the test factory at `publish_test.go:89-92` literally has that signature shape) produces a nil-pointer panic inside `w.Write` or, worse, inside the deferred `w.Abort()` while already unwinding an error.
+
+**Fix:** Make the conversion explicit and guard the result:
+```go
+w, err := atomicfile.Create(path, perm)
+if err != nil { return nil, err }
+return w, nil
+```
+and in `publishFile`, after the error check: `if w == nil { return errors.New("graph output writer factory returned no writer") }`.
+
+---
+
+### 4. Medium — `publish_test.go:149`, `publish_test.go:220`
+**Issue:** The test writes the pre-existing file with `os.WriteFile(path, original, 0o644)` and then asserts `info.Mode().Perm() != 0o644`. `os.WriteFile` modes are masked by the process umask; `Chmod` is not. (The assertion at line 67 is safe for this reason — `0o640` comes from `atomicfile`'s explicit `Chmod` — but line 220's does not.)
+
+**Impact:** On any machine or CI runner with a umask stricter than `0o022` (e.g. `0o027`, `0o077` — common on hardened images), the file is created `0o640`/`0o600` and all eight subtests fail with "original permissions changed". The `runtime.GOOS != "windows"` guard does not help. The frozen `pure.log` only proves this passes under the umask of one machine.
+
+**Fix:** Follow the setup write with `os.Chmod(path, 0o644)`, or capture the pre-publication mode via `os.Stat` before calling `publishFile` and assert the post-failure mode equals *that*.
+
+---
+
+### 5. Medium — `publish.go:23-27`
+**Issue:** `publicationWriter` carries no doc comment, so the contract `publishFile` depends on is unstated: must `Abort` be safe after a failed `Close`? Must it be idempotent? Must `Close` self-clean on failure? The real implementation and the test fake answer differently. `atomicfile.Writer.Close` sets `done = true` *before* its first failure check, so after a real `Close` failure `Abort()` returns `nil` immediately and cleanup came entirely from `Close`'s internal `os.Remove`. The fake at `publish_test.go:179-184` returns `closeErr` without ever calling `w.Close()`, leaving `done == false` so `Abort` does the real removal.
+
+**Impact:** The `aborts != 1` assertion at line 214 encodes fake-only behavior. A future `publicationWriter` whose `Close` fails *without* self-cleanup, or whose `Abort` is not a no-op after `Close`, is unverified — and `publishFile` would either leak or double-clean. Separately, only `atomicfile`'s **rename** failure is covered by a real-writer test (`TestPublishFileRealRenameFailure`); its `chmod` and `sync` failure paths are never exercised through `publishFile`.
+
+**Fix:** Document the interface: "`Abort` must discard any pending output and must be a safe no-op after `Close`, successful or not. `Close` must leave no residue on failure." Add a real-writer case where `Close` fails before rename (e.g. publish to a path whose parent is removed between `Create` and `Close`) and assert `requireNoTemps`.
+
+---
+
+### 6. Medium — `publish_test.go:39-48`
+**Issue:** `requireNoTemps` only inspects `filepath.Dir(path)` and only *after* the operation completes. Nothing asserts that the temp file was created in the **target's** directory while publication was in flight — which is the entire basis of the same-filesystem rename guarantee.
+
+**Impact:** If `atomicfile.Create` regressed to `os.CreateTemp(os.TempDir(), ...)`, every test in this file would still pass: `requireNoTemps` would find exactly one entry, and rename would still succeed on single-filesystem CI. Cross-device publication would break silently in production with `EXDEV`.
+
+**Fix:** Inside the `write` callback of `TestPublishFileFailurePreservesDestination`, read `filepath.Dir(path)` and assert exactly two entries — the target plus one `.~export.` prefixed sibling.
+
+---
+
+### 7. Medium — `publish.go:38`, `publish.go:44-48`
+**Issue:** `path` is unvalidated. The package exports `ErrNilContext` and `ErrNilWriter` as input-validation sentinels but has no equivalent for the destination. `PublishFile(ctx, "", data, perm)` resolves to `filepath.Dir("") == "."`, so `os.CreateTemp` creates `.~..XXXXXX` **in the process working directory**, then `os.Rename(temp, "")` fails and the temp is removed.
+
+**Impact:** A path bug in a caller (empty string from an unset flag, or a trailing-slash directory path) causes file creation outside the intended destination before failing. Inconsistent with the two sentinels the package does export, and untested.
+
+**Fix:** Add `ErrEmptyPath = errors.New("graph output requires a destination path")` and reject `path == ""` before `create`, alongside the entry context check. Add a subtest asserting the sentinel and that the working directory is unchanged.
+
+---
+
+### 8. Medium — `publish_test.go` (whole file)
+**Issue:** No test asserts that `data` is unmodified after `PublishFile` / `WriteStream`. This is the one invariant the slice's governing contract is actually about — "detached bytes only", "the caller owns data and must not modify it during publication" (`publish.go:32-33`, `publish.go:76`).
+
+**Impact:** The central contract of the frozen slice is unverified. Chunking arithmetic at line 88-89 slices `data` directly; a future in-place transform (framing, length prefix, normalization) added at this layer would silently mutate the caller's buffer with no test failing.
+
+**Fix:** In `TestPublishFileReplacement` and `TestWriteStreamEmptyAndNilWriter`, keep a `slices.Clone(data)` and assert `bytes.Equal` against it after the call, for a size spanning multiple chunks.
+
+---
+
+### 9. Low — `publish.go:78-83`
+**Issue:** `WriteStream` checks the context *before* checking `w == nil`. A programming error is therefore masked by transient state.
+
+**Impact:** `WriteStream(canceledCtx, nil, data)` returns `context.Canceled`; `WriteStream(nil, nil, nil)` returns `ErrNilContext`. A caller that treats cancellation as benign ("user aborted, exit 130") will never surface the nil-writer bug. `TestWriteStreamEmptyAndNilWriter:337` only covers nil-writer with `context.Background()`, so the combination is untested.
+
+**Fix:** Move the `w == nil` check above the context check, and add a subtest asserting `errors.Is(err, ErrNilWriter)` for a nil writer with a canceled context.
+
+---
+
+### 10. Low — `publish.go:45-47`, `publish.go:62-64`
+**Issue:** Context errors are returned bare, with no wrapping. `PublishFile(ctx, "/exports/graph.bin", …)` under cancellation returns exactly `context.Canceled` — no path, no operation, not even the `"graph output"` prefix every other error in the package carries.
+
+**Impact:** Indistinguishable from any other cancellation in the caller's stack. For a user-facing export that was discarded at the finish line (the line 62 pre-`Close` check), the message cannot explain what was abandoned.
+
+**Fix:** `return fmt.Errorf("publish graph output to %s: %w", path, err)`. The existing `errors.Is(err, context.Canceled)` and `errors.Is(err, context.DeadlineExceeded)` assertions at lines 93-106 and 197 continue to hold through the single `%w`.
+
+---
+
+### 11. Low — `publish_test.go:67`, `publish_test.go:220`
+**Issue:** The guard is `runtime.GOOS != "windows"`, but Windows is not the only platform that does not honor Unix mode bits — `plan9` has a different permission model, and `js/wasm` and `wasip1` have partial or no `chmod` support.
+
+**Impact:** The same spurious failure reappears on any non-Windows platform lacking POSIX mode semantics. The guard also hardcodes an exclusion list that must be maintained as ports are added.
+
+**Fix:** Replace the `GOOS` test with a capability probe: create a scratch file, `os.Chmod` it to `0o640`, `os.Stat` it, and assert the published mode only if the probe reports `0o640`. This is platform-agnostic and self-maintaining.
+
+---
+
+### 12. Low — `publish_test.go:50-72`
+**Issue:** Two publication blind spots that together are what would actually catch the Windows behavior in finding 1:
+- No test republishes over a file that a prior `PublishFile` created (every test's pre-existing file comes from `os.WriteFile`), so the `done`-flag and chmod-before-rename interaction on a second pass is unexercised.
+- No test uses a `perm` without owner write (e.g. `0o444`). On Unix this succeeds; on Windows `Chmod(0o444)` sets `FILE_ATTRIBUTE_READONLY` and a subsequent `MoveFileEx(..., REPLACE_EXISTING)` over that read-only target fails with `ERROR_ACCESS_DENIED`.
+
+**Impact:** Repeated publication of a read-only export is broken on Windows and no test would reveal it.
+
+**Fix:** Add a subtest that calls `PublishFile` twice on the same path — first `0o444`, then `0o640` — asserting both succeed and the final bytes and mode are correct (mode under the probe guard from finding 11).
+
+---
+
+### 13. Low — `publish_test.go:74-113`, `publish_test.go:131-144`
+**Issue:** `context.DeadlineExceeded` is only exercised at function entry. Every mid-publication case in `TestPublishFileFailurePreservesDestination` uses `cancel()`, so the loop-head check (line 85) and the pre-`Close` check (line 62) are only ever tested with `Canceled`.
+
+**Impact:** The two cancellation causes travel the same `ctx.Err()` code path today, so this is a coverage asymmetry rather than a live bug — but it means a future change that special-cases `DeadlineExceeded` (plausible at the pre-`Close` boundary, where all the work is already done) would ship unverified.
+
+**Fix:** Parameterize one mid-write and one pre-finalize case over a `context.WithTimeout` whose deadline is forced to expire inside the `write` callback.
+
+---
+
+### 14. Low — `BUILD.bazel:7`, `BUILD.bazel:11-16`, cross-referenced with `pure.log:1`
+**Issue:** Three unrelated weaknesses:
+- `pure.log:1` shows the frozen evidence is `go test -p 4 -parallel 4 -timeout 25m -v -count 1 ./internal/graphoutput`. The `BUILD.bazel` in the manifest was never executed by anything in this slice, so its `srcs`/`deps`/`embed` wiring is asserted but unverified.
+- `go_test` declares no `size` or `timeout`, silently inheriting `medium` (300s). The `go test` evidence ran with a 25m timeout — the two harnesses disagree on the bound.
+- `visibility = ["//:__subpackages__"]` grants every package in the repository access to a package whose own doc (`publish.go:2-3`) states callers "must finish those operations successfully before invoking this package" — hard preconditions this package cannot check.
+
+**Impact:** A Bazel-only CI lane could fail on a wiring error the frozen log cannot detect; a slow-filesystem runner could hit a timeout mismatch; broad visibility invites callers that violate the stated preconditions.
+
+**Fix:** Add `size = "small"` to `go_test`. Narrow visibility to the intended consumers (e.g. `["//internal/export:__subpackages__", "//cmd:__subpackages__"]`). Note in the slice's evidence that the Bazel target is unvalidated by `pure.log`.
+
+---
+
+# Inherited `atomicfile` limitations — pre-existing, not introduced by this slice
+
+These are properties of `atomicfile.go`, which `publish.go` consumes unchanged. Listed separately per instruction; `publish.go` can only document or work around them.
+
+### I1. Medium — `atomicfile.go:93-96`
+No `fsync` of the parent directory after `os.Rename`. The rename is atomic with respect to concurrent readers but not durable: a crash after `Close` returns can leave the directory entry pointing at the old file or at nothing. Already acknowledged honestly in `publish.go:36-37`, but unfixed. Fix in `atomicfile`: after a successful rename, `os.Open(filepath.Dir(w.target))` → `Sync()` → `Close()`, surfacing the error.
+
+### I2. Medium — `atomicfile.go:76`
+`w.f.Chmod(w.perm)` is the sole permission mechanism. On Windows this maps to the read-only attribute alone, so `perm` is effectively discarded (root cause of new finding 1). Additionally, a read-only target cannot be replaced by `MoveFileEx` on Windows, so republication over a `0o444` file fails there (root cause of new finding 12).
+
+### I3. Medium — `atomicfile.go:93`
+Rename-based replacement **clobbers a symlink destination** with a regular file rather than writing through it. This diverges from `os.WriteFile`, which follows the link, and is documented nowhere in either file. An export destination that is a symlink into a shared directory silently stops being shared after the first publication.
+
+### I4. Medium — `atomicfile.go:77-78`, `:83-84`, `:89`, `:94`
+Every cleanup operation on `Close`'s failure paths is discarded with `_ =`. `Close` reports only the primary cause. Because `Close` sets `done = true` at line 73 before any failure check, a subsequent `Abort()` returns `nil` at line 104 — so `publishFile`'s cleanup-error-preservation guarantee (`publish.go:52-58`, the discipline this slice exists to establish) **does not extend to the real `Close` path at all**. If the temp file cannot be removed after a rename failure, the user is told only "rename failed" and never learns residue was left behind.
+
+### I5. Low — `atomicfile.go:109`
+`Abort` returns `os.Remove`'s error unconditionally, including `fs.ErrNotExist` when the temp file is already gone (removed externally, or on a filesystem that unlinked it). `publishFile` joins that into the caller's error as "abort graph output: … no such file or directory" — spurious noise attached to the real failure. Fix: swallow `errors.Is(err, fs.ErrNotExist)`.
+
+### I6. Low — `atomicfile.go:49`
+The temp prefix `".~" + base + "."` plus `CreateTemp`'s random suffix adds roughly 13 bytes to the basename. For a destination name near `NAME_MAX` (255), `CreateTemp` fails with `ENAMETOOLONG`, and on Windows the same inflation can breach path limits — so `PublishFile` fails for long filenames where a direct `os.WriteFile` to the same path would succeed. Fix: truncate `base` in the prefix to a bounded length.
+
+### I7. Low — `atomicfile.go:45-59`
+If the process dies between `Create` and `Close`/`Abort`, the temp file is orphaned with no reaping mechanism, and the `.~` prefix hides it from plain `ls`. Combined with new finding 2 (panic path), the export directory can silently accumulate residue.
+
+### I8. Low — `atomicfile.go:93`, and `atomicfile.go:69-99` generally
+Rename-based replacement discards the previous file's extended attributes, POSIX ACLs, and ownership, and requires **write permission on the parent directory** — whereas an in-place overwrite requires only write permission on the file itself. Both are undocumented preconditions that surface as confusing `PublishFile` failures.
+
+### I9. Low — `atomicfile.go:35-40`, `:69-110`
+`Writer` is not safe for concurrent use and `done` is a plain `bool`, so a concurrent `Close`/`Abort` races on both the flag and the file descriptor. `publishFile` is single-goroutine so there is no live defect, but the constraint is not documented on the type.
+
+### I10. Low — `atomicfile.go:20-30`
+The sibling `WriteFile` helper discards the abort error (`_ = w.Abort()`, line 26), directly contradicting the cleanup-error-preservation discipline this slice establishes. Not reached by `publish.go`, but it is the obvious alternative a future caller will pick up, inheriting the weaker behavior.

@@ -1,0 +1,16 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "graphoutput",
+    srcs = ["publish.go"],
+    importpath = "github.com/steveyegge/beads/internal/graphoutput",
+    visibility = ["//:__subpackages__"],
+    deps = ["//internal/atomicfile"],
+)
+
+go_test(
+    name = "graphoutput_test",
+    srcs = ["publish_test.go"],
+    embed = [":graphoutput"],
+    deps = ["//internal/atomicfile"],
+)
