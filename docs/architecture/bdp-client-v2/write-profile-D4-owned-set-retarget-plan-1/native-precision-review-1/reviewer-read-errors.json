@@ -1,0 +1,15 @@
+{
+  "errors": [
+    {
+      "actualExit": 1,
+      "kind": "Origin schema assumed sha256 on line-numbered excerpt",
+      "resolution": "Verified separate originSha256 and copySha256 fields"
+    },
+    {
+      "actualExit": 1,
+      "kind": "Asserted65 audit indexed files rather than64 files plus index",
+      "resolution": "Verified64 index members plus index; plan65 total is correct"
+    }
+  ],
+  "scope": "Read-only review assertions, not candidate findings; no source/helper/runtime mutation or execution"
+}

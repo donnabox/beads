@@ -1,0 +1,147 @@
+{
+  "observedUtc": "2026-10-18T06:33:01.127913+00:00",
+  "acceptedFirstFour": true,
+  "stages": {
+    "node-version": {
+      "exitSha256": "68dc817999c01e6f1f807ce1df2009b0e3d9672c82e6211d4d0e1633f554271d",
+      "elapsedSeconds": 3.7187292091548443,
+      "accepted": true,
+      "rawExit": 0,
+      "logSha256": "a8f8f7ba69d43285857a0ea34017ef8dadd3ba012404bb7dd188fc773cf63ee2"
+    },
+    "pnpm-version": {
+      "exitSha256": "cd98a0665712bf1a338f674ae48fa3472a8b34e52a192ff84a827808e4309970",
+      "elapsedSeconds": 3.926880791783333,
+      "accepted": true,
+      "rawExit": 0,
+      "logSha256": "6784d6c924df1c8341f9f841f5b5b20c37255de3d34f923baebc0a557d5d5201"
+    },
+    "workspace-install": {
+      "exitSha256": "4a9ee6ea97e6483e40c5b6eb1244f2e758c6e4f87befd8999cc7c8e0806532c6",
+      "elapsedSeconds": 3.992049000225961,
+      "accepted": true,
+      "rawExit": 0,
+      "logSha256": "22afcd1754a4446650ca500eb8762c9aaaebb04d77f123a1879fdeb8893b0ba2"
+    },
+    "bind-workspace-tools": {
+      "exitSha256": "ece3e5de0e80bdff3aec85f2d5c83d5c49eebfeb5205aa3d8085a92ddf266608",
+      "elapsedSeconds": 8.191032166127115,
+      "accepted": true,
+      "rawExit": 0,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "firstFourStartedGateSha256": "4eb58108e5bcd823d8decb39644faf79ad83936b4a49c1c5b2399b09c26d90e9",
+  "observedActiveGateSha256": "863ea3cefaa82d035026babd9785fbe411b00b7d948c20aec178fc442645e7c9",
+  "observedActiveGateReleased": true,
+  "observedActiveApprovedStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build"
+  ],
+  "sourceFilesVerified": 682,
+  "sourceIdentity": "0c53a6bb33d57133c8fbb43b8787d9251ca4276abcdb18b2a9f434279bfe364b",
+  "sourceBindingSha256": "0572475970aee5a5466530ad68c4e84b5725947a0d7f3740da9321b6a23f75de",
+  "fullPatchBinding": "515e11937c2a89c5e22a696a11a0c01a547a532a02fd645a8994ef12d6d27343",
+  "frozenPreparationFilesVerified": 465,
+  "frozenException": "execution-gate.json alone explicitly root-released; immutable execution-gate.closed.json unchanged",
+  "workspaceToolsVerified": 11,
+  "workspaceToolsSha256": "e1cba7536b66787e21d2580cc87551260c6e71c6ab190def98110ed324177324",
+  "sampledPids": [
+    61369,
+    62776,
+    64295,
+    65711,
+    65721,
+    65740,
+    65761,
+    65778,
+    65815,
+    65835,
+    65855,
+    65876,
+    65893,
+    65913,
+    65931,
+    65950,
+    65970,
+    65985,
+    66003,
+    66042,
+    66079,
+    66100,
+    66118,
+    66138,
+    66158,
+    66180,
+    66200,
+    66217,
+    66239,
+    66275,
+    66317,
+    66332,
+    66350,
+    66369,
+    66388,
+    66407,
+    66427,
+    66445,
+    66456,
+    66457
+  ],
+  "sampledGroups": [
+    61369,
+    62776,
+    64295,
+    65711
+  ],
+  "sampledPidsAndGroupsAbsentAtCensus": true,
+  "scratchDirectories": [
+    {
+      "stage": "node-version",
+      "path": "/private/tmp/vickie-trusted-startup-validation-node-version-dyp1441_",
+      "exists": true,
+      "topLevelNames": [],
+      "bdpDirectories": []
+    },
+    {
+      "stage": "pnpm-version",
+      "path": "/private/tmp/vickie-trusted-startup-validation-pnpm-version-hu6chy6k",
+      "exists": true,
+      "topLevelNames": [
+        "node-compile-cache"
+      ],
+      "bdpDirectories": []
+    },
+    {
+      "stage": "workspace-install",
+      "path": "/private/tmp/vickie-trusted-startup-validation-workspace-install-z6qe1fc5",
+      "exists": true,
+      "topLevelNames": [
+        "node-compile-cache"
+      ],
+      "bdpDirectories": []
+    },
+    {
+      "stage": "bind-workspace-tools",
+      "path": "/private/tmp/vickie-trusted-startup-validation-bind-workspace-tools-4r1xdmki",
+      "exists": true,
+      "topLevelNames": [],
+      "bdpDirectories": []
+    }
+  ],
+  "laterAttemptRecordsAtObservation": [
+    "typecheck.started.json"
+  ],
+  "laterQualification": "No later success asserted; gate/attempt inventory is specific to observation epoch",
+  "actualReviewerReadCorrectedBytes": false,
+  "actualCodeFinalization": "FAILED/CLI UNKNOWN historical evidence plus minimal native correction chain",
+  "auditorExecutedValidation": false,
+  "findings": []
+}

@@ -1,0 +1,36 @@
+{
+  "currentlyImplemented": [
+    {
+      "gate": "public Read",
+      "source": "packages/server/src/index.ts288–317; read-conformance-capability27–55",
+      "behavior": "explicit profile required; any nonread refused; target-bound well-formed shipped Read evidence constant required; opaque factory brand guards createReadServer"
+    },
+    {
+      "gate": "ordinary bdptest",
+      "source": "apps/bdptest/src/main.ts59–85",
+      "behavior": "composes configured Read server then node listener; no ordinary RU/TX runtime wiring on cce"
+    },
+    {
+      "gate": "ordinary artifact",
+      "source": "artifact-bundle90–101,179–213",
+      "behavior": "read-v1 catalog carrier closed; diagnostic RU lane diagnostic IDs only; source-private canonical cumulative factories separate"
+    },
+    {
+      "gate": "private cumulative",
+      "source": "artifact-bundle105–151;runner335–353,2791–2820",
+      "behavior": "RU/TX v2 carrier and matching exact execution; TX private branded bundle+runner required; return claimEligible:false"
+    },
+    {
+      "gate": "profile planner",
+      "source": "profile-contract-plan217–370",
+      "behavior": "no unobserved requirement removed; six readiness classes; TX transportAdmission private-exact-available; all claimEligible:false"
+    }
+  ],
+  "notImplementedHere": [
+    "Write production evidence generator/sealer/verifier/capability/admission path",
+    "ordinary credentialed RU/TX intended-listener startup and fail-before-bind lifecycle completion",
+    "all applicable canonical required rows with whole-clause proof on final actual installed configuration"
+  ],
+  "currentPublicReadEvidence": "existing sealed two-target Read artifact and shared constant stay exact; no old Read89/count conversion to Write credit",
+  "futureSelfReferenceConstraint": "installed-payload hashes actual server/protocol dist plus dependency closure without capability exclusions. Adding a server evidence constant changes that digest. A later admission plan must bind actual final bytes and evidence-only delta explicitly; do not create a hash fixed-point, silently exclude files, normalize hashes, or relabel a pre-admission private payload as the final shipping payload. Prefer separately verified non-secret administrative evidence input outside measured runtime closure if accepted in later implementation review; exact placement/authority remains a concrete implementation design task, not a new protocol ruling."
+}

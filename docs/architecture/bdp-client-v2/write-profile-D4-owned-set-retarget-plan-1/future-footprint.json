@@ -1,0 +1,19 @@
+{
+  "selectedFutureFiles": [
+    "apps/bdptest/src/transactional-set-installed.test.ts"
+  ],
+  "why": "One existing callback already owns workload. Local response/pending/returned-child observation and final reporting solve the concrete success/restart evidence gap. Pre-ready failure stays unknown and fails; root supervisor handles descendant closure. No new runtime, duplicated product test or new helper framework.",
+  "sharedHelper": "scripts/transaction-installed-observation.mjs unchanged; optional onSpawn/export change NOT proposed. Its 23 importing source files retain signatures/defaults; failure cleanup internals can outlive local10s wait and must remain visible to root.",
+  "outsideFootprint": [
+    "all runtime/store/configuration/policy/compiler/schema files",
+    "transactional-execution-binding.ts",
+    "all other callbacks/importers",
+    "design.md and launch files",
+    "all older packets/guards/gates",
+    "public profile activation and ordinary bdptest main wiring"
+  ],
+  "authoringReleased": false,
+  "reviewLaunchReleased": false,
+  "executionReleased": false,
+  "claimEligible": false
+}

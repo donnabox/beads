@@ -1,0 +1,443 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration
+
+ ✓ packages/server/src/reference-deployment.test.ts > captures the RU default closure through the existing capture and exposes only an inert handle 10ms
+ ✓ packages/server/src/reference-deployment.test.ts > accepts the deploymentFile-only bdptest section for read-update with one selected file open 3ms
+ ✓ packages/server/src/reference-deployment.test.ts > accepts the deploymentFile-only bdptest section for transactional with one selected file open 7ms
+ ✓ packages/server/src/reference-deployment.test.ts > refuses a nested deploymentFile mismatched-path before opening 1ms
+ ✓ packages/server/src/reference-deployment.test.ts > refuses a nested deploymentFile invalid-path-type before opening 1ms
+ ✓ packages/server/src/reference-deployment.test.ts > refuses a nested deploymentFile fixture-conflict before opening 0ms
+ ✓ packages/server/src/reference-deployment.test.ts > delegates explicit RU schemas, ownership and endpoint multiplicity without an alternate compiler 8ms
+ ✓ packages/server/src/reference-deployment.test.ts > keeps TX compilation, credentials and capabilities private and leaves live metadata unavailable 8ms
+ ✓ packages/server/src/reference-deployment.test.ts > accepts duplicate RU principals with unique tokens, preserving existing semantics 4ms
+ ✓ packages/server/src/reference-deployment.test.ts > snapshots caller settings before await and never rereads after file replacement 3ms
+ ✓ packages/server/src/reference-deployment.test.ts > does not create or alter a pre-existing read-only target store directory 2ms
+ ✓ packages/server/src/reference-deployment.test.ts > refuses unsupported profile read before opening 0ms
+ ✓ packages/server/src/reference-deployment.test.ts > refuses unsupported profile undefined before opening 0ms
+ ✓ packages/server/src/reference-deployment.test.ts > refuses unsupported profile future before opening 0ms
+ ✓ packages/server/src/reference-deployment.test.ts > refuses shared listener/limits/fixture/fault conflicts before opening and never invokes getters 1ms
+ ✓ packages/server/src/reference-deployment.test.ts > accepts the supported RU IPv6 intended listener 2ms
+ ✓ packages/server/src/reference-deployment.test.ts > refuses envelope extensions, wrong profile/format and Directory/descriptor wire shapes 6ms
+ ✓ packages/server/src/reference-deployment.test.ts > delegates RU credential, policy, provisioning, artifact, locality and aggregate refusals 20ms
+ ✓ packages/server/src/reference-deployment.test.ts > delegates TX exact credential and compiled closure refusals 8ms
+ ✓ packages/server/src/reference-deployment.test.ts > rejects malformed UTF8, BOM, escaped duplicate names, lone surrogates and unsafe numbers without echo 4ms
+ ✓ packages/server/src/reference-deployment.test.ts > bounds the lossless tree before numeric admission and treats number literals as atomic 114ms
+ ✓ packages/server/src/reference-deployment.test.ts > isolates the outer byte ceiling with a valid small envelope and legal trailing whitespace 8ms
+ ✓ packages/server/src/reference-deployment.test.ts > closes the single real descriptor on success and syntax/contract failures 6ms
+ ✓ packages/server/src/reference-deployment.test.ts > bounds reads despite stale stat and closes handles on overflow/read failure/non-file 3ms
+ ✓ packages/server/src/reference-deployment.test.ts > exports only the loader and local error constructor from the public data entry 0ms
+ ↓ packages/server/src/transaction-runtime-configuration.test.ts > serves a real default compiled canonical runtime and detaches inputs and seams before await
+ ↓ packages/server/src/transaction-runtime-configuration.test.ts > separates all four authority cases, nondefault ports and request default-port refusal
+ ↓ packages/server/src/transaction-runtime-configuration.test.ts > preserves logical identity across reopen and separate live listener ports; permissions are per token
+ ↓ packages/server/src/transaction-runtime-configuration.test.ts > suppresses metadata for explicitly supplied undefined seam clock
+ ↓ packages/server/src/transaction-runtime-configuration.test.ts > suppresses metadata for explicitly supplied undefined seam scheduler
+ ↓ packages/server/src/transaction-runtime-configuration.test.ts > suppresses metadata for explicitly supplied undefined seam comparison
+ ↓ packages/server/src/transaction-runtime-configuration.test.ts > suppresses metadata for explicitly supplied undefined seam minimumReads
+ ↓ packages/server/src/transaction-runtime-configuration.test.ts > suppresses metadata for explicitly supplied undefined seam maximumOperations
+ ↓ packages/server/src/transaction-runtime-configuration.test.ts > suppresses metadata for explicitly supplied undefined seam receiptMaximumItems
+ ↓ packages/server/src/transaction-runtime-configuration.test.ts > suppresses metadata for explicitly supplied undefined seam maintenanceIntervalMs
+ ↓ packages/server/src/transaction-runtime-configuration.test.ts > suppresses numeric seams and schema-free metadata without changing private serving
+ ↓ packages/server/src/transaction-runtime-configuration.test.ts > rejects accessors, proxies and unknown data before provisioning without getter evaluation
+ ↓ packages/server/src/transaction-runtime-configuration.test.ts > bounds administrative credentials by count and UTF8 principal bytes, preserving non-ASCII
+ ↓ packages/server/src/transaction-runtime-configuration.test.ts > binds the live closure and fixed policy, not compatibility JSON; credential ordering is immaterial
+ ↓ packages/server/src/transaction-runtime-configuration.test.ts > binds the owner Scope Snapshot tuple separately from query pagination and store compatibility
+ ✓ packages/server/src/transaction-runtime-configuration.test.ts > binds every default tuple leaf in the pure digest dependency test (not a served override) 4ms
+ ↓ packages/server/src/transaction-runtime-configuration.test.ts > detaches supplied Type inventory and nested seams without qualifying injected behavior
+ ↓ packages/server/src/transaction-runtime-configuration.test.ts > retains exact supplied closure refusal and closes startup resources for a valid retry
+ ↓ packages/server/src/transaction-runtime-configuration.test.ts > refuses invalid numeric seams before store provisioning
+ ↓ packages/server/src/transaction-runtime-configuration.test.ts > refuses unused scheduler keys before provisioning while preserving the turn-only seam
+ ↓ packages/server/src/transaction-runtime-configuration.test.ts > binds credentials through the versioned credential domain without asserting entropy
+ ↓ packages/server/src/transaction-runtime-configuration.test.ts > hashes actual stream defaults and all four transport timers; timing seams remain unattestable
+ ✓ packages/server/src/transaction-runtime-configuration.test.ts > effective stream availability preserves finite-only idle seams at the strict boundary 50ms
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 actual committed prefixes, shared source and delivery > interleaves current alias Read with original and new retry locators through actual S5
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 actual committed prefixes, shared source and delivery > observes five real prefixes, owned/alias state and atomic properties R1 before actual R2
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 actual committed prefixes, shared source and delivery > shares actual configuration for P/Q/anonymous and lawful aggregate changes without stale2
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 every active entry and timer phase > refuses owner-active reentry from actual member-capture with no new admission
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 every active entry and timer phase > refuses owner-active reentry from actual member-policy with no new admission
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 every active entry and timer phase > refuses owner-active reentry from actual contract with no new admission
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 every active entry and timer phase > refuses owner-active reentry from actual member-clock with no new admission
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 every active entry and timer phase > refuses owner-active reentry from actual maintenance with no new admission
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 every active entry and timer phase > refuses owner-active reentry from actual cancellation with no new admission
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 every active entry and timer phase > contains actual read-capture reentry through the complete plane delegation
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 every active entry and timer phase > contains actual page-clock reentry through the complete plane delegation
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 every active entry and timer phase > contains actual token reentry through the complete plane delegation
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 every active entry and timer phase > contains actual signal reentry through the complete plane delegation
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 every active entry and timer phase > contains actual remove reentry through the complete plane delegation
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 every active entry and timer phase > guards a real idle timer before logical expiry and cancels it at ordinary joint close
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 complete facet Promise/error boundary > returns the exact plane Promise for perform, preserving delegate and gate fault identities
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 complete facet Promise/error boundary > returns the exact plane Promise for alias, preserving delegate and gate fault identities
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 actual drain, ordinary failures and read fence > closes at2of5 with original completion and settled R1 while real3–5 drain
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 actual drain, ordinary failures and read fence > waits for another real attempt after an ordinary member fault and keeps ordinary read faults local
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 actual drain, ordinary failures and read fence > attributes a labeled sticky fence from actual withRead to read and recovers only real remaining claims
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 close evidence and automatic owner observation > retains fixed actual completion and invocation evidence for owner-invoke
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 close evidence and automatic owner observation > retains fixed actual completion and invocation evidence for owner-complete
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 close evidence and automatic owner observation > retains fixed actual completion and invocation evidence for read-invoke
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 close evidence and automatic owner observation > retains fixed actual completion and invocation evidence for read-complete
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 close evidence and automatic owner observation > retains fixed actual completion and invocation evidence for owner-complete-read-invoke
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 close evidence and automatic owner observation > retains fixed actual completion and invocation evidence for all
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 close evidence and automatic owner observation > retains fixed actual completion and invocation evidence for foreign
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 close evidence and automatic owner observation > owns original and derived rejections during automatic close and a real timer while owner drains
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 close evidence and automatic owner observation > owns original and derived rejections during explicit-before-observer close and a real timer while owner drains
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 receiving, ownership transfer and captured inputs > rejects scope before transfer and leaves the actual owner usable
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 receiving, ownership transfer and captured inputs > rejects malformed-scope before transfer and leaves the actual owner usable
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 receiving, ownership transfer and captured inputs > rejects pagination before transfer and leaves the actual owner usable
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 receiving, ownership transfer and captured inputs > rejects entry before transfer and leaves the actual owner usable
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 receiving, ownership transfer and captured inputs > rejects method before transfer and leaves the actual owner usable
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 receiving, ownership transfer and captured inputs > rejects completion before transfer and leaves the actual owner usable
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 receiving, ownership transfer and captured inputs > rejects busy before transfer and leaves the actual owner usable
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 receiving, ownership transfer and captured inputs > rejects draining before transfer and leaves the actual owner usable
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 receiving, ownership transfer and captured inputs > waits for actual admitted tail after plane failure, retaining cleanup failure=false
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 receiving, ownership transfer and captured inputs > waits for actual admitted tail after plane failure, retaining cleanup failure=true
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 receiving, ownership transfer and captured inputs > owns an intentionally unconsumed receiving factory rejection through a native checkpoint
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 receiving, ownership transfer and captured inputs > owns the unconsumed post-transfer factory and derived construction rejection after real tail drain
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 receiving, ownership transfer and captured inputs > captures actual owner/source/Read/pagination callables and original receivers before late replacement
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 receiving, ownership transfer and captured inputs > preserves a caller lookalike thrown from actual authorization during perform
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 receiving, ownership transfer and captured inputs > preserves a caller lookalike thrown from actual authorization during alias
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 source qualification and private containment > counts a hidden unowned Link against the same current aggregate seen by Read
+ ↓ packages/server/src/read-sequence-lifecycle.test.ts > G11 source qualification and private containment > holds the common close phase through actual pagination disposal
+ ✓ packages/server/src/read-sequence-lifecycle.test.ts > G11 source qualification and private containment > keeps lifecycle internals private alongside the explicit development facade 44ms
+ ↓ apps/bdptest/src/installed-reference-startup.test.ts > withholds reads and mutation admission until every principal is ready (later failure=false)
+ ↓ apps/bdptest/src/installed-reference-startup.test.ts > withholds reads and mutation admission until every principal is ready (later failure=true)
+ ✓ apps/bdptest/src/installed-reference-startup.test.ts > binds every fixed owner-bound group into configuration identity without enabling overrides 8ms
+ ↓ apps/bdptest/src/installed-reference-startup.test.ts > checks the actual owner before serving a static directory or hosted schema
+ ↓ apps/bdptest/src/installed-reference-startup.test.ts > retries failed listener cleanup without repeating successful owner cleanup
+ ↓ apps/bdptest/src/installed-reference-startup.test.ts > does not erase a terminal owner cleanup failure or invoke owner close again on retry
+ ✓ scripts/smoke-safety.test.mjs > pins the root and explicit development facade and refuses missing or broad exports 1ms
+ ✓ scripts/smoke-safety.test.mjs > refuses root, descendants and symlink aliases while accepting an external sibling 2ms
+ ↓ packages/config/src/index.test.ts > parseConfigArgs > extracts --config in both spellings and preserves every other argument
+ ↓ packages/config/src/index.test.ts > parseConfigArgs > rejects a missing path
+ ↓ packages/config/src/index.test.ts > parseConfigArgs > rejects an empty path in either spelling
+ ↓ packages/config/src/index.test.ts > parseConfigArgs > rejects a repeated flag rather than silently taking the last one
+ ↓ packages/config/src/index.test.ts > defaults > start in local-test mode with server.advertisedProfile deliberately unset
+ ↓ packages/config/src/index.test.ts > defaults > never invents an advertised profile when nothing was configured
+ ↓ packages/config/src/index.test.ts > precedence > takes the config file over defaults
+ ↓ packages/config/src/index.test.ts > precedence > takes the environment over the config file, field by field
+ ↓ packages/config/src/index.test.ts > precedence > selects the config file from BDP_CONFIG when no flag is given
+ ↓ packages/config/src/index.test.ts > precedence > takes the --config flag over BDP_CONFIG
+ ↓ packages/config/src/index.test.ts > precedence > rejects an empty BDP_CONFIG instead of falling back to defaults
+ ↓ packages/config/src/index.test.ts > bd fields > reads the executable and workspace from the environment
+ ↓ packages/config/src/index.test.ts > bd fields > omits an unset workspace rather than emitting undefined
+ ↓ packages/config/src/index.test.ts > bd fields > rejects an empty bd field
+ ↓ packages/config/src/index.test.ts > role validation > requires an explicit bd workspace for bdpbd in production
+ ↓ packages/config/src/index.test.ts > role validation > accepts bdpbd in production once the workspace is explicit
+ ↓ packages/config/src/index.test.ts > role validation > leaves the local-test workspace default alone for bdpbd
+ ↓ packages/config/src/index.test.ts > role validation > constrains no other role
+ ↓ packages/config/src/index.test.ts > Scope URL normalization > normalizes https://EXAMPLE.com/scope/ to https://example.com/scope/
+ ↓ packages/config/src/index.test.ts > Scope URL normalization > normalizes https://example.com:443/scope/ to https://example.com/scope/
+ ↓ packages/config/src/index.test.ts > Scope URL normalization > normalizes http://example.com:80/scope/ to http://example.com/scope/
+ ↓ packages/config/src/index.test.ts > Scope URL normalization > normalizes HTTPS://Example.COM:443/Scope/ to https://example.com/Scope/
+ ↓ packages/config/src/index.test.ts > Scope URL normalization > normalizes https://example.com/scope to https://example.com/scope/
+ ↓ packages/config/src/index.test.ts > Scope URL normalization > normalizes https://example.com to https://example.com/
+ ↓ packages/config/src/index.test.ts > Scope URL normalization > normalizes http://127.0.0.1:9999/s/ to http://127.0.0.1:9999/s/
+ ↓ packages/config/src/index.test.ts > Scope URL normalization > rejects "/relative/"
+ ↓ packages/config/src/index.test.ts > Scope URL normalization > rejects "https:\\example.com\\scope"
+ ↓ packages/config/src/index.test.ts > Scope URL normalization > rejects "https:/example.com/scope"
+ ↓ packages/config/src/index.test.ts > Scope URL normalization > rejects "https:example.com/scope"
+ ↓ packages/config/src/index.test.ts > Scope URL normalization > rejects ""
+ ↓ packages/config/src/index.test.ts > Scope URL normalization > rejects "ftp://example.com/scope/"
+ ↓ packages/config/src/index.test.ts > Scope URL normalization > rejects "https://user:pw@example.com/scope/"
+ ↓ packages/config/src/index.test.ts > Scope URL normalization > rejects "https://:pw@example.com/scope/"
+ ↓ packages/config/src/index.test.ts > Scope URL normalization > rejects "https://example.com/scope/?a=1"
+ ↓ packages/config/src/index.test.ts > Scope URL normalization > rejects "https://example.com/scope/#f"
+ ↓ packages/config/src/index.test.ts > Scope URL normalization > rejects "https://example.com/scope//"
+ ↓ packages/config/src/index.test.ts > Scope URL normalization > rejects "https://example.com/%73cope/"
+ ↓ packages/config/src/index.test.ts > Scope URL normalization > rejects "https://example.com/a/../victim/"
+ ↓ packages/config/src/index.test.ts > Scope URL normalization > rejects "https://example.com/a/%2E%2E/victim/"
+ ↓ packages/config/src/index.test.ts > Scope URL normalization > rejects "https://example.com/a/.%2e/victim/"
+ ↓ packages/config/src/index.test.ts > Scope URL normalization > rejects "https://example.com/scope\\evil/"
+ ↓ packages/config/src/index.test.ts > Scope URL normalization > never echoes the value, which is where a mistyped credential lands
+ ↓ packages/config/src/index.test.ts > derived local-test Scope URL > matches the configured listener rather than a fixed constant
+ ↓ packages/config/src/index.test.ts > derived local-test Scope URL > is normalized by the same validator as a supplied Scope URL
+ ↓ packages/config/src/index.test.ts > derived local-test Scope URL > refuses to derive a Scope URL from a IPv4 wildcard
+ ↓ packages/config/src/index.test.ts > derived local-test Scope URL > refuses to derive a Scope URL from a bare IPv6 wildcard
+ ↓ packages/config/src/index.test.ts > derived local-test Scope URL > refuses to derive a Scope URL from a bracketed IPv6 wildcard
+ ↓ packages/config/src/index.test.ts > derived local-test Scope URL > refuses to derive a Scope URL from a IPv6 wildcard written out
+ ↓ packages/config/src/index.test.ts > derived local-test Scope URL > refuses to derive a Scope URL from a shorthand IPv4 wildcard
+ ↓ packages/config/src/index.test.ts > derived local-test Scope URL > refuses to derive a Scope URL from a ephemeral port
+ ↓ packages/config/src/index.test.ts > derived local-test Scope URL > accepts a wildcard listener once the Scope URL is explicit
+ ↓ packages/config/src/index.test.ts > derived local-test Scope URL > brackets a bare IPv6 host
+ ↓ packages/config/src/index.test.ts > derived local-test Scope URL > does not double-bracket an already-bracketed IPv6 host
+ ↓ packages/config/src/index.test.ts > derived local-test Scope URL > drops the default port, as URL serialization does
+ ↓ packages/config/src/index.test.ts > derived local-test Scope URL > is the documented constant under the default host and port
+ ↓ packages/config/src/index.test.ts > server.host is a host and nothing else > accepts 127.0.0.1
+ ↓ packages/config/src/index.test.ts > server.host is a host and nothing else > accepts localhost
+ ↓ packages/config/src/index.test.ts > server.host is a host and nothing else > accepts beads.example
+ ↓ packages/config/src/index.test.ts > server.host is a host and nothing else > accepts ::1
+ ↓ packages/config/src/index.test.ts > server.host is a host and nothing else > accepts [::1]
+ ↓ packages/config/src/index.test.ts > server.host is a host and nothing else > accepts example.test.
+ ↓ packages/config/src/index.test.ts > server.host is a host and nothing else > accepts 0:0:0:0:0:0:0:1
+ ↓ packages/config/src/index.test.ts > server.host is a host and nothing else > rejects a space
+ ↓ packages/config/src/index.test.ts > server.host is a host and nothing else > rejects a scheme
+ ↓ packages/config/src/index.test.ts > server.host is a host and nothing else > rejects userinfo
+ ↓ packages/config/src/index.test.ts > server.host is a host and nothing else > rejects userinfo with a password
+ ↓ packages/config/src/index.test.ts > server.host is a host and nothing else > rejects a port
+ ↓ packages/config/src/index.test.ts > server.host is a host and nothing else > rejects a bracketed IPv6 literal with a port
+ ↓ packages/config/src/index.test.ts > server.host is a host and nothing else > rejects a path
+ ↓ packages/config/src/index.test.ts > server.host is a host and nothing else > rejects a query string
+ ↓ packages/config/src/index.test.ts > server.host is a host and nothing else > rejects a fragment
+ ↓ packages/config/src/index.test.ts > server.host is a host and nothing else > rejects an unterminated IPv6 literal
+ ↓ packages/config/src/index.test.ts > server.host is a host and nothing else > rejects a malformed IPv6 literal
+ ↓ packages/config/src/index.test.ts > server.host is a host and nothing else > rejects an empty bracket pair
+ ↓ packages/config/src/index.test.ts > server.host is a host and nothing else > rejects an embedded newline
+ ↓ packages/config/src/index.test.ts > server.host is a host and nothing else > rejects an embedded tab
+ ↓ packages/config/src/index.test.ts > server.host is a host and nothing else > does not echo the rejected value, which may be a misplaced credential
+ ↓ packages/config/src/index.test.ts > production identity > requires an explicit Scope URL
+ ↓ packages/config/src/index.test.ts > production identity > rejects the reserved local-test path on any host
+ ↓ packages/config/src/index.test.ts > production identity > allows a loopback Scope URL that does not use the reserved path
+ ↓ packages/config/src/index.test.ts > production identity > does not treat a path that merely starts with the same letters as reserved
+ ↓ packages/config/src/index.test.ts > production identity > accepts an explicit production Scope URL
+ ↓ packages/config/src/index.test.ts > production identity > does not accuse an unparseable production Scope URL of being the local-test URL
+ ↓ packages/config/src/index.test.ts > port contract > a string keeps its spelling, so the spelling is checked > accepts "0"
+ ↓ packages/config/src/index.test.ts > port contract > a string keeps its spelling, so the spelling is checked > accepts "80"
+ ↓ packages/config/src/index.test.ts > port contract > a string keeps its spelling, so the spelling is checked > accepts "8080"
+ ↓ packages/config/src/index.test.ts > port contract > a string keeps its spelling, so the spelling is checked > accepts "65535"
+ ↓ packages/config/src/index.test.ts > port contract > a string keeps its spelling, so the spelling is checked > rejects ""
+ ↓ packages/config/src/index.test.ts > port contract > a string keeps its spelling, so the spelling is checked > rejects " 8080"
+ ↓ packages/config/src/index.test.ts > port contract > a string keeps its spelling, so the spelling is checked > rejects "8080 "
+ ↓ packages/config/src/index.test.ts > port contract > a string keeps its spelling, so the spelling is checked > rejects "8e3"
+ ↓ packages/config/src/index.test.ts > port contract > a string keeps its spelling, so the spelling is checked > rejects "0x10"
+ ↓ packages/config/src/index.test.ts > port contract > a string keeps its spelling, so the spelling is checked > rejects "+80"
+ ↓ packages/config/src/index.test.ts > port contract > a string keeps its spelling, so the spelling is checked > rejects "080"
+ ↓ packages/config/src/index.test.ts > port contract > a string keeps its spelling, so the spelling is checked > rejects "80.0"
+ ↓ packages/config/src/index.test.ts > port contract > a string keeps its spelling, so the spelling is checked > rejects "-1"
+ ↓ packages/config/src/index.test.ts > port contract > a string keeps its spelling, so the spelling is checked > rejects "65536"
+ ↓ packages/config/src/index.test.ts > port contract > a string keeps its spelling, so the spelling is checked > holds a JSON string to the same spelling rule as an environment value
+ ↓ packages/config/src/index.test.ts > port contract > a JSON number has already lost its spelling, so only the value is checked > cannot distinguish 8e3 from 8000 and accepts both as 8000
+ ↓ packages/config/src/index.test.ts > port contract > a JSON number has already lost its spelling, so only the value is checked > accepts an in-range integer
+ ↓ packages/config/src/index.test.ts > port contract > a JSON number has already lost its spelling, so only the value is checked > rejects 80.5
+ ↓ packages/config/src/index.test.ts > port contract > a JSON number has already lost its spelling, so only the value is checked > rejects -1
+ ↓ packages/config/src/index.test.ts > port contract > a JSON number has already lost its spelling, so only the value is checked > rejects 65536
+ ↓ packages/config/src/index.test.ts > port contract > a JSON number has already lost its spelling, so only the value is checked > rejects true
+ ↓ packages/config/src/index.test.ts > port contract > a JSON number has already lost its spelling, so only the value is checked > rejects null
+ ↓ packages/config/src/index.test.ts > validation > rejects unknown config-file keys so a typo is loud
+ ↓ packages/config/src/index.test.ts > validation > reports every issue in one throw
+ ↓ packages/config/src/index.test.ts > validation > reports an unreadable config file rather than starting on defaults
+ ↓ packages/config/src/index.test.ts > validation > reports a config file that is not a JSON object
+ ↓ packages/config/src/index.test.ts > server.advertisedProfile > is unset by default so a future server cannot claim a profile the operator never asked for
+ ↓ packages/config/src/index.test.ts > server.advertisedProfile > accepts the normative wire token read from the environment
+ ↓ packages/config/src/index.test.ts > server.advertisedProfile > accepts the normative wire token read-update from the environment
+ ↓ packages/config/src/index.test.ts > server.advertisedProfile > accepts the normative wire token transactional from the environment
+ ↓ packages/config/src/index.test.ts > server.advertisedProfile > takes the config file value when supplied
+ ↓ packages/config/src/index.test.ts > server.advertisedProfile > refuses the human label read+update, which is not the wire token
+ ↓ packages/config/src/index.test.ts > server.advertisedProfile > refuses an unknown profile without echoing the value
+ ↓ packages/config/src/index.test.ts > server.internalFaultResource > is unset by default so no shipping server carries an ambient fault
+ ↓ packages/config/src/index.test.ts > server.internalFaultResource > accepts a canonical absolute HTTPS resource URL
+ ↓ packages/config/src/index.test.ts > server.internalFaultResource > takes the config file value when supplied
+ ↓ packages/config/src/index.test.ts > server.internalFaultResource > refuses a relative path
+ ↓ packages/config/src/index.test.ts > server.internalFaultResource > refuses a non-HTTP scheme
+ ↓ packages/config/src/index.test.ts > server.internalFaultResource > refuses embedded credentials
+ ↓ packages/config/src/index.test.ts > server.internalFaultResource > refuses a query string
+ ↓ packages/config/src/index.test.ts > server.internalFaultResource > refuses a fragment
+ ↓ packages/config/src/index.test.ts > server.internalFaultResource > refuses non-canonical spelling
+ ↓ packages/config/src/index.test.ts > server.internalFaultResource > refuses an empty string
+ ↓ packages/config/src/index.test.ts > server.internalFaultResource > is refused outright in production mode, like every test-only affordance
+ ↓ packages/config/src/index.test.ts > server.limits > carries the public server defaults
+ ↓ packages/config/src/index.test.ts > server.limits > reads every limit from its public environment variable
+ ↓ packages/config/src/index.test.ts > server.limits > accepts every exact public safety maximum from canonical environment text
+ ↓ packages/config/src/index.test.ts > server.limits > accepts every exact public safety maximum from JSON numbers
+ ↓ packages/config/src/index.test.ts > server.limits > rejects BDP_SERVER_PAGE_DEFAULT_ITEMS one above its public safety maximum
+ ↓ packages/config/src/index.test.ts > server.limits > rejects BDP_SERVER_PAGE_MAXIMUM_ITEMS one above its public safety maximum
+ ↓ packages/config/src/index.test.ts > server.limits > rejects BDP_SERVER_SELECTOR_BYTES one above its public safety maximum
+ ↓ packages/config/src/index.test.ts > server.limits > rejects BDP_SERVER_SELECTOR_DEPTH one above its public safety maximum
+ ↓ packages/config/src/index.test.ts > server.limits > rejects BDP_SERVER_SELECTOR_NODES one above its public safety maximum
+ ↓ packages/config/src/index.test.ts > server.limits > rejects BDP_SERVER_CURSOR_TTL_MILLISECONDS one above its public safety maximum
+ ↓ packages/config/src/index.test.ts > server.limits > rejects JSON number one above the maximum for page.defaultItems
+ ↓ packages/config/src/index.test.ts > server.limits > rejects JSON number one above the maximum for page.maximumItems
+ ↓ packages/config/src/index.test.ts > server.limits > rejects JSON number one above the maximum for selector.bytes
+ ↓ packages/config/src/index.test.ts > server.limits > rejects JSON number one above the maximum for selector.depth
+ ↓ packages/config/src/index.test.ts > server.limits > rejects JSON number one above the maximum for selector.nodes
+ ↓ packages/config/src/index.test.ts > server.limits > rejects JSON number one above the maximum for cursorTtlMilliseconds
+ ↓ packages/config/src/index.test.ts > server.limits > rejects JSON limit value 0
+ ↓ packages/config/src/index.test.ts > server.limits > rejects JSON limit value -1
+ ↓ packages/config/src/index.test.ts > server.limits > rejects JSON limit value 1.5
+ ↓ packages/config/src/index.test.ts > server.limits > rejects JSON limit value true
+ ↓ packages/config/src/index.test.ts > server.limits > rejects a non-object JSON limits branch
+ ↓ packages/config/src/index.test.ts > server.limits > rejects a non-object JSON page branch
+ ↓ packages/config/src/index.test.ts > server.limits > rejects a non-object JSON selector branch
+ ↓ packages/config/src/index.test.ts > server.limits > reads the nested JSON shape and applies environment precedence per leaf
+ ↓ packages/config/src/index.test.ts > server.limits > requires BDP_SERVER_PAGE_DEFAULT_ITEMS to be a canonical positive safe integer
+ ↓ packages/config/src/index.test.ts > server.limits > requires BDP_SERVER_PAGE_MAXIMUM_ITEMS to be a canonical positive safe integer
+ ↓ packages/config/src/index.test.ts > server.limits > requires BDP_SERVER_SELECTOR_BYTES to be a canonical positive safe integer
+ ↓ packages/config/src/index.test.ts > server.limits > requires BDP_SERVER_SELECTOR_DEPTH to be a canonical positive safe integer
+ ↓ packages/config/src/index.test.ts > server.limits > requires BDP_SERVER_SELECTOR_NODES to be a canonical positive safe integer
+ ↓ packages/config/src/index.test.ts > server.limits > requires BDP_SERVER_CURSOR_TTL_MILLISECONDS to be a canonical positive safe integer
+ ↓ packages/config/src/index.test.ts > server.limits > requires the default page size not to exceed the maximum
+ ↓ packages/config/src/index.test.ts > server.limits > keeps limit content role-owned while keeping nested vocabulary globally loud
+ ↓ packages/config/src/index.test.ts > bdptest.fixture > is unset by default
+ ↓ packages/config/src/index.test.ts > bdptest.fixture > reads the fixture identifier from the environment
+ ↓ packages/config/src/index.test.ts > bdptest.fixture > takes the config file value when supplied
+ ↓ packages/config/src/index.test.ts > bdptest.fixture > accepts the grammar-legal identifier "a"
+ ↓ packages/config/src/index.test.ts > bdptest.fixture > accepts the grammar-legal identifier "Z9"
+ ↓ packages/config/src/index.test.ts > bdptest.fixture > accepts the grammar-legal identifier "minimal-read"
+ ↓ packages/config/src/index.test.ts > bdptest.fixture > accepts the grammar-legal identifier "corpus.a"
+ ↓ packages/config/src/index.test.ts > bdptest.fixture > accepts the grammar-legal identifier "corpus_a"
+ ↓ packages/config/src/index.test.ts > bdptest.fixture > accepts the grammar-legal identifier "0"
+ ↓ packages/config/src/index.test.ts > bdptest.fixture > accepts the grammar-legal identifier aaaaaaaa… (128 chars)
+ ↓ packages/config/src/index.test.ts > bdptest.fixture > refuses empty string
+ ↓ packages/config/src/index.test.ts > bdptest.fixture > refuses length 129 (one over the maximum)
+ ↓ packages/config/src/index.test.ts > bdptest.fixture > refuses leading whitespace
+ ↓ packages/config/src/index.test.ts > bdptest.fixture > refuses trailing whitespace
+ ↓ packages/config/src/index.test.ts > bdptest.fixture > refuses leading hyphen
+ ↓ packages/config/src/index.test.ts > bdptest.fixture > refuses leading dot
+ ↓ packages/config/src/index.test.ts > bdptest.fixture > refuses leading underscore
+ ↓ packages/config/src/index.test.ts > bdptest.fixture > refuses embedded space
+ ↓ packages/config/src/index.test.ts > bdptest.fixture > refuses embedded tab
+ ↓ packages/config/src/index.test.ts > bdptest.fixture > refuses embedded newline
+ ↓ packages/config/src/index.test.ts > bdptest.fixture > refuses embedded carriage return
+ ↓ packages/config/src/index.test.ts > bdptest.fixture > refuses path separator
+ ↓ packages/config/src/index.test.ts > bdptest.fixture > refuses parent-directory traversal
+ ↓ packages/config/src/index.test.ts > bdptest.fixture > refuses a NUL byte
+ ↓ packages/config/src/index.test.ts > bdptest.fixture > refuses non-ASCII letter
+ ↓ packages/config/src/index.test.ts > conformance fields > carry the documented defaults
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.profile > accepts the normative wire token read
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.profile > accepts the normative wire token read-update
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.profile > accepts the normative wire token transactional
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.profile > refuses the human label read+update
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.profile > refuses an unknown value
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.scenarioFilter > stores a non-empty pattern from the environment
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.scenarioFilter > stores a punctuation-heavy substring verbatim: no glob or regex is inferred
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.scenarioFilter > refuses an empty value
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.scenarioFilter > is unset by default so the runner runs every scenario in the selected profile
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.seed > accepts a canonical decimal from the environment
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.seed > accepts 0 from the environment
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.seed > accepts MAX_SAFE_INTEGER from the environment
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.seed > refuses MAX_SAFE_INTEGER + 1 from the environment as an out-of-range integer
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.seed > accepts a JSON integer
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.seed > accepts JSON number 0
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.seed > accepts JSON number MAX_SAFE_INTEGER
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.seed > refuses JSON number MAX_SAFE_INTEGER + 1
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.seed > refuses the string ""
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.seed > refuses the string " 1"
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.seed > refuses the string "1 "
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.seed > refuses the string "1e3"
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.seed > refuses the string "0x1"
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.seed > refuses the string "+1"
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.seed > refuses the string "01"
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.seed > refuses the string "-1"
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.seed > refuses the string "1.5"
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.seed > refuses the JSON value -1
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.seed > refuses the JSON value 1.5
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.seed > refuses the JSON value true
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.seed > refuses the JSON value null
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.seed > cannot distinguish 1e3 from 1000 in a JSON number and accepts both as 1000
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.reportFormat > accepts text
+ ↓ packages/config/src/index.test.ts > conformance fields > conformance.reportFormat > refuses an unknown format
+ ↓ packages/config/src/index.test.ts > conformance fields > does not echo a rejected profile value which might be a mistyped credential
+ ↓ packages/config/src/index.test.ts > role-scoped views > bdp returns only mode, scope, and auth
+ ↓ packages/config/src/index.test.ts > role-scoped views > bdptest returns only mode, scope, server, and bdptest
+ ↓ packages/config/src/index.test.ts > role-scoped views > bdpbd returns only mode, scope, server, and bd
+ ↓ packages/config/src/index.test.ts > role-scoped views > conformance returns only mode, scope, auth, and conformance
+ ↓ packages/config/src/index.test.ts > role-scoped views > bdptest and bdpbd share the same server.advertisedProfile field deliberately
+ ↓ packages/config/src/index.test.ts > role isolation > ignores an invalid bdptest.fixture when loading as bdp
+ ↓ packages/config/src/index.test.ts > role isolation > ignores an invalid conformance.seed when loading as bdpbd
+ ↓ packages/config/src/index.test.ts > role isolation > ignores an invalid server.advertisedProfile when loading as bdp
+ ↓ packages/config/src/index.test.ts > role isolation > ignores an invalid server.internalFaultResource when loading as bdp
+ ↓ packages/config/src/index.test.ts > role isolation > skips a known but unrelated section inside a config file without a finding
+ ↓ packages/config/src/index.test.ts > role isolation > still flags a truly unknown section under any role
+ ↓ packages/config/src/index.test.ts > role isolation > still validates the section a role owns
+ ↓ packages/config/src/index.test.ts > role isolation > does not emit unrelated role sections in the resolved config
+ ↓ packages/config/src/index.test.ts > role isolation > flags a nested typo inside an unrelated section, because structural vocabulary is global
+ ↓ packages/config/src/index.test.ts > role isolation > flags a nested typo inside a role-owned section
+ ↓ packages/config/src/index.test.ts > role isolation > ignores a grammar-illegal value in an unrelated section under a client role
+ ↓ packages/config/src/index.test.ts > shared local-test Scope identity across roles > derives the same Scope URL from a shared listener regardless of role
+ ↓ packages/config/src/index.test.ts > shared local-test Scope identity across roles > refuses a wildcard listener under every role because the derivation would name nothing
+ ↓ packages/config/src/index.test.ts > shared local-test Scope identity across roles > isolates a client with an explicit Scope URL from invalid server-only inputs
+ ↓ packages/config/src/index.test.ts > full shared contract (no role) > collects every known field into one contract when role is omitted
+ ↓ packages/config/src/index.test.ts > full shared contract (no role) > rejects an unknown key inside a new section rather than silently dropping it
+ ↓ packages/config/src/index.test.ts > redaction > hides the bearer token in diagnostics while the resolved config keeps it
+ ↓ packages/config/src/index.test.ts > redaction > leaves a token-free config untouched
+ ↓ packages/config/src/index.test.ts > redaction > leaves a server-only role view unchanged because it has no auth section
+ ↓ packages/config/src/index.test.ts > diagnostics > serializes a config error as one JSON line
+ ↓ packages/config/src/index.test.ts > diagnostics > emits only the sections the role owns
+ ↓ packages/config/src/index.test.ts > explicit reference ReadUpdate defaults > resolves omitted fields, captures overrides and leaves Read startup separate
+ ↓ packages/config/src/index.test.ts > explicit reference ReadUpdate defaults > rejects invalid explicit overrides null
+ ↓ packages/config/src/index.test.ts > explicit reference ReadUpdate defaults > rejects invalid explicit overrides undefined
+ ↓ packages/config/src/index.test.ts > explicit reference ReadUpdate defaults > rejects invalid explicit overrides 1
+ ↓ packages/config/src/index.test.ts > explicit reference ReadUpdate defaults > rejects invalid explicit overrides "1"
+ ↓ packages/config/src/index.test.ts > explicit reference ReadUpdate defaults > rejects invalid explicit overrides "2026-10-18T06:35:06.911Z"
+ ↓ packages/config/src/index.test.ts > explicit reference ReadUpdate defaults > rejects invalid explicit overrides {}
+ ↓ packages/config/src/index.test.ts > explicit reference ReadUpdate defaults > rejects invalid explicit overrides {}
+ ↓ packages/config/src/index.test.ts > explicit reference ReadUpdate defaults > rejects invalid explicit overrides {"requestBodyBytes":0}
+ ↓ packages/config/src/index.test.ts > explicit reference ReadUpdate defaults > rejects invalid explicit overrides {"diagnosticBytes":-1}
+ ↓ packages/config/src/index.test.ts > explicit reference ReadUpdate defaults > rejects invalid explicit overrides {"propertiesBytes":1.1}
+ ↓ packages/config/src/index.test.ts > explicit reference ReadUpdate defaults > rejects invalid explicit overrides {"propertiesBytes":null}
+ ↓ packages/config/src/index.test.ts > explicit reference ReadUpdate defaults > rejects invalid explicit overrides {"diagnosticBytes":null}
+ ↓ packages/config/src/index.test.ts > explicit reference ReadUpdate defaults > rejects invalid explicit overrides {"requestBodyBytes":9007199254740992}
+ ↓ packages/config/src/index.test.ts > explicit reference ReadUpdate defaults > rejects invalid explicit overrides {"propertiesBytes":"12"}
+ ↓ packages/config/src/index.test.ts > explicit reference ReadUpdate defaults > rejects invalid explicit overrides {"diagnosticCount":1}
+ ↓ packages/config/src/index.test.ts > explicit reference ReadUpdate defaults > rejects invalid explicit overrides {"extra":1}
+ ↓ packages/config/src/index.test.ts > explicit reference ReadUpdate defaults > rejects invalid explicit overrides {}
+ ↓ packages/config/src/index.test.ts > explicit reference ReadUpdate defaults > rejects invalid explicit overrides {}
+ ↓ packages/config/src/index.test.ts > explicit reference ReadUpdate defaults > never invokes an accessor to obtain an override
+ ↓ packages/config/src/index.test.ts > explicit reference ReadUpdate defaults > allows each independent positive safe override without selecting a count
+ ✓ packages/config/src/index.test.ts > bdptest.deploymentFile > stores a nonsecret absolute path without opening it and preserves precedence 1ms
+ ✓ packages/config/src/index.test.ts > bdptest.deploymentFile > refuses invalid path case 0 with field/rule-only diagnostics 0ms
+ ✓ packages/config/src/index.test.ts > bdptest.deploymentFile > refuses invalid path case 1 with field/rule-only diagnostics 0ms
+ ✓ packages/config/src/index.test.ts > bdptest.deploymentFile > refuses invalid path case 2 with field/rule-only diagnostics 0ms
+ ✓ packages/config/src/index.test.ts > bdptest.deploymentFile > refuses invalid path case 3 with field/rule-only diagnostics 0ms
+ ✓ packages/config/src/index.test.ts > bdptest.deploymentFile > refuses invalid path case 4 with field/rule-only diagnostics 0ms
+ ✓ packages/config/src/index.test.ts > bdptest.deploymentFile > refuses invalid path case 5 with field/rule-only diagnostics 0ms
+ ✓ packages/config/src/index.test.ts > bdptest.deploymentFile > uses UTF8 bytes at the exact path bound 0ms
+ ✓ packages/config/src/index.test.ts > bdptest.deploymentFile > ignores content but preserves global vocabulary for bdp 0ms
+ ✓ packages/config/src/index.test.ts > bdptest.deploymentFile > ignores content but preserves global vocabulary for bdpbd 0ms
+ ✓ packages/config/src/index.test.ts > bdptest.deploymentFile > ignores content but preserves global vocabulary for conformance 0ms
+ ✓ packages/server/src/transaction-installed.test.ts > captures detached bounded own-data launch inputs without installing alternate runtime controls 2ms
+ ↓ packages/server/src/transaction-snapshot.test.ts > captures a schema-valid frozen empty genesis without changing graph, receipts or position
+ ↓ packages/server/src/transaction-snapshot.test.ts > captures complete canonical streams larger than a page and transaction, survives mutation and reopen, then rendezvous with feed
+ ↓ packages/server/src/transaction-snapshot.test.ts > expiry is fixed, inclusive at the promised instant, reclaims in entry and permanently distinguishes issued from unknown
+ ↓ packages/server/src/transaction-snapshot.test.ts > after-snapshot-copy preserves the appropriate durable disposition without graph effects
+ ↓ packages/server/src/transaction-snapshot.test.ts > after-snapshot-commit preserves the appropriate durable disposition without graph effects
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: missing-record rather than rebuilding current graph
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: changed-record rather than rebuilding current graph
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: oversized-record rather than rebuilding current graph
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: missing-range rather than rebuilding current graph
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: wrong-kind rather than rebuilding current graph
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: wrong-context rather than rebuilding current graph
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: wrong-anchor rather than rebuilding current graph
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: wrong-expiry rather than rebuilding current graph
+ ↓ packages/server/src/transaction-snapshot.test.ts > page token is bound through its Snapshot and stream and cannot be borrowed
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses missing owned or endpoint data before issuing a capture
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses prior format before maintenance and preserves actual file bytes; changed current configuration is also refused
+ ↓ packages/server/src/transaction-snapshot.test.ts > checks total authority count and byte bounds before loading malformed bodies
+ ↓ packages/server/src/transaction-snapshot.test.ts > fences uncertain before-COMMIT, then recovery determines whether a capture was issued
+ ↓ packages/server/src/transaction-snapshot.test.ts > fences uncertain after-COMMIT, then recovery determines whether a capture was issued
+ ↓ packages/server/src/transaction-snapshot.test.ts > failed Snapshot rollback fences tentative pages until reopen
+ ↓ packages/server/src/transaction-snapshot.test.ts > an abrupt exit during capture leaves no issued tentative handle after reopen
+ ↓ packages/server/src/transaction-snapshot.test.ts > accepts the 4096-resource boundary and canonical identity order, refuses one more
+ ↓ packages/server/src/transaction-snapshot.test.ts > actual complete R-sized records bind 32MiB capture, 4MiB pages and 64MiB aggregate before handle count
+ ↓ packages/server/src/transaction-snapshot.test.ts > permanent 65536 issued-identity bound refuses new issuance even after all detail expired
+ ↓ packages/server/src/transaction-snapshot.test.ts > independent expected inventory rejects coherent omissions and early termination even when individual wire records remain valid
+ ✓ packages/server/src/transaction-snapshot.test.ts > new private Snapshot entry points do not escape package public exports 1ms
+ ↓ packages/server/src/transaction-snapshot.test.ts > retains bounded recognition of issued page tokens after expiry/reopen, while unknown or borrowed continuations stay 404
+ ↓ packages/server/src/transaction-snapshot.test.ts > packs below the byte cap when successor token grows at page 9
+ ↓ packages/server/src/transaction-snapshot.test.ts > packs below the byte cap when successor token grows at page 99
+ ↓ packages/server/src/transaction-snapshot.test.ts > shares one validated authority-record pass across owned topology and reuses hot SQL
+ ↓ packages/server/src/transaction-snapshot.test.ts > orders canonical percent-encoded BMP and supplementary identities with matching owned streams
+ ↓ packages/server/src/transaction-snapshot.test.ts > persists the actual view and refuses different-view before retracting a pending claim
+ ↓ packages/server/src/transaction-snapshot.test.ts > persists the actual view and refuses prior-format-9 before retracting a pending claim
+ ↓ packages/server/src/transaction-snapshot.test.ts > startup sweep validates the same canonical position as reads and rolls back pending recovery on refusal
+ ↓ packages/server/src/transaction-snapshot.test.ts > decodes only the bounded live subset when compact expired history grows
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses forged-expired classification before pending recovery and preserves the file
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses missing-expired classification before pending recovery and preserves the file
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses nonboolean-expired classification before pending recovery and preserves the file
+ ↓ packages/server/src/transaction-snapshot.test.ts > refuses malformed-json classification before pending recovery and preserves the file
+ ↓ packages/server/src/transaction-snapshot.test.ts > validates a cold expired commitment on lookup without decoding all cold history during capture
+ ↓ packages/server/src/transaction-snapshot.test.ts > rejects orphaned records during startup recovery with rollback and no file mutation
+ ↓ packages/server/src/transaction-snapshot.test.ts > rejects orphaned pages during startup recovery with rollback and no file mutation
+ ↓ packages/server/src/transaction-snapshot.test.ts > asserts the internal expiry-before-capture precondition instead of ignoring retained expired detail
+ ↓ packages/server/src/transaction-snapshot.test.ts > continues to refuse impossible excess live handles as integrity corruption
+ ↓ packages/server/src/transaction-snapshot.test.ts > pairs expected preflight and retained failures inside the same entry after atomic rollback
+ ↓ packages/server/src/transaction-snapshot.test.ts > paired observation preserves unexpected after-snapshot-copy failure and its committed disposition
+ ↓ packages/server/src/transaction-snapshot.test.ts > paired observation preserves unexpected after-snapshot-commit failure and its committed disposition
+ ↓ packages/server/src/transaction-snapshot.test.ts > checks each fresh Snapshot minimum before any handle, record, page or expiry work
+ ↓ packages/server/src/transaction-snapshot.test.ts > does not expire retained Snapshot details on an ineligible fresh attempt
+ ↓ packages/server/src/transaction-snapshot.test.ts > captures and reopens deep owned Links without losing JSON value equality
+ ↓ packages/server/src/transaction-snapshot.test.ts > rejects deep owned-Link divergence before Snapshot issuance
+ ↓ packages/server/src/transaction-snapshot.test.ts > gates fresh Snapshot opaque minima before allocation and expiry
+
+ Test Files  8 passed (8)
+      Tests  44 passed | 389 skipped (433)
+   Start at  23:35:05
+   Duration  1.66s (transform 439ms, setup 44ms, import 862ms, tests 343ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-validation-preparation-5/run/focused-source.results.json
