@@ -1,0 +1,52 @@
+{
+  "sourceBase": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "sourceTree": "6757829bd5b700faf28df39071190a272add90c9",
+  "branch": "codex/vickie-owned-set-retarget-minimum",
+  "metadataAuthority": "Exact root release, no Git invoked by author",
+  "mappedFiles": 679,
+  "ownedFiles": [
+    "apps/bdptest/src/transactional-set-installed.test.ts"
+  ],
+  "changedSourceFiles": [
+    "apps/bdptest/src/transactional-set-installed.test.ts"
+  ],
+  "unownedFiles": 678,
+  "all678UnownedByteIdentical": true,
+  "sharedLauncher": {
+    "path": "scripts/transaction-installed-observation.mjs",
+    "sha256": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+    "unchanged": true
+  },
+  "other22ImporterHashes": {
+    "apps/bdptest/src/transactional-alias-installed.test.ts": "8595e2578cb4e98ec20699d8c1c7a36598eba69c5208079cd4c23efaad667ff3",
+    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": "813c7446abbd064fe14425b81ae4befad7a55f54e30a44172209b6a82950fa77",
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": "bc9d19959df0249b5b7c195c2f24a2cde4462db56de3e0b816c7fdf01f5ab048",
+    "apps/bdptest/src/transactional-depth-key-order-installed.test.ts": "f4e19ef9b7aba1a12f3376540257b9680e27dcd00936048b066eb7667ebe19fe",
+    "apps/bdptest/src/transactional-direct-refusal-installed.test.ts": "c817729792a8bd97473b4b7ebe06474d4a0c27bcd5122e58268b997aa03408b0",
+    "apps/bdptest/src/transactional-discovery-installed.test.ts": "7cf8822108489f3fb2f9c5ca1d97c6d7b832acca95a2f7d891c3413404d90c49",
+    "apps/bdptest/src/transactional-event-missing-context-installed.test.ts": "25f1738d78064670997c9b50aff503bf978e18eed0d7b02555d072165b02bf81",
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts": "5bc8fd664215c14de913e994b26a4792753d6b372317f21f028850021b9ac7c7",
+    "apps/bdptest/src/transactional-fresh-depth-installed.test.ts": "df4030346fc5ec402c0d77d5a5c9953542f341aa86e242d2a5e6cdcf9e09f991",
+    "apps/bdptest/src/transactional-guarded-batch-installed.test.ts": "01e3ec2bf5f5af19dcd497fce5a37c8a9394723bca5760ceca53f8b8128626ab",
+    "apps/bdptest/src/transactional-matrix.test.ts": "95e07ead41f9cb39087a155e87cad22998d92cd3967cb9c3c446568ff6139bc8",
+    "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts": "21146871e6b5bfa3d9e96ff2db7c4897dd62fac026de538981832de295628f15",
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts": "165ded90d0e172bfc6bd9c4c9de634739aa5d2a1ab5e0bcbd51258122178f11a",
+    "apps/bdptest/src/transactional-principal-key-installed.test.ts": "0f941001445e001f96f8c432a7099a5eb29dc4b68bc4458d6d1dfae472a3ce20",
+    "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts": "eaf1289ed0a8318ce949704ba4cd983755c6f5fd20ffe9d61712869894cb5064",
+    "apps/bdptest/src/transactional-same-key-overlap-installed.test.ts": "b13688d6b02c5901e68251620ab6d7e00f9f675af4025319817f9e8cc6c9bca3",
+    "apps/bdptest/src/transactional-schema-installed.test.ts": "18840119f1ca270d35414f3cb0d44dfe988a44ff9cb1edaa4a405b25b6da4759",
+    "apps/bdptest/src/transactional-selector-admission-installed.test.ts": "527baee6dec377680beaec1402f69039d044f45d2a36165f3b739e53a517b962",
+    "apps/bdptest/src/transactional-sequence-depth-installed.test.ts": "0a2a765cab6137f324cffb7ff7d96d1f3e81fef3a73c14f56adfd36309083aa7",
+    "apps/bdptest/src/transactional-sequence-refusal-installed.test.ts": "7861e55113e3e3bbf6621e526f2836a638e2bbcffafd2b321cc98e40846f1ba2",
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts": "2b678726212691b6d6abcd7ad409f308ff04df4f58a99b3dfb2f1cd2005f5422",
+    "apps/bdptest/src/transactional-sse-installed.test.ts": "0af05a745d5c3ee74fb84adff995c39c6bf1c1ed1891a30dd5e0902f8d859d19"
+  },
+  "pinnedSpecSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+  "sourceBeforeMapSha256": "ff8ad56f23c3d7ee6e652724501cdaa16ec9551ea24b1673dc6c74bf5c1c06b7",
+  "sourceAfterMapSha256": "e020362235c3e123d9ac975050944c24f1559215178e403e6d74341a30159abc",
+  "otherWorktreesDesignLaunchGitFlagsWritten": false,
+  "sourceRuntimeValidationExecuted": false,
+  "onlyAllowedNonDataExecution": "one root-pinned Biome format --write exact owned file; exit0, captured, no retry",
+  "applicableRepoInstructions": "No AGENTS.md/CLAUDE.md among679 pinned repo paths; user link preferences observed",
+  "remoteRoleClaimSha": "2bfdb47db856cfbaada54c4b467e0b1a279be2dd"
+}

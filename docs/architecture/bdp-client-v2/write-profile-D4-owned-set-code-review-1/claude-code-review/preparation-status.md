@@ -1,0 +1,1 @@
+CLOSED FIRST D4 CODE packet. Exact one-file source and complete source/native/plan contexts finalized. Native packet mechanics/root acceptance and separate two-flag release before ONE actual read-only default Claude. No attempt/nine outputs or product validation; F6 remains CLOSED. No second PLAN/retry.

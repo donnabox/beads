@@ -1,0 +1,177 @@
+{
+  "rootLabels": 12,
+  "assessments": [
+    {
+      "label": "F1",
+      "status": "implemented statically",
+      "lines": [
+        102,
+        110,
+        128,
+        130,
+        497,
+        535,
+        574,
+        811,
+        840
+      ],
+      "analysis": "Expected33/96/1/static5 live separately from nullable derived aggregates. Actual result-array lengths and actually followed Event pages supply counts; unavailable/missing array or incomplete traversal does not initialize expected totals. Counts of available arrays remain observed facts even when a subsequent semantic assertion fails; outcome remains failed and grants no complete qualification. Clone outcomes start unobserved and change only when each existing discriminator is reached."
+    },
+    {
+      "label": "F2",
+      "status": "implemented statically",
+      "lines": [
+        263,
+        270,
+        300,
+        310,
+        695
+      ],
+      "analysis": "Only one importer changes. Unchanged shared launcher and other22 importers verified bytewise; launcher call retains entry/configuration/signal and same defaults. No runtime helper/API/argument migration."
+    },
+    {
+      "label": "F3",
+      "status": "implemented statically",
+      "lines": [
+        65,
+        91,
+        121,
+        224,
+        289,
+        796,
+        883
+      ],
+      "analysis": "Cached partial state is initialized before owned entry/source/fixture/schema/validator/launcher IO under callback try. Metadata failure launches nothing; finally/report use caches. Ordinary static dependency imports/pure fixed fixture/helper definitions remain module-level as allowed."
+    },
+    {
+      "label": "F4a",
+      "status": "implemented statically",
+      "lines": [
+        229,
+        234
+      ],
+      "analysis": "Every retained workspace Git capture gets2000ms/1048576 maxBuffer; no8MiB widening. Only records inspected, no Git executed by reviewer."
+    },
+    {
+      "label": "F4b",
+      "status": "implemented statically",
+      "lines": [
+        227,
+        260
+      ],
+      "analysis": "Explicit installed-entry mode first requires source env, so nullish fallback never invokes Git in that branch; status/diff code also restricted to workspace. Externally-bound N/A disposition is separate from failure nullReason. Actual entry/fixture bytes are read locally; source/build/archive/consumer truth remains later root proof."
+    },
+    {
+      "label": "F5",
+      "status": "implemented statically",
+      "lines": [
+        163,
+        211,
+        300,
+        350,
+        688,
+        702,
+        743,
+        778,
+        848,
+        870
+      ],
+      "analysis": "Actual returned ChildProcess/PID/generation retained synchronously and separate exit/close handlers attach before another await/assertion. clean requires observed exit0/signalnull, observed close0/signalnull and settled successful cached close promise. Lost pre-return exit is not synthesized. Reopen waits pending0/28 actual responses and BOTH observations inside remaining90s/local10s, reuses directory/artifacts/credential and createfalse with full served/runtime equality. Exit is lock-release/shutdown evidence, close is stdio/IPC drain, not direct SQLite-close telemetry."
+    },
+    {
+      "label": "F6",
+      "status": "DELIBERATELY CLOSED FUTURE EXECUTION GATE, not an implemented runtime qualification",
+      "lines": [
+        91,
+        96,
+        195,
+        203,
+        724,
+        742,
+        789,
+        793,
+        845,
+        846,
+        874,
+        884
+      ],
+      "analysis": "Work90s/request5s/localcleanup10s/callback120s retained, failed timing is sticky. No proposed outer150/145/149 launch/signals/run occur. Bounded startup S/reportflush F/additional10s detached drain/complete collector-capacity proof remain unresolved; no single elapsed sample is treated as maximum. Source-only acceptance does not resolve/release this gate."
+    },
+    {
+      "label": "F7",
+      "status": "implemented statically",
+      "lines": [
+        395,
+        418,
+        497,
+        503
+      ],
+      "analysis": "Attempt ordinal and independent32 hardcap precede execute invocation; page guard12 remains. Observations count is attempt ledger, not expected-success alias. Unknown/undelivered response fields remain null."
+    },
+    {
+      "label": "F8",
+      "status": "implemented statically; collector gate still closed",
+      "lines": [
+        378,
+        393,
+        434,
+        448,
+        796,
+        840
+      ],
+      "analysis": "Actual status/headers/body/writeState/full wire base64+SHA are captured before assertions. Rejected executor records only exposed fixed category/writeState and null unavailable response. Per-response defaultheader65536/body1048576/derivedwire1179648 and32 cap unchanged. Full report includes duplicate bounded forms; base64 component50331648 is not complete report capacity. No truncation/hash-only fallback/HTTP cap expansion."
+    },
+    {
+      "label": "F9",
+      "status": "implemented statically",
+      "lines": [
+        74,
+        88,
+        300,
+        352,
+        725,
+        727,
+        848,
+        866
+      ],
+      "analysis": "No returned handle means unknown acquisition/closure/PIDnull; only exact known AggregateError shape selects prelaunch-cleanup-unsettled versus prelaunch-rejected, with independent reopen-refused-pre-ready stage. No raw error/cause is serialized into report. Original failures stay internal AggregateError; no speculative signal or missingPID-to-clean conversion."
+    },
+    {
+      "label": "F10",
+      "status": "implemented statically",
+      "lines": [
+        122,
+        124,
+        768,
+        793,
+        867,
+        870
+      ],
+      "analysis": "Unknown ownership is sticky, any unclean acquisition or pending request prevents removal. rm errors aggregate and mark unknown. Retained/removed refer to directory only, store-file presence always unknown without new IO. No finally stat/readFile/Git and no inference that removal proves closure."
+    },
+    {
+      "label": "F11",
+      "status": "implemented statically",
+      "lines": [
+        100,
+        433,
+        471,
+        688,
+        695,
+        743,
+        771
+      ],
+      "analysis": "Callback now owns explicit request Promise registry/settlement ledger and correct first-close-then-reopen chronology. Final cleanup observes requests and cached child close/events under one shared10s interval. An expired local wait never claims background launcher drain settled; root exact descendant audit remains required."
+    }
+  ],
+  "preservedProductBehavior": [
+    "same32HTTP11POST21GET30status200two404",
+    "same28rows child1/fourrows child2 and2acquisitions on success",
+    "same33receipt entries[32,1], seed99Events, deletion96Events/pages[32,32,32]/one group",
+    "same literal ownedn1/revision/sourceRevision/inline ownership/noop/schema rollback/replays",
+    "same five clone-only discriminators, no product counterprobes",
+    "same fourType/ownsOutgoingmax32/onewriter/emptyScopeaggregate/Historyfalse capture",
+    "same canonicalScope/store/credential/artifacts across actual createfalse reopen"
+  ],
+  "noColdReadUpdateOrPublicProfileCredit": true
+}

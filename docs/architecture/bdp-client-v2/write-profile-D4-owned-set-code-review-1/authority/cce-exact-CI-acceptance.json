@@ -1,0 +1,40 @@
+{
+  "kind": "root-final-exact-D1-increment-acceptance",
+  "accepted": true,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "acceptedUtc": "2026-10-18T05:35:10.498340+00:00",
+  "sourceHead": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "sourceTree": "6757829bd5b700faf28df39071190a272add90c9",
+  "soleParent": "a56254d682cf4623cab22a552e3d2f695f691795",
+  "ciRun": 39099693742,
+  "all27StepsSuccess": true,
+  "testsPassed": 9474,
+  "filesPassed": 186,
+  "testsSkipped": 1,
+  "preflightPassed": 7,
+  "nativeCI": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-exact-ci-1/native-ci-audit-1/report.json",
+    "sha256": "f4b73a1aed07d8361b5c6468f35d4b886f41a8a1aab6aba2b527245dc08132ad"
+  },
+  "rootCIInspection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-exact-ci-1/root-inspection-1/inspection.json",
+    "sha256": "13a102896b771002731aa6a5b027c56ced5b07f4a97bf1012d1ed5f728388418"
+  },
+  "localAll28Acceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-validation4-root-final-local-acceptance-1/acceptance.json",
+    "sha256": "a678ca6eb557052ee6c10aecf7af37a27b83dd8ada81aea172c811c3b7e70792"
+  },
+  "sourcePublication": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-publication-1/publication.json",
+    "sha256": "e3318cb8ecae14d77c73b42fde686eaa118cb2f86877323c4cb336ca8531b0b0"
+  },
+  "acceptedLimits": [
+    "Raw CLI capture partial; full API zip supplies complete result",
+    "Eight GitHub-masked observation JSON lines remain unparsed; historical10 only visible scalar/row projection plus actual callbackPASS",
+    "CI workspace dist provenance separate from fresh externalconsumer local proof",
+    "Existing Read89 seal historical; not cumulative current Write qualification"
+  ],
+  "pr168MayMarkReady": true,
+  "furtherMainLandingAuthorized": false,
+  "fullWriteComplete": false
+}

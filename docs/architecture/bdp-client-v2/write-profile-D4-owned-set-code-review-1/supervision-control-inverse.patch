@@ -1,0 +1,24 @@
+--- D4-owned-set-code-review/control.json
++++ generic-supervisor5/control.json
+@@ -1,8 +1,8 @@
+ {
+   "rootLaunchReleased": false,
+-  "packet": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-owned-set-code-review-1/claude-code-review",
++  "packet": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1",
+   "expectedSession": "2026-10-18T02:16:24Z-549f",
+-  "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-owned-set-retarget-minimum",
++  "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum",
+   "reviewerArgv": [
+     "/opt/homebrew/bin/claude",
+     "--safe-mode",
+@@ -25,7 +25,7 @@
+   "termAtSeconds": 1790,
+   "killAtSeconds": 1798,
+   "noRetry": true,
+-  "authority": "CLOSED FIRST D4 one-file dirty CODE only. Root exact source identity accepted; independent packet native/root checks and separate two-flag release before ONE default read-only Claude. Native source findings may remain pending for independent whole-candidate CODE. No second PLAN/retry/product validation authority.",
+-  "predecessorIndexSha256": "6fcca98a7c50dde057f4994c5b352702f992ec5879fb0bc0706872689b29b5b1",
+-  "rootDispositionSha256": "3f556b0ae0cc3d6ddc9f14a418a0d8d6673beb8176ffbb5c7ffd179e9913a5c8"
++  "authority": "CLOSED generic future supervision5: exact root/native-accepted first identity-failure diagnostic only. No actual new packet or execution/retry authority. Historical consumed changefeed packet remains referenced and refuses relaunch; future rebind requires separate root release.",
++  "predecessorIndexSha256": "7cd5029dc67647cc9020b15e8335938e6f7b9a05791593ef75ebf9378f1c2e89",
++  "rootDispositionSha256": "864603ad6f8e5fecc82b5b19986320b7311477b241c90cb28b647bbac92a046c"
+ }
