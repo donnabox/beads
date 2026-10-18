@@ -228,7 +228,11 @@ func TestLegacyImportJSONCloneOmissionCoverage(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if prepared.Issues[0].ContentHash == "source-cache" || prepared.Issues[0].RowVersion == 23 || input.Issues[0].ContentHash != "source-cache" || input.Issues[0].RowVersion != 23 {
+	clean, err := prepareLegacyImport(parseLegacyFixture(t, `{"id":"old-a","title":"Derived source state"}`), "importer")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if prepared.Issues[0].ContentHash != clean.Issues[0].ContentHash || prepared.Issues[0].RowVersion == 23 || input.Issues[0].ContentHash != "source-cache" || input.Issues[0].RowVersion != 23 {
 		t.Fatalf("derived state disposition or caller isolation changed: %+v %+v", prepared.Issues[0], input.Issues[0])
 	}
 }

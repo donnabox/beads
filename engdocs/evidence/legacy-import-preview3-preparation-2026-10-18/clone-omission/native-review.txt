@@ -12,3 +12,7 @@ reject source sentinels while preserving caller state. Exact json omission-tag
 comparison is correct. Static inspection only; no tests, engines or mutations.
 Unexported internals, duplicate JSON tags and custom marshalers remain outside
 this guard's scope. Production/runtime qualification was not re-reviewed.
+
+Final tiny-delta confirmation: no actionable finding. Clean/seeded preparation
+comparison strengthens cache independence without computation timing policy;
+caller isolation and source-counter rejection remain intact. Static only.
