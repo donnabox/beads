@@ -7,7 +7,7 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 ## Autonomous profile completion — active execution plan
 
 <!-- VICKIE-CURRENT-START -->
-Current execution, 2026-10-18 12:16 UTC: [PR168](https://github.com/gastownhall/bdp/pull/168) and [PR169](https://github.com/gastownhall/bdp/pull/169) remain ready for Trish. Their increment validation is complete. Ordinary Write startup and cumulative same-configuration qualification remain open. No incoming main/spec changes are absorbed; further landing belongs to Trish/operator.
+Current execution, 2026-10-18 12:37 UTC: P7 fresh setup/static/build first9 stages PASS on corrected TX discovery source679/a61; [independent root build acceptance7](tx-discovery-validation7-build-binding-root-release-1/acceptance.json) rehashes all476 emitted artifacts,679 source files and11 actual tools, with sampled process/group absence. Prefix17 releases four source suites each followed immediately by its audit only after this checkpoint is pushed. Carrier source4 independent review, D4 helper4 closed mechanics and final-TX contract precision continue. PR168/169 remain ready for Trish; no further landing or incoming main/spec adoption. Ordinary startup and whole-target cumulative Write qualification remain open.
 
 | Lane | Verified state | Active next step |
 | --- | --- | --- |
