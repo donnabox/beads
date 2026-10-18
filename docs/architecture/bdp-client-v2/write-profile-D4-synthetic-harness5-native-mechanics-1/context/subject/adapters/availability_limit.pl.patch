@@ -1,0 +1,12 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/availability_limit.pl
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/availability_limit.pl
+@@ -38,8 +38,7 @@
+  $SIG{ALRM}='DEFAULT';alarm(0);
+  POSIX::setsid() >= 0 or POSIX::_exit(126);
+  $ENV{D4_NATIVE_LIMITER}="$limiter";
+- exec '/opt/homebrew/opt/python@3.14/bin/python3.14','-I','-B','/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/availability_owner.py',"$ORIGIN",$release,"$limiter";
+- POSIX::_exit(126);
++ exec('/opt/homebrew/opt/python@3.14/bin/python3.14','-I','-B','/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/availability_owner.py',"$ORIGIN",$release,"$limiter") or POSIX::_exit(126);
+ }
+ # PID direct ownership exists immediately after fork, before metadata or IO.
+ my $last_term=-1;

@@ -1,0 +1,23 @@
+{
+  "H2CorrectionsStaticAssessment": "prior-findings-assessment.json",
+  "executionReleased": false,
+  "findings": [
+    {
+      "evidence": "drain reads peer stdout/stderr into local bytearrays. Timeout/incomplete EOF, the65536-byte check, read error or polling failure raises before return. The files term/kill.stdout and .stderr are created only after drain returns successfully. The exception record saves type/reason/PIDs but not already received bytes, prefix hashes, per-stream counts or observed EOF/exit states. A bootstrap/read failure can therefore lose actual diagnostic bytes while started/failure files exist.",
+      "id": "H3-N1",
+      "locations": [
+        "availability_owner.py:40-53",
+        "availability_owner.py:85",
+        "availability_owner.py:94-103",
+        "availability-plan.md:7-9"
+      ],
+      "minimumCorrection": "In a separately authorized successor, retain each actual chunk incrementally to exclusive per-role stdout/stderr files before checking capacity or throwing. Preserve the crossing chunk and actual received counts/EOF/exit/partial-prefix hash state; keep full hash/stream UNKNOWN when incomplete or killed. Flush/write/hash/cleanup stay under the same native120/115/119 clock and original65536 output acceptance policy; no buffering repair, grace, retry or invented terminal. If a write itself fails, preserve the actual saved file and label unsaved/full state UNKNOWN rather than manufacturing bytes.",
+      "scope": "New separate availability-only program; no claim that a genuine complete receipt could pass this failure, and no product/helper4 defect. Mask/clock/signals remain UNEXECUTED.",
+      "severity": "Medium",
+      "title": "Availability drain discards already received partial raw output on failure",
+      "validationBoundary": "Future root availability-only release and actual raw/terminal/fresh-process audit remain required after new full native/root precision. No current H3 evaluation release or second attempt is authorized."
+    }
+  ],
+  "mechanicsAccepted": false,
+  "reviewComplete": true
+}

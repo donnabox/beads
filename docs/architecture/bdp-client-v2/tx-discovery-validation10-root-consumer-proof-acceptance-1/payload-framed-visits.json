@@ -1,0 +1,2870 @@
+{
+  "recursiveVisits": [
+    "@bdp/server",
+    "@bdp/server>@bdp/protocol",
+    "@bdp/server>@bdp/protocol>ajv",
+    "@bdp/server>@bdp/protocol>ajv>fast-deep-equal",
+    "@bdp/server>@bdp/protocol>ajv>fast-uri",
+    "@bdp/server>@bdp/protocol>ajv>json-schema-traverse",
+    "@bdp/server>@bdp/protocol>ajv>require-from-string",
+    "@bdp/server>@bdp/protocol>ajv-formats",
+    "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+    "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-deep-equal",
+    "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+    "@bdp/server>@bdp/protocol>ajv-formats>ajv>json-schema-traverse",
+    "@bdp/server>@bdp/protocol>ajv-formats>ajv>require-from-string",
+    "@bdp/server>fast-uri"
+  ],
+  "files": [
+    {
+      "identity": "@bdp/server",
+      "path": "package.json",
+      "bytes": 488,
+      "sha256": "d583f4158c3a393923c37d70a61212f6a716c951a5f3be7ed9bbe3aa8846ca2e"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/alias-evaluator.js",
+      "bytes": 6645,
+      "sha256": "7a03692769d46e735c775f75152a0b73c10863c811469584eea23ed7820fe447"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/authority-read.js",
+      "bytes": 37413,
+      "sha256": "0d579df0ede780551c369679dbfce6727433e15bfbfbea49c39baac76851f7fe"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/development-authority.js",
+      "bytes": 14655,
+      "sha256": "adcd555997c226a428baf4c5514579e611fab8f9e08a604ec2d72ad9ed77bba1"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/development-composition.js",
+      "bytes": 3953,
+      "sha256": "54db32e28c39c656bbb7d3f8580472f6d38c82e37694a89f68a77e951c8cc318"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/development-contracts.js",
+      "bytes": 9970,
+      "sha256": "038a7144b879ee3b89b6cf1ec670af92c47a2d01073ab5f24c922c3c121863cd"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/development-runtime.js",
+      "bytes": 24324,
+      "sha256": "e1f7571f43ed5ad3d7155f866c0142d07a09772ba8ad668e1b55393a75003431"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/development.js",
+      "bytes": 407,
+      "sha256": "101188d34f75d6ba9976d4097c6cd7e7141efff4ec1b6f4f4ba937218eff907f"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/index.js",
+      "bytes": 46910,
+      "sha256": "7145b97293f4a0ec307cd32b98b69c4487c1fd9cefb15a5c4bb643a1dca70f59"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/installed-contract-artifact.js",
+      "bytes": 16274,
+      "sha256": "d30354c471c34d24b5567b5a950d59952705765ba2b8aa5a7c853dcc3979bdcb"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/installed-payload.js",
+      "bytes": 3928,
+      "sha256": "dc0da1f44913d3f9c3839c5f21d3f17a33ca7a97dac1da1434e0e6565f0a57a5"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/installed-reference-configuration.js",
+      "bytes": 7992,
+      "sha256": "9ca2071ccd43e0eba1a512bdbc3a5edd9b3a24912b14b487d4886e45002b4c79"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/installed-reference-process.js",
+      "bytes": 3241,
+      "sha256": "3eb9a6bc8df1237d78ba4aae7e95589df6fb7f4781f572e04adda583f359c71d"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/installed-reference.js",
+      "bytes": 1644,
+      "sha256": "be57131fe4af37b30ee94c332436d18db889ff454c2a680b05fdf1308b94737c"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/installed-schema-builtins.js",
+      "bytes": 15616,
+      "sha256": "bcb55ba8d30780fc183d77f4f68c8d547783808d3a5abba44742428ea3f60235"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/installed-schema-decimal.js",
+      "bytes": 6055,
+      "sha256": "4d18c4125c509703e849b336623a08344b981207f89918b3410182950373a74d"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/installed-schema-evaluator.js",
+      "bytes": 45318,
+      "sha256": "56e4b0fb6d71504744f62868f05346b43335d062ecdf62ecfd93ccced0f5d6ca"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/installed-schema-graph.js",
+      "bytes": 19700,
+      "sha256": "a5fa3ad25207824da1dafda2df268ed328a46609bccf7c4cfb1b46116bca268d"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/installed-schema-pattern.js",
+      "bytes": 20924,
+      "sha256": "7d44816cea2b104c4001b14263a561815f4b169dddc89203d0bcaed02f565299"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/installed-schema-recursion.js",
+      "bytes": 16521,
+      "sha256": "5c060c5b5e1a6fa6fdb26e59751d4eedd2de39f57fb0b51f10067c1a35b04d0c"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/installed-schema-shape.js",
+      "bytes": 9547,
+      "sha256": "5774c022d1a45569e4983fdfb86006282579d45e8ab40f8e3634945c661e5bb5"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/installed-schema-uri.js",
+      "bytes": 7647,
+      "sha256": "5c2b746f2db51b586beeba4b816cf9364546399ef129d2a90ceac5f3548705fe"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/installed-schema-value.js",
+      "bytes": 13954,
+      "sha256": "82ac8756bae5b324093857b41dc54796ece46d0b1963a2d6bf132b9adc489754"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/json-value-equality.js",
+      "bytes": 1004,
+      "sha256": "2ae52de7dfc7bf5d73b5df0e68087e843004cd7885bbf39ec3008ae5c62489bc"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/member-executor.js",
+      "bytes": 29174,
+      "sha256": "3d39cad981b60b62fbea36f380e28b4b9ac0bd2b0af11b7a9738cd13734d6c1b"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/member-identity.js",
+      "bytes": 21748,
+      "sha256": "0d44888e873a7b421c7408c8f619f82c02608966166f5a1d396b29ad8dfe360f"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/member-numeric-diagnostics.js",
+      "bytes": 2735,
+      "sha256": "b26abb89fe14dcf8c84df49dc45bdb192da3262104e37e08274120c3b6f3612a"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/node-http-disconnect.js",
+      "bytes": 491,
+      "sha256": "195f6a6ca6205d4f307a443401ae7a2ea15c0babab64c59e8365bd920769e5bd"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/node-http-target.js",
+      "bytes": 2687,
+      "sha256": "7085b22ad2eab1cb9d1590b744f5948df8f27122cf48304c83ff2782c93ad1fc"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/read-conformance-capability.js",
+      "bytes": 2833,
+      "sha256": "8448816d732fb0b49be124bac2c403876ebaf135e4ed913d8495170d861817d1"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/read-http-routing.js",
+      "bytes": 2586,
+      "sha256": "13b49961facf8eb468a5ea2038dc640285268cb664ac9c5392e2577b3d2bad49"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/read-http.js",
+      "bytes": 9418,
+      "sha256": "39a3dd43650c30f84a8100af1a36c158b863cda7added8810df7251ff467c0b2"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/read-pagination.js",
+      "bytes": 28225,
+      "sha256": "a87360206f50ace4a8cd3cba6497d8075746189f681cefe112d3057d6c5496b2"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/read-request.js",
+      "bytes": 30808,
+      "sha256": "be23340bb132331fd3bcdae33eca90d6c85f18bbf2d8c004ca963f52cb8be624"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/read-selector.js",
+      "bytes": 29703,
+      "sha256": "b4a69b8934eb039387137ba016ffbeab03cbdc59da19ebc5b26b4120732258f8"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/read-sequence-lifecycle.js",
+      "bytes": 14335,
+      "sha256": "d10315f9bccb80d994c7b67b27716f5a84d174a53f817eb207e46cab75828b2b"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/read-update-runtime-limits.js",
+      "bytes": 3525,
+      "sha256": "7483588c18a447d310cbe32baababf7d866f82f164687ec310c1ee8ad0430608"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/recovery-store.js",
+      "bytes": 34994,
+      "sha256": "eb75b6a8e7e4a8272f869978d8ead8829c14ab2c13e9d2e78ebde3061b4bfee0"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/resource-evaluator.js",
+      "bytes": 40678,
+      "sha256": "c6da6640df847ddb011d299f9d99f0612a4306f01cb540812e3759e06de60a7e"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/retained-disclosure.js",
+      "bytes": 1667,
+      "sha256": "3ce3d9909a47d78a20b256a0d0affe605224938e5ed92e35d63b3a3d7e517100"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/semantic-identity.js",
+      "bytes": 6509,
+      "sha256": "4e9baff204a18846bfd25d9ee33d3dd25078d2c226e08692c75870fb0c159b72"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/sequence-executor.js",
+      "bytes": 22535,
+      "sha256": "c3820c429ad7e622b7cc501e601a8ac02d28d5042c8b39d94572c2016799ce16"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/transaction-authorization.js",
+      "bytes": 4054,
+      "sha256": "cb46be5cae5397451466341a919da18fec36f21ab571d51ca87c187308165edc"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/transaction-batch.js",
+      "bytes": 41898,
+      "sha256": "c312e6544cbc41a329f33f261e3a016a8e41a89c12dc56a87ed60d8d83243013"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/transaction-changefeed.js",
+      "bytes": 6176,
+      "sha256": "6e462db3447f9d6565e8b22d7698de0b730e17cc1cba89768512f8317090d426"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/transaction-comparison.js",
+      "bytes": 2214,
+      "sha256": "7ffe623ec7d78f61f74431acd5fc58d0a03ba92aed757a8f035ca33cd8878466"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/transaction-consistency.js",
+      "bytes": 6893,
+      "sha256": "fad929d0561c6f4a30cbcda852ce80ef9de5edb422e016604621a8f56cc6106a"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/transaction-dependencies.js",
+      "bytes": 12938,
+      "sha256": "0d16fc892bb0cfef17ed013a511a11a251cf30c7589c2cf0f448d1f33c0688e8"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/transaction-discovery.js",
+      "bytes": 2720,
+      "sha256": "2cf8c1519d05eb3f9d402db7e59f1db02e12ae79e165c5876f888712233fab71"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/transaction-events.js",
+      "bytes": 10793,
+      "sha256": "320880e4b8047074cdfdcb58045bdb45556d629940ab953f0d05065d9792b971"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/transaction-http.js",
+      "bytes": 29450,
+      "sha256": "0aa06ff5fe2a1c31fcf39f42b5d6a4848ecea18eee905db58eea1e6ebb985f3c"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/transaction-installed-configuration.js",
+      "bytes": 2946,
+      "sha256": "786a945b8ab3609a9d1ed6e4cd0c5f6e94b502f7ae945f173c40fd979254aea9"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/transaction-installed-process.js",
+      "bytes": 2971,
+      "sha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/transaction-installed.js",
+      "bytes": 1222,
+      "sha256": "2dc1386a8a9f38d32c1fbf4ab8413538e86e3d41a20db9b9ab275a73b8c4040f"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/transaction-read.js",
+      "bytes": 16333,
+      "sha256": "544f8b897abc1ae99a5bb5a7e981ad43623feef05c2f3de0fafc027c34ca662c"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/transaction-runtime-configuration.js",
+      "bytes": 16466,
+      "sha256": "c78f0bfaa2bdb505d5653cd64c8ddef62c83a2b460231dcc743f820d145c97a8"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/transaction-runtime.js",
+      "bytes": 15369,
+      "sha256": "3d9aeb5bc9fc29d823567816af66ce61687c3f6945671f0a3247966575b31418"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/transaction-schema-http.js",
+      "bytes": 2286,
+      "sha256": "62a7f0fb4fc29124e52566646a749ca8c2640f3f1e8d859c7957b87d9c463b3d"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/transaction-sequence.js",
+      "bytes": 5342,
+      "sha256": "8128db5c3846c72c7949527865b36ece9a539162bf569390e3c363854b52584b"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/transaction-service.js",
+      "bytes": 30745,
+      "sha256": "0bffdc84e193653c25f0cda2dce547f043033ac1fd34c57a4174eb7710bf3495"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/transaction-set.js",
+      "bytes": 5762,
+      "sha256": "18851f343b071733eea5dfded6a6e5faaf49998c4c62c9d21d4459f0130deefd"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/transaction-snapshot.js",
+      "bytes": 31267,
+      "sha256": "a5188cade47643524e17ff6683335cbc17ae97e34bfb3dfe34e87e7f8800c59b"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/transaction-sse.js",
+      "bytes": 5393,
+      "sha256": "93ca231304322cc9e4521e8df0a11f3a050949825d9b2b72ebb880ba1e6b8736"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/transaction-store.js",
+      "bytes": 94327,
+      "sha256": "5e347bdaee30fc5f41c43b90cc257f177224954e1a8d827aca9e85a19e70bb80"
+    },
+    {
+      "identity": "@bdp/server",
+      "path": "dist/transaction-submission.js",
+      "bytes": 5769,
+      "sha256": "23c616fc3273981c7609f7f6e74539fefcf60e786c2c23cf3ba3eea42974651f"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol",
+      "path": "package.json",
+      "bytes": 428,
+      "sha256": "2415a9a929050fc642fceceb15dce1084debaf1bf7b05f1602ba034afa57f17f"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol",
+      "path": "dist/history-values.js",
+      "bytes": 6653,
+      "sha256": "06928d65b343c2c3e45dbb1ed96c2dd0c31cd7973145bc15a385ec667bb1134b"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol",
+      "path": "dist/index.js",
+      "bytes": 7634,
+      "sha256": "1554d12e06f39934809b0546aaa667ca682594b5a8597c82a36e7e80285b4a36"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol",
+      "path": "dist/json-admission.js",
+      "bytes": 12513,
+      "sha256": "4eb14f77a22b9d47939becad6912993ddf988cc6fc3aa6532245a4a525b1389e"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol",
+      "path": "dist/json-values.js",
+      "bytes": 5969,
+      "sha256": "c68b1d5abf4fd4d35122c9bff408e27359fbb12790d23d5562e0e12e8b370289"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol",
+      "path": "dist/link-header.js",
+      "bytes": 2825,
+      "sha256": "b1daae38417b979869487bcd7e1c0d09834976bdd1ffc7fe8f7b4709c46cebbf"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol",
+      "path": "dist/property-validation.js",
+      "bytes": 58,
+      "sha256": "b785b92ab97b9f1b4168cd700c659e313fd962fdd4cd444e9d34a4e4975800e2"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol",
+      "path": "dist/protocol-errors.js",
+      "bytes": 307,
+      "sha256": "01953c4f785548b510cfb0af188ebec6eb2fcd887108713aa5f9e9747622ffec"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol",
+      "path": "dist/read-update-preflight.js",
+      "bytes": 6350,
+      "sha256": "1c7594da5cfa2520673df23aceabf8edb414b60a97b1baf86f1009bc472180ae"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol",
+      "path": "dist/read-update-problems.js",
+      "bytes": 342,
+      "sha256": "53e20c0f8fdf4429a9b718a84c68e2655d172240d6204b8b0c1da5e4b6a47643"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol",
+      "path": "dist/read-update-values.js",
+      "bytes": 14023,
+      "sha256": "f79cbfd230d85242763e7f946a0d58934195cdf7d8ebed269c805fd79939b89a"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol",
+      "path": "dist/read-values.js",
+      "bytes": 19997,
+      "sha256": "117a54e6cabeff81ba4a7e3290a8d41652cf8c58915d7a082e20f6279e432b60"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol",
+      "path": "dist/reference-domain.js",
+      "bytes": 2958,
+      "sha256": "640962f3d4490e90bd89071655671a4507b4626c86eb1adc38c951f46a59feeb"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol",
+      "path": "dist/schema-formats.js",
+      "bytes": 1485,
+      "sha256": "fba76af9b124c8de74b7dd1f2b2cc01cfe6628f9ead6f8b5d496da73691d2f8a"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol",
+      "path": "dist/transaction-discovery-values.js",
+      "bytes": 2308,
+      "sha256": "26341c6e6c3e1e11e212b6e8d827572e343dea1287abfaf0d7de7dee7ac3efed"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol",
+      "path": "dist/type-conformance.js",
+      "bytes": 4269,
+      "sha256": "a4cd37710d9daeb504d6ba116c3070e349f2a9f413dd3b671d3b9b8209393718"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol",
+      "path": "schemas/bdp-v0.schema.json",
+      "bytes": 133208,
+      "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": ".runkit_example.js",
+      "bytes": 496,
+      "sha256": "e37e85bf1db5d53a6e4e38a9cac83db25208f28c09a2fa19e3971877c8a7b8cf"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/2019.js",
+      "bytes": 3188,
+      "sha256": "4a1b1d479d0b946af0119f3a3960fcabfd964e1c20e87f7a9575f8f9e705d0c4"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/2020.js",
+      "bytes": 2894,
+      "sha256": "908e9670b478b2ba126802a221b7e47006f50cf467e2c5dd7935d3dbef10a20a"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/ajv.js",
+      "bytes": 2841,
+      "sha256": "edaed56fc546f5551b0d6dc2ff2a9cc25c2d6c83318a086eaa8c3ad0b2479297"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/compile/codegen/code.js",
+      "bytes": 4676,
+      "sha256": "1287153722f1fc3c5342647de7ae1d7b6fb68bdb3378a0776a937d273fc97e0d"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/compile/codegen/index.js",
+      "bytes": 23127,
+      "sha256": "f03b2b72597ef86878d1d4030580c2d0964046efad4867f3d05aa91065ba034c"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/compile/codegen/scope.js",
+      "bytes": 5198,
+      "sha256": "d2a0a97af2faa2cad88702314fe421e235ab17f11e0d62883d58d8d4dc734286"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/compile/errors.js",
+      "bytes": 5771,
+      "sha256": "53990f8f2cc05922bba410ae68231d3f869de4f8343277ede5b4834fa564c6c2"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/compile/index.js",
+      "bytes": 10046,
+      "sha256": "05b34da22814f3787bfa3ac68dad59c9047f56e55a607e0a20719ebf5afe69ac"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/compile/jtd/parse.js",
+      "bytes": 13727,
+      "sha256": "548b7e6ee5558360945f261e092cd328662868995877140ed2ae7ff981300b7f"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/compile/jtd/serialize.js",
+      "bytes": 8962,
+      "sha256": "d4fdfc18734d62f31780b53b5bcc437f07d172b806e35fd12833b4d4871bf803"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/compile/jtd/types.js",
+      "bytes": 291,
+      "sha256": "e92a89e57c3b7d228be4e2e74c71ef3af52320bf061b411add9dccc34ddb0a78"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/compile/names.js",
+      "bytes": 1440,
+      "sha256": "3cab37a2240b996b9bed92fe7a041d91689cfe3ad2e9ae4c0ab99e4146408493"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/compile/ref_error.js",
+      "bytes": 543,
+      "sha256": "81c98fdf34c3037c91bfcc02277ec32156c71e34048f36cfe4e084416e916cb7"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/compile/resolve.js",
+      "bytes": 5006,
+      "sha256": "df75af0e0cf03fa1c6452e8dc61019f5aec645a8a5f6f494dc4e13cb5502d2d9"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/compile/rules.js",
+      "bytes": 918,
+      "sha256": "ec1d86500f497aa8e20f9f0c1695951159d9a909669d00a261ce1bb22b3cf0a9"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/compile/util.js",
+      "bytes": 7103,
+      "sha256": "fa911f5631f29d4d6420adfe086cb693b94b08de2719475c78c54bcb82f831a5"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/compile/validate/applicability.js",
+      "bytes": 853,
+      "sha256": "50c5cba5894a7fb9874b3432355b46ec71b73c9368dafb1323ded8567cca8fc0"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/compile/validate/boolSchema.js",
+      "bytes": 1531,
+      "sha256": "c08abdbdbd3d8b1dcc0552a20fbc7d837ed44f4ca6abb2e464985590ac94377f"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/compile/validate/dataType.js",
+      "bytes": 8409,
+      "sha256": "697bd7005361ec7066a23c18830a10b0ef28aec1a33138b4e3098bf78c4fae52"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/compile/validate/defaults.js",
+      "bytes": 1448,
+      "sha256": "05721971df94faa57b09c8cfd60c2eef81b6d14910a7dea5f539d693a029c428"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/compile/validate/index.js",
+      "bytes": 20552,
+      "sha256": "cb2103e5f890e04592c10d24b45857dad91155bae9f9460138a2459bdaaea2cd"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/compile/validate/keyword.js",
+      "bytes": 5695,
+      "sha256": "ab8f070c75c25eee9be5c837f364748909b58f5db66149a2beccbd2f66afeb76"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/compile/validate/subschema.js",
+      "bytes": 3858,
+      "sha256": "ca783d6052af91e65ebb59a5b48b47fb459a2241d37ca6a042f767d4ce451bdc"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/core.js",
+      "bytes": 25185,
+      "sha256": "7fdd03e949ecb3d020e560f669da71ce69a70f4bca28e5aff2ebc34d15bc2134"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/jtd.js",
+      "bytes": 3360,
+      "sha256": "9554827c19abbb10694cafb71edd72a8303ea71e56b9eb7253200f5395610e44"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/refs/data.json",
+      "bytes": 409,
+      "sha256": "d24ab8a97c18b3f5afdde7d7024a0e0ac1df0614a16a41cb88f81379edcc2db3"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/refs/json-schema-2019-09/index.js",
+      "bytes": 938,
+      "sha256": "ec400bdf35a0f290266811503cdbfffd7c18c4a690379988b8062c57b48f946d"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/refs/json-schema-2019-09/meta/applicator.json",
+      "bytes": 1566,
+      "sha256": "9c356a52b0ad5da7d4c1b69f61dff5277c2af46221bc0b0521bbdbf3a12d3a2a"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/refs/json-schema-2019-09/meta/content.json",
+      "bytes": 477,
+      "sha256": "cf4792ae93f4a4580ec9523640945f7756f75fd624935ebf15194b0ac3909267"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/refs/json-schema-2019-09/meta/core.json",
+      "bytes": 1273,
+      "sha256": "629c017994ffaa33f573a96cf01b9dac6cae80c7d5d17dad5e823a3afa18d5fe"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/refs/json-schema-2019-09/meta/format.json",
+      "bytes": 375,
+      "sha256": "018ef7c81bcca9e40a4a02ed236e7cabb3a630f2b1ea01fbdeed2f882c15ddc8"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/refs/json-schema-2019-09/meta/meta-data.json",
+      "bytes": 758,
+      "sha256": "e038593d36bf1855875a13b8812469d6a2d62ed309436b9c9a2fa5a4ba59085e"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/refs/json-schema-2019-09/meta/validation.json",
+      "bytes": 2264,
+      "sha256": "aaba7f2d6fcbdfa6ca97fdc3d3da1ae7d66ca3322b7e90cf5a98b067555d06e6"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/refs/json-schema-2019-09/schema.json",
+      "bytes": 1579,
+      "sha256": "264720afa0dd61919e21bbe9bc1312121b70e43019ac696240e069adc72cce15"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/refs/json-schema-2020-12/index.js",
+      "bytes": 1026,
+      "sha256": "2e39089b0aaa14efa7901ecf5384622ec3d5897b206e1d589d2420f17b9fa6e1"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/refs/json-schema-2020-12/meta/applicator.json",
+      "bytes": 1441,
+      "sha256": "f1e465ff0c0cc86bee5c0cc4b51d2734c532e6ea12c75b60a2ac093a4577b2d4"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/refs/json-schema-2020-12/meta/content.json",
+      "bytes": 479,
+      "sha256": "7ede86f2c48d646202bf1332aefaf46db268c943d59752727db7247dc2920516"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/refs/json-schema-2020-12/meta/core.json",
+      "bytes": 1344,
+      "sha256": "c3a5947992d4fe67c95cda7910911207376bbae41c0a124ec9e7e699172e7a49"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/refs/json-schema-2020-12/meta/format-annotation.json",
+      "bytes": 420,
+      "sha256": "1e31131b1ed21f98c007f04deb501343b8c4dd77f1c5a8494a9c2085f68d769d"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/refs/json-schema-2020-12/meta/meta-data.json",
+      "bytes": 758,
+      "sha256": "eb008c756b29bdaa237c1f06d32ea4a21f6ef22148b03c6372cea5e4c0782273"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/refs/json-schema-2020-12/meta/unevaluated.json",
+      "bytes": 472,
+      "sha256": "8f7f75f4274745faa32e4abdba12de99f49b21df225f52f723b5c62043b0edca"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/refs/json-schema-2020-12/meta/validation.json",
+      "bytes": 2264,
+      "sha256": "3cae7069843679429e4ada7df261bb8961fa34cac15be89296026e69af312092"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/refs/json-schema-2020-12/schema.json",
+      "bytes": 2166,
+      "sha256": "5333c7df76bceee098e865881d0808238dea836126c6c60b49299ec85c6c7a56"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/refs/json-schema-draft-06.json",
+      "bytes": 3449,
+      "sha256": "a9b6a00af20105009f0924cd7c02d811bbf70c579a96f1552579c3457111f687"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/refs/json-schema-draft-07.json",
+      "bytes": 3811,
+      "sha256": "f7e8b13cad4fecff9771f3626fef33e20e59027b90938a28fd9d2f6c17cd0773"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/refs/json-schema-secure.json",
+      "bytes": 2521,
+      "sha256": "b7840b4f1526eee47ac19780906a436d0c39df2aa3d505388caf18864085a421"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/refs/jtd-schema.js",
+      "bytes": 2882,
+      "sha256": "ed529445bf027885182bbed71e5458baecec2d356a788b636ed9f0c7cdaccd92"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/runtime/equal.js",
+      "bytes": 286,
+      "sha256": "c94467da09ee94e5d194483a7ab821b9bb3bf1c04397270f2ab53dea9de59274"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/runtime/parseJson.js",
+      "bytes": 5401,
+      "sha256": "1bc006064c98afbbb4fc03bef49db7e85dd9493fb54a7dc647d4344ad043848e"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/runtime/quote.js",
+      "bytes": 943,
+      "sha256": "1061132b1475fce15821d2b41c74b9ac710f278a33f5dae3385458715cc962b2"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/runtime/re2.js",
+      "bytes": 213,
+      "sha256": "e1a6849652ae9a099c36c9aee9d2efc7412c8f83c4b285142413af99a7238361"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/runtime/timestamp.js",
+      "bytes": 1536,
+      "sha256": "05cd4fc283b82af25a2a71ee5e587640c1d42945c74cea790627135fff338bef"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/runtime/ucs2length.js",
+      "bytes": 808,
+      "sha256": "1df012dd3d23fced07255a7204798004509687cb1f431ae0ab976db436bbd890"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/runtime/uri.js",
+      "bytes": 218,
+      "sha256": "d1d61baf97ed87d7310df847a78ed73d19c8cc003207bf5aaec977500bdb1578"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/runtime/validation_error.js",
+      "bytes": 337,
+      "sha256": "11bf5b4affc8114e5e7cdf65b93006c2d997ab60ada1152c22e136f9b828b815"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/standalone/index.js",
+      "bytes": 4480,
+      "sha256": "361d58a7523548bb1b9c782135fae27e76d93c8feaba8c4d613331dbcd3b888f"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/standalone/instance.js",
+      "bytes": 1015,
+      "sha256": "4e14aa01e0cb8288fbb75deeb2e738950b0560bd02e1ad8974f391af4c9fc6f3"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/types/index.js",
+      "bytes": 110,
+      "sha256": "fc9c6096246805c2075c83ab1b96082eda2fc98c240a2502caa82f1966096b71"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/types/json-schema.js",
+      "bytes": 116,
+      "sha256": "2e30aa0c0789b5af8248b081ddc14b439b48937730eb1be0ab28de2ca2353b28"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/types/jtd-schema.js",
+      "bytes": 115,
+      "sha256": "6755d0ec5a09cc74205d46089f814c88c1ce4363e56a55486c12a0a86942bd8d"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/applicator/additionalItems.js",
+      "bytes": 1931,
+      "sha256": "7beb0fbda5e349907067c8398bb8cc3260a6267b6e5dff9793a5ab2171934099"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/applicator/additionalProperties.js",
+      "bytes": 4309,
+      "sha256": "e237cb180cd2e3f2e676feb714d7dcc6a42116640f9db2ad830cd20d9dfc540a"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/applicator/allOf.js",
+      "bytes": 756,
+      "sha256": "98f46a6434ebe5f851b406480e18b776dd7f1bcc275e28c16a13bfef3cc067c7"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/applicator/anyOf.js",
+      "bytes": 343,
+      "sha256": "8d7368d4aebad0514b713191b934993b4f0bf570e1bab93b07dc69712db2cec5"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/applicator/contains.js",
+      "bytes": 3680,
+      "sha256": "56165dc93cd8b0b4611db50a97f1e7d7f9af6c5ffe95a7a5b054d6eeaa7f6a8c"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/applicator/dependencies.js",
+      "bytes": 3198,
+      "sha256": "c1a83bf484b6fde4d268935f079ddba5e74a2f589dfc6d15ca2e20ba4d06ee5b"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/applicator/dependentSchemas.js",
+      "bytes": 354,
+      "sha256": "d17d23755b0cf8699c180dd98b8b7270b688d2e4fe5a4c4fcc53ffdcc18ee58e"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/applicator/if.js",
+      "bytes": 2438,
+      "sha256": "42374ee5dc681433579cc689b0c4ae5343f5bf78d4d6a561722b9277c5335ec4"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/applicator/index.js",
+      "bytes": 1529,
+      "sha256": "5a61978f6d81bbabfa8b9ccb71d7de816ed6dd1fd7de5c72657439a76c2a7cb3"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/applicator/items.js",
+      "bytes": 1993,
+      "sha256": "fa87f74adc3aac1f1b5e3e7dddf73294e6850e1dd49ed131fca4352e9645c54e"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/applicator/items2020.js",
+      "bytes": 1037,
+      "sha256": "c449ef64aec16263c7935293ed450cfc2da3ba66f6df5f99c3198c05f169838f"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/applicator/not.js",
+      "bytes": 773,
+      "sha256": "ab2f2758d4ea97ac8763fe5540dd0f4d877859676fe5d6c750a18deca387f718"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/applicator/oneOf.js",
+      "bytes": 2257,
+      "sha256": "e2aeb6c22d49fd5f348bedcf7f5c4d7b31f5a05dd7ff1a0c531374c6968792a2"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/applicator/patternProperties.js",
+      "bytes": 3236,
+      "sha256": "0d43da49a82452c439ba990de7372ad5cedb663717918a5f6dae07025abff655"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/applicator/prefixItems.js",
+      "bytes": 354,
+      "sha256": "16264f7b3233a6dcb98b48700643efbd3ebc4d11e27b3eacffc83ccb5f44fb23"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/applicator/properties.js",
+      "bytes": 2153,
+      "sha256": "c896873ae7251093a2c8880545b69b6e8cb55c44817a53ec830a49818d74104f"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/applicator/propertyNames.js",
+      "bytes": 1221,
+      "sha256": "b3411cfeaff8efd5e6de12971bb5dc339e64b61fbe62d3b950794c077315c2e7"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/applicator/thenElse.js",
+      "bytes": 446,
+      "sha256": "9bc42eb8699d57188a7ec2a710d3f38052f92bd78c5d4d0442cf98cf2ebbe22d"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/code.js",
+      "bytes": 6216,
+      "sha256": "9212ddf8bd0a4c3b1c4b44cdadd141183b2b36f561b91d13df53c83911e3bf63"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/core/id.js",
+      "bytes": 267,
+      "sha256": "49c8eff694ce4371450c1f9986e934fcbf4bd143311caef5332113f29175bc11"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/core/index.js",
+      "bytes": 357,
+      "sha256": "f420e1011b95e27b54c58323a7ed4ffbd0a88cdb4496f771bb6782c2aa22d23e"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/core/ref.js",
+      "bytes": 5234,
+      "sha256": "1422c1454b3621d890066042048f37746fe1cf213088307099816199889bbfd1"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/discriminator/index.js",
+      "bytes": 4845,
+      "sha256": "b58b58025d2dbe5a6967376faec9295b860a338664c47037e9a1035c1e8fb88e"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/discriminator/types.js",
+      "bytes": 308,
+      "sha256": "2365341d1f30dc72cece7703e908e47aacb8f904b9f66ec4019fe889ae1e57fa"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/draft2020.js",
+      "bytes": 762,
+      "sha256": "2d0dc3a14abd48a45ad1407a97f23a0f943fa5244923037f86e95a7de04a7445"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/draft7.js",
+      "bytes": 557,
+      "sha256": "8c62022c6c3aa302c3ea6f6709a697fc9eb6385d243fa7c2156dbe9f02228170"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/dynamic/dynamicAnchor.js",
+      "bytes": 1261,
+      "sha256": "78222a5b42bab186253d880f9af4b012394ae5988bfab78e79f2510caed0ccf7"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/dynamic/dynamicRef.js",
+      "bytes": 1985,
+      "sha256": "acc2913c91d11ff57150dde1751cdd5d9f486a0cb156037870ede203273af917"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/dynamic/index.js",
+      "bytes": 457,
+      "sha256": "8c05d09948653957427f351d9c6172965b932a5663f7dcb63014a491a533cc0b"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/dynamic/recursiveAnchor.js",
+      "bytes": 522,
+      "sha256": "9f6cb7e509f9deada1b884010f08c52876f8eace32dcf0e7da28f6d0d91f3f76"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/dynamic/recursiveRef.js",
+      "bytes": 325,
+      "sha256": "7b0c651e2c5b5218639cd3ad7e5162f1e226fc9814107a85f4c3e47f5138670d"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/errors.js",
+      "bytes": 111,
+      "sha256": "7758b311e7cba27a8ff8b99a5fcd8db6804265cbc48d2867b72bfe56823d36bc"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/format/format.js",
+      "bytes": 4317,
+      "sha256": "6fae0d5124fd821b1a9959492f7d6d7b528bee8830d49a7a4759fc9a9ab81d5f"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/format/index.js",
+      "bytes": 209,
+      "sha256": "d5dad5f95c9c5f48f8ca956cdbb927aafc7b56baabfca8c0b0403d92c5ebeb67"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/jtd/discriminator.js",
+      "bytes": 2785,
+      "sha256": "14df845b5ef760d96a3c62db8d4446840e3d408a248d1b92ba6db2260fca4da2"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/jtd/elements.js",
+      "bytes": 949,
+      "sha256": "b2cad5c59d7c8ce936cea240d70beb41404c729901a60f32013c4facdcacfd5b"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/jtd/enum.js",
+      "bytes": 1745,
+      "sha256": "4a8b7fa05f94b2e67275445c6e8437c337b92f709d243ed30a48ba6a08a9a154"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/jtd/error.js",
+      "bytes": 893,
+      "sha256": "d6896337eedc9b71a742912f776580918cb4de58a90b434cd39f152896da16f9"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/jtd/index.js",
+      "bytes": 962,
+      "sha256": "c57d340cd0709479d8ea9f102549a8fd2a47a2c1f2e6fe7f0e14067fe6385d7d"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/jtd/metadata.js",
+      "bytes": 810,
+      "sha256": "237a4bcc04f1a59628ba35aab9bd7c02fa19a007bf026f75c562c20c7a63ab68"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/jtd/nullable.js",
+      "bytes": 859,
+      "sha256": "ba6494ac04fb1c2654951e8c8a57861e324fafa0f6c3bd2e1716bea8eb5c823a"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/jtd/optionalProperties.js",
+      "bytes": 436,
+      "sha256": "82b67841649a948b069c8e0cfab712eb883579690065a05658b7df7e4eddcc62"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/jtd/properties.js",
+      "bytes": 6320,
+      "sha256": "4a392193b708f69c25511ed059e80a70ea084585731817ad8e459364f479eb35"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/jtd/ref.js",
+      "bytes": 2648,
+      "sha256": "4736880c610f3664a8c714fdb5cf4e9db9fcda1721691dcacad2e9796e937460"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/jtd/type.js",
+      "bytes": 2706,
+      "sha256": "f97e19f2c3042938f433cfad0c4500b3342d869719550246bd4fced479db8e1c"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/jtd/union.js",
+      "bytes": 343,
+      "sha256": "f8404ab539ecfc5f6eb1bc489cc541aad6bf79cf58beecfcfe671226678c3280"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/jtd/values.js",
+      "bytes": 1838,
+      "sha256": "6b98eb1fbe2686a7f26fbf1e8860f61bdc81fe47117c4f5a79d5ca1fc92138f2"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/metadata.js",
+      "bytes": 427,
+      "sha256": "45c178744a7ec57e20c85ceeaea8d9f36b5663636ab7e495ea2c3c1bf4a58609"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/next.js",
+      "bytes": 433,
+      "sha256": "491c4d9738e50a6c22b3090cb1df49911b4bb7c3b7dcafc2f2dd4c074c4d82e7"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/unevaluated/index.js",
+      "bytes": 350,
+      "sha256": "4e7936d1a55051e70e2ebbbfc8de94fbe7f1e7b055252df5a984481ea7c156a4"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/unevaluated/unevaluatedItems.js",
+      "bytes": 1588,
+      "sha256": "4d7010c39f1b7af4a2fe1a62e5b65c8f763d4e58ac3d710099d367659f5e4fda"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/unevaluated/unevaluatedProperties.js",
+      "bytes": 2608,
+      "sha256": "665029a99612ec32e9bef99c9c4b09a4dc0be6c71d7b920594d414d404806ebe"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/validation/const.js",
+      "bytes": 852,
+      "sha256": "ace994e9ab97a70899a9484794794f4be5ee03bfb3cf32242d3f091d77f0329a"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/validation/dependentRequired.js",
+      "bytes": 403,
+      "sha256": "cd69a90089328b24d2232c12edae57858c14f66aaa56923c12929eb3d673e8fa"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/validation/enum.js",
+      "bytes": 1901,
+      "sha256": "61062b318a40eb52fc5a8283e7f4781db98349841744961ef4fe04a4722ebf22"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/validation/index.js",
+      "bytes": 1036,
+      "sha256": "4a1839832de5f10ff423c1c0c6cb232b5b6e1b34980a28862cf56b2763136de4"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/validation/limitContains.js",
+      "bytes": 495,
+      "sha256": "0ea6f2e43359add298e1ed9306fe5020c62e086392f2915f10226b01394b200d"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/validation/limitItems.js",
+      "bytes": 852,
+      "sha256": "49f0427d29b38aef2fa8aead26e68bda12deb9a2da22f7a7804ba0fed44e1fec"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/validation/limitLength.js",
+      "bytes": 1130,
+      "sha256": "379c28317faaf7784680b6049c3562692d3df6d65cce33f48e6c6c723beeeec2"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/validation/limitNumber.js",
+      "bytes": 1036,
+      "sha256": "3dd4bd41dbfc76c522078ff54b6479683485c4e97faa04cfcfaf2d8cb0fb8e65"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/validation/limitProperties.js",
+      "bytes": 896,
+      "sha256": "8523a3f7b36c34882ca32b0ec71a2157d7930907cb86b778a97c1514fa6258ac"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/validation/multipleOf.js",
+      "bytes": 1023,
+      "sha256": "df128c2a6ca74ae57c65fbfe3aea8a101447a3ae8c41fd53cfc5693fa23cc8bd"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/validation/pattern.js",
+      "bytes": 905,
+      "sha256": "592f7966bb9dea6256dc8c0242ab9e05cdfef2b1d6dd27ef478c7a20c9a0471b"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/validation/required.js",
+      "bytes": 3188,
+      "sha256": "b953bc18d94274bd73374dd5b4282d7a21159cec8c0e7a357e1eaf3f326b9054"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "dist/vocabularies/validation/uniqueItems.js",
+      "bytes": 3037,
+      "sha256": "666d1a2aa25c0dfe3cf41312d0f9d40e9f99eb2c19be7469134ad89005aadd52"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "lib/refs/data.json",
+      "bytes": 409,
+      "sha256": "d24ab8a97c18b3f5afdde7d7024a0e0ac1df0614a16a41cb88f81379edcc2db3"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "lib/refs/json-schema-2019-09/meta/applicator.json",
+      "bytes": 1566,
+      "sha256": "9c356a52b0ad5da7d4c1b69f61dff5277c2af46221bc0b0521bbdbf3a12d3a2a"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "lib/refs/json-schema-2019-09/meta/content.json",
+      "bytes": 477,
+      "sha256": "cf4792ae93f4a4580ec9523640945f7756f75fd624935ebf15194b0ac3909267"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "lib/refs/json-schema-2019-09/meta/core.json",
+      "bytes": 1273,
+      "sha256": "629c017994ffaa33f573a96cf01b9dac6cae80c7d5d17dad5e823a3afa18d5fe"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "lib/refs/json-schema-2019-09/meta/format.json",
+      "bytes": 375,
+      "sha256": "018ef7c81bcca9e40a4a02ed236e7cabb3a630f2b1ea01fbdeed2f882c15ddc8"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "lib/refs/json-schema-2019-09/meta/meta-data.json",
+      "bytes": 758,
+      "sha256": "e038593d36bf1855875a13b8812469d6a2d62ed309436b9c9a2fa5a4ba59085e"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "lib/refs/json-schema-2019-09/meta/validation.json",
+      "bytes": 2264,
+      "sha256": "aaba7f2d6fcbdfa6ca97fdc3d3da1ae7d66ca3322b7e90cf5a98b067555d06e6"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "lib/refs/json-schema-2019-09/schema.json",
+      "bytes": 1579,
+      "sha256": "264720afa0dd61919e21bbe9bc1312121b70e43019ac696240e069adc72cce15"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "lib/refs/json-schema-2020-12/meta/applicator.json",
+      "bytes": 1441,
+      "sha256": "f1e465ff0c0cc86bee5c0cc4b51d2734c532e6ea12c75b60a2ac093a4577b2d4"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "lib/refs/json-schema-2020-12/meta/content.json",
+      "bytes": 479,
+      "sha256": "7ede86f2c48d646202bf1332aefaf46db268c943d59752727db7247dc2920516"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "lib/refs/json-schema-2020-12/meta/core.json",
+      "bytes": 1344,
+      "sha256": "c3a5947992d4fe67c95cda7910911207376bbae41c0a124ec9e7e699172e7a49"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "lib/refs/json-schema-2020-12/meta/format-annotation.json",
+      "bytes": 420,
+      "sha256": "1e31131b1ed21f98c007f04deb501343b8c4dd77f1c5a8494a9c2085f68d769d"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "lib/refs/json-schema-2020-12/meta/meta-data.json",
+      "bytes": 758,
+      "sha256": "eb008c756b29bdaa237c1f06d32ea4a21f6ef22148b03c6372cea5e4c0782273"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "lib/refs/json-schema-2020-12/meta/unevaluated.json",
+      "bytes": 472,
+      "sha256": "8f7f75f4274745faa32e4abdba12de99f49b21df225f52f723b5c62043b0edca"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "lib/refs/json-schema-2020-12/meta/validation.json",
+      "bytes": 2264,
+      "sha256": "3cae7069843679429e4ada7df261bb8961fa34cac15be89296026e69af312092"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "lib/refs/json-schema-2020-12/schema.json",
+      "bytes": 2166,
+      "sha256": "5333c7df76bceee098e865881d0808238dea836126c6c60b49299ec85c6c7a56"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "lib/refs/json-schema-draft-06.json",
+      "bytes": 3449,
+      "sha256": "a9b6a00af20105009f0924cd7c02d811bbf70c579a96f1552579c3457111f687"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "lib/refs/json-schema-draft-07.json",
+      "bytes": 3811,
+      "sha256": "f7e8b13cad4fecff9771f3626fef33e20e59027b90938a28fd9d2f6c17cd0773"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "lib/refs/json-schema-secure.json",
+      "bytes": 2521,
+      "sha256": "b7840b4f1526eee47ac19780906a436d0c39df2aa3d505388caf18864085a421"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv",
+      "path": "package.json",
+      "bytes": 4457,
+      "sha256": "ce1539e6f4e0f345ed402c47137d2679497b2035d4a4f420ee11acdde03dea92"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-deep-equal",
+      "path": "es6/index.js",
+      "bytes": 1935,
+      "sha256": "d7f027497048c75e17268dbc66b670579d4f70f2dc0e019cdc9edf5078c247d6"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-deep-equal",
+      "path": "es6/react.js",
+      "bytes": 2209,
+      "sha256": "366779cbb7821d26d18b9eaa12b6788cbb101cdbbabcae36f2919a5f48534ef0"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-deep-equal",
+      "path": "index.js",
+      "bytes": 1177,
+      "sha256": "eb469e206280321a3878f2335ec98aa2104a155079d8ed83a23029098dccd215"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-deep-equal",
+      "path": "package.json",
+      "bytes": 1496,
+      "sha256": "a5c63940db0260739be9e2ac67f3aac268df4db5770420ee4e34e493152f97d2"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-deep-equal",
+      "path": "react.js",
+      "bytes": 1451,
+      "sha256": "37cbd168dbd42c73119ce7326556bddef40b3a5fbd2e215cf81a7c78fb73ff9a"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-uri",
+      "path": "benchmark/benchmark.mjs",
+      "bytes": 4421,
+      "sha256": "45ba9783c3258e448b05bd371161ef9fcbeed332ba1e9455ca9c98edb24e1f33"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-uri",
+      "path": "benchmark/equal.mjs",
+      "bytes": 1305,
+      "sha256": "36eb5b2acea9c4e969ab8fe028e88b781aa948e597368655a13528c3a93f1d39"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-uri",
+      "path": "benchmark/non-simple-domain.mjs",
+      "bytes": 838,
+      "sha256": "303eb41faa6c2489b5086f3d2764bf6ecaf3b937b385647c6e8b14aaf2582524"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-uri",
+      "path": "benchmark/package.json",
+      "bytes": 293,
+      "sha256": "463a034d344b042e495841b770ca69a812693087ee2053d7c18cc8497e020b58"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-uri",
+      "path": "benchmark/string-array-to-hex-stripped.mjs",
+      "bytes": 819,
+      "sha256": "693d4a312b0e275e02ef5531d707ff7df6cddf14cd83bc09a79909ea2008bfd4"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-uri",
+      "path": "benchmark/ws-is-secure.mjs",
+      "bytes": 1891,
+      "sha256": "6f105dc633aadd4bd4b8362765f4a1d44fb31fe0c8754cb11d73f27ff7d6527b"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-uri",
+      "path": "eslint.config.js",
+      "bytes": 135,
+      "sha256": "52e3a2601a98f23c954d664ab8de95fddb390789f8b067815e484b010d3da2d0"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-uri",
+      "path": "index.js",
+      "bytes": 15326,
+      "sha256": "79945eb0b513058251bd1c3b518b86c5c549bb73b8c37c77d717133d66277a97"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-uri",
+      "path": "lib/schemes.js",
+      "bytes": 7122,
+      "sha256": "0f9497f8e43c9b002d79c8a916709daa4ae8a6462735b1b5dc6ad587a28a5064"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-uri",
+      "path": "lib/utils.js",
+      "bytes": 10762,
+      "sha256": "3394986f9670b821493943faafe5d83ccc15109aba908f1b5dd017e27b0d0ea7"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-uri",
+      "path": "package.json",
+      "bytes": 1983,
+      "sha256": "3b01e17f5de289a0905ad894187235c8a8bb284a1fd285b40227b1d862f86b4d"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-uri",
+      "path": "test/ajv.test.js",
+      "bytes": 752,
+      "sha256": "75892faa0e01df30856f2a87eb50dcd4a4aa9a3ec1c7aa4e290ff936b0789f72"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-uri",
+      "path": "test/equal.test.js",
+      "bytes": 3649,
+      "sha256": "fa84d7b6849680df2acaa440deca9b38136474d04fef7eabfce3e48a00e53967"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-uri",
+      "path": "test/fixtures/uri-js-parse.json",
+      "bytes": 9806,
+      "sha256": "da2ac8219f62193bd0c3eb09a0f00b2fdffbf613eeadb7911a3808583c78ae79"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-uri",
+      "path": "test/fixtures/uri-js-serialize.json",
+      "bytes": 1688,
+      "sha256": "c10203102fee328d6c8aedbd03319b8eeb364417c3b1137d714537fcd3102d69"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-uri",
+      "path": "test/parse.test.js",
+      "bytes": 14260,
+      "sha256": "0ce9da8a9a8773c78f224def6f0fb63d35a4428e4b4b626d2ebf36bd1a832c95"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-uri",
+      "path": "test/resolve.test.js",
+      "bytes": 4480,
+      "sha256": "5f44df0de389cfb13848595184fd73a309ef7a702f55ebf5fc3cf0490ff7709c"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-uri",
+      "path": "test/rfc-3986.test.js",
+      "bytes": 5279,
+      "sha256": "b753dd115304e6cc567d2cb1169dd4d23641148274956fde0fabfdc612c65e27"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-uri",
+      "path": "test/security-normalization.test.js",
+      "bytes": 931,
+      "sha256": "4b9dbd4d9abb067dd843b54c5989eb30c809678daa0168a0d23aaa27ccae46d9"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-uri",
+      "path": "test/security.test.js",
+      "bytes": 12054,
+      "sha256": "8441804a2f794fe8400f322d1cc5d289857eacd20a377e074dfb7d94435e92b2"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-uri",
+      "path": "test/serialize.test.js",
+      "bytes": 6283,
+      "sha256": "abb8f831a5ebcfe6d76d8d9abb2220bfe2d255892cab1f2b43d8ef3364f21ab4"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-uri",
+      "path": "test/uri-js-compatibility.test.js",
+      "bytes": 1019,
+      "sha256": "ca79aa1a3917c2bb237ab7e64235e4f1036a6ddacb66a5319845e8926cc89b28"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-uri",
+      "path": "test/uri-js.test.js",
+      "bytes": 42039,
+      "sha256": "dc3a3b9d0a532f6483bc2c11d13b865273afb7c74224e401ce6005a7fa0a834a"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-uri",
+      "path": "test/util.test.js",
+      "bytes": 1147,
+      "sha256": "fa0595a97c1f948e641ea4696828a4d81c3389a986a45ac0a16feeffc73f8cad"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>fast-uri",
+      "path": "tsconfig.json",
+      "bytes": 166,
+      "sha256": "6bbba68684f6d6f1613d9ae79de617c25d8d749f30942307faee46a6d2fd721f"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>json-schema-traverse",
+      "path": "index.js",
+      "bytes": 2428,
+      "sha256": "024191b747afac01b28ff11d744e9f82720bbad5f716163ba5c962eb62aa2350"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>json-schema-traverse",
+      "path": "package.json",
+      "bytes": 1004,
+      "sha256": "156fb24af02845c190701360d06dfda35ef04282e34a734289ea9535ad9819ae"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>json-schema-traverse",
+      "path": "spec/fixtures/schema.js",
+      "bytes": 5544,
+      "sha256": "0262591e321bc88b22dc33ec78bcded5ab664e2fce2c10b9e0c35d3eb6030d27"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>json-schema-traverse",
+      "path": "spec/index.spec.js",
+      "bytes": 6042,
+      "sha256": "40e6986bda700387e2d397971087a3977d6801bf954591505229691a267c5f69"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>require-from-string",
+      "path": "index.js",
+      "bytes": 866,
+      "sha256": "cb059342a762b955997bf780f3693add176922727f2fa9f11fcaf1b3fc323239"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv>require-from-string",
+      "path": "package.json",
+      "bytes": 511,
+      "sha256": "c0002f7d4c7d7e2a885cf0f97226344902417c3a0980f2beca41962d2bc1f6d8"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats",
+      "path": "dist/formats.js",
+      "bytes": 12263,
+      "sha256": "b61693a26869970a92cc1fe832c931ccd3afe8b6d66802b19c48306349e84880"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats",
+      "path": "dist/index.js",
+      "bytes": 1508,
+      "sha256": "3f3014150293846086d11058bb8bf43e669e354a98b37adcf10281454d5e753b"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats",
+      "path": "dist/limit.js",
+      "bytes": 2900,
+      "sha256": "ffc374031a55c3f6e39dc3fe69e663f8251b9d9d7ddb8f513a6807c985c18bb8"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats",
+      "path": "package.json",
+      "bytes": 1897,
+      "sha256": "402fb4bcfa457f0226813f3976ac42839dd619907c075c108efba8600d7edb69"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": ".runkit_example.js",
+      "bytes": 496,
+      "sha256": "e37e85bf1db5d53a6e4e38a9cac83db25208f28c09a2fa19e3971877c8a7b8cf"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/2019.js",
+      "bytes": 3188,
+      "sha256": "4a1b1d479d0b946af0119f3a3960fcabfd964e1c20e87f7a9575f8f9e705d0c4"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/2020.js",
+      "bytes": 2894,
+      "sha256": "908e9670b478b2ba126802a221b7e47006f50cf467e2c5dd7935d3dbef10a20a"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/ajv.js",
+      "bytes": 2841,
+      "sha256": "edaed56fc546f5551b0d6dc2ff2a9cc25c2d6c83318a086eaa8c3ad0b2479297"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/compile/codegen/code.js",
+      "bytes": 4676,
+      "sha256": "1287153722f1fc3c5342647de7ae1d7b6fb68bdb3378a0776a937d273fc97e0d"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/compile/codegen/index.js",
+      "bytes": 23127,
+      "sha256": "f03b2b72597ef86878d1d4030580c2d0964046efad4867f3d05aa91065ba034c"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/compile/codegen/scope.js",
+      "bytes": 5198,
+      "sha256": "d2a0a97af2faa2cad88702314fe421e235ab17f11e0d62883d58d8d4dc734286"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/compile/errors.js",
+      "bytes": 5771,
+      "sha256": "53990f8f2cc05922bba410ae68231d3f869de4f8343277ede5b4834fa564c6c2"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/compile/index.js",
+      "bytes": 10046,
+      "sha256": "05b34da22814f3787bfa3ac68dad59c9047f56e55a607e0a20719ebf5afe69ac"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/compile/jtd/parse.js",
+      "bytes": 13727,
+      "sha256": "548b7e6ee5558360945f261e092cd328662868995877140ed2ae7ff981300b7f"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/compile/jtd/serialize.js",
+      "bytes": 8962,
+      "sha256": "d4fdfc18734d62f31780b53b5bcc437f07d172b806e35fd12833b4d4871bf803"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/compile/jtd/types.js",
+      "bytes": 291,
+      "sha256": "e92a89e57c3b7d228be4e2e74c71ef3af52320bf061b411add9dccc34ddb0a78"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/compile/names.js",
+      "bytes": 1440,
+      "sha256": "3cab37a2240b996b9bed92fe7a041d91689cfe3ad2e9ae4c0ab99e4146408493"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/compile/ref_error.js",
+      "bytes": 543,
+      "sha256": "81c98fdf34c3037c91bfcc02277ec32156c71e34048f36cfe4e084416e916cb7"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/compile/resolve.js",
+      "bytes": 5006,
+      "sha256": "df75af0e0cf03fa1c6452e8dc61019f5aec645a8a5f6f494dc4e13cb5502d2d9"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/compile/rules.js",
+      "bytes": 918,
+      "sha256": "ec1d86500f497aa8e20f9f0c1695951159d9a909669d00a261ce1bb22b3cf0a9"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/compile/util.js",
+      "bytes": 7103,
+      "sha256": "fa911f5631f29d4d6420adfe086cb693b94b08de2719475c78c54bcb82f831a5"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/compile/validate/applicability.js",
+      "bytes": 853,
+      "sha256": "50c5cba5894a7fb9874b3432355b46ec71b73c9368dafb1323ded8567cca8fc0"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/compile/validate/boolSchema.js",
+      "bytes": 1531,
+      "sha256": "c08abdbdbd3d8b1dcc0552a20fbc7d837ed44f4ca6abb2e464985590ac94377f"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/compile/validate/dataType.js",
+      "bytes": 8409,
+      "sha256": "697bd7005361ec7066a23c18830a10b0ef28aec1a33138b4e3098bf78c4fae52"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/compile/validate/defaults.js",
+      "bytes": 1448,
+      "sha256": "05721971df94faa57b09c8cfd60c2eef81b6d14910a7dea5f539d693a029c428"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/compile/validate/index.js",
+      "bytes": 20552,
+      "sha256": "cb2103e5f890e04592c10d24b45857dad91155bae9f9460138a2459bdaaea2cd"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/compile/validate/keyword.js",
+      "bytes": 5695,
+      "sha256": "ab8f070c75c25eee9be5c837f364748909b58f5db66149a2beccbd2f66afeb76"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/compile/validate/subschema.js",
+      "bytes": 3858,
+      "sha256": "ca783d6052af91e65ebb59a5b48b47fb459a2241d37ca6a042f767d4ce451bdc"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/core.js",
+      "bytes": 25185,
+      "sha256": "7fdd03e949ecb3d020e560f669da71ce69a70f4bca28e5aff2ebc34d15bc2134"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/jtd.js",
+      "bytes": 3360,
+      "sha256": "9554827c19abbb10694cafb71edd72a8303ea71e56b9eb7253200f5395610e44"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/refs/data.json",
+      "bytes": 409,
+      "sha256": "d24ab8a97c18b3f5afdde7d7024a0e0ac1df0614a16a41cb88f81379edcc2db3"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/refs/json-schema-2019-09/index.js",
+      "bytes": 938,
+      "sha256": "ec400bdf35a0f290266811503cdbfffd7c18c4a690379988b8062c57b48f946d"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/refs/json-schema-2019-09/meta/applicator.json",
+      "bytes": 1566,
+      "sha256": "9c356a52b0ad5da7d4c1b69f61dff5277c2af46221bc0b0521bbdbf3a12d3a2a"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/refs/json-schema-2019-09/meta/content.json",
+      "bytes": 477,
+      "sha256": "cf4792ae93f4a4580ec9523640945f7756f75fd624935ebf15194b0ac3909267"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/refs/json-schema-2019-09/meta/core.json",
+      "bytes": 1273,
+      "sha256": "629c017994ffaa33f573a96cf01b9dac6cae80c7d5d17dad5e823a3afa18d5fe"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/refs/json-schema-2019-09/meta/format.json",
+      "bytes": 375,
+      "sha256": "018ef7c81bcca9e40a4a02ed236e7cabb3a630f2b1ea01fbdeed2f882c15ddc8"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/refs/json-schema-2019-09/meta/meta-data.json",
+      "bytes": 758,
+      "sha256": "e038593d36bf1855875a13b8812469d6a2d62ed309436b9c9a2fa5a4ba59085e"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/refs/json-schema-2019-09/meta/validation.json",
+      "bytes": 2264,
+      "sha256": "aaba7f2d6fcbdfa6ca97fdc3d3da1ae7d66ca3322b7e90cf5a98b067555d06e6"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/refs/json-schema-2019-09/schema.json",
+      "bytes": 1579,
+      "sha256": "264720afa0dd61919e21bbe9bc1312121b70e43019ac696240e069adc72cce15"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/refs/json-schema-2020-12/index.js",
+      "bytes": 1026,
+      "sha256": "2e39089b0aaa14efa7901ecf5384622ec3d5897b206e1d589d2420f17b9fa6e1"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/refs/json-schema-2020-12/meta/applicator.json",
+      "bytes": 1441,
+      "sha256": "f1e465ff0c0cc86bee5c0cc4b51d2734c532e6ea12c75b60a2ac093a4577b2d4"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/refs/json-schema-2020-12/meta/content.json",
+      "bytes": 479,
+      "sha256": "7ede86f2c48d646202bf1332aefaf46db268c943d59752727db7247dc2920516"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/refs/json-schema-2020-12/meta/core.json",
+      "bytes": 1344,
+      "sha256": "c3a5947992d4fe67c95cda7910911207376bbae41c0a124ec9e7e699172e7a49"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/refs/json-schema-2020-12/meta/format-annotation.json",
+      "bytes": 420,
+      "sha256": "1e31131b1ed21f98c007f04deb501343b8c4dd77f1c5a8494a9c2085f68d769d"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/refs/json-schema-2020-12/meta/meta-data.json",
+      "bytes": 758,
+      "sha256": "eb008c756b29bdaa237c1f06d32ea4a21f6ef22148b03c6372cea5e4c0782273"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/refs/json-schema-2020-12/meta/unevaluated.json",
+      "bytes": 472,
+      "sha256": "8f7f75f4274745faa32e4abdba12de99f49b21df225f52f723b5c62043b0edca"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/refs/json-schema-2020-12/meta/validation.json",
+      "bytes": 2264,
+      "sha256": "3cae7069843679429e4ada7df261bb8961fa34cac15be89296026e69af312092"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/refs/json-schema-2020-12/schema.json",
+      "bytes": 2166,
+      "sha256": "5333c7df76bceee098e865881d0808238dea836126c6c60b49299ec85c6c7a56"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/refs/json-schema-draft-06.json",
+      "bytes": 3449,
+      "sha256": "a9b6a00af20105009f0924cd7c02d811bbf70c579a96f1552579c3457111f687"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/refs/json-schema-draft-07.json",
+      "bytes": 3811,
+      "sha256": "f7e8b13cad4fecff9771f3626fef33e20e59027b90938a28fd9d2f6c17cd0773"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/refs/json-schema-secure.json",
+      "bytes": 2521,
+      "sha256": "b7840b4f1526eee47ac19780906a436d0c39df2aa3d505388caf18864085a421"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/refs/jtd-schema.js",
+      "bytes": 2882,
+      "sha256": "ed529445bf027885182bbed71e5458baecec2d356a788b636ed9f0c7cdaccd92"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/runtime/equal.js",
+      "bytes": 286,
+      "sha256": "c94467da09ee94e5d194483a7ab821b9bb3bf1c04397270f2ab53dea9de59274"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/runtime/parseJson.js",
+      "bytes": 5401,
+      "sha256": "1bc006064c98afbbb4fc03bef49db7e85dd9493fb54a7dc647d4344ad043848e"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/runtime/quote.js",
+      "bytes": 943,
+      "sha256": "1061132b1475fce15821d2b41c74b9ac710f278a33f5dae3385458715cc962b2"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/runtime/re2.js",
+      "bytes": 213,
+      "sha256": "e1a6849652ae9a099c36c9aee9d2efc7412c8f83c4b285142413af99a7238361"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/runtime/timestamp.js",
+      "bytes": 1536,
+      "sha256": "05cd4fc283b82af25a2a71ee5e587640c1d42945c74cea790627135fff338bef"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/runtime/ucs2length.js",
+      "bytes": 808,
+      "sha256": "1df012dd3d23fced07255a7204798004509687cb1f431ae0ab976db436bbd890"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/runtime/uri.js",
+      "bytes": 218,
+      "sha256": "d1d61baf97ed87d7310df847a78ed73d19c8cc003207bf5aaec977500bdb1578"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/runtime/validation_error.js",
+      "bytes": 337,
+      "sha256": "11bf5b4affc8114e5e7cdf65b93006c2d997ab60ada1152c22e136f9b828b815"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/standalone/index.js",
+      "bytes": 4480,
+      "sha256": "361d58a7523548bb1b9c782135fae27e76d93c8feaba8c4d613331dbcd3b888f"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/standalone/instance.js",
+      "bytes": 1015,
+      "sha256": "4e14aa01e0cb8288fbb75deeb2e738950b0560bd02e1ad8974f391af4c9fc6f3"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/types/index.js",
+      "bytes": 110,
+      "sha256": "fc9c6096246805c2075c83ab1b96082eda2fc98c240a2502caa82f1966096b71"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/types/json-schema.js",
+      "bytes": 116,
+      "sha256": "2e30aa0c0789b5af8248b081ddc14b439b48937730eb1be0ab28de2ca2353b28"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/types/jtd-schema.js",
+      "bytes": 115,
+      "sha256": "6755d0ec5a09cc74205d46089f814c88c1ce4363e56a55486c12a0a86942bd8d"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/applicator/additionalItems.js",
+      "bytes": 1931,
+      "sha256": "7beb0fbda5e349907067c8398bb8cc3260a6267b6e5dff9793a5ab2171934099"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/applicator/additionalProperties.js",
+      "bytes": 4309,
+      "sha256": "e237cb180cd2e3f2e676feb714d7dcc6a42116640f9db2ad830cd20d9dfc540a"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/applicator/allOf.js",
+      "bytes": 756,
+      "sha256": "98f46a6434ebe5f851b406480e18b776dd7f1bcc275e28c16a13bfef3cc067c7"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/applicator/anyOf.js",
+      "bytes": 343,
+      "sha256": "8d7368d4aebad0514b713191b934993b4f0bf570e1bab93b07dc69712db2cec5"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/applicator/contains.js",
+      "bytes": 3680,
+      "sha256": "56165dc93cd8b0b4611db50a97f1e7d7f9af6c5ffe95a7a5b054d6eeaa7f6a8c"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/applicator/dependencies.js",
+      "bytes": 3198,
+      "sha256": "c1a83bf484b6fde4d268935f079ddba5e74a2f589dfc6d15ca2e20ba4d06ee5b"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/applicator/dependentSchemas.js",
+      "bytes": 354,
+      "sha256": "d17d23755b0cf8699c180dd98b8b7270b688d2e4fe5a4c4fcc53ffdcc18ee58e"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/applicator/if.js",
+      "bytes": 2438,
+      "sha256": "42374ee5dc681433579cc689b0c4ae5343f5bf78d4d6a561722b9277c5335ec4"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/applicator/index.js",
+      "bytes": 1529,
+      "sha256": "5a61978f6d81bbabfa8b9ccb71d7de816ed6dd1fd7de5c72657439a76c2a7cb3"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/applicator/items.js",
+      "bytes": 1993,
+      "sha256": "fa87f74adc3aac1f1b5e3e7dddf73294e6850e1dd49ed131fca4352e9645c54e"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/applicator/items2020.js",
+      "bytes": 1037,
+      "sha256": "c449ef64aec16263c7935293ed450cfc2da3ba66f6df5f99c3198c05f169838f"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/applicator/not.js",
+      "bytes": 773,
+      "sha256": "ab2f2758d4ea97ac8763fe5540dd0f4d877859676fe5d6c750a18deca387f718"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/applicator/oneOf.js",
+      "bytes": 2257,
+      "sha256": "e2aeb6c22d49fd5f348bedcf7f5c4d7b31f5a05dd7ff1a0c531374c6968792a2"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/applicator/patternProperties.js",
+      "bytes": 3236,
+      "sha256": "0d43da49a82452c439ba990de7372ad5cedb663717918a5f6dae07025abff655"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/applicator/prefixItems.js",
+      "bytes": 354,
+      "sha256": "16264f7b3233a6dcb98b48700643efbd3ebc4d11e27b3eacffc83ccb5f44fb23"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/applicator/properties.js",
+      "bytes": 2153,
+      "sha256": "c896873ae7251093a2c8880545b69b6e8cb55c44817a53ec830a49818d74104f"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/applicator/propertyNames.js",
+      "bytes": 1221,
+      "sha256": "b3411cfeaff8efd5e6de12971bb5dc339e64b61fbe62d3b950794c077315c2e7"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/applicator/thenElse.js",
+      "bytes": 446,
+      "sha256": "9bc42eb8699d57188a7ec2a710d3f38052f92bd78c5d4d0442cf98cf2ebbe22d"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/code.js",
+      "bytes": 6216,
+      "sha256": "9212ddf8bd0a4c3b1c4b44cdadd141183b2b36f561b91d13df53c83911e3bf63"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/core/id.js",
+      "bytes": 267,
+      "sha256": "49c8eff694ce4371450c1f9986e934fcbf4bd143311caef5332113f29175bc11"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/core/index.js",
+      "bytes": 357,
+      "sha256": "f420e1011b95e27b54c58323a7ed4ffbd0a88cdb4496f771bb6782c2aa22d23e"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/core/ref.js",
+      "bytes": 5234,
+      "sha256": "1422c1454b3621d890066042048f37746fe1cf213088307099816199889bbfd1"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/discriminator/index.js",
+      "bytes": 4845,
+      "sha256": "b58b58025d2dbe5a6967376faec9295b860a338664c47037e9a1035c1e8fb88e"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/discriminator/types.js",
+      "bytes": 308,
+      "sha256": "2365341d1f30dc72cece7703e908e47aacb8f904b9f66ec4019fe889ae1e57fa"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/draft2020.js",
+      "bytes": 762,
+      "sha256": "2d0dc3a14abd48a45ad1407a97f23a0f943fa5244923037f86e95a7de04a7445"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/draft7.js",
+      "bytes": 557,
+      "sha256": "8c62022c6c3aa302c3ea6f6709a697fc9eb6385d243fa7c2156dbe9f02228170"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/dynamic/dynamicAnchor.js",
+      "bytes": 1261,
+      "sha256": "78222a5b42bab186253d880f9af4b012394ae5988bfab78e79f2510caed0ccf7"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/dynamic/dynamicRef.js",
+      "bytes": 1985,
+      "sha256": "acc2913c91d11ff57150dde1751cdd5d9f486a0cb156037870ede203273af917"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/dynamic/index.js",
+      "bytes": 457,
+      "sha256": "8c05d09948653957427f351d9c6172965b932a5663f7dcb63014a491a533cc0b"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/dynamic/recursiveAnchor.js",
+      "bytes": 522,
+      "sha256": "9f6cb7e509f9deada1b884010f08c52876f8eace32dcf0e7da28f6d0d91f3f76"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/dynamic/recursiveRef.js",
+      "bytes": 325,
+      "sha256": "7b0c651e2c5b5218639cd3ad7e5162f1e226fc9814107a85f4c3e47f5138670d"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/errors.js",
+      "bytes": 111,
+      "sha256": "7758b311e7cba27a8ff8b99a5fcd8db6804265cbc48d2867b72bfe56823d36bc"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/format/format.js",
+      "bytes": 4317,
+      "sha256": "6fae0d5124fd821b1a9959492f7d6d7b528bee8830d49a7a4759fc9a9ab81d5f"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/format/index.js",
+      "bytes": 209,
+      "sha256": "d5dad5f95c9c5f48f8ca956cdbb927aafc7b56baabfca8c0b0403d92c5ebeb67"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/jtd/discriminator.js",
+      "bytes": 2785,
+      "sha256": "14df845b5ef760d96a3c62db8d4446840e3d408a248d1b92ba6db2260fca4da2"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/jtd/elements.js",
+      "bytes": 949,
+      "sha256": "b2cad5c59d7c8ce936cea240d70beb41404c729901a60f32013c4facdcacfd5b"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/jtd/enum.js",
+      "bytes": 1745,
+      "sha256": "4a8b7fa05f94b2e67275445c6e8437c337b92f709d243ed30a48ba6a08a9a154"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/jtd/error.js",
+      "bytes": 893,
+      "sha256": "d6896337eedc9b71a742912f776580918cb4de58a90b434cd39f152896da16f9"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/jtd/index.js",
+      "bytes": 962,
+      "sha256": "c57d340cd0709479d8ea9f102549a8fd2a47a2c1f2e6fe7f0e14067fe6385d7d"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/jtd/metadata.js",
+      "bytes": 810,
+      "sha256": "237a4bcc04f1a59628ba35aab9bd7c02fa19a007bf026f75c562c20c7a63ab68"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/jtd/nullable.js",
+      "bytes": 859,
+      "sha256": "ba6494ac04fb1c2654951e8c8a57861e324fafa0f6c3bd2e1716bea8eb5c823a"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/jtd/optionalProperties.js",
+      "bytes": 436,
+      "sha256": "82b67841649a948b069c8e0cfab712eb883579690065a05658b7df7e4eddcc62"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/jtd/properties.js",
+      "bytes": 6320,
+      "sha256": "4a392193b708f69c25511ed059e80a70ea084585731817ad8e459364f479eb35"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/jtd/ref.js",
+      "bytes": 2648,
+      "sha256": "4736880c610f3664a8c714fdb5cf4e9db9fcda1721691dcacad2e9796e937460"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/jtd/type.js",
+      "bytes": 2706,
+      "sha256": "f97e19f2c3042938f433cfad0c4500b3342d869719550246bd4fced479db8e1c"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/jtd/union.js",
+      "bytes": 343,
+      "sha256": "f8404ab539ecfc5f6eb1bc489cc541aad6bf79cf58beecfcfe671226678c3280"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/jtd/values.js",
+      "bytes": 1838,
+      "sha256": "6b98eb1fbe2686a7f26fbf1e8860f61bdc81fe47117c4f5a79d5ca1fc92138f2"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/metadata.js",
+      "bytes": 427,
+      "sha256": "45c178744a7ec57e20c85ceeaea8d9f36b5663636ab7e495ea2c3c1bf4a58609"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/next.js",
+      "bytes": 433,
+      "sha256": "491c4d9738e50a6c22b3090cb1df49911b4bb7c3b7dcafc2f2dd4c074c4d82e7"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/unevaluated/index.js",
+      "bytes": 350,
+      "sha256": "4e7936d1a55051e70e2ebbbfc8de94fbe7f1e7b055252df5a984481ea7c156a4"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/unevaluated/unevaluatedItems.js",
+      "bytes": 1588,
+      "sha256": "4d7010c39f1b7af4a2fe1a62e5b65c8f763d4e58ac3d710099d367659f5e4fda"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/unevaluated/unevaluatedProperties.js",
+      "bytes": 2608,
+      "sha256": "665029a99612ec32e9bef99c9c4b09a4dc0be6c71d7b920594d414d404806ebe"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/validation/const.js",
+      "bytes": 852,
+      "sha256": "ace994e9ab97a70899a9484794794f4be5ee03bfb3cf32242d3f091d77f0329a"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/validation/dependentRequired.js",
+      "bytes": 403,
+      "sha256": "cd69a90089328b24d2232c12edae57858c14f66aaa56923c12929eb3d673e8fa"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/validation/enum.js",
+      "bytes": 1901,
+      "sha256": "61062b318a40eb52fc5a8283e7f4781db98349841744961ef4fe04a4722ebf22"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/validation/index.js",
+      "bytes": 1036,
+      "sha256": "4a1839832de5f10ff423c1c0c6cb232b5b6e1b34980a28862cf56b2763136de4"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/validation/limitContains.js",
+      "bytes": 495,
+      "sha256": "0ea6f2e43359add298e1ed9306fe5020c62e086392f2915f10226b01394b200d"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/validation/limitItems.js",
+      "bytes": 852,
+      "sha256": "49f0427d29b38aef2fa8aead26e68bda12deb9a2da22f7a7804ba0fed44e1fec"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/validation/limitLength.js",
+      "bytes": 1130,
+      "sha256": "379c28317faaf7784680b6049c3562692d3df6d65cce33f48e6c6c723beeeec2"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/validation/limitNumber.js",
+      "bytes": 1036,
+      "sha256": "3dd4bd41dbfc76c522078ff54b6479683485c4e97faa04cfcfaf2d8cb0fb8e65"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/validation/limitProperties.js",
+      "bytes": 896,
+      "sha256": "8523a3f7b36c34882ca32b0ec71a2157d7930907cb86b778a97c1514fa6258ac"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/validation/multipleOf.js",
+      "bytes": 1023,
+      "sha256": "df128c2a6ca74ae57c65fbfe3aea8a101447a3ae8c41fd53cfc5693fa23cc8bd"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/validation/pattern.js",
+      "bytes": 905,
+      "sha256": "592f7966bb9dea6256dc8c0242ab9e05cdfef2b1d6dd27ef478c7a20c9a0471b"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/validation/required.js",
+      "bytes": 3188,
+      "sha256": "b953bc18d94274bd73374dd5b4282d7a21159cec8c0e7a357e1eaf3f326b9054"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "dist/vocabularies/validation/uniqueItems.js",
+      "bytes": 3037,
+      "sha256": "666d1a2aa25c0dfe3cf41312d0f9d40e9f99eb2c19be7469134ad89005aadd52"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "lib/refs/data.json",
+      "bytes": 409,
+      "sha256": "d24ab8a97c18b3f5afdde7d7024a0e0ac1df0614a16a41cb88f81379edcc2db3"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "lib/refs/json-schema-2019-09/meta/applicator.json",
+      "bytes": 1566,
+      "sha256": "9c356a52b0ad5da7d4c1b69f61dff5277c2af46221bc0b0521bbdbf3a12d3a2a"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "lib/refs/json-schema-2019-09/meta/content.json",
+      "bytes": 477,
+      "sha256": "cf4792ae93f4a4580ec9523640945f7756f75fd624935ebf15194b0ac3909267"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "lib/refs/json-schema-2019-09/meta/core.json",
+      "bytes": 1273,
+      "sha256": "629c017994ffaa33f573a96cf01b9dac6cae80c7d5d17dad5e823a3afa18d5fe"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "lib/refs/json-schema-2019-09/meta/format.json",
+      "bytes": 375,
+      "sha256": "018ef7c81bcca9e40a4a02ed236e7cabb3a630f2b1ea01fbdeed2f882c15ddc8"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "lib/refs/json-schema-2019-09/meta/meta-data.json",
+      "bytes": 758,
+      "sha256": "e038593d36bf1855875a13b8812469d6a2d62ed309436b9c9a2fa5a4ba59085e"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "lib/refs/json-schema-2019-09/meta/validation.json",
+      "bytes": 2264,
+      "sha256": "aaba7f2d6fcbdfa6ca97fdc3d3da1ae7d66ca3322b7e90cf5a98b067555d06e6"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "lib/refs/json-schema-2019-09/schema.json",
+      "bytes": 1579,
+      "sha256": "264720afa0dd61919e21bbe9bc1312121b70e43019ac696240e069adc72cce15"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "lib/refs/json-schema-2020-12/meta/applicator.json",
+      "bytes": 1441,
+      "sha256": "f1e465ff0c0cc86bee5c0cc4b51d2734c532e6ea12c75b60a2ac093a4577b2d4"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "lib/refs/json-schema-2020-12/meta/content.json",
+      "bytes": 479,
+      "sha256": "7ede86f2c48d646202bf1332aefaf46db268c943d59752727db7247dc2920516"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "lib/refs/json-schema-2020-12/meta/core.json",
+      "bytes": 1344,
+      "sha256": "c3a5947992d4fe67c95cda7910911207376bbae41c0a124ec9e7e699172e7a49"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "lib/refs/json-schema-2020-12/meta/format-annotation.json",
+      "bytes": 420,
+      "sha256": "1e31131b1ed21f98c007f04deb501343b8c4dd77f1c5a8494a9c2085f68d769d"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "lib/refs/json-schema-2020-12/meta/meta-data.json",
+      "bytes": 758,
+      "sha256": "eb008c756b29bdaa237c1f06d32ea4a21f6ef22148b03c6372cea5e4c0782273"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "lib/refs/json-schema-2020-12/meta/unevaluated.json",
+      "bytes": 472,
+      "sha256": "8f7f75f4274745faa32e4abdba12de99f49b21df225f52f723b5c62043b0edca"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "lib/refs/json-schema-2020-12/meta/validation.json",
+      "bytes": 2264,
+      "sha256": "3cae7069843679429e4ada7df261bb8961fa34cac15be89296026e69af312092"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "lib/refs/json-schema-2020-12/schema.json",
+      "bytes": 2166,
+      "sha256": "5333c7df76bceee098e865881d0808238dea836126c6c60b49299ec85c6c7a56"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "lib/refs/json-schema-draft-06.json",
+      "bytes": 3449,
+      "sha256": "a9b6a00af20105009f0924cd7c02d811bbf70c579a96f1552579c3457111f687"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "lib/refs/json-schema-draft-07.json",
+      "bytes": 3811,
+      "sha256": "f7e8b13cad4fecff9771f3626fef33e20e59027b90938a28fd9d2f6c17cd0773"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "lib/refs/json-schema-secure.json",
+      "bytes": 2521,
+      "sha256": "b7840b4f1526eee47ac19780906a436d0c39df2aa3d505388caf18864085a421"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv",
+      "path": "package.json",
+      "bytes": 4457,
+      "sha256": "ce1539e6f4e0f345ed402c47137d2679497b2035d4a4f420ee11acdde03dea92"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-deep-equal",
+      "path": "es6/index.js",
+      "bytes": 1935,
+      "sha256": "d7f027497048c75e17268dbc66b670579d4f70f2dc0e019cdc9edf5078c247d6"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-deep-equal",
+      "path": "es6/react.js",
+      "bytes": 2209,
+      "sha256": "366779cbb7821d26d18b9eaa12b6788cbb101cdbbabcae36f2919a5f48534ef0"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-deep-equal",
+      "path": "index.js",
+      "bytes": 1177,
+      "sha256": "eb469e206280321a3878f2335ec98aa2104a155079d8ed83a23029098dccd215"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-deep-equal",
+      "path": "package.json",
+      "bytes": 1496,
+      "sha256": "a5c63940db0260739be9e2ac67f3aac268df4db5770420ee4e34e493152f97d2"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-deep-equal",
+      "path": "react.js",
+      "bytes": 1451,
+      "sha256": "37cbd168dbd42c73119ce7326556bddef40b3a5fbd2e215cf81a7c78fb73ff9a"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+      "path": "benchmark/benchmark.mjs",
+      "bytes": 4421,
+      "sha256": "45ba9783c3258e448b05bd371161ef9fcbeed332ba1e9455ca9c98edb24e1f33"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+      "path": "benchmark/equal.mjs",
+      "bytes": 1305,
+      "sha256": "36eb5b2acea9c4e969ab8fe028e88b781aa948e597368655a13528c3a93f1d39"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+      "path": "benchmark/non-simple-domain.mjs",
+      "bytes": 838,
+      "sha256": "303eb41faa6c2489b5086f3d2764bf6ecaf3b937b385647c6e8b14aaf2582524"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+      "path": "benchmark/package.json",
+      "bytes": 293,
+      "sha256": "463a034d344b042e495841b770ca69a812693087ee2053d7c18cc8497e020b58"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+      "path": "benchmark/string-array-to-hex-stripped.mjs",
+      "bytes": 819,
+      "sha256": "693d4a312b0e275e02ef5531d707ff7df6cddf14cd83bc09a79909ea2008bfd4"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+      "path": "benchmark/ws-is-secure.mjs",
+      "bytes": 1891,
+      "sha256": "6f105dc633aadd4bd4b8362765f4a1d44fb31fe0c8754cb11d73f27ff7d6527b"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+      "path": "eslint.config.js",
+      "bytes": 135,
+      "sha256": "52e3a2601a98f23c954d664ab8de95fddb390789f8b067815e484b010d3da2d0"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+      "path": "index.js",
+      "bytes": 15326,
+      "sha256": "79945eb0b513058251bd1c3b518b86c5c549bb73b8c37c77d717133d66277a97"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+      "path": "lib/schemes.js",
+      "bytes": 7122,
+      "sha256": "0f9497f8e43c9b002d79c8a916709daa4ae8a6462735b1b5dc6ad587a28a5064"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+      "path": "lib/utils.js",
+      "bytes": 10762,
+      "sha256": "3394986f9670b821493943faafe5d83ccc15109aba908f1b5dd017e27b0d0ea7"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+      "path": "package.json",
+      "bytes": 1983,
+      "sha256": "3b01e17f5de289a0905ad894187235c8a8bb284a1fd285b40227b1d862f86b4d"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+      "path": "test/ajv.test.js",
+      "bytes": 752,
+      "sha256": "75892faa0e01df30856f2a87eb50dcd4a4aa9a3ec1c7aa4e290ff936b0789f72"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+      "path": "test/equal.test.js",
+      "bytes": 3649,
+      "sha256": "fa84d7b6849680df2acaa440deca9b38136474d04fef7eabfce3e48a00e53967"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+      "path": "test/fixtures/uri-js-parse.json",
+      "bytes": 9806,
+      "sha256": "da2ac8219f62193bd0c3eb09a0f00b2fdffbf613eeadb7911a3808583c78ae79"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+      "path": "test/fixtures/uri-js-serialize.json",
+      "bytes": 1688,
+      "sha256": "c10203102fee328d6c8aedbd03319b8eeb364417c3b1137d714537fcd3102d69"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+      "path": "test/parse.test.js",
+      "bytes": 14260,
+      "sha256": "0ce9da8a9a8773c78f224def6f0fb63d35a4428e4b4b626d2ebf36bd1a832c95"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+      "path": "test/resolve.test.js",
+      "bytes": 4480,
+      "sha256": "5f44df0de389cfb13848595184fd73a309ef7a702f55ebf5fc3cf0490ff7709c"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+      "path": "test/rfc-3986.test.js",
+      "bytes": 5279,
+      "sha256": "b753dd115304e6cc567d2cb1169dd4d23641148274956fde0fabfdc612c65e27"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+      "path": "test/security-normalization.test.js",
+      "bytes": 931,
+      "sha256": "4b9dbd4d9abb067dd843b54c5989eb30c809678daa0168a0d23aaa27ccae46d9"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+      "path": "test/security.test.js",
+      "bytes": 12054,
+      "sha256": "8441804a2f794fe8400f322d1cc5d289857eacd20a377e074dfb7d94435e92b2"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+      "path": "test/serialize.test.js",
+      "bytes": 6283,
+      "sha256": "abb8f831a5ebcfe6d76d8d9abb2220bfe2d255892cab1f2b43d8ef3364f21ab4"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+      "path": "test/uri-js-compatibility.test.js",
+      "bytes": 1019,
+      "sha256": "ca79aa1a3917c2bb237ab7e64235e4f1036a6ddacb66a5319845e8926cc89b28"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+      "path": "test/uri-js.test.js",
+      "bytes": 42039,
+      "sha256": "dc3a3b9d0a532f6483bc2c11d13b865273afb7c74224e401ce6005a7fa0a834a"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+      "path": "test/util.test.js",
+      "bytes": 1147,
+      "sha256": "fa0595a97c1f948e641ea4696828a4d81c3389a986a45ac0a16feeffc73f8cad"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>fast-uri",
+      "path": "tsconfig.json",
+      "bytes": 166,
+      "sha256": "6bbba68684f6d6f1613d9ae79de617c25d8d749f30942307faee46a6d2fd721f"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>json-schema-traverse",
+      "path": "index.js",
+      "bytes": 2428,
+      "sha256": "024191b747afac01b28ff11d744e9f82720bbad5f716163ba5c962eb62aa2350"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>json-schema-traverse",
+      "path": "package.json",
+      "bytes": 1004,
+      "sha256": "156fb24af02845c190701360d06dfda35ef04282e34a734289ea9535ad9819ae"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>json-schema-traverse",
+      "path": "spec/fixtures/schema.js",
+      "bytes": 5544,
+      "sha256": "0262591e321bc88b22dc33ec78bcded5ab664e2fce2c10b9e0c35d3eb6030d27"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>json-schema-traverse",
+      "path": "spec/index.spec.js",
+      "bytes": 6042,
+      "sha256": "40e6986bda700387e2d397971087a3977d6801bf954591505229691a267c5f69"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>require-from-string",
+      "path": "index.js",
+      "bytes": 866,
+      "sha256": "cb059342a762b955997bf780f3693add176922727f2fa9f11fcaf1b3fc323239"
+    },
+    {
+      "identity": "@bdp/server>@bdp/protocol>ajv-formats>ajv>require-from-string",
+      "path": "package.json",
+      "bytes": 511,
+      "sha256": "c0002f7d4c7d7e2a885cf0f97226344902417c3a0980f2beca41962d2bc1f6d8"
+    },
+    {
+      "identity": "@bdp/server>fast-uri",
+      "path": "benchmark/benchmark.mjs",
+      "bytes": 4421,
+      "sha256": "45ba9783c3258e448b05bd371161ef9fcbeed332ba1e9455ca9c98edb24e1f33"
+    },
+    {
+      "identity": "@bdp/server>fast-uri",
+      "path": "benchmark/equal.mjs",
+      "bytes": 1305,
+      "sha256": "36eb5b2acea9c4e969ab8fe028e88b781aa948e597368655a13528c3a93f1d39"
+    },
+    {
+      "identity": "@bdp/server>fast-uri",
+      "path": "benchmark/non-simple-domain.mjs",
+      "bytes": 838,
+      "sha256": "303eb41faa6c2489b5086f3d2764bf6ecaf3b937b385647c6e8b14aaf2582524"
+    },
+    {
+      "identity": "@bdp/server>fast-uri",
+      "path": "benchmark/package.json",
+      "bytes": 293,
+      "sha256": "463a034d344b042e495841b770ca69a812693087ee2053d7c18cc8497e020b58"
+    },
+    {
+      "identity": "@bdp/server>fast-uri",
+      "path": "benchmark/string-array-to-hex-stripped.mjs",
+      "bytes": 819,
+      "sha256": "693d4a312b0e275e02ef5531d707ff7df6cddf14cd83bc09a79909ea2008bfd4"
+    },
+    {
+      "identity": "@bdp/server>fast-uri",
+      "path": "benchmark/ws-is-secure.mjs",
+      "bytes": 1891,
+      "sha256": "6f105dc633aadd4bd4b8362765f4a1d44fb31fe0c8754cb11d73f27ff7d6527b"
+    },
+    {
+      "identity": "@bdp/server>fast-uri",
+      "path": "eslint.config.js",
+      "bytes": 135,
+      "sha256": "52e3a2601a98f23c954d664ab8de95fddb390789f8b067815e484b010d3da2d0"
+    },
+    {
+      "identity": "@bdp/server>fast-uri",
+      "path": "index.js",
+      "bytes": 15326,
+      "sha256": "79945eb0b513058251bd1c3b518b86c5c549bb73b8c37c77d717133d66277a97"
+    },
+    {
+      "identity": "@bdp/server>fast-uri",
+      "path": "lib/schemes.js",
+      "bytes": 7122,
+      "sha256": "0f9497f8e43c9b002d79c8a916709daa4ae8a6462735b1b5dc6ad587a28a5064"
+    },
+    {
+      "identity": "@bdp/server>fast-uri",
+      "path": "lib/utils.js",
+      "bytes": 10762,
+      "sha256": "3394986f9670b821493943faafe5d83ccc15109aba908f1b5dd017e27b0d0ea7"
+    },
+    {
+      "identity": "@bdp/server>fast-uri",
+      "path": "package.json",
+      "bytes": 1983,
+      "sha256": "3b01e17f5de289a0905ad894187235c8a8bb284a1fd285b40227b1d862f86b4d"
+    },
+    {
+      "identity": "@bdp/server>fast-uri",
+      "path": "test/ajv.test.js",
+      "bytes": 752,
+      "sha256": "75892faa0e01df30856f2a87eb50dcd4a4aa9a3ec1c7aa4e290ff936b0789f72"
+    },
+    {
+      "identity": "@bdp/server>fast-uri",
+      "path": "test/equal.test.js",
+      "bytes": 3649,
+      "sha256": "fa84d7b6849680df2acaa440deca9b38136474d04fef7eabfce3e48a00e53967"
+    },
+    {
+      "identity": "@bdp/server>fast-uri",
+      "path": "test/fixtures/uri-js-parse.json",
+      "bytes": 9806,
+      "sha256": "da2ac8219f62193bd0c3eb09a0f00b2fdffbf613eeadb7911a3808583c78ae79"
+    },
+    {
+      "identity": "@bdp/server>fast-uri",
+      "path": "test/fixtures/uri-js-serialize.json",
+      "bytes": 1688,
+      "sha256": "c10203102fee328d6c8aedbd03319b8eeb364417c3b1137d714537fcd3102d69"
+    },
+    {
+      "identity": "@bdp/server>fast-uri",
+      "path": "test/parse.test.js",
+      "bytes": 14260,
+      "sha256": "0ce9da8a9a8773c78f224def6f0fb63d35a4428e4b4b626d2ebf36bd1a832c95"
+    },
+    {
+      "identity": "@bdp/server>fast-uri",
+      "path": "test/resolve.test.js",
+      "bytes": 4480,
+      "sha256": "5f44df0de389cfb13848595184fd73a309ef7a702f55ebf5fc3cf0490ff7709c"
+    },
+    {
+      "identity": "@bdp/server>fast-uri",
+      "path": "test/rfc-3986.test.js",
+      "bytes": 5279,
+      "sha256": "b753dd115304e6cc567d2cb1169dd4d23641148274956fde0fabfdc612c65e27"
+    },
+    {
+      "identity": "@bdp/server>fast-uri",
+      "path": "test/security-normalization.test.js",
+      "bytes": 931,
+      "sha256": "4b9dbd4d9abb067dd843b54c5989eb30c809678daa0168a0d23aaa27ccae46d9"
+    },
+    {
+      "identity": "@bdp/server>fast-uri",
+      "path": "test/security.test.js",
+      "bytes": 12054,
+      "sha256": "8441804a2f794fe8400f322d1cc5d289857eacd20a377e074dfb7d94435e92b2"
+    },
+    {
+      "identity": "@bdp/server>fast-uri",
+      "path": "test/serialize.test.js",
+      "bytes": 6283,
+      "sha256": "abb8f831a5ebcfe6d76d8d9abb2220bfe2d255892cab1f2b43d8ef3364f21ab4"
+    },
+    {
+      "identity": "@bdp/server>fast-uri",
+      "path": "test/uri-js-compatibility.test.js",
+      "bytes": 1019,
+      "sha256": "ca79aa1a3917c2bb237ab7e64235e4f1036a6ddacb66a5319845e8926cc89b28"
+    },
+    {
+      "identity": "@bdp/server>fast-uri",
+      "path": "test/uri-js.test.js",
+      "bytes": 42039,
+      "sha256": "dc3a3b9d0a532f6483bc2c11d13b865273afb7c74224e401ce6005a7fa0a834a"
+    },
+    {
+      "identity": "@bdp/server>fast-uri",
+      "path": "test/util.test.js",
+      "bytes": 1147,
+      "sha256": "fa0595a97c1f948e641ea4696828a4d81c3389a986a45ac0a16feeffc73f8cad"
+    },
+    {
+      "identity": "@bdp/server>fast-uri",
+      "path": "tsconfig.json",
+      "bytes": 166,
+      "sha256": "6bbba68684f6d6f1613d9ae79de617c25d8d749f30942307faee46a6d2fd721f"
+    }
+  ]
+}

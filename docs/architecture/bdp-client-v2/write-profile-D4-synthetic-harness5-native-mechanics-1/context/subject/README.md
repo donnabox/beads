@@ -1,0 +1,5 @@
+# H5 synthetic harness preparation — CLOSED
+
+Author-only correction of exactly TWO Perl exec fallback expressions under root41c032ff/durable61d45fcf. Both use explicit exec(SAMEARGV) or POSIX::_exit(126); only mandatory H4→H5 operational namespace literals also change. All13 Python helpers reverse namespace to H4 byte-exact (the12 other helper bodies likewise unchanged). No warning suppression/filtering/stderr allowance, clock/signal/alarm/ownership/ACK/nonce or product/helper4/schema changes.
+
+H4 remains FAILED: actual native0 plus stderr215 did not satisfy caller1/zero-stderr/availability, and no clock acceptance is inherited. Full prepared92/current102 with ten explicit attempt additions, native actual110/static100 and earlier histories remain INPLACE with exact censuses/pins. No old attempt/results reuse. New H5 availability-attempt absent; both gates false/approvedempty. OTHER-native/root FULL mechanics, a separate CLOSED H5 caller/10-key native authority and independent14-key durable root execution authority are required before any new exact-source availability invocation. No subject evaluation or compilecheck occurred.

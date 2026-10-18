@@ -1,0 +1,477 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/origins.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-5/origins.json
+@@ -1,233 +1,338 @@
+ [
+   {
++    "copy": "authoring-data-error-1.json",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/authoring-data-error-1.json",
++    "sha256": "d82db3ff7b054f8d3d38c9af402949e18f923ea0e910e6eb1360196a41a0ca3d",
++    "bytes": 463,
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
++  },
++  {
++    "copy": "authority-snapshots/05-HiRes.pm",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/authority-snapshots/05-HiRes.pm",
++    "sha256": "9bc6ece12a90e5c01d784a4efd672c49b8a7551ce6871b620efbd38cd4960f34",
++    "bytes": 25689,
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
++  },
++  {
++    "copy": "authority-snapshots/07-POSIX.pm",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/authority-snapshots/07-POSIX.pm",
++    "sha256": "d941cf37b6dee5253b859cbb703a5785629a0bcdd86f61d1ec96fa464d69df90",
++    "bytes": 20384,
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
++  },
++  {
++    "copy": "authority-snapshots/08-Fcntl.pm",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/authority-snapshots/08-Fcntl.pm",
++    "sha256": "80511e494fc719cb63d252a95987ba24c04557947c1bf1584f5eeb6704786e9b",
++    "bytes": 4044,
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
++  },
++  {
++    "copy": "authority-snapshots/09-_time.h",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/authority-snapshots/09-_time.h",
++    "sha256": "a3dceadf2c95133018af363187829ca072d85a93d69f9682a2e4fb993902f28d",
++    "bytes": 8243,
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
++  },
++  {
++    "copy": "authority-snapshots/10-mach_time.h",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/authority-snapshots/10-mach_time.h",
++    "sha256": "d690e304ea595ca216ed51e20aa9747e0b3bcb07446d996abe0080a231c7065f",
++    "bytes": 2590,
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
++  },
++  {
++    "copy": "availability-release-schema.json",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/availability-release-schema.json",
++    "sha256": "93a810e3c8e17cbe5a1b1a9472ab73cefe1aefece9a99aaa3f899c6ab116dea5",
++    "bytes": 1531,
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
++  },
++  {
++    "copy": "availability_owner.py",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/availability_owner.py",
++    "sha256": "c3615a87bd70256b383e585268a9d21d1c951f8f9618dfa0dd820101dd157fa7",
++    "bytes": 14000,
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
++  },
++  {
++    "copy": "availability_peer.py",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/availability_peer.py",
++    "sha256": "65c078a6d9739f4c4017433eef5d260084e9ee005622a7d5f08fdc89b0b05ec7",
++    "bytes": 1126,
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
++  },
++  {
++    "copy": "bootstrap.py",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/bootstrap.py",
++    "sha256": "6e11b44e8e95458b35052c87a02a17cffdae32ad060a5dbd3de53e19f2f873cc",
++    "bytes": 2114,
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
++  },
++  {
++    "copy": "context/h3-native/availability-review.json",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/context/h3-native/availability-review.json",
++    "sha256": "1918860de6edfdf69092498d7b12b75acb7ad5c9c65dacd6d61cac0098699b2d",
++    "bytes": 2463,
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
++  },
++  {
++    "copy": "context/h3-native/closure.json",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/context/h3-native/closure.json",
++    "sha256": "8b891a351a31c53d6cf75ebb5247b8d80ef5f395237dd133778c5fee885d1e4b",
++    "bytes": 1358,
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
++  },
++  {
++    "copy": "context/h3-native/findings.json",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/context/h3-native/findings.json",
++    "sha256": "56b3450c2bc3d63f45c6b7c1fe93276e4fd764190bcb85c9babd1928aaec148f",
++    "bytes": 2071,
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
++  },
++  {
++    "copy": "context/h3-native/index.json",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/context/h3-native/index.json",
++    "sha256": "131489165f40aaff2b2eaea684833864ea9f0d1dbf4d733e62ec1b9d737f33df",
++    "bytes": 21097,
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
++  },
++  {
+     "copy": "context/h3-native/report.md",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness3-native-mechanics-1/report.md",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/context/h3-native/report.md",
+     "sha256": "1af447ca28e45859ebf73ab020e4e6127bbf099e60594d153a96304cf5dd72bd",
+     "bytes": 11153,
+-    "role": "exact bounded independent H3 review context; full129 history pinned INPLACE"
+-  },
+-  {
+-    "copy": "context/h3-native/findings.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness3-native-mechanics-1/findings.json",
+-    "sha256": "56b3450c2bc3d63f45c6b7c1fe93276e4fd764190bcb85c9babd1928aaec148f",
+-    "bytes": 2071,
+-    "role": "exact bounded independent H3 review context; full129 history pinned INPLACE"
+-  },
+-  {
+-    "copy": "context/h3-native/closure.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness3-native-mechanics-1/closure.json",
+-    "sha256": "8b891a351a31c53d6cf75ebb5247b8d80ef5f395237dd133778c5fee885d1e4b",
+-    "bytes": 1358,
+-    "role": "exact bounded independent H3 review context; full129 history pinned INPLACE"
+-  },
+-  {
+-    "copy": "context/h3-native/index.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness3-native-mechanics-1/index.json",
+-    "sha256": "131489165f40aaff2b2eaea684833864ea9f0d1dbf4d733e62ec1b9d737f33df",
+-    "bytes": 21097,
+-    "role": "exact bounded independent H3 review context; full129 history pinned INPLACE"
+-  },
+-  {
+-    "copy": "context/h3-native/availability-review.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness3-native-mechanics-1/availability-review.json",
+-    "sha256": "1918860de6edfdf69092498d7b12b75acb7ad5c9c65dacd6d61cac0098699b2d",
+-    "bytes": 2463,
+-    "role": "exact bounded independent H3 review context; full129 history pinned INPLACE"
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
++  },
++  {
++    "copy": "context/root-authority/disposition.json",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/context/root-authority/disposition.json",
++    "sha256": "04852d016f775e7a1e0b3e860b0cb5d17090813d367de0f378d85ca023d4dc1a",
++    "bytes": 2356,
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
++  },
++  {
++    "copy": "context/root-authority/index.json",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/context/root-authority/index.json",
++    "sha256": "8b9cebadac4a689a046170f54289a74b6e1e41e36041daf9ff50a809e610957e",
++    "bytes": 230,
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
+   },
+   {
+     "copy": "context/root-authority/release.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness3-root-disposition-1/release.json",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/context/root-authority/release.json",
+     "sha256": "81b29b32eb6d56b8bafc0c1a15b5f93156437b86846be3e843929de26a8d1cd6",
+     "bytes": 2531,
+-    "role": "author-only H4 root authority, not evaluation release"
+-  },
+-  {
+-    "copy": "context/root-authority/disposition.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness3-root-disposition-1/disposition.json",
+-    "sha256": "04852d016f775e7a1e0b3e860b0cb5d17090813d367de0f378d85ca023d4dc1a",
+-    "bytes": 2356,
+-    "role": "author-only H4 root authority, not evaluation release"
+-  },
+-  {
+-    "copy": "context/root-authority/index.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness3-root-disposition-1/index.json",
+-    "sha256": "8b9cebadac4a689a046170f54289a74b6e1e41e36041daf9ff50a809e610957e",
+-    "bytes": 230,
+-    "role": "author-only H4 root authority, not evaluation release"
+-  },
+-  {
+-    "copy": "authority-snapshots/05-HiRes.pm",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/authority-snapshots/05-HiRes.pm",
+-    "sha256": "9bc6ece12a90e5c01d784a4efd672c49b8a7551ce6871b620efbd38cd4960f34",
+-    "bytes": 25689,
+-    "role": "active immutable tool/header authority snapshot, not runtime loading"
+-  },
+-  {
+-    "copy": "authority-snapshots/07-POSIX.pm",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/authority-snapshots/07-POSIX.pm",
+-    "sha256": "d941cf37b6dee5253b859cbb703a5785629a0bcdd86f61d1ec96fa464d69df90",
+-    "bytes": 20384,
+-    "role": "active immutable tool/header authority snapshot, not runtime loading"
+-  },
+-  {
+-    "copy": "authority-snapshots/08-Fcntl.pm",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/authority-snapshots/08-Fcntl.pm",
+-    "sha256": "80511e494fc719cb63d252a95987ba24c04557947c1bf1584f5eeb6704786e9b",
+-    "bytes": 4044,
+-    "role": "active immutable tool/header authority snapshot, not runtime loading"
+-  },
+-  {
+-    "copy": "authority-snapshots/09-_time.h",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/authority-snapshots/09-_time.h",
+-    "sha256": "a3dceadf2c95133018af363187829ca072d85a93d69f9682a2e4fb993902f28d",
+-    "bytes": 8243,
+-    "role": "active immutable tool/header authority snapshot, not runtime loading"
+-  },
+-  {
+-    "copy": "authority-snapshots/10-mach_time.h",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/authority-snapshots/10-mach_time.h",
+-    "sha256": "d690e304ea595ca216ed51e20aa9747e0b3bcb07446d996abe0080a231c7065f",
+-    "bytes": 2590,
+-    "role": "active immutable tool/header authority snapshot, not runtime loading"
+-  },
+-  {
+-    "copy": "availability-release-schema.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/availability-release-schema.json",
+-    "sha256": "93a810e3c8e17cbe5a1b1a9472ab73cefe1aefece9a99aaa3f899c6ab116dea5",
+-    "bytes": 1531,
+-    "role": "unchanged active H3 input; full historical original separately pinned"
+-  },
+-  {
+-    "copy": "availability_peer.py",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/availability_peer.py",
+-    "sha256": "65c078a6d9739f4c4017433eef5d260084e9ee005622a7d5f08fdc89b0b05ec7",
+-    "bytes": 1126,
+-    "role": "unchanged active H3 input; full historical original separately pinned"
+-  },
+-  {
+-    "copy": "bootstrap.py",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/bootstrap.py",
+-    "sha256": "6e11b44e8e95458b35052c87a02a17cffdae32ad060a5dbd3de53e19f2f873cc",
+-    "bytes": 2114,
+-    "role": "unchanged active H3 input; full historical original separately pinned"
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
+   },
+   {
+     "copy": "control-matrix.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/control-matrix.json",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/control-matrix.json",
+     "sha256": "ca0b88fef5f5e069921f089b4e23c792441c5ddc0daba4cf22156cee88562dea",
+     "bytes": 61308,
+-    "role": "unchanged active H3 input; full historical original separately pinned"
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
+   },
+   {
+     "copy": "execution-gate.closed.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/execution-gate.closed.json",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/execution-gate.closed.json",
+     "sha256": "69f7eb67fa2ae35674192163791f8dc0a9006f383ba6a407501c138eaa3170f5",
+     "bytes": 145,
+-    "role": "unchanged active H3 input; full historical original separately pinned"
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
+   },
+   {
+     "copy": "execution-gate.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/execution-gate.json",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/execution-gate.json",
+     "sha256": "69f7eb67fa2ae35674192163791f8dc0a9006f383ba6a407501c138eaa3170f5",
+     "bytes": 145,
+-    "role": "unchanged active H3 input; full historical original separately pinned"
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
+   },
+   {
+     "copy": "gate_controls.py",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/gate_controls.py",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/gate_controls.py",
+     "sha256": "47e89d6e27c0ae5d1dc80aaeedd2199decdfff41a28dca97e8382348fefc6b8c",
+     "bytes": 4985,
+-    "role": "unchanged active H3 input; full historical original separately pinned"
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
+   },
+   {
+     "copy": "hard-limiter-authority.md",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/hard-limiter-authority.md",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/hard-limiter-authority.md",
+     "sha256": "97bf4cc971c89d1344ca5ac1a9d38038319d754f9b4c8c985d2c80f05081586d",
+     "bytes": 3491,
+-    "role": "unchanged active H3 input; full historical original separately pinned"
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
+   },
+   {
+     "copy": "harness.py",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/harness.py",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/harness.py",
+     "sha256": "40d5b1a9da985fde2db27d5709eae831628b93771bb79d9401ee890177d048f5",
+     "bytes": 9667,
+-    "role": "unchanged active H3 input; full historical original separately pinned"
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
+   },
+   {
+     "copy": "host_controls.py",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/host_controls.py",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/host_controls.py",
+     "sha256": "3aa0f1cf48cf404cc78203bd66089aacb12bc66bc7357ea35d28e19dad3a522d",
+     "bytes": 9733,
+-    "role": "unchanged active H3 input; full historical original separately pinned"
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
+   },
+   {
+     "copy": "host_peer.py",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/host_peer.py",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/host_peer.py",
+     "sha256": "e586b1568c5b51e0e60386565922f35db98a8521ecd1b093e50d1646a6f12798",
+     "bytes": 5185,
+-    "role": "unchanged active H3 input; full historical original separately pinned"
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
+   },
+   {
+     "copy": "outer_host.py",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/outer_host.py",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/outer_host.py",
+     "sha256": "abfb5adcade832dc0105b2abd29ca167d7ef14e6f15558db37e4921d1a8832e0",
+     "bytes": 18317,
+-    "role": "unchanged active H3 input; full historical original separately pinned"
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
+   },
+   {
+     "copy": "outer_worker.py",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/outer_worker.py",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/outer_worker.py",
+     "sha256": "c18a2e78dc8da96613b36cb909a8f1503091871200884dce313de6cc06c8f35b",
+     "bytes": 5715,
+-    "role": "unchanged active H3 input; full historical original separately pinned"
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
+   },
+   {
+     "copy": "owned_spawn.py",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/owned_spawn.py",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/owned_spawn.py",
+     "sha256": "c4d73ba6d4d6d759b7e5dbeeb79986d2c8d6ccade163886b6a07b17cba02f3d8",
+     "bytes": 3508,
+-    "role": "unchanged active H3 input; full historical original separately pinned"
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
+   },
+   {
+     "copy": "ownership-fault-scope.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/ownership-fault-scope.json",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/ownership-fault-scope.json",
+     "sha256": "749cf3c12e46d731c7da6ee6fe242c25bbba8c8a8cff6d1a39f399bf94150765",
+     "bytes": 1826,
+-    "role": "unchanged active H3 input; full historical original separately pinned"
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
++  },
++  {
++    "copy": "raw-retention-contract.json",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/raw-retention-contract.json",
++    "sha256": "979f396f653055c195554b44be9b15d6b8f0cbfe59de51b4b68be83fc185ceae",
++    "bytes": 2928,
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
+   },
+   {
+     "copy": "report_controls.py",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/report_controls.py",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/report_controls.py",
+     "sha256": "d814d9edfb0f393e3f5c46550e56b8f273f9445e106ebba0e3d84603c2f4b12b",
+     "bytes": 16265,
+-    "role": "unchanged active H3 input; full historical original separately pinned"
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
++  },
++  {
++    "copy": "residuals.json",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/residuals.json",
++    "sha256": "9c6829e2f12f4c743d8f12eccb81686abc29ce9ad7f2e57c21d30ef5cf6b683d",
++    "bytes": 3184,
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
+   },
+   {
+     "copy": "scanner_controls.py",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/scanner_controls.py",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/scanner_controls.py",
+     "sha256": "25f2b4ccdc3691acb8726a4a4a868f2df5f8f657df40a83f82013dfca93c3b56",
+     "bytes": 8502,
+-    "role": "unchanged active H3 input; full historical original separately pinned"
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
+   },
+   {
+     "copy": "source-map.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/source-map.json",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/source-map.json",
+     "sha256": "7fb84ed403b7be9dd587ed2b2980d0d8e5def7e260186c948abd1c4a1f997dda",
+     "bytes": 87874,
+-    "role": "unchanged active H3 input; full historical original separately pinned"
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
++  },
++  {
++    "copy": "static-call-inventory.json",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/static-call-inventory.json",
++    "sha256": "4b6daf8e68e22b352aef23d95a2d7fcba871e0106808e0d937f0187b9bbc4d5e",
++    "bytes": 118886,
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
++  },
++  {
++    "copy": "subcase-call-map.json",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/subcase-call-map.json",
++    "sha256": "aad4ab31f4d4a20541019cee8264fbe0e9f288092a73f2a0e8e313e333e8a5b4",
++    "bytes": 31366,
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
+   },
+   {
+     "copy": "tool-identity-read.json",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/tool-identity-read.json",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/tool-identity-read.json",
+     "sha256": "f61ec88a28f6c40eaf83be3a12784188ca069129704395ba178820b2796f282a",
+     "bytes": 4207,
+-    "role": "unchanged active H3 input; full historical original separately pinned"
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
+   },
+   {
+     "copy": "watchdog_controls.py",
+-    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-3/watchdog_controls.py",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness-preparation-4/watchdog_controls.py",
+     "sha256": "8ad4abdbbc7a0973c99cf98a989e0130ca883288e6223595a157fa0bd67162ff",
+     "bytes": 14512,
+-    "role": "unchanged active H3 input; full historical original separately pinned"
++    "role": "exact H4 prepared input unless explicit namespace/native exec correction delta"
++  },
++  {
++    "copy": "context/h4-actual-failure/index.json",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-actual-native-audit-1/index.json",
++    "sha256": "b6d899896ee97fea09616c3fdddc7efe17f23bff7adf25ab25b809b59ff8a5cd",
++    "bytes": 19775,
++    "role": "exact governing H4 history; not H5 acceptance or new outcome"
++  },
++  {
++    "copy": "context/h4-actual-failure/closure.json",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-actual-native-audit-1/closure.json",
++    "sha256": "70b9f03ae4f06335bbd6ddce454bb1051d7621c86944e7aa852e218e4ca3c299",
++    "bytes": 1255,
++    "role": "exact governing H4 history; not H5 acceptance or new outcome"
++  },
++  {
++    "copy": "context/h4-actual-failure/report.md",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-actual-native-audit-1/report.md",
++    "sha256": "f88081c246a5db52cde8fd783c165193b6d2f93fa36ff1763b70990700b44417",
++    "bytes": 5606,
++    "role": "exact governing H4 history; not H5 acceptance or new outcome"
++  },
++  {
++    "copy": "context/h4-static-native/index.json",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness4-native-mechanics-1/index.json",
++    "sha256": "f5c34b8a43735cc4687e9266ab5336f6d19c5459855b6081281bb6dfdc5a7c82",
++    "bytes": 11302,
++    "role": "exact governing H4 history; not H5 acceptance or new outcome"
++  },
++  {
++    "copy": "context/h4-static-native/closure.json",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness4-native-mechanics-1/closure.json",
++    "sha256": "ac43d3bfd86d98c35907bf9297bf30d1752dbf432905c22029e9b231dd23f5e1",
++    "bytes": 1892,
++    "role": "exact governing H4 history; not H5 acceptance or new outcome"
++  },
++  {
++    "copy": "context/h4-static-native/report.md",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-synthetic-harness4-native-mechanics-1/report.md",
++    "sha256": "a42d839d6c4fee8fa697833ecc8cdcab9ecc0450755c1bb42e0228c2a752116a",
++    "bytes": 6030,
++    "role": "exact governing H4 history; not H5 acceptance or new outcome"
++  },
++  {
++    "copy": "context/h4-failure-root/index.json",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-failure-root-disposition-1/index.json",
++    "sha256": "4b2d645059a2ab50db7526633656e9a267da963518161dd66bba7a74bbb800f6",
++    "bytes": 290,
++    "role": "exact governing H4 history; not H5 acceptance or new outcome"
++  },
++  {
++    "copy": "context/h4-failure-root/disposition.json",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-failure-root-disposition-1/disposition.json",
++    "sha256": "78ebbc65edc0dabf86836395981116d47b980a343710e67e8cc8e873a292c64b",
++    "bytes": 2225,
++    "role": "exact governing H4 history; not H5 acceptance or new outcome"
++  },
++  {
++    "copy": "context/h4-failure-root/release.json",
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D4-availability-failure-root-disposition-1/release.json",
++    "sha256": "41c032ffe7ed6fb0c374ded373a5586e652113f5469d6b7d30473508e733f4a4",
++    "bytes": 2547,
++    "role": "exact governing H4 history; not H5 acceptance or new outcome"
+   }
+ ]
