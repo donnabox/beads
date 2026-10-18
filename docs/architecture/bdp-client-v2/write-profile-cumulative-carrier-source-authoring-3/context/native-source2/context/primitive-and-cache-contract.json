@@ -1,0 +1,24 @@
+{
+  "N1": {
+    "cacheScope": "Two immutable local variables per present owner per assemble call; no across-call or persistent cache",
+    "canonicalResultSha256": "After bounded parse and existing result checks, compute SHA256(canonicalJson(parsed wrapper.result)) once; use same value at every original consumer. This remains a derived digest, never raw wrapper or runtime payload identity.",
+    "preservation": "No normalization/exclusion/hash fixedpoint, added digest field, result mutation, API, workload or deadline change. No benchmark/actual timeout asserted.",
+    "rawWrapperSha256": "After intrinsic source byte copy, compute SHA256(bytes) once; use same value for expected hash check, all row projections and owner report summary."
+  },
+  "N3": {
+    "captureOrder": [
+      "Validate canonical selection and real factory configuration as before.",
+      "Intrinsic own-data-capture each observation. Reject wrong primitive identity/hash types before any canonicalJson comparison or regex coercion.",
+      "Intrinsically capture arrays and nested ready/session/transport data using existing safeData/ownData/array helpers and existing100000nodes/128depth/10000container limits; reject Proxy/accessor/function/nonfinite values without evaluating behavior.",
+      "Only traverse captured plain finite data or bounded parsed JSON. Keep branded configuration reference for its existing factory assertion; compare its immutable own-data representation after brand check."
+    ],
+    "errors": "No new error class/code/cause/input/path echo. Getter/Proxy/function shape refusal invalid-source; missing/malformed parsed report metadata invalid-report; well-formed inconsistent bound configuration/session metadata configuration-mismatch. Existing valid digest mismatch remains invalid-report.",
+    "primitiveSlots": {
+      "expectedReportSha256": "primitive lower64hex string; wrong type/grammar invalid-source; well-formed unequal actual raw digest invalid-report",
+      "lifecycle.cleanup": "existing finite enum through primitive text validation, no change",
+      "ownerId": "primitive string exactly expected fixed owner ID; wrong type invalid-source, wrong identity invalid-report",
+      "runtimeConfigurationIdentity": "primitive lower64hex string as current contract; compare all actual baseline/session identities with it, never String(value) coercion",
+      "sourceCommit": "primitive lower40hex string, equal bound configuration.sourceCommit; wrong type invalid-source, valid different source configuration-mismatch"
+    }
+  }
+}

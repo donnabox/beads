@@ -1,0 +1,94 @@
+{
+  "utc": "2026-10-18T10:41:40.712923+00:00",
+  "psArgv": [
+    "/bin/ps",
+    "-axo",
+    "pid=,ppid=,pgid=,stat=,comm="
+  ],
+  "psExit": 0,
+  "psOutputSha256": "56ef2b5d389456d98b3dbde16a1513372d9dd69b71bed20f0bc4758a759aa043",
+  "psRows": 1425,
+  "observedPids": [
+    32869,
+    35059,
+    36573,
+    38074,
+    38084,
+    38105,
+    38124,
+    38144,
+    38164,
+    38228,
+    38244,
+    38264,
+    38286,
+    38304,
+    38347,
+    38368,
+    38387,
+    38407,
+    38425,
+    38445,
+    38483,
+    38503,
+    38524,
+    38542,
+    38562,
+    38581,
+    38601,
+    38620,
+    38637,
+    38658,
+    38677,
+    38696,
+    38715,
+    38736,
+    38773,
+    38791,
+    38811,
+    38831,
+    38853,
+    38873,
+    38890,
+    38896,
+    38897
+  ],
+  "observedProcessGroups": [
+    32869,
+    35059,
+    36573,
+    38074
+  ],
+  "currentMatchingRows": [],
+  "scratch": [
+    {
+      "stage": "node-version",
+      "temporaryDirectory": "/private/tmp/vickie-tx-discovery-validation-node-version-mq8j5t8i",
+      "scratchRetainedAtCapture": true,
+      "BDPRuntimeDirectories": [],
+      "scratchRemovalRequired": false
+    },
+    {
+      "stage": "pnpm-version",
+      "temporaryDirectory": "/private/tmp/vickie-tx-discovery-validation-pnpm-version-pl17y5dy",
+      "scratchRetainedAtCapture": true,
+      "BDPRuntimeDirectories": [],
+      "scratchRemovalRequired": false
+    },
+    {
+      "stage": "workspace-install",
+      "temporaryDirectory": "/private/tmp/vickie-tx-discovery-validation-workspace-install-3fke2ans",
+      "scratchRetainedAtCapture": true,
+      "BDPRuntimeDirectories": [],
+      "scratchRemovalRequired": false
+    },
+    {
+      "stage": "bind-workspace-tools",
+      "temporaryDirectory": "/private/tmp/vickie-tx-discovery-validation-bind-workspace-tools-48dep3cp",
+      "scratchRetainedAtCapture": true,
+      "BDPRuntimeDirectories": [],
+      "scratchRemovalRequired": false
+    }
+  ],
+  "scope": "Exact first4 sampled PIDs and PGIDs absent at fresh census; no claim about unrelated/future processes."
+}

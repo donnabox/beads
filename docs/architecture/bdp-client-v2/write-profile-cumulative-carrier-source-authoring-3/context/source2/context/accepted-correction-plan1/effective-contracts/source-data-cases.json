@@ -1,0 +1,513 @@
+{
+  "caseCount": 48,
+  "cases": [
+    {
+      "budgetMs": 5000,
+      "expected": "130 requirements;56owners/74null,34 declared flags, all unobserved; qualificationfalse",
+      "group": "valid-data",
+      "id": "V01",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "canonical RU branded two-shard set, no observations"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "251 requirements;17owners/234null;0whole; qualificationfalse",
+      "group": "valid-data",
+      "id": "V02",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "canonical TX current v2 manifest/fixture/coverage, no observation"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "Genuine reportVersion4 actual stopped remainder harness-error/not-run for ALL remaining selected IDs including missing plans/diagnostics; exact order/index/empty exchanges, assertionsAllPassednull;0wire0children. No not-implemented rewrite or legacy succeeded association.",
+      "group": "valid-data",
+      "id": "V03",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "actual existing RU runner called already-aborted with matching exact config; executor throws if called"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "Genuine256 metadata rows with harness-error/not-run stopped remainder INCLUDING5diagnostics, required251; preserve exact row indices/order/empty exchanges and null execution credit;0wire0children.",
+      "group": "valid-data",
+      "id": "V04",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "actual TX branded runner called already-aborted with matching exact config; executor throws if called"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "map pass to actual input row index/digest, keep other required IDs missing and whole qualification unestablished; never installed proof",
+      "finiteSubassertionCounts": {
+        "booleanPrecedenceChecks": 8,
+        "laneChecks": 4,
+        "total": 12
+      },
+      "group": "valid-data",
+      "id": "V05",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "well-formed source-unit report with one pass row and exact manifest assertions, explicitly unit-data",
+      "subassertions": [
+        "For RU dot and TX colon, CURRENT http and client action fixtures each exercise the two manifest-family lanes (4 finite lane checks); general rule covers every non-http family without inventing new action families.",
+        "Within SAME callback test alltrue=>true, true+unresolved=>null, false+unresolved=>false, false+true=>false; unexecuted=>null. No whole credit."
+      ]
+    },
+    {
+      "budgetMs": 5000,
+      "correctionPlan1Subcontrols": [
+        "Keep raw wrapper SHA versus canonical result SHA distinction and expected value equality after compute-once change; no performance benchmark or timing prediction. Keep same once-serialization JSON representation facts."
+      ],
+      "expected": "Detached snapshot and explicit JSON representations match; exact one-serialization handoff raw bytes/digest remain separate; missing legacy path allowed.",
+      "group": "valid-data",
+      "id": "V06",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "qualificationLimit": "This pure-data callback validates captured wrapper/projection inputs and IO adapter behavior, not the inline actual TX positive hook invocation. Single serialization/legacy mode branches are source/CODE inspection obligations and actual existing-callback validation later; no product callback import or hidden runner is permitted.",
+      "setup": "capture then mutate original source/report bytes and round-trip canonical safe projection; same case includes carrier-only TX exact-byte handoff roundtrip with legacy output path absent",
+      "subassertions": [
+        "TX carrier-only, legacy-only and both paths share ONE exact legacy serialization per call and original wrapper bytes/field order/indent/newline; no paths means no new serialization.",
+        "For each result/sessions/baseline compare explicit JSON projection including undefined object-member omission and undefined array-item null; parsed actual equals projection, raw digest remains exact independent byte identity."
+      ]
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "configuration-mismatch",
+      "group": "rejection",
+      "id": "R01",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "changed Scope"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "configuration-mismatch",
+      "group": "rejection",
+      "id": "R02",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "changed profile"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "unsupported-selection",
+      "group": "rejection",
+      "id": "R03",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "Historytrue"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "configuration-mismatch",
+      "group": "rejection",
+      "id": "R04",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "changed source commit"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "configuration-mismatch",
+      "group": "rejection",
+      "id": "R05",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "changed installed payload"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "configuration-mismatch",
+      "group": "rejection",
+      "id": "R06",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "changed contracts digest"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "configuration-mismatch",
+      "group": "rejection",
+      "id": "R07",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "changed policy digest"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "configuration-mismatch",
+      "group": "rejection",
+      "id": "R08",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "changed authentication digest"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "configuration-mismatch",
+      "group": "rejection",
+      "id": "R09",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "changed fixture exact bytes"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "invalid-source",
+      "group": "rejection",
+      "id": "R10",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "trimmed/unbranded canonical selection"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "invalid-source",
+      "group": "rejection",
+      "id": "R11",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "unbranded served configuration"
+    },
+    {
+      "budgetMs": 5000,
+      "correctionPlan1Subcontrols": [
+        "Retain existing top-level artifacts.kind accessor tripwire. Add wrong-type ownerId/sourceCommit/expectedReportSha objects with enumerable getters; nested RU baseline/sessions and TX served/session metadata accessor; ready array accessor element/function-valued metadata. Fixed invalid-source and getter counter0."
+      ],
+      "expected": "invalid-source without getter invocation",
+      "group": "rejection",
+      "id": "R12",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "accessor own API field tripwire"
+    },
+    {
+      "budgetMs": 5000,
+      "correctionPlan1Subcontrols": [
+        "Retain top-level Proxy control. Add Proxy identity value, ready array/element/nested served and session object; fixed invalid-source with trap counter0."
+      ],
+      "expected": "invalid-source",
+      "group": "rejection",
+      "id": "R13",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "Proxy API/source record"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "invalid-ownership",
+      "group": "rejection",
+      "id": "R14",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "duplicate same requirement owner across shards"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "invalid-ownership",
+      "group": "rejection",
+      "id": "R15",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "retired inherited requirement manifest row"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "invalid-ownership",
+      "group": "rejection",
+      "id": "R16",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "unknown normative ID"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "invalid-ownership",
+      "group": "rejection",
+      "id": "R17",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "noncanonical owner/row order"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "invalid-prerequisite",
+      "group": "rejection",
+      "id": "R18",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "later or cross-shard RU prerequisite"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "invalid-report",
+      "group": "rejection",
+      "id": "R19",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "reportVersion3 for v2 carrier"
+    },
+    {
+      "budgetMs": 5000,
+      "correctionPlan1Subcontrols": [
+        "With representative RU and TX source-unit wrappers and matching expected raw SHA, separately omit baseline/sessions, change configuration/runtime/source identity, remove/reorder/duplicate/replace a session or field. Valid metadata control succeeds; missing/malformed raw metadata invalid-report and valid-shaped binding mismatch configuration-mismatch. Recompute raw expected SHA in those controls so the new metadata check\u2014not only a digest mismatch\u2014causes refusal. No changed genuine runner result."
+      ],
+      "expected": "invalid-report; exact handoff/source digest and pre-hook result mismatch refused, no canonical-result/raw-wrapper relabel",
+      "group": "rejection",
+      "id": "R20",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "one wrapper/report/artifact digest mismatch OR changed .result in TX handed-off legacy bytes against genuine pre-hook capture",
+      "subassertions": [
+        "Alter each result/sessions/baseline or digest independently: new acceptance refuses fixed invalid-report/evidence failure and raw digest null; genuine observed snapshot unchanged.",
+        "Missing/refused JSON projection is fixed carrier failure. No canonical result digest substituted for raw wrapper."
+      ]
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "invalid-report",
+      "group": "rejection",
+      "id": "R21",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "scenarioFilter or unsupported subset selection"
+    },
+    {
+      "budgetMs": 5000,
+      "correctionPlan1Subcontrols": [
+        "Reject unknown/nondeclared/later/wrong-owner prerequisite ID, wrong phase/type/category/requirements, malformed/duplicate unknown retained request/action/assertion IDs, initial failure with invented observations, and a real stop followed by a nonstopped row. Preserve genuine already-aborted256/all-stopped case and diagnostic ordering.",
+        "Refuse arbitrary present-plan not-implemented without the exact known last-action missing-executor marker, mismatched action id/family/operation, invented after-failure continuation, or malformed marker type. No reason-text classification."
+      ],
+      "expected": "invalid-report",
+      "group": "rejection",
+      "id": "R22",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "missing/extra selected/result ID including diagnostic count mismatch",
+      "subassertions": [
+        "Unknown/duplicate action ID, duplicate assertion ID, wrong action/assertion binding and wrong family lane each refuse; same-ID unrelated exchange is not fallback authority."
+      ]
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "evidence-mismatch; no whole qualification promoted",
+      "group": "rejection",
+      "id": "R23",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "candidate whole flag changed relative bound coverage"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "capacity before parse/persistence; existing originals intact",
+      "group": "rejection",
+      "id": "R24",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "4MiB+1 report source or1MiB+1 summary",
+      "subassertions": [
+        "4MiB+1 bytes fails capacity before parse; summary1MiB+1 fails capacity. Bounded parser node100001/depth129/container10001 fixtures all below4MiB map exact fixed capacity errors; malformed UTF8/JSON and caller secret-bearing label cannot leak. No fifth-file/helper kind change."
+      ]
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "credential-check; sidecar withheld, fixed failure only; no secret or encoded secret in output",
+      "group": "credential",
+      "id": "S01",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "literal token in would-be persisted key/string"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "credential-check; sidecar withheld, fixed failure only; no secret or encoded secret in output",
+      "group": "credential",
+      "id": "S02",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "percent-encoded token in would-be persisted key/string"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "credential-check; sidecar withheld, fixed failure only; no secret or encoded secret in output",
+      "group": "credential",
+      "id": "S03",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "base64 token in would-be persisted key/string"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "credential-check; sidecar withheld, fixed failure only; no secret or encoded secret in output",
+      "group": "credential",
+      "id": "S04",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "base64url token in would-be persisted key/string"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "credential-check; sidecar withheld, fixed failure only; no secret or encoded secret in output",
+      "group": "credential",
+      "id": "S05",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "hex UTF8 token in would-be persisted key/string"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "credential-check; sidecar withheld, fixed failure only; no secret or encoded secret in output",
+      "group": "credential",
+      "id": "S06",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "JSON unicode-escaped token in would-be persisted key/string"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "credential-check; sidecar withheld, fixed failure only; no secret or encoded secret in output",
+      "group": "credential",
+      "id": "S07",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "percent(base64(token)) in would-be persisted key/string"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "credential-check; sidecar withheld, fixed failure only; no secret or encoded secret in output",
+      "group": "credential",
+      "id": "S08",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "base64(percent(token)) in would-be persisted key/string"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "UnboundRUAttemptV1: bindingStatusunbound/configurationnull, existing requested selection/source/set only, all130 observationsnull, running/unobserved, no bound carrier or qualification.",
+      "group": "lifecycle-data",
+      "id": "L01",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "start only",
+      "subassertions": [
+        "Serializer rejects omission or extra key, nonnull configuration, wrong kind/version/bindingStatus/profile, eligibilitytrue, 129/131 observations or any nonnull entry; canonical130 allnull succeeds. Tripwires before arbitrary getter evaluation; exactly3 exports."
+      ]
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "UnboundRUAttemptV1 stays unbound/configurationnull/all observationsnull; acquired cleanup pending, no runtime/PID/readiness facts fabricated.",
+      "group": "lifecycle-data",
+      "id": "L02",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "acquired with no result",
+      "subassertions": [
+        "Acquired remains unbound/null/all130null; serializer checks closure, no invented runtime binding."
+      ]
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "retained/pending, no complete claim",
+      "group": "lifecycle-data",
+      "id": "L03",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "returned genuine snapshot before cleanup",
+      "subassertions": [
+        "New missing/invalid handoff and new acceptance errors retain fixed failed/pending/null raw digest without replacing genuine data. Adapter/source-level control-flow witness requires actual product assertion continuation in later existing positive callback validation; no product observe invocation in this pure-data case."
+      ]
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "reported-complete/ownershipunverified, qualificationfalse",
+      "group": "lifecycle-data",
+      "id": "L04",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "cleaned success with only current close snapshots"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "retained original result + failed sticky stage, no final success",
+      "group": "lifecycle-data",
+      "id": "L05",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "cleanup failure after returned",
+      "subassertions": [
+        "Original legacy serialization/write failure retains genuine original propagation/cleanup aggregation; separate new carrier-only serialization/acceptance/persistence failure does not escape observe or replace result. Data-sidecar adapter failure checked here; actual observe wiring separately source-reviewed and later existing-callback validated."
+      ]
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "Failure before first genuine returned remains permanently UnboundRUAttemptV1/configurationnull/all observationsnull with fixed execution stage; no guessed binding, bound summary or zero-as-pass.",
+      "group": "lifecycle-data",
+      "id": "L06",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "execution failure before returned",
+      "subassertions": [
+        "Pre-return failure remains unbound serializer-checked exact130null. No configuration guessing."
+      ]
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "actual returned rows retained + aborted outcome, no retry",
+      "group": "lifecycle-data",
+      "id": "L07",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "abort after real runner returns stopped rows"
+    },
+    {
+      "budgetMs": 5000,
+      "correctionPlan1Subcontrols": [
+        "Add source-derived finite synthetic initial prerequisite skip followed by independent and not-implemented rows; permit continuation and keep null credit. Add no-category recheck with retained actual-shaped exchanges/actions and following independent row; permit continuation with null credit. Add category-bearing recheck and cleanupError-bearing recheck followed by exact stopped suffix; retain partial records, do not claim runtime observation.",
+        "Add finite synthetic known-source authored-plan missing-executor not-implemented with retained prefix and exact last non-http missing-executor marker; allow next independent row, null authored credit. No actual missing-executor runner invocation."
+      ],
+      "expected": "baseline retained; second missing/failed, no stitched success",
+      "group": "lifecycle-data",
+      "id": "L08",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "continuation failure after baseline success"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "configuration-mismatch before new projection; prior report remains",
+      "group": "lifecycle-data",
+      "id": "L09",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "reopen binding differs"
+    },
+    {
+      "budgetMs": 5000,
+      "expected": "No preexisting/other-attempt overwrite; firstwx0600 required, own-only atomic replacement; fixed carrier IO failure does not grant success.",
+      "group": "lifecycle-data",
+      "id": "L10",
+      "productChildren": 0,
+      "productHTTP": 0,
+      "setup": "profile-specific fresh/existing/stale/collision and own-only replacement failures (both profiles, one callback)",
+      "subassertions": [
+        "Within ONE existing callback use both profiles at same opt-in base: mandatory four distinct suffix paths; fresh first-create wx0600.",
+        "For each profile preexisting attempt and separately preexisting summary refuse before new output; same-profile competing first-create loses wx without modifying original; other-profile paths coexist.",
+        "Own-created replacement may use own exclusive temporary then atomic rename; stale/foreign/missing/replaced identity never authorizes replacement; simulate temp/write/rename failure and fixed aggregation without successful summary. Legacy files byte unchanged."
+      ]
+    }
+  ],
+  "correctionPlan1": "Same48 IDs/groups/budgets/0wire/0children; existing R12/R13/R20/L08/R22 and V06 subcontrols only. Genuine V03/V04/L07 runner result unchanged; wrappers gain honest current-schema data metadata only. No extra runner invocation.",
+  "exactCallbackCountPreserved": true,
+  "groups": {
+    "encodedCredential": 8,
+    "lifecycleData": 10,
+    "rejectMutations": 24,
+    "validData": 6
+  },
+  "newProductCallbacks": 0,
+  "precisionSuccessor": "N1L01/L02/L06, N2V06/R20 byte handoff subassertions and N3V03/V04 corrected; same48 cases/groups, no product requests/timer changes.",
+  "qualification": "V03/V04 genuine current runner RETURNED ABORTED outputs, not observed service results; V05 synthetic unit-data expressly not authority output. No permanent fixture from external L path needed. Existing current JSON factories/fixtures used with local in-memory copies; no new product test/network/service. Case group counts are cases, not assertion counts.",
+  "sourceCLI": "--maxWorkers=2 explicitly; default callback5s unchanged"
+}

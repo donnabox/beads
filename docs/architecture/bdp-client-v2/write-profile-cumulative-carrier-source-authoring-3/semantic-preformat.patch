@@ -1,0 +1,50 @@
+--- a/packages/conformance/test-support/profile-evidence.test.ts
++++ b/packages/conformance/test-support/profile-evidence.test.ts
+@@ -1286,6 +1286,37 @@
+         ),
+       "invalid-source",
+     );
++    // These supplied records are deliberately not valid transport metadata. At10000 keys,
++    // capture completes and the ordinary configuration comparison refuses; at10001 keys,
++    // the container bound must refuse before visiting even the final nested child.
++    let nestedVisits = 0;
++    const nestedTripwire = Object.defineProperty({}, "private", {
++      enumerable: true,
++      get() {
++        nestedVisits++;
++        throw new Error("unit-supplied-container-tripwire");
++      },
++    });
++    for (const length of [10000, 10001]) {
++      const suppliedRecord = Object.fromEntries(
++        Array.from({ length }, (_, index) => [
++          `unit-${index}`,
++          index === 10000 ? nestedTripwire : null,
++        ]),
++      );
++      code(
++        () =>
++          assemble(
++            c,
++            withObservation(c, {
++              ...o,
++              exactConfiguration: { ...exact(c), supplemental: suppliedRecord },
++            }),
++          ),
++        length === 10000 ? "configuration-mismatch" : "capacity",
++      );
++    }
++    expect(nestedVisits).toBe(0);
+     const large = {
+       ...c,
+       configuration: configuration("read-update", ruFixture, {
+--- a/packages/conformance/test-support/profile-evidence.ts
++++ b/packages/conformance/test-support/profile-evidence.ts
+@@ -132,6 +132,7 @@
+   if (typeof value === "number" && Number.isFinite(value)) return value;
+   if (Array.isArray(value)) return array(value).map((x) => safeData(x, depth + 1, budget));
+   const captured = record(value);
++  if (Object.keys(captured).length > 10000) return refuse("capacity");
+   return Object.fromEntries(
+     Object.entries(captured).map(([k, x]) => [k, safeData(x, depth + 1, budget)]),
+   );
