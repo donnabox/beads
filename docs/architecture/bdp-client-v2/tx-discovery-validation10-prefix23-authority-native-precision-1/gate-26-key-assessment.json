@@ -1,0 +1,224 @@
+[
+  {
+    "assessment": "UNCHANGED from accepted active9 authority",
+    "candidate": true,
+    "changedFromActive9": false,
+    "key": "actualClaudeReviewDisposed"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active9 authority",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-root-proposed-authority-10/actual-code-disposition.json",
+      "sha256": "c60dcb2420c18cedc63973781e3755a9b644e05b2f8bbd017e6131800cc75d80"
+    },
+    "changedFromActive9": false,
+    "key": "actualCodeDisposition"
+  },
+  {
+    "assessment": "prospective23 only",
+    "candidate": [
+      "node-version",
+      "pnpm-version",
+      "workspace-install",
+      "bind-workspace-tools",
+      "typecheck",
+      "format-check",
+      "lint",
+      "fresh-build",
+      "bind-fresh-build",
+      "focused-source",
+      "audit-focused-source",
+      "legacy-changefeed-source",
+      "audit-legacy-changefeed-source",
+      "legacy-installed-contracts-source",
+      "audit-legacy-installed-contracts-source",
+      "schema-confinement-source",
+      "audit-schema-confinement-source",
+      "prepare-package-directory",
+      "pack-protocol",
+      "pack-server",
+      "verify-archives",
+      "prepare-consumer",
+      "consumer-install"
+    ],
+    "changedFromActive9": true,
+    "key": "approvedStages"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active9 authority",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/base-tools.candidate.json",
+      "sha256": "c05588f1210d14a4716a67ee0ee1dc727b5cb150e6e81727fbddbc17c424066a"
+    },
+    "changedFromActive9": false,
+    "key": "baseTools"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active9 authority",
+    "candidate": [],
+    "changedFromActive9": false,
+    "key": "bootstrapReuse"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active9 authority",
+    "candidate": {
+      "path": "UNRESOLVED",
+      "sha256": "UNRESOLVED"
+    },
+    "changedFromActive9": false,
+    "key": "consumerInventory"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active9 authority",
+    "candidate": "UNRESOLVED",
+    "changedFromActive9": false,
+    "key": "consumerLockSha256"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active9 authority",
+    "candidate": "9c25ab144b84cd3a6192bb5061664570367ccf070b1a972243bb97f3e8022b75",
+    "changedFromActive9": false,
+    "key": "implementationIndexSha256"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active9 authority",
+    "candidate": {
+      "path": "UNRESOLVED",
+      "sha256": "UNRESOLVED"
+    },
+    "changedFromActive9": false,
+    "key": "installedProvenance"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active9 authority",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-snapshot-target-source-correction-1/index.json",
+      "sha256": "268ee16e9388dec80a80728d2890df1cec5f45953eef9880860432d99904b6d7"
+    },
+    "changedFromActive9": false,
+    "key": "knownCorrectedSourceFreeze"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active9 authority",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-3/predecessor2/predecessor/context/corrected-source2/context/original-actual-code-terminal-closure.json",
+      "sha256": "28a4f9ce58047194602d3f2385061f18ee9c0e6508543f71e4b4e4880c6e3084"
+    },
+    "changedFromActive9": false,
+    "key": "knownOriginalActualCodeTerminal"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active9 authority",
+    "candidate": "final",
+    "changedFromActive9": false,
+    "key": "mode"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active9 authority",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-root-proposed-authority-10/native-code-disposition.json",
+      "sha256": "0daa3047b68a5c52c55e19211a61f4b5a97bc67c6444ac3a40c2b603341c7260"
+    },
+    "changedFromActive9": false,
+    "key": "nativeCodeDisposition"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active9 authority",
+    "candidate": true,
+    "changedFromActive9": false,
+    "key": "nativeCodeReviewDisposed"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active9 authority",
+    "candidate": true,
+    "changedFromActive9": false,
+    "key": "released"
+  },
+  {
+    "assessment": "actual source-bound archive acceptance",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-root-archive-acceptance-1/acceptance.json",
+      "sha256": "9f8c16e04de89a32f69efd6b9bc289035278940d2cc44d52552aca177903d7c5"
+    },
+    "changedFromActive9": true,
+    "key": "rootArchiveAcceptance"
+  },
+  {
+    "assessment": "actual fresh476 root barrier",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-root-build-acceptance-1/acceptance.json",
+      "sha256": "f511e198d40e56a51c2959b7efbc1d86e9e8de5eb9c3b18642cd7f6962f7f438"
+    },
+    "changedFromActive9": false,
+    "key": "rootBuildAcceptance"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active9 authority",
+    "candidate": {
+      "path": "UNRESOLVED",
+      "sha256": "UNRESOLVED"
+    },
+    "changedFromActive9": false,
+    "key": "rootConsumerLockAcceptance"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active9 authority",
+    "candidate": {
+      "path": "UNRESOLVED",
+      "sha256": "UNRESOLVED"
+    },
+    "changedFromActive9": false,
+    "key": "rootConsumerProofAcceptance"
+  },
+  {
+    "assessment": "exact accepted source/static+runtime disposition for23",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix23-proposed-authority-1/disposition.json",
+      "sha256": "4c37223e48ca8a66d3bcb4e13674e1c084f3561365ca2906d2707cc37a3fa36e"
+    },
+    "changedFromActive9": true,
+    "key": "rootDisposition"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active9 authority",
+    "candidate": true,
+    "changedFromActive9": false,
+    "key": "rootExactSourceAccepted"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active9 authority",
+    "candidate": true,
+    "changedFromActive9": false,
+    "key": "rootPlanAccepted"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active9 authority",
+    "candidate": "2026-10-18T02:16:24Z-549f",
+    "changedFromActive9": false,
+    "key": "session"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active9 authority",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/source-binding.json",
+      "sha256": "9bb16e9c984f7c259c6f4cb42ddad2886234771a90f4421c3fddec57c5079a41"
+    },
+    "changedFromActive9": false,
+    "key": "sourceBinding"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active9 authority",
+    "candidate": true,
+    "changedFromActive9": false,
+    "key": "staticValidationAuthorized"
+  },
+  {
+    "assessment": "UNCHANGED from accepted active9 authority",
+    "candidate": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/workspace-tools.json",
+      "sha256": "72150ced3b46657e65e67557e60c10a835cb152dd49757cbe7844b2f729a681d"
+    },
+    "changedFromActive9": false,
+    "key": "workspaceTools"
+  }
+]

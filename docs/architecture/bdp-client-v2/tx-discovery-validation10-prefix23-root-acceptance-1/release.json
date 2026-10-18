@@ -1,0 +1,48 @@
+{
+  "utc": "2026-10-18T16:28:50.436351+00:00",
+  "accepted": true,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "acceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix23-root-acceptance-1/acceptance.json",
+    "sha256": "33adf345714d3c4f17f8a4594af773e592ac93784493afc5a98c7e26ca6e5c6b"
+  },
+  "gateSha256": "f78f325ad0f20d25b33c526f43dc4b3867469cab05660a4f9268f7601315fb69",
+  "approvedStages": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "focused-source",
+    "audit-focused-source",
+    "legacy-changefeed-source",
+    "audit-legacy-changefeed-source",
+    "legacy-installed-contracts-source",
+    "audit-legacy-installed-contracts-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install"
+  ],
+  "dispatchOnlyNext2": [
+    "prepare-consumer",
+    "consumer-install"
+  ],
+  "noRetry": true,
+  "preconditions": [
+    "Publish/readback exact candidate+FULLnative+root BEFOREactivation",
+    "Byteexact activatef78f/publish/readback activation BEFOREdispatch",
+    "Only2sequentialfresh wrappers, no prior21rerun,raw0/wholeelapsed<120,first failure/late/unknown STOP noRetry",
+    "Root actualgeneratedlock/manifest/settings/eightversions/archiveintegrity+nativeactual23 before separately independently reviewedprefix24 verification"
+  ],
+  "activationPerformed": false,
+  "executionDispatched": false
+}

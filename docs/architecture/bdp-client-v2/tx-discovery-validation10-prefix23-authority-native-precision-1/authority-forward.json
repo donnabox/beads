@@ -1,0 +1,72 @@
+{
+  "approvedStages": {
+    "after": [
+      "node-version",
+      "pnpm-version",
+      "workspace-install",
+      "bind-workspace-tools",
+      "typecheck",
+      "format-check",
+      "lint",
+      "fresh-build",
+      "bind-fresh-build",
+      "focused-source",
+      "audit-focused-source",
+      "legacy-changefeed-source",
+      "audit-legacy-changefeed-source",
+      "legacy-installed-contracts-source",
+      "audit-legacy-installed-contracts-source",
+      "schema-confinement-source",
+      "audit-schema-confinement-source",
+      "prepare-package-directory",
+      "pack-protocol",
+      "pack-server",
+      "verify-archives",
+      "prepare-consumer",
+      "consumer-install"
+    ],
+    "before": [
+      "node-version",
+      "pnpm-version",
+      "workspace-install",
+      "bind-workspace-tools",
+      "typecheck",
+      "format-check",
+      "lint",
+      "fresh-build",
+      "bind-fresh-build",
+      "focused-source",
+      "audit-focused-source",
+      "legacy-changefeed-source",
+      "audit-legacy-changefeed-source",
+      "legacy-installed-contracts-source",
+      "audit-legacy-installed-contracts-source",
+      "schema-confinement-source",
+      "audit-schema-confinement-source",
+      "prepare-package-directory",
+      "pack-protocol",
+      "pack-server",
+      "verify-archives"
+    ]
+  },
+  "rootArchiveAcceptance": {
+    "after": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-root-archive-acceptance-1/acceptance.json",
+      "sha256": "9f8c16e04de89a32f69efd6b9bc289035278940d2cc44d52552aca177903d7c5"
+    },
+    "before": {
+      "path": "UNRESOLVED",
+      "sha256": "UNRESOLVED"
+    }
+  },
+  "rootDisposition": {
+    "after": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix23-proposed-authority-1/disposition.json",
+      "sha256": "4c37223e48ca8a66d3bcb4e13674e1c084f3561365ca2906d2707cc37a3fa36e"
+    },
+    "before": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation10-prefix21-proposed-authority-1/disposition.json",
+      "sha256": "7a1575c97023ea90937c509f051013b764eebd05f313830a0a0e8a704924d5d8"
+    }
+  }
+}

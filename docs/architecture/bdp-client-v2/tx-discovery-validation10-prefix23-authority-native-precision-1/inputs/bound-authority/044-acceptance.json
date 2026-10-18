@@ -1,0 +1,680 @@
+{
+  "utc": "2026-10-18T16:08:17.035029+00:00",
+  "accepted": true,
+  "scope": "Actual source prefix17 only, no archives/consumer/installed qualification",
+  "sourceBindingSha256": "9bb16e9c984f7c259c6f4cb42ddad2886234771a90f4421c3fddec57c5079a41",
+  "sourceIdentity": "a61cd3fbf9fac68e3aad857a24a2456dd16b83048067eef85348d7091c0aa08e",
+  "rootToolSession": 61421,
+  "actualToolExitCode": 0,
+  "actual17StagesPassed": true,
+  "freshSourceCallbacksPassed": 63,
+  "callbackGroups": [
+    21,
+    32,
+    9,
+    1
+  ],
+  "emittedReports39DistinctFrom63Callbacks": true,
+  "fourImmediateStrictAuditsPassed": true,
+  "focusedDirect96": 96,
+  "focusedRawWire14": 14,
+  "focusedBaselines20": 20,
+  "focusedZeroWireCounterfactuals9": 9,
+  "stages": [
+    {
+      "stage": "node-version",
+      "inner": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/node-version.exit.json",
+        "sha256": "f459d97f9d34aa8540be085501b2688aa33b39cba81c8c2d5c2104365349cbd8"
+      },
+      "wholeWrapperSeconds": 14.106995958369225,
+      "wrapperRawExit": 0
+    },
+    {
+      "stage": "pnpm-version",
+      "inner": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/pnpm-version.exit.json",
+        "sha256": "4369a35f8a88a635b25b561cb84c1d046ed58d9423594f721166b9bd792bc742"
+      },
+      "wholeWrapperSeconds": 13.128842249978334,
+      "wrapperRawExit": 0
+    },
+    {
+      "stage": "workspace-install",
+      "inner": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/workspace-install.exit.json",
+        "sha256": "97598429638c6f56412a481734645f67a94980f17d810778f72ef841e10e21fd"
+      },
+      "wholeWrapperSeconds": 12.887761666905135,
+      "wrapperRawExit": 0
+    },
+    {
+      "stage": "bind-workspace-tools",
+      "inner": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/bind-workspace-tools.exit.json",
+        "sha256": "99c89fe7a97731a136693234bee73272aa2ff8106a8a333f6f4725c50420f38a"
+      },
+      "wholeWrapperSeconds": 20.107991416938603,
+      "wrapperRawExit": 0
+    },
+    {
+      "stage": "typecheck",
+      "inner": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/typecheck.exit.json",
+        "sha256": "79013a4bc8cf51feca6adc990c66b0ae444640217728bd087082ba8520f4819e"
+      },
+      "wholeWrapperSeconds": 15.002746833954006,
+      "wrapperRawExit": 0
+    },
+    {
+      "stage": "format-check",
+      "inner": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/format-check.exit.json",
+        "sha256": "975aaad6c9675c8b203cae3e497d386ae17579fb00d1ddf8774c4e34f70a868e"
+      },
+      "wholeWrapperSeconds": 13.581090208142996,
+      "wrapperRawExit": 0
+    },
+    {
+      "stage": "lint",
+      "inner": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/lint.exit.json",
+        "sha256": "1848d8efc508f2c3f8493224ce9c08779c0b4acc6e9eb543367ec1a16ca1d259"
+      },
+      "wholeWrapperSeconds": 12.749598250258714,
+      "wrapperRawExit": 0
+    },
+    {
+      "stage": "fresh-build",
+      "inner": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/fresh-build.exit.json",
+        "sha256": "5d09522c8a1c4b5987e99c073daa01136633802a1b84f6070b6ee79677f84bc5"
+      },
+      "wholeWrapperSeconds": 14.239753250032663,
+      "wrapperRawExit": 0
+    },
+    {
+      "stage": "bind-fresh-build",
+      "inner": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/bind-fresh-build.exit.json",
+        "sha256": "01aa06d20f1e50c38e5d8f04e561ff0dc37aea91dbb88fc1ee7a1f1213b819b8"
+      },
+      "wholeWrapperSeconds": 19.840632542036474,
+      "wrapperRawExit": 0
+    },
+    {
+      "stage": "focused-source",
+      "inner": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/focused-source.exit.json",
+        "sha256": "e52ce7662e743f8a2bb15d0199b8d8bd954b96407fc79220c588403bf425f418"
+      },
+      "wholeWrapperSeconds": 15.389936666935682,
+      "wrapperRawExit": 0
+    },
+    {
+      "stage": "audit-focused-source",
+      "inner": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/audit-focused-source.exit.json",
+        "sha256": "dc09b2195ab6a6e666a7332b72cb76183a7b75dcc587ee5159aed2e90e7512b3"
+      },
+      "wholeWrapperSeconds": 18.83120366698131,
+      "wrapperRawExit": 0
+    },
+    {
+      "stage": "legacy-changefeed-source",
+      "inner": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/legacy-changefeed-source.exit.json",
+        "sha256": "f99bf1ed8e44dd49a92057e43b11efd8505da23082d96bbee9b6fef09b0706d9"
+      },
+      "wholeWrapperSeconds": 13.515475583728403,
+      "wrapperRawExit": 0
+    },
+    {
+      "stage": "audit-legacy-changefeed-source",
+      "inner": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/audit-legacy-changefeed-source.exit.json",
+        "sha256": "39a9172921912e844125235c9c958a82008811b04d1d205fb297ee1354c69f2b"
+      },
+      "wholeWrapperSeconds": 18.988344457931817,
+      "wrapperRawExit": 0
+    },
+    {
+      "stage": "legacy-installed-contracts-source",
+      "inner": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/legacy-installed-contracts-source.exit.json",
+        "sha256": "1712a27a2d95a5e89e7ad424f7c218f02a8913ec69807e5a03d7ec58c602d749"
+      },
+      "wholeWrapperSeconds": 13.647825040854514,
+      "wrapperRawExit": 0
+    },
+    {
+      "stage": "audit-legacy-installed-contracts-source",
+      "inner": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/audit-legacy-installed-contracts-source.exit.json",
+        "sha256": "e8ceb07d0f48cd6c895a431b7b8d7cf565050aa4ecbd379639402bdec41a4897"
+      },
+      "wholeWrapperSeconds": 20.59459670819342,
+      "wrapperRawExit": 0
+    },
+    {
+      "stage": "schema-confinement-source",
+      "inner": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/schema-confinement-source.exit.json",
+        "sha256": "659ca0c7e801fc39682b652ace23a78a0c3165a2cf4163eeb2707b0db3388193"
+      },
+      "wholeWrapperSeconds": 13.678265583701432,
+      "wrapperRawExit": 0
+    },
+    {
+      "stage": "audit-schema-confinement-source",
+      "inner": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/audit-schema-confinement-source.exit.json",
+        "sha256": "f2eb4fc319b2f270239cdcf73bc03edff21992505b5e77830fdd16c49455f133"
+      },
+      "wholeWrapperSeconds": 20.850664790719748,
+      "wrapperRawExit": 0
+    }
+  ],
+  "sourceFilesVerified": 679,
+  "buildMapSha256": "4f1fcefc104a68ef14f3e64770e31853d387cdba6ced05a48fac1ba70a66cf61",
+  "freshBuildFilesVerified": 476,
+  "workspaceToolsVerified": 11,
+  "knownPids": [
+    616,
+    1562,
+    2354,
+    3066,
+    3068,
+    3788,
+    4484,
+    4556,
+    4558,
+    4585,
+    4593,
+    4594,
+    5336,
+    6042,
+    6066,
+    6081,
+    6109,
+    6124,
+    6140,
+    6155,
+    6170,
+    6186,
+    6216,
+    6231,
+    6247,
+    6266,
+    6279,
+    6294,
+    6311,
+    6325,
+    6355,
+    6369,
+    6385,
+    6399,
+    6413,
+    6427,
+    6443,
+    6458,
+    6473,
+    6491,
+    6522,
+    6537,
+    6552,
+    6567,
+    6583,
+    6597,
+    6611,
+    6626,
+    6639,
+    6656,
+    6670,
+    6686,
+    6700,
+    6718,
+    6735,
+    6750,
+    6806,
+    6812,
+    6814,
+    54703,
+    55889,
+    55893,
+    56668,
+    57392,
+    57401,
+    57416,
+    57430,
+    57446,
+    57462,
+    57478,
+    57494,
+    57512,
+    57525,
+    57541,
+    57556,
+    57572,
+    57590,
+    57605,
+    57621,
+    57637,
+    57653,
+    57668,
+    57686,
+    57700,
+    57715,
+    57730,
+    57763,
+    57778,
+    57795,
+    57810,
+    57826,
+    57842,
+    57857,
+    57874,
+    57891,
+    57906,
+    57923,
+    57941,
+    57957,
+    57974,
+    58004,
+    58021,
+    58035,
+    58050,
+    58065,
+    58081,
+    58097,
+    58114,
+    58129,
+    58145,
+    58146,
+    58854,
+    59624,
+    59627,
+    60409,
+    61905,
+    61925,
+    61940,
+    61972,
+    61988,
+    62006,
+    62021,
+    62039,
+    62055,
+    62070,
+    62086,
+    62103,
+    62117,
+    62132,
+    62150,
+    62167,
+    62184,
+    62198,
+    62213,
+    62229,
+    62246,
+    62263,
+    62279,
+    62295,
+    62325,
+    62340,
+    62356,
+    62372,
+    62388,
+    62406,
+    62420,
+    62436,
+    62451,
+    62467,
+    62499,
+    62531,
+    62546,
+    62564,
+    62580,
+    62595,
+    62611,
+    62626,
+    62642,
+    62661,
+    62662,
+    63377,
+    64085,
+    64088,
+    64821,
+    65597,
+    65616,
+    65631,
+    65662,
+    65679,
+    65693,
+    65708,
+    65725,
+    65739,
+    65755,
+    65770,
+    65786,
+    65816,
+    65830,
+    65846,
+    65877,
+    65907,
+    65921,
+    65934,
+    65948,
+    65965,
+    65983,
+    66001,
+    66016,
+    66047,
+    66061,
+    66078,
+    66096,
+    66110,
+    66125,
+    66142,
+    66156,
+    66173,
+    66190,
+    66204,
+    66223,
+    66237,
+    66283,
+    66298,
+    66313,
+    66344,
+    66358,
+    66365,
+    66366,
+    67089,
+    67804,
+    67807,
+    67813,
+    69334,
+    70104,
+    70136,
+    70150,
+    70166,
+    70186,
+    70204,
+    70221,
+    70239,
+    70254,
+    70268,
+    70284,
+    70301,
+    70330,
+    70359,
+    70403,
+    70419,
+    70434,
+    70448,
+    70463,
+    70477,
+    70491,
+    70505,
+    70519,
+    70533,
+    70548,
+    70563,
+    70580,
+    70593,
+    70609,
+    70624,
+    70637,
+    70652,
+    70667,
+    70682,
+    70696,
+    70712,
+    70729,
+    70743,
+    70761,
+    70777,
+    70794,
+    70811,
+    70829,
+    70845,
+    70863,
+    70878,
+    70896,
+    70913,
+    70926,
+    70928,
+    72391,
+    73119,
+    73853,
+    74573,
+    75354,
+    76085,
+    76851,
+    78361,
+    78393,
+    78411,
+    78425,
+    78443,
+    78459,
+    78477,
+    78510,
+    78527,
+    78542,
+    78558,
+    78575,
+    78593,
+    78610,
+    78627,
+    78644,
+    78663,
+    78683,
+    78700,
+    78718,
+    78736,
+    78751,
+    78769,
+    78784,
+    78795,
+    78811,
+    78834,
+    78850,
+    78870,
+    78884,
+    78914,
+    78941,
+    78955,
+    78969,
+    78992,
+    79005,
+    79016,
+    79032,
+    79047,
+    79064,
+    79079,
+    79103,
+    79123,
+    79154,
+    79167,
+    79192,
+    79208,
+    79221,
+    79235,
+    79249,
+    79310,
+    79325,
+    79340,
+    79341,
+    98150,
+    98851,
+    98876
+  ],
+  "knownGroups": [
+    1562,
+    3066,
+    4484,
+    6042,
+    55889,
+    57392,
+    59624,
+    61905,
+    64085,
+    65597,
+    67804,
+    70104,
+    73119,
+    74573,
+    76085,
+    78361,
+    98851
+  ],
+  "freshKnownPidsGroupsAbsent": true,
+  "genericScratchRetained": [
+    {
+      "stage": "node-version",
+      "genericScratchExists": true,
+      "nestedBdpRuntimeDirectories": []
+    },
+    {
+      "stage": "pnpm-version",
+      "genericScratchExists": true,
+      "nestedBdpRuntimeDirectories": []
+    },
+    {
+      "stage": "workspace-install",
+      "genericScratchExists": true,
+      "nestedBdpRuntimeDirectories": []
+    },
+    {
+      "stage": "bind-workspace-tools",
+      "genericScratchExists": true,
+      "nestedBdpRuntimeDirectories": []
+    },
+    {
+      "stage": "typecheck",
+      "genericScratchExists": true,
+      "nestedBdpRuntimeDirectories": []
+    },
+    {
+      "stage": "format-check",
+      "genericScratchExists": true,
+      "nestedBdpRuntimeDirectories": []
+    },
+    {
+      "stage": "lint",
+      "genericScratchExists": true,
+      "nestedBdpRuntimeDirectories": []
+    },
+    {
+      "stage": "fresh-build",
+      "genericScratchExists": true,
+      "nestedBdpRuntimeDirectories": []
+    },
+    {
+      "stage": "bind-fresh-build",
+      "genericScratchExists": true,
+      "nestedBdpRuntimeDirectories": []
+    },
+    {
+      "stage": "focused-source",
+      "genericScratchExists": true,
+      "nestedBdpRuntimeDirectories": []
+    },
+    {
+      "stage": "audit-focused-source",
+      "genericScratchExists": true,
+      "nestedBdpRuntimeDirectories": []
+    },
+    {
+      "stage": "legacy-changefeed-source",
+      "genericScratchExists": true,
+      "nestedBdpRuntimeDirectories": []
+    },
+    {
+      "stage": "audit-legacy-changefeed-source",
+      "genericScratchExists": true,
+      "nestedBdpRuntimeDirectories": []
+    },
+    {
+      "stage": "legacy-installed-contracts-source",
+      "genericScratchExists": true,
+      "nestedBdpRuntimeDirectories": []
+    },
+    {
+      "stage": "audit-legacy-installed-contracts-source",
+      "genericScratchExists": true,
+      "nestedBdpRuntimeDirectories": []
+    },
+    {
+      "stage": "schema-confinement-source",
+      "genericScratchExists": true,
+      "nestedBdpRuntimeDirectories": []
+    },
+    {
+      "stage": "audit-schema-confinement-source",
+      "genericScratchExists": true,
+      "nestedBdpRuntimeDirectories": []
+    }
+  ],
+  "semanticReports": [
+    {
+      "stage": "focused-source",
+      "callbacksPassed": 21,
+      "rawResult": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/focused-source.results.json",
+        "sha256": "7429ffe4e5fbb5a2d108d91b950f2be99a06a3769d3fa4c04c06f1a77aa24a7c"
+      },
+      "strictObservation": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/focused-source.accepted-observation.json",
+        "sha256": "7a68a0e3de5c5d98fde2f944b9f72ee88ce2bcd7dfb3c0e0504a028c2fdb7ad7"
+      },
+      "unselectedTestsRemainUnselected": 89,
+      "actualReportCount": 21
+    },
+    {
+      "stage": "legacy-changefeed-source",
+      "callbacksPassed": 32,
+      "rawResult": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/legacy-changefeed-source.results.json",
+        "sha256": "7e3ae9c9951b2080b14ba8277bc45a2fcfe5e9c51906b15814db505de05ce2d4"
+      },
+      "strictObservation": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/legacy-changefeed-source.accepted-observation.json",
+        "sha256": "d74af4ea318d45089e596c571c8557ba8115e04f878080a294e6c472d1249124"
+      },
+      "unselectedTestsRemainUnselected": 6,
+      "actualReportCount": 18
+    },
+    {
+      "stage": "legacy-installed-contracts-source",
+      "callbacksPassed": 9,
+      "rawResult": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/legacy-installed-contracts-source.results.json",
+        "sha256": "50f1e918d1eaea9fbdf1eca92160f41984559d92ab7c0bec078b2f4e09f380df"
+      },
+      "strictObservation": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/legacy-installed-contracts-source.accepted-observation.json",
+        "sha256": "908d27d501da39417096e63a05c80da51b7e175d3bd5930463601b49b5206b56"
+      },
+      "unselectedTestsRemainUnselected": 4,
+      "actualReportCount": 0
+    },
+    {
+      "stage": "schema-confinement-source",
+      "callbacksPassed": 1,
+      "rawResult": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/schema-confinement-source.results.json",
+        "sha256": "fcc874bd2a2fa114ace79cc98585ce676467ac10bb4a1538c63ebe1a8c760019"
+      },
+      "strictObservation": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-10/run/schema-confinement-source.accepted-observation.json",
+        "sha256": "a62c1e6ce35587d3cd36ef564dea7540e3ce17bbbe444f3f41f475cf93ef273f"
+      },
+      "unselectedTestsRemainUnselected": 1,
+      "actualReportCount": 0
+    }
+  ],
+  "archiveConsumerInstalledProof": "UNATTEMPTED/UNKNOWN",
+  "WriteQualified": false,
+  "noRetry": true,
+  "ownReadOnlyErrors": "Prior root combined assertion incorrectly equated report and callback counts; corrected to frozen21/18/0/0 reports versus21/32/9/1 callbacks. No subject change/retry. Other guessed stage-key/noisy ps DATA errors recorded in commentary and receipt."
+}
