@@ -1057,3 +1057,21 @@ func EvaluateAt(query string, now time.Time) (*QueryResult, error) {
 	eval := NewEvaluator(now)
 	return eval.Evaluate(node)
 }
+
+// PredicateAt evaluates an entire parsed expression against one Issue. It is
+// useful to a bounded, checked snapshot reader that cannot push native Issue
+// filters down without changing graph IDs into backing IDs first.
+func PredicateAt(expression string, now time.Time) (func(*types.Issue) bool, error) {
+	node, err := Parse(expression)
+	if err != nil {
+		return nil, err
+	}
+	return PredicateNodeAt(node, now)
+}
+
+// PredicateNodeAt evaluates a parsed subtree. Checked graph readers can keep
+// a public-ID or parent comparison outside this native Issue predicate while
+// preserving the parser's original value and operator in the other subtrees.
+func PredicateNodeAt(node Node, now time.Time) (func(*types.Issue) bool, error) {
+	return NewEvaluator(now).buildPredicate(node)
+}
