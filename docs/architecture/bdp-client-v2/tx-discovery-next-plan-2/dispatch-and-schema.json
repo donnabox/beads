@@ -1,0 +1,57 @@
+{
+  "ownedFutureFiles": [
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-discovery-installed.test.ts"
+  ],
+  "directoryMembers": {
+    "createBead": "create-bead",
+    "updateBead": "update-bead",
+    "deleteBead": "delete-bead",
+    "createLink": "create-link",
+    "updateLink": "update-link",
+    "deleteLink": "delete-link",
+    "putAlias": "put-alias",
+    "deleteAlias": "delete-alias",
+    "sequence": "sequence",
+    "updateWhere": "update-where",
+    "deleteWhere": "delete-where",
+    "batch": "batch"
+  },
+  "directoryValuesArePinnedSchemaConstants": true,
+  "coldOracleMayUseNamesForCompleteness": true,
+  "coldOracleMayUseDirectoryConstantsToConstructRequests": false,
+  "dispatchSource": {
+    "path": "packages/server/src/transaction-discovery.ts",
+    "constant": "TRANSACTION_HTTP_OPERATIONS",
+    "lines": "8-21"
+  },
+  "dispatchReceiver": {
+    "path": "packages/server/src/transaction-http.ts",
+    "targetsAndNames": "174-189",
+    "operationDispatch": "278-402",
+    "authAndMinimumSyntax": "403-405",
+    "currentReadGate": "589-606",
+    "discoveryRefusal": "607-616",
+    "finalSemantics": "670-682"
+  },
+  "schemas": [
+    "transactionalDiscovery",
+    "transactionalOperationDirectory",
+    "typeDescriptor",
+    "mutationReceipt",
+    "transactionalSequenceResponse",
+    "transactionalProblem",
+    "currentBeadRecord",
+    "currentLinkRecord",
+    "currentBeadCollection",
+    "currentLinkCollection",
+    "snapshotManifest",
+    "changefeedPage",
+    "eventPage"
+  ],
+  "protocolParsers": "packages/protocol/src/transaction-discovery-values.ts:63-81",
+  "projection": "packages/server/src/transaction-discovery.ts:26-67",
+  "observation": "packages/server/src/transaction-service.ts:267-300",
+  "noSchemaOrDispatcherEdits": true
+}

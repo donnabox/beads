@@ -1,0 +1,75 @@
+--- a/packages/server/src/reference-deployment.ts
++++ b/packages/server/src/reference-deployment.ts
+@@ -200,34 +200,18 @@
+     await handle.close();
+   }
+ }
+-/** Iterate decoded children without constructing a sibling value/task array. */
+-function* losslessChildren(
+-  value: readonly LosslessJsonValue[] | { readonly [key: string]: LosslessJsonValue },
+-): Generator<LosslessJsonValue> {
+-  if (Array.isArray(value)) {
+-    yield* value;
+-    return;
+-  }
+-  for (const key in value) {
+-    const child = (value as { readonly [key: string]: LosslessJsonValue })[key];
+-    if (child === undefined) refuse("internal");
+-    yield child;
+-  }
+-}
+ function boundLossless(root: LosslessJsonValue): void {
+-  const frames: { children: Iterator<LosslessJsonValue>; depth: number }[] = [];
++  const pending: { value: LosslessJsonValue; depth: number }[] = [{ value: root, depth: 0 }];
+   let nodes = 0;
+-  const discover = (value: LosslessJsonValue, depth: number): void => {
+-    // Charge each discovered value before scheduling any of its children.
+-    if (++nodes > 100000 || depth > 16) refuse("bounds");
+-    if (value !== null && typeof value === "object" && !(value instanceof JsonNumberLiteral))
+-      frames.push({ children: losslessChildren(value), depth });
+-  };
+-  discover(root, 0);
+-  for (let frame = frames.at(-1); frame !== undefined; frame = frames.at(-1)) {
+-    const child = frame.children.next();
+-    if (child.done) frames.pop();
+-    else discover(child.value, frame.depth + 1);
++  for (let next = pending.pop(); next !== undefined; next = pending.pop()) {
++    if (++nodes > 100000 || next.depth > 16) refuse("bounds");
++    if (
++      next.value !== null &&
++      typeof next.value === "object" &&
++      !(next.value instanceof JsonNumberLiteral)
++    ) {
++      for (const value of Object.values(next.value)) pending.push({ value, depth: next.depth + 1 });
++    }
+   }
+ }
+ function immutable<T>(value: T): T {
+--- a/packages/server/src/reference-deployment.test.ts
++++ b/packages/server/src/reference-deployment.test.ts
+@@ -582,10 +582,7 @@
+   await failure(f.input, "contract"); // Number at depth16, not its private literal property at17.
+   writeFileSync(f.input.deploymentFile, `{"extra":${nested(16, "9007199254740993")}}`);
+   await failure(f.input, "bounds");
+-  // Root object + child array + 99998 atomic values = exactly100000 nodes.
+-  f.write({ extra: Array.from({ length: 99998 }, () => 1) });
+-  await failure(f.input, "contract");
+-  f.write({ extra: Array.from({ length: 99999 }, () => 1) });
++  f.write({ extra: Array.from({ length: 100000 }, () => 1) });
+   await failure(f.input, "bounds");
+ });
+ it("isolates the outer byte ceiling with a valid small envelope and legal trailing whitespace", async () => {
+--- a/scripts/smoke-executables.mjs
++++ b/scripts/smoke-executables.mjs
+@@ -1191,9 +1191,8 @@
+ }
+ 
+ /** Pure installed-loader witness; this guard owns the occupied intended port.
+- * Success excludes acquisition of that configured listener. Source forbidden-call
+- * instrumentation separately observes attempted startup calls. Store paths stay
+- * absent. This is not installed service evidence. */
++ * Successful preparation while it remains occupied proves no listener bind is
++ * attempted. Store paths stay absent. This is not installed service evidence. */
+ async function observePackedDeploymentLoader(deployment, temporaryRoot) {
+   const guard = createServer();
+   await new Promise((resolve, reject) => {

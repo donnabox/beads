@@ -1,0 +1,27 @@
+{
+  "recordedAt": "2026-10-18T04:21:22.340983+00:00",
+  "action": "git add -N exactly3newsourcefiles",
+  "sourceAll682Unchanged": true,
+  "head": "a56254d682cf4623cab22a552e3d2f695f691795",
+  "treeBase": "144f278c7f5a08516c4ac99ba553d4cc25bcf560",
+  "statusAfter": " M docs/design/startup-configuration.md\n M packages/config/src/index.test.ts\n M packages/config/src/index.ts\n M packages/server/package.json\n M packages/server/src/read-sequence-lifecycle.test.ts\n A packages/server/src/reference-deployment-state.ts\n A packages/server/src/reference-deployment.test.ts\n A packages/server/src/reference-deployment.ts\n M packages/server/src/transaction-snapshot.test.ts\n M scripts/smoke-executables.mjs\n M scripts/smoke-safety.mjs\n M scripts/smoke-safety.test.mjs\n",
+  "changedFiles": [
+    "docs/design/startup-configuration.md",
+    "packages/config/src/index.test.ts",
+    "packages/config/src/index.ts",
+    "packages/server/package.json",
+    "packages/server/src/read-sequence-lifecycle.test.ts",
+    "packages/server/src/reference-deployment-state.ts",
+    "packages/server/src/reference-deployment.test.ts",
+    "packages/server/src/reference-deployment.ts",
+    "packages/server/src/transaction-snapshot.test.ts",
+    "scripts/smoke-executables.mjs",
+    "scripts/smoke-safety.mjs",
+    "scripts/smoke-safety.test.mjs"
+  ],
+  "trackedFilesAfter": 682,
+  "indexedFullPatchSha256": "00fa952644ab1725e4bfb8fc8c642683a39f60dd45f6a08de8881d590150a0b4",
+  "stagedContentEmpty": true,
+  "untrackedSourceFiles": false,
+  "evidenceLimit": "Intent-to-add/index metadata only; original author2 custom fullpatch remains historical. Source bytes and semantics unchanged."
+}

@@ -1,0 +1,64 @@
+{
+  "disposedAt": "2026-10-18T03:55:59.847594+00:00",
+  "expectedSession": "2026-10-18T02:16:24Z-549f",
+  "actualPlanReviewAcceptedAsComplete": true,
+  "runnerExitCode": 0,
+  "outerSupervisorExitCode": 0,
+  "rootIndependentlyVerifiedRawTerminalAndSource": true,
+  "rawSha256": "19d6aa6c94a038f539fb05589d585d898d17944de7c3ec19a85143d987b88ff5",
+  "rawRecords": 3657,
+  "rawBytes": 2272500,
+  "reviewTextSha256": "1450385fcf727eaa8dde9718ab0c714f0b79ef7731be64a4740b5ec6464352d9",
+  "nativeAuditIndexSha256": "607a1759fbebf81e849425d2a56f3d05a7a1a6926e99457bcdfb99db48c06dbe",
+  "nativeAuditClosureSha256": "86646422da4881245a8d4f41598651c302d89147e9a27b188eec9d6926b93328",
+  "all679Source39Context15ArtifactInputsUnchanged": true,
+  "rootCurrentObservedReviewerWrapperSupervisorGroupsAbsent": true,
+  "findings": [
+    {
+      "id": "F1",
+      "decision": "ACCEPT capability boundary; explicit12file footprint successor",
+      "correction": "Public loader returns explicitly typed frozen inert summary/opaque handle only; no captures, projected credentials, authenticator/metadata/readOptions functions or private runtime types in public values/declarations. Add private reference-deployment-state.ts WeakMap registry/internal accessor, not package-exported, preserving exact immutable captured state and no reread. Its emitted files join exact inventory; bare/deep registry and deployment specifiers refused."
+    },
+    {
+      "id": "F2",
+      "decision": "ACCEPT truthful bounds and bounded diagnostics; decline extra JSON scanner",
+      "correction": "32MiB is the sole pre-decode bound on trusted operator data. Existing decoder then iterative lossless depth16/node100000 traversal (JsonNumberLiteral atomic) BEFORE numeric materialization; admitJsonNumbers diagnostics1 fixed sanitized formatter. These are post-decode bounds; no pre-decode depth/memory/work guarantee. Retain byte ceiling and explicitly accept bounded trusted-input decode allocation risk."
+    },
+    {
+      "id": "F3",
+      "decision": "ACCEPT",
+      "correction": "Name public tuple preflightReadLimits, matched code/capture constants only. Later owner-before-bind validates persisted receiptMaximumItems, snapshotLimits/token policy, runtime limits, contract identity, Scope/Type set, policy/view/recovery; loader opens no owner."
+    },
+    {
+      "id": "F4",
+      "decision": "ACCEPT",
+      "correction": "Add bare/deep reference-deployment and private registry refusals; include new public entry in Snapshot/json-equality private import scan; stream checks use captured settings/liveStreamsAvailable, no direct private stream/Snapshot imports."
+    },
+    {
+      "id": "F5",
+      "decision": "ACCEPT",
+      "correction": "Fixed deploymentFile validator field/rule-only message and rejected-value non-echo test. Document resolved path emitted like bd.workspace; it must not hold secrets. Contents/tokens/payload/cause never logged."
+    },
+    {
+      "id": "F6",
+      "decision": "ACCEPT accuracy correction, retain32MiB",
+      "correction": "Outer encoded and inner16MiB budgets independently enforced; below-inner-limit input may exceed outer after escaping, no guaranteed universal half capacity. Isolate outer-bound negative fixture; no ceiling widening."
+    },
+    {
+      "id": "F7",
+      "decision": "ACCEPT",
+      "correction": "Unique tokens only; accepted duplicate principals stay accepted. Narrow duplicate negative and fix two source ranges."
+    },
+    {
+      "id": "F8",
+      "decision": "ACCEPT small existing-smoke default-unset assertion; DEFER unrelated docs",
+      "correction": "Assert deploymentFile absent by default alongside fixture in already owned smoke file; no extra progress-document edits."
+    }
+  ],
+  "next": "Named corrected startup plan3 + contract + genuine deltas + exact12file footprint, native independent precision closure. No actual PLAN retry. Separate source-authoring release only after root acceptance of corrections.",
+  "startupSourceAuthoringReleased": false,
+  "runtimeValidationReleased": false,
+  "publicActivationReleased": false,
+  "noProductRulingNeeded": true,
+  "noNewSemanticsOrMainAbsorption": true
+}

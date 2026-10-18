@@ -1,0 +1,41 @@
+{
+  "frozenAt": "2026-10-18T04:19:59.699784+00:00",
+  "expectedSession": "2026-10-18T02:16:24Z-549f",
+  "worktree": "/Users/dbox/repos/wt/vickie/vickie-trusted-startup-configuration",
+  "branch": "codex/vickie-trusted-startup-configuration",
+  "baseHead": "a56254d682cf4623cab22a552e3d2f695f691795",
+  "sourceReleaseSha256": "940a61ac5b3ac40b8f34eccd67b443cbb8ac471bf51e3fd4af72d119bb35eed7",
+  "nativeCorrectionReleaseSha256": "57c25a1292717c14d1348753da7772c3a29903dcbdd66d1deb28c3b5088d8c56",
+  "predecessorIndexSha256": "c7820100b6a6a550ee0d0789f8c73ebc37fe6f418d8d5d177e9f042866e842d1",
+  "fullPatchSha256": "95ac4b10eeba0da5b54f1f1c977289a3be3b6b545fb3aeefde5f00d980354ef1",
+  "inversePatchSha256": "d283988a44caec57ffd8c7ac599e26d0f5164753781c7cb0b6fdc7ed82c8269a",
+  "successorDeltaSha256": "6e294ee199e3d1b1a32b87e3de9c0b32a2aecb353e50a977b7218ca201c26656",
+  "successorInverseSha256": "3ad867ef4089e81799fc1283184c98a5686086e349e4b991144c3d5cfbc2722b",
+  "sourceMapSha256": "8c1b3674f9d8afd316eadc7d5d225c5b31f537dfbde8bd30c9f60a2d5b9b23a9",
+  "afterMapSha256": "7ec81f50227dbe0e8437b0174b329521d0e9fbbb07b903cee765ff2bdc4e9b0e",
+  "ownedFiles": [
+    "packages/config/src/index.ts",
+    "packages/config/src/index.test.ts",
+    "docs/design/startup-configuration.md",
+    "packages/server/src/reference-deployment.ts",
+    "packages/server/src/reference-deployment-state.ts",
+    "packages/server/src/reference-deployment.test.ts",
+    "packages/server/package.json",
+    "scripts/smoke-executables.mjs",
+    "scripts/smoke-safety.mjs",
+    "scripts/smoke-safety.test.mjs",
+    "packages/server/src/transaction-snapshot.test.ts",
+    "packages/server/src/read-sequence-lifecycle.test.ts"
+  ],
+  "correctionFiles": [
+    "packages/server/src/reference-deployment.ts",
+    "packages/server/src/reference-deployment.test.ts",
+    "scripts/smoke-executables.mjs"
+  ],
+  "state": "CLOSED SOURCE CORRECTION FREEZE; root CODE and validation release pending",
+  "rootLaunchReleased": false,
+  "actualCodeReviewReleased": false,
+  "testsBuildInstallRuntimeExecuted": false,
+  "readinessClaim": false,
+  "newFileGitIndexMechanics": "Root owned; author did not stage or intent-to-add"
+}

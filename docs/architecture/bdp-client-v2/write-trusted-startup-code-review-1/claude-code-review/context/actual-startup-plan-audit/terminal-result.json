@@ -1,0 +1,110 @@
+{
+  "duration_api_ms": 667406,
+  "stop_reason": "end_turn",
+  "session_id": "21421683-44a1-46c4-9259-ff91aa6f1cc7",
+  "total_cost_usd": 7.807399999999998,
+  "usage": {
+    "input_tokens": 118,
+    "cache_creation_input_tokens": 225877,
+    "cache_read_input_tokens": 8587048,
+    "output_tokens": 50098,
+    "output_tokens_details": {
+      "thinking_tokens": 34986
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 225877,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [
+      {
+        "input_tokens": 2,
+        "output_tokens": 6948,
+        "cache_read_input_tokens": 230168,
+        "cache_creation_input_tokens": 455,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 0,
+          "ephemeral_1h_input_tokens": 455
+        },
+        "type": "message"
+      }
+    ],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 1986,
+      "outputTokens": 16,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.002066,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "claude-haiku-4-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    },
+    "claude-opus-5[1m]": {
+      "inputTokens": 118,
+      "outputTokens": 50098,
+      "cacheReadInputTokens": 8587048,
+      "cacheCreationInputTokens": 225877,
+      "webSearchRequests": 0,
+      "costUSD": 7.8053339999999976,
+      "contextWindow": 1000000,
+      "maxOutputTokens": 64000,
+      "thinkingTokens": 34986,
+      "canonicalModel": "claude-opus-5",
+      "provider": "firstParty",
+      "costBasis": "list"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 69,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "I read the five context files, then verified every load-bearing claim against the pinned tree (`a56254d`). Findings first.\n\n---\n\n## 1. [High] The prepared result carries the private TX runtime capture and plaintext RU credentials through a newly public package subpath\n\n**Where:** plan.md \u00a7\"Loader algorithm and return boundary\" step 5 (`plan.md:49`), footprint row `packages/server/package.json` (`plan.md:63`).\n**Source:** `packages/server/src/transaction-runtime-configuration.ts:310\u2013403` \u2014 the capture's frozen return exposes `authenticate(supplied: Buffer)` (line 321), `readOptions(scope)` (333) and `metadata(actual, scope)` (353). `packages/server/src/installed-reference-configuration.ts:187\u2013202` returns `credentials` holding plaintext `token`. Against this, `scripts/smoke-executables.mjs:535\u2013536` and `549\u2013550` deliberately assert that `@bdp/server/transaction-runtime-configuration` and `@bdp/server/installed-reference-configuration` resolve to `ERR_PACKAGE_PATH_NOT_EXPORTED`.\n\n**Issue:** the plan describes the loader as \"data/compilation only, never a start/admit factory\" (`plan.md:41`) and the subpath as having \"no start/admit operation\" (`plan.md:94`), but step 5 says the frozen object contains \"compiled/preflight data needed by later internal startup.\" For TX that is the capture object itself. `authenticate` is a bearer-credential oracle whose length check (`c.credential.length === supplied.length` before `timingSafeEqual`, line 323) is not constant-time, and `metadata` is the TX live-identity producer. Shipping either inside the returned value makes them reachable from any installed consumer of `@bdp/server/reference-configuration`, bypassing the existing specifier-level tripwires by value rather than by path, and pulls private runtime types (`TransactionHttpAuthorization`, `TransactionReadOptions`, `ReturnType<ReturnType<typeof openTransactionStore>[\"readConfiguration\"]>`) into the emitted `reference-deployment.d.ts`.\n\n**Impact:** this is not a secret-disclosure escalation \u2014 the caller supplied the tokens \u2014 but it directly contradicts the plan's own \"No candidate/runtime/admission export\" constraint (`plan.md:63`) and makes the new \"data-only\" surface non-inert. The plan frames the declaration leak as a type-ergonomics footnote (`plan.md:70`), not as capability exposure.\n\n**Fix:** return only inert data (format, profile, canonicalScope, intended listener, matched limit tuple, artifact identity, RU configuration/artifact/policy/authentication identities, frozen projected input, file digest). Hold the live RU/TX capture objects in a module-private `WeakMap` keyed by the prepared handle (or an unexported brand) and reach them only from an internal accessor absent from `package.json#exports`. D3c loses nothing: `startInstalledReferenceCandidate` (`installed-reference.ts:8`) and `startInstalledTransactionCandidate` (`transaction-installed.ts:5`) already accept the raw projected input, and the plan already accepts deterministic re-capture (`plan.md:52`). Add negative assertions in `reference-deployment.test.ts` and `smoke-safety.test.mjs` that the prepared object has no `authenticate` / `metadata` / `readOptions` / `credentials` key.\n\n---\n\n## 2. [Medium] The envelope depth/node bounds are enforced after decode, so bytes are the only pre-decode bound\n\n**Where:** plan.md step 2\u20133 (`plan.md:46\u201347`), contract.md \u00a7\"Supported effective Read tuples\" closing line (`contract.md:74`).\n**Source:** `packages/protocol/src/json-admission.ts:98\u2013193`. The decoder is documented to impose \"no hidden nesting/wire limit\" (lines 3\u20136) and pushes one `Frame` with its own `Set` per container (line 138); `admitJsonNumbers` \u2192 `mapLosslessJson` (231\u2013291) then materializes a second full tree.\n\n**Issue:** the plan says \"require the successful value, then enforce envelope max depth 16 and 100000 nodes using a finite iterative traversal.\" Both bounds therefore run *after* a 32 MiB document has been fully decoded. A file of `[[[[\u2026` or of millions of two-byte members is materialized first; the advertised depth/node protection describes post-decode validation, not parser work. Separately, the plan calls `admitJsonNumbers` without a diagnostic budget, and the API documents that omitting both bounds \"explicitly requests the full list\" (`json-admission.ts:45\u201346`): a document of inadmissible literals builds one frozen occurrence plus one formatted diagnostic per number, and those occurrences carry `pointer` (file-derived key names) and `literal`, which step 6 forbids from reaching the error.\n\n**Impact:** robustness, not privilege escalation \u2014 the file is operator-supplied and trusted. But the plan's \"safe bounded\" framing overstates what the 32 MiB ceiling buys, and the planned negative test for \"depth/node/32MiB bounds\" (`plan.md:80`) will exercise only the benign small-document case.\n\n**Fix:** before decoding, reject the text on a cheap structural pre-scan (count of `{`/`[`/`,` outside strings exceeding the 100 000-node budget, or running `{`/`[` nesting exceeding 16); pass `{ diagnostics: 1, diagnostic: () => ({ message: \"unsupported number\" }) }` to `admitJsonNumbers` so refusal is O(1) and carries no pointer or literal; if the pre-scan is not adopted, state in `contract.md` that the only pre-decode bound is bytes.\n\n---\n\n## 3. [Medium] The TX enforced Read tuple is a store-persisted value, so step 4's \"actual fixed readOptions tuple\" is a preflight claim the loader cannot settle\n\n**Where:** plan.md step 4 (`plan.md:48`), contract.md \u00a7\"Supported effective Read tuples\" (`contract.md:67\u201374`) and \u00a7\"Binding and limitations\" (`contract.md:80`).\n**Source:** `packages/server/src/transaction-service.ts:111\u2013116` compares `capturedRead.advertisedLimits.page.maximumItems` against `owner.readConfiguration().receiptMaximumItems` and throws \"receipt page maximum differs from installed owner\". `packages/server/src/transaction-store.ts:317\u2013330` serializes `receiptMaximumItems`, `snapshotLimits`, `snapshotTokenPolicy`, `runtimeLimits`, `contractIdentity`, `scope` and the sorted Type set into `metadata.configuration`, and line 599 refuses a reopen whose stored configuration matches neither the current nor the legacy serialization.\n\n**Issue:** contract.md's deferred-check list names \"Storage existence, compatible private store format, persisted Scope, installed live Type inventory, current policy/view and recovery\" but omits the persisted `receiptMaximumItems` / snapshot-limit / runtime-limit / contract-identity equality that actually decides whether the matched tuple holds. Verified correct: the code constants are page 2/32, selector 4096/32/256, cursor 1000 ms (`transaction-runtime-configuration.ts:96\u201399,334\u2013341` with `transaction-batch.ts:62` and `transaction-store.ts:251`), and RU is 20/100, 4096/32/256, 60 000 ms (`development-authority.ts:50\u201352`, consumed as `advertisedLimits` at `development-authority.ts:260\u2013268`). The defect is the claim's strength, not the numbers.\n\n**Impact:** a later composition or reviewer could treat the prepared \"enforced Read limits\" as settled and advertise them, while an existing store provisioned under different constants still fails at open \u2014 today *after* `listen` (`transaction-runtime.ts:316` precedes `326`, which the plan correctly flags at `plan.md:93`).\n\n**Fix:** add persisted `receiptMaximumItems`, snapshot limits/token policy, runtime limits, contract identity and Type set to contract.md's explicit later-owner validation list; name the prepared field `preflightReadLimits` (or equivalent) and have the safe summary label the tuple as matched against code constants only.\n\n---\n\n## 4. [Medium] Two existing tripwires are not extended to the new module, leaving the plan's own guarantees unenforced\n\n**Where:** footprint rows `scripts/smoke-executables.mjs` (`plan.md:64`) and `packages/server/src/transaction-snapshot.test.ts` (`plan.md:67`).\n**Source:** `scripts/smoke-executables.mjs:509\u2013520` filters deep-specifier refusals to names starting `installed-schema-` or `transaction-`, so `reference-deployment.js` is outside it; `522\u2013559` is the explicit refusal list; `packages/server/src/transaction-snapshot.test.ts:678\u2013680` scans only `[\"index.ts\", \"development.ts\"]` for `transaction-snapshot` / `json-value-equality`.\n\n**Issue:** (a) nothing will assert that `@bdp/server/reference-deployment` and `@bdp/server/dist/reference-deployment.js` still fail with `ERR_PACKAGE_PATH_NOT_EXPORTED` \u2014 that is precisely the tripwire that would catch an accidental `./dist/*` or bare-name broadening of the new export. (b) `reference-deployment.ts` becomes a third public entry file, but the plan says to change \"only the exact package export key assertion\" at the privacy test, so the private-module scan the plan promises to \"preserve\" will not cover it. That matters concretely: step 4 requires checking \"compatible stream defaults\", which an author could implement by importing `TRANSACTION_SSE_DEFAULTS` / `TRANSACTION_SNAPSHOT_LIMITS` into the new public entry.\n\n**Fix:** add both deep specifiers to the `smoke-executables.mjs:522` refusal list; add `reference-deployment.ts` to the `transaction-snapshot.test.ts:678` file list; satisfy the stream-defaults check from the capture's own `liveStreamsAvailable` / `settings` (`transaction-runtime-configuration.ts:306\u2013320`) rather than importing `transaction-sse.js` or `transaction-snapshot.js`.\n\n---\n\n## 5. [Medium] The new config field's refusal and diagnostic discipline is under-specified against the repository's stated no-echo rule\n\n**Where:** plan.md \u00a7\"Chosen input contract\" (`plan.md:21`), \u00a7\"Prospective tests\" Config bullet (`plan.md:76`, \"diagnostic output without payload\"), contract.md projection row (`contract.md:58`).\n**Source:** `packages/config/src/index.ts:901\u2013929` (`readHost`), `981\u20131036` (`readScopeUrl`), `785\u2013800` (`readFixture`) all name field and rule and never echo the value; `docs/design/startup-configuration.md:506\u2013515` makes that an explicit contract. `redactStartupConfig` (`index.ts:1045\u20131049`) replaces only `auth.token`, so the resolved `bdptest.deploymentFile` is emitted verbatim in `startup.config` via `apps/bdptest/src/main.ts:117`.\n\n**Issue:** \"without payload\" is ambiguous between \"no file contents\" and \"no echoed path.\" The plan never states that the validator message must not echo the supplied value, nor that the resolved path is logged unredacted. Given the doc's rationale \u2014 a credential can be pasted into any `BDP_*` variable \u2014 the omission is material for a brand-new `BDP_BDPTEST_DEPLOYMENT_FILE`.\n\n**Fix:** specify a fixed message naming `bdptest.deploymentFile` and its rule only; add an `index.test.ts` assertion that no issue message contains the rejected value, mirroring the existing host/Scope tests; record in the doc's Fields and Redaction sections that the resolved path is emitted like `bd.workspace` and must not carry secrets.\n\n---\n\n## 6. [Low] The 32 MiB outer ceiling derates the 16 MiB inner artifact budget by roughly half, unquantified\n\n**Where:** plan.md step 2 (`plan.md:46`), contract.md `:74`.\n**Source:** `packages/server/src/installed-contract-artifact.ts:19\u201324` \u2014 `artifactBytes` 1 048 576, `totalBytes` 16 777 216.\n\n**Issue:** descriptors and schemas are themselves JSON, so embedding them as `utf8` strings at minimum doubles every `\"` and `\\`; control characters expand 6\u00d7 as `\\uXXXX`. A bundle near the 16 MiB inner total will commonly exceed 32 MiB once escaped. The plan calls this \"an honest local input refusal,\" which it is, but it does not quantify the effective capacity.\n\n**Impact:** the supported configuration is materially smaller than the inner ceilings advertise, and a negative test written at exactly 16 MiB inner would trip the transport bound rather than the bound it means to isolate.\n\n**Fix:** either raise the transport ceiling to \u2265 2\u00d7 `totalBytes` plus envelope overhead, or state the derated effective inner capacity in `contract.md` and choose the 32 MiB negative-test input so it isolates the transport bound alone.\n\n---\n\n## 7. [Low] \"unique token/principal credentials\" overstates the pinned contract; two citations do not match the pinned files\n\n**Where:** plan.md \u00a7\"Existing constraints\" bullets 4\u20135 (`plan.md:14\u201315`) and \u00a7\"Source negatives\" (`plan.md:80`).\n**Source:** `installed-reference-configuration.ts:117\u2013118` and `transaction-installed-configuration.ts:39\u201340` both check uniqueness of `token` only. Duplicate `principal` values are accepted in RU (each still needs a policy, `installed-reference-configuration.ts:122`) and in TX.\n\n**Issue:** an author reading \"1..32 unique token/principal credentials\" plus the negative \"empty/duplicate/invalid credentials\" could write a test asserting duplicate principals are refused, which the pinned source accepts. Also `installed-reference-configuration.ts:81\u2013207` is cited but the file ends at line 204 (the function spans 85\u2013203), and `transaction-installed-configuration.ts:21\u201367` omits the signature at 17\u201320. All other citations I checked are accurate, several exactly (`index.ts:460\u2013461`, `563\u2013575`; `development-authority.ts:41\u201377`; `transaction-store.ts:251`).\n\n**Fix:** say \"unique tokens\"; scope the duplicate-credential negative to duplicate tokens; correct the two ranges.\n\n---\n\n## 8. [Low \u2014 optional enhancement, not required for this slice]\n\n`scripts/smoke-executables.mjs:958\u2013960` asserts `bdptest.fixture` is unset by default; nothing will assert the same for `deploymentFile`. And the existing `@bdp/server/development` subpath is described in `docs/design/profile-implementation-progress.md:9` and `docs/design/update-implementation-progress.md:168`, while the plan's only doc row is `docs/design/startup-configuration.md`. Both are optional; neither blocks the eleven-file footprint.\n\n---\n\n## Verified with no finding\n\n- **N1 delta is correct and complete.** Exactly four files in the tree reference the server export map \u2014 `scripts/smoke-safety.mjs:8`, `scripts/smoke-safety.test.mjs:10`, `read-sequence-lifecycle.test.ts:1548\u20131551`, `transaction-snapshot.test.ts:677` \u2014 matching native-review-2 N1. I also checked for a twelfth required file and found none: `check-dependency-boundaries.mjs` constrains only `@bdp/*` package edges (so the plan's \"no server\u2192config dependency\" is the right call), `vitest.config.ts:51\u201352` aliases only `.`/`./development` and the new test is in-package, `clean-build.mjs` and `smoke-development.mjs` are generic, Biome enumerates no entry points, and no test enumerates `packages/server/src`.\n- **Config changes are additive.** `index.test.ts:100\u2013108` (`bdptest: {}`), `:1227\u20131236`, `:1273\u20131293` and `smoke-executables.mjs:26\u201330,958\u2013960` all survive an absent-by-default field. The `bdptestOwned` gate (`index.ts:460\u2013461,575`) gives the claimed role isolation; no-serve never reads the file (`apps/bdptest/src/main.ts:118\u2013133`).\n- **Projection arity is exact.** RU needs 8 keys (`installed-reference-configuration.ts:86\u201395`) = 6 envelope + injected `scope`/`listener`; TX needs 5 (`transaction-installed-configuration.ts:20\u201326`) = 4 + `scope`. The installed TX capture's 7-key frozen output is accepted by `captureTransactionRuntimeConfiguration`'s `fields(...)` allow/require lists (`transaction-runtime-configuration.ts:206\u2013209`), and `administrativeData`/`fields`/`record` all accept the null-prototype trees that `decodeJsonDocument` and `mapLosslessJson` produce, so no prototype-pollution or shape mismatch arises. Closed-union-before-projection (`contract.md:65`) correctly forecloses injected-field override.\n- **Parser claims hold.** BOM is refused (`json-admission.ts:141\u2013157`), duplicate *decoded* names are refused (`:180`), unpaired surrogates are refused (`:120`).\n- **Secret-safe errors are achievable with existing code.** `ContractArtifactError` is a closed code vocabulary that never copies URIs or content (`installed-contract-artifact.ts:60\u201366`), the evaluator refusal `reason` is likewise closed (`installed-schema-evaluator.ts:157\u2013173`), and `assertCanonicalPathSegments` / `parseCanonicalScope` do not echo values.\n- **Boundary claims are accurate:** `withConfiguredInternalFault` is used only by the two Read compositions, never by the mutable candidates; `startTransactionRuntime` does listen (`:316`) before `openTransactionStore` (`:326`) and binds fixed host `127.0.0.1` with `captured.port === 0`, exactly as the plan states; RU refuses port 0 (`installed-reference-configuration.ts:99\u2013105`) while config permits it; the limit tuples are comparable structurally via the existing `ServerReadLimitsConfig` shape against `DEVELOPMENT_OWNER_LIMITS.read` and `readOptions(scope).advertisedLimits`.\n- I found no manufactured product-approval gate in the plan; stages 4\u20135 (`plan.md:93\u201394`) are correctly scoped as later gated work.\n\n**Scope note:** completion is not approval. Findings 1\u20135 are actual plan/source defects; 6\u20137 are accuracy defects; 8 is explicitly optional. None of the five context documents were modified, and I ran no commands, tests, builds, services, git operations or other reviewers.",
+  "ttft_ms": 1499,
+  "type": "result",
+  "duration_ms": 667393,
+  "uuid": "b0765650-2254-4e4a-bff8-d4c36d9d762b",
+  "ttft_stream_ms": 1002,
+  "time_to_request_ms": 10,
+  "first_content_frame_ms": 1002,
+  "queued_turn_count": 0
+}

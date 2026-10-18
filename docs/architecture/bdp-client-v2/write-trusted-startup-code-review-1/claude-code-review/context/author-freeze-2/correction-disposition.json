@@ -1,0 +1,22 @@
+{
+  "authoritySha256": "57c25a1292717c14d1348753da7772c3a29903dcbdd66d1deb28c3b5088d8c56",
+  "predecessorIndexSha256": "c7820100b6a6a550ee0d0789f8c73ebc37fe6f418d8d5d177e9f042866e842d1",
+  "findings": [
+    {
+      "id": "N1",
+      "status": "SOURCE CORRECTED; UNEXECUTED",
+      "change": "Lazy decoded-child generator with depth-only iterator frames; charge each discovered node before scheduling descendants; no Object.values sibling array or per-sibling worklist",
+      "bounds": "unchanged rootdepth0/maxdepth16/maxnodes100000; JsonNumberLiteral atomic",
+      "control": "root+array+99998 values equals100000 reaches contract validation; one extra value refuses bounds; existing depth16/depth17/atomic controls preserved"
+    },
+    {
+      "id": "N2",
+      "status": "COMMENT CORRECTED",
+      "change": "Occupied intended port excludes acquisition of that configured listener; source forbidden-call instrumentation separately observes attempted startup calls",
+      "behaviorChanged": false
+    }
+  ],
+  "otherNineOwnedFilesUnchanged": true,
+  "testsBuildCompilerRuntimeExecuted": false,
+  "rootLaunchReleased": false
+}

@@ -1,0 +1,27 @@
+{
+  "name": "@bdp/server",
+  "version": "0.0.0",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./development": {
+      "types": "./dist/development.d.ts",
+      "default": "./dist/development.js"
+    }
+  },
+  "dependencies": {
+    "@bdp/protocol": "workspace:*",
+    "fast-uri": "3.1.5"
+  },
+  "devDependencies": {
+    "vitest": "4.1.10"
+  }
+}

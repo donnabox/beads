@@ -1,0 +1,44 @@
+{
+  "method": "In-memory textual hunk reconstruction against exact baseline/predecessor/source copies; no git apply or product execution",
+  "allFourDirectionsExact": true,
+  "checkedFiles": {
+    "fullForward": [
+      "docs/design/startup-configuration.md",
+      "packages/config/src/index.test.ts",
+      "packages/config/src/index.ts",
+      "packages/server/package.json",
+      "packages/server/src/read-sequence-lifecycle.test.ts",
+      "packages/server/src/transaction-snapshot.test.ts",
+      "scripts/smoke-executables.mjs",
+      "scripts/smoke-safety.mjs",
+      "scripts/smoke-safety.test.mjs",
+      "packages/server/src/reference-deployment-state.ts",
+      "packages/server/src/reference-deployment.test.ts",
+      "packages/server/src/reference-deployment.ts"
+    ],
+    "fullInverse": [
+      "docs/design/startup-configuration.md",
+      "packages/config/src/index.test.ts",
+      "packages/config/src/index.ts",
+      "packages/server/package.json",
+      "packages/server/src/read-sequence-lifecycle.test.ts",
+      "packages/server/src/transaction-snapshot.test.ts",
+      "scripts/smoke-executables.mjs",
+      "scripts/smoke-safety.mjs",
+      "scripts/smoke-safety.test.mjs",
+      "packages/server/src/reference-deployment-state.ts",
+      "packages/server/src/reference-deployment.test.ts",
+      "packages/server/src/reference-deployment.ts"
+    ],
+    "successorForward": [
+      "packages/server/src/reference-deployment.ts",
+      "packages/server/src/reference-deployment.test.ts",
+      "scripts/smoke-executables.mjs"
+    ],
+    "successorInverse": [
+      "packages/server/src/reference-deployment.ts",
+      "packages/server/src/reference-deployment.test.ts",
+      "scripts/smoke-executables.mjs"
+    ]
+  }
+}
