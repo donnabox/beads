@@ -21,7 +21,7 @@ diff --git a/cmd/bd/graph_preview_import_workflow_test.go b/cmd/bd/graph_preview
  )
  
  // Installed process admission, input selection and persisted graph projections
-@@ -114,3 +120,236 @@
+@@ -116,3 +122,240 @@
  		})
  	}
  }
@@ -129,6 +129,10 @@ diff --git a/cmd/bd/graph_preview_import_workflow_test.go b/cmd/bd/graph_preview
 +			}
 +			call(string(ambiguous), "invalid_properties", "import", "-", "--source-prefix", "other", "--dry-run")
 +			preview := graphMixedResult[graphstore.LegacyImportResult](t, call(string(fixture), "", "import", "-", "--dry-run"))
++			configuredPreview := graphMixedResult[graphstore.LegacyImportResult](t, call(string(fixture), "", "import", "-", "--source-prefix", "web-app", "--dry-run"))
++			if !reflect.DeepEqual(preview, configuredPreview) {
++				t.Fatalf("inferred and explicit prefix dry-runs differ: %+v %+v", preview, configuredPreview)
++			}
 +			lines := bytes.Split(bytes.TrimSpace(fixture), []byte{'\n'})
 +			for i, j := 0, len(lines)-1; i < j; i, j = i+1, j-1 {
 +				lines[i], lines[j] = lines[j], lines[i]
@@ -141,8 +145,8 @@ diff --git a/cmd/bd/graph_preview_import_workflow_test.go b/cmd/bd/graph_preview
 +			if got := call("", "", "list", "--all", "--format", "records-json"); got != before {
 +				t.Fatal("completeness dry-run reserved data")
 +			}
-+			result := graphMixedResult[graphstore.LegacyImportResult](t, call(reversed, "", "import", "-"))
-+			if result.DryRun || !reflect.DeepEqual(result.IDs, preview.IDs) || !reflect.DeepEqual(result.MemoryIDs, preview.MemoryIDs) {
++			result := graphMixedResult[graphstore.LegacyImportResult](t, call(reversed, "", "import", "-", "--source-prefix", "web-app"))
++			if result.DryRun || len(result.DependencyIDs) != 1 || result.IssuePrefix != preview.IssuePrefix || !reflect.DeepEqual(result.IDs, preview.IDs) || !reflect.DeepEqual(result.MemoryIDs, preview.MemoryIDs) || !reflect.DeepEqual(result.DependencyIDs, preview.DependencyIDs) {
 +				t.Fatalf("apply did not preserve dry-run identity maps: %+v", result)
 +			}
 +			allocated := map[string]bool{}
@@ -193,7 +197,7 @@ diff --git a/cmd/bd/graph_preview_import_workflow_test.go b/cmd/bd/graph_preview
 +					if err := json.Unmarshal(got.Owned[0], &link); err != nil {
 +						t.Fatal(err)
 +					}
-+					if link.Type != graphstore.DependencyTypeURL(scope) || link.Source != id || link.Target != result.IDs["web-app-a1b"] || link.Properties["dep_type"] != "blocks" {
++					if link.ID == "" || result.DependencyIDs["web-app-b2c -> web-app-a1b"] != link.ID || link.Type != graphstore.DependencyTypeURL(scope) || link.Source != id || link.Target != result.IDs["web-app-a1b"] || link.Properties["dep_type"] != "blocks" {
 +						t.Fatalf("Issue %s dependency lost type or endpoints: %+v", source.ID, link)
 +					}
 +				}
