@@ -1,0 +1,130 @@
+{
+  "allCountsProspective": true,
+  "source": {
+    "callbacks": 21,
+    "newDirectHandlerCalls": 94,
+    "newWireRequests": 14,
+    "legacyWireRequestsSeparate": 7
+  },
+  "cold": {
+    "requests": [
+      43,
+      28
+    ],
+    "all12OperationNames": [
+      "batch",
+      "createBead",
+      "createLink",
+      "deleteAlias",
+      "deleteBead",
+      "deleteLink",
+      "deleteWhere",
+      "putAlias",
+      "sequence",
+      "updateBead",
+      "updateLink",
+      "updateWhere"
+    ],
+    "unionAll12": true,
+    "commandPosts": [
+      11,
+      5
+    ],
+    "receiptGets": [
+      10,
+      3
+    ],
+    "finalPositions": [
+      "pos-8",
+      "pos-5"
+    ]
+  },
+  "installed": {
+    "callbacks": 11,
+    "scheduled": 190,
+    "completed": 187,
+    "expectedTransportAborts": 3,
+    "finiteRowsReconcile": true,
+    "budgetsMs": [
+      5000,
+      45000,
+      10000,
+      60000,
+      120000,
+      115000
+    ],
+    "automaticRetries": 0
+  },
+  "counterfactualApplications": 8,
+  "schemaNamesVerified": [
+    "transactionalDiscovery",
+    "transactionalOperationDirectory",
+    "typeDescriptor",
+    "mutationReceipt",
+    "transactionalSequenceResponse",
+    "transactionalProblem",
+    "currentBeadRecord",
+    "currentLinkRecord",
+    "currentBeadCollection",
+    "currentLinkCollection",
+    "snapshotManifest",
+    "changefeedPage",
+    "eventPage"
+  ],
+  "evidence": [
+    {
+      "topic": "Routing and one observation",
+      "evidence": [
+        "transaction-http.ts:258-272,403-405,589-615,637-681",
+        "transaction-service.ts:267-292",
+        "transaction-discovery.ts:8-66"
+      ],
+      "assessment": "Selected discovery precedes generic minimum Read exclusion; exact lexical tuple capture, exactly one discoveryObserved, same-entry context and final Read HTTP semantics once; existing Scope pathname versus exact descriptor/Directory href preserved."
+    },
+    {
+      "topic": "Receiving and conditions",
+      "evidence": [
+        "transaction-runtime.ts:128-179",
+        "transaction-consistency.ts:15-72,115-175",
+        "read-http.ts:10-55"
+      ],
+      "assessment": "Raw Host/method/Origin stays transport-owned; authentication/lexical syntax precedes owner work; minimum eligibility precedes media/conditions. Scope204 has no JSON negotiation, and ordinary conditional Link survives."
+    },
+    {
+      "topic": "Cold provenance and command shapes",
+      "evidence": [
+        "docs/specs/bdp.md:914-942,2066-2122,2156-2160,2389-2408,3551-3588,4198-4218,4328+",
+        "schemas/bdp-v0.schema.json typeSummary/typesInventory/transactional definitions",
+        "transaction-batch.ts; transaction-set.ts"
+      ],
+      "assessment": "Actual Link/descriptor/Directory/Type/receipt/resource URLs feed confined allowlist. No ready.targets/constants in cold oracle. Eight singleton names plus four carrier/set names are all invoked; singleton receipts, sequence per-member commits/@made/failure, alias non-position effects, set results and replay fit pinned semantics. Optional expectedRevision remains optional."
+    },
+    {
+      "topic": "Source counters",
+      "evidence": [
+        "transaction-consistency.ts:138-175",
+        "transaction-service.ts:140-154,267-292,767-787"
+      ],
+      "assessment": "Per minimum-order callback five timeout rows give10 owner entries/5 waits/15 clocks; four eligible/foreign rows give4 entries/4 clocks; total14 entries/2 assemblies/5 waits/19 clocks. Catch-up3 entries/2 assemblies/1 wait/2 clocks; abort1/0/1/2; close2/0/1/3 match finite loop."
+    },
+    {
+      "topic": "Lifecycle distinction",
+      "evidence": [
+        "transaction-service.ts:767-787",
+        "transaction-runtime.ts:151,174-180,306-311,375-390",
+        "transaction-installed-process.ts:25-59",
+        "scripts/transaction-installed-observation.mjs"
+      ],
+      "assessment": "Source held wait proves admitted-work drain before owner close. Installed listener/connection close occurs before pending/service drain, so three abort outcomes have no invented503/body/hash. Sent-only finish is not internal admission proof; clean child close/exit/PID absence and settlements precede removal; unknown ownership retains/fails."
+    },
+    {
+      "topic": "Preservation and basis",
+      "evidence": [
+        "preservation.json; source-bases.json; predecessor/plan.md",
+        "transaction-http.test.ts:211-218,1782-1796",
+        "transactional-discovery-installed.test.ts:189-225"
+      ],
+      "assessment": "Only six installed500s, three source500s and three discovery minimum-loop members superseded. Cursor/Read/write/replay/receipt/Snapshot/Event/D1 laws remain. Root must close D1 validation and serialize shared HTTP basis; frozen D1 map is overlap context only, never future selected source."
+    }
+  ]
+}
