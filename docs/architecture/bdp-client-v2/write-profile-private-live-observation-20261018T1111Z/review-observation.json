@@ -1,0 +1,39 @@
+{
+  "utc": "2026-10-18T11:10:48.284041+00:00",
+  "actualReview": "FIRSTcarrierCODE",
+  "running": true,
+  "toolSession": 4811,
+  "process": {
+    "pid": 6236,
+    "pgid": 6236,
+    "started": "2026-10-18T11:02:27.063131+00:00",
+    "argv": [
+      "/opt/homebrew/bin/claude",
+      "--safe-mode",
+      "-p",
+      "--tools",
+      "Read,Glob,Grep",
+      "--allowedTools",
+      "Read,Glob,Grep",
+      "--disable-slash-commands",
+      "--strict-mcp-config",
+      "--mcp-config",
+      "{\"mcpServers\":{}}",
+      "--no-session-persistence",
+      "--output-format",
+      "stream-json",
+      "--verbose",
+      "--include-partial-messages"
+    ],
+    "timeoutSeconds": 1800,
+    "termAfterSeconds": 1790
+  },
+  "sampledStreamBytes": 1434601,
+  "sampledStreamSha256": "f8a06f2318c91b35e21b0be09b5937032e53a99d2ee88d9879ec311a550d3d98",
+  "completeRecordsInSnapshot": 1776,
+  "absoluteContextReadCalls": 8,
+  "toolResultErrorsInSnapshot": 0,
+  "terminalSeen": false,
+  "approvalInferred": false,
+  "durableTwoFlagReleaseCommit": "201cf80d352191a1151c92e8d1d633bafe064ac4"
+}
