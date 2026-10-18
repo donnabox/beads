@@ -1,0 +1,74 @@
+{
+  "actualConfig": {
+    "path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/biome.json",
+    "realpath": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/biome.json",
+    "bytes": 398,
+    "sha256": "62beced4e0227b97fe9ade1a1a573bf53a2f8916af8da7ce70f94315fece39dc"
+  },
+  "explicitConfigArgument": "--config-path=/Users/dbox/repos/wt/vickie/vickie-schema-minimum/biome.json",
+  "config": {
+    "$schema": "https://biomejs.dev/schemas/2.5.7/schema.json",
+    "files": {
+      "includes": [
+        "**",
+        "!!**/dist",
+        "!!**/node_modules",
+        "!!docs/design/evidence/read-cohort/*.json"
+      ]
+    },
+    "formatter": {
+      "enabled": true,
+      "indentStyle": "space",
+      "lineWidth": 100
+    },
+    "linter": {
+      "enabled": true,
+      "rules": {
+        "preset": "recommended"
+      }
+    }
+  },
+  "ancestorConfigurationInventory": [
+    {
+      "directory": "/Users/dbox/repos/wt/vickie",
+      "configurationFiles": []
+    },
+    {
+      "directory": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+      "configurationFiles": [
+        {
+          "path": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/biome.json",
+          "realpath": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/biome.json",
+          "bytes": 398,
+          "sha256": "62beced4e0227b97fe9ade1a1a573bf53a2f8916af8da7ce70f94315fece39dc"
+        }
+      ]
+    },
+    {
+      "directory": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/apps",
+      "configurationFiles": []
+    },
+    {
+      "directory": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/apps/bdptest",
+      "configurationFiles": []
+    },
+    {
+      "directory": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/apps/bdptest/src",
+      "configurationFiles": []
+    },
+    {
+      "directory": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages",
+      "configurationFiles": []
+    },
+    {
+      "directory": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/server",
+      "configurationFiles": []
+    },
+    {
+      "directory": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum/packages/server/src",
+      "configurationFiles": []
+    }
+  ],
+  "noConfigExtendsOrPerRuleOverrides": true,
+  "noDefaultSeverityInferenceFromRuleName": true
+}
