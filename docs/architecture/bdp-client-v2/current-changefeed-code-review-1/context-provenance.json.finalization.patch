@@ -1,0 +1,78 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-code-review-1/initial-scaffold/claude-code-review/context-provenance.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-code-review-1/claude-code-review/context-provenance.json
+@@ -74,5 +74,75 @@
+     "gitCommit": "a515ebd9cad7d5d303bc39e11d44777640f69948",
+     "sha256": "d0a77de5f4a500b70fbd5c55a0b3a8ee1bf671adc1c53b59f750a2f68b566f94",
+     "attribution": "Immutable committed sole-plan checkpoint; subsequent live plan edits cannot change copied review context."
++  },
++  "authored-full.patch": {
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-authoring-1/full.patch",
++    "sha256": "4ff4ef9448fb79a0c08b3665b7069fb019c9b1d311b898b5525bc888bcd2955c",
++    "attribution": "Exact immutable authored freeze/root CODE-only acceptance; no execution/test/build result or validation release."
++  },
++  "author-freeze.json": {
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-authoring-1/binding.json",
++    "sha256": "6b349233d20cc2b7d676e9a6ce8a66c43606cda8d7519a238a5ab8f896ab4983",
++    "attribution": "Exact immutable authored freeze/root CODE-only acceptance; no execution/test/build result or validation release."
++  },
++  "author-index.json": {
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-authoring-1/index.json",
++    "sha256": "31bb0664e3174bdff460d3a8b876f328a7c04d8aa24be236603ce60217fb1072",
++    "attribution": "Exact immutable authored freeze/root CODE-only acceptance; no execution/test/build result or validation release."
++  },
++  "author-scope.json": {
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-authoring-1/scope.json",
++    "sha256": "e76f14d5a13fb69d1bd4d54f55d7e28a27931e8a8463d47f61271af14970eebb",
++    "attribution": "Exact immutable authored freeze/root CODE-only acceptance; no execution/test/build result or validation release."
++  },
++  "author-preservation.json": {
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-authoring-1/preservation.json",
++    "sha256": "4254b783456a87c0b581a6fa9ee19c52de49d2730f4ffcc43e20366d9cc666b4",
++    "attribution": "Exact immutable authored freeze/root CODE-only acceptance; no execution/test/build result or validation release."
++  },
++  "author-freeze-report.md": {
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-authoring-1/report.md",
++    "sha256": "d0dff88e841ecde4d0a90c6eeb59d39539e7fe5ceed87eeb3da16d9f57ffbb4a",
++    "attribution": "Exact immutable authored freeze/root CODE-only acceptance; no execution/test/build result or validation release."
++  },
++  "root-static-acceptance.json": {
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-root-source-inspection-1/inspection.json",
++    "sha256": "c6e247f6495af8fa6a937cdde8ed378bd8a23950538f23e60dee03019cd3f316",
++    "attribution": "Exact immutable authored freeze/root CODE-only acceptance; no execution/test/build result or validation release."
++  },
++  "final-authored-report-binding.json": {
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-authoring-1/report-bindings.json",
++    "sha256": "9a35ee47add02370d5980e2d937c5909645b9bdb049b2bcd7ad22d33d19f5346",
++    "attribution": "Exact immutable authored freeze/root CODE-only acceptance; no execution/test/build result or validation release."
++  },
++  "authored-source/apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": {
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-authoring-1/source/apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
++    "sha256": "55f9b0eb8b5b8686c16bc7ee006d80578597d0c8c20b727f8987f1696b97ce66",
++    "attribution": "Exact immutable authored freeze/root CODE-only acceptance; no execution/test/build result or validation release."
++  },
++  "authored-source/packages/server/src/transaction-changefeed.test.ts": {
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-authoring-1/source/packages/server/src/transaction-changefeed.test.ts",
++    "sha256": "98f593d738c9d9e3e81d35c01eae869082ca433ac382e80c574cbdac083ea8da",
++    "attribution": "Exact immutable authored freeze/root CODE-only acceptance; no execution/test/build result or validation release."
++  },
++  "authored-source/packages/server/src/transaction-http.ts": {
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-authoring-1/source/packages/server/src/transaction-http.ts",
++    "sha256": "be9402cadf5d2888dd42a1904bbd8eeea0b32643bd7d7949f0ae34a8eefdd2e0",
++    "attribution": "Exact immutable authored freeze/root CODE-only acceptance; no execution/test/build result or validation release."
++  },
++  "authored-source/packages/server/src/transaction-service.ts": {
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-authoring-1/source/packages/server/src/transaction-service.ts",
++    "sha256": "25a993b33a49dc55bc3bb24619d7ea5ea73f8f3d030c4798b250f9ffa0583622",
++    "attribution": "Exact immutable authored freeze/root CODE-only acceptance; no execution/test/build result or validation release."
++  },
++  "authored-source/packages/server/src/transaction-sse.test.ts": {
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-authoring-1/source/packages/server/src/transaction-sse.test.ts",
++    "sha256": "8ed09116f709d47573b394fdf9d6cc6eb4c90db858bfce9afa89097d0f305d9d",
++    "attribution": "Exact immutable authored freeze/root CODE-only acceptance; no execution/test/build result or validation release."
++  },
++  "authored-source/packages/server/src/transaction-store.ts": {
++    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/current-changefeed-authoring-1/source/packages/server/src/transaction-store.ts",
++    "sha256": "2feff60d7064cf6a1f8b15c8360b98c1671a04762346d1d6bb3a9321ef69a2d5",
++    "attribution": "Exact immutable authored freeze/root CODE-only acceptance; no execution/test/build result or validation release."
+   }
+ }

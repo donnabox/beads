@@ -1,0 +1,41 @@
+{
+  "createdUtc": "2026-10-18T03:49:14.139120+00:00",
+  "state": "CLOSED mechanical scaffold pending author freeze/root acceptance",
+  "runnerSource": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-replay-code-review/run.py",
+    "sha256": "73672533463d3c2bad9938eacfbdb86c80b62c801c3a2d1d18120b183e5f7204"
+  },
+  "runnerAdaptation": [
+    "dedicated current-changefeed checkout",
+    "base head9f89271->a562",
+    "current-session guard path",
+    "fresh guard immediately before Popen"
+  ],
+  "supervisorSource": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-4/supervise.py",
+    "sha256": "e61b9008610b7349b06e8c322e240d707dbdedb9124c611890132f2cf81fb32b",
+    "copiedByteIdentical": true
+  },
+  "guardSource": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/claude-plan-review/guarded-action-session-20261018-021624-549f.py",
+    "sha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30"
+  },
+  "adapterPrecedent": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-trusted-startup-next-plan-2/launch-supervision-T1-successor-2/control.json",
+    "sha256": "c48395307a49bbfd2395b822bc78fb6168dba9fab91b91cf8c02668f81ba786a"
+  },
+  "originalPR167FilesRehashed": 679,
+  "originalPR167Clean": true,
+  "targetSourceReadOrBound": false,
+  "copiedContexts": 15,
+  "selectedSourceCallbacks": 15,
+  "newReports": 9,
+  "selectedLegacyReports": 2,
+  "unselectedReport": "private-source-changefeed-parameter-context",
+  "finalBindings": "UNRESOLVED",
+  "finalIndex": "UNRESOLVED",
+  "attemptExists": false,
+  "reviewInvoked": false,
+  "rootLaunchReleased": false,
+  "sourceBindingFinalized": false
+}
