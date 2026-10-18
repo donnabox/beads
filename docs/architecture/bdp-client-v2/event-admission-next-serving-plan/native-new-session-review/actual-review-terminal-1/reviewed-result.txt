@@ -1,0 +1,68 @@
+# Plan review — current changefeed admission/replay minimum composition
+
+Reviewed against working tree at `a56254d` (clean), plan/selection/workload as supplied, and pinned `spec.md` ranges. Read-only; no commands, builds, or writers run.
+
+---
+
+## Findings
+
+**1. [Medium] D's self-imposed timing budget is the tightest in the repo for the largest request count.**
+- Location: plan "New source D" ("work abort3000ms and absolute cleanup-inclusive4000ms ceiling", "Callback retains default5000ms"); `workload.bounds.newDWorkMs/newDCleanupInclusiveStopMs`.
+- Issue: D must do, inside 3000 ms of work and a 4000 ms absolute ceiling: local `startTransactionRuntime` (dist import, SQLite create, 2 type descriptors, listener bind), 2 `fetch` POST commits, 30 fresh raw socket exchanges, one live SSE register/frame/drain/close, then `runtime.close()` + directory removal. Every comparable runtime+HTTP callback in this repo takes a 60 s callback timeout with a 45 s work deadline (`packages/server/src/transaction-changefeed.test.ts:1028`, `:1895`); the heaviest default-timeout SSE callback (`packages/server/src/transaction-sse.test.ts:145-222`) performs ~12 interactions, not 32. `vitest.config.ts` sets no `testTimeout`, so 5000 ms is the real ceiling.
+- Impact: on a loaded worker the abort fires and is recorded as a hard failure ("work deadline") that is indistinguishable from a real regression; the oracles themselves are fine, so this is pure false-failure risk.
+- Smallest correction: give the new callback an explicit timeout (`}, 60000)`) and scale its local budgets into the existing HTTP family (work 45000, cleanup-inclusive 10000). No oracle, status vector, or count changes.
+
+**2. [Low-Medium] B's stated step order contradicts B's own derived read counts.**
+- Location: plan "New source B" ("commit a; baseline genesis read yields actual CP1; create spread delegate that records real readChanges calls…") vs `workload.newSource.groups.B` (`readChangesCalls 16` = `baselineReads 4` + `serviceAttempts 8` + `positiveServiceReads 4`).
+- Issue: if the baseline read is issued on the raw owner before the delegate exists, only 3 calls per case are delegate-recorded. The legacy analogue does the opposite: the pre-service read goes through `delegatedOwner` and `expect(reads).toHaveLength(4)` (`transaction-changefeed.test.ts:1110`, `:1186`).
+- Impact: either a failing exact-count assertion or a report whose `readChangesCalls` silently means something other than what was recorded.
+- Smallest correction: one clause reorder — construct the delegate first and issue the baseline through it — or relabel the workload field as owner invocations and fix delegate-recorded counts at 3/12.
+
+**3. [Low] F collapses four rows into one callback without a per-row isolation rule.**
+- Location: plan "New source F" ("One exact callback containing four isolated fixture/service rows… Four stores/owners/commits/captures/closes;3clocks. Report four real row records"); legacy analogue is `it.each` with one callback per row (`transaction-changefeed.test.ts:1379-1481`).
+- Issue: in a single callback, a failing row aborts rows 2–4 unless per-row `try/finally` + aggregation is mandated. Then "four real row records", 4 closes, and the 0+1+1+1=3 clock total are unreachable, and the failing row's store stays open (F registers no global cleanup).
+- Impact: the report is least trustworthy on exactly the failure path F exists to police.
+- Smallest correction: require per-row `try/finally` (record + close each row, aggregate failures, attempt all four) and state 4/4/4/3 as the all-rows-attempted expectation.
+
+**4. [Low] B/C/F local ownership deliberately drops `fixture()`/`service()`'s unconditional backstop — say so, and note why counts still hold.**
+- Location: plan "Fixtures and common controls" vs `transaction-changefeed.test.ts:84-98` (`fixture()` pushes `owner.close()` + `rmSync(force:true)` onto the afterEach `cleanup` array) and `:513-546` (`service()` pushes `instance.close()`).
+- Confirmation requested: the smallest local-ownership design **does** preserve counts and failure bounds. `close()` is idempotent (`transaction-store.ts:2368 if (!closed)`), so the legacy double-close was harmless, and no in-callback counter depends on afterEach (legacy asserts `closes: 1` before afterEach runs, `:1333`). Avoiding registration is nonetheless necessary for B/C/F specifically, because afterEach would close/remove *after* each report is emitted, making "verified operation/service closure before removal" unassertable.
+- Residual: a failed row now retains an open SQLite handle plus a tmp directory for the rest of the worker process — intended per "unknown or failed drainage preserves the directory", but unstated.
+- Smallest correction: one sentence declaring retention-on-failure intentional and the report's closure/directory fields as the recovery signal. No helper edits.
+
+**5. [Low] Name E's recorder specifier.**
+- Location: plan "Source, scope and release dependencies" ("callback-local dynamic import of the existing server test-support recorder").
+- Actual: installed tests import it as `@bdp/server/testing` (`apps/bdptest/src/transactional-sse-installed.test.ts:11`), aliased by `vitest.config.ts:49-50` to `packages/server/test-support/testing.ts`, which re-exports `recordRawSse` (`:429`). A relative dynamic import into `packages/server/test-support/raw-sse-recorder.ts` would bypass the alias convention.
+- Smallest correction: pin `await import("@bdp/server/testing")` inside the E callback body (prefix bytes still preserved).
+
+**6. [Low / precision] Owner edit range overshoots.**
+- Plan cites "Owner1848–1930"; `readChanges` is `transaction-store.ts:1848-1917`, and `1918-1930` is `readConfiguration`, which the plan separately requires to remain untouched (spread-delegate preserves it). Cite 1848–1917.
+
+---
+
+## Verified correct (the load-bearing claims)
+
+- **Blast radius is exactly as scoped.** Repo-wide, the only assertions that depend on the canonical changefeed's strict-minimum `500 x-bdp-development-limit: minimum-position` are the two rows at `transaction-changefeed.test.ts:1820-1830`, inside an owned file. Current vector is `[200,200,200,503,503,503,503,500,500,400]` (`:1842-1844`); the plan's `[…,503,503,400]` is right, and row 9's `content-type not text/event-stream` assertion survives (503 Problem). That callback already uses a fake clock seam (`budgetMs: 2`, `now: () => tick`, `:1646-1653`), so the two new refusals add no wall-clock cost.
+- **No out-of-scope test regresses.** All other changefeed+minimum HTTP traffic uses *known* positions, which behave identically under `checkCurrentReadMinimum(…, true)` → `checkTransactionMinimum`: `:694-753` (pos-1/pos-0/genesis → 503/410/409/400/304), `transaction-sse.test.ts:588-616` (pos-99 → behind → waits). `transactional-matrix.test.ts` minimum rows target `operations/*`, `beads/`, `events/`; `transactional-snapshot-installed.test.ts:543` sends no minimum headers on `changes/`; `transaction-http.test.ts:4653-4685` sends an incomplete tuple → 400 at the malformed fence. The installed historical callbacks send no minimum headers (callback 1) and use finite `start=now` (callback 2, `:700-735`) → both unchanged.
+- **No production edit is needed outside the six owned files.** `snapshotCurrentReadMinimum` and `checkCurrentReadMinimum(…, waitable)` already exist and are already wired into service/store (`transaction-consistency.ts:33,115`; `transaction-store.ts:1867,1880`); the tags are per-method string literals with no shared union (`transaction-store.ts:1851`, `transaction-service.ts:470`), and the pump passes no tag/minimum (`transaction-runtime.ts:204-212`).
+- **Ordering claims match source.** HTTP: parser → media → raw `Last-Event-ID` → repeated-SSE refusal → effective → minimum (`transaction-http.ts:468-492`), with `malformedTransactionMinimumHeaders` and 401 strictly earlier (`:403-405`). Service: intent/tuple copy before `run`, capture inside `run` before waiter policy/clock/abort (`:474-493`). Owner: `unsupported` before `readContext` → context → checkpoint parse (epoch-before-view, `transaction-changefeed.ts:102-105`) → future-position → retained-row SELECT → minimum → framing (`transaction-store.ts:1869-1902`). Preflight order and identities (`capture 1`, `reads 0`, `waits 0`, clocks `0/1/1/1`, `"finite minimum-read wait policy required"` / `"invalid minimum-read clock"` / `ScopeServerOperationAbortedError`) match `transaction-consistency.ts:143-160` and the legacy oracle at `:1450-1455`.
+- **A's oracles hold**, including row 12 (`unsupported` returns before the `"bad"` cursor is ever parsed), row 14 (tuple TypeError before `enter`), and the corruption pair: delete `groups` position 1 → row 15 fails on the `start>0` existence SELECT, row 16 passes K then fails on `row.position !== start+1` via `retainedGroupReader` (`:674-691`, `:1883-1885`). The close → `DatabaseSync` → delete → `fixture.reopen()` sequence is the established pattern (`:385-398`); `close()` is idempotent.
+- **D's 32-row table is internally consistent and source-consistent**: 6/12/1/1/1/5/3/2/1 sums to 32; 503 precedes 406/304/412 because `applyReadHttpSemantics` only transforms 200-JSON/204 (`read-http.ts:10-39`); 406 is an empty representation, not a Problem; HEAD content-length equals GET's (`:42-46`); 410/409/400 codes confirmed by `transaction-sse.test.ts:629-643`; STALE/FOREIGN_VIEW/FUTURE via fixed-width 43-char slices is the existing technique (`:626-627`); duplicate raw `Last-Event-ID` reaches the handler faithfully only through the raw listener (`transaction-runtime.ts:153-156`), which `recordRawSse` satisfies and `fetch` would not.
+- **E is implementable without touching the prefix**: every symbol it needs (`artifacts` with `required:["title"]`, `validReceipt/validPage/validProblem`, `installedTransactionBinding`, `createRawHttpExchangeExecutor`, `launchInstalledTransaction`, `digest`, entry/dirty/commit bindings) is already module-scope; duplicate authored header lines are permitted and `last-event-id` is not reserved (`packages/conformance/src/http-executor.ts:664-677`, `:346-358`); 5 refusals at the production 1000 ms budget fit the 45 s work bound.
+- **Title inventory is exact.** All six legacy source titles exist verbatim (`transaction-changefeed.test.ts:548,694,1483,1598`; `transaction-sse.test.ts:588,617`), both installed historical titles exist verbatim (`:95,:441`), the 9 new titles do not collide, and the 15-alternative anchored `sourceTitleFilter` matches the selection.
+- **Accounting checks out.** New 9/12/13/32/18/1; legacy 6/6/6/28(0+0+10+7+2+9)/5/4; source totals 15/18/19/60/23/5; installed 3/24/3/3/4; combined 18/84/21/22/27. Legacy per-callback HTTP/commit counts verified by reading each callback (e.g. `:694-753` is 7 requests, 0 commits; `:617-660` is 9 requests, 1 commit). Two instrumented legacy reports (`:1580`, `:1878`) ⇒ 18 non-instrumented legacy requests, as stated.
+- **Spec reading is accurate and correctly bounded.** `spec.md:5841-5851` gives remaining reads a disjunction (serve-at-or-later / wait / route / normative problem); the bounded-wait-then-503 MUST is scoped to "an existing authorized current Bead or Link Resource or properties view", and the paragraph explicitly declines precedence for retained continuations. So admitting the changefeed to bounded waiting is a permissible reference choice, not a Resource-only MUST, and the prior 500 development gap was not a conformance defect — consistent with the plan claiming no new qualification. `:6043-6045`, `:6148-6153`, `:6183-6189` support the SSE `Last-Event-ID` override, the `start=now` admitted-head `after`, and `id`=checkpoint / `event: change-group` / whole-group `data` oracles.
+
+---
+
+## Limitations
+
+- Plan review only: no execution, build, test, or CI verification; every count, status, frame, and report field above is a source-derived prediction, not an observation. The six source files were read as the current committed source — "proposed" diffs do not yet exist, so I reviewed the described edits against the code they would modify.
+- I did not evaluate the CI-PENDING/exact-green/rebind evidence, PR 167 state, publication/release gating, consumer/pack provenance, or the three-pair installed supervision procedure beyond noting that the plan requires real emitted reports.
+- Out of scope by instruction and not assessed: S1, Event G2, foreign-protocol policy beyond the comparisons above, discovery activation, Types/History, D3 ordinary discovery/startup, D5 cumulative same-target qualification.
+- Timing judgements (finding 1) are comparative against in-repo precedent, not measured.
+- Prior native reviews were treated as context only; findings above are independently derived from source.
+
+## Verdict
+
+**No blockers.** The production seam, file ownership, ordering claims, spec reading, status/count oracles, and title inventory all hold against the actual repository, and the two legacy 500→503 rows are provably the entire legacy blast radius. Findings 1–6 are one real false-failure risk (D's budget) plus five precision/accounting corrections, all fixable in plan text without redesign, new file ownership, or oracle changes. Findings 2–6 are plan-precision items, not latent defects in the intended behaviour; none of them is additional coverage demand. Conditions on execution: D's budget corrected or consciously accepted, and all nine source reports plus E bound to real observed values and real consumer/provenance, never the planned numbers above.

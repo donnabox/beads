@@ -1,0 +1,52 @@
+{
+  "adjudicatedAt": "2026-10-18T03:29:12.687885+00:00",
+  "reviewEvidenceAccepted": true,
+  "acceptanceBasis": "One complete actual success terminal, exact source/packet invariance, substantive findings inspected, independent native plus root posthash and observed process closure. Satisfies actual PLAN review evidence gate without retry.",
+  "supervisedExecutionPassed": false,
+  "runnerCompletionVerified": false,
+  "actualCliExitCode": null,
+  "preservedFailure": "process_ownership_or_cleanup_failure during finalization, likely T1 exited/zombie identity rejection; no runner exit/source-after/final-review/terminal-results reconstructed",
+  "terminalAuditIndexSha256": "c4ba040f0ae294bd85155d66c9ae65b331e0185dbafc0dc7a362d69a19aa648b",
+  "rawStreamSha256": "3ac44ed5f7b3db948b335bf80c07bf3285298a01b8d809c7ae0e4be51462dd1e",
+  "reviewTextSha256": "10332b579afe50fbf1cefe535292a931cadf7feefc008d7e6ff8dae463dbfc3a",
+  "sourceFilesRehashed": 679,
+  "contextsRehashed": 24,
+  "artifactsRehashed": 12,
+  "rootCheckedObservedPids": 194,
+  "rootCheckedObservedGroups": 76,
+  "remainingObserved": [],
+  "findings": [
+    {
+      "id": "F1",
+      "disposition": "Reject deadline widening; consciously retain source default5000ms/work3000ms/cleanup-inclusive4000ms, installed bounds unchanged. Comparative unmeasured concern is a validation risk, not evidence permitting widening. Preserve any real failure and fix bounded implementation, not predicate."
+    },
+    {
+      "id": "F2",
+      "disposition": "Accept precision: construct recording spread delegate before baseline and perform baseline through it. Preserve4actual owner call records per B case/16total, original dimensions."
+    },
+    {
+      "id": "F3",
+      "disposition": "Accept precision: per-row try/finally/report and aggregation for all4Frows; actual attempted/completed rows explicit, no fabricated4success records after early failure, each owned closure bounded."
+    },
+    {
+      "id": "F4",
+      "disposition": "Accept explicit retention note: unknown/failed drainage intentionally retains store/directory/ownership evidence, no global afterEach fallback, no removal before verified closure."
+    },
+    {
+      "id": "F5",
+      "disposition": "Accept callback-local await import(\"@bdp/server/testing\") for E recorder; preserve complete installed historical prefix."
+    },
+    {
+      "id": "F6",
+      "disposition": "Accept owner range1848-1917; readConfiguration remains unchanged."
+    },
+    {
+      "id": "R1",
+      "disposition": "Root source inventory correction: selected historical reports are3, not2; preserve all actual historical schemas/identities, source+execution recheck, no scope/request/deadline change."
+    }
+  ],
+  "sourceAuthoringReleased": false,
+  "next": "Prepare exact plan precision successor and independent native closure; root then releases six-file authoring in dedicated clean current-changefeed worktree. Separate T1 supervisor correction before future review use.",
+  "noRetry": true,
+  "approvalInferred": false
+}

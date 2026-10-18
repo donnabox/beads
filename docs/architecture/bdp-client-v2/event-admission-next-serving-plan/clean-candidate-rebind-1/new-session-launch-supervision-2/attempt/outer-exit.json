@@ -1,0 +1,1833 @@
+{
+  "classification": "process_ownership_or_cleanup_failure",
+  "approvalInferred": false,
+  "started": "2026-10-18T03:05:03.606269+00:00",
+  "elapsedSeconds": 1133.902927415911,
+  "deadlineSeconds": 1800,
+  "termAfterSeconds": 1790,
+  "killAfterSeconds": 1798,
+  "wrapperPid": 5342,
+  "wrapperExitCode": -15,
+  "roleChecks": [
+    {
+      "pid": 5332,
+      "startedElapsed": 0.006519832648336887,
+      "exitCode": 0
+    },
+    {
+      "pid": 5629,
+      "startedElapsed": 15.489261040929705,
+      "exitCode": 0
+    },
+    {
+      "pid": 6032,
+      "startedElapsed": 30.885352540761232,
+      "exitCode": 0
+    },
+    {
+      "pid": 6243,
+      "startedElapsed": 46.22069587465376,
+      "exitCode": 0
+    },
+    {
+      "pid": 7020,
+      "startedElapsed": 61.56578083289787,
+      "exitCode": 0
+    },
+    {
+      "pid": 7291,
+      "startedElapsed": 76.89936570776626,
+      "exitCode": 0
+    },
+    {
+      "pid": 7633,
+      "startedElapsed": 92.21557824965566,
+      "exitCode": 0
+    },
+    {
+      "pid": 7832,
+      "startedElapsed": 107.63928637467325,
+      "exitCode": 0
+    },
+    {
+      "pid": 8611,
+      "startedElapsed": 122.9604306248948,
+      "exitCode": 0
+    },
+    {
+      "pid": 9609,
+      "startedElapsed": 138.4193044155836,
+      "exitCode": 0
+    },
+    {
+      "pid": 9860,
+      "startedElapsed": 154.02114279102534,
+      "exitCode": 0
+    },
+    {
+      "pid": 10091,
+      "startedElapsed": 169.37011508271098,
+      "exitCode": 0
+    },
+    {
+      "pid": 10922,
+      "startedElapsed": 184.8214104999788,
+      "exitCode": 0
+    },
+    {
+      "pid": 11258,
+      "startedElapsed": 200.26762929093093,
+      "exitCode": 0
+    },
+    {
+      "pid": 11521,
+      "startedElapsed": 215.68284625001252,
+      "exitCode": 0
+    },
+    {
+      "pid": 11739,
+      "startedElapsed": 231.0373164578341,
+      "exitCode": 0
+    },
+    {
+      "pid": 12353,
+      "startedElapsed": 246.4306042077951,
+      "exitCode": 0
+    },
+    {
+      "pid": 12712,
+      "startedElapsed": 261.730736957863,
+      "exitCode": 0
+    },
+    {
+      "pid": 13432,
+      "startedElapsed": 277.51019624993205,
+      "exitCode": 0
+    },
+    {
+      "pid": 14234,
+      "startedElapsed": 292.9060777910054,
+      "exitCode": 0
+    },
+    {
+      "pid": 15220,
+      "startedElapsed": 308.33283366588876,
+      "exitCode": 0
+    },
+    {
+      "pid": 15577,
+      "startedElapsed": 323.8405822496861,
+      "exitCode": 0
+    },
+    {
+      "pid": 16061,
+      "startedElapsed": 339.20010558282956,
+      "exitCode": 0
+    },
+    {
+      "pid": 16667,
+      "startedElapsed": 354.5338954576291,
+      "exitCode": 0
+    },
+    {
+      "pid": 18046,
+      "startedElapsed": 369.9663005406037,
+      "exitCode": 0
+    },
+    {
+      "pid": 18265,
+      "startedElapsed": 385.47165620792657,
+      "exitCode": 0
+    },
+    {
+      "pid": 19652,
+      "startedElapsed": 400.9427622077055,
+      "exitCode": 0
+    },
+    {
+      "pid": 20482,
+      "startedElapsed": 416.2731352909468,
+      "exitCode": 0
+    },
+    {
+      "pid": 21554,
+      "startedElapsed": 431.63565862504765,
+      "exitCode": 0
+    },
+    {
+      "pid": 22666,
+      "startedElapsed": 446.99065387481824,
+      "exitCode": 0
+    },
+    {
+      "pid": 22912,
+      "startedElapsed": 462.4746955409646,
+      "exitCode": 0
+    },
+    {
+      "pid": 23174,
+      "startedElapsed": 477.8582032499835,
+      "exitCode": 0
+    },
+    {
+      "pid": 24175,
+      "startedElapsed": 493.28016349999234,
+      "exitCode": 0
+    },
+    {
+      "pid": 24515,
+      "startedElapsed": 508.72282987460494,
+      "exitCode": 0
+    },
+    {
+      "pid": 25993,
+      "startedElapsed": 524.0926456656307,
+      "exitCode": 0
+    },
+    {
+      "pid": 26302,
+      "startedElapsed": 539.4724657079205,
+      "exitCode": 0
+    },
+    {
+      "pid": 26930,
+      "startedElapsed": 554.8581907078624,
+      "exitCode": 0
+    },
+    {
+      "pid": 27164,
+      "startedElapsed": 570.249520665966,
+      "exitCode": 0
+    },
+    {
+      "pid": 27410,
+      "startedElapsed": 585.6161428326741,
+      "exitCode": 0
+    },
+    {
+      "pid": 27846,
+      "startedElapsed": 600.9264337499626,
+      "exitCode": 0
+    },
+    {
+      "pid": 28509,
+      "startedElapsed": 616.3467813329771,
+      "exitCode": 0
+    },
+    {
+      "pid": 28771,
+      "startedElapsed": 631.6765339998528,
+      "exitCode": 0
+    },
+    {
+      "pid": 29142,
+      "startedElapsed": 647.0659028328955,
+      "exitCode": 0
+    },
+    {
+      "pid": 29408,
+      "startedElapsed": 662.5043414579704,
+      "exitCode": 0
+    },
+    {
+      "pid": 30093,
+      "startedElapsed": 677.9041720409878,
+      "exitCode": 0
+    },
+    {
+      "pid": 30303,
+      "startedElapsed": 693.2634256249294,
+      "exitCode": 0
+    },
+    {
+      "pid": 30520,
+      "startedElapsed": 708.640254124999,
+      "exitCode": 0
+    },
+    {
+      "pid": 30717,
+      "startedElapsed": 723.9527893746272,
+      "exitCode": 0
+    },
+    {
+      "pid": 31365,
+      "startedElapsed": 739.2802733746357,
+      "exitCode": 0
+    },
+    {
+      "pid": 31548,
+      "startedElapsed": 754.643145665992,
+      "exitCode": 0
+    },
+    {
+      "pid": 31724,
+      "startedElapsed": 770.0504013746977,
+      "exitCode": 0
+    },
+    {
+      "pid": 32040,
+      "startedElapsed": 785.493518457748,
+      "exitCode": 0
+    },
+    {
+      "pid": 32637,
+      "startedElapsed": 800.8639970407821,
+      "exitCode": 0
+    },
+    {
+      "pid": 32827,
+      "startedElapsed": 816.3235600828193,
+      "exitCode": 0
+    },
+    {
+      "pid": 33008,
+      "startedElapsed": 831.8195063327439,
+      "exitCode": 0
+    },
+    {
+      "pid": 33207,
+      "startedElapsed": 847.2693742075935,
+      "exitCode": 0
+    },
+    {
+      "pid": 33899,
+      "startedElapsed": 862.6995779578574,
+      "exitCode": 0
+    },
+    {
+      "pid": 34127,
+      "startedElapsed": 878.0599631248042,
+      "exitCode": 0
+    },
+    {
+      "pid": 34456,
+      "startedElapsed": 893.3972910000011,
+      "exitCode": 0
+    },
+    {
+      "pid": 34682,
+      "startedElapsed": 908.7784101660363,
+      "exitCode": 0
+    },
+    {
+      "pid": 36160,
+      "startedElapsed": 924.1127832499333,
+      "exitCode": 0
+    },
+    {
+      "pid": 36393,
+      "startedElapsed": 939.4555517500266,
+      "exitCode": 0
+    },
+    {
+      "pid": 37565,
+      "startedElapsed": 954.9466085829772,
+      "exitCode": 0
+    },
+    {
+      "pid": 37895,
+      "startedElapsed": 970.3300202498212,
+      "exitCode": 0
+    },
+    {
+      "pid": 38602,
+      "startedElapsed": 985.7481660000049,
+      "exitCode": 0
+    },
+    {
+      "pid": 38879,
+      "startedElapsed": 1001.1136129996739,
+      "exitCode": 0
+    },
+    {
+      "pid": 39354,
+      "startedElapsed": 1016.5518712908961,
+      "exitCode": 0
+    },
+    {
+      "pid": 39778,
+      "startedElapsed": 1032.0259536658414,
+      "exitCode": 0
+    },
+    {
+      "pid": 40502,
+      "startedElapsed": 1047.3908194578253,
+      "exitCode": 0
+    },
+    {
+      "pid": 40830,
+      "startedElapsed": 1062.7887374158017,
+      "exitCode": 0
+    },
+    {
+      "pid": 41086,
+      "startedElapsed": 1078.1592403748073,
+      "exitCode": 0
+    },
+    {
+      "pid": 41387,
+      "startedElapsed": 1093.4805907909758,
+      "exitCode": 0
+    },
+    {
+      "pid": 42203,
+      "startedElapsed": 1108.8761459579691,
+      "exitCode": 0
+    },
+    {
+      "pid": 42454,
+      "startedElapsed": 1124.3184174159542,
+      "exitCode": 0
+    }
+  ],
+  "finalRoleVerified": false,
+  "forcedCleanup": true,
+  "termSentAtDeadline": false,
+  "killSentAtDeadline": false,
+  "termSignalPassAttempts": 0,
+  "killSignalPassAttempts": 0,
+  "signalStateMeaning": "Sent flags mean a complete successful inventory/signal pass, not a scheduled attempt; logs preserve per-group signals and failed passes.",
+  "errors": [
+    "reviewer_identity:RuntimeError",
+    "signal:PermissionError",
+    "signal:PermissionError",
+    "signal:PermissionError"
+  ],
+  "remainingOwned": [],
+  "ownershipUnknown": true,
+  "observedOwned": [
+    {
+      "pid": 5332,
+      "ppid": 5331,
+      "pgid": 5332,
+      "start": "Sat Oct 17 20:05:03 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 5334,
+      "ppid": 5332,
+      "pgid": 5332,
+      "start": "Sat Oct 17 20:05:03 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 5341,
+      "ppid": 5332,
+      "pgid": 5332,
+      "start": "Sat Oct 17 20:05:03 2026",
+      "comm": "(true)"
+    },
+    {
+      "pid": 5342,
+      "ppid": 5331,
+      "pgid": 5342,
+      "start": "Sat Oct 17 20:05:04 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 5352,
+      "ppid": 5342,
+      "pgid": 5342,
+      "start": "Sat Oct 17 20:05:04 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 5354,
+      "ppid": 5352,
+      "pgid": 5342,
+      "start": "Sat Oct 17 20:05:04 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 5360,
+      "ppid": 5359,
+      "pgid": 5342,
+      "start": "Sat Oct 17 20:05:04 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 5359,
+      "ppid": 5342,
+      "pgid": 5342,
+      "start": "Sat Oct 17 20:05:04 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 5366,
+      "ppid": 5342,
+      "pgid": 5366,
+      "start": "Sat Oct 17 20:05:04 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 5379,
+      "ppid": 5366,
+      "pgid": 5366,
+      "start": "Sat Oct 17 20:05:04 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 5380,
+      "ppid": 5366,
+      "pgid": 5366,
+      "start": "Sat Oct 17 20:05:04 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 5381,
+      "ppid": 5366,
+      "pgid": 5366,
+      "start": "Sat Oct 17 20:05:04 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 5382,
+      "ppid": 5366,
+      "pgid": 5366,
+      "start": "Sat Oct 17 20:05:04 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 5383,
+      "ppid": 5366,
+      "pgid": 5366,
+      "start": "Sat Oct 17 20:05:04 2026",
+      "comm": "(git)"
+    },
+    {
+      "pid": 5384,
+      "ppid": 5366,
+      "pgid": 5366,
+      "start": "Sat Oct 17 20:05:04 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 5385,
+      "ppid": 5366,
+      "pgid": 5366,
+      "start": "Sat Oct 17 20:05:04 2026",
+      "comm": "(ioreg)"
+    },
+    {
+      "pid": 5630,
+      "ppid": 5629,
+      "pgid": 5629,
+      "start": "Sat Oct 17 20:05:19 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 5629,
+      "ppid": 5331,
+      "pgid": 5629,
+      "start": "Sat Oct 17 20:05:19 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 6032,
+      "ppid": 5331,
+      "pgid": 6032,
+      "start": "Sat Oct 17 20:05:34 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 6033,
+      "ppid": 6032,
+      "pgid": 6032,
+      "start": "Sat Oct 17 20:05:34 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 6041,
+      "ppid": 5342,
+      "pgid": 5342,
+      "start": "Sat Oct 17 20:05:35 2026",
+      "comm": "(ps)"
+    },
+    {
+      "pid": 6243,
+      "ppid": 5331,
+      "pgid": 6243,
+      "start": "Sat Oct 17 20:05:49 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 6244,
+      "ppid": 6243,
+      "pgid": 6243,
+      "start": "Sat Oct 17 20:05:49 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 7020,
+      "ppid": 5331,
+      "pgid": 7020,
+      "start": "Sat Oct 17 20:06:05 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 7021,
+      "ppid": 7020,
+      "pgid": 7020,
+      "start": "Sat Oct 17 20:06:05 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 7023,
+      "ppid": 5342,
+      "pgid": 5342,
+      "start": "Sat Oct 17 20:06:05 2026",
+      "comm": "ps"
+    },
+    {
+      "pid": 7291,
+      "ppid": 5331,
+      "pgid": 7291,
+      "start": "Sat Oct 17 20:06:20 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 7292,
+      "ppid": 7291,
+      "pgid": 7291,
+      "start": "Sat Oct 17 20:06:20 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 7625,
+      "ppid": 5342,
+      "pgid": 5342,
+      "start": "Sat Oct 17 20:06:35 2026",
+      "comm": "(ps)"
+    },
+    {
+      "pid": 7633,
+      "ppid": 5331,
+      "pgid": 7633,
+      "start": "Sat Oct 17 20:06:35 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 7634,
+      "ppid": 7633,
+      "pgid": 7633,
+      "start": "Sat Oct 17 20:06:35 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 7832,
+      "ppid": 5331,
+      "pgid": 7832,
+      "start": "Sat Oct 17 20:06:51 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 7834,
+      "ppid": 7832,
+      "pgid": 7832,
+      "start": "Sat Oct 17 20:06:51 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 8611,
+      "ppid": 5331,
+      "pgid": 8611,
+      "start": "Sat Oct 17 20:07:06 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 8612,
+      "ppid": 8611,
+      "pgid": 8611,
+      "start": "Sat Oct 17 20:07:06 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 8800,
+      "ppid": 5366,
+      "pgid": 5366,
+      "start": "Sat Oct 17 20:07:17 2026",
+      "comm": "(security)"
+    },
+    {
+      "pid": 9609,
+      "ppid": 5331,
+      "pgid": 9609,
+      "start": "Sat Oct 17 20:07:22 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 9611,
+      "ppid": 9609,
+      "pgid": 9609,
+      "start": "Sat Oct 17 20:07:22 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 9841,
+      "ppid": 5342,
+      "pgid": 5342,
+      "start": "Sat Oct 17 20:07:35 2026",
+      "comm": "(ps)"
+    },
+    {
+      "pid": 9860,
+      "ppid": 5331,
+      "pgid": 9860,
+      "start": "Sat Oct 17 20:07:37 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 9861,
+      "ppid": 9860,
+      "pgid": 9860,
+      "start": "Sat Oct 17 20:07:37 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 9866,
+      "ppid": 9860,
+      "pgid": 9860,
+      "start": "Sat Oct 17 20:07:37 2026",
+      "comm": "(true)"
+    },
+    {
+      "pid": 10091,
+      "ppid": 5331,
+      "pgid": 10091,
+      "start": "Sat Oct 17 20:07:52 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 10092,
+      "ppid": 10091,
+      "pgid": 10091,
+      "start": "Sat Oct 17 20:07:52 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 10869,
+      "ppid": 5342,
+      "pgid": 5342,
+      "start": "Sat Oct 17 20:08:05 2026",
+      "comm": "ps"
+    },
+    {
+      "pid": 10922,
+      "ppid": 5331,
+      "pgid": 10922,
+      "start": "Sat Oct 17 20:08:08 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 10924,
+      "ppid": 10922,
+      "pgid": 10922,
+      "start": "Sat Oct 17 20:08:08 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 11211,
+      "ppid": 5366,
+      "pgid": 5366,
+      "start": "Sat Oct 17 20:08:22 2026",
+      "comm": "(bash)"
+    },
+    {
+      "pid": 11258,
+      "ppid": 5331,
+      "pgid": 11258,
+      "start": "Sat Oct 17 20:08:23 2026",
+      "comm": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+    },
+    {
+      "pid": 11259,
+      "ppid": 11258,
+      "pgid": 11258,
+      "start": "Sat Oct 17 20:08:23 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 11502,
+      "ppid": 5366,
+      "pgid": 5366,
+      "start": "Sat Oct 17 20:08:39 2026",
+      "comm": "(claude)"
+    },
+    {
+      "pid": 11521,
+      "ppid": 5331,
+      "pgid": 11521,
+      "start": "Sat Oct 17 20:08:39 2026",
+      "comm": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+    },
+    {
+      "pid": 11522,
+      "ppid": 11521,
+      "pgid": 11521,
+      "start": "Sat Oct 17 20:08:39 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 11695,
+      "ppid": 5366,
+      "pgid": 5366,
+      "start": "Sat Oct 17 20:08:52 2026",
+      "comm": "(security)"
+    },
+    {
+      "pid": 11739,
+      "ppid": 5331,
+      "pgid": 11739,
+      "start": "Sat Oct 17 20:08:54 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 11740,
+      "ppid": 11739,
+      "pgid": 11739,
+      "start": "Sat Oct 17 20:08:54 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 12353,
+      "ppid": 5331,
+      "pgid": 12353,
+      "start": "Sat Oct 17 20:09:10 2026",
+      "comm": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+    },
+    {
+      "pid": 12354,
+      "ppid": 12353,
+      "pgid": 12353,
+      "start": "Sat Oct 17 20:09:10 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 12712,
+      "ppid": 5331,
+      "pgid": 12712,
+      "start": "Sat Oct 17 20:09:25 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 12714,
+      "ppid": 12712,
+      "pgid": 12712,
+      "start": "Sat Oct 17 20:09:25 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 13432,
+      "ppid": 5331,
+      "pgid": 13432,
+      "start": "Sat Oct 17 20:09:41 2026",
+      "comm": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+    },
+    {
+      "pid": 13433,
+      "ppid": 13432,
+      "pgid": 13432,
+      "start": "Sat Oct 17 20:09:41 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 14234,
+      "ppid": 5331,
+      "pgid": 14234,
+      "start": "Sat Oct 17 20:09:56 2026",
+      "comm": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+    },
+    {
+      "pid": 14235,
+      "ppid": 14234,
+      "pgid": 14234,
+      "start": "Sat Oct 17 20:09:56 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 15220,
+      "ppid": 5331,
+      "pgid": 15220,
+      "start": "Sat Oct 17 20:10:11 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 15221,
+      "ppid": 15220,
+      "pgid": 15220,
+      "start": "Sat Oct 17 20:10:11 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 15223,
+      "ppid": 15221,
+      "pgid": 15220,
+      "start": "Sat Oct 17 20:10:11 2026",
+      "comm": "(infocmp)"
+    },
+    {
+      "pid": 15577,
+      "ppid": 5331,
+      "pgid": 15577,
+      "start": "Sat Oct 17 20:10:27 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 15578,
+      "ppid": 15577,
+      "pgid": 15577,
+      "start": "Sat Oct 17 20:10:27 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 15811,
+      "ppid": 5342,
+      "pgid": 5342,
+      "start": "Sat Oct 17 20:10:36 2026",
+      "comm": "(ps)"
+    },
+    {
+      "pid": 16062,
+      "ppid": 16061,
+      "pgid": 16061,
+      "start": "Sat Oct 17 20:10:42 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 16061,
+      "ppid": 5331,
+      "pgid": 16061,
+      "start": "Sat Oct 17 20:10:42 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 16672,
+      "ppid": 16667,
+      "pgid": 16667,
+      "start": "Sat Oct 17 20:10:58 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 16667,
+      "ppid": 5331,
+      "pgid": 16667,
+      "start": "Sat Oct 17 20:10:58 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 18046,
+      "ppid": 5331,
+      "pgid": 18046,
+      "start": "Sat Oct 17 20:11:13 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 18047,
+      "ppid": 18046,
+      "pgid": 18046,
+      "start": "Sat Oct 17 20:11:13 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 18265,
+      "ppid": 5331,
+      "pgid": 18265,
+      "start": "Sat Oct 17 20:11:29 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 18266,
+      "ppid": 18265,
+      "pgid": 18265,
+      "start": "Sat Oct 17 20:11:29 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 19652,
+      "ppid": 5331,
+      "pgid": 19652,
+      "start": "Sat Oct 17 20:11:44 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 19653,
+      "ppid": 19652,
+      "pgid": 19652,
+      "start": "Sat Oct 17 20:11:44 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 20482,
+      "ppid": 5331,
+      "pgid": 20482,
+      "start": "Sat Oct 17 20:11:59 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 20483,
+      "ppid": 20482,
+      "pgid": 20482,
+      "start": "Sat Oct 17 20:11:59 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 20994,
+      "ppid": 5342,
+      "pgid": 5342,
+      "start": "Sat Oct 17 20:12:07 2026",
+      "comm": "(ps)"
+    },
+    {
+      "pid": 21181,
+      "ppid": 5366,
+      "pgid": 5366,
+      "start": "Sat Oct 17 20:12:08 2026",
+      "comm": "(bash)"
+    },
+    {
+      "pid": 21554,
+      "ppid": 5331,
+      "pgid": 21554,
+      "start": "Sat Oct 17 20:12:15 2026",
+      "comm": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+    },
+    {
+      "pid": 21555,
+      "ppid": 21554,
+      "pgid": 21554,
+      "start": "Sat Oct 17 20:12:15 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 22666,
+      "ppid": 5331,
+      "pgid": 22666,
+      "start": "Sat Oct 17 20:12:30 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 22667,
+      "ppid": 22666,
+      "pgid": 22666,
+      "start": "Sat Oct 17 20:12:30 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 22669,
+      "ppid": 22667,
+      "pgid": 22666,
+      "start": "Sat Oct 17 20:12:30 2026",
+      "comm": "(infocmp)"
+    },
+    {
+      "pid": 22673,
+      "ppid": 22666,
+      "pgid": 22666,
+      "start": "Sat Oct 17 20:12:30 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 22912,
+      "ppid": 5331,
+      "pgid": 22912,
+      "start": "Sat Oct 17 20:12:46 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 22913,
+      "ppid": 22912,
+      "pgid": 22912,
+      "start": "Sat Oct 17 20:12:46 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 23174,
+      "ppid": 5331,
+      "pgid": 23174,
+      "start": "Sat Oct 17 20:13:01 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 23175,
+      "ppid": 23174,
+      "pgid": 23174,
+      "start": "Sat Oct 17 20:13:01 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 24178,
+      "ppid": 24175,
+      "pgid": 24175,
+      "start": "Sat Oct 17 20:13:16 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 24175,
+      "ppid": 5331,
+      "pgid": 24175,
+      "start": "Sat Oct 17 20:13:16 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 24515,
+      "ppid": 5331,
+      "pgid": 24515,
+      "start": "Sat Oct 17 20:13:32 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 24516,
+      "ppid": 24515,
+      "pgid": 24515,
+      "start": "Sat Oct 17 20:13:32 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 25993,
+      "ppid": 5331,
+      "pgid": 25993,
+      "start": "Sat Oct 17 20:13:47 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 25994,
+      "ppid": 25993,
+      "pgid": 25993,
+      "start": "Sat Oct 17 20:13:47 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 25999,
+      "ppid": 25993,
+      "pgid": 25993,
+      "start": "Sat Oct 17 20:13:47 2026",
+      "comm": "(true)"
+    },
+    {
+      "pid": 26085,
+      "ppid": 5366,
+      "pgid": 5366,
+      "start": "Sat Oct 17 20:13:53 2026",
+      "comm": "(security)"
+    },
+    {
+      "pid": 26302,
+      "ppid": 5331,
+      "pgid": 26302,
+      "start": "Sat Oct 17 20:14:03 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 26303,
+      "ppid": 26302,
+      "pgid": 26302,
+      "start": "Sat Oct 17 20:14:03 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 26930,
+      "ppid": 5331,
+      "pgid": 26930,
+      "start": "Sat Oct 17 20:14:18 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 26931,
+      "ppid": 26930,
+      "pgid": 26930,
+      "start": "Sat Oct 17 20:14:18 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 27164,
+      "ppid": 5331,
+      "pgid": 27164,
+      "start": "Sat Oct 17 20:14:33 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 27165,
+      "ppid": 27164,
+      "pgid": 27164,
+      "start": "Sat Oct 17 20:14:33 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 27410,
+      "ppid": 5331,
+      "pgid": 27410,
+      "start": "Sat Oct 17 20:14:49 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 27411,
+      "ppid": 27410,
+      "pgid": 27410,
+      "start": "Sat Oct 17 20:14:49 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 27426,
+      "ppid": 5366,
+      "pgid": 5366,
+      "start": "Sat Oct 17 20:14:50 2026",
+      "comm": "(claude)"
+    },
+    {
+      "pid": 27846,
+      "ppid": 5331,
+      "pgid": 27846,
+      "start": "Sat Oct 17 20:15:04 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 27847,
+      "ppid": 27846,
+      "pgid": 27846,
+      "start": "Sat Oct 17 20:15:04 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 27910,
+      "ppid": 5342,
+      "pgid": 5342,
+      "start": "Sat Oct 17 20:15:08 2026",
+      "comm": "(ps)"
+    },
+    {
+      "pid": 28510,
+      "ppid": 28509,
+      "pgid": 28509,
+      "start": "Sat Oct 17 20:15:19 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 28509,
+      "ppid": 5331,
+      "pgid": 28509,
+      "start": "Sat Oct 17 20:15:19 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 28771,
+      "ppid": 5331,
+      "pgid": 28771,
+      "start": "Sat Oct 17 20:15:35 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 28772,
+      "ppid": 28771,
+      "pgid": 28771,
+      "start": "Sat Oct 17 20:15:35 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 28809,
+      "ppid": 5342,
+      "pgid": 5342,
+      "start": "Sat Oct 17 20:15:38 2026",
+      "comm": "(ps)"
+    },
+    {
+      "pid": 29143,
+      "ppid": 29142,
+      "pgid": 29142,
+      "start": "Sat Oct 17 20:15:50 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 29142,
+      "ppid": 5331,
+      "pgid": 29142,
+      "start": "Sat Oct 17 20:15:50 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 29408,
+      "ppid": 5331,
+      "pgid": 29408,
+      "start": "Sat Oct 17 20:16:06 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 29409,
+      "ppid": 29408,
+      "pgid": 29408,
+      "start": "Sat Oct 17 20:16:06 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 30094,
+      "ppid": 30093,
+      "pgid": 30093,
+      "start": "Sat Oct 17 20:16:21 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 30093,
+      "ppid": 5331,
+      "pgid": 30093,
+      "start": "Sat Oct 17 20:16:21 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 30304,
+      "ppid": 30303,
+      "pgid": 30303,
+      "start": "Sat Oct 17 20:16:36 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 30303,
+      "ppid": 5331,
+      "pgid": 30303,
+      "start": "Sat Oct 17 20:16:36 2026",
+      "comm": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python"
+    },
+    {
+      "pid": 30520,
+      "ppid": 5331,
+      "pgid": 30520,
+      "start": "Sat Oct 17 20:16:52 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 30521,
+      "ppid": 30520,
+      "pgid": 30520,
+      "start": "Sat Oct 17 20:16:52 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 30718,
+      "ppid": 30717,
+      "pgid": 30717,
+      "start": "Sat Oct 17 20:17:07 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 30717,
+      "ppid": 5331,
+      "pgid": 30717,
+      "start": "Sat Oct 17 20:17:07 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 30735,
+      "ppid": 5342,
+      "pgid": 5342,
+      "start": "Sat Oct 17 20:17:08 2026",
+      "comm": "(ps)"
+    },
+    {
+      "pid": 31365,
+      "ppid": 5331,
+      "pgid": 31365,
+      "start": "Sat Oct 17 20:17:22 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 31366,
+      "ppid": 31365,
+      "pgid": 31365,
+      "start": "Sat Oct 17 20:17:22 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 31548,
+      "ppid": 5331,
+      "pgid": 31548,
+      "start": "Sat Oct 17 20:17:38 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 31549,
+      "ppid": 31548,
+      "pgid": 31548,
+      "start": "Sat Oct 17 20:17:38 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 31560,
+      "ppid": 5342,
+      "pgid": 5342,
+      "start": "Sat Oct 17 20:17:39 2026",
+      "comm": "(ps)"
+    },
+    {
+      "pid": 31724,
+      "ppid": 5331,
+      "pgid": 31724,
+      "start": "Sat Oct 17 20:17:53 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 31725,
+      "ppid": 31724,
+      "pgid": 31724,
+      "start": "Sat Oct 17 20:17:53 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 32040,
+      "ppid": 5331,
+      "pgid": 32040,
+      "start": "Sat Oct 17 20:18:09 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 32041,
+      "ppid": 32040,
+      "pgid": 32040,
+      "start": "Sat Oct 17 20:18:09 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 32638,
+      "ppid": 32637,
+      "pgid": 32637,
+      "start": "Sat Oct 17 20:18:24 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 32637,
+      "ppid": 5331,
+      "pgid": 32637,
+      "start": "Sat Oct 17 20:18:24 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 32644,
+      "ppid": 32637,
+      "pgid": 32637,
+      "start": "Sat Oct 17 20:18:24 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 32820,
+      "ppid": 5342,
+      "pgid": 5342,
+      "start": "Sat Oct 17 20:18:39 2026",
+      "comm": "(ps)"
+    },
+    {
+      "pid": 32827,
+      "ppid": 5331,
+      "pgid": 32827,
+      "start": "Sat Oct 17 20:18:39 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 32828,
+      "ppid": 32827,
+      "pgid": 32827,
+      "start": "Sat Oct 17 20:18:39 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 33008,
+      "ppid": 5331,
+      "pgid": 33008,
+      "start": "Sat Oct 17 20:18:55 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 33009,
+      "ppid": 33008,
+      "pgid": 33008,
+      "start": "Sat Oct 17 20:18:55 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 33201,
+      "ppid": 5366,
+      "pgid": 5366,
+      "start": "Sat Oct 17 20:19:10 2026",
+      "comm": "(security)"
+    },
+    {
+      "pid": 33207,
+      "ppid": 5331,
+      "pgid": 33207,
+      "start": "Sat Oct 17 20:19:10 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 33208,
+      "ppid": 33207,
+      "pgid": 33207,
+      "start": "Sat Oct 17 20:19:10 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 33899,
+      "ppid": 5331,
+      "pgid": 33899,
+      "start": "Sat Oct 17 20:19:26 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 33900,
+      "ppid": 33899,
+      "pgid": 33899,
+      "start": "Sat Oct 17 20:19:26 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 34128,
+      "ppid": 34127,
+      "pgid": 34127,
+      "start": "Sat Oct 17 20:19:41 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 34127,
+      "ppid": 5331,
+      "pgid": 34127,
+      "start": "Sat Oct 17 20:19:41 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 34456,
+      "ppid": 5331,
+      "pgid": 34456,
+      "start": "Sat Oct 17 20:19:57 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 34457,
+      "ppid": 34456,
+      "pgid": 34456,
+      "start": "Sat Oct 17 20:19:57 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 34682,
+      "ppid": 5331,
+      "pgid": 34682,
+      "start": "Sat Oct 17 20:20:12 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 34684,
+      "ppid": 34682,
+      "pgid": 34682,
+      "start": "Sat Oct 17 20:20:12 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 36160,
+      "ppid": 5331,
+      "pgid": 36160,
+      "start": "Sat Oct 17 20:20:27 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 36161,
+      "ppid": 36160,
+      "pgid": 36160,
+      "start": "Sat Oct 17 20:20:27 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 36347,
+      "ppid": 5342,
+      "pgid": 5342,
+      "start": "Sat Oct 17 20:20:40 2026",
+      "comm": "(ps)"
+    },
+    {
+      "pid": 36393,
+      "ppid": 5331,
+      "pgid": 36393,
+      "start": "Sat Oct 17 20:20:43 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 36394,
+      "ppid": 36393,
+      "pgid": 36393,
+      "start": "Sat Oct 17 20:20:43 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 37566,
+      "ppid": 37565,
+      "pgid": 37565,
+      "start": "Sat Oct 17 20:20:58 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 37565,
+      "ppid": 5331,
+      "pgid": 37565,
+      "start": "Sat Oct 17 20:20:58 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 37895,
+      "ppid": 5331,
+      "pgid": 37895,
+      "start": "Sat Oct 17 20:21:13 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 37896,
+      "ppid": 37895,
+      "pgid": 37895,
+      "start": "Sat Oct 17 20:21:13 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 38602,
+      "ppid": 5331,
+      "pgid": 38602,
+      "start": "Sat Oct 17 20:21:29 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 38603,
+      "ppid": 38602,
+      "pgid": 38602,
+      "start": "Sat Oct 17 20:21:29 2026",
+      "comm": "(gh)"
+    },
+    {
+      "pid": 38789,
+      "ppid": 5342,
+      "pgid": 5342,
+      "start": "Sat Oct 17 20:21:40 2026",
+      "comm": "ps"
+    },
+    {
+      "pid": 38880,
+      "ppid": 38879,
+      "pgid": 38879,
+      "start": "Sat Oct 17 20:21:44 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 38879,
+      "ppid": 5331,
+      "pgid": 38879,
+      "start": "Sat Oct 17 20:21:44 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 39354,
+      "ppid": 5331,
+      "pgid": 39354,
+      "start": "Sat Oct 17 20:22:00 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 39355,
+      "ppid": 39354,
+      "pgid": 39354,
+      "start": "Sat Oct 17 20:22:00 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 39640,
+      "ppid": 5342,
+      "pgid": 5342,
+      "start": "Sat Oct 17 20:22:10 2026",
+      "comm": "(ps)"
+    },
+    {
+      "pid": 39778,
+      "ppid": 5331,
+      "pgid": 39778,
+      "start": "Sat Oct 17 20:22:15 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 39779,
+      "ppid": 39778,
+      "pgid": 39778,
+      "start": "Sat Oct 17 20:22:15 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 40503,
+      "ppid": 40502,
+      "pgid": 40502,
+      "start": "Sat Oct 17 20:22:31 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 40502,
+      "ppid": 5331,
+      "pgid": 40502,
+      "start": "Sat Oct 17 20:22:31 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 40830,
+      "ppid": 5331,
+      "pgid": 40830,
+      "start": "Sat Oct 17 20:22:46 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 40831,
+      "ppid": 40830,
+      "pgid": 40830,
+      "start": "Sat Oct 17 20:22:46 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 41086,
+      "ppid": 5331,
+      "pgid": 41086,
+      "start": "Sat Oct 17 20:23:01 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 41087,
+      "ppid": 41086,
+      "pgid": 41086,
+      "start": "Sat Oct 17 20:23:01 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 41092,
+      "ppid": 41086,
+      "pgid": 41086,
+      "start": "Sat Oct 17 20:23:02 2026",
+      "comm": "(true)"
+    },
+    {
+      "pid": 41387,
+      "ppid": 5331,
+      "pgid": 41387,
+      "start": "Sat Oct 17 20:23:17 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 41388,
+      "ppid": 41387,
+      "pgid": 41387,
+      "start": "Sat Oct 17 20:23:17 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 42203,
+      "ppid": 5331,
+      "pgid": 42203,
+      "start": "Sat Oct 17 20:23:32 2026",
+      "comm": "<defunct>"
+    },
+    {
+      "pid": 42204,
+      "ppid": 42203,
+      "pgid": 42203,
+      "start": "Sat Oct 17 20:23:32 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 42455,
+      "ppid": 42454,
+      "pgid": 42454,
+      "start": "Sat Oct 17 20:23:47 2026",
+      "comm": "gh"
+    },
+    {
+      "pid": 42454,
+      "ppid": 5331,
+      "pgid": 42454,
+      "start": "Sat Oct 17 20:23:47 2026",
+      "comm": "(Python)"
+    },
+    {
+      "pid": 42460,
+      "ppid": 42454,
+      "pgid": 42454,
+      "start": "Sat Oct 17 20:23:48 2026",
+      "comm": "(Python)"
+    }
+  ],
+  "observedGroups": {
+    "5332": "session-check",
+    "5342": "wrapper",
+    "5366": "reviewer",
+    "5629": "session-check",
+    "6032": "session-check",
+    "6243": "session-check",
+    "7020": "session-check",
+    "7291": "session-check",
+    "7633": "session-check",
+    "7832": "session-check",
+    "8611": "session-check",
+    "9609": "session-check",
+    "9860": "session-check",
+    "10091": "session-check",
+    "10922": "session-check",
+    "11258": "session-check",
+    "11521": "session-check",
+    "11739": "session-check",
+    "12353": "session-check",
+    "12712": "session-check",
+    "13432": "session-check",
+    "14234": "session-check",
+    "15220": "session-check",
+    "15577": "session-check",
+    "16061": "session-check",
+    "16667": "session-check",
+    "18046": "session-check",
+    "18265": "session-check",
+    "19652": "session-check",
+    "20482": "session-check",
+    "21554": "session-check",
+    "22666": "session-check",
+    "22912": "session-check",
+    "23174": "session-check",
+    "24175": "session-check",
+    "24515": "session-check",
+    "25993": "session-check",
+    "26302": "session-check",
+    "26930": "session-check",
+    "27164": "session-check",
+    "27410": "session-check",
+    "27846": "session-check",
+    "28509": "session-check",
+    "28771": "session-check",
+    "29142": "session-check",
+    "29408": "session-check",
+    "30093": "session-check",
+    "30303": "session-check",
+    "30520": "session-check",
+    "30717": "session-check",
+    "31365": "session-check",
+    "31548": "session-check",
+    "31724": "session-check",
+    "32040": "session-check",
+    "32637": "session-check",
+    "32827": "session-check",
+    "33008": "session-check",
+    "33207": "session-check",
+    "33899": "session-check",
+    "34127": "session-check",
+    "34456": "session-check",
+    "34682": "session-check",
+    "36160": "session-check",
+    "36393": "session-check",
+    "37565": "session-check",
+    "37895": "session-check",
+    "38602": "session-check",
+    "38879": "session-check",
+    "39354": "session-check",
+    "39778": "session-check",
+    "40502": "session-check",
+    "40830": "session-check",
+    "41086": "session-check",
+    "41387": "session-check",
+    "42203": "session-check",
+    "42454": "session-check"
+  },
+  "noRetry": true,
+  "localEvidenceAfterSupersessionAllowed": true,
+  "remoteWritesPerformed": false,
+  "limitation": "PID/start-time/ancestry and authenticated runner process record provide owned-group evidence; no system-wide socket census or hard-real-time OS guarantee. Terminal local evidence adds no reviewer execution allowance."
+}

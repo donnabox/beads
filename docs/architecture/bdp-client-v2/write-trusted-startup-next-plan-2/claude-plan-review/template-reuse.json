@@ -1,0 +1,30 @@
+{
+  "runnerTemplate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/run.py",
+    "sha256": "3f38d1ed135fed4dcc9ea7d211769bc255bf27d962f92a65635b7bd50b06885a",
+    "change": "Exactly one absolute current-session guard path string replaced; no executable logic change."
+  },
+  "byteIdentical": {
+    "parse-stream.py": {
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/parse-stream.py",
+      "sha256": "77466c44356f316a66ccd093bb64b6cd053fb2efde207916858062c878ed4ac6",
+      "equal": true
+    },
+    "arguments.json": {
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/arguments.json",
+      "sha256": "c7a06e44f911e415839ce4638c3ca20330b0ae204fe1f846632d367638090ede",
+      "equal": true
+    },
+    "guarded-action-session-20261018-021624-549f.py": {
+      "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/claude-plan-review-session-20261018-021624-1/guarded-action-session-20261018-021624-549f.py",
+      "sha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+      "equal": true
+    }
+  },
+  "supervisor": {
+    "origin": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/event-admission-next-serving-plan/clean-candidate-rebind-1/new-session-launch-supervision-2/supervise.py",
+    "sha256": "44a8c1948ca8b257277bdfaa854e7748271b72dc970df1031d6b54b62e4e589e",
+    "equal": true
+  },
+  "sourceRootUnchanged": "/Users/dbox/repos/wt/vickie/vickie-event-admission-replay-minimum"
+}
