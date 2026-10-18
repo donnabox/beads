@@ -13,7 +13,15 @@
     "format-check",
     "lint",
     "fresh-build",
-    "bind-fresh-build"
+    "bind-fresh-build",
+    "focused-source",
+    "audit-focused-source",
+    "legacy-changefeed-source",
+    "audit-legacy-changefeed-source",
+    "legacy-installed-contracts-source",
+    "audit-legacy-installed-contracts-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source"
   ],
   "baseTools": {
     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation-preparation-6/base-tools.candidate.json",
@@ -50,8 +58,8 @@
     "sha256": "UNRESOLVED"
   },
   "rootBuildAcceptance": {
-    "path": "UNRESOLVED",
-    "sha256": "UNRESOLVED"
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-validation6-build-binding-root-release-1/acceptance.json",
+    "sha256": "7a985f78c19e5e7a06b7ad3f4484973e45f5c0d0291d8aa4262cd5f1e7de8987"
   },
   "rootConsumerLockAcceptance": {
     "path": "UNRESOLVED",

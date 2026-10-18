@@ -1,0 +1,34 @@
+{
+  "classifications": [
+    "POSITIVE_PRIVATE_OBSERVATION_PENDING_EXTERNAL_AUDIT",
+    "CONFORMING_FAILED_PARTIAL_NO_CREDIT",
+    "NONCONFORMING_OR_INCOMPLETE_EVIDENCE_NO_CREDIT",
+    "RESOURCE_REFUSAL_INCONCLUSIVE_NO_CREDIT"
+  ],
+  "positiveRequirements": [
+    "Exactly one complete selected source report satisfies closed grammar and every cross-field/wire/semantic obligation; outcomeobserved/failureStages[]/all32received+settled+validated; expectedcounts remain literals but actual counts must independently rederive.",
+    "Complete source metadata/binding/initialReady/reopenedReady and current external actualsource/build/archive/consumer/lock/proof accepted; source label alone never installed proof.",
+    "Exactly two acquired distinct-generation child records with actual realPID (PID reuse not presumed impossible), observedExit{code0,signalnull} AND distinct observedClose{code0,signalnull}, cachedclose requested+settled+succeeded; no snapshot substitution. Root independently verifies exact owned PID/start identities/descendant absence.",
+    "pendingRequests0/ownershipUnknownfalse; actual directoryremoved only under successful source predicates; storeFilePresence remainsunknown. Removal alone proves no child/SQLite closure.",
+    "All five sourceoraclespass and independent exact Vitest onecallback pass with typedzero failedtests/failedsuites/clean actual supervised terminal, no missingoutputs/syntheticexit.",
+    "Actual finite source work<90000 and cleanup<=10000; originalcallback120000 and strict separate marker/phase/watchdog/finalproof/drain limits; no retry/widening."
+  ],
+  "partialRules": [
+    "Complete failed reports can be structurally retained with outcome failed; never become positive or credit just because their counts/closed shapes match. Missing/null facts stay unknown; do not copy expected33/96/1 into observed.",
+    "Actual failed request flow may differ from success32 table because collectEvents follows actual next, up to12pages each and totaldispatch hardcap32. Validate finite source-state path and dynamic URL dependencies; do NOT reject honest failed pagination solely for differing success ordinals, and do not turn that divergence into positive.",
+    "Rows form exact attempted ordinal prefix1..k, but successful expected semantic stages need not be reached. Body parsing/schema failure keeps full returned raw/body/header/status facts, validatedfalse as recorded. A transport rejection exposes no response; record only its existing category/writeState, settled independently.",
+    "receiptPages entries are actual captured arraylengths ornull; receiptComplete only actual page.next===null; receiptEntries computed only when both relevant source-phase arrays captured and completion flag true. They can have non-success lengths on a failed report. Event pages append before source schema assertion; complete/count only after actual next chain terminates; countnull/incomplete otherwise. groupsactual arraylength may differ from1 on failure.",
+    "ready/binding captured malformed by the installed target may make a genuine failure report NONCONFORMING under the strict expected-ready grammar. Preserve complete original evidence and classify no-credit; never strip fields/repair/fabricate a successful ready. Missingreport/marker/finalreceipt is incomplete, not a reconstructable successful failure report.",
+    "ReturnedChildHandles is count acquisition==acquired; attemptedlaunch list distinct from returnedhandle. Unknown/pre-ready acquisition carries no inventedPID, observedexit/close or successfulclose. Even a later root kill/absence cannot rewrite source unknown as clean.",
+    "Known source stages finite; no error-message substring inference, new label or reflected exception/cause/credential/headerline. Preserve primary/cleanup actual evidence externally if present; source report intentionally has no raw exception."
+  ],
+  "lifecycleCrossChecks": [
+    "children generation order1then2, phaseinitial/reopen, launchAttemptedtrue; max2. firstgeneration dirty or missingPID/exit/close/closePromise prevents positive secondgeneration/reopen.",
+    "closure observed-clean-exit-and-close iff sourceclean predicate:acquired, pidnonnull, actualExit0null, actualClose0null, closePromiseSettledtrue, closePromiseSucceededtrue. exitCodeSnapshot/signalCodeSnapshot typechecked as snapshots only.",
+    "unknown acquisition has refusalprelaunch-rejected orprelaunch-cleanup-unsettled when launcherrejected; may stillnull iflaunch hung. closureunknown-or-failed, pidnull, observedExit/Close null, closePromiseSettled/Succeeded null, closeRequestedfalse.",
+    "ownershipUnknown reflects sticky ownershipUncertain OR anyacquisition notclean. It may staytrue after late clean events due priorunknown; never clearstickytrue from final snapshots.",
+    "Directory pathnull/dispositionunknown before acquired directory. Nonnull directory retent/unknown when ownership/request settlement uncertain; removed cannot coexist pending>0/settled!=attempted/anyunknownacquisition/sourceownershipUnknowntrue. storeFilePresence alwaysunknown sourcevalue.",
+    "cached report afterfinally is not a root descendant census. Root exact ownedprocess audit and actual terminal are mandatory separate evidence; no timer-only absence or guaranteedfinally assumption."
+  ],
+  "noAdditionalProductOrFailureInjectionRuns": true
+}
