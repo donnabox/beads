@@ -1,0 +1,19 @@
+# First D3a actual PLAN packet — CLOSED
+
+Exact plan3 e3ac1d6f and independent native precision89f66628 are bound to expected clean cce884ccea1db97cbc6fd7bff876d4d6091f9081/tree6757829bd5b700faf28df39071190a272add90c9, sole parenta562. All679 current source bytes were rehashed and all47 actual source/spec inputs have exact frozen copies. Fresh Git HEAD/tree/parent/clean/tracked checks remain in the proven clean PLAN runner for any future launch; no Git command was invoked during preparation. SourceBindingFinalized means byte/context closure only, not source-basis acceptance or authoring authority.
+
+This is a first actual D3a PLAN preparation. It creates no attempt or reviewer output and does not retry any historical review. The proven clean-source startup PLAN runner is changed only by source-root, expected-commit and guard-packet path literals; parser/argv/guard are byte-identical. New supervisor5 code is byte-identical791e5a566561798aa3352f19b021e6db9beeddb033ae5725c7d031d51716f95c. Its final native closurebb6646af is now bound. Its root static inspection49e0bae6 is known, while generic final root acceptance and this actual packet's native/root mechanics acceptance remain unresolved. No supervisor code redesign or permission weakening is present.
+
+Both binding.json and launch-supervision/control.json have rootLaunchReleased:false; closed-binding.json exactly equals binding.json. The frozen packet index covers all82 inner files. Default configured Claude model, Read/Glob/Grep only, safe mode, strict empty MCP, no persistence/agents/model override/max-turn cap; stdout-only findings prompt. Broader reads in the pinned repository and frozen safe context are allowed. Source/prompt/context/tool/artifact hashes are bound; no unrelated ledgers or failed attempts are copied into review context.
+
+Exact CI39099693742 was RUNNING at root instruction. Root exact-CI acceptance, shared HTTP/source-basis acceptance, generic supervisor5 final root acceptance and packet mechanics acceptance precede any one-attempt review release. release-prerequisites.json is the CLOSED preparation snapshot. Later named root evidence may resolve its pending gates without retroactively rewriting plan3/history. No flag is changed here. Terminal audit and root disposition are additionally required before a separate source-authoring release.
+
+After those prerequisites and a separate root-only flag release, the sole prepared invocation is:
+
+    /opt/homebrew/opt/python@3.14/bin/python3.14 /Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-plan-review-1/launch-supervision/supervise.py
+
+DO NOT RUN NOW. It is a single exclusive attempt under existing1800 total/TERM1790/KILL1798, exact549f role checks, PID/start/ancestry/known-group ownership, safe escalation/cleanup and no-retry rules. No wrapper/manual second reviewer path is authorized. Complete raw results do not imply supervised success or approval; missing finalization stays missing and exact first-failure diagnostics remain truthful.
+
+Current PATH resolves git to /opt/homebrew/bin/git; actual candidate and template-listed /usr/bin/git were both hashed without execution. Runner unqualified git/ps behavior is unchanged; the recorded PATH lookup is not a guarantee if the future launch environment changes. Root/native should inspect the actual data/helper binding before release.
+
+Only normal current-role guards and pure-data copies/hashes/AST/delta checks ran. No helper, reviewer, compiler, formatter, tests, build, install, runtime, product source, Git operation, old packet/control/guard/gate edit or launch occurred. Whole plan3 and all six witness contracts remain unchanged: cold43/28 with12 actual targets; source21/94 direct/14 wire; installed11/190 scheduled/187 responses/3 expected aborts, same budgets. No public admission or Write completion is claimed.

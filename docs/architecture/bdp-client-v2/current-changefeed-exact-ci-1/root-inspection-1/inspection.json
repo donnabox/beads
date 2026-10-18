@@ -1,0 +1,64 @@
+{
+  "kind": "root-exact-D1-CI-full-API-log-inspection",
+  "accepted": true,
+  "createdUtc": "2026-10-18T05:33:10.625267+00:00",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "tree": "6757829bd5b700faf28df39071190a272add90c9",
+  "soleParent": "a56254d682cf4623cab22a552e3d2f695f691795",
+  "ciRun": 39099693742,
+  "all27StepsSuccess": true,
+  "filesPassed": 186,
+  "testsPassed": 9474,
+  "testsSkipped": 1,
+  "totalTests": 9475,
+  "mainTestLogSha256": "ac115c208e97ea77e9b119f19039e838c91fd9bd127d53634f8fea6d8b95c871",
+  "apiInventorySha256": "15de34b0aef8c7b76e564dee7e53b59bd7e83bbb3309c4f9140e46fff53cb0a6",
+  "parsedStructuredRecords": 385,
+  "maskedInstalledRawLinesUnparsed": [
+    {
+      "line": 2355,
+      "containsGitHubMask": true,
+      "bytes": 19280
+    },
+    {
+      "line": 2371,
+      "containsGitHubMask": true,
+      "bytes": 31457
+    },
+    {
+      "line": 3427,
+      "containsGitHubMask": true,
+      "bytes": 9699
+    },
+    {
+      "line": 3446,
+      "containsGitHubMask": true,
+      "bytes": 9660
+    },
+    {
+      "line": 4552,
+      "containsGitHubMask": true,
+      "bytes": 27293
+    },
+    {
+      "line": 5844,
+      "containsGitHubMask": true,
+      "bytes": 12454
+    }
+  ],
+  "newInstalledCurrent10ActualCleanTerminal": true,
+  "ciEntrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+  "entryEqualsActualLocallyProvenEntry": true,
+  "CLIAdapterLimit": "Initial gh run view --log capture omits main-suite tail; preserve it unchanged, complete API zip supplies actual terminal counts.",
+  "historicalReportLimit": "GitHub secret masking corrupts one historical installed JSON line; preserve raw bytes, no repaired raw JSON or complete parse claim. Local separately packed historical10 passed under its original schema.",
+  "warnings": {
+    "format": 1,
+    "lint": 1169,
+    "lintInfos": 131,
+    "actionNode20Deprecation": true
+  },
+  "qualification": "Exact increment CI only; historical Read89 seal and private nonattesting runtime evidence do not establish cumulative Write.",
+  "nativeAuditPending": true,
+  "mainLandingAuthorized": false
+}

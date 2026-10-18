@@ -1,0 +1,31 @@
+{
+  "rootLaunchReleased": false,
+  "packet": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/tx-discovery-plan-review-1/claude-plan-review",
+  "expectedSession": "2026-10-18T02:16:24Z-549f",
+  "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-current-changefeed-minimum",
+  "reviewerArgv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--disable-slash-commands",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--no-session-persistence",
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    "--include-partial-messages"
+  ],
+  "outerTotalSeconds": 1800,
+  "termAtSeconds": 1790,
+  "killAtSeconds": 1798,
+  "noRetry": true,
+  "authority": "CLOSED first D3a actual PLAN preparation for conditional clean cce884c. Root exact CI/source-basis/shared HTTP and actual supervisor5 native/root/packet mechanics acceptance precede one separate flag-only review release. No source authoring/runtime/profile activation or retries.",
+  "predecessorIndexSha256": "6fcca98a7c50dde057f4994c5b352702f992ec5879fb0bc0706872689b29b5b1",
+  "rootDispositionSha256": "864603ad6f8e5fecc82b5b19986320b7311477b241c90cb28b647bbac92a046c"
+}

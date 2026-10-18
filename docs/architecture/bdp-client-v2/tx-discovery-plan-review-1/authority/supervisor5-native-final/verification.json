@@ -1,0 +1,53 @@
+{
+  "createdUtc": "2026-10-18T05:26:45.289220+00:00",
+  "accepted": true,
+  "codeSha256": "791e5a566561798aa3352f19b021e6db9beeddb033ae5725c7d031d51716f95c",
+  "frozenIndexSha256": "6fcca98a7c50dde057f4994c5b352702f992ec5879fb0bc0706872689b29b5b1",
+  "indexedFilesVerified": 21,
+  "mirroredFilesVerified": 22,
+  "originBindingsVerified": 12,
+  "predecessorFilesVerified": 10,
+  "genuineCodeDeltaInverse": true,
+  "genuineControlDeltaInverse": true,
+  "exactPreviouslyAcceptedProposal": true,
+  "astAfterStrippingOnlyDiagnosticsEquals4": true,
+  "protectedSourceOrderedCallCounts": {
+    "require": 22,
+    "subprocess.Popen": 2,
+    "subprocess.check_output": 1,
+    "os.killpg": 1,
+    "os.getpgid": 1,
+    "poll_direct": 7,
+    "register_direct": 2,
+    "collect": 8,
+    "check_session": 3,
+    "wait_check": 3,
+    "send_owned": 8,
+    "fail": 7,
+    "inventory": 1,
+    "log": 7,
+    "time.sleep": 5,
+    "finished.wait": 1,
+    "timer.join": 1
+  },
+  "fileOpenWriteFlushCallSequencesUnchanged": true,
+  "controlChangedMetadataOnly": [
+    "authority",
+    "predecessorIndexSha256",
+    "rootDispositionSha256"
+  ],
+  "controlClosed": true,
+  "historicalPacketConsumedOutputs": [
+    "process.json",
+    "stream.jsonl",
+    "progress.jsonl",
+    "source-before.json"
+  ],
+  "attemptExists": false,
+  "freshPacketPrepared": false,
+  "helperOrCLIExecuted": false,
+  "processInventoryExecuted": false,
+  "productOrGitAction": false,
+  "ownershipSignalDeadlineRetryPolicyChanged": false,
+  "runtimeRelease": false
+}

@@ -1,0 +1,15 @@
+{
+  "kind": "actual-startup-validation2-typecheck-failure",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "createdUtc": "2026-10-18T05:31:51.797810+00:00",
+  "actualLogSha256": "6cb63fc5da8e937e01e38f26b3de3368ca9d2e41ad4c592fec9b80f3451dd5ef",
+  "failure": "One TS2540 at reference-deployment.test.ts376: readonly page.maximumItems mutation in intentional post-call caller-input test.",
+  "sourcePatchSha256": "4fd125d8613b0d3370227353b3e29e1ee73735466bd332a6961c400e3535fbe2",
+  "firstFourPassed": true,
+  "typecheckExit": 1,
+  "laterStagesUnattempted": true,
+  "cleanupOrSourceFailure": false,
+  "gateClosed": true,
+  "correctionScope": "One test-fixture construction line: explicitly mutable copied page leaf, retaining the exact in-place mutation and deep snapshot assertion. No production/type contracts/tests/counts/schema/deadline change.",
+  "requires": "Native exact source closure; separately named fresh validation3 with all stages fresh. No same-attempt retry or reviewer repeat."
+}

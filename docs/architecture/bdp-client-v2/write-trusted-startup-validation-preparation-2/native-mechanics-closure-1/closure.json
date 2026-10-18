@@ -1,0 +1,16 @@
+{
+  "kind": "independent-native-startup-validation2-N1-N2-precision-closure",
+  "reviewedUtc": "2026-10-18T05:27:27.861202+00:00",
+  "decision": "N1 AND N2 CLOSED; no new findings in bounded successor",
+  "findings": [],
+  "preparationIndexSha256": "03fb7810376c9e71dcdd5af5ef9d7e6723b101c138e97183fe24c95a9c302337",
+  "implementationIndexSha256": "75c6d0e1232a4a1a38d9511c922e55cf047537b66c4ecc66dfd9948d3d8f6871",
+  "sourceBindingSha256": "fcd37bf3a028b90d89fd5f98652510b9a0afaa849470e7aa6964b44c82cb9fc3",
+  "priorFullNativeReviewSha256": "b50419912a3eb97138af1270b63c820ec74f5707a1fef1e0037a52fb30a878dc",
+  "N1": "Close attempt/actual callback settlement/success tracked explicitly. Every close rejection/error/timeout sets cleanupUnknown true. Final predicate independently requires settled successful close, and sticky unknown cannot be cleared by a late successful callback. Unknown blocks rm and totalGuard clearing. The same single cleanup deadline/work/process/outer limits are unchanged. This closes failure-evidence preservation without claiming a runtime test.",
+  "N2": "numFailedTests and numFailedTestSuites are accessed unconditionally and require exact integer0. Missing keys fail; bool/string/nonzero fail. numRuntimeErrorTestSuites stays optional but exact integer0 when present. Other audit paths unchanged.",
+  "scope": "Only N1/N2 code corrections and necessary separate-root data/index bindings; prior full review stands. All682 source bytes unchanged; no product correction or extra actual review.",
+  "executionAuthorityGranted": false,
+  "helpersRuntimeCompilerTestsBuildInstallGitFlagsExecuted": false,
+  "next": "Root independently binds accepted corrected-source/native/actual/mechanics documents and actual base tools, then may release exact first-four fresh stages. Runtime and all later output acceptance remains unresolved."
+}

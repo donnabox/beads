@@ -1,0 +1,9 @@
+﻿2026-10-18T05:26:12.3442685Z ##[group]Run pnpm evidence:verify || test $? -eq 2
+2026-10-18T05:26:12.3443217Z [36;1mpnpm evidence:verify || test $? -eq 2[0m
+2026-10-18T05:26:12.3486702Z shell: /usr/bin/bash -e {0}
+2026-10-18T05:26:12.3486988Z env:
+2026-10-18T05:26:12.3487239Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2026-10-18T05:26:12.3487535Z   GOTOOLCHAIN: local
+2026-10-18T05:26:12.3487736Z ##[endgroup]
+2026-10-18T05:26:12.7261144Z $ node scripts/read-cohort-evidence.mjs
+2026-10-18T05:26:12.8532655Z {"level":"info","event":"evidence.verified","executable":"read-cohort-evidence","artifact":"docs/design/evidence/read-cohort/read-v1.json","constant":"674982be2123b9b7aae630bf79c3f774122900cd","runHead":"e5f7d0c43c151426350ceededdc77fe7e372db9b","evidenceCommit":"dbaf63a24219e1ea3f80394746853598b0d4464a","schemaReadProjection":"bd7da0fc3f8082e0bfb6f4969c04409f2a610e12408dbc6a0bd14b4b351127cc","schemaReadProjectionDefinitions":47,"schemaReadProjectionReachable":46,"rows":89}

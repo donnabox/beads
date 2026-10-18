@@ -1,0 +1,8 @@
+﻿2026-10-18T05:14:31.0218684Z ##[group]Run pnpm typecheck
+2026-10-18T05:14:31.0219226Z [36;1mpnpm typecheck[0m
+2026-10-18T05:14:31.0269986Z shell: /usr/bin/bash -e {0}
+2026-10-18T05:14:31.0270436Z env:
+2026-10-18T05:14:31.0271038Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+2026-10-18T05:14:31.0271574Z   GOTOOLCHAIN: local
+2026-10-18T05:14:31.0272023Z ##[endgroup]
+2026-10-18T05:14:31.4032569Z $ tsc -p tsconfig.check.json

@@ -1,0 +1,3 @@
+$ tsc -p tsconfig.check.json
+packages/server/src/reference-deployment.test.ts(376,30): error TS2540: Cannot assign to 'maximumItems' because it is a read-only property.
+[ELIFECYCLE] Command failed with exit code 1.
