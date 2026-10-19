@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+Actual package-directory capture FULLnative79 index4813e4dc/closure6af2a9fb accepted/no findings; ROOT verified79/61origins7949currentledger plus own52c5daff full1422censusrows/59samples/50PIDs3groups/raw0600/clock18.246213542<115/source679/105impl/110prepared/P193run82/build476/tools11. [ROOT final directory disposition](write-profile-G09-validation5-prepare-package-directory-root-final-disposition-1/disposition.json) accepts ONE capture/exact empty0755directory only. ONE nextpack-protocol exactS3 cells conditional ONLY AFTER fullnative79+ROOT3+sole83raw/Gitmodes/critical durability; notyetattempted. No archives/consumer/installedstartup/publicprofile/fullWrite credit. Original false/pending/finiteprocess/scratch/wire+fullENVUNRETAINED/failed histories unchanged; no retry/main request.
+
+
 [ONE actual package-directory preparation](write-profile-G09-validation5-prepare-package-directory-root-tool-evidence-1/report.md) COMPLETE A889e55/B e1c2f6/C d53e4d all0; A actualsession13026/polls retained/no retry. Common18.246213542s<115/inner11.064842625s/emptylog/source1eca unchanged; run/packages created empty ONLY. Full3349authorityd4cd9c5d beforef16->34 plus separateactivation00fa9c5b BEFOREactual. Full actual independent native+ROOT conjunction/durable disposition required BEFOREpack-protocol, stillUNATTEMPTED. No archives/consumer/installedstartup/publicprofile/fullWrite credit; first17neverrepeat/later13closed/pinnedbasis unchanged.
 
 
