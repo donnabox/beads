@@ -1,10 +1,12 @@
 {
-  "actualClaudeReviewDisposed": false,
+  "actualClaudeReviewDisposed": true,
   "actualCodeDisposition": {
-    "path": "UNRESOLVED",
-    "sha256": "UNRESOLVED"
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-proposed-authority-1/actual-code-disposition.json",
+    "sha256": "eeda8fe1204b2a36a3814c2162a4c2c9fe4a5748ce99c6cd487bab9b7a6f68d5"
   },
-  "approvedStages": [],
+  "approvedStages": [
+    "lint-error-observation"
+  ],
   "baseTools": {
     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-preparation-1/base-tools.candidate.json",
     "sha256": "c05588f1210d14a4716a67ee0ee1dc727b5cb150e6e81727fbddbc17c424066a"
@@ -30,11 +32,11 @@
   },
   "mode": "final",
   "nativeCodeDisposition": {
-    "path": "UNRESOLVED",
-    "sha256": "UNRESOLVED"
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-proposed-authority-1/native-code-disposition.json",
+    "sha256": "1c0a8cd31848473a5446de721b4d83a54521704b8287150f8d0903126d29bdfc"
   },
-  "nativeCodeReviewDisposed": false,
-  "released": false,
+  "nativeCodeReviewDisposed": true,
+  "released": true,
   "rootArchiveAcceptance": {
     "path": "UNRESOLVED",
     "sha256": "UNRESOLVED"
@@ -52,17 +54,17 @@
     "sha256": "UNRESOLVED"
   },
   "rootDisposition": {
-    "path": "UNRESOLVED",
-    "sha256": "UNRESOLVED"
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-proposed-authority-1/root-disposition.json",
+    "sha256": "7af560c113d461f9df4fbdc438f823072460d365960db64f552a768fb251f985"
   },
-  "rootExactSourceAccepted": false,
-  "rootPlanAccepted": false,
+  "rootExactSourceAccepted": true,
+  "rootPlanAccepted": true,
   "session": "2026-10-18T02:16:24Z-549f",
   "sourceBinding": {
     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-preparation-1/source-binding.json",
     "sha256": "712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714"
   },
-  "staticValidationAuthorized": false,
+  "staticValidationAuthorized": true,
   "workspaceTools": {
     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-preparation-1/workspace-tools.json",
     "sha256": "30468c88674a41a54f8a366ca78c84dffc07f3e035a0d9bf32430300b6503552"
