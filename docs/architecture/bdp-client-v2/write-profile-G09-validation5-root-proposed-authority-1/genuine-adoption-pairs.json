@@ -1,0 +1,74 @@
+[
+  {
+    "after": {
+      "bytes": 8348,
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-proposed-authority-1/root-disposition.json",
+      "sha256": "e545829cd9b937d37500be77d5cc4d476283b76602a364694f7e1333c261ad2e"
+    },
+    "before": {
+      "bytes": 8612,
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-proposed-authority-1/root-disposition.json",
+      "sha256": "8ca2417110927f97a4b505945b44e005ad9a808da024da9639f0c7d5d04ccf57"
+    },
+    "forward": "deltas/root-disposition.json.forward.patch",
+    "inverse": "deltas/root-disposition.json.inverse.patch",
+    "ndiff": "deltas/root-disposition.json.reversible.ndiff",
+    "wholeBothRestorations": true
+  },
+  {
+    "after": {
+      "bytes": 7079,
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-proposed-authority-1/native-code-disposition.json",
+      "sha256": "afb6ea3f0038bcbe5e25d396563f35de3830d3dee352edf3d19c3820c96c4fc2"
+    },
+    "before": {
+      "bytes": 3595,
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-proposed-authority-1/native-code-disposition.json",
+      "sha256": "09898f77cedf52190ec16271c9bb12705d50b1227f690d4a4c0c8abb02ad3f0c"
+    },
+    "forward": "deltas/native-code-disposition.json.forward.patch",
+    "inverse": "deltas/native-code-disposition.json.inverse.patch",
+    "ndiff": "deltas/native-code-disposition.json.reversible.ndiff",
+    "wholeBothRestorations": true
+  },
+  {
+    "after": {
+      "bytes": 8171,
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-proposed-authority-1/actual-code-disposition.json",
+      "sha256": "43c5d39fac454099fcc576b36eb22a15f6ca8f35df0b718c4c848c12112794d8"
+    },
+    "before": {
+      "bytes": 6101,
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-proposed-authority-1/actual-code-disposition.json",
+      "sha256": "7efd6023295c82b84ec63114f48796dbf340f28a7d5fe1337024c78fd9fe4aa4"
+    },
+    "forward": "deltas/actual-code-disposition.json.forward.patch",
+    "inverse": "deltas/actual-code-disposition.json.inverse.patch",
+    "ndiff": "deltas/actual-code-disposition.json.reversible.ndiff",
+    "wholeBothRestorations": true
+  },
+  {
+    "after": {
+      "bytes": 2900,
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-proposed-authority-1/execution-gate.proposed.json",
+      "sha256": "ad5b647e6b2f1aba93981d1a85fdb7ef0930062418012cf4acf90073de202919"
+    },
+    "before": {
+      "bytes": 2287,
+      "mode": "0o644",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.closed.json",
+      "sha256": "4a87b45d714a6bd28a94fd50a389defe4b5582dc5f42ec56fd827c7cf5b01e76"
+    },
+    "forward": "deltas/execution-gate.proposed.json.forward.patch",
+    "inverse": "deltas/execution-gate.proposed.json.inverse.patch",
+    "ndiff": "deltas/execution-gate.proposed.json.reversible.ndiff",
+    "wholeBothRestorations": true
+  }
+]
