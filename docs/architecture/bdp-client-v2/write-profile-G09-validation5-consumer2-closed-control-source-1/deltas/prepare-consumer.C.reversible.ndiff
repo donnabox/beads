@@ -1,0 +1,26 @@
+  import time
+  POST_TERMINAL_WITNESS = time.monotonic() # FIRST before all further DATA processing.
+  import json, hashlib
+  from pathlib import Path
+- ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/verify-archives')
+?                                                                                                                    ^  ------------
++ ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/prepare-consumer')
+?                                                                                                                    ^^^^^^^^^^^^^^
+  ACTUAL_B_TOOL_ID = 'UNRESOLVED_ACTUAL_B_TOOL_ID'
+  ACTUAL_B_TOOL_RAW_EXIT = 0
+  assert ACTUAL_B_TOOL_ID != 'UNRESOLVED_ACTUAL_B_TOOL_ID'
+  assert type(ACTUAL_B_TOOL_RAW_EXIT) is int and ACTUAL_B_TOOL_RAW_EXIT==0
+  origin_raw=(ROOT/'origin.json').read_bytes(); origin=json.loads(origin_raw)
+  census_raw=(ROOT/'postterminal-census.json').read_bytes(); census=json.loads(census_raw)
+- assert census['stage']=='verify-archives' and census['accepted'] is False
+?                          ^  ------------
++ assert census['stage']=='prepare-consumer' and census['accepted'] is False
+?                          ^^^^^^^^^^^^^^
+  assert census['failure'] is None and census['probeRawExit']==0 and census['probeBothEOF'] is True and census['probeDirectReaped'] is True and census['matchingTaskRows']==[]
+  elapsed=POST_TERMINAL_WITNESS-origin['originMonotonic']
+  assert 0<=elapsed<115
+- witness={'stage':'verify-archives','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True}
+?                   ^^^^^^ ^^^^^^^^
++ witness={'stage':'prepare-consumer','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True}
+?                   ^^^^^^^ ^^^^^^^^
+  with (ROOT/'final-clock-witness.json').open('x') as f:f.write(json.dumps(witness,allow_nan=False)+'\n')

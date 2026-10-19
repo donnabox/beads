@@ -1,0 +1,72 @@
+from pathlib import Path
+import json,hashlib,stat,shutil
+L=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs');C=Path('/Users/dbox/repos/wt/vickie/bdp-client-design/checkout');D=C/'docs/architecture/bdp-client-v2';P=L/'write-profile-G09-validation-preparation-5';S=L/'write-profile-G09-validation5-package4-closed-control-source-1';N=L/'write-profile-G09-validation5-package4-control-native-precision-1';R=L/'write-profile-G09-validation5-package4-root-final-acceptance-1'
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def read(p):return json.loads(p.read_text())
+cache={}
+def meta(p):
+ p=Path(p)
+ if str(p) not in cache:cache[str(p)]={'bytes':p.stat().st_size,'mode':oct(stat.S_IMODE(p.stat().st_mode)),'sha256':sha(p)}
+ return cache[str(p)]
+def pin(p):return {'path':str(p),'sha256':sha(p)}
+def dump(p,x):p.write_text(json.dumps(x,indent=2,sort_keys=True)+'\n')
+assert not R.exists()
+assert sha(N/'index.json')=='0b332f9fbf184cf5fb2c398f4d43038d39f7f46971c59d154b0f4b7de2e0f15e'
+assert sha(N/'closure.json')=='2351296d46957d64a919c3e814e850be83b9ba4d8394dc1eece4048377b460bc'
+nc=read(N/'closure.json');assert nc['accepted'] and nc['findings']==[] and not nc['runtimeAuthority'] and not nc['liveWriteAuthority'] and nc['rootFinalAcceptance']=='PENDING'
+assert read(N/'findings.json')==[]
+ni=read(N/'index.json');nf=[p for p in N.rglob('*') if p.is_file()]
+assert len(nf)==116 and len(ni['files'])==115 and set(ni['files'])=={str(p.relative_to(N)) for p in nf if p.name!='index.json'}
+for p in nf:
+ rel=str(p.relative_to(N));assert meta(p)==meta(D/N.name/rel),rel
+ if rel!='index.json':assert meta(p)==ni['files'][rel],rel
+no=read(N/'input-origins.json');assert len(no)==102
+for r in no:assert meta(Path(r['origin']))==meta(N/r['copy'])=={k:r[k] for k in ['bytes','mode','sha256']},r
+nl=read(N/'input-ledger.json');assert len(nl)==7752
+for n,m in nl.items():assert meta(n)=={k:m[k] for k in ['bytes','mode','sha256']},n
+assert sha(S/'index.json')=='c89de2f1746d5c94845661726ab1ff1aca51733b3f5e7349ac98dd8d4f43c39e'
+si=read(S/'index.json');sf=[p for p in S.rglob('*') if p.is_file()]
+assert len(sf)==427 and len(si['files'])==426
+for p in sf:
+ rel=str(p.relative_to(S));assert meta(p)==meta(D/S.name/rel)
+ if rel!='index.json':assert meta(p)==si['files'][rel],rel
+assert read(S/'closure.json')['accepted'] is False
+live=P/'execution-gate.json';assert sha(live)=='f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8'
+before=read(live);after=read(S/'execution-gate.proposed.json');changed=[k for k in before if before[k]!=after[k]]
+assert len(before)==len(after)==26 and set(changed)=={'approvedStages','rootDisposition'}
+order=read(P/'commands.json')['finalOrder'];assert before['approvedStages']==order[:17] and after['approvedStages']==order[:21]
+own=L/'root-G09-validation5-package4-independent-source-inspection-1.json';raw=L/'root-G09-validation5-package4-independent-raw-hash-graph-inspection-1.json'
+assert sha(own)=='b946e1474fe077424a558b4d2e582f8ce06868173abd718ef9dd7eae4959dee3'
+assert sha(raw)=='752988b347dee143d40c0faa2624128da50dfe7c2d0cbcdb008ca9ab0b6ea974'
+g=read(raw);assert g['acyclic'] and g['nodes']==427 and g['edges']==9055
+R.mkdir()
+for src,name in [(own,'independent-source-inspection.json'),(raw,'independent-raw-hash-graph-inspection.json'),(L/'root-G09-validation5-package4-early-control-reading-2.json','early-control-reading.json'),(L/'root-G09-validation5-package4-early-reader-failure-1.json','early-reader-failure.json')]:shutil.copy2(src,R/name)
+findings={'accepted':True,'scope':'FULL_CLOSED_PACKAGE4_STATIC_CONTROL_PRECISION_ONLY','nativeFindings':[],'nativeIndex':pin(N/'index.json'),'nativeClosure':pin(N/'closure.json'),'all116NativeFiles102Origins7752CurrentLedgerIndependentlyVerified':True,'originalSourceAcceptedFalseAndPendingFieldsPreserved':True,'authorDataFailurePreserved':pin(S/'author-data-failure-1.json'),'rootEarlyReaderFailurePreserved':pin(R/'early-reader-failure.json'),'rootSupplementalMetadataReaderShapeError':'Read-only display expected dict for findings.json list; terminal retained; no source/control/runtime change or subject invocation','typedBindings':'Full1171=1161strict+10exactowner-pointer-version qualifications; original1105 snapshot kept historical','retainedAbsoluteMaps':'34295=34292strict+2 exact old18-to-f16 same-gate phase+1 exact old soleplan snapshot','nativeDataCheckerCorrectionsPreservedInFrozenChecks':True,'runtimeAuthority':False};dump(R/'findings-disposition.json',findings)
+accept={'accepted':True,'session':'2026-10-18T02:16:24Z-549f','scope':'FULL_CLOSED_FOUR_PACKAGE_STAGE_CONTROL_PRECISION_CONDITIONAL_ON_COMPLETE_DURABILITY_AND_SEPARATE_ACTIVATION','sourceIndex':pin(S/'index.json'),'sourceBinding':pin(P/'source-binding.json'),'candidate':pin(S/'execution-gate.proposed.json'),'manifest':pin(S/'execution-manifest.json'),'conditionalBridge':pin(S/'root-disposition.proposed.json'),'nativeIndex':pin(N/'index.json'),'nativeClosure':pin(N/'closure.json'),'nativeReport':pin(N/'report.md'),'nativePhysicalFilesVerified':116,'nativeOriginsVerified':102,'nativeCurrentLedgerVerified':7752,'sourcePhysicalFilesVerified':427,'sourceOriginsVerified':342,'sourceCurrentReferencesVerified':6892,'wholeLiteralCells':12,'wholeLFChanges':52,'genuineForwardInverseNdiffPairs':15,'typedBindings':{'all':1171,'strict':1161,'exactQualified':10},'absoluteMaps':{'all':34295,'strict':34292,'exactQualified':3},'rawHashGraph':{'nodes':427,'edges':9055,'acyclic':True,'inspection':pin(R/'independent-raw-hash-graph-inspection.json')},'rootSourceInspection':pin(R/'independent-source-inspection.json'),'findingsDisposition':pin(R/'findings-disposition.json'),'onlyCandidateFields':changed,'other24FieldsUnchanged':True,'source679Impl105Other110Helper189Run78Build476Tools11GitExact':True,'completedFirst17NeverRepeat':order[:17],'conditionalNewStages':order[17:21],'later13Closed':order[21:],'actualLiveBeforeSha256':sha(live),'sourcePublication':'03dfbf4995e39ecff821c838ebb6e99221434a20 full428 readback ROOT-attributed; native local Git replay427 plus prior105, no fresh native remote replay','liveWriteReleasedOnlyAfterCompleteCurrentAndPriorCompositeRawGitModeCriticalReadback':True,'separateActivationPublicationRequiredBeforeOneStage18':True,'actualRuntimeReleased':False,'actualStagesRun':0,'archiveConsumerLockProofUnresolved':True,'originalFalsePendingFailedWireAndFullEnvUnretainedFiniteCensusLimitsPreserved':True,'qualityPass':False,'wholeWriteCredit':False};dump(R/'acceptance.json',accept)
+release={'accepted':True,'session':'2026-10-18T02:16:24Z-549f','kind':'ONE_EXACT_LIVE_GATE_WRITE_CONDITIONAL_ON_COMPLETE_CURRENT_PRIOR_AUTHORITY_DURABILITY','acceptance':pin(R/'acceptance.json'),'findingsDisposition':pin(R/'findings-disposition.json'),'onlyLivePath':str(live),'beforeSha256':sha(live),'candidate':pin(S/'execution-gate.proposed.json'),'manifest':pin(S/'execution-manifest.json'),'onlyChangedFields':changed,'requireCompleteCurrentAndPriorCompositeRawGitModesAndCriticalReadbacksBeforeWrite':True,'requireBeforeAfterSourceHelperRunBuildToolsGitAndExactHistoricalPhaseChecks':True,'separateActivationOutput':str(L/'write-profile-G09-validation5-package4-root-activation-1'),'requireSeparateActivationPublicationBeforeOnePreparePackageDirectory':True,'perStageActualNativeRootDurabilityBeforeSuccessor':True,'first17NeverRepeat':True,'later13Unreleased':True,'noRuntimeAtWrite':True,'runtimeAuthority':False};dump(R/'write-release.json',release)
+dump(R/'index.json',{'files':{str(p.relative_to(R)):meta(p) for p in R.rglob('*') if p.is_file()},'selfExcluded':'index.json','physicalFiles':8,'runtimeAuthority':False})
+assert len(list(R.iterdir()))==8;shutil.copytree(R,D/R.name)
+plan=D/'design.md';t=plan.read_text();mark='<!-- VICKIE-CURRENT-START -->';note='\n\n[Package4 full ROOT control acceptance](write-profile-G09-validation5-package4-root-final-acceptance-1/acceptance.json): DIFFERENT native116 index0b332f9f/closure2351296d accepted/no findings; ROOT independently verified116/102origins7752currentledger plus complete source427/342origins6892refs/12cells52LF/15genuinepairs/1171typedpins(1161strict+10exactqualifications)/34295retainedmaps(34292strict+3exactqualifications)/427node9055edge acyclic full raw graph. Own sourceb946e147/raw752988b3; author/reviewer/ROOT DATAchecker histories and original sourceacceptedfalse/pending preserved. Conditional write-release ONLY2gatefields/prefix17->21; COMPLETE current+prior composite raw/Gitmodes/critical durability required BEFORE one exactlivef16->34 write; separateactivationpublication required BEFORE ONEprepare-package-directory. No actual package commands run; first17 neverrepeat/later13 closed. FullWriteOPEN/pinnedsource1eca/basea562/contract677/no incomingsemantics or main request.\n';assert mark in t;plan.write_text(t.replace(mark,mark+note,1))
+selected=[D/p.relative_to(L) for folder in [N,R] for p in folder.rglob('*') if p.is_file()]+[plan]
+pre=L/'root-G09-validation5-package4-final-authority-publication-1';dump(Path(str(pre)+'.manifest.json'),{str(p.relative_to(C)):meta(p) for p in selected});Path(str(pre)+'.paths').write_bytes(b''.join(str(p.relative_to(C)).encode()+b'\0' for p in selected))
+old=read(L/'root-G09-validation5-source-pairs-final-authority-publication-1.composite-manifest.json');composite={}
+for n,m in old.items():
+ if n=='docs/architecture/bdp-client-v2/design.md':continue
+ assert meta(C/n)==m,n;composite[n]=m
+folders=[S,N,R,L/'write-profile-G09-validation5-source-pairs-root-activation-1',L/'write-profile-G09-validation5-package4-source-authoring-release-1',L/'write-profile-G09-validation5-later17-binding-inventory-1',L/'write-profile-G09-validation5-later17-binding-root-disposition-1',L/'write-profile-G09-validation5-later17-binding-root-disposition-2',L/'write-profile-G09-validation5-audit-schema-confinement-source-root-final-disposition-1',L/'write-profile-G09-validation5-audit-schema-confinement-source-root-final-disposition-2']
+for stage in order[9:17]:
+ for pattern in [f'write-profile-G09-validation5-{stage}-root-tool-evidence-1',f'write-profile-G09-validation5-{stage}-actual-native-audit-1',f'write-profile-G09-validation5-{stage}-root-final-disposition-1']:
+  folders.extend(L.glob(pattern))
+ folders.append(L/'write-profile-G09-validation5-root-first4-dispatch-1'/stage)
+for folder in folders:
+ assert folder.is_dir(),folder
+ for p in folder.rglob('*'):
+  if p.is_file():
+   q=D/p.relative_to(L);assert meta(q)==meta(p),q
+   composite[str(q.relative_to(C))]=meta(q)
+for p in (P/'run').rglob('*'):
+ if p.is_file():
+  q=D/p.relative_to(L);assert meta(q)==meta(p),q;composite[str(q.relative_to(C))]=meta(q)
+composite[str(plan.relative_to(C))]={'bytes':plan.stat().st_size,'mode':oct(stat.S_IMODE(plan.stat().st_mode)),'sha256':sha(plan)}
+dump(Path(str(pre)+'.composite-manifest.json'),composite)
+print(json.dumps({'nativeFiles':116,'origins':102,'ledger':7752,'selected':len(selected),'composite':len(composite),'acceptance':sha(R/'acceptance.json'),'writeRelease':sha(R/'write-release.json'),'index':sha(R/'index.json'),'runtime':False}))
