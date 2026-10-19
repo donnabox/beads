@@ -8,7 +8,7 @@ The [active BDP/Beads policy](https://github.com/gastownhall/beads/issues/7656#i
 
 | Concern | Normative home |
 | --- | --- |
-| Constraint, Subject To, Requires/Defines, and claim meanings | BDP's Memory typedef Specification, currently [010be646](https://github.com/gastownhall/bdp/blob/010be6463c54041dc9ec266c385788ec1a3fd88b/specs/types/memory/memory.md). Reference these rules rather than redefine them in CLI code or prose. |
+| Constraint, Subject To, Requires/Defines, and claim meanings | BDP's Memory typedef Specification, currently [12cbbf1](https://github.com/gastownhall/bdp/blob/12cbbf1c612c21fa7be3cd28b222bde92c84d414/specs/types/memory/memory.md). Reference these rules rather than redefine them in CLI code or prose. |
 | Portable resource selection, Type-family matching, read consistency, and any future portable traversal mechanism | The applicable BDP shared contracts. A missing protocol mechanism needs a separate amendment; a Type definition cannot silently add one. |
 | Commands, selectors, flags, defaults, output, diagnostics, compatibility, and exit behavior | Beads. The eventual Memory facade belongs at `docs/reference/bdp/cli/types/memory/memory.md` and Requires the whole Memory typedef Specification. This does not implicitly require the Types profile or a new BDP protocol. |
 | Evidence acceptance and reconciliation for a release, compliance, or closing gate | The consuming application, under an explicit policy. A query does not manufacture a verified verdict. |
@@ -42,7 +42,7 @@ Export Specification --subject-to--> Review Specification documents
 
 `constraints Release` reports the Specification, row Requirement, data Policy, and redaction subpolicy. It does not report the document-review Policy: Subject To is nontransitive. `requires Export Specification` shows its necessary dependencies and distinguishes Defines from ordinary Requires.
 
-Suppose Release has a Satisfies claim for the row Requirement and an Addresses claim for the Specification. These direct subject-to-Constraint claims illustrate the published 010be646 baseline. The row has a complete-satisfaction **claim**; the Specification has a contribution claim; the Policy and subpolicy have no visible relevant assessment. None of this establishes verified compliance or changes Issue readiness. A Violates claim concerning the same row, subject, revisions, and context must coexist with the Satisfies claim as a contradiction. A claim concerning another revision must be shown separately, not merged into that conflict.
+Suppose an evaluation of Release alone owns a Satisfies claim for the row Requirement and an Addresses claim for the Specification. Its full subject group is Release; the claims belong to the evaluation, not the release build. The row has a complete-satisfaction **claim**; the Specification has a contribution claim; the Policy and subpolicy have no visible relevant assessment. None of this establishes verified compliance or changes Issue readiness. A Violates claim concerning the same row, subject, revisions, and context must coexist with the Satisfies claim as a contradiction. A claim concerning another revision must be shown separately, not merged into that conflict.
 
 ## Smallest proposed slice
 
@@ -50,7 +50,7 @@ Recommend **declared-root inspection, Requires closure, direct claims, and expla
 
 Do not initially evaluate prose or applicability predicates, run tests, author claims, reconcile evidence, or derive indirect Satisfies claims without established revision/context compatibility. The portable Type rules remain intact; unavailable capabilities are explicit.
 
-The published 010be646 baseline uses direct subject → Constraint claims. Donna has since selected one uniform evaluation-owned claim model, with one collective subject group per evaluation, as described below. Its coordinated successor still needs the concrete evaluation/subject representation. “Direct claim” in these views means an authored claim rather than one derived through a Satisfies chain; it does not require the assessed subject to be the Link's source.
+The main Memory draft at 12cbbf1 now incorporates the accepted uniform evaluation-owned model and proposes Evaluation as a Memory subtype with typed subjects. The concrete carrier name/refinement, subject-reference encoding and lifecycle remain for review. The earlier direct/unowned Memory010 source keeps its historical identity for frozen consumers; this proposal's reference update changes no runtime pin. “Direct claim” in these views means an authored claim rather than one derived through a Satisfies composition; the claim's source is its owning evaluation.
 
 Retain the four existing memory entry points—`remember`, `recall`, `memories`, and `forget`—as compatibility inputs to the eventual facade design. Their canonical-group mapping and precise behavior still need specification. Type-specific creation shortcuts and tuned create/update/show/delete operations are outside this first slice. Packs and a broad query-language rewrite are separate work.
 
@@ -84,7 +84,7 @@ An evaluation-owned claim about a Web app and an API concerns the combination: t
 
 Each evaluation owns claims for one full subject group. A claim about a different group belongs to a separate evaluation; two evaluations may still independently assess the same group. The query obtains the assessed scope from the evaluation rather than applying a per-claim subset selector.
 
-Assessment remains a working name, not an existing or selected Type name. The concrete representation, Type name/reuse, subject binding, and cleanup contract still need design. Every Addresses, Satisfies, or Violates claim must belong to an evaluation, including self-authored or unattested claims; direct unowned claims are not retained in the successor model. Any Bead can still be an assessed subject. Queries resolve a subject to its evaluations, then inspect the claims owned by those evaluations, preserving their complete subject groups. This proposal selects neither a join nor a generic third-party owner field.
+The main draft proposes Evaluation as the concrete carrier; Assessment was the earlier working name. Concrete Type acceptance/refinement, subject-reference encoding, and cleanup still need review. Every Addresses, Satisfies, or Violates claim must belong to an evaluation, including self-authored or unattested claims; direct unowned claims are not retained in the successor model. Any Bead can still be an assessed subject. Queries resolve a subject to its evaluations, then inspect the claims owned by those evaluations, preserving their complete subject groups. This proposal selects neither a join nor a generic third-party owner field.
 
 Before implementation, turn the example into acceptance cases covering nontransitive Subject To, an installed Link specialization included through Requires refinement, shared children/cycles, conflicting versus different-context claims, an incomplete walk, and an unestablished multi-request read context. Use an exact contract source for each case. These are design examples, not passing tests or a Preview 3 qualification claim.
 
