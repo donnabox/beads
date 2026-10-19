@@ -1,0 +1,28 @@
+{
+  "all31RawModesMirrors": true,
+  "all703InputPins": true,
+  "all17OriginsIncludingDerivedDiffSection": true,
+  "fullForwardInverseNdiffExact": true,
+  "rootIndependentMinimalProposalMatches": true,
+  "all12StaticBranchCasesReadNotExecuted": true,
+  "currentSourceStillF6": true,
+  "prospectiveCanonicalOnly": "1ecaf2e47369cc12cc26bc3ed693c5d4d3b9cffa4714b13dbe5567f9e46bfb15",
+  "beforeSha256": "0470da566dc7a294d19f749f6977f57f63648d52e857f235795d8857a401eef1",
+  "afterInertSha256": "7ba9d8de683f3e2c5f8a38efd6deab7e6de0950590b8de3d97bd2afa2657dac9",
+  "actualDiagnosticFullAuditPending": false,
+  "otherNativeProposalPrecisionPending": false,
+  "sourceFixAuthorized": false,
+  "qualityPass": false,
+  "nextStageAuthorized": false,
+  "priorRootDataInspectionFailure": {
+    "ordinaryTool": "65b17c",
+    "actualExit": 1,
+    "cause": "ROOT incorrectly chose compact JSON separators for canonical hash, while preserved gate source_check uses json.dumps(map,sort_keys=True) default separators",
+    "productOrNativeFinding": false,
+    "correction": "Read actual gate source definition and recomputed old f6/new projected1eca with exact existing serialization; no product/runtime/subject retry"
+  },
+  "otherNativeAll37RawModesMirror": true,
+  "otherNativeFullReportRead": true,
+  "otherNativeIndex": "7b16131f4aa039a9587d5263b61c992f7bccbb7eb318ff52780ab78aad2e6f81",
+  "otherNativeClosure": "a90716b5575daf262a8dcf28e3e0dea9bde7c25db9a531444d9fefc79fed5fca"
+}

@@ -1,0 +1,21 @@
+packages/server/src/transaction-service.test.ts:4330:24 lint/correctness/noUnsafeFinally ━━━━━━━━━━━
+
+  × Unsafe usage of 'throw'.
+  
+    4328 │     try {
+    4329 │       await g09ServiceBound(f.service.close(), 1000);
+  > 4330 │       if (!f.closed()) throw new Error("G09 owner close unobserved");
+         │                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    4331 │       rmSync(path.dirname(f.file), { recursive: true });
+    4332 │       removed = true;
+  
+  i 'throw' in 'finally' overwrites the control flow statements inside 'try' and 'catch'.
+  
+
+Checked 10 files in 70ms. No fixes applied.
+Found 1 error.
+lint ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+  
+

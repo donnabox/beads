@@ -1,0 +1,16 @@
+{
+  "captureMechanicsFindings": [],
+  "observedBlockingDiagnostic": {
+    "id": "G09-DIAGNOSTIC-1",
+    "rule": "lint/correctness/noUnsafeFinally",
+    "source": "packages/server/src/transaction-service.test.ts",
+    "line": 4330,
+    "column": 24,
+    "rawLogSha256": "36267e6a10a07f102abcca22670dd4c2c24aeee869e39ffc81680ac647f70314",
+    "reportedSeverity": "error",
+    "effect": "Child lint exit1; original and diagnostic lint quality remain failed.",
+    "recommendation": "Root disposition of the observed error before any separately authorized source successor. No fix or execution authority supplied by this audit."
+  },
+  "originalFailurePreserved": true,
+  "filteredCountersNotOrdinaryQualityEvidence": true
+}

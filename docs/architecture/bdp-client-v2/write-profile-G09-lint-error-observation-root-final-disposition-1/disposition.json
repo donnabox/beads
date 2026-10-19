@@ -1,0 +1,47 @@
+{
+  "session": "2026-10-18T02:16:24Z-549f",
+  "time": "2026-10-19T00:25:24.715951+00:00",
+  "accepted": true,
+  "acceptedMeaning": "ONE complete separately named diagnostic capture and identified configured lint finding only",
+  "auditComplete": true,
+  "diagnosticCaptureAccepted": true,
+  "lintStagePassed": false,
+  "lintRawExit": 1,
+  "qualityPass": false,
+  "profileOrWholeWriteCredit": false,
+  "nextStageAuthorized": false,
+  "sourceChangeAuthorized": false,
+  "actualTools": {
+    "A": "17aea7",
+    "B": "2ac69c",
+    "C": "e2966a",
+    "allRawTerminals": 0,
+    "attribution": "source-attributed actual tool responses; independently decoded raw tool receipts UNRETAINED"
+  },
+  "commonClockSeconds": 10.055988000240177,
+  "nativeIndex": "bc282d68da287ff426645ad5444e7a050eb6ddaf595c959dcd3e19e4d2b2d89f",
+  "nativeClosure": "0c7c9489bfad0f79182eca5606ef2269c42f6b871e475b8f34048bb1c6f0d63a",
+  "rootInspection": "4dffdcfb7cda19d491fa99fd4e851bcf0efe10d15497e453e3d9eaf519973256",
+  "findingDisposition": {
+    "id": "G09-DIAGNOSTIC-1/G09-LINT-CAUSE-01",
+    "accepted": true,
+    "rule": "lint/correctness/noUnsafeFinally",
+    "path": "packages/server/src/transaction-service.test.ts",
+    "line": 4330,
+    "column": 24,
+    "interpretation": "Actual configured static lint failure, not observed runtime primary-error overwrite; nested throw is locally caught/appended",
+    "chosenProspectiveCorrection": "Direct same-message Error append plus else-only deletion inside existing try/finally",
+    "sourceAuthoringStillRequires": "OTHER-native proposal precision, root exact source-only release and complete selected durability/readback BEFORE authoring"
+  },
+  "noAdditionalDiagnosticAuthorized": true,
+  "originalP3FailedStoppedUntouched": true,
+  "noProviderReviewRepeated": true,
+  "noDeadlineSchemaRuleCapOrSelectionWeakening": true,
+  "retainedLimitations": [
+    "raw ordinary tool receipts independently decoded UNRETAINED; source-attributed only",
+    "finite selected census is not global/unseen transient/escaped/admin task closure",
+    "temporary scratch retained; no cleanup action or complete cleanup claim",
+    "historical P3 failure not recovered; prior warnings/infos unchanged",
+    "filtered report counters cannot prove ordinary lint quality"
+  ]
+}

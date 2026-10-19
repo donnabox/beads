@@ -1,0 +1,91 @@
+{
+  "cases": [
+    {
+      "condition": "run resolves; close fulfills; closedtrue; rmSync succeeds",
+      "id": "C01",
+      "oracle": "cleanup awaited once; same report and normal return",
+      "requiredFailures": "[]",
+      "requiredRemoved": "true"
+    },
+    {
+      "condition": "run rejects original E; close fulfills; closedtrue; deletion succeeds",
+      "id": "C02",
+      "oracle": "same original E identity/order retained; final AggregateError contains E",
+      "requiredFailures": "[E]",
+      "requiredRemoved": "true"
+    },
+    {
+      "condition": "run reaches existing3000 timeout T; close succeeds closedtrue; deletion succeeds",
+      "id": "C03",
+      "oracle": "same timeout error; no deadline/cancellation change or fabricated pending settlement",
+      "requiredFailures": "[T]",
+      "requiredRemoved": "true"
+    },
+    {
+      "condition": "run settles or fails; close rejects C",
+      "id": "C04",
+      "oracle": "closed check/deletion skipped; directory retention policy unchanged",
+      "requiredFailures": "[prior..., C]",
+      "requiredRemoved": "false"
+    },
+    {
+      "condition": "close remains pending until existing1000 timeout C",
+      "id": "C05",
+      "oracle": "do not delete; close may remain pending, not silently swallowed or called again",
+      "requiredFailures": "[prior..., C]",
+      "requiredRemoved": "false"
+    },
+    {
+      "condition": "close fulfills but closedfalse",
+      "id": "C06",
+      "oracle": "old throw->localcatch appends once; A direct append once then skips deletion",
+      "requiredFailures": "[prior..., new Error(\"G09 owner close unobserved\")]",
+      "requiredRemoved": "false"
+    },
+    {
+      "condition": "close fulfills; closed check itself throws G",
+      "id": "C07",
+      "oracle": "same enclosing catch retains G; deletion skipped",
+      "requiredFailures": "[prior..., G]",
+      "requiredRemoved": "false"
+    },
+    {
+      "condition": "close fulfills closedtrue; rmSync throws R",
+      "id": "C08",
+      "oracle": "same catch and failure count; removed is false, not proof directory remains physically intact after partial rm",
+      "requiredFailures": "[prior..., R]",
+      "requiredRemoved": "false"
+    },
+    {
+      "condition": "prior E and closedfalse",
+      "id": "C09",
+      "oracle": "no primary overwrite, no double append; final AggregateError ordering unchanged",
+      "requiredFailures": "[E, same-class/message newly constructed cleanup error]",
+      "requiredRemoved": "false"
+    },
+    {
+      "condition": "service.close already captured by S03",
+      "id": "C10",
+      "oracle": "cached close reused; underlying owner close count remains one",
+      "requiredFailures": "unchanged by proposal",
+      "requiredRemoved": "actual branch"
+    },
+    {
+      "condition": "console/JSON report itself throws L",
+      "id": "C11",
+      "oracle": "proposal does not add catch/suppression or claim guaranteed report; out of this correction",
+      "requiredFailures": "same escaping L as original",
+      "requiredRemoved": "actual prior branch"
+    },
+    {
+      "condition": "fixture construction throws before run try",
+      "id": "C12",
+      "oracle": "no proposed setup/lifecycle expansion or cleanup claim",
+      "requiredFailures": "same preexisting rejection",
+      "requiredRemoved": "uninitialized"
+    }
+  ],
+  "domain": "SOURCE_DERIVED_CONTROL_FLOW_COMPARISON_NOT_EXECUTED",
+  "originalVsA": "Same append/order/delete guards for all listed branches; no interpreter evaluation",
+  "runtimeTestsRun": 0
+}

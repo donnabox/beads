@@ -1,0 +1,53 @@
+{
+  "session": "2026-10-18T02:16:24Z-549f",
+  "time": "2026-10-19T00:26:43.222933+00:00",
+  "scope": "SOURCE_AUTHORING_ONLY_AFTER_COMPLETE_SELECTED_PUBLICATION_READBACK",
+  "rootPlanAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-noUnsafeFinally-proposal-root-acceptance-1/acceptance.json",
+    "sha256": "0c3d61455392777d7b00d516eb0c378d2f3d706474cc042f44702208f826f4c0"
+  },
+  "sourceOnly": true,
+  "runtimeAuthority": false,
+  "qualityPass": false,
+  "nextStageAuthorized": false,
+  "requiresDurabilityBeforeAuthor": true,
+  "target": {
+    "worktree": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+    "branch": "codex/vickie-schema-lint-correction-minimum",
+    "baseHead": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+    "baseTree": "6757829bd5b700faf28df39071190a272add90c9",
+    "pinnedParentBasis": "a56254d682cf4623cab22a552e3d2f695f691795"
+  },
+  "reconstruction": {
+    "oldWorktree": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+    "all679BeforeCanonical": "f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65",
+    "exactPriorBinaryPatchSha256": "00804293791b29e26b6b7d58eb7b7f7bf17b20aecc765cbc389617d2daeb9b0f",
+    "instruction": "Fresh exact-cce checkout; apply exact old ten-file binary patch and verify all679 before correction; preserve original checkout and every absolute historical ref"
+  },
+  "authorizedProductChange": {
+    "path": "packages/server/src/transaction-service.test.ts",
+    "beforeSha256": "0470da566dc7a294d19f749f6977f57f63648d52e857f235795d8857a401eef1",
+    "patchPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-noUnsafeFinally-causal-analysis-1/proposals/option-A.direct-error-append.patch.txt",
+    "patchSha256": "3e37281c2c24f99d378767b9f651437fe5c575b622965eac9d1bde9cabd48df8",
+    "expectedExactAfterSha256": "7ba9d8de683f3e2c5f8a38efd6deab7e6de0950590b8de3d97bd2afa2657dac9",
+    "expectedCanonical": "1ecaf2e47369cc12cc26bc3ed693c5d4d3b9cffa4714b13dbe5567f9e46bfb15",
+    "other678Exact": true,
+    "noFormatterOrAdditionalSourceChange": true
+  },
+  "allowed": [
+    "Root exact isolated worktree/branch creation and source Git observations, no incoming main fetch/merge",
+    "Apply exact approved patch only after old679 reconstruction",
+    "Bounded source author writes fresh exact before/after679 maps,678protection/fullcumulative and minimal forward/inverse/ndiff/fullfilecopies,actualsourcebinding/newroot Git receipts",
+    "Derive final new path/filehash/+3line metadata for existing callbacks only; unchanged report schemas/selection/names/counts/production",
+    "Freeze source-author packet and exact D mirror for independent native/root static review"
+  ],
+  "forbidden": [
+    "Modify old source/gates/reports/attempts/history",
+    "Any install/build/compiler/lint/test/callback/helper/runtime/CLI/reviewer invocation",
+    "Provider review repeat, originalP3retry, runtime gate/capture/manifest activation",
+    "Change callback/request inventory/budgets/rules/cap/schema/semantic contract",
+    "Source commit/push/PR/landing before root final exact-source acceptance",
+    "Other-owner work/main/spec absorption/release/downstream pins"
+  ],
+  "nextBarrier": "Independent exact new source native/root acceptance, then separately named corrected-source CLOSED strict validation successor source-only release; all prior attempts preserved"
+}

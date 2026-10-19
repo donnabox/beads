@@ -1,0 +1,31 @@
+# Actual G09 diagnostic audit
+
+The single diagnostic capture is complete within its authorized scope. The lint child exited **1**, `accepted` and `qualityPass` remain **false**, and no lint-stage, profile, next-stage or whole-Write credit follows. No capture-integrity or mechanics finding was found.
+
+The complete 1,022-byte merged inner report identifies **`lint/correctness/noUnsafeFinally` at `packages/server/src/transaction-service.test.ts:4330:24`**. The reported `throw` occurs inside the cleanup `finally`; the whole current helper source was inspected. The report says ten files checked, one error, no fixes. Its digest is `36267e6a10a07f102abcca22670dd4c2c24aeee869e39ffc81680ac647f70314`. No fatal or infrastructure failure appears in this complete report. This is a severity-filtered observation: warning/info absence and ordinary lint quality are not established. The old P3 log's hidden error was not retroactively exposed in that old log.
+
+## Actual evidence
+
+All nine root tool-evidence files, eight original root files and four original inner files were checked in full, including modes and exact sole-docs mirrors. The original command bodies and recorded issued sources agree. A equals its approved rendered body. B and C differ from their frozen bodies only at the respective single complete LF tool-ID assignments; both inverse checks restore the originals. Protective sentinel comparisons and `RAW_EXIT0=0` remain unchanged. The complete whole rendering has exactly the two approved gate/manifest LF substitutions, with full inverse to the frozen placeholder. Original commands have no LF after their heredoc terminator; no normalization was used.
+
+Trusted root source-attributed tool records identify actual A `17aea7`, B `2ac69c` and C `e2966a`, all terminal 0. A's wrapper has an immediately retained direct handle, raw exit0, no force/error and successful pipe closure. Its 752-byte stdout is exactly the child's exit JSON; stderr is zero bytes. The actual child exited1, reports observationComplete true, source unchanged, no errors, no forced cleanup, no remaining sampled process or nested `bdp-` runtime directory. Inner elapsed is 4.239512790925801 seconds. Inner stdout/stderr share the original merged `.log`; separate inner BOTHPIPE evidence is not claimed.
+
+All four root/census raw streams have equal received, saved, hashed and original fstat byte counts; full hashes match retained bytes. Each original file's current device/inode/mode/uid/size matches the descriptor receipt, mode0600/uid501, actual EOF and descriptor closure true. Root streams are 752/0 bytes; census streams are 205825/0. Copies preserve bytes and modes, not original descriptor identities.
+
+The two actual process samples contain three rows, covering inner PIDs39661 and39663. The exact registry is four task PIDs38776/38777/39661/39663 and three PGIDs38771/38777/39661. Collector38776 is not its PGID38771. All **1,387** census rows were parsed and none match these IDs or groups. The census's direct probe40475/group40475 is visible in its own retained raw census and is separately recorded reaped/raw0 with BOTHPIPE EOF. Observer40474/group40463 is outside task-absence assertions. No new process probe or cleanup action was taken for this audit.
+
+After actual A terminal0, actual B terminal0 precedes the first C witness sample. The joined origin is2254757.995360166; witness2254768.051348166; exact difference **10.055988000240177 seconds <115**. Origin/provisional/census hashes and actual tool-ID joins agree. This establishes the recorded normal observation interval, not OS hard realtime or the lifetime of an already-running administrative observer. Later static audit/publication is excluded.
+
+## Identity and authority
+
+All679 bound source files still hash to canonical `f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65`; the retained ten-file binary patch is `00804293791b29e26b6b7d58eb7b7f7bf17b20aecc765cbc389617d2daeb9b0f`. Source HEAD/tree/dirty status remain attributed to the existing root/source receipts; no Git command was executed here. All47 helper implementation entries, eleven workspace tool realpaths/hashes and three base tool bindings match. No executable was run to refresh versions.
+
+The original helper preparation53 is now current57 with exactly four run records. Its prepared52-file index is immutable: only the explicitly authorized live gate changed from771887f0 to c127ce33, including its byte length2474→3057. The closed copy remains7718. The original P3 live gate remains failed/closed f672. All2,872 reference records across the903/969/1000 tables were checked, with precisely that one absolute live-path historical projection; all other bytes match. The historical211-member and94-member censuses remain historical, not falsely described as complete current directory censuses. The measured current source/file ledger contains1,078 distinct entries.
+
+The full manifest, ROOT final acceptance, rendering, activation and direct document pins were checked. Retained ROOT publication/readback receipts establish complete-authority ed10cc1f before activation and separate activation8ece7702 before the actual invocation. These are retained trusted-root observations, not new remote Git verification by this auditor. The manifest is acyclic and explicitly diagnostic-only/noPipelineCredit/qualityAcceptance false. The original failed provider delivery and its complete separately audited substantive artifact remain honestly distinguished.
+
+## Limits and disposition
+
+Independently decoded original raw administrative tool receipts are **UNRETAINED**; tool exits are explicitly trusted-root source attribution. Administrative guard/tool process identities are UNKNOWN. Selected task absence does not establish observer self-absence, global containment or absence of unseen/transient/escaped tasks. The retained temporary root is not claimed empty or removed. No additional runtime inspection was performed. The audit's corrected DATA-method assertions are preserved separately; no subject input was changed.
+
+ROOT disposition of the observed lint error is required before any separately authorized source change or future diagnostic. This audit does not retry or resume P3, authorize another provider review, repair a source file, open a gate, or release a later stage.

@@ -1,0 +1,17 @@
+{
+  "subjectChanges": false,
+  "dataAssertionsCorrected": [
+    {
+      "issue": "Original prepared gate byte length2474 compared to authorized activated gate3057",
+      "correction": "Apply exact sole live-path historical-to-active digest AND byte-length projection; no other exception."
+    },
+    {
+      "issue": "External top-level retained root readback receipt has no sole-docs mirror",
+      "correction": "Require complete mirror for packet members and actual originals; external retained readback is separately pinned without invented mirror requirement."
+    },
+    {
+      "issue": "Audit command-framing assertion initially presumed LF after heredoc terminator",
+      "correction": "Observed original commands have no final LF; verified exact header + full original source + exact terminator, without normalization or subject change."
+    }
+  ]
+}
