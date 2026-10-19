@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+Next5 FULL native72 d31642ba/966adba0 preservesacceptedfalse and oneLowP5-NEXT5-N1 inheritedfirst4/12cellprose. [ExactROOTbridgeerratum3](write-profile-G09-validation5-next5-bridge-scope-root-erratum-1/erratum.json)76af896c qualifiesONLY3pointers/effectivenext5/15cellscope. SeparateFULLnativeerratum10 55390565/127fc49a acceptsstaticclosurecondition/nofindings, originals60/native72unchanged. ROOT independently verifiesall72/63origins2405ledger/erratum3/native10+10refs and own60source/19origins2314refs/141pins/65LFinverses/60nodeDAG. [ROOTfinalacceptance5](write-profile-G09-validation5-next5-root-final-acceptance-1/acceptance.json) closesLowthroughadditiveerratum/finalSTATICcontrolscope only. COMPLETE selected composite authority/native/root/erratum raw/Gitmodes/directreadbacks REQUIREDBEFORE separatelyauthorizedsolelivead5->candidate18write. Separatefullactivationdurability stillBEFOREONEtypecheck; no currentlivewrite/runtime/quality/fullWritecredit. Completedfirst4nevrepeat/later25closed.
+
+
 ROOT authored [CLOSED next-five control/source packet](write-profile-G09-validation5-next5-closed-control-source-1/report.md) onlyAFTER fullactualfreshbindingacceptance/all63 raw/Gitmodes/directreadbacks d0130634. New inert26keycandidate changesONLY approvedprefix4->9/workspaceToolsactual11/rootDispositionnewconditionalbridge; oldlivead5 untouched. Acyclicmanifest and15literalA/B/Ccells derive from reviewedbindbaseline with65 countedcompleteLFchanges/fullinverseproofs, sameclocks/raw/EOF/guards/RAWEXIT0. No eval/import/AST/compile/tool/test/build/reviewer/livewrite. FULL OTHER-native/root exactsourcecontrolprecision/findings/disposition/authoritydurability and separatelypublishedactivation stillprecede ONEtypecheck; prior4nevrepeat/later25unreleased/fullWriteOPEN.
 
 

@@ -1,0 +1,17 @@
+[
+  {
+    "bridgeSha256": "344523bb8448f51e7fb67330f99fd767300db9f5451d596b7364b9b0bf817d53",
+    "fields": [
+      "activationPrerequisites[0]",
+      "role",
+      "runtimeAuthorizationMeaning"
+    ],
+    "id": "P5-NEXT5-N1",
+    "impact": "Contradictory human-facing scope instruction; actual gate fields/manifest/cell behavior consistently encode next5 and no executable defect was found.",
+    "location": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/root-disposition.proposed.json:5,147,148",
+    "problem": "Inherited descriptive fields still require12 cells / say first4 only and exclude later30, while the new kind, approved nine-stage prefix and five invocable stages require15 cells and extend stages5..9. They are not explicitly labeled historical in this new bridge.",
+    "severity": "Low",
+    "status": "OPEN_PENDING_EXPLICIT_ROOT_SCOPE_DISPOSITION",
+    "sufficientFix": "Separate exact additive ROOT final disposition pinned to immutable bridge SHA and these fields should mark inherited first4 descriptions historical and state effective conditional next5/15-cell scope, preserving first4 never-repeat/later25 closed/two durability barriers. No source/cell/candidate hash change or new successor is required for this purely descriptive issue."
+  }
+]

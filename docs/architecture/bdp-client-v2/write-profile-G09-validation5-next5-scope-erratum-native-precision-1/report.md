@@ -1,0 +1,9 @@
+# Next5 bridge scope erratum native precision
+
+Accepted as the exact additive descriptive correction satisfying P5-NEXT5-N1’s static closure condition, with no new findings. Full ROOT final findings disposition and complete authority/activation barriers remain required; no live write, runtime or later-stage release follows.
+
+Read all three frozen erratum files and checked exact hashes/modes/docs mirror. Its three JSON pointers resolve to the exact original values in immutable bridge344523bb: activationPrerequisites[0], role and runtimeAuthorizationMeaning. Effective instructions clearly require15 cells and the five new stages5..9 only, mark inherited first4 descriptions historical, preserve completed first4 never-repeat and later25 closed, and retain full independent native/ROOT precision, complete authority publication, separate exact one-file livewrite and separate activation publication plus per-stage actual disposition/durability.
+
+The erratum pins exact bridge/sourceindexd436/candidate18a4, changes no original source bytes, and explicitly remains acceptedAsFinalAuthority=false/source-only/no runtime or livewrite. Independently rehashed all original60 source files and all original72 native-review files against their frozen indices. Original accepted=false/finding/history is preserved; no retroactive silent edit or waiver. Current live gate remainsad5, and every new output child remains absent.
+
+This meets the narrow remedy specified in the original full review: purely descriptive scope qualification, with no executable control/source successor needed. No subject import/AST/compile/eval, tool, process, Git, reviewer, source mutation, runtime or proof execution occurred. ROOT must now explicitly dispose the original Low finding and independently accept/publish the complete effective source+erratum+native material before any separately released activation.
