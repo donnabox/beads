@@ -1,0 +1,11 @@
+--- gate.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/gate.py
+@@ -2,7 +2,7 @@
+ from pathlib import Path
+ import hashlib,json,subprocess,os
+ P=Path(__file__).resolve().parent
+-W=Path('/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum')
++W=Path('/Users/dbox/repos/wt/vickie/vickie-schema-minimum')
+ GUARD=P/'guarded-action-session-20261018-021624-549f.py'
+ MODE=os.environ.get('TX_DISCOVERY_VALIDATION_PHASE','final')
+ assert MODE=='final'

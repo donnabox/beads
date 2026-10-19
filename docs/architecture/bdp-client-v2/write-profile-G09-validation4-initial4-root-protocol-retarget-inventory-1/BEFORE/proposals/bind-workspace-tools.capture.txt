@@ -1,0 +1,326 @@
+# DATA-ONLY fixed one-off root capture proposal. NEVER execute this .txt artifact.
+# This origin precedes every gate/source/hash/setup/child import and child spawn below.
+# This first root target-invocation clock is before the child interpreter, imports,
+# gate/source/hash/setup. Actual collector terminal and the later independent
+# same-clock census/receipt witness are ordinary-tool observations B/C below.
+# No claim is made to measure the already-running observer before its first sample.
+import time
+ORIGIN = time.monotonic()
+import os, json, hashlib, subprocess, select
+from pathlib import Path
+STAGE = 'bind-workspace-tools'
+ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py', 'final', 'bind-workspace-tools']
+CWD = '/Users/dbox/repos/wt/vickie/vickie-schema-minimum'
+P = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3')
+# Root must prepare/review/publish these exact replacements in a future literal
+# command before invoking; this CLOSED proposal refuses unbound placeholders.
+APPROVED_GATE_SHA256 = 'UNRESOLVED_FUTURE_ROOT_ACTIVATED_GATE_SHA256'
+EXPECTED_IMPLEMENTATION_SHA256 = '8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6'
+EXPECTED_SOURCE_BINDING_SHA256 = '712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714'
+EXPECTED_COMMANDS_SHA256 = 'd7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7'
+OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/bind-workspace-tools'
+# Additive exact externally pinned root execution acceptance; charged to ORIGIN.
+APPROVED_EXECUTION_ACCEPTANCE_SHA256 = 'UNRESOLVED_FUTURE_ROOT_EXECUTION_ACCEPTANCE_SHA256'
+EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-execution-acceptance-1/acceptance.json')
+assert type(APPROVED_EXECUTION_ACCEPTANCE_SHA256) is str and len(APPROVED_EXECUTION_ACCEPTANCE_SHA256)==64 and all(c in '0123456789abcdef' for c in APPROVED_EXECUTION_ACCEPTANCE_SHA256)
+assert EXECUTION_ACCEPTANCE_PATH.is_file() and not EXECUTION_ACCEPTANCE_PATH.is_symlink()
+execution_acceptance_raw = EXECUTION_ACCEPTANCE_PATH.read_bytes()
+assert hashlib.sha256(execution_acceptance_raw).hexdigest() == APPROVED_EXECUTION_ACCEPTANCE_SHA256
+execution_acceptance = json.loads(execution_acceptance_raw, object_pairs_hook=lambda pairs: dict(pairs) if len(pairs)==len(dict(pairs)) else (_ for _ in ()).throw(ValueError('duplicate-root-execution-acceptance-key')), parse_constant=lambda _: (_ for _ in ()).throw(ValueError('nonfinite-root-execution-acceptance')))
+assert type(execution_acceptance) is dict
+assert execution_acceptance['accepted'] is True
+assert execution_acceptance['session'] == '2026-10-18T02:16:24Z-549f'
+assert execution_acceptance['mode'] == 'final'
+assert execution_acceptance['sourceBindingSha256'] == '712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714'
+assert execution_acceptance['implementationIndexSha256'] == '8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6'
+assert execution_acceptance['commandsSha256'] == 'd7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7'
+assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version','pnpm-version','workspace-install','bind-workspace-tools']
+assert STAGE in execution_acceptance['approvedStages']
+assert type(execution_acceptance['activeGate']) is dict and set(execution_acceptance['activeGate']) == {'path','sha256'}
+assert execution_acceptance['activeGate'] == {'path':str(P/'execution-gate.json'),'sha256':APPROVED_GATE_SHA256}
+assert time.monotonic()-ORIGIN<115
+# End additive authority-only checks; every original A/B/C byte follows unchanged.
+proc = None
+handles = []
+streams = []
+failure = None
+forced = False
+root = None
+root_acquired = False
+pipe_close_succeeded = False
+inner = None
+registry = {"pids": [], "pgids": [], "origins": []}
+try:
+    assert len(APPROVED_GATE_SHA256) == 64 and OWNED_ROOT_OUTPUT.startswith('/')
+    assert time.monotonic() - ORIGIN < 115
+    assert hashlib.sha256((P/'execution-gate.json').read_bytes()).hexdigest() == APPROVED_GATE_SHA256
+    assert hashlib.sha256((P/'implementation-hashes.json').read_bytes()).hexdigest() == EXPECTED_IMPLEMENTATION_SHA256
+    assert hashlib.sha256((P/'source-binding.json').read_bytes()).hexdigest() == EXPECTED_SOURCE_BINDING_SHA256
+    assert hashlib.sha256((P/'commands.json').read_bytes()).hexdigest() == EXPECTED_COMMANDS_SHA256
+    root = Path(OWNED_ROOT_OUTPUT)
+    if STAGE == 'node-version': root.parent.mkdir(mode=0o700, exist_ok=False)
+    else: assert root.parent.is_dir() and not root.parent.is_symlink()
+    root.mkdir(mode=0o700, exist_ok=False)  # exclusive; any prior attempt blocks
+    root_acquired = True
+    with (root/'origin.json').open('x') as origin_file:
+        origin_file.write(json.dumps({'session':'2026-10-18T02:16:24Z-549f','stage':STAGE,'originMonotonic':ORIGIN,'collectorPid':os.getpid(),'collectorPgid':os.getpgrp(),'argv':ARGV,'cwd':CWD,'rootGateSha256':APPROVED_GATE_SHA256,'implementationSha256':EXPECTED_IMPLEMENTATION_SHA256,'sourceBindingSha256':EXPECTED_SOURCE_BINDING_SHA256,'commandsSha256':EXPECTED_COMMANDS_SHA256},allow_nan=False)+'\n')
+    registry['pids'].append(os.getpid()); registry['pgids'].append(os.getpgrp())
+    registry['origins'].append({'role':'collector','pid':os.getpid(),'pgid':os.getpgrp(),'basis':'actual local getpid/getpgrp; no signal authority'})
+    for suffix in ('stdout','stderr'):
+        path = root/(STAGE+'.'+suffix)
+        fd = os.open(path, os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_CLOEXEC, 0o600)
+        streams.append(dict(path=str(path), fd=fd, received=0, saved=0, hashed=0,
+                            digest=hashlib.sha256(), hashKnown=True, eof=False,
+                            rawClosed=False, error=None))
+    assert time.monotonic() - ORIGIN < 115
+    proc = subprocess.Popen(ARGV, cwd=CWD, stdin=subprocess.DEVNULL,
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                            start_new_session=True)
+    handles.append(proc)  # FIRST action after return; no fallible metadata first
+    creation_pid = proc.pid
+    creation_pgid = proc.pid  # actual start_new_session creation basis
+    registry["pids"].append(creation_pid); registry["pgids"].append(creation_pgid)
+    registry["origins"].append({"role":"direct-wrapper","pid":creation_pid,"pgid":creation_pgid,"basis":"actual retained Popen start_new_session"})
+    for pipe in (proc.stdout, proc.stderr):
+        os.set_blocking(pipe.fileno(), False)
+    while time.monotonic() - ORIGIN < 120:
+        if time.monotonic() - ORIGIN >= 115:
+            failure = failure or 'root-normal-deadline'
+            if proc.returncode is None and not forced:
+                proc.terminate()  # unreaped direct handle only; no group-ID kill
+                forced = True
+        for state, pipe in zip(streams, (proc.stdout, proc.stderr)):
+            if state['eof']: continue
+            try: chunk = os.read(pipe.fileno(), 65536)
+            except BlockingIOError: continue
+            if not chunk:
+                state['eof'] = True
+                continue
+            state['received'] += len(chunk)
+            offset = 0
+            while offset < len(chunk):
+                assert time.monotonic() - ORIGIN < 120
+                try:
+                    written = os.write(state['fd'], chunk[offset:])
+                except BaseException as write_error:
+                    state['error'] = type(write_error).__name__
+                    raise
+                assert written > 0
+                state['saved'] += written
+                try:
+                    state['digest'].update(chunk[offset:offset+written])
+                    state['hashed'] += written
+                except BaseException:
+                    state['hashKnown'] = False
+                    raise
+                offset += written
+        proc.poll()  # actual terminal, never inferred from a receipt or EOF alone
+        if proc.returncode is not None and all(s['eof'] for s in streams): break
+        select.select([], [], [], 0.002)
+    assert proc.returncode is not None and all(s['eof'] for s in streams)
+    assert proc.returncode == 0 and not forced and failure is None
+except BaseException as exc:
+    failure = failure or type(exc).__name__
+    if proc is not None and proc.returncode is None and not forced:
+        try: proc.terminate(); forced = True
+        except OSError: pass
+    # No fabricated EOF/wait, unsafe historical group signal, off-clock grace,
+    # retry, or presumed escaped-task closure. Root recovery remains UNKNOWN.
+finally:
+    for state in streams:
+        try:
+            st = os.fstat(state['fd'])
+            state['identity'] = dict(device=st.st_dev, inode=st.st_ino, mode=st.st_mode,
+                                     uid=st.st_uid, bytes=st.st_size)
+            os.close(state['fd']); state['rawClosed'] = True
+            if (st.st_mode & 0o777) != 0o600 or st.st_uid != os.getuid(): failure = failure or 'raw-mode-or-owner'
+        except BaseException as exc:
+            state['error'] = type(exc).__name__; failure = failure or 'raw-close-or-identity'
+    if proc is not None:
+        pipe_close_succeeded = True
+        for pipe in (proc.stdout, proc.stderr):
+            try: pipe.close()
+            except BaseException:
+                pipe_close_succeeded = False
+                failure = failure or 'pipe-close'
+    # Retain exact received/saved/hashed counts and digest-as-prefix, even on failure.
+    # A COMPLETE stream additionally requires actual EOF, actual child terminal,
+    # actual raw close, hashKnown and received==saved==hashed==fstat.bytes.
+    # Same-clock, best-effort original observed prefix publication; never expected facts.
+    # Actual inner process rows remain raw in P/run and are bound by hashes here.
+    inner_pins = {}
+    try:
+        for suffix in ('started.json','processes.jsonl','exit.json'):
+            item = P/'run'/(STAGE+'.'+suffix)
+            if item.is_file():
+                raw = item.read_bytes()
+                inner_pins[suffix] = {'path':str(item),'sha256':hashlib.sha256(raw).hexdigest()}
+                if suffix == 'processes.jsonl':
+                    assert not raw or raw.endswith(b'\n')
+                    for line in raw.splitlines():
+                        sample = json.loads(line)
+                        for row in sample['group']:
+                            assert type(row) is list and len(row)==4
+                            pid,pgid=int(row[0]),int(row[2])
+                            assert pid>0 and pgid>0
+                            registry['pids'].append(pid); registry['pgids'].append(pgid)
+                            registry['origins'].append({'role':'actual-inner-sample','pid':pid,'pgid':pgid,'receipt':str(item)})
+                if suffix == 'exit.json':
+                    inner = json.loads(raw)
+                    for pid in inner['sampledPids']:
+                        assert type(pid) is int and pid>0
+                        registry['pids'].append(pid)
+                        registry['origins'].append({'role':'actual-inner-sampledPid','pid':pid,'pgid':None,'receipt':str(item)})
+        if inner is None: failure = failure or 'inner-terminal-unavailable'
+        elif not (inner['exit']==0 and inner['accepted'] is True and inner['sourceUnchanged'] is True and inner['sourceIdentity']=='f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65' and inner['forcedCleanup'] is False and inner['errors']==[] and inner['remainingProcesses']==[] and inner['runtimeDirectoriesStillPresent']==[]): failure = failure or 'inner-not-accepted'
+    except BaseException as exc:
+        failure = failure or type(exc).__name__
+    facts = []
+    for state in streams:
+        identity = state.get('identity')
+        full = (proc is not None and proc.returncode is not None and state['eof'] and state['rawClosed'] and state['hashKnown'] and state['error'] is None and identity is not None and state['received']==state['saved']==state['hashed']==identity['bytes'])
+        facts.append({'path':state['path'],'receivedBytes':state['received'],'savedBytes':state['saved'],'hashedPrefixBytes':state['hashed'],'savedPrefixSha256':state['digest'].hexdigest() if state['hashKnown'] else None,'hashKnown':state['hashKnown'],'actualEOF':state['eof'],'rawDescriptorClosed':state['rawClosed'],'fileIdentity':identity,'writeOrCloseError':state['error'],'fullStreamSha256':state['digest'].hexdigest() if full else None,'fullStreamState':'COMPLETE_ACTUAL_CAPTURE' if full else 'UNKNOWN_PREFIX_ONLY'})
+    registry['pids']=sorted(set(registry['pids'])); registry['pgids']=sorted(set(registry['pgids']))
+    if root_acquired:
+        try:
+            assert time.monotonic()-ORIGIN<120
+            with (root/'collector-provisional.json').open('x') as metadata:
+                metadata.write(json.dumps({'stage':STAGE,'originMonotonic':ORIGIN,'collectorPid':os.getpid(),'collectorPgid':os.getpgrp(),'rootWrapperArgv':ARGV,'rootWrapperCwd':CWD,'sourceBindingSha256':EXPECTED_SOURCE_BINDING_SHA256,'implementationIndexSha256':EXPECTED_IMPLEMENTATION_SHA256,'rootGateSha256':APPROVED_GATE_SHA256,'creationPid':proc.pid if proc is not None else None,'creationPgid':proc.pid if proc is not None else None,'directHandleRegistered':proc is not None and proc in handles,'rawExit':proc.returncode if proc is not None else None,'forcedTermination':forced,'pipeCloseSucceeded':pipe_close_succeeded,'streams':facts,'innerReceipts':inner_pins,'knownTaskRegistry':registry,'failure':failure,'elapsedAtProvisionalPublication':time.monotonic()-ORIGIN,'actualCollectorToolTerminal':None,'freshSelectedCensus':None,'finalClockWitness':None,'accepted':False,'requiresIndependentOrdinaryToolObservations':True},allow_nan=False)+'\n')
+        except BaseException as exc:
+            failure = failure or type(exc).__name__
+    # No normal status after115; metadata is still provisional until real terminal.
+    if time.monotonic()-ORIGIN>=115: failure = failure or 'root-normal-deadline'
+    if proc is None or proc.returncode != 0 or forced or not all(s['eof'] and s['rawClosed'] and s['hashKnown'] and s['error'] is None for s in streams): failure = failure or 'incomplete-or-failed-capture'
+    if failure is not None: raise SystemExit(1)
+
+# Provisional until actual root terminal AND separate root post-terminal selected
+# census/source/tool/audit facts. Parent self-events cannot prove their own terminal.
+# A root record cannot become PASS unless ALL schema predicates hold and actual
+# earliest root invocation through final observation is strictly below115.
+# Any late/nonzero/missing/partial/unknown => STOP, failed or UNKNOWN, no next stage.
+
+========== DATA ONLY: ORDINARY-TOOL PHASE B, AFTER ACTUAL PHASE-A TOOL TERMINAL ==========
+Do not execute this entire .txt as a program. Root observes actual phase-A tool ID/raw terminal from the ordinary tool, retains that evidence or attributes the trusted-root observation if raw tool receipt is unretained. No receipt above proves its own terminal.
+For THIS FIXED STAGE only, read origin.json/collector-provisional.json at the literal OWNED_ROOT_OUTPUT above. Retain exact hashes and derive the unique union of every actual knownTaskRegistry PID/PGID plus any other actually recorded root-owned wrapper/guard/child/probe identity with its true origin; do not adopt unrelated parent/host identities or invent PGIDs.
+Record observer actual PID/PGID separately. Before any probe require monotonic-origin<115. One literal census argv:
+["/bin/ps", "-axo", "pid=,ppid=,pgid=,stat=,lstart=,comm="]
+Capture that direct probe with stdout=PIPE/stderr=PIPE/start_new_session=True. Keep the Popen handle FIRST after return. All drain/wait/write/hash/close/receipt work uses the same absolute remaining origin+115; no relative fresh grace. Actual communicate completion from both PIPEs/direct wait gives raw0/BOTH EOF/reaped; a timeout/error does NOT. Preserve all received raw (not clipped), actual counts/hashes/file identities/close and actual probePID/creationPGID immediately, including ordinary failed prefixes where observable. No cap or successful off-clock cleanup is invented.
+Retain full raw ps stdout/stderr in exclusive0600 files under this SAME fixed output. Inspect only rows matching the recorded task PID or PGID union; zombie is present, a reused matching number refuses rather than silently disappearing. Require no matching task rows. Retain every selection origin. The independent observer/probe are separate administrative observations: direct probe must be actually reaped; observer is not claimed absent from its own live census. Later actual observer tool terminal is a trusted-root observation, never inferred from its pre-exit event. No second census/retry/unsafe historical signal is authorized by this plan.
+Before observer return, close all raw files and exclusively publish postterminal-census.json with: phaseA actual tool-terminal attribution; task IDs/groups+origins; observer/probe actual identities; literal argv; raw0/BOTH EOF/actual direct reap; exact raw counts/hash/file identities/close facts; complete matchingTaskRows; actual same-domain census-end monotonic; any fixed-class failure/UNKNOWN; accepted=false pending root conjunction. It must point to actual immutable phase-A receipt, not rewrite it. Root then observes the actual phase-B ordinary-tool terminal.
+
+PHASE B FIXED ORDINARY-TOOL SOURCE (DATA; replace only actual tool-observation facts after A actually terminates):
+import time
+OBSERVER_FIRST = time.monotonic()
+import os, json, subprocess, hashlib
+from pathlib import Path
+ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/bind-workspace-tools')
+ACTUAL_A_TOOL_ID = 'UNRESOLVED_ACTUAL_TOOL_ID'
+ACTUAL_A_TOOL_RAW_EXIT = 0
+# These root-source observations must come from the actual ordinary-tool result,
+# never from collector-provisional.json. Independently decoded raw tool receipt
+# remains null/UNRETAINED if the tool did not supply a retained one.
+assert ACTUAL_A_TOOL_ID != 'UNRESOLVED_ACTUAL_TOOL_ID'
+origin_raw=(ROOT/'origin.json').read_bytes()
+provisional_raw=(ROOT/'collector-provisional.json').read_bytes()
+origin=json.loads(origin_raw); provisional=json.loads(provisional_raw)
+ORIGIN=origin['originMonotonic']
+assert type(ACTUAL_A_TOOL_RAW_EXIT) is int and ACTUAL_A_TOOL_RAW_EXIT==0
+assert provisional['stage']=='bind-workspace-tools' and provisional['accepted'] is False
+assert provisional['failure'] is None and provisional['rawExit']==0 and provisional['forcedTermination'] is False and provisional['pipeCloseSucceeded'] is True
+assert time.monotonic()-ORIGIN<115
+known_pids=provisional['knownTaskRegistry']['pids']
+known_groups=provisional['knownTaskRegistry']['pgids']
+assert all(type(x) is int and x>0 for x in known_pids+known_groups)
+# Add only additional actually recorded root-owned task/guard/probe IDs with real
+# origin/handle/creation identity receipts. No invented ID/group; no unrelated
+# structural parent automatically adopted as an owned task. Any unavailable such
+# facts stay UNKNOWN. Source-only inherited preflight guard completion is narrower
+# than a retained guard PID; no global/unseen-transient claim is made.
+p=None; handles=[]; out=None; err=None; complete=False; failure=None; facts=[]; matching=[]
+try:
+    assert time.monotonic()-ORIGIN<115
+    p=subprocess.Popen(['/bin/ps','-axo','pid=,ppid=,pgid=,stat=,lstart=,comm='],stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True)
+    handles.append(p) # FIRST after return; actual owned direct probe, never guessed.
+    out,err=p.communicate(timeout=max(.001,115-(time.monotonic()-ORIGIN)))
+    complete=True # actual BOTH PIPE communicate completion + direct wait/reap.
+    assert p.returncode==0 and time.monotonic()-ORIGIN<115
+    for line in out.decode('utf-8',errors='strict').splitlines():
+        fields=line.split(None,4)
+        assert len(fields)==5
+        pid,ppid,pgid=int(fields[0]),int(fields[1]),int(fields[2])
+        if pid in known_pids or pgid in known_groups: matching.append(line)
+    assert matching==[] # zombies/reused matching numbers remain present/refused.
+except subprocess.TimeoutExpired as exc:
+    out=exc.output; err=exc.stderr; failure='TimeoutExpired'
+except BaseException as exc:
+    failure=type(exc).__name__
+finally:
+    if p is not None and p.returncode is None:
+        try:p.terminate() # safe still-unreaped direct handle; no group-ID signal.
+        except OSError:pass
+    # Every local raw/finalization operation remains on the same absolute clock.
+    # Unavailable raw stays null; never manufacture empty complete streams.
+    for suffix,data in [('stdout',out),('stderr',err)]:
+        saved=0; hashed=0; digest=hashlib.sha256(); hashKnown=True; closed=False; identity=None; error=None; fd=None
+        path=ROOT/('postterminal-census.'+suffix)
+        try:
+            assert time.monotonic()-ORIGIN<120
+            if data is not None:
+                assert type(data) is bytes
+                fd=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_CLOEXEC,0o600)
+                offset=0
+                while offset<len(data):
+                    assert time.monotonic()-ORIGIN<120
+                    n=os.write(fd,data[offset:]); assert n>0
+                    saved+=n
+                    try:digest.update(data[offset:offset+n]); hashed+=n
+                    except BaseException:hashKnown=False;raise
+                    offset+=n
+                st=os.fstat(fd);identity={'device':st.st_dev,'inode':st.st_ino,'mode':st.st_mode,'uid':st.st_uid,'bytes':st.st_size}
+                assert (st.st_mode&0o777)==0o600 and st.st_uid==os.getuid()
+        except BaseException as exc:
+            error=type(exc).__name__;failure=failure or error
+        finally:
+            if fd is not None:
+                try:os.close(fd);closed=True
+                except OSError as exc:error=type(exc).__name__;failure=failure or error
+        full=(hashKnown and complete and p is not None and p.returncode is not None and data is not None and closed and error is None and identity is not None and len(data)==saved==hashed==identity['bytes'])
+        facts.append({'path':str(path),'receivedBytes':len(data) if data is not None else None,'savedBytes':saved,'hashedPrefixBytes':hashed,'savedPrefixSha256':digest.hexdigest() if hashKnown else None,'hashKnown':hashKnown,'fullStreamSha256':digest.hexdigest() if full else None,'actualEOF':complete,'rawDescriptorClosed':closed,'fileIdentity':identity,'writeOrCloseError':error,'fullStreamState':'COMPLETE_ACTUAL_CAPTURE' if full else 'UNKNOWN_PREFIX_ONLY'})
+    if p is not None:
+        for pipe in [p.stdout,p.stderr]:
+            try:pipe.close()
+            except OSError as exc:failure=failure or type(exc).__name__
+    value={'stage':'bind-workspace-tools','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None}
+    try:
+        assert time.monotonic()-ORIGIN<120
+        with (ROOT/'postterminal-census.json').open('x') as f:f.write(json.dumps(value,allow_nan=False)+'\n')
+    except BaseException as exc:failure=failure or type(exc).__name__
+    if failure is not None or not complete or time.monotonic()-ORIGIN>=115:raise SystemExit(1)
+The actual ordinary-tool exit of this B cell is observed by root BEFORE C. The received/saved/hashed counts from communicate refer to actually returned bytes, not presumed read callbacks; EOF is source-attributed to successful BOTH-PIPE communicate completion, never fd.close or a pre-exit event. On a missing terminal/prefix/publication failure stop; no automatic additional census or off-clock successful wait. No live descriptor/handle is mistaken for known cleanup.
+
+========== DATA ONLY: ROOT PHASE C, AFTER ACTUAL PHASE-B TOOL TERMINAL ==========
+Take a same-domain monotonic sample FIRST in the following ordinary DATA observation. Literal boundary source (data, not an executable helper):
+import time
+POST_TERMINAL_WITNESS = time.monotonic()
+This sample follows actual collector/tool terminal AND independent census/direct reap/raw+local metadata publication AND actual observer-tool terminal. Retain its actual value and origin receipt pin, root observed tool IDs/raw terminal attribution, both stream/census facts and calculated difference. Strictly require witness-origin<115. No process probe, child invocation, helper import, Git or retry is part of this clock witness. Root independently adjudicates all conjunctive facts only after these actual observations. Source-attributed trusted-root tool-terminal observations remain explicitly narrower than independently decoded raw tool receipts.
+The later static hash audit/qualification review/Git publication is outside this measured runtime interval; no runtime cleanup/receipt/probe may be deferred there. Any late/nonzero/missing/partial/unknown fact stops the prefix; no new stage or retry. This DATA file authorizes no acquisition, authority activation or product action.
+
+PHASE C FIXED ORDINARY DATA CLOCK OBSERVATION (DATA; only actual B tool facts are filled after B actually terminates):
+import time
+POST_TERMINAL_WITNESS = time.monotonic() # FIRST before all further DATA processing.
+import json, hashlib
+from pathlib import Path
+ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/bind-workspace-tools')
+ACTUAL_B_TOOL_ID = 'UNRESOLVED_ACTUAL_B_TOOL_ID'
+ACTUAL_B_TOOL_RAW_EXIT = 0
+assert ACTUAL_B_TOOL_ID != 'UNRESOLVED_ACTUAL_B_TOOL_ID'
+assert type(ACTUAL_B_TOOL_RAW_EXIT) is int and ACTUAL_B_TOOL_RAW_EXIT==0
+origin_raw=(ROOT/'origin.json').read_bytes(); origin=json.loads(origin_raw)
+census_raw=(ROOT/'postterminal-census.json').read_bytes(); census=json.loads(census_raw)
+assert census['stage']=='bind-workspace-tools' and census['accepted'] is False
+assert census['failure'] is None and census['probeRawExit']==0 and census['probeBothEOF'] is True and census['probeDirectReaped'] is True and census['matchingTaskRows']==[]
+elapsed=POST_TERMINAL_WITNESS-origin['originMonotonic']
+assert 0<=elapsed<115
+witness={'stage':'bind-workspace-tools','rootOriginMonotonic':origin['originMonotonic'],'postTerminalWitnessMonotonic':POST_TERMINAL_WITNESS,'completedInvocationAndObservationUpperBoundSeconds':elapsed,'strictUnder115':True,'phaseBActualToolId':ACTUAL_B_TOOL_ID,'phaseBActualToolRawExit':ACTUAL_B_TOOL_RAW_EXIT,'phaseBToolTerminalAttribution':'trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'censusReceiptSha256':hashlib.sha256(census_raw).hexdigest(),'accepted':False,'requiresIndependentRootFullConjunction':True,'noNewRuntimeChildOrProbe':True,'laterStaticAuditAndGitExcludedFromRuntime':True}
+with (ROOT/'final-clock-witness.json').open('x') as f:f.write(json.dumps(witness,allow_nan=False)+'\n')
+The witness file is static proof attribution of the already-completed target/census interval. Its own later DATA publication is not falsely represented as preceding its first timestamp. All target/runtime cleanup and the B census/receipts already completed before that timestamp; no runtime activity may be deferred into this static audit. This does not recursively require a new supervisor proving the static writer's death.
