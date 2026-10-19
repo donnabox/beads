@@ -1,0 +1,414 @@
+{
+  "actualResultPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/g09-schema-source.results.json",
+  "numTestSuitesCountersNotInterpretedAsPhysicalFileCount": true,
+  "officialReportAuditStage": "audit-g09-schema-source NOT_ATTEMPTED",
+  "officialSemanticPairAccepted": false,
+  "physicalResultFileSuites": 1,
+  "rawObservationRecords": [
+    {
+      "line": 5,
+      "parsedRecord": {
+        "calls": 8,
+        "observation": "G09-S04",
+        "observations": 0,
+        "urlReads": 0
+      },
+      "rawLineSha256": "68049325a139ce98648af64b14e5c0647b5fb6d1b7e786791a5f0cc93456e13d"
+    },
+    {
+      "line": 8,
+      "parsedRecord": {
+        "abortCalls": 1,
+        "abortPropagated": true,
+        "abortSignalForwarded": true,
+        "calls": 8,
+        "observation": "G09-S05",
+        "rows": [
+          {
+            "method": "GET",
+            "status": 200
+          },
+          {
+            "method": "HEAD",
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "status": 304
+          },
+          {
+            "method": "HEAD",
+            "status": 412
+          },
+          {
+            "method": "GET",
+            "status": 406
+          },
+          {
+            "method": "GET",
+            "status": 410
+          },
+          {
+            "method": "HEAD",
+            "status": 409
+          },
+          {
+            "method": "GET",
+            "status": 503
+          }
+        ]
+      },
+      "rawLineSha256": "6a2e8ef0c9939cee05e9136a0dd2ea3058d7370e12bd82866296f7930f5277d1"
+    },
+    {
+      "line": 11,
+      "parsedRecord": {
+        "attempted": 5,
+        "closed": true,
+        "completed": 5,
+        "failureCount": 0,
+        "observation": "G09-S06",
+        "pending": 0,
+        "removed": true,
+        "rows": [
+          {
+            "errorCategory": null,
+            "headers": {
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-epoch": "aa27b85f-39c4-4ed9-98e8-74fd35edd544",
+              "bdp-scope-position": "pos-0",
+              "cache-control": "private, no-store",
+              "connection": "keep-alive",
+              "content-length": "171",
+              "content-type": "application/json",
+              "date": "Mon, 19 Oct 2026 03:49:03 GMT",
+              "keep-alive": "timeout=1",
+              "vary": "Accept",
+              "x-bdp-development": "non-attesting"
+            },
+            "method": "GET",
+            "ordinal": 1,
+            "received": true,
+            "settled": true,
+            "status": 200,
+            "text": "{\n \"$id\": \"https://schema.invalid/acme/schemas/root\", \"type\": \"object\", \"properties\": {\"title\": {\"$ref\": \"value\"}}, \"required\": [\"title\"], \"additionalProperties\": false\n}\n",
+            "url": "https://schema.invalid/acme/schemas/root",
+            "validated": true
+          },
+          {
+            "errorCategory": null,
+            "headers": {
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-epoch": "aa27b85f-39c4-4ed9-98e8-74fd35edd544",
+              "bdp-scope-position": "pos-0",
+              "cache-control": "private, no-store",
+              "connection": "keep-alive",
+              "content-length": "171",
+              "content-type": "application/json",
+              "date": "Mon, 19 Oct 2026 03:49:03 GMT",
+              "keep-alive": "timeout=1",
+              "vary": "Accept",
+              "x-bdp-development": "non-attesting"
+            },
+            "method": "GET",
+            "ordinal": 2,
+            "received": true,
+            "settled": true,
+            "status": 200,
+            "text": "{\n \"$id\": \"https://schema.invalid/acme/schemas/root\", \"type\": \"object\", \"properties\": {\"title\": {\"$ref\": \"value\"}}, \"required\": [\"title\"], \"additionalProperties\": false\n}\n",
+            "url": "https://schema.invalid/acme/schemas/root",
+            "validated": true
+          },
+          {
+            "errorCategory": null,
+            "headers": {
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-epoch": "aa27b85f-39c4-4ed9-98e8-74fd35edd544",
+              "bdp-scope-position": "pos-0",
+              "cache-control": "private, no-store",
+              "connection": "keep-alive",
+              "content-length": "171",
+              "content-type": "application/json",
+              "date": "Mon, 19 Oct 2026 03:49:03 GMT",
+              "keep-alive": "timeout=1",
+              "vary": "Accept",
+              "x-bdp-development": "non-attesting"
+            },
+            "method": "HEAD",
+            "ordinal": 3,
+            "received": true,
+            "settled": true,
+            "status": 200,
+            "text": "",
+            "url": "https://schema.invalid/acme/schemas/root",
+            "validated": true
+          },
+          {
+            "errorCategory": null,
+            "headers": {
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-epoch": "aa27b85f-39c4-4ed9-98e8-74fd35edd544",
+              "bdp-scope-position": "pos-0",
+              "cache-control": "private, no-store",
+              "connection": "keep-alive",
+              "content-length": "125",
+              "content-type": "application/problem+json",
+              "date": "Mon, 19 Oct 2026 03:49:03 GMT",
+              "keep-alive": "timeout=1",
+              "x-bdp-development": "non-attesting"
+            },
+            "method": "GET",
+            "ordinal": 4,
+            "received": true,
+            "settled": true,
+            "status": 410,
+            "text": "{\"type\":\"https://github.com/gastownhall/bdp/problems/gone\",\"code\":\"cursor-expired\",\"retry\":\"after-state-change\",\"status\":410}",
+            "url": "https://schema.invalid/acme/schemas/root",
+            "validated": true
+          },
+          {
+            "errorCategory": null,
+            "headers": {
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-epoch": "aa27b85f-39c4-4ed9-98e8-74fd35edd544",
+              "bdp-scope-position": "pos-0",
+              "cache-control": "private, no-store",
+              "connection": "keep-alive",
+              "content-length": "127",
+              "content-type": "application/problem+json",
+              "date": "Mon, 19 Oct 2026 03:49:03 GMT",
+              "keep-alive": "timeout=1",
+              "x-bdp-development": "non-attesting"
+            },
+            "method": "HEAD",
+            "ordinal": 5,
+            "received": true,
+            "settled": true,
+            "status": 409,
+            "text": "",
+            "url": "https://schema.invalid/acme/schemas/root",
+            "validated": true
+          }
+        ]
+      },
+      "rawLineSha256": "78403691a54117f5fc19c6c8b3fed2365fbd613391a20dfcf7729a0f464565ec"
+    },
+    {
+      "line": 25,
+      "parsedRecord": {
+        "attempted": 2,
+        "closed": true,
+        "completed": 2,
+        "failureCount": 0,
+        "observation": "G09-S07",
+        "pending": 0,
+        "removed": true,
+        "rows": [
+          {
+            "errorCategory": null,
+            "headers": {
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-epoch": "7d2a02ae-df7f-455e-8cb0-62aba9d2f588",
+              "bdp-scope-position": "pos-0",
+              "cache-control": "private, no-store",
+              "connection": "keep-alive",
+              "content-length": "171",
+              "content-type": "application/json",
+              "date": "Mon, 19 Oct 2026 03:49:03 GMT",
+              "keep-alive": "timeout=1",
+              "vary": "Accept",
+              "x-bdp-development": "non-attesting"
+            },
+            "method": "GET",
+            "ordinal": 1,
+            "received": true,
+            "settled": true,
+            "status": 200,
+            "text": "{\n \"$id\": \"https://schema.invalid/acme/schemas/root\", \"type\": \"object\", \"properties\": {\"title\": {\"$ref\": \"value\"}}, \"required\": [\"title\"], \"additionalProperties\": false\n}\n",
+            "url": "https://schema.invalid/acme/schemas/root",
+            "validated": true
+          },
+          {
+            "errorCategory": null,
+            "headers": {
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-epoch": "7d2a02ae-df7f-455e-8cb0-62aba9d2f588",
+              "bdp-scope-position": "pos-0",
+              "cache-control": "private, no-store",
+              "connection": "keep-alive",
+              "content-length": "127",
+              "content-type": "application/problem+json",
+              "date": "Mon, 19 Oct 2026 03:49:04 GMT",
+              "keep-alive": "timeout=1",
+              "retry-after": "1",
+              "x-bdp-development": "non-attesting"
+            },
+            "method": "GET",
+            "ordinal": 2,
+            "received": true,
+            "settled": true,
+            "status": 503,
+            "text": "{\"type\":\"https://github.com/gastownhall/bdp/problems/unavailable\",\"code\":\"catch-up-timeout\",\"retry\":\"after-delay\",\"status\":503}",
+            "url": "https://schema.invalid/acme/schemas/root",
+            "validated": true
+          }
+        ]
+      },
+      "rawLineSha256": "5191d2b740f87bc13520bf5741a24eebd87265bf98c9c8718ab0b14b6482c947"
+    },
+    {
+      "line": 28,
+      "parsedRecord": {
+        "attempted": 2,
+        "closed": true,
+        "completed": 2,
+        "failureCount": 0,
+        "observation": "G09-S08",
+        "pending": 0,
+        "removed": true,
+        "rows": [
+          {
+            "errorCategory": null,
+            "headers": {
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-epoch": "2b6ef000-8114-4dda-b8c5-42f6d4d045cd",
+              "bdp-scope-position": "pos-0",
+              "cache-control": "private, no-store",
+              "connection": "keep-alive",
+              "content-length": "171",
+              "content-type": "application/json",
+              "date": "Mon, 19 Oct 2026 03:49:04 GMT",
+              "keep-alive": "timeout=1",
+              "vary": "Accept",
+              "x-bdp-development": "non-attesting"
+            },
+            "method": "GET",
+            "ordinal": 1,
+            "received": true,
+            "settled": true,
+            "status": 200,
+            "text": "{\n \"$id\": \"https://schema.invalid/acme/schemas/root\", \"type\": \"object\", \"properties\": {\"title\": {\"$ref\": \"value\"}}, \"required\": [\"title\"], \"additionalProperties\": false\n}\n",
+            "url": "https://schema.invalid/acme/schemas/root",
+            "validated": true
+          },
+          {
+            "errorCategory": null,
+            "headers": {
+              "bdp-authorization-view": "development-all-visible",
+              "bdp-scope-epoch": "2b6ef000-8114-4dda-b8c5-42f6d4d045cd",
+              "bdp-scope-position": "pos-0",
+              "cache-control": "private, no-store",
+              "connection": "keep-alive",
+              "content-length": "127",
+              "content-type": "application/problem+json",
+              "date": "Mon, 19 Oct 2026 03:49:05 GMT",
+              "keep-alive": "timeout=1",
+              "retry-after": "1",
+              "x-bdp-development": "non-attesting"
+            },
+            "method": "HEAD",
+            "ordinal": 2,
+            "received": true,
+            "settled": true,
+            "status": 503,
+            "text": "",
+            "url": "https://schema.invalid/acme/schemas/root",
+            "validated": true
+          }
+        ]
+      },
+      "rawLineSha256": "e4ff7f57829308e2e20173ab6a3b148c86260a202ada166592be9a7997fc7bcf"
+    }
+  ],
+  "reportedTopLevelCounters": {
+    "numFailedTestSuites": 0,
+    "numFailedTests": 0,
+    "numPassedTestSuites": 1,
+    "numPassedTests": 5,
+    "numPendingTestSuites": 0,
+    "numPendingTests": 8,
+    "numTodoTests": 0,
+    "numTotalTestSuites": 1,
+    "numTotalTests": 13,
+    "startTime": 1792381743053,
+    "success": true
+  },
+  "selectedExactlyOnce": [
+    {
+      "assertion": {
+        "ancestorTitles": [],
+        "duration": 50.85595799999999,
+        "failureMessages": [],
+        "fullName": "G09-S04 schema selector receiving and exact identity",
+        "meta": {},
+        "status": "passed",
+        "tags": [],
+        "title": "G09-S04 schema selector receiving and exact identity"
+      },
+      "file": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/packages/server/src/transaction-schema-http.test.ts"
+    },
+    {
+      "assertion": {
+        "ancestorTitles": [],
+        "duration": 3.9996250000000373,
+        "failureMessages": [],
+        "fullName": "G09-S05 schema selector HTTP/min failure order",
+        "meta": {},
+        "status": "passed",
+        "tags": [],
+        "title": "G09-S05 schema selector HTTP/min failure order"
+      },
+      "file": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/packages/server/src/transaction-schema-http.test.ts"
+    },
+    {
+      "assertion": {
+        "ancestorTitles": [],
+        "duration": 21.913167000000044,
+        "failureMessages": [],
+        "fullName": "G09-S06 schema runtime satisfied and context errors",
+        "meta": {},
+        "status": "passed",
+        "tags": [],
+        "title": "G09-S06 schema runtime satisfied and context errors"
+      },
+      "file": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/packages/server/src/transaction-schema-http.test.ts"
+    },
+    {
+      "assertion": {
+        "ancestorTitles": [],
+        "duration": 1013.398334,
+        "failureMessages": [],
+        "fullName": "G09-S07 schema runtime ahead before conditional",
+        "meta": {},
+        "status": "passed",
+        "tags": [],
+        "title": "G09-S07 schema runtime ahead before conditional"
+      },
+      "file": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/packages/server/src/transaction-schema-http.test.ts"
+    },
+    {
+      "assertion": {
+        "ancestorTitles": [],
+        "duration": 1009.6572910000002,
+        "failureMessages": [],
+        "fullName": "G09-S08 schema runtime unknown before HEAD/media",
+        "meta": {},
+        "status": "passed",
+        "tags": [],
+        "title": "G09-S08 schema runtime unknown before HEAD/media"
+      },
+      "file": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/packages/server/src/transaction-schema-http.test.ts"
+    }
+  ],
+  "sha256": "a2d7e81baff5c8fa75e85bb7aeaeffd1c99cfca62bfbd2d78cdaf59f205d103d",
+  "unselectedSkippedFullNames": [
+    "serves exact captured root and transitive bytes without retaining mutable input",
+    "applies selection once and retains exact byte length and current context",
+    "preserves receiving refusals and foreign schema minima before conditionals",
+    "preserves accepted offline configuration and unserved aliases: differing-id",
+    "preserves accepted offline configuration and unserved aliases: outside-namespace",
+    "preserves accepted offline configuration and unserved aliases: query-retrieval",
+    "discards a disconnected schema delivery and leaves the runtime usable",
+    "sanitizes a selected schema observation fault without stale response metadata"
+  ]
+}

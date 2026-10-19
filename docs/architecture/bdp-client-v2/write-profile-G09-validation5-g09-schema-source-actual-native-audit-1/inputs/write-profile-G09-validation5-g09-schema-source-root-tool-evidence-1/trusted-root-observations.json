@@ -1,0 +1,83 @@
+{
+  "accepted": false,
+  "actualFunctionsCellId": "3261",
+  "actualInnerElapsedSeconds": 7.444552666973323,
+  "actualInnerExit": 0,
+  "actualLog": {
+    "bytes": 9479,
+    "mode": "0o644",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/g09-schema-source.log",
+    "sha256": "7de64bbbdd467cbb9d2d30e9b24b892d4ddcd4ceb59804532a0f5b29a563c028"
+  },
+  "actualPhaseTerminalObservations": [
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "da06a6",
+      "phase": "A"
+    },
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "20a3d6",
+      "phase": "B"
+    },
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "292a60",
+      "phase": "C"
+    }
+  ],
+  "actualVitestResult": {
+    "bytes": 3942,
+    "mode": "0o644",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/g09-schema-source.results.json",
+    "sha256": "a2d7e81baff5c8fa75e85bb7aeaeffd1c99cfca62bfbd2d78cdaf59f205d103d"
+  },
+  "censusRawStreamBytes": [
+    204425,
+    0
+  ],
+  "cleanupPerformedByStaticPacket": false,
+  "completedInvocationAndObservationUpperBoundSeconds": 13.450222124811262,
+  "firstPostBTerminalWitnessMonotonic": 2267479.792901041,
+  "fullIndependentConjunctionAudit": "PENDING",
+  "matchingTaskRows": [],
+  "nextStageReleased": false,
+  "observerSelfAbsenceOrGlobalContainmentClaim": false,
+  "ordinaryToolRecords": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-g09-schema-source-root-tool-evidence-1/dispatch-state.json",
+    "sha256": "794d817a26c51970d7673a3d558b8977d659a5e4f9d2da604912df29f22d1bb1"
+  },
+  "probeDirectReaped": true,
+  "qualityPass": false,
+  "rawWireToolReceipts": "UNRETAINED_SOURCE_ATTRIBUTED_NORMALIZED_RESULTS",
+  "recordedTaskPGIDs": [
+    14284,
+    14290,
+    14997
+  ],
+  "recordedTaskPIDs": [
+    14289,
+    14290,
+    14997,
+    15001
+  ],
+  "reportedFailedTests": 0,
+  "reportedPassedFullNames": [
+    "G09-S04 schema selector receiving and exact identity",
+    "G09-S05 schema selector HTTP/min failure order",
+    "G09-S06 schema runtime satisfied and context errors",
+    "G09-S07 schema runtime ahead before conditional",
+    "G09-S08 schema runtime unknown before HEAD/media"
+  ],
+  "reportedSelectedPasses": 5,
+  "reportedSuccess": true,
+  "rootOriginMonotonic": 2267466.342678916,
+  "rootRawStreamBytes": [
+    488,
+    0
+  ],
+  "stage": "g09-schema-source",
+  "strictReportAuditStage": "audit-g09-schema-source_NOT_ATTEMPTED",
+  "strictUnder115": true,
+  "temporaryDirectory": "/private/tmp/vickie-tx-discovery-validation-g09-schema-source-n7fsqmyh"
+}
