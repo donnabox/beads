@@ -1,0 +1,31 @@
+{
+  "acceptedObservationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/legacy-schema-source.accepted-observation.json",
+  "acceptedObservationSha256": "9838974a8fbaecdb2ddfe3cee9da3716987c8d152de735736469893220f2abd9",
+  "actualAuditorZeroAndOutputJoinVerified": true,
+  "claimEligible": false,
+  "exact8Keys": true,
+  "limitationsExact": "Private exact source/build/archive/consumer only. Historical lanes distinct. Failure/partial records remain raw, never reconstructed; no public Write qualification/admission claim.",
+  "newG09DirectCredit": 0,
+  "newG09WireCredit": 0,
+  "originalRecordLineHashes": [],
+  "privatePairFinalDisposition": "PENDING ROOT full actual disposition+durability",
+  "publicProfileOrWholeWriteCredit": false,
+  "reportObjects": 0,
+  "reportsExactOriginalLogObjects": [],
+  "selectedExactlyOnce": [
+    "serves exact captured root and transitive bytes without retaining mutable input",
+    "preserves receiving refusals and foreign schema minima before conditionals"
+  ],
+  "sourceBindingJoin": true,
+  "sourceIdentityJoin": true,
+  "sourceLog": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/legacy-schema-source.log",
+    "sha256": "8309b3750bea55589bfa2805c5827b53b97503a62ba2ba801005a102277ca7e5"
+  },
+  "sourceResults": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/legacy-schema-source.results.json",
+    "sha256": "bff798f0ff9bd6dec3407466e4efc601ec6dddc1705e23e7eff9c71acec3af36"
+  },
+  "strictLegacyReportArrayEmpty": true,
+  "unselectedSkipped": 11
+}
