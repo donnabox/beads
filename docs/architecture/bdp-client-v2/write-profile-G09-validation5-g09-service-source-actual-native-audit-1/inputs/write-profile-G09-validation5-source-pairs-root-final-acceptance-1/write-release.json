@@ -1,0 +1,36 @@
+{
+  "acceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-source-pairs-root-final-acceptance-1/acceptance.json",
+    "sha256": "c295b60b555240ab8c95d1ca1367de604e1e482dc350e15d2e39193ac8ff10c8"
+  },
+  "accepted": true,
+  "allNewActualsUnattempted": true,
+  "allPriorActualsNeverRepeat": true,
+  "beforeSha256": "18a440d47c2b4e7aef7e46afc73f627a27d13e51cae8b990cd2feade33c774a4",
+  "candidate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-source-pairs-closed-control-source-1/execution-gate.proposed.json",
+    "sha256": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8"
+  },
+  "findingsDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-source-pairs-root-final-acceptance-1/findings-disposition.json",
+    "sha256": "804cf4011c07747697b2b5711712347fc7b05c812251b37ef9700f16713e8bad"
+  },
+  "kind": "ONE_EXACT_LIVE_GATE_WRITE_CONDITIONAL_ON_COMPLETE_AUTHORITY_DURABILITY",
+  "manifest": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-source-pairs-closed-control-source-1/execution-manifest.json",
+    "sha256": "fca6f5f586215109fc28bf3837a95df0e363a67caad4023932cc2ba688e6a872"
+  },
+  "noRuntimeAtWrite": true,
+  "onlyChangedFields": [
+    "approvedStages",
+    "rootBuildAcceptance",
+    "rootDisposition"
+  ],
+  "onlyLivePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+  "requireBeforeAfterSource679Helper105Other110Run38Build476Tools11GitAndStrictHistoricalReferencePhaseChecks": true,
+  "requireFullCurrentAndPriorCompositeRawGitModesAndCriticalDirectReadbacksBeforeWrite": true,
+  "requireSeparateActivationPublicationAndDirectReadbacksBeforeOneG09ServiceSource": true,
+  "runtimeInvocationAuthority": false,
+  "separateActivationOutput": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-source-pairs-root-activation-1",
+  "session": "2026-10-18T02:16:24Z-549f"
+}

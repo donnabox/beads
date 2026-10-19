@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+G09 service-source capture FULLnative79 index99809f8f/closure32ab5037 accepted/no findings. ROOT independently verified79/64origins5534currentledger plus full ownactualinspection1e66fbd6. [ROOT final source capture disposition](write-profile-G09-validation5-g09-service-source-root-final-disposition-1/disposition.json) acceptsONEactual capture/exactselected3PASS/112UNSELECTEDskipped/finiteobservationconjunction only: inner0/source1eca unchanged/common9.829497917<115/full20394Blog10270d0e. Three retained observationrecords areavailability only; officialreportaudit NOT_ATTEMPTED/source-auditpair incomplete. ONE existing audit-g09-service-source exact S2 baseline conditionally released ONLY AFTER native79+ROOT3+sole83 raw/Gitmodes/critical readback. Actualauditor must run next and produce g09-service-source.accepted-observation.json; static/native checks are not a substitute. Originalfalse/pending/raw wireUNRETAINED/source207acceptedfalse/finiteprocess/scratch/P3P4limits preserved. No other source stage/profile/fullWrite pass; later17closed.
+
+
 ONE actual g09-service-source COMPLETE functions3233 A0ca869/B01aab3/C660eb9 all0 afterfull1805authority803920ab/separate6activationc4bb2f09. Actualselected3PASS/112unselectedSKIPPED/0failed, inner0/source1eca unchanged4.697510584/common9.829497917<115/full20394Blog10270d0e+JSONresult retained. [Frozen source capture9](write-profile-G09-validation5-g09-service-source-root-tool-evidence-1/report.md)+root8+inner5/all23/no retry/secondcensus. FULL actualnative/ROOTcaptureacceptance/durability BEFORE existing next audit-g09-service-source; official strict reportaudit NOT_ATTEMPTED/source-auditpair notcomplete/no profile/fullWritepass. Originalfalse/pending/raw wireUNRETAINED/finiteprocess/scratch limits preserved.
 
 
