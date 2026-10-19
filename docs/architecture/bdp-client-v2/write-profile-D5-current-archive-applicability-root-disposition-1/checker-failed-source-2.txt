@@ -1,0 +1,59 @@
+from pathlib import Path
+import json,hashlib,stat,shutil
+L=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs');C=Path('/Users/dbox/repos/wt/vickie/bdp-client-design/checkout');D=C/'docs/architecture/bdp-client-v2';E=L/'write-profile-D5-current-archive-applicability-snapshot-1';R=L/'write-profile-D5-current-archive-applicability-root-disposition-1';P=L/'write-profile-G09-validation-preparation-5'
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def read(p):return json.loads(p.read_text())
+def meta(p):return {'bytes':p.stat().st_size,'mode':oct(stat.S_IMODE(p.stat().st_mode)),'sha256':sha(p)}
+def pin(p):return {'path':str(p),'sha256':sha(p)}
+def dump(p,x):p.write_text(json.dumps(x,indent=2,sort_keys=True)+'\n')
+assert not R.exists() and sha(E/'index.json')=='ecbe4c8fa79919eb8002726d1e4c166988517cb3821c0f556ec0270b357b07a7' and sha(E/'closure.json')=='e067e92771ba13d587a2c292237232356c7ddb1a0c5566ddf5c8473d764a78f0'
+fs=[p for p in E.rglob('*') if p.is_file()];assert len(fs)==7 and len(read(E/'index.json')['files'])==6
+for p in fs:
+ rel=str(p.relative_to(E));assert meta(p)==meta(D/E.name/rel)
+ if rel!='index.json':assert meta(p)==read(E/'index.json')['files'][rel]
+assert read(E/'closure.json')['accepted'] is False
+origins=read(E/'input-origins.json')['origins'];assert len(origins)==27;objects={};lineChecks=0
+for key,m in origins.items():
+ p=Path(m['path']);assert meta(p)=={k:m[k] for k in ['bytes','mode','sha256']},key
+ payload=p.read_bytes()
+ try:raw=payload.decode('utf-8')
+ except UnicodeDecodeError:
+  assert not m['anchors'];objects[key]=payload;continue
+ lines=raw.splitlines()
+ for a in m['anchors']:
+  assert a['firstLineText']==lines[a['lines'][0]-1],(key,a)
+  for n in a['lines']:assert a['needle'] in lines[n-1];lineChecks+=1
+ try:objects[key]=json.loads(raw)
+ except json.JSONDecodeError:objects[key]=raw
+ if m['snapshotOnly']:assert not m['currentEqualityClaimed']
+cross=read(E/'delivery-crosswalk.json');assert len(cross['rows'])==8 and len(cross['finalElevenBindings'])==11 and all(x['finalValue']=='UNKNOWN' for x in cross['finalElevenBindings'])
+pointerChecks=0
+def walk(v):
+ global pointerChecks
+ if type(v) is dict:
+  if 'origin' in v and 'pointer' in v:
+   assert v['origin'] in origins;obj=objects[v['origin']];ptr=v['pointer']
+   if ptr:
+    assert ptr.startswith('/')
+    for part in ptr[1:].split('/'):
+     part=part.replace('~1','/').replace('~0','~')
+     obj=obj[int(part)] if type(obj) is list else obj[part]
+   pointerChecks+=1
+  for x in v.values():walk(x)
+ elif type(v) is list:
+  for x in v:walk(x)
+walk(cross)
+sb=read(P/'source-binding.json');W=Path(sb['worktree']);assert len(sb['trackedSourceFiles'])==679
+for n,h in sb['trackedSourceFiles'].items():assert sha(W/n)==h,n
+build=read(P/'run/build-artifacts.json');assert len(build['artifacts'])==476
+for n,h in build['artifacts'].items():assert sha(W/n)==h,n
+tools=read(P/'run/workspace-tools.json');assert len(tools['tools'])==11
+for n,m in tools['tools'].items():assert sha(Path(n))==m['sha256'] and str(Path(n).resolve(strict=True))==m['realpath']
+basis=read(E/'basis.json');assert basis['accepted'] is False and basis['finalDeliveryIdentity']=='UNBOUND_NOT_A_SELECTION_OF_THIS_D1_CANDIDATE'
+for row in basis['currentPrivateD1']['archives']:assert meta(Path(row['archive']['path']))=={k:row['archive'][k] for k in ['bytes','mode','sha256']}
+proof=read(P/'run/tar-source-provenance.json');assert len(proof)==11 and sum(len(v['files']) for v in proof['packages'].values())==321
+absences=basis['observedRuntimeBoundary']['consumerInstalledOutputsObservedAbsent'];assert len(absences)==3 and all(not Path(p).exists() for p in absences)
+R.mkdir();shutil.copy2(L/'root-D5-current-archive-inventory-checker-failed-source-1.txt',R/'checker-failed-source-1.txt');shutil.copy2(L/'root-D5-current-archive-inventory-checker-failure-1.json',R/'checker-failure-1.json');dump(R/'independent-input-checks.json',{'allSevenFilesSixIndexedMirrorsExact':True,'originMetadataCurrentAtRootRead':27,'historicalSnapshotOnlyOrigins':[k for k,v in origins.items() if v['snapshotOnly']],'realLineAnchorsVerified':lineChecks,'referencedJsonPointersResolved':pointerChecks,'obligationRows':8,'allElevenFinalBindingsRemainUnknown':True,'source679Build476Tools11BothArchiveFilesRehashed':True,'actualProofElevenKeys321RecordedMembers':True,'archiveTarNotReDecodedForThisDataInventory':'Existing separately accepted R21 applies only to exact private source/archive basis','onlyObservedFilesystemAbsences':absences,'processExistenceNotObserved':'UNKNOWN; no census invoked','runtimeAction':False})
+dis={'accepted':True,'kind':'DATA_INVENTORY_ONLY_WITH_EXACT_DESCRIPTIVE_SCOPE_QUALIFICATION','session':'2026-10-18T02:16:24Z-549f','inventoryIndex':pin(E/'index.json'),'inventoryClosure':pin(E/'closure.json'),'independentChecks':pin(R/'independent-input-checks.json'),'rootReadOnlyCheckerFailurePreserved':pin(R/'checker-failure-1.json'),'scope':'Private actualD1 archive facts crosswalked to STILLUNBOUND finaldelivery duties; not new archive/runtime/identity/admission/source authority','exactDescriptiveFinding':{'severity':'Low','owner':pin(E/'report.md'),'originalPhrase':'No consumer/lock/inventory/entry or installed child exists at this observation.','correctedScope':'Only the three listed consumer/provenance/inventory paths were observed absent. Process existence and unrelated installed children were not checked and remain UNKNOWN. No census was invoked.','originalReportAndSevenFileInventoryUnchanged':True,'basisObservedRuntimeBoundaryWasAlreadyNarrow':True,'status':'QUALIFIED_BY_EXACT_ROOT_DISPOSITION_ONLY'},'finalElevenFieldsStillUNKNOWN':True,'noPrivateFactPromotedToFinalSelectedTargetConfig':True,'source681CarrierAndSource679D1RemainDistinct':True,'RUSeparateResponseRetryNonatomicAndTXAtomicityReceiptRecoveryRetained':True,'failedMandatoryOwnerPlanC16ClockConflictAndPlatformAssuranceRemainUnresolved':True,'noHumanDecisionRequiredForActiveIndependentPreparation':True,'sourceAuthoringAuthority':False,'runtimeAuthority':False,'gateWriteAuthority':False,'reviewRetryAuthority':False,'profileAdmission':False,'wholeWriteCredit':False};dump(R/'disposition.json',dis);dump(R/'index.json',{'files':{p.name:meta(p) for p in R.iterdir()},'physicalFiles':5,'selfExcluded':'index.json','runtimeAuthority':False});shutil.copytree(R,D/R.name)
+selected=[D/p.relative_to(L) for folder in [E,R] for p in folder.rglob('*') if p.is_file()];assert len(selected)==12
+pre=L/'root-D5-current-archive-applicability-publication-1';dump(Path(str(pre)+'.manifest.json'),{str(p.relative_to(C)):meta(p) for p in selected});Path(str(pre)+'.paths').write_bytes(b''.join(str(p.relative_to(C)).encode()+b'\0' for p in selected));print(json.dumps({'selected':12,'rootDisposition':sha(R/'disposition.json'),'rootIndex':sha(R/'index.json'),'originPins':27,'pointerChecks':pointerChecks,'lineChecks':lineChecks,'runtime':False}))

@@ -1,0 +1,21 @@
+# Current D1 archives against final Write delivery
+
+Inventory only; accepted **false**. The actual D1 archive verifier is accepted by its existing native/ROOT authorities. This seven-file snapshot grants no source, runtime, gate, profile, review retry or landing authority.
+
+Current private facts: frozen679 source identity 1ecaf2e47369cc12cc26bc3ed693c5d4d3b9cffa4714b13dbe5567f9e46bfb15, HEAD cce884ccea1db97cbc6fd7bff876d4d6091f9081/tree 6757829bd5b700faf28df39071190a272add90c9 with ten reviewed dirty paths;476 fresh build artifacts,11 measured tools, actual protocol68665-byte/63-member and server445045-byte/258-member archives. The eleven-key/321-member tar proof is adb24bc4154d97f48c2acb5c4e21bc67a3f541dfd8696bfaff95bf997e552fea; ROOT archive disposition is 5f08d675179a7a93aa74d39e0723012db8c8045394e0dc188aa6d5ccb09f7508. These are dirty-source attribution, not child-attested or final combined committed-source proof. Existing complete106 publication receipt names f76f68452413b2f5415e4718c60626607f9e3cee. This snapshot reads/re-hashes local receipts; it does not independently replay remote publication or accept them again.
+
+| Current private fact | Final delivery boundary |
+| --- | --- |
+| Source/build/tool/archive bytes now measured | Final combined source and reviewed owner/fixture freeze remains unselected; later byte changes return through existing freeze/install/baseline barriers. |
+| First21 accepted P5 stages, prefix exhausted | Later13 runtime closed. No consumer/lock/inventory/entry or installed child exists at this observation. CLOSED consumer-source release is not runtime permission. |
+| Real archive-source provenance | No final Scope, profile, History, sourceCommit, payload/contracts/policy/auth/fixture/capabilities binding follows. All11 final fields stay UNKNOWN. |
+| Current source callbacks and tar verification | Not full-clause cumulative coverage:251 selected TX laws retain17 partial owners,234 missing and zero whole established. Inherited Read/RU laws must run on actual TX owner with TX forms; genuine RU remains separately bound. |
+| Separate carrier4 static acceptance | Same-run wrapper+sidecar retention, lifecycle and final capacity unvalidated; its source681 is a different lane. C16 subjectBegin+120 versus normalROOT<115 stays blocked. |
+| Archive acceptance | Does not settle credentialed cold navigation, ordinary installed RU/TX intended-listener startup, actual supported erasure/recovery/restore applicability, public admission, combined exact-tree CI or authorized landing. |
+
+[delivery-crosswalk.json](/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D5-current-archive-applicability-snapshot-1/delivery-crosswalk.json) contains eight concrete obligation rows and exact origin IDs, JSON pointers and real source line anchors. [input-origins.json](/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D5-current-archive-applicability-snapshot-1/input-origins.json) pins exact current bytes, sizes and modes; the sole-plan and live-gate versions are dated snapshots only. [basis.json](/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-D5-current-archive-applicability-snapshot-1/basis.json) keeps current D1 measured identities distinct from final delivery identities.
+
+No human answer is required for this inventory or the active independent consumer-control preparation. Final-owner authored/reviewed owner/fixture/configuration freeze remains agent/root work. The absent mandatory final-owner PLAN result, incompatible C16 clock boundary, and any unsupported operator/platform assurance or admission scope remain later explicit decisions only after independent work is exhausted. No review waiver, retry, deadline widening, semantic ruling, report union or fixture fusion is adopted.
+
+This worker read/hash-checked all679 current source files,476 recorded build artifacts,11 actual tool files, both archive file hashes and the selected immutable evidence origins. It read the existing eleven-key proof as data; it did not re-execute tar/provenance helpers, inspect live processes, run tests, product, compiler, install, reviewer or Git. Prior FAILED/UNKNOWN/MISSING histories remain unchanged. Root must independently review this inventory.
+
