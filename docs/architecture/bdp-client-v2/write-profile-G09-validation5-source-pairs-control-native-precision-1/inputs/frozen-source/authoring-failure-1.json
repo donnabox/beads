@@ -1,0 +1,10 @@
+{
+  "allEarlyActualReleaseSourceHelperBuildFreshPathAnd104LfConstraintsHadPassed": true,
+  "errorType": "FileNotFoundError",
+  "newPacketDirectoryCreatedAtFailure": false,
+  "phase": "PRE_WRITE_OWN_DATA_DAG_CHECK",
+  "reason": "Own DAG scanner initially treated the explicitly historical source-author-release sole-plan manifest metadata as a current filesystem pin. Exact immutable historical record is now checked against that same original publication manifest; no live pin exemption or repair.",
+  "reportedPath": "docs/architecture/bdp-client-v2/design.md",
+  "subjectConstraintMismatch": false,
+  "subjectOrRuntimeAttempt": false
+}
