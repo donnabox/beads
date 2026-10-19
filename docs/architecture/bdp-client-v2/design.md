@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+Node-version actual audit COMPLETE: independent native55 accepted/no findings, ROOT independently verified all55 files/42 origins/2665 current ledger inputs and raw descriptor identities. [ROOT final disposition](write-profile-G09-validation5-node-version-root-final-disposition-1/disposition.json) accepts only ONE actual Node v24.16.0 capture, common8.820629875<115, finite3PID3PGID absence/actual terminals0. Original provisionalfalse/pending snapshots and raw tool receipts UNRETAINED remain honest; no quality/profile/fullWrite credit or cleanup. NEXT pnpm-version ONE exact reviewed A/B/C is conditionally released ONLY AFTER full native55+ROOT3+soleplan raw/Gitmodes/critical readback. Never repeat node-version. All later stages remain separately gated; first4only/later30unreleased.
+
+
 ONE actual P5 node-version A/B/C completed (functions3040): ordinarytool actualterminalsA e073df/B37787e/C968d98 all0, no retry or secondcensus. [Original actualsource/tool evidence9](write-profile-G09-validation5-node-version-root-tool-evidence-1/report.md) plus root8/inner4 are frozen, allsource/actualrecords retained. Actual9B log v24.16.0+LF/innerexit0/source1eca unchanged3.758924957830459s; rootwholepostBterminalclock8.820629875175655<115. Rootraw476/0B, census205070/0B; actualknown3PID3PGID selectedabsence/directprobereap recorded. Fullraw/EOF/0600/source/normalclock/terminal/provenance conjunction still PENDING fullindependent native+ROOT actualaudit; no nextstage released or quality/profile/fullWrite credit. A source exactbaseline; B/C onlyonewholeLF actualpriorID assignment, fullinverse/guards+RAWEXIT0unchanged; normalizedtoolresult attribution narrower than independentlydecodedrawtoolreceipt UNRETAINED. Allnext33stages unattempted; pnpm blocked pendingaudit/disposition/durablepublication.
 
 

@@ -1,0 +1,66 @@
+{
+  "accepted": false,
+  "actualFunctionsCellId": "3040",
+  "actualInnerElapsedSeconds": 3.758924957830459,
+  "actualInnerExit": 0,
+  "actualPhaseTerminalObservations": [
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "e073df",
+      "phase": "A"
+    },
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "37787e",
+      "phase": "B"
+    },
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "968d98",
+      "phase": "C"
+    }
+  ],
+  "censusRawStreamBytes": [
+    205070,
+    0
+  ],
+  "cleanupNotPerformedByThisStaticPacket": true,
+  "firstPostBTerminalWitnessMonotonic": 2259592.53928525,
+  "fullIndependentConjunctionAudit": "PENDING",
+  "independentlyDecodedRawToolReceipts": "UNRETAINED_SOURCE_ATTRIBUTED_NORMALIZED_TOOL_RESULTS_ONLY",
+  "matchingTaskRows": [],
+  "measuredCompletedInvocationAndObservationUpperBoundSeconds": 8.820629875175655,
+  "nextStageReleased": false,
+  "observedNodeVersionLog": {
+    "bytes": 9,
+    "exactText": "v24.16.0\n",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/node-version.log",
+    "sha256": "a8f8f7ba69d43285857a0ea34017ef8dadd3ba012404bb7dd188fc773cf63ee2"
+  },
+  "observerSelfAbsenceOrGlobalContainmentClaim": false,
+  "ordinaryToolRecords": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-node-version-root-tool-evidence-1/dispatch-state.json",
+    "sha256": "6be338a86fed33c44e5a532b01a032a3fe875d74b0343ec18200164808737063"
+  },
+  "probeDirectReaped": true,
+  "qualityPass": false,
+  "recordedTaskPGIDs": [
+    39207,
+    39211,
+    39915
+  ],
+  "recordedTaskPIDs": [
+    39210,
+    39211,
+    39915
+  ],
+  "rootOriginMonotonic": 2259583.718655375,
+  "rootRawStreamBytes": [
+    476,
+    0
+  ],
+  "session": "2026-10-18T02:16:24Z-549f",
+  "stage": "node-version",
+  "strictUnder115": true,
+  "temporaryDirectory": "/private/tmp/vickie-tx-discovery-validation-node-version-73fhh829"
+}

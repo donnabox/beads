@@ -1,0 +1,77 @@
+{
+  "accepted": true,
+  "all34FreshUnattempted": true,
+  "authorityIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-proposed-authority-1/index.json",
+    "sha256": "5aa2e47fd05c05a3d4aec3670feca9482c39f3fc38e694eacd3106c1a964050b"
+  },
+  "candidate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-proposed-authority-1/execution-gate.proposed.json",
+    "sha256": "ad5b647e6b2f1aba93981d1a85fdb7ef0930062418012cf4acf90073de202919"
+  },
+  "commandsSha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f",
+  "findingsDisposition": [
+    {
+      "erratum": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-concrete-authority-root-final-acceptance-1/manifest-provenance-erratum.json",
+        "sha256": "7ff5be565bdfbf3b310dfcdabd33654faee0cec81a9625da3accc59496edfd08"
+      },
+      "id": "P5-FINAL-N1",
+      "noExecutableControlDefectOrSourceSuccessor": true,
+      "originalManifestRawAndAll66RemainImmutable": true,
+      "requiresFreshActualP5PriorReceipts": true,
+      "state": "CLOSED_DESCRIPTIVE_PROVENANCE_BY_EXPLICIT_ADDITIVE_ROOT_ERRATUM"
+    }
+  ],
+  "first4": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools"
+  ],
+  "implementationIndexSha256": "c2a7d11deb63169052434c3b45c62bd30664009d4ea6a3e9b42c4cd85bd649a6",
+  "later30Released": false,
+  "liveP5StillClosed": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.closed.json",
+    "sha256": "4a87b45d714a6bd28a94fd50a389defe4b5582dc5f42ec56fd827c7cf5b01e76"
+  },
+  "liveWriteReleasedByThisFile": false,
+  "manifest": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-execution-acceptance-1/acceptance.json",
+    "sha256": "c8ee1a1cd556beae5ddb93454a5156a23c8bc817a4a4ff405996de49049f7ae1"
+  },
+  "manifestIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-execution-acceptance-1/index.json",
+    "sha256": "863bf21045f9ca9f795783717d9b5150b0b89d88e5a50ac64a4ae169171a4818"
+  },
+  "nativeAcceptedFalsePreserved": true,
+  "nativeClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-concrete-authority-final-native-precision-1/closure.json",
+    "sha256": "eae4afecc90351bcd4373be927699511394281b117a24687a34ea7215f864de3"
+  },
+  "nativeConditionalScopeSatisfiedByRootDisposition": true,
+  "nativeCountProseErratum": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-final-native-count-erratum-1/erratum.json",
+    "sha256": "13b51888bb1cd9a5ba53471de21491f3ac87646088f81efdb411bfe11e1154bb"
+  },
+  "nativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-concrete-authority-final-native-precision-1/index.json",
+    "sha256": "eae357413a7a3e4dce2fdcf7928f2973d2117cf64042773fea068e69ee0036df"
+  },
+  "originalActualReviewVsCorrectedSourceTruth": "Actual eeb only with9findings/omissions. Historicalf6native55c/a9, current1ecanative22f/cd63; no new actual CODE/PLAN/provider coverage claim.",
+  "qualityPass": false,
+  "renderedIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-instantiated-source-1/index.json",
+    "sha256": "3f2325eb2d8a27f2e320f633a81705f2849ca0d51909d15c56ba5502bd69a64f"
+  },
+  "rootInspection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-concrete-authority-root-final-acceptance-1/inspection.json",
+    "sha256": "4764f26ce9ff38f56ced8f7a30ead098434757d1c71c3fd94f36db7fb3319426"
+  },
+  "runtimeAuthority": false,
+  "scope": "EXACT_P5_FIRST4_SOURCE_CONTROL_BRIDGES_CANDIDATE_ACYCLIC_MANIFEST_RENDERED12CELLS_STATIC_FINAL_ONLY",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "sourceBindingSha256": "e0252cb07ac1896fac0faab395e10e50ea58eac263b6d33ee224e378413c2d68",
+  "sourceIdentity": "1ecaf2e47369cc12cc26bc3ed693c5d4d3b9cffa4714b13dbe5567f9e46bfb15",
+  "wholeWriteComplete": false
+}
