@@ -1,0 +1,124 @@
+{
+  "administrativeRowsNotSelfAbsence": [
+    {
+      "birth": "Sun Oct 18 21:09:48 2026",
+      "comm": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+      "pgid": 47581,
+      "pid": 47585,
+      "ppid": 47581,
+      "state": "S"
+    },
+    {
+      "birth": "Sun Oct 18 21:09:48 2026",
+      "comm": "/bin/ps",
+      "pgid": 47586,
+      "pid": 47586,
+      "ppid": 47585,
+      "state": "Rs"
+    }
+  ],
+  "censusRows": 1374,
+  "globalAbsenceClaim": false,
+  "matchingRows": [],
+  "observerTerminalRootAttributed": true,
+  "probeDirectReapSourceAttested": true,
+  "registryOriginsExact": true,
+  "sampleRows": 9,
+  "samples": [
+    {
+      "group": [
+        [
+          "46849",
+          "46155",
+          "46849",
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node"
+        ]
+      ],
+      "seconds": 0.05812008399516344
+    },
+    {
+      "group": [
+        [
+          "46849",
+          "46155",
+          "46849",
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node"
+        ]
+      ],
+      "seconds": 0.15605762507766485
+    },
+    {
+      "group": [
+        [
+          "46849",
+          "46155",
+          "46849",
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node"
+        ],
+        [
+          "46852",
+          "46849",
+          "46849",
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node"
+        ]
+      ],
+      "seconds": 0.25504358392208815
+    },
+    {
+      "group": [
+        [
+          "46849",
+          "46155",
+          "46849",
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node"
+        ],
+        [
+          "46852",
+          "46849",
+          "46849",
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node"
+        ]
+      ],
+      "seconds": 0.3518085842952132
+    },
+    {
+      "group": [
+        [
+          "46849",
+          "46155",
+          "46849",
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node"
+        ],
+        [
+          "46852",
+          "46849",
+          "46849",
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node"
+        ]
+      ],
+      "seconds": 0.44915787503123283
+    },
+    {
+      "group": [
+        [
+          "46849",
+          "46155",
+          "46849",
+          "<defunct>"
+        ]
+      ],
+      "seconds": 0.5438514589332044
+    }
+  ],
+  "taskPGIDs": [
+    46151,
+    46155,
+    46849
+  ],
+  "taskPIDs": [
+    46154,
+    46155,
+    46849,
+    46852
+  ]
+}
