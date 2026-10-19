@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+ONE actual lint A/B/C COMPLETE functions3165 after formatter full acceptance/all73 readback538315c0: normalized terminals c135ca/89853b/8eeb45 all0; innerexit0/source1eca unchanged. Exact unfiltered default20 log13485B e8b4ab86 retains96warnings/30infos/106unprinted diagnostics. Success is not diagnostic-free; historical P3 failure preserved. [Frozen lint capture9](write-profile-G09-validation5-lint-root-tool-evidence-1/report.md)+root8+inner4 retained/no retry/secondcensus. FULL independent native+ROOT actual disposition/durability REQUIREDBEFORE fresh-build; originalfalse/pending/raw wire UNRETAINED/scratch retained/no globalclaim remain. Remaining27 commands unattempted/later25closed/no build,test,profile,fullWritepass.
+
+
 Format-check actual FULLnative69 9e8e2d49/85b9d685 accepted/no findings. ROOT independently verified69/56origins2784currentledger and ownactualinspection5a385c47. [ROOT final formatting disposition](write-profile-G09-validation5-format-check-root-final-disposition-1/disposition.json) accepts ONE actual no-write formatting conjunction only: ten files, inner0, source1eca unchanged, common9.313092125<115. Original provisionalfalse/pending and raw wire tool receipts UNRETAINED preserved. Native checked prior typecheck67static+2critical, authority90static+10critical, activation5static+3critical; full432remote replay remains prior ROOT-attributed. ONE lint exact S baseline conditionally released ONLY AFTER all native69+ROOT3+sole73 raw/Git modes/critical readback. Prior stages never repeat; later25 remain closed. No lint, build, test, profile or full Write credit yet.
 
 
