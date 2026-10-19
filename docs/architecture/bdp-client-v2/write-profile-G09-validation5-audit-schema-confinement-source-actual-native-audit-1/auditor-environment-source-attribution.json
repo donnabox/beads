@@ -1,0 +1,39 @@
+{
+  "actualAuditorArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/audit.py",
+    "schema-confinement-source"
+  ],
+  "auditPySha256": "1892c8b723126ea69d33053ce0ec6e2461e299dbf9e8b886be35905c132412a2",
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+  "fullActualEnvironmentSnapshot": "UNRETAINED; construction and started receipt are source-attested, not an independent ENV dump",
+  "noRuntimeInvocationByNativeAuditor": true,
+  "npmCache": "/private/tmp/vickie-tx-discovery-validation-audit-schema-confinement-source-7yfwc49g/npm-cache",
+  "runPySha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70",
+  "sourceAttestedConstruction": {
+    "TX_DISCOVERY_VALIDATION_ATTEMPT": "95e790dc5db12c4c7c0acffca09906714efe2682ac206ff8f5d035534c9d44d0",
+    "TX_DISCOVERY_VALIDATION_STAGE": "audit-schema-confinement-source",
+    "fixed": {
+      "CI": "true",
+      "NO_COLOR": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "TX_DISCOVERY_VALIDATION_PHASE": "final"
+    },
+    "scrubNames": [
+      "NODE_OPTIONS",
+      "NODE_PATH",
+      "NODE_DEBUG",
+      "PYTHONOPTIMIZE",
+      "BIOME_BINARY",
+      "npm_execpath",
+      "npm_node_execpath",
+      "FORCE_COLOR"
+    ],
+    "scrubPrefixes": [
+      "BDP_",
+      "VITEST_"
+    ]
+  },
+  "startedReceiptOverrides": {},
+  "temporaryDirectory": "/private/tmp/vickie-tx-discovery-validation-audit-schema-confinement-source-7yfwc49g"
+}
