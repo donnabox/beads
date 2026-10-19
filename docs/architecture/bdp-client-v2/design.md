@@ -8,6 +8,16 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+Latest checkpoint 2026-10-19T16:39:39Z: **case16 bootstrap1 held/preserved, full review active; producer2 bootstrap SOURCE active.**
+
+Retained-case16 bootstrap SOURCE1 is now frozen and durably preserved, HELD/unexecuted. Packet write-profile-proof2-case16-retained-capture1-bootstrap-source-1-20261019:11 regular0644 files/150231 B, index2225 B SHA58e50b0a95f31aab7d4c07c06a18e9b941979f3915c0feffc7bfee06fbbb4e07, bootstrap_caller.py27901 B SHA90e71166dbeb049d90b002e8df90adca1c92fcac75b7d1f4228b93636f2ea862. Full index hashes/lengths/modes and exact tree verified. Preservation receipt context/vickie/proof2-case16-bootstrap-source1-held-preservation-publication-20261019.json at3ea75e8bc1e75c80d0701a7888ce7d5d406b817d,8176 B SHAa188e858aee0ba4106a96c203072eab1f6ecc8974c61bd13cb4224aa92e81dc3, full immutable raw Gitblob/tree/mode readbacks. Preservation grants no execution or source acceptance.
+
+Two author findings confirmed by ROOT full source text read: B1 release.bootstrapControl duplicates entire controls/publication-target map in nested child command; even45 existing target descriptor rows with null publication are26169 compact bytes, making chosen conservative bound at least159816>131072 before new controls. This is deterministic refusal of this chosen bound, not proof an OS command is inherently impossible. Proposed remedy is a prepublished exact control descriptor anchor with whole transitive body resolution and no self/future-hash cycle. B2 _finish skips decoding valid failed launcher terminal whenever adapter errors include nonzero exit; full raw response is retained but decoded failed terminal is missing. Valid full failed terminal must be decoded while retaining nonzero/83 failure. No expected-failure acceptance.
+
+decision_inventory ACTIVE full different review of all11 SOURCE files and admitted metadata to find complete blockers before a new version. Its report destination write-profile-proof2-case16-retained-capture1-bootstrap-source-1-independent-review-20261019.json. acquisition_inventory COMPLETED/idle, explicitly told preserve SOURCE1, no edits or SOURCE2 until new exact grant. ROOT owns final review/new grant/publication. Producer2 bootstrap SOURCE authoring remains ACTIVE with delivery_readiness under published c75f51796549265803019d1f1c136f6370193e24 grant; no change to that scope.
+
+No actual source imports/compile/AST/tests/guards/preflight/component/body/root/capture/privateoutput/PID/runtimebinary action occurred. No execution release, no DATA call, stage24/gate unchanged; stages1–23/accepted/exhausted calls never rerun. Full earlier accepted proposal/parent/review pins and grants are in immutable647b3826d6d15b16d53b77a27959427c7063e7da/launch/vickie.md and sole-plan notes. Five Donna decisions unchanged, bus cursor16:31:28Z no Vickie ask, frozenproof1/rejectedLOCAL preserved. Independent engineering work remains and heartbeat stays ACTIVE.
+
 Latest checkpoint 2026-10-19T16:38:16Z: **case16 concrete proposal and producer2 parent SOURCE accepted/published; producer2 bootstrap SOURCE ACTIVE; case16 bootstrap1 held for two source defects.**
 
 Both independent technical lanes advanced through full review and immutable publication. No new component or DATA call occurred.
