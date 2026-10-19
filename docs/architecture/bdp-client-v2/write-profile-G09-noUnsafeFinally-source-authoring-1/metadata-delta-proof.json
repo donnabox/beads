@@ -1,0 +1,67 @@
+{
+  "genuineMetadataPairs": [
+    {
+      "after": {
+        "bytes": 4152,
+        "mode": "0o644",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-noUnsafeFinally-source-authoring-1/selection.json",
+        "sha256": "e10a9b5f4ce2796091975337680fb73d49c80b06e91fbcb8c242d6820af406da"
+      },
+      "before": {
+        "bytes": 4152,
+        "mode": "0o644",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-source-correction-authoring-2/selection.json",
+        "sha256": "03c472f4343f79cba673ba7bbbc976c14c81e6a0e16020c4c4239d54e9f1b043"
+      },
+      "fullBothNdiffRestorations": true,
+      "subject": "selection.json"
+    },
+    {
+      "after": {
+        "bytes": 9113,
+        "mode": "0o644",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-noUnsafeFinally-source-authoring-1/source-cases.json",
+        "sha256": "015446b72cf4aed1d312611ba3ff70831b8cbaac8cdaa84bd937d819ab979c53"
+      },
+      "before": {
+        "bytes": 9073,
+        "mode": "0o644",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-source-correction-authoring-2/source-cases.json",
+        "sha256": "f7f8859a01c0b7464ec9f48e367552975f758965c7a33a19798700825418e602"
+      },
+      "fullBothNdiffRestorations": true,
+      "subject": "source-cases.json"
+    },
+    {
+      "after": {
+        "bytes": 754,
+        "mode": "0o644",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-noUnsafeFinally-source-authoring-1/report-bindings.json",
+        "sha256": "96453db23ad4e6181a9b72f5bfa18979dc1903e8639a42ce1c7e2e8af10162a8"
+      },
+      "before": {
+        "bytes": 754,
+        "mode": "0o644",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-source-correction-authoring-2/report-bindings.json",
+        "sha256": "721d6cb5feb6ecfca3ddcfc29bee4cd8a8da70838bcc7c326f896c6d90355065"
+      },
+      "fullBothNdiffRestorations": true,
+      "subject": "report-bindings.json"
+    }
+  ],
+  "installedRequests": [
+    14,
+    16
+  ],
+  "legacyInstalled14Unchanged": true,
+  "noSourceCasesExecuted": true,
+  "normalizationsRestoreCompleteOriginalStructures": true,
+  "reportBindingsAllowedChanges": "Only final sourceBinding/sourceCases/selection SHA references; reportContracts SHA exact",
+  "reportContractByteExact": true,
+  "selectionAllowedChanges": "Only S01/S02/S03 fileSha256 and line+3",
+  "sourceCallbacks": 8,
+  "sourceCasesAllowedChanges": "Only S01/S02/S03 final fileSha256/line+3 plus eight final sourceFreeze provenance labels to this packet. Historical basisSelection remains exact.",
+  "sourceDirect": 26,
+  "sourceWire": 9,
+  "status": "STATIC_METADATA_ONLY_NOT_TEST_RESULTS"
+}

@@ -1,0 +1,18 @@
+--- b/packages/server/src/transaction-service.test.ts
++++ a/packages/server/src/transaction-service.test.ts
+@@ -4327,12 +4327,9 @@
+   } finally {
+     try {
+       await g09ServiceBound(f.service.close(), 1000);
+-      if (!f.closed()) {
+-        failures.push(new Error("G09 owner close unobserved"));
+-      } else {
+-        rmSync(path.dirname(f.file), { recursive: true });
+-        removed = true;
+-      }
++      if (!f.closed()) throw new Error("G09 owner close unobserved");
++      rmSync(path.dirname(f.file), { recursive: true });
++      removed = true;
+     } catch (error) {
+       failures.push(error);
+     }
