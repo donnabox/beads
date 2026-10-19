@@ -1,0 +1,89 @@
+{
+  "fullCandidateTextOrPatchesAuthored": false,
+  "gateAllowedLiteralLocation": "gate.py line5 W constant; old exact path becomes new exact isolated path once. INTEGRATION stayscce, relativeP/E remain self-locating.",
+  "onlyFivePrograms": true,
+  "programs": [
+    {
+      "before": {
+        "bytes": 5357,
+        "mode": "0o644",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py",
+        "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+      },
+      "futureDisposition": "BYTE_EXACT",
+      "futureProgramSha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70",
+      "newWorktreeLiteral": null,
+      "notAuthoredHere": true,
+      "oldWorktreeLiteralOccurrences": 0,
+      "program": "run.py",
+      "protected": "All logic/order/imports/strict JSON/hash/keysets/source/tool/build/archive/consumer/audit/process/deadlines unchanged",
+      "readCompleteLines": 80
+    },
+    {
+      "before": {
+        "bytes": 12583,
+        "mode": "0o644",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/gate.py",
+        "sha256": "c3e631f818f63a17d1b5518b6122d761f6d1fecf5dfb3cb0b1b043d568204168"
+      },
+      "futureDisposition": "ONE_EXACT_WORKTREE_LITERAL_ONLY",
+      "futureProgramSha256": "UNRESOLVED_UNAUTHORED",
+      "newWorktreeLiteral": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "notAuthoredHere": true,
+      "oldWorktreeLiteralOccurrences": 1,
+      "program": "gate.py",
+      "protected": "All logic/order/imports/strict JSON/hash/keysets/source/tool/build/archive/consumer/audit/process/deadlines unchanged",
+      "readCompleteLines": 137
+    },
+    {
+      "before": {
+        "bytes": 46796,
+        "mode": "0o644",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/audit.py",
+        "sha256": "1892c8b723126ea69d33053ce0ec6e2461e299dbf9e8b886be35905c132412a2"
+      },
+      "futureDisposition": "BYTE_EXACT",
+      "futureProgramSha256": "1892c8b723126ea69d33053ce0ec6e2461e299dbf9e8b886be35905c132412a2",
+      "newWorktreeLiteral": null,
+      "notAuthoredHere": true,
+      "oldWorktreeLiteralOccurrences": 0,
+      "program": "audit.py",
+      "protected": "All logic/order/imports/strict JSON/hash/keysets/source/tool/build/archive/consumer/audit/process/deadlines unchanged",
+      "readCompleteLines": 461
+    },
+    {
+      "before": {
+        "bytes": 8760,
+        "mode": "0o644",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/packages.py",
+        "sha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9"
+      },
+      "futureDisposition": "BYTE_EXACT",
+      "futureProgramSha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9",
+      "newWorktreeLiteral": null,
+      "notAuthoredHere": true,
+      "oldWorktreeLiteralOccurrences": 0,
+      "program": "packages.py",
+      "protected": "All logic/order/imports/strict JSON/hash/keysets/source/tool/build/archive/consumer/audit/process/deadlines unchanged",
+      "readCompleteLines": 116
+    },
+    {
+      "before": {
+        "bytes": 946,
+        "mode": "0o644",
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/guarded-action-session-20261018-021624-549f.py",
+        "sha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30"
+      },
+      "futureDisposition": "BYTE_EXACT",
+      "futureProgramSha256": "b2d467920638e68d3b007ba9daa432e971636245eca988bfb29d7a99d6e3fb30",
+      "newWorktreeLiteral": null,
+      "notAuthoredHere": true,
+      "oldWorktreeLiteralOccurrences": 0,
+      "program": "guarded-action-session-20261018-021624-549f.py",
+      "protected": "All logic/order/imports/strict JSON/hash/keysets/source/tool/build/archive/consumer/audit/process/deadlines unchanged",
+      "readCompleteLines": 20
+    }
+  ],
+  "programsAuthored": 0,
+  "requiredFutureProof": "Four byte-exact program hashes; gate full genuine forward/inverse and exact normalization of sole literal; no AST/import/evaluation at preparation."
+}
