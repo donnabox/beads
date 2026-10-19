@@ -1,0 +1,2127 @@
+{
+  "actualCensus": {
+    "accepted": false,
+    "actualObserverToolTerminal": null,
+    "censusEndMonotonic": 2274517.720241291,
+    "failure": null,
+    "finalClockWitness": null,
+    "matchingTaskRows": [],
+    "observerPgid": 84660,
+    "observerPid": 84663,
+    "originReceiptSha256": "a0644fb85463dabc691ece1d8d533ad45bee31a4582bf1219dae91bf8246cac5",
+    "phaseAToolId": "8d3acd",
+    "phaseAToolRawExit": 0,
+    "phaseAToolReceiptAttribution": "trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied",
+    "probeBothEOF": true,
+    "probeCreationPgid": 84664,
+    "probeDirectReaped": true,
+    "probePid": 84664,
+    "probeRawExit": 0,
+    "provisionalReceiptSha256": "8771a1f8036da86b9206b19627a68a4793f2c5435cac0138d43918ba63ae6198",
+    "rootOriginMonotonic": 2274501.885482541,
+    "selectionOrigins": [
+      {
+        "basis": "actual local getpid/getpgrp; no signal authority",
+        "pgid": 82475,
+        "pid": 82479,
+        "role": "collector"
+      },
+      {
+        "basis": "actual retained Popen start_new_session",
+        "pgid": 82480,
+        "pid": 82480,
+        "role": "direct-wrapper"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83196,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83212,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83229,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83246,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83263,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83279,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83295,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83311,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83326,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83356,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83402,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83419,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83433,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83446,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83461,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83476,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83492,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83508,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83523,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83537,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83554,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83569,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83583,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83600,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83616,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83630,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83647,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83677,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83693,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83724,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83742,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83756,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83772,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83790,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83822,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83838,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83855,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83870,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83886,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83906,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83925,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83939,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83940,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83939,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83940,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": 83186,
+        "pid": 83939,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "role": "actual-inner-sample"
+      },
+      {
+        "pgid": null,
+        "pid": 83186,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83196,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83212,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83229,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83246,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83263,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83279,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83295,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83311,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83326,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83356,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83402,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83419,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83433,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83446,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83461,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83476,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83492,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83508,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83523,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83537,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83554,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83569,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83583,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83600,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83616,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83630,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83647,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83677,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83693,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83724,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83742,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83756,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83772,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83790,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83822,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83838,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83855,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83870,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83886,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83906,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83925,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83939,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      },
+      {
+        "pgid": null,
+        "pid": 83940,
+        "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "role": "actual-inner-sampledPid"
+      }
+    ],
+    "stage": "prepare-consumer",
+    "streams": [
+      {
+        "actualEOF": true,
+        "fileIdentity": {
+          "bytes": 212033,
+          "device": 16777232,
+          "inode": 96373616,
+          "mode": 33152,
+          "uid": 501
+        },
+        "fullStreamSha256": "9aa02a356648106c93c082ca2cd0724b8fc66946df0eeb713ad5083767074085",
+        "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+        "hashKnown": true,
+        "hashedPrefixBytes": 212033,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/prepare-consumer/postterminal-census.stdout",
+        "rawDescriptorClosed": true,
+        "receivedBytes": 212033,
+        "savedBytes": 212033,
+        "savedPrefixSha256": "9aa02a356648106c93c082ca2cd0724b8fc66946df0eeb713ad5083767074085",
+        "writeOrCloseError": null
+      },
+      {
+        "actualEOF": true,
+        "fileIdentity": {
+          "bytes": 0,
+          "device": 16777232,
+          "inode": 96373617,
+          "mode": 33152,
+          "uid": 501
+        },
+        "fullStreamSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+        "hashKnown": true,
+        "hashedPrefixBytes": 0,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/prepare-consumer/postterminal-census.stderr",
+        "rawDescriptorClosed": true,
+        "receivedBytes": 0,
+        "savedBytes": 0,
+        "savedPrefixSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "writeOrCloseError": null
+      }
+    ],
+    "taskPGIDs": [
+      82475,
+      82480,
+      83186
+    ],
+    "taskPIDs": [
+      82479,
+      82480,
+      83186,
+      83196,
+      83212,
+      83229,
+      83246,
+      83263,
+      83279,
+      83295,
+      83311,
+      83326,
+      83356,
+      83402,
+      83419,
+      83433,
+      83446,
+      83461,
+      83476,
+      83492,
+      83508,
+      83523,
+      83537,
+      83554,
+      83569,
+      83583,
+      83600,
+      83616,
+      83630,
+      83647,
+      83677,
+      83693,
+      83724,
+      83742,
+      83756,
+      83772,
+      83790,
+      83822,
+      83838,
+      83855,
+      83870,
+      83886,
+      83906,
+      83925,
+      83939,
+      83940
+    ]
+  },
+  "actualEarliestSourceOriginBeforeChildSetupImportsAndGate": true,
+  "actualProvisional": {
+    "accepted": false,
+    "actualCollectorToolTerminal": null,
+    "collectorPgid": 82475,
+    "collectorPid": 82479,
+    "creationPgid": 82480,
+    "creationPid": 82480,
+    "directHandleRegistered": true,
+    "elapsedAtProvisionalPublication": 15.343336459249258,
+    "failure": null,
+    "finalClockWitness": null,
+    "forcedTermination": false,
+    "freshSelectedCensus": null,
+    "implementationIndexSha256": "c2a7d11deb63169052434c3b45c62bd30664009d4ea6a3e9b42c4cd85bd649a6",
+    "innerReceipts": {
+      "exit.json": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+        "sha256": "8fccee8f58e177ee73ac172d09cf9b8eb9faca0ef49d4f5b3f97effda1437f02"
+      },
+      "processes.jsonl": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+        "sha256": "89da5268658ee91c7fc72eef367f4428adb73f9502026692d9e335edb12f794f"
+      },
+      "started.json": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.started.json",
+        "sha256": "4fa5977424be54d796935dcf1c3c145b87e9e4d21c87b846139e8ec96411022e"
+      }
+    },
+    "knownTaskRegistry": {
+      "origins": [
+        {
+          "basis": "actual local getpid/getpgrp; no signal authority",
+          "pgid": 82475,
+          "pid": 82479,
+          "role": "collector"
+        },
+        {
+          "basis": "actual retained Popen start_new_session",
+          "pgid": 82480,
+          "pid": 82480,
+          "role": "direct-wrapper"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83196,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83212,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83229,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83246,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83263,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83279,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83295,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83311,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83326,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83356,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83402,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83419,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83433,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83446,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83461,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83476,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83492,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83508,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83523,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83537,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83554,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83569,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83583,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83600,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83616,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83630,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83647,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83677,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83693,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83724,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83742,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83756,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83772,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83790,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83822,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83838,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83855,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83870,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83886,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83906,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83925,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83939,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83940,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83939,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83940,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": 83186,
+          "pid": 83939,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.processes.jsonl",
+          "role": "actual-inner-sample"
+        },
+        {
+          "pgid": null,
+          "pid": 83186,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83196,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83212,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83229,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83246,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83263,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83279,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83295,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83311,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83326,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83356,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83402,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83419,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83433,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83446,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83461,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83476,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83492,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83508,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83523,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83537,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83554,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83569,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83583,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83600,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83616,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83630,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83647,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83677,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83693,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83724,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83742,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83756,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83772,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83790,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83822,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83838,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83855,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83870,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83886,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83906,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83925,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83939,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        },
+        {
+          "pgid": null,
+          "pid": 83940,
+          "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.exit.json",
+          "role": "actual-inner-sampledPid"
+        }
+      ],
+      "pgids": [
+        82475,
+        82480,
+        83186
+      ],
+      "pids": [
+        82479,
+        82480,
+        83186,
+        83196,
+        83212,
+        83229,
+        83246,
+        83263,
+        83279,
+        83295,
+        83311,
+        83326,
+        83356,
+        83402,
+        83419,
+        83433,
+        83446,
+        83461,
+        83476,
+        83492,
+        83508,
+        83523,
+        83537,
+        83554,
+        83569,
+        83583,
+        83600,
+        83616,
+        83630,
+        83647,
+        83677,
+        83693,
+        83724,
+        83742,
+        83756,
+        83772,
+        83790,
+        83822,
+        83838,
+        83855,
+        83870,
+        83886,
+        83906,
+        83925,
+        83939,
+        83940
+      ]
+    },
+    "originMonotonic": 2274501.885482541,
+    "pipeCloseSucceeded": true,
+    "rawExit": 0,
+    "requiresIndependentOrdinaryToolObservations": true,
+    "rootGateSha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+    "rootWrapperArgv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+      "final",
+      "prepare-consumer"
+    ],
+    "rootWrapperCwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+    "sourceBindingSha256": "e0252cb07ac1896fac0faab395e10e50ea58eac263b6d33ee224e378413c2d68",
+    "stage": "prepare-consumer",
+    "streams": [
+      {
+        "actualEOF": true,
+        "fileIdentity": {
+          "bytes": 782,
+          "device": 16777232,
+          "inode": 96372133,
+          "mode": 33152,
+          "uid": 501
+        },
+        "fullStreamSha256": "de7a123d27d9864b4a21cca1f5f2bcf6f4b7adadbb4c155a12b3ed770953877f",
+        "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+        "hashKnown": true,
+        "hashedPrefixBytes": 782,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/prepare-consumer/prepare-consumer.stdout",
+        "rawDescriptorClosed": true,
+        "receivedBytes": 782,
+        "savedBytes": 782,
+        "savedPrefixSha256": "de7a123d27d9864b4a21cca1f5f2bcf6f4b7adadbb4c155a12b3ed770953877f",
+        "writeOrCloseError": null
+      },
+      {
+        "actualEOF": true,
+        "fileIdentity": {
+          "bytes": 0,
+          "device": 16777232,
+          "inode": 96372134,
+          "mode": 33152,
+          "uid": 501
+        },
+        "fullStreamSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "fullStreamState": "COMPLETE_ACTUAL_CAPTURE",
+        "hashKnown": true,
+        "hashedPrefixBytes": 0,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/prepare-consumer/prepare-consumer.stderr",
+        "rawDescriptorClosed": true,
+        "receivedBytes": 0,
+        "savedBytes": 0,
+        "savedPrefixSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "writeOrCloseError": null
+      }
+    ]
+  },
+  "actualWitness": {
+    "accepted": false,
+    "censusReceiptSha256": "77f2a42e4bba6feac3b11d96c191a5571aed2b9be72b9929ef610ba49706150f",
+    "completedInvocationAndObservationUpperBoundSeconds": 16.209989667404443,
+    "laterStaticAuditAndGitExcludedFromRuntime": true,
+    "noNewRuntimeChildOrProbe": true,
+    "originReceiptSha256": "a0644fb85463dabc691ece1d8d533ad45bee31a4582bf1219dae91bf8246cac5",
+    "phaseBActualToolId": "f4d73c",
+    "phaseBActualToolRawExit": 0,
+    "phaseBToolTerminalAttribution": "trusted root actual ordinary-tool observation; raw tool receipt UNRETAINED unless actually separately supplied",
+    "postTerminalWitnessMonotonic": 2274518.095472208,
+    "requiresIndependentRootFullConjunction": true,
+    "rootOriginMonotonic": 2274501.885482541,
+    "stage": "prepare-consumer",
+    "strictUnder115": true
+  },
+  "currentScratchInventory": [],
+  "independentlyRecomputedCommonClock": 16.209989667404443,
+  "innerElapsed": 10.010259083006531,
+  "innerLog": {
+    "bytes": 0,
+    "mode": "0o644",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/prepare-consumer.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "laterObserverSelfAbsenceOrHardRealtimeNotClaimed": true,
+  "origin": {
+    "argv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py",
+      "final",
+      "prepare-consumer"
+    ],
+    "collectorPgid": 82475,
+    "collectorPid": 82479,
+    "commandsSha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f",
+    "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+    "implementationSha256": "c2a7d11deb63169052434c3b45c62bd30664009d4ea6a3e9b42c4cd85bd649a6",
+    "originMonotonic": 2274501.885482541,
+    "rootGateSha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+    "session": "2026-10-18T02:16:24Z-549f",
+    "sourceBindingSha256": "e0252cb07ac1896fac0faab395e10e50ea58eac263b6d33ee224e378413c2d68",
+    "stage": "prepare-consumer"
+  },
+  "scratchCleanupPerformed": false,
+  "streams": [
+    {
+      "actualEOF": true,
+      "bytes": 782,
+      "descriptorClosed": true,
+      "fileIdentity": {
+        "bytes": 782,
+        "device": 16777232,
+        "inode": 96372133,
+        "mode": 33152,
+        "uid": 501
+      },
+      "fullCountsAndHash": true,
+      "mode": "0o600",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/prepare-consumer/prepare-consumer.stdout",
+      "sha256": "de7a123d27d9864b4a21cca1f5f2bcf6f4b7adadbb4c155a12b3ed770953877f"
+    },
+    {
+      "actualEOF": true,
+      "bytes": 0,
+      "descriptorClosed": true,
+      "fileIdentity": {
+        "bytes": 0,
+        "device": 16777232,
+        "inode": 96372134,
+        "mode": 33152,
+        "uid": 501
+      },
+      "fullCountsAndHash": true,
+      "mode": "0o600",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/prepare-consumer/prepare-consumer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "actualEOF": true,
+      "bytes": 212033,
+      "descriptorClosed": true,
+      "fileIdentity": {
+        "bytes": 212033,
+        "device": 16777232,
+        "inode": 96373616,
+        "mode": 33152,
+        "uid": 501
+      },
+      "fullCountsAndHash": true,
+      "mode": "0o600",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/prepare-consumer/postterminal-census.stdout",
+      "sha256": "9aa02a356648106c93c082ca2cd0724b8fc66946df0eeb713ad5083767074085"
+    },
+    {
+      "actualEOF": true,
+      "bytes": 0,
+      "descriptorClosed": true,
+      "fileIdentity": {
+        "bytes": 0,
+        "device": 16777232,
+        "inode": 96373617,
+        "mode": 33152,
+        "uid": 501
+      },
+      "fullCountsAndHash": true,
+      "mode": "0o600",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/prepare-consumer/postterminal-census.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

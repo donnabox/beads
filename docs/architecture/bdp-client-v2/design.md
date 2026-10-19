@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+Actualprepare-consumer FULLnative83 indexeba2d1fb/closurec15685b3 accepted/no findings; ROOTverified83/69origins10049currentledger plus own5b801010 all1415censusrows54samples46recordedPIDs3groups/raw0600/clock16.209989667<115/source679/105impl/110prepared/P214run103/build476/tools11/GitLock/8refdomains15nativeledgers exactknownsame-live-gatepastphasesONLY. [ROOT final fresh consumer preparation disposition](write-profile-G09-validation5-prepare-consumer-root-final-disposition-1/disposition.json) accepts ONEcapture and exact originalfreshmanifest/settings; archives+whole11key321memberproof unchanged. Aall4normalizedresults retained/no retry. ROOTreadonly locator failure and draftorchestration parsefailure preservedhonestly/no subjectaction. ONEoriginalconsumer-install conditional ONLY AFTER fullnative+ROOT5+sole RAW/Gitmodes/criticaldurability, UNATTEMPTED. First22neverrepeat/later11closed/stopbefore24actualROOTgeneratedNONFROZENlock-manifest-settingsacceptance. No installedstartup/publicprofile/fullWritecredit/incomingmainsemantics.
+
+
 [ONE actual fresh consumer preparation](write-profile-G09-validation5-prepare-consumer-root-tool-evidence-1/report.md) COMPLETE Ainitialaf270d/session82036/pollsf5baaf-76dada/terminal8d3acd0; Bf4d73c0/C0f9dcf0/no retry. Common16.209989667404443s<115/inner10.010259083006531s/emptylog/source1eca unchanged. Actual fresh externalconsumer package.json+pnpm-workspace.yaml created; lock/node_modules/installedproof absent. Full4458authorityd79385a6 before34->437 plus separateactivation6readback3b6edceb BEFOREactual. Full actual native+ROOT conjunction/durability REQUIRED BEFOREconsumer-install, UNATTEMPTED. First21neverrepeat/later11closed/stopbefore24actualROOTgeneratedNONFROZENlockacceptance. P214=111prepared+103run; no installed/publicprofile/fullWrite credit/incomingsemantics.
 
 
