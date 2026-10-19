@@ -1,0 +1,554 @@
+{
+  "actualActivation": {
+    "activeBytes": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.active.json",
+      "sha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6"
+    },
+    "actualArchiveAcceptedConsumerLockInstalledProofStillUnresolved": true,
+    "actualExecutionBegun": false,
+    "afterSha256": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+    "all13LaterStagesUnattemptedAtWrite": true,
+    "all4458CompositeRawGitModesAnd15CriticalReadbacksBeforeWrite": true,
+    "approvedPrefix": [
+      "node-version",
+      "pnpm-version",
+      "workspace-install",
+      "bind-workspace-tools",
+      "typecheck",
+      "format-check",
+      "lint",
+      "fresh-build",
+      "bind-fresh-build",
+      "g09-service-source",
+      "audit-g09-service-source",
+      "g09-schema-source",
+      "audit-g09-schema-source",
+      "legacy-schema-source",
+      "audit-legacy-schema-source",
+      "schema-confinement-source",
+      "audit-schema-confinement-source",
+      "prepare-package-directory",
+      "pack-protocol",
+      "pack-server",
+      "verify-archives",
+      "prepare-consumer",
+      "consumer-install"
+    ],
+    "at": "2026-10-19T05:45:24.257952+00:00",
+    "authorityCommit": "d79385a6163f3530f4c29fb0ded8ffd3cf5eb433",
+    "authorityPublicationReceipt": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-consumer2-final-authority-publication-1.remote-readback.json",
+      "sha256": "7d4c75bab5d6f7a6e6f573afd42c6050748babc4c8d9cdb3ed034a199f0dc339"
+    },
+    "beforeBytes": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/execution-gate.before.json",
+      "sha256": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea"
+    },
+    "beforeSha256": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+    "controlPair": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-activation-1/control-pair.json",
+      "sha256": "049c83a1693d133c04a82b6cbc5cc257eca885cc2898d7c1f2af62a60747fdba"
+    },
+    "first21AlreadyAcceptedNeverRepeat": true,
+    "gitSourceReadOnlyVerified": {
+      "branch": "codex/vickie-schema-lint-correction-minimum",
+      "dirtyBinarySha256": "f87d60ddc56b23737c46ed14e1675cc751c0062c7ab3466c33606398ae305df6",
+      "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+      "parent": "a56254d682cf4623cab22a552e3d2f695f691795",
+      "status": " M apps/bdptest/src/transactional-discovery-installed.test.ts\n M apps/bdptest/src/transactional-schema-installed.test.ts\n M packages/server/src/transaction-changefeed.test.ts\n M packages/server/src/transaction-http.test.ts\n M packages/server/src/transaction-http.ts\n M packages/server/src/transaction-installed-contracts.test.ts\n M packages/server/src/transaction-schema-http.test.ts\n M packages/server/src/transaction-schema-http.ts\n M packages/server/src/transaction-service.test.ts\n M packages/server/src/transaction-service.ts\n",
+      "tree": "6757829bd5b700faf28df39071190a272add90c9"
+    },
+    "invocableNewStagesOnly": [
+      "prepare-consumer",
+      "consumer-install"
+    ],
+    "kind": "ONE_EXACT_CONSUMER2_ACTIVATION_EFFECTIVE_ONLY_AFTER_SEPARATE_FULL_PUBLICATION_READBACK",
+    "later11Authorized": false,
+    "livePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+    "manifest": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-closed-control-source-1/execution-manifest.json",
+      "sha256": "fa2f30c69d85e5d552ee2c461b5cd006d793a3998abc99b4a82b8b30194a99c2"
+    },
+    "nativeLedgersAfter": {
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-audit-g09-schema-source-actual-native-audit-1/input-ledger.json": {
+        "actualGate": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+        "originalGate": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 5959
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-audit-g09-service-source-actual-native-audit-1/input-ledger.json": {
+        "actualGate": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+        "originalGate": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 5669
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-audit-legacy-schema-source-actual-native-audit-1/input-ledger.json": {
+        "actualGate": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+        "originalGate": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 6253
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-audit-schema-confinement-source-actual-native-audit-1/input-ledger.json": {
+        "actualGate": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+        "originalGate": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 6548
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-control-native-precision-1/input-ledger.json": {
+        "actualGate": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+        "originalGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 9479
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-g09-schema-source-actual-native-audit-1/input-ledger.json": {
+        "actualGate": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+        "originalGate": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 5817
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-g09-service-source-actual-native-audit-1/input-ledger.json": {
+        "actualGate": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+        "originalGate": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 5534
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-legacy-schema-source-actual-native-audit-1/input-ledger.json": {
+        "actualGate": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+        "originalGate": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 6107
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-pack-protocol-actual-native-audit-1/input-ledger.json": {
+        "actualGate": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+        "originalGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 8016
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-pack-server-actual-native-audit-1/input-ledger.json": {
+        "actualGate": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+        "originalGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 8079
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-control-native-precision-1/input-ledger.json": {
+        "actualGate": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+        "originalGate": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 7752
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-prepare-package-directory-actual-native-audit-1/input-ledger.json": {
+        "actualGate": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+        "originalGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 7949
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-schema-confinement-source-actual-native-audit-1/input-ledger.json": {
+        "actualGate": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+        "originalGate": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 6401
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-source-pairs-control-native-precision-1/current-input-ledger.json": {
+        "actualGate": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+        "originalGate": "18a440d47c2b4e7aef7e46afc73f627a27d13e51cae8b990cd2feade33c774a4",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 3743
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-verify-archives-actual-native-audit-1/input-ledger.json": {
+        "actualGate": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+        "originalGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 8143
+      }
+    },
+    "nativeLedgersBefore": {
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-audit-g09-schema-source-actual-native-audit-1/input-ledger.json": {
+        "actualGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "originalGate": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 5959
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-audit-g09-service-source-actual-native-audit-1/input-ledger.json": {
+        "actualGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "originalGate": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 5669
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-audit-legacy-schema-source-actual-native-audit-1/input-ledger.json": {
+        "actualGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "originalGate": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 6253
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-audit-schema-confinement-source-actual-native-audit-1/input-ledger.json": {
+        "actualGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "originalGate": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 6548
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-control-native-precision-1/input-ledger.json": {
+        "actualGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "originalGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "soleExactGateQualification": [],
+        "total": 9479
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-g09-schema-source-actual-native-audit-1/input-ledger.json": {
+        "actualGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "originalGate": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 5817
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-g09-service-source-actual-native-audit-1/input-ledger.json": {
+        "actualGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "originalGate": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 5534
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-legacy-schema-source-actual-native-audit-1/input-ledger.json": {
+        "actualGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "originalGate": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 6107
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-pack-protocol-actual-native-audit-1/input-ledger.json": {
+        "actualGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "originalGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "soleExactGateQualification": [],
+        "total": 8016
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-pack-server-actual-native-audit-1/input-ledger.json": {
+        "actualGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "originalGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "soleExactGateQualification": [],
+        "total": 8079
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-package4-control-native-precision-1/input-ledger.json": {
+        "actualGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "originalGate": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 7752
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-prepare-package-directory-actual-native-audit-1/input-ledger.json": {
+        "actualGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "originalGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "soleExactGateQualification": [],
+        "total": 7949
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-schema-confinement-source-actual-native-audit-1/input-ledger.json": {
+        "actualGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "originalGate": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 6401
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-source-pairs-control-native-precision-1/current-input-ledger.json": {
+        "actualGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "originalGate": "18a440d47c2b4e7aef7e46afc73f627a27d13e51cae8b990cd2feade33c774a4",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 3743
+      },
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-verify-archives-actual-native-audit-1/input-ledger.json": {
+        "actualGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "originalGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "soleExactGateQualification": [],
+        "total": 8143
+      }
+    },
+    "noRetry": true,
+    "onlyCandidateFieldsChanged": [
+      "approvedStages",
+      "rootArchiveAcceptance",
+      "rootDisposition"
+    ],
+    "perStageActualNativeRootDurabilityBeforeNext": true,
+    "preparedClosed4aAndAllHistoricalCopiesIndicesUnchanged": true,
+    "qualityPass": false,
+    "referenceDomainsAfter": {
+      "write-profile-G09-validation-preparation-5": {
+        "actualGate": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+        "originalGate": null,
+        "soleExactGateQualification": [],
+        "total": 1857
+      },
+      "write-profile-G09-validation5-consumer2-closed-control-source-1": {
+        "actualGate": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+        "originalGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 8472
+      },
+      "write-profile-G09-validation5-fixed-text-proof-correction-1": {
+        "actualGate": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+        "originalGate": "4a87b45d714a6bd28a94fd50a389defe4b5582dc5f42ec56fd827c7cf5b01e76",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 2207
+      },
+      "write-profile-G09-validation5-next5-closed-control-source-1": {
+        "actualGate": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+        "originalGate": "ad5b647e6b2f1aba93981d1a85fdb7ef0930062418012cf4acf90073de202919",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 2314
+      },
+      "write-profile-G09-validation5-package4-closed-control-source-1": {
+        "actualGate": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+        "originalGate": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 6892
+      },
+      "write-profile-G09-validation5-root-fixed-protocol-preparation-1": {
+        "actualGate": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+        "originalGate": "4a87b45d714a6bd28a94fd50a389defe4b5582dc5f42ec56fd827c7cf5b01e76",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 2082
+      },
+      "write-profile-G09-validation5-root-proposed-authority-1": {
+        "actualGate": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+        "originalGate": "4a87b45d714a6bd28a94fd50a389defe4b5582dc5f42ec56fd827c7cf5b01e76",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 2206
+      },
+      "write-profile-G09-validation5-source-pairs-closed-control-source-1": {
+        "actualGate": "437edd25c7267d9595a15115db65d50051372f0cb4915f6981cf46aa04be65c6",
+        "originalGate": "18a440d47c2b4e7aef7e46afc73f627a27d13e51cae8b990cd2feade33c774a4",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 3510
+      }
+    },
+    "referenceDomainsBefore": {
+      "write-profile-G09-validation-preparation-5": {
+        "actualGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "originalGate": null,
+        "soleExactGateQualification": [],
+        "total": 1857
+      },
+      "write-profile-G09-validation5-consumer2-closed-control-source-1": {
+        "actualGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "originalGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "soleExactGateQualification": [],
+        "total": 8472
+      },
+      "write-profile-G09-validation5-fixed-text-proof-correction-1": {
+        "actualGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "originalGate": "4a87b45d714a6bd28a94fd50a389defe4b5582dc5f42ec56fd827c7cf5b01e76",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 2207
+      },
+      "write-profile-G09-validation5-next5-closed-control-source-1": {
+        "actualGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "originalGate": "ad5b647e6b2f1aba93981d1a85fdb7ef0930062418012cf4acf90073de202919",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 2314
+      },
+      "write-profile-G09-validation5-package4-closed-control-source-1": {
+        "actualGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "originalGate": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 6892
+      },
+      "write-profile-G09-validation5-root-fixed-protocol-preparation-1": {
+        "actualGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "originalGate": "4a87b45d714a6bd28a94fd50a389defe4b5582dc5f42ec56fd827c7cf5b01e76",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 2082
+      },
+      "write-profile-G09-validation5-root-proposed-authority-1": {
+        "actualGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "originalGate": "4a87b45d714a6bd28a94fd50a389defe4b5582dc5f42ec56fd827c7cf5b01e76",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 2206
+      },
+      "write-profile-G09-validation5-source-pairs-closed-control-source-1": {
+        "actualGate": "34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea",
+        "originalGate": "18a440d47c2b4e7aef7e46afc73f627a27d13e51cae8b990cd2feade33c774a4",
+        "soleExactGateQualification": [
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+        ],
+        "total": 3510
+      }
+    },
+    "rootFinal": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-final-acceptance-1/acceptance.json",
+      "sha256": "3ae7174043a509b0a6ffc9eb31d8f226617259dd1ff55d996a3eb6ddb0b87797"
+    },
+    "rootWriteRelease": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-final-acceptance-1/write-release.json",
+      "sha256": "c41c56a36afb88d3fcd24456e94532e220ae66d57be5477f9c541620524d4b89"
+    },
+    "secondPublicationReadbackRequiredBeforePrepareConsumerA": true,
+    "session": "2026-10-18T02:16:24Z-549f",
+    "source679Impl105Other110Prepared97RunBuild476Tools11Exact": true,
+    "sourceCurrentBefore8472AllStrictAfterOnlySameGate34To437": true,
+    "sourceIndex": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-closed-control-source-1/index.json",
+      "sha256": "702452a7d23ee796ec598ce770817965e6b6a234f40a7dc0739a7a7a98ee5433"
+    },
+    "wholeWriteCredit": false
+  },
+  "all23ActualsNeverRepeat": true,
+  "currentPrefix23": true,
+  "first22NeverRepeat": true,
+  "later11RemainClosed": true,
+  "localStaticBodyChecksVersusRootRemoteAttributionDistinct": true,
+  "nativeControl": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-control-native-precision-1/closure.json",
+    "sha256": "7e1da5be888a7bea43b095eb04d14b5ab4b49d13dca565a0a0ec60da531d549d"
+  },
+  "newNativeRemoteGitReplay": false,
+  "noStageReleasedByAudit": true,
+  "onlyThreeGateFieldsChanged": [
+    "approvedStages",
+    "rootArchiveAcceptance",
+    "rootDisposition"
+  ],
+  "prior22RootDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-prepare-consumer-root-final-disposition-1/disposition.json",
+    "sha256": "76c62bc62c46c614f6c2775e27e3afdcfcfe062864a238177d5be70148bc66c3"
+  },
+  "publicationJoins": [
+    {
+      "commit": "d79385a6163f3530f4c29fb0ded8ffd3cf5eb433",
+      "criticalDirectBodies": 15,
+      "historicalSolePlan": [
+        {
+          "bytes": 477545,
+          "currentEqualityClaimed": false,
+          "mode": "0o644",
+          "path": "docs/architecture/bdp-client-v2/design.md",
+          "sha256": "50244522fe11baf6b43c9493384498e079feff9f2ea8f936ccb8040a3351499a"
+        }
+      ],
+      "nativeFreshRemoteReplay": false,
+      "nativeLocalStaticMembers": 4457,
+      "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-consumer2-final-authority-publication-1.remote-readback.json",
+      "rootVerifiedRawGitModes": 4458
+    },
+    {
+      "commit": "3b6edcebfb8e1ba536c1a9db75d56c998e0cdfc6",
+      "criticalDirectBodies": 3,
+      "historicalSolePlan": [
+        {
+          "bytes": 478328,
+          "currentEqualityClaimed": false,
+          "mode": "0o644",
+          "path": "docs/architecture/bdp-client-v2/design.md",
+          "sha256": "ab90f1310b5c5100b30f6870c38939aeb380372f93b7d2bcb2955b9744cc58be"
+        }
+      ],
+      "nativeFreshRemoteReplay": false,
+      "nativeLocalStaticMembers": 5,
+      "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-consumer2-activation-publication-1.remote-readback.json",
+      "rootVerifiedRawGitModes": 6
+    },
+    {
+      "commit": "08d4adedd9e354637ada4585644e1d64dd671b05",
+      "criticalDirectBodies": 2,
+      "historicalSolePlan": [
+        {
+          "bytes": 481095,
+          "currentEqualityClaimed": false,
+          "mode": "0o644",
+          "path": "docs/architecture/bdp-client-v2/design.md",
+          "sha256": "ffdf883012c7555270f8f33dc3199a9d79889e1d98bb36163964dd7babed1741"
+        }
+      ],
+      "nativeFreshRemoteReplay": false,
+      "nativeLocalStaticMembers": 22,
+      "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-consumer-install-actual-capture-publication-1.remote-readback.json",
+      "rootVerifiedRawGitModes": 23
+    },
+    {
+      "commit": "1682f33690eccabe6d518f979161c3886050c275",
+      "criticalDirectBodies": 2,
+      "historicalSolePlan": {
+        "bytes": 480165,
+        "mode": "0o644",
+        "sha256": "9758a5b853086dce4f96b154bf3073990a20905d87c285a96036116664162ee6"
+      },
+      "nativeFreshRemoteReplay": false,
+      "nativeLocalStaticMembers": 88,
+      "receipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-prepare-consumer-final-disposition-publication-1.remote-readback.json",
+      "rootVerifiedRawGitModes": 89
+    }
+  ],
+  "rootFinalControlAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-final-acceptance-1/acceptance.json",
+    "sha256": "3ae7174043a509b0a6ffc9eb31d8f226617259dd1ff55d996a3eb6ddb0b87797"
+  },
+  "stage24StillRequiresActualRootGeneratedNonfrozenLockManifestSettingsAcceptanceAndSeparateClosedControlSourceReviewPublicationActivation": true,
+  "writeRelease": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer2-root-final-acceptance-1/write-release.json",
+    "sha256": "c41c56a36afb88d3fcd24456e94532e220ae66d57be5477f9c541620524d4b89"
+  }
+}

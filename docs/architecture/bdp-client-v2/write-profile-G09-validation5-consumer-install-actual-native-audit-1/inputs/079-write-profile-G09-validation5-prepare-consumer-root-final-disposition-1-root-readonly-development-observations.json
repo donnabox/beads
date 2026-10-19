@@ -1,0 +1,26 @@
+{
+  "noActualInvocationRepeated": true,
+  "observations": [
+    {
+      "actualToolChunkId": "c9ac3a",
+      "cause": "Reader assumed a def consumer function; the actual unchanged helper uses elif mode==consumer. Subsequent static branch inspection used real source structure.",
+      "exitCode": 1,
+      "failure": "ValueError: substring not found",
+      "outputCreatedAtFailure": false,
+      "source": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-prepare-consumer-root-final-disposition-1/root-readonly-locator-failed-source.py",
+        "sha256": "67df79e5890ea06210146e6a4497408835646b33ba512515ef4d893a62f9b365"
+      },
+      "subjectMutationOrInvocation": false
+    },
+    {
+      "cause": "Draft JavaScript generator used triple quote syntax; rejected before evaluation, no nested tool or subject action.",
+      "failure": "SyntaxError: missing ) after argument list",
+      "fullFailedOrchestrationSourceArtifact": "UNRETAINED; failed tool input remains in conversation, not claimed as a retained local artifact",
+      "outputCreatedAtFailure": false,
+      "subjectMutationOrInvocation": false,
+      "tool": "functions.exec"
+    }
+  ],
+  "scope": "ROOT_READONLY_INSPECTION_ORCHESTRATION_DEVELOPMENT_ONLY_NO_SUBJECT_RETRY"
+}

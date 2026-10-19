@@ -1,0 +1,36 @@
+{
+  "AActualPtySession": 14031,
+  "allActualPollsRetained": true,
+  "noRetry": true,
+  "rawWireToolReceipts": "UNRETAINED; normalized actual original tool results plus issued literal sources retained",
+  "relations": [
+    {
+      "actualExit": 0,
+      "actualTerminalToolId": "8f972f",
+      "baselineSha256": "eac9404f1cfdf22984e9731e07966403691a2edde7f26a23eadb781819b23aa9",
+      "issuedSha256": "eac9404f1cfdf22984e9731e07966403691a2edde7f26a23eadb781819b23aa9",
+      "normalizedResultCount": 3,
+      "phase": "A",
+      "sourceRelation": "EXACT_A"
+    },
+    {
+      "actualExit": 0,
+      "actualTerminalToolId": "ab393a",
+      "baselineSha256": "e050e36776072aa7ce0b5be45fab898968b2f1fc73cddf993e6ab41c1987fe96",
+      "issuedSha256": "2569d4431b4abd40ba3e714b371a2cb4e884aaf544f37ea9ccf7adeb2dffd7a3",
+      "normalizedResultCount": 1,
+      "phase": "B",
+      "sourceRelation": "ONE_COMPLETE_LF_PRECEDING_ACTUAL_TERMINAL_ID_ONLY_FULL_INVERSE"
+    },
+    {
+      "actualExit": 0,
+      "actualTerminalToolId": "8645a5",
+      "baselineSha256": "1aee19a6aced51244140402af6b1dc9f6508fe7a466b1588756fbd1fdf5110d9",
+      "issuedSha256": "c9c8568ae561c3201274e95574fc70edf49f46b4451e3606c73fe241d0fd1eb8",
+      "normalizedResultCount": 1,
+      "phase": "C",
+      "sourceRelation": "ONE_COMPLETE_LF_PRECEDING_ACTUAL_TERMINAL_ID_ONLY_FULL_INVERSE"
+    }
+  ],
+  "stage": "consumer-install"
+}

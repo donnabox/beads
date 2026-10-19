@@ -1,0 +1,209 @@
+{
+  "accepted": true,
+  "actualBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer-install-root-tool-evidence-1/binding.json",
+    "sha256": "7b82a7244e715c23ec1de242c869c669deff3a30b829ecb97296be2898fc5b4b"
+  },
+  "actualCapturePublication": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-consumer-install-actual-capture-publication-1.remote-readback.json",
+    "sha256": "82cf24bb7beb2c398f38cfc1855fe1c649317637def58ab20cb348f8b56d9fc5"
+  },
+  "actualEvidenceIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer-install-root-tool-evidence-1/index.json",
+    "sha256": "1e4428b8c466e8fcc57b6307b4f7067a233ebb607d3be67c0205ac2e073a3a0d"
+  },
+  "actualInstalledDataInventory": {
+    "actualArchiveSha512IntegrityAndFileImportersExact": true,
+    "actualInternalPnpmLockSame": true,
+    "actualLock": {
+      "bytes": 2958,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/pnpm-lock.yaml",
+      "sha256": "1ee287fcdfe295bd82001f9a09fe3dec06037f2128ee2c332e11cadb3bfd2ee5"
+    },
+    "actualLogReports": "resolved8/reused7/downloaded1/added8",
+    "allFilesMetadataHashesAndSymlinkTargetsReproduced": true,
+    "entryPresentFilesystemOnlyNotInvoked": true,
+    "expectedEightProductionVersions": {
+      "@bdp/protocol": "0.0.0",
+      "@bdp/server": "0.0.0",
+      "ajv": "8.17.1",
+      "ajv-formats": "3.0.1",
+      "fast-deep-equal": "3.1.3",
+      "fast-uri": "3.1.5",
+      "json-schema-traverse": "1.0.0",
+      "require-from-string": "2.0.2"
+    },
+    "installedGraph": {
+      "@bdp/protocol": {
+        "dependencies": {
+          "ajv": {
+            "manifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/node_modules/.pnpm/ajv@8.17.1/node_modules/ajv/package.json",
+            "version": "8.17.1"
+          },
+          "ajv-formats": {
+            "manifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/node_modules/.pnpm/ajv-formats@3.0.1_ajv@8.17.1/node_modules/ajv-formats/package.json",
+            "version": "3.0.1"
+          }
+        },
+        "manifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/node_modules/.pnpm/@bdp+protocol@file+..+packages+bdp-protocol-0.0.0.tgz/node_modules/@bdp/protocol/package.json",
+        "sha256": "2415a9a929050fc642fceceb15dce1084debaf1bf7b05f1602ba034afa57f17f"
+      },
+      "@bdp/server": {
+        "dependencies": {
+          "@bdp/protocol": {
+            "manifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/node_modules/.pnpm/@bdp+protocol@file+..+packages+bdp-protocol-0.0.0.tgz/node_modules/@bdp/protocol/package.json",
+            "version": "0.0.0"
+          },
+          "fast-uri": {
+            "manifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/node_modules/.pnpm/fast-uri@3.1.5/node_modules/fast-uri/package.json",
+            "version": "3.1.5"
+          }
+        },
+        "manifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/package.json",
+        "sha256": "d583f4158c3a393923c37d70a61212f6a716c951a5f3be7ed9bbe3aa8846ca2e"
+      },
+      "ajv": {
+        "dependencies": {
+          "fast-deep-equal": {
+            "manifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/node_modules/.pnpm/fast-deep-equal@3.1.3/node_modules/fast-deep-equal/package.json",
+            "version": "3.1.3"
+          },
+          "fast-uri": {
+            "manifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/node_modules/.pnpm/fast-uri@3.1.5/node_modules/fast-uri/package.json",
+            "version": "3.1.5"
+          },
+          "json-schema-traverse": {
+            "manifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/node_modules/.pnpm/json-schema-traverse@1.0.0/node_modules/json-schema-traverse/package.json",
+            "version": "1.0.0"
+          },
+          "require-from-string": {
+            "manifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/node_modules/.pnpm/require-from-string@2.0.2/node_modules/require-from-string/package.json",
+            "version": "2.0.2"
+          }
+        },
+        "manifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/node_modules/.pnpm/ajv@8.17.1/node_modules/ajv/package.json",
+        "sha256": "ce1539e6f4e0f345ed402c47137d2679497b2035d4a4f420ee11acdde03dea92"
+      },
+      "ajv-formats": {
+        "dependencies": {
+          "ajv": {
+            "manifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/node_modules/.pnpm/ajv@8.17.1/node_modules/ajv/package.json",
+            "version": "8.17.1"
+          }
+        },
+        "manifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/node_modules/.pnpm/ajv-formats@3.0.1_ajv@8.17.1/node_modules/ajv-formats/package.json",
+        "sha256": "402fb4bcfa457f0226813f3976ac42839dd619907c075c108efba8600d7edb69"
+      },
+      "fast-deep-equal": {
+        "dependencies": {},
+        "manifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/node_modules/.pnpm/fast-deep-equal@3.1.3/node_modules/fast-deep-equal/package.json",
+        "sha256": "a5c63940db0260739be9e2ac67f3aac268df4db5770420ee4e34e493152f97d2"
+      },
+      "fast-uri": {
+        "dependencies": {},
+        "manifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/node_modules/.pnpm/fast-uri@3.1.5/node_modules/fast-uri/package.json",
+        "sha256": "3b01e17f5de289a0905ad894187235c8a8bb284a1fd285b40227b1d862f86b4d"
+      },
+      "json-schema-traverse": {
+        "dependencies": {},
+        "manifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/node_modules/.pnpm/json-schema-traverse@1.0.0/node_modules/json-schema-traverse/package.json",
+        "sha256": "156fb24af02845c190701360d06dfda35ef04282e34a734289ea9535ad9819ae"
+      },
+      "require-from-string": {
+        "dependencies": {},
+        "manifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer/node_modules/.pnpm/require-from-string@2.0.2/node_modules/require-from-string/package.json",
+        "sha256": "c0002f7d4c7d7e2a885cf0f97226344902417c3a0980f2beca41962d2bc1f6d8"
+      }
+    },
+    "installedProtocolServerAll321ArchiveMemberBytesExact": true,
+    "lockPackageAndSnapshotKeys": {
+      "packages": [
+        "@bdp/protocol@file:../packages/bdp-protocol-0.0.0.tgz",
+        "@bdp/server@file:../packages/bdp-server-0.0.0.tgz",
+        "ajv-formats@3.0.1",
+        "ajv@8.17.1",
+        "fast-deep-equal@3.1.3",
+        "fast-uri@3.1.5",
+        "json-schema-traverse@1.0.0",
+        "require-from-string@2.0.2"
+      ],
+      "snapshots": [
+        "@bdp/protocol@file:../packages/bdp-protocol-0.0.0.tgz",
+        "@bdp/server@file:../packages/bdp-server-0.0.0.tgz",
+        "ajv-formats@3.0.1(ajv@8.17.1)",
+        "ajv@8.17.1",
+        "fast-deep-equal@3.1.3",
+        "fast-uri@3.1.5",
+        "json-schema-traverse@1.0.0",
+        "require-from-string@2.0.2"
+      ]
+    },
+    "networkObservation": "UNRETAINED; actual offline argv and literal log only, no zero-network claim",
+    "originalInstalledProvenanceAndInventoryAbsentFilesystemOnly": true,
+    "regularFiles": 870,
+    "scope": "STATIC filesystem, actual generated NONFROZEN lock and fixed dependency graph DATA ONLY; original stage24 installed proof unattempted",
+    "symlinks": 17
+  },
+  "actualLogSha256": "072b17518f5e1c0de392562d55b3a7c2232b1a7ff9aa0fff6f9353b6229d2602",
+  "actualTerminals": {
+    "A": "8f972f",
+    "B": "ab393a",
+    "C": "8645a5"
+  },
+  "all1412CensusRows6Samples3RecordedPIDs3GroupsVerified": true,
+  "all23NeverRepeat": true,
+  "allEightRefDomainsSixteenPriorNativeLedgersOnlyKnownSameGatePhases": true,
+  "commonClockSeconds": 10.000101832672954,
+  "consumerLockSha256": "1ee287fcdfe295bd82001f9a09fe3dec06037f2128ee2c332e11cadb3bfd2ee5",
+  "consumerManifestSha256": "e5e96542af510e59f9856db34e994e8d706f18afdc0e7a3a2e1c609de0ce9279",
+  "consumerSettingsSha256": "1d620557a5caab797d2fd516df77e3a108ba29c0e1f7e3de7ada175e145e3e43",
+  "currentPrefix23Exhausted": true,
+  "entryPresentFilesystemOnlyNotStarted": true,
+  "findings": [],
+  "full4458AuthorityBeforeThreeField34To437WriteSeparateActivation6BeforeActualPrior22All89Before23Verified": true,
+  "later11RuntimeClosed": true,
+  "literalResolved8Reused7Downloaded1Added8Preserved": true,
+  "nativeClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer-install-actual-native-audit-1/closure.json",
+    "sha256": "ab10f2952bdd6cbd8d71ee00a744d331b487cf340b20df1bfed33341dd7214ca"
+  },
+  "nativeCurrentLedgerVerified": 10978,
+  "nativeDataCheckerHistory": [],
+  "nativeFilesVerified": 103,
+  "nativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer-install-actual-native-audit-1/index.json",
+    "sha256": "3812b0d5e7643ec3c4534f8714a965d872b1e3b5acd619de2fd27e9ab3fd1b50"
+  },
+  "nativeOriginCopiesVerified": 89,
+  "nativePublicationReplayScope": "Retained local source/Git/raw joins separately scoped from ROOT actual remote publication receipts",
+  "nativeReport": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer-install-actual-native-audit-1/report.md",
+    "sha256": "b58242834cc2c05025af4f8e97c8adad53eaa7646dec1778602aaf00997f6f1e"
+  },
+  "nativeWholeLockReconstructedFromActualArchivesAndFrozenWorkspaceVerified": true,
+  "networkWireInference": false,
+  "noRuntimeOrInstalledProfileStartupWholeWriteAuthority": true,
+  "oneActualAInitial6826d6Session14031Poll4c1311Terminal8f972fAllThreeResults": true,
+  "oneActualNoRetry": true,
+  "originalFalsePendingFailedWireFullEnvUnretainedFiniteCensusScratchAndOriginal23AttemptsPreserved": true,
+  "originalStage24InstalledProofAbsentUnattempted": true,
+  "qualityPass": false,
+  "raw0600EOFCountsHashesCloseReapComplete": true,
+  "retainedRootReadOnlyDevelopmentObservations": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer-install-root-final-disposition-1/retained-root-checker-development/observations.json",
+    "sha256": "a4836bc3d3afa30f3ed2add1a1dc35031df72ea328358dd0333809575e6adfe1"
+  },
+  "rootIndependentInspection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-consumer-install-root-final-disposition-1/independent-actual-inspection.json",
+    "sha256": "082bf2745f579c4a6d19bfb6fb2e8a2669ea1cbce171109d486990b16eae32d2"
+  },
+  "rootLockAcceptanceIsExactExistingGate129To132Interface": true,
+  "runtimeAuthority": false,
+  "scope": "ONE_ACTUAL_CONSUMER_INSTALL_CAPTURE_STATIC_FILESYSTEM_AND_ACTUAL_GENERATED_NONFROZEN_LOCK_MANIFEST_SETTINGS_ACCEPTANCE_ONLY",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "source679Impl105OtherPrepared110TotalPrepared111Current1086Run975IncludingInstalledPayloadBuild476Tools11GitSourceLockExact": true,
+  "sourceBindingSha256": "e0252cb07ac1896fac0faab395e10e50ea58eac263b6d33ee224e378413c2d68",
+  "sourceOnlySuccessorAuthoringRequiresCompleteNativeRootReleaseSoleDurability": true,
+  "strictUnder115": true,
+  "wholeWriteCredit": false
+}
