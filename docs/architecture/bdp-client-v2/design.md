@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+[ONE actual protocol package capture](write-profile-G09-validation5-pack-protocol-root-tool-evidence-1/report.md) COMPLETE A f2e587/B63fea1/C92f1af all0/no polls/retry; common10.553203000s<115/inner4.505418708s/source1eca unchanged. Original pnpm emitted actual68665B protocoltgz4683cb6c, full log7063c833 retained. Prior directory FULLnative79/ROOTd7b59de7/all83pub4bfbff5a BEFOREactual. Native+ROOT actual conjunction/durability REQUIRED BEFOREpack-server, UNATTEMPTED. Full dualarchive/provenance/consumer/installedproof unresolved; no publicprofile/fullWrite credit; originalfalse/pending/finiteprocess/wire+fullENVUNRETAINED/failed histories preserved.
+
+
 Actual package-directory capture FULLnative79 index4813e4dc/closure6af2a9fb accepted/no findings; ROOT verified79/61origins7949currentledger plus own52c5daff full1422censusrows/59samples/50PIDs3groups/raw0600/clock18.246213542<115/source679/105impl/110prepared/P193run82/build476/tools11. [ROOT final directory disposition](write-profile-G09-validation5-prepare-package-directory-root-final-disposition-1/disposition.json) accepts ONE capture/exact empty0755directory only. ONE nextpack-protocol exactS3 cells conditional ONLY AFTER fullnative79+ROOT3+sole83raw/Gitmodes/critical durability; notyetattempted. No archives/consumer/installedstartup/publicprofile/fullWrite credit. Original false/pending/finiteprocess/scratch/wire+fullENVUNRETAINED/failed histories unchanged; no retry/main request.
 
 
