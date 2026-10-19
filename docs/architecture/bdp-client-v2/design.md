@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+ONE actual typecheck A/B/C COMPLETE functions3135 after432authority05ea+separateactivation6 3ee: actualnormalizedterminals6a4c7e/bc524a/ba7d1c all0; exactcompilerlog $ tsc -p tsconfig.check.jsonLF/innerexit0/source1eca unchanged5.018787875s/common9.847113583<115. [Frozen actualcompiler capture9](write-profile-G09-validation5-typecheck-root-tool-evidence-1/report.md)+root8+inner4 retained, no retry/secondcensus. FULLindependentactualnative+ROOTdisposition/durability REQUIREDBEFORE format-check; provisionalfalse/pending/rawwiretoolreceiptsUNRETAINED preserved, no cleanup/globalclaim. Allnext29commandsunattempted/later25unreleased/no lint/test/build/profile/fullWritepass.
+
+
 ALL432composite authority/source/helper/capture/proof/acceptedfirst4ROOT raw/Gitmodes+10criticalbodies freshlyverified durable05ea96bd5e7ad81656711dde0dabcd9876898dfb BEFORE [ONE next5 liveactivation](write-profile-G09-validation5-next5-root-activation-1/activation.json). SoleP/livegatead5->exactcandidate18, only3JSONfields approvedprefix9/workspace11map/rootconditionalbridge; fullbefore/active/controlpair retained. Other110prepared/105impl/679source/17priorrun/HEADcce/tree675/branch/f87d/tenunstaged unchanged; new2314refs ONLYexactlivead5->18 and olddomains ONLYsame4a->ad5->18 qualified, no repair. Actualtypecheck/new5stillUNATTEMPTED: separatefullactivationpublication/readback REQUIREDBEFORE ONEtypecheckA/B/C, fullactualnative/ROOTdurabledisposition before eachnext. First4nevrepeat/later25closed/fullWriteOPEN.
 
 
