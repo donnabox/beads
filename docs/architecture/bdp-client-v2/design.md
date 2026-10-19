@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+Pnpm-version actual audit COMPLETE: independent native51 accepted/no findings, ROOT verified all51/38origins/2531currentledger plus fullownactualinspection71c1377b. [ROOT final disposition](write-profile-G09-validation5-pnpm-version-root-final-disposition-1/disposition.json) acceptsONEversioncapture only,11.20.0+LF/common8.588768958<115/actualterminals0/finite3PID3PGIDabsence. Scratch retained with compilecache, no emptiness predicate or cleanup/globalclaim; rawtoolreceiptsUNRETAINED. Workspace-install ONE exactreviewed A/B/C conditionally released ONLY AFTER complete native51+ROOT3+soleplan raw/Gitmodes/criticalreadback. Never repeat Node or pnpm. Allotherstages separateactualauditbarriers/later30unreleased/fullWriteOPEN.
+
+
 ONE actual pnpm-version A/B/C COMPLETE functions3059 after durable Node final disposition873d2df5: actual normalized terminals270143/9ebe12/ed7372 all0, exact log11.20.0+LF, innerexit0/source1eca unchanged3.9093565s, common8.588768958<115. [Frozen actual pnpm evidence9](write-profile-G09-validation5-pnpm-version-root-tool-evidence-1/report.md)+root8/inner4 retained; no retry/secondcensus. Full actual native+ROOT audit/disposition/durability REQUIRED before workspace-install. Original provisionalfalse/pending flags preserved; independent rawtoolreceiptsUNRETAINED. No quality/profile/fullWrite credit, allnext32stages unattempted/later30unreleased.
 
 

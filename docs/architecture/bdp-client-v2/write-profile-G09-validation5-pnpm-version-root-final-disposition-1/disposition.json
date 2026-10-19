@@ -1,0 +1,41 @@
+{
+  "accepted": true,
+  "actualRootCommonClockSeconds": 8.588768958114088,
+  "actualTerminals": {
+    "A": "270143",
+    "B": "9ebe12",
+    "C": "ed7372"
+  },
+  "cleanupPerformed": false,
+  "findings": [],
+  "nativeClosureSha256": "cd0af1f9fe64cd4e875e9e0d9ea2d2bfcef24b48f2fef623547a669907161fab",
+  "nativeCopiedOriginsVerified": 38,
+  "nativeCurrentLedgerInputsVerified": 2531,
+  "nativeIndexSha256": "d602d0e8ab72f5d9e2309b91add7eeacc8e0296338922f39ae3309e636467c47",
+  "nativePhysicalFilesVerified": 51,
+  "nextStage": "workspace-install",
+  "nextStageConditionalRelease": {
+    "allActualTerminalRawEOF600FiniteCensusAndReapConditionsRequired": true,
+    "exactPublishedBaselineCellsOnly": true,
+    "fullIndependentActualNativeRootDispositionAndDurabilityBeforeAnyFollowingStage": true,
+    "later30RemainUnreleased": true,
+    "onlyWholeLFPrecedingActualTerminalIDSubstitution": true,
+    "priorActualVersionStagesMustNeverBeRepeated": true,
+    "requiresCompleteSelectedNative51Root3AndSolePlanPublicationRawGitModesAndCriticalDirectReadback": true,
+    "singleFreshABCActualAttemptOnly": true,
+    "strictCommonClockUnder115Outer120": true
+  },
+  "observedVersion": "11.20.0",
+  "observerSelfAbsenceOrGlobalContainmentClaim": false,
+  "originalProvisionalAcceptedFalseAndHistoricalPendingFieldsPreserved": true,
+  "publicationAloneDoesNotInvokeRuntime": true,
+  "qualityPass": false,
+  "rawToolReceipts": "UNRETAINED_SOURCE_ATTRIBUTED_NORMALIZED_RESULTS",
+  "rootIndependentInspectionSha256": "71c1377b24d8122fd80ff33437aa1e91bcda5b7cc56314b82a5c4de940bcedcf",
+  "scope": "ONE_ACTUAL_PNPM_VERSION_CAPTURE_AND_FINITE_OBSERVATION_CONJUNCTION_ONLY",
+  "scratchRetained": true,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "sourceIdentity": "1ecaf2e47369cc12cc26bc3ed693c5d4d3b9cffa4714b13dbe5567f9e46bfb15",
+  "stage": "pnpm-version",
+  "wholeWriteCredit": false
+}
