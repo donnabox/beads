@@ -1,0 +1,32 @@
+{
+  "actualFunctionsCellId": "3306",
+  "noRetry": true,
+  "relations": [
+    {
+      "actualSha256": "bb5e436e1e7a5b187efd877db759bd3279213ba5d41ebdfae2426b931a77e77b",
+      "baselineSha256": "bb5e436e1e7a5b187efd877db759bd3279213ba5d41ebdfae2426b931a77e77b",
+      "kind": "EXACT_PUBLISHED_BASELINE_A",
+      "phase": "A"
+    },
+    {
+      "actualPrecedingTerminalToolId": "d29e2a",
+      "actualSha256": "963f80b67270c07c63c14d004c91e64f7e5308f95d59ef3054a749daee1a646d",
+      "baselineSha256": "1a474931f3bbf163e4df672f573eb44cc3a79caef23251a390f60ff2acda3f7f",
+      "fullInverseExact": true,
+      "kind": "ONE_COMPLETE_LF_PRECEDING_ACTUAL_TERMINAL_ID_ASSIGNMENT_ONLY",
+      "phase": "B",
+      "sentinelComparisonsAndRAWEXIT0Unchanged": true
+    },
+    {
+      "actualPrecedingTerminalToolId": "1a3874",
+      "actualSha256": "142965d891f05d7c63b01ae154a0975cba99da7a91020f442488faca8c3769ab",
+      "baselineSha256": "95aeaf36a55c67c775ed6c2c0211746be9e77e33bacc91722d7b627cfd39baee",
+      "fullInverseExact": true,
+      "kind": "ONE_COMPLETE_LF_PRECEDING_ACTUAL_TERMINAL_ID_ASSIGNMENT_ONLY",
+      "phase": "C",
+      "sentinelComparisonsAndRAWEXIT0Unchanged": true
+    }
+  ],
+  "sourceAttribution": "Original issued sources and normalized ordinary tool results retained from actual contiguous functions3306; independently decoded original wire receipts UNRETAINED.",
+  "stage": "legacy-schema-source"
+}

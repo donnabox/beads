@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+ONE actual legacy-schema-source COMPLETE functions3306 A d29e2a/B1a3874/Ce97b62 all0 AFTER private HTTP/schema pair FULLnative92/ROOT3/all96pubfaba6dbe. [Frozen legacy schema source capture](write-profile-G09-validation5-legacy-schema-source-root-tool-evidence-1/report.md) retains original sources/normalized terminals/full log+results/root8+inner5/all23. Legacy regression observations add no new G09 direct/wire credit. Full independent actual native+ROOT disposition/durability BEFORE immediate existing audit-legacy-schema-source; official audit NOT_ATTEMPTED/pair incomplete. Original false/pending/UNRETAINED wire+fullENV/finiteprocess/scratch/failed history unchanged; no publicprofile/fullWrite qualification/later17closed.
+
+
 Separate [later17 binding inventory44](write-profile-G09-validation5-later17-binding-inventory-1/report.md) is ROOT-reviewed as DATA only: original17 exact command configs,30 observed inputs including exact historicalsoleplan6b5c and136 actual hash/line pointers. ROOT checker/partial-author DATA errors are preserved; corrected separately named ROOT successor grants no runtime authority. [ROOT limited inventory disposition](write-profile-G09-validation5-later17-binding-root-disposition-2/disposition.json) grants no author/runtime/livewrite authority. Natural futurewindow18..21 only AFTER source4pairs complete; stopbefore22 actualarchiveacceptance, before24 generatedNONFROZENconsumer-lock acceptance, before25 fullinstalledproof. Futurestage34 originalraw0or2 versus inheritedcaptureinner0 and stage33 separate npm nonoffline smoke footprint explicitly retained for later corrected CLOSEDsource precision; no fix/deadline/flag/schema/semantics change. Currentlivef16prefix17 unchanged/fullWriteOPEN.
 
 
