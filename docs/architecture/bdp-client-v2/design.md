@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+ONE actual fresh-build A/B/C COMPLETE functions3181 after full lint acceptance/all77 readback522e9a4b: normalizedterminals c31377/32a52b/2a58c4 all0; inner0/source1eca unchanged4.453079833/common9.249441709<115. Exact72B clean/build log232dac5e retained. [Frozen build capture9](write-profile-G09-validation5-fresh-build-root-tool-evidence-1/report.md)+root8+inner4/all22 retained/no retry/secondcensus. FULL independent native/ROOT actual disposition/durability required before bind-fresh-build; actual full build inventory/exports/maps/source-log joins UNRESOLVED until separate binding and acceptance. Originalfalse/pending/raw wireUNRETAINED/finiteprocess/scratch limits preserved. Remaining26commands unattempted/later25closed/no source test,archive,consumer,profile,fullWrite pass.
+
+
 Actual lint FULL native73 index43b1358a/closureb697e3c8 accepted/no subject findings. ROOT independently verified73/59origins2792currentledger and own actualinspection2edbd331 plus current actual Git HEADcce/tree675/parenta562/ten unstaged/f87d diff/no staged/untracked. [ROOT final lint disposition](write-profile-G09-validation5-lint-root-final-disposition-1/disposition.json) acceptsONEactual lint capture conjunction: inner0/source1eca unchanged/common8.261916250<115; log13485B e8b4ab86/96warnings30infos106unprinted/default20 configured unfiltered rules, NOTdiagnosticfree. Threeactualsamples/FOURrows; handoff six-row wording and inherited ActualFormat receipt key qualified, original artifacts unchanged. PriorP3FAILED/provisionalfalse/pending/raw wireUNRETAINED/finiteprocess/scratch limits preserved. ONE fresh-build exact S baseline conditionally released ONLY AFTER allnative73+ROOT3+sole77 raw/Gitmodes/critical readback. No actual fresh build/test/profile/fullWrite pass; later25 closed.
 
 

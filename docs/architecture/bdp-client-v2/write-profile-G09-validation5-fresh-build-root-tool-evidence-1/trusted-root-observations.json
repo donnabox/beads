@@ -1,0 +1,71 @@
+{
+  "accepted": false,
+  "actualBuildLog": {
+    "bytes": 72,
+    "exactText": "$ pnpm clean && tsc -b\n$ tsc -b --clean && node scripts/clean-build.mjs\n",
+    "mode": "0o644",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/fresh-build.log",
+    "sha256": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208"
+  },
+  "actualFunctionsCellId": "3181",
+  "actualInnerElapsedSeconds": 4.453079833183438,
+  "actualInnerExit": 0,
+  "actualPhaseTerminalObservations": [
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "c31377",
+      "phase": "A"
+    },
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "32a52b",
+      "phase": "B"
+    },
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "2a58c4",
+      "phase": "C"
+    }
+  ],
+  "censusRawStreamBytes": [
+    212606,
+    0
+  ],
+  "cleanupPerformedByStaticPacket": false,
+  "completedInvocationAndObservationUpperBoundSeconds": 9.24944170890376,
+  "firstPostBTerminalWitnessMonotonic": 2263903.95788175,
+  "fullIndependentConjunctionAudit": "PENDING",
+  "matchingTaskRows": [],
+  "nextStageReleased": false,
+  "observerSelfAbsenceOrGlobalContainmentClaim": false,
+  "ordinaryToolRecords": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-fresh-build-root-tool-evidence-1/dispatch-state.json",
+    "sha256": "de4e33ab34015a54ec30ad1df86cbaf8b412dee6c0ead995314ed414ddc81b70"
+  },
+  "probeDirectReaped": true,
+  "qualityPass": false,
+  "rawWireToolReceipts": "UNRETAINED_SOURCE_ATTRIBUTED_NORMALIZED_RESULTS",
+  "recordedTaskPGIDs": [
+    28132,
+    28145,
+    28845
+  ],
+  "recordedTaskPIDs": [
+    28144,
+    28145,
+    28845,
+    28859,
+    28860,
+    28876,
+    28877,
+    28885
+  ],
+  "rootOriginMonotonic": 2263894.708440041,
+  "rootRawStreamBytes": [
+    510,
+    0
+  ],
+  "stage": "fresh-build",
+  "strictUnder115": true,
+  "temporaryDirectory": "/private/tmp/vickie-tx-discovery-validation-fresh-build-jlut0h9k"
+}
