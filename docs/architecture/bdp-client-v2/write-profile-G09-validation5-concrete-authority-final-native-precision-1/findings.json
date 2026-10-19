@@ -1,0 +1,14 @@
+[
+  {
+    "id": "P5-FINAL-N1",
+    "impact": "Descriptive provenance instruction names historical P3 receipts despite actual fresh P5 gate/cells and no-reuse requirements. This is not an observed executable control defect.",
+    "location": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-execution-acceptance-1/acceptance.json:59; positiveConjunction[1]",
+    "manifestSha256": "c8ee1a1cd556beae5ddb93454a5156a23c8bc817a4a4ff405996de49049f7ae1",
+    "noSilentWaiver": true,
+    "originalText": "Actual Atool0 +wrapper/inner0/no force/errors/sourcechange; sourcechecked prior P3 stage receipts only.",
+    "requiredCorrectedText": "Actual Atool0 +wrapper/inner0/no force/errors/sourcechange; sourcechecked prior P5 stage receipts only.",
+    "severity": "Low",
+    "status": "OPEN_PENDING_EXPLICIT_ROOT_ADDITIVE_ERRATUM",
+    "sufficientDisposition": "An explicit separately frozen ROOT erratum/final findings disposition pinned to this immutable manifest rawSHA and exact field/original/corrected text is sufficient. Retain original text/hash and enforce actual fresh P5 receipts; no capture-code or source successor is required for this typo."
+  }
+]

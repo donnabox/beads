@@ -1,0 +1,24 @@
+{
+  "afterSha256": "ad5b647e6b2f1aba93981d1a85fdb7ef0930062418012cf4acf90073de202919",
+  "beforeSha256": "4a87b45d714a6bd28a94fd50a389defe4b5582dc5f42ec56fd827c7cf5b01e76",
+  "candidatePreactivationReferences": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-proposed-authority-1/reference-pins.json",
+  "closedCopy": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.closed.json",
+    "sha256": "4a87b45d714a6bd28a94fd50a389defe4b5582dc5f42ec56fd827c7cf5b01e76"
+  },
+  "implementation": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/implementation-hashes.json",
+    "sha256": "c2a7d11deb63169052434c3b45c62bd30664009d4ea6a3e9b42c4cd85bd649a6"
+  },
+  "liveWriteReleasedByThisDocument": false,
+  "preparedIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/preparation-index.json",
+    "sha256": "2e1717523848f0aea7d7f70434c6930d8f07c78d33b55cffa4a318ad17393872"
+  },
+  "protocolPreparedReferences": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-fixed-protocol-preparation-1/reference-pins.json",
+    "sha256": "c6d2026a31e9e130ba96fd49bba6991c0118283012b9b43b3f1c504b579b6335"
+  },
+  "rule": "BEFORE livewrite every original prepared pin exact. AFTER independently accepted and fully published exact one-file transition, ONLY soleLivePath uses afterSha; original index remains historical, never repaired/current. All other110 prepared files incl closedcopy/105implementation exact. Actual run outputs separately indexed. Any other mismatch STOP.",
+  "soleLivePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+}

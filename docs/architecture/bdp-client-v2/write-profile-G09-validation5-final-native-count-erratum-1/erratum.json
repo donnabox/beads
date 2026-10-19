@@ -1,0 +1,44 @@
+{
+  "authorityCandidate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-proposed-authority-1/execution-gate.proposed.json",
+    "sha256": "ad5b647e6b2f1aba93981d1a85fdb7ef0930062418012cf4acf90073de202919"
+  },
+  "closedCopy": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.closed.json",
+    "sha256": "4a87b45d714a6bd28a94fd50a389defe4b5582dc5f42ec56fd827c7cf5b01e76"
+  },
+  "correctText": "ten top-level keys differ from the closed copy: six typed booleans, three document pins and approvedStages",
+  "incorrectText": "eleven fields differ from the closed copy",
+  "meaning": "Native arithmetic prose error preserved and corrected additively. The original exact keyset assertion and checks list are correct; no subject/control/source defect or change. Main finding P5-FINAL-N1 and static mechanics conclusions unchanged.",
+  "measuredChangedTopLevelKeyCount": 10,
+  "measuredChangedTopLevelKeys": [
+    "actualClaudeReviewDisposed",
+    "actualCodeDisposition",
+    "approvedStages",
+    "nativeCodeDisposition",
+    "nativeCodeReviewDisposed",
+    "released",
+    "rootDisposition",
+    "rootExactSourceAccepted",
+    "rootPlanAccepted",
+    "staticValidationAuthorized"
+  ],
+  "originalChecksAlreadyCorrect": {
+    "field": "changedCandidateKeys contains exact ten keys",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-concrete-authority-final-native-precision-1/checks.json",
+    "sha256": "2af0d86b2f9f75336137f91a5496acfa7fa70d527efe46c2ff76f6cc0f10fb00"
+  },
+  "originalFilesUnchanged": true,
+  "originalIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-concrete-authority-final-native-precision-1/index.json",
+    "sha256": "eae357413a7a3e4dce2fdcf7928f2973d2117cf64042773fea068e69ee0036df"
+  },
+  "originalReport": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-concrete-authority-final-native-precision-1/report.md",
+    "sha256": "18ff8b77f3fa6d7f2c604a4a07891a810a9c40f6aa88368c929d575185498241"
+  },
+  "rootNoticedAfterNativeFreezeBeforeNativeDelivery": true,
+  "runtimeAuthority": false,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "type": "ADDITIVE_NATIVE_PROSE_COUNT_ERRATUM_ONLY"
+}
