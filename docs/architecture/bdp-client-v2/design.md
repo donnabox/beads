@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+[Protocol capture descriptive poll-chain correction](write-profile-G09-validation5-pack-protocol-capture-descriptive-erratum-1/capture-summary-erratum.json): frozen originalstate/issued-source-relations were correct: Ainitialce7211/session68202 then completionpollf2e587 actual0; B63fea1/C92f1af eachsingle actual0. Earlier report/plan prose said no polls; that descriptive phrase is superseded by this exact correction, originalsource unchanged. Read-only ROOT checker wrongone-A-result assumption failed before any output or subject action; failedsource/result retained. ONE packaging invocation only, not a retry. Full actual native+ROOT conjunction/durability still required BEFOREpack-server; no runtime release.
+
+
 [ONE actual protocol package capture](write-profile-G09-validation5-pack-protocol-root-tool-evidence-1/report.md) COMPLETE A f2e587/B63fea1/C92f1af all0/no polls/retry; common10.553203000s<115/inner4.505418708s/source1eca unchanged. Original pnpm emitted actual68665B protocoltgz4683cb6c, full log7063c833 retained. Prior directory FULLnative79/ROOTd7b59de7/all83pub4bfbff5a BEFOREactual. Native+ROOT actual conjunction/durability REQUIRED BEFOREpack-server, UNATTEMPTED. Full dualarchive/provenance/consumer/installedproof unresolved; no publicprofile/fullWrite credit; originalfalse/pending/finiteprocess/wire+fullENVUNRETAINED/failed histories preserved.
 
 
