@@ -1,0 +1,48 @@
+{
+  "accepted": false,
+  "auditAccepted": true,
+  "authoringReleasedByThisFile": false,
+  "captureAcceptance": false,
+  "captureBodiesStaticCoherent": true,
+  "concreteAuthorityReleased": false,
+  "correctivePlan": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-fixed-text-proof-correction-plan-1/plan.json",
+    "sha256": "526dc3d3f0c9f5cf8642ddd2f84ba365eb92e23b7a9c17969edbeec2879c8011"
+  },
+  "findingDispositions": [
+    {
+      "acceptedFinding": true,
+      "alsoRootId": "ROOT-TEXT-PROOF-01",
+      "id": "P5-TEXT-N1",
+      "required": "Actual already-bound input oldassignment0/new1 must be refused by prebinding applicability; preserve rawold40 rows/authortrace/templates. Postbindinginversealone tests a different condition. No capture body/guard/LF/RAW_EXIT0 changes.",
+      "severity": "Low",
+      "state": "OPEN_REQUIRED_ADDITIVE_CORRECT_PROOF"
+    }
+  ],
+  "historicalAuthorSource": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-fixed-text-root-findings-disposition-1/historical-ROOT-DATA-author-source.txt",
+    "sha256": "b447cdce460f6d4fd4f3e9e4a46659884f3f8efc32b73fe00e63e7a3b76cb3d4"
+  },
+  "inspection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-fixed-text-root-findings-disposition-1/inspection.json",
+    "sha256": "b43f9a2676492040e62833e4d8a2878e353ad2d96597e11ce95d28b30756d719"
+  },
+  "nativeClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-fixed-protocol-native-precision-1/closure.json",
+    "sha256": "6fb586042446dfe437d7ceafb9887c9c91925d57cdd1a033f366ab973ff9a5dc"
+  },
+  "nativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-fixed-protocol-native-precision-1/index.json",
+    "sha256": "63e0237a340274736b63e5080b1f1f3b246ac355c5ca24d0428b530ee9572928"
+  },
+  "qualityPass": false,
+  "runtimeAuthority": false,
+  "scope": "FIXED_TEXT_PREPARATION_ONE_LOW_DATA_PROOF_FINDING_PENDING_ADDITIVE_CORRECTION",
+  "session": "2026-10-18T02:16:24Z-549f",
+  "subjectIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-fixed-protocol-preparation-1/index.json",
+    "sha256": "73d6117bc34c8d7810c88a8f530d31935d591170be96ab449cf148d88cf33f96"
+  },
+  "subjectRetry": false,
+  "wholeFourTemplatesEightClassesFourteenOccurrencesInverse": true
+}

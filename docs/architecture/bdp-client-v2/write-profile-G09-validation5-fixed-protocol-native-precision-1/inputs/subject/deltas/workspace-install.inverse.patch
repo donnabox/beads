@@ -1,0 +1,70 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-fixed-protocol-preparation-1/proposals/workspace-install.capture.txt
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-fixed-protocol-preparation-1/proposals/workspace-install.capture.txt
+@@ -9,19 +9,19 @@
+ import os, json, hashlib, subprocess, select
+ from pathlib import Path
+ STAGE = 'workspace-install'
+-ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py', 'final', 'workspace-install']
+-CWD = '/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum'
+-P = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5')
++ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py', 'final', 'workspace-install']
++CWD = '/Users/dbox/repos/wt/vickie/vickie-schema-minimum'
++P = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3')
+ # Root must prepare/review/publish these exact replacements in a future literal
+ # command before invoking; this CLOSED proposal refuses unbound placeholders.
+ APPROVED_GATE_SHA256 = 'UNRESOLVED_FUTURE_ROOT_ACTIVATED_GATE_SHA256'
+-EXPECTED_IMPLEMENTATION_SHA256 = 'c2a7d11deb63169052434c3b45c62bd30664009d4ea6a3e9b42c4cd85bd649a6'
+-EXPECTED_SOURCE_BINDING_SHA256 = 'e0252cb07ac1896fac0faab395e10e50ea58eac263b6d33ee224e378413c2d68'
+-EXPECTED_COMMANDS_SHA256 = 'ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f'
+-OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/workspace-install'
++EXPECTED_IMPLEMENTATION_SHA256 = '8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6'
++EXPECTED_SOURCE_BINDING_SHA256 = '712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714'
++EXPECTED_COMMANDS_SHA256 = 'd7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7'
++OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/workspace-install'
+ # Additive exact externally pinned root execution acceptance; charged to ORIGIN.
+ APPROVED_EXECUTION_ACCEPTANCE_SHA256 = 'UNRESOLVED_FUTURE_ROOT_EXECUTION_ACCEPTANCE_SHA256'
+-EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-execution-acceptance-1/acceptance.json')
++EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-execution-acceptance-1/acceptance.json')
+ assert type(APPROVED_EXECUTION_ACCEPTANCE_SHA256) is str and len(APPROVED_EXECUTION_ACCEPTANCE_SHA256)==64 and all(c in '0123456789abcdef' for c in APPROVED_EXECUTION_ACCEPTANCE_SHA256)
+ assert EXECUTION_ACCEPTANCE_PATH.is_file() and not EXECUTION_ACCEPTANCE_PATH.is_symlink()
+ execution_acceptance_raw = EXECUTION_ACCEPTANCE_PATH.read_bytes()
+@@ -31,9 +31,9 @@
+ assert execution_acceptance['accepted'] is True
+ assert execution_acceptance['session'] == '2026-10-18T02:16:24Z-549f'
+ assert execution_acceptance['mode'] == 'final'
+-assert execution_acceptance['sourceBindingSha256'] == 'e0252cb07ac1896fac0faab395e10e50ea58eac263b6d33ee224e378413c2d68'
+-assert execution_acceptance['implementationIndexSha256'] == 'c2a7d11deb63169052434c3b45c62bd30664009d4ea6a3e9b42c4cd85bd649a6'
+-assert execution_acceptance['commandsSha256'] == 'ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f'
++assert execution_acceptance['sourceBindingSha256'] == '712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714'
++assert execution_acceptance['implementationIndexSha256'] == '8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6'
++assert execution_acceptance['commandsSha256'] == 'd7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7'
+ assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version','pnpm-version','workspace-install','bind-workspace-tools']
+ assert STAGE in execution_acceptance['approvedStages']
+ assert type(execution_acceptance['activeGate']) is dict and set(execution_acceptance['activeGate']) == {'path','sha256'}
+@@ -172,7 +172,7 @@
+                         registry['pids'].append(pid)
+                         registry['origins'].append({'role':'actual-inner-sampledPid','pid':pid,'pgid':None,'receipt':str(item)})
+         if inner is None: failure = failure or 'inner-terminal-unavailable'
+-        elif not (inner['exit']==0 and inner['accepted'] is True and inner['sourceUnchanged'] is True and inner['sourceIdentity']=='1ecaf2e47369cc12cc26bc3ed693c5d4d3b9cffa4714b13dbe5567f9e46bfb15' and inner['forcedCleanup'] is False and inner['errors']==[] and inner['remainingProcesses']==[] and inner['runtimeDirectoriesStillPresent']==[]): failure = failure or 'inner-not-accepted'
++        elif not (inner['exit']==0 and inner['accepted'] is True and inner['sourceUnchanged'] is True and inner['sourceIdentity']=='f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65' and inner['forcedCleanup'] is False and inner['errors']==[] and inner['remainingProcesses']==[] and inner['runtimeDirectoriesStillPresent']==[]): failure = failure or 'inner-not-accepted'
+     except BaseException as exc:
+         failure = failure or type(exc).__name__
+     facts = []
+@@ -213,7 +213,7 @@
+ OBSERVER_FIRST = time.monotonic()
+ import os, json, subprocess, hashlib
+ from pathlib import Path
+-ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/workspace-install')
++ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/workspace-install')
+ ACTUAL_A_TOOL_ID = 'UNRESOLVED_ACTUAL_TOOL_ID'
+ ACTUAL_A_TOOL_RAW_EXIT = 0
+ # These root-source observations must come from the actual ordinary-tool result,
+@@ -310,7 +310,7 @@
+ POST_TERMINAL_WITNESS = time.monotonic() # FIRST before all further DATA processing.
+ import json, hashlib
+ from pathlib import Path
+-ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/workspace-install')
++ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/workspace-install')
+ ACTUAL_B_TOOL_ID = 'UNRESOLVED_ACTUAL_B_TOOL_ID'
+ ACTUAL_B_TOOL_RAW_EXIT = 0
+ assert ACTUAL_B_TOOL_ID != 'UNRESOLVED_ACTUAL_B_TOOL_ID'

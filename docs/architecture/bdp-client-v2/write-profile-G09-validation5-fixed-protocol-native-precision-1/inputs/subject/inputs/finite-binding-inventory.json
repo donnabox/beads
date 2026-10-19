@@ -1,0 +1,532 @@
+{
+  "P5PreparationIndexSha256": "2e1717523848f0aea7d7f70434c6930d8f07c78d33b55cffa4a318ad17393872",
+  "allExistingRoot115Outer120ClockEOFDescriptorProcessAndToolRulesPreserved": true,
+  "finiteMappings": [
+    {
+      "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5",
+      "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3",
+      "kind": "helperNamespace"
+    },
+    {
+      "after": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "before": "/Users/dbox/repos/wt/vickie/vickie-schema-minimum",
+      "kind": "sourceWorktree"
+    },
+    {
+      "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1",
+      "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1",
+      "kind": "ownedOutputNamespace"
+    },
+    {
+      "after": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-execution-acceptance-1/acceptance.json",
+      "before": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-execution-acceptance-1/acceptance.json",
+      "kind": "futureManifestNamespace"
+    },
+    {
+      "after": "c2a7d11deb63169052434c3b45c62bd30664009d4ea6a3e9b42c4cd85bd649a6",
+      "before": "8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6",
+      "kind": "implementationDigest"
+    },
+    {
+      "after": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f",
+      "before": "d7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7",
+      "kind": "commandsDigest"
+    },
+    {
+      "after": "e0252cb07ac1896fac0faab395e10e50ea58eac263b6d33ee224e378413c2d68",
+      "before": "712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714",
+      "kind": "sourceBindingDigest"
+    },
+    {
+      "after": "1ecaf2e47369cc12cc26bc3ed693c5d4d3b9cffa4714b13dbe5567f9e46bfb15",
+      "before": "f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65",
+      "kind": "sourceIdentity"
+    }
+  ],
+  "futureCaptureAuthoringAuthorized": false,
+  "futureGateAndManifestDigest": "UNRESOLVED",
+  "noNewWorkspaceMapBeforeStage4": true,
+  "qualityPass": false,
+  "runtimeAuthority": false,
+  "sharedParent": "First node exclusive then later existing non-symlink, each exclusive child",
+  "sourceControlWrappers": "UNPREPARED",
+  "state": "READONLY_DATA_INVENTORY_ONLY_NO_FUTURE_TEXT_AUTHORED",
+  "wholeTemplateLedger": [
+    {
+      "before": {
+        "bytes": 28529,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-fixed-protocol-preparation-1/proposals/node-version.capture.txt",
+        "sha256": "9622a32504d70deae15cab955c34ac4f79cddc0e55d8e4ed46652c5bedeb532f"
+      },
+      "expectedAIdAssignmentCount": 1,
+      "expectedBIdAssignmentCount": 1,
+      "finiteBindingSites": [
+        {
+          "kind": "helperNamespace",
+          "lines": [
+            {
+              "line": 12,
+              "text": "ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py', 'final', 'node-version']"
+            },
+            {
+              "line": 14,
+              "text": "P = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3')"
+            }
+          ],
+          "occurrences": 2
+        },
+        {
+          "kind": "sourceWorktree",
+          "lines": [
+            {
+              "line": 13,
+              "text": "CWD = '/Users/dbox/repos/wt/vickie/vickie-schema-minimum'"
+            }
+          ],
+          "occurrences": 1
+        },
+        {
+          "kind": "ownedOutputNamespace",
+          "lines": [
+            {
+              "line": 21,
+              "text": "OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/node-version'"
+            },
+            {
+              "line": 216,
+              "text": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/node-version')"
+            },
+            {
+              "line": 313,
+              "text": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/node-version')"
+            }
+          ],
+          "occurrences": 3
+        },
+        {
+          "kind": "futureManifestNamespace",
+          "lines": [
+            {
+              "line": 24,
+              "text": "EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-execution-acceptance-1/acceptance.json')"
+            }
+          ],
+          "occurrences": 1
+        },
+        {
+          "kind": "implementationDigest",
+          "lines": [
+            {
+              "line": 18,
+              "text": "EXPECTED_IMPLEMENTATION_SHA256 = '8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6'"
+            },
+            {
+              "line": 35,
+              "text": "assert execution_acceptance['implementationIndexSha256'] == '8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6'"
+            }
+          ],
+          "occurrences": 2
+        },
+        {
+          "kind": "commandsDigest",
+          "lines": [
+            {
+              "line": 20,
+              "text": "EXPECTED_COMMANDS_SHA256 = 'd7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7'"
+            },
+            {
+              "line": 36,
+              "text": "assert execution_acceptance['commandsSha256'] == 'd7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7'"
+            }
+          ],
+          "occurrences": 2
+        },
+        {
+          "kind": "sourceBindingDigest",
+          "lines": [
+            {
+              "line": 19,
+              "text": "EXPECTED_SOURCE_BINDING_SHA256 = '712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714'"
+            },
+            {
+              "line": 34,
+              "text": "assert execution_acceptance['sourceBindingSha256'] == '712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714'"
+            }
+          ],
+          "occurrences": 2
+        },
+        {
+          "kind": "sourceIdentity",
+          "lines": [
+            {
+              "line": 175,
+              "text": "        elif not (inner['exit']==0 and inner['accepted'] is True and inner['sourceUnchanged'] is True and inner['sourceIdentity']=='f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65' and inner['forcedCleanup'] is False and inner['errors']==[] and inner['remainingProcesses']==[] and inner['runtimeDirectoriesStillPresent']==[]): failure = failure or 'inner-not-accepted'"
+            }
+          ],
+          "occurrences": 1
+        }
+      ],
+      "rawExitZeroAssignmentsPrepublished": 2,
+      "stage": "node-version",
+      "unresolvedGateAssignmentCount": 1,
+      "unresolvedManifestAssignmentCount": 1
+    },
+    {
+      "before": {
+        "bytes": 28529,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-fixed-protocol-preparation-1/proposals/pnpm-version.capture.txt",
+        "sha256": "05f370d55248a2f0d017aacbf1e645b6003b97fc925327dd62664b7b5b6b2cfe"
+      },
+      "expectedAIdAssignmentCount": 1,
+      "expectedBIdAssignmentCount": 1,
+      "finiteBindingSites": [
+        {
+          "kind": "helperNamespace",
+          "lines": [
+            {
+              "line": 12,
+              "text": "ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py', 'final', 'pnpm-version']"
+            },
+            {
+              "line": 14,
+              "text": "P = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3')"
+            }
+          ],
+          "occurrences": 2
+        },
+        {
+          "kind": "sourceWorktree",
+          "lines": [
+            {
+              "line": 13,
+              "text": "CWD = '/Users/dbox/repos/wt/vickie/vickie-schema-minimum'"
+            }
+          ],
+          "occurrences": 1
+        },
+        {
+          "kind": "ownedOutputNamespace",
+          "lines": [
+            {
+              "line": 21,
+              "text": "OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/pnpm-version'"
+            },
+            {
+              "line": 216,
+              "text": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/pnpm-version')"
+            },
+            {
+              "line": 313,
+              "text": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/pnpm-version')"
+            }
+          ],
+          "occurrences": 3
+        },
+        {
+          "kind": "futureManifestNamespace",
+          "lines": [
+            {
+              "line": 24,
+              "text": "EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-execution-acceptance-1/acceptance.json')"
+            }
+          ],
+          "occurrences": 1
+        },
+        {
+          "kind": "implementationDigest",
+          "lines": [
+            {
+              "line": 18,
+              "text": "EXPECTED_IMPLEMENTATION_SHA256 = '8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6'"
+            },
+            {
+              "line": 35,
+              "text": "assert execution_acceptance['implementationIndexSha256'] == '8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6'"
+            }
+          ],
+          "occurrences": 2
+        },
+        {
+          "kind": "commandsDigest",
+          "lines": [
+            {
+              "line": 20,
+              "text": "EXPECTED_COMMANDS_SHA256 = 'd7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7'"
+            },
+            {
+              "line": 36,
+              "text": "assert execution_acceptance['commandsSha256'] == 'd7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7'"
+            }
+          ],
+          "occurrences": 2
+        },
+        {
+          "kind": "sourceBindingDigest",
+          "lines": [
+            {
+              "line": 19,
+              "text": "EXPECTED_SOURCE_BINDING_SHA256 = '712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714'"
+            },
+            {
+              "line": 34,
+              "text": "assert execution_acceptance['sourceBindingSha256'] == '712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714'"
+            }
+          ],
+          "occurrences": 2
+        },
+        {
+          "kind": "sourceIdentity",
+          "lines": [
+            {
+              "line": 175,
+              "text": "        elif not (inner['exit']==0 and inner['accepted'] is True and inner['sourceUnchanged'] is True and inner['sourceIdentity']=='f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65' and inner['forcedCleanup'] is False and inner['errors']==[] and inner['remainingProcesses']==[] and inner['runtimeDirectoriesStillPresent']==[]): failure = failure or 'inner-not-accepted'"
+            }
+          ],
+          "occurrences": 1
+        }
+      ],
+      "rawExitZeroAssignmentsPrepublished": 2,
+      "stage": "pnpm-version",
+      "unresolvedGateAssignmentCount": 1,
+      "unresolvedManifestAssignmentCount": 1
+    },
+    {
+      "before": {
+        "bytes": 28574,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-fixed-protocol-preparation-1/proposals/workspace-install.capture.txt",
+        "sha256": "ec6b8f14b5054311f3cb984c8f00a0a37ee3e5b7d9e6ba6fd4cf04024533cef9"
+      },
+      "expectedAIdAssignmentCount": 1,
+      "expectedBIdAssignmentCount": 1,
+      "finiteBindingSites": [
+        {
+          "kind": "helperNamespace",
+          "lines": [
+            {
+              "line": 12,
+              "text": "ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py', 'final', 'workspace-install']"
+            },
+            {
+              "line": 14,
+              "text": "P = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3')"
+            }
+          ],
+          "occurrences": 2
+        },
+        {
+          "kind": "sourceWorktree",
+          "lines": [
+            {
+              "line": 13,
+              "text": "CWD = '/Users/dbox/repos/wt/vickie/vickie-schema-minimum'"
+            }
+          ],
+          "occurrences": 1
+        },
+        {
+          "kind": "ownedOutputNamespace",
+          "lines": [
+            {
+              "line": 21,
+              "text": "OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/workspace-install'"
+            },
+            {
+              "line": 216,
+              "text": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/workspace-install')"
+            },
+            {
+              "line": 313,
+              "text": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/workspace-install')"
+            }
+          ],
+          "occurrences": 3
+        },
+        {
+          "kind": "futureManifestNamespace",
+          "lines": [
+            {
+              "line": 24,
+              "text": "EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-execution-acceptance-1/acceptance.json')"
+            }
+          ],
+          "occurrences": 1
+        },
+        {
+          "kind": "implementationDigest",
+          "lines": [
+            {
+              "line": 18,
+              "text": "EXPECTED_IMPLEMENTATION_SHA256 = '8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6'"
+            },
+            {
+              "line": 35,
+              "text": "assert execution_acceptance['implementationIndexSha256'] == '8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6'"
+            }
+          ],
+          "occurrences": 2
+        },
+        {
+          "kind": "commandsDigest",
+          "lines": [
+            {
+              "line": 20,
+              "text": "EXPECTED_COMMANDS_SHA256 = 'd7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7'"
+            },
+            {
+              "line": 36,
+              "text": "assert execution_acceptance['commandsSha256'] == 'd7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7'"
+            }
+          ],
+          "occurrences": 2
+        },
+        {
+          "kind": "sourceBindingDigest",
+          "lines": [
+            {
+              "line": 19,
+              "text": "EXPECTED_SOURCE_BINDING_SHA256 = '712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714'"
+            },
+            {
+              "line": 34,
+              "text": "assert execution_acceptance['sourceBindingSha256'] == '712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714'"
+            }
+          ],
+          "occurrences": 2
+        },
+        {
+          "kind": "sourceIdentity",
+          "lines": [
+            {
+              "line": 175,
+              "text": "        elif not (inner['exit']==0 and inner['accepted'] is True and inner['sourceUnchanged'] is True and inner['sourceIdentity']=='f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65' and inner['forcedCleanup'] is False and inner['errors']==[] and inner['remainingProcesses']==[] and inner['runtimeDirectoriesStillPresent']==[]): failure = failure or 'inner-not-accepted'"
+            }
+          ],
+          "occurrences": 1
+        }
+      ],
+      "rawExitZeroAssignmentsPrepublished": 2,
+      "stage": "workspace-install",
+      "unresolvedGateAssignmentCount": 1,
+      "unresolvedManifestAssignmentCount": 1
+    },
+    {
+      "before": {
+        "bytes": 28601,
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-fixed-protocol-preparation-1/proposals/bind-workspace-tools.capture.txt",
+        "sha256": "4c2434393c537f142fb14e36b951644bb75dbb4e2ef2079d648487b454277440"
+      },
+      "expectedAIdAssignmentCount": 1,
+      "expectedBIdAssignmentCount": 1,
+      "finiteBindingSites": [
+        {
+          "kind": "helperNamespace",
+          "lines": [
+            {
+              "line": 12,
+              "text": "ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/run.py', 'final', 'bind-workspace-tools']"
+            },
+            {
+              "line": 14,
+              "text": "P = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3')"
+            }
+          ],
+          "occurrences": 2
+        },
+        {
+          "kind": "sourceWorktree",
+          "lines": [
+            {
+              "line": 13,
+              "text": "CWD = '/Users/dbox/repos/wt/vickie/vickie-schema-minimum'"
+            }
+          ],
+          "occurrences": 1
+        },
+        {
+          "kind": "ownedOutputNamespace",
+          "lines": [
+            {
+              "line": 21,
+              "text": "OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/bind-workspace-tools'"
+            },
+            {
+              "line": 216,
+              "text": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/bind-workspace-tools')"
+            },
+            {
+              "line": 313,
+              "text": "ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-first4-dispatch-1/bind-workspace-tools')"
+            }
+          ],
+          "occurrences": 3
+        },
+        {
+          "kind": "futureManifestNamespace",
+          "lines": [
+            {
+              "line": 24,
+              "text": "EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation3-root-execution-acceptance-1/acceptance.json')"
+            }
+          ],
+          "occurrences": 1
+        },
+        {
+          "kind": "implementationDigest",
+          "lines": [
+            {
+              "line": 18,
+              "text": "EXPECTED_IMPLEMENTATION_SHA256 = '8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6'"
+            },
+            {
+              "line": 35,
+              "text": "assert execution_acceptance['implementationIndexSha256'] == '8ad44a93c1215bfe0b9777df4135385f72e82dd8873287a6988da2f1fb7615c6'"
+            }
+          ],
+          "occurrences": 2
+        },
+        {
+          "kind": "commandsDigest",
+          "lines": [
+            {
+              "line": 20,
+              "text": "EXPECTED_COMMANDS_SHA256 = 'd7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7'"
+            },
+            {
+              "line": 36,
+              "text": "assert execution_acceptance['commandsSha256'] == 'd7189bd723bce76f8b214a33197ec48485e6f534f310dad10522f8612d495ef7'"
+            }
+          ],
+          "occurrences": 2
+        },
+        {
+          "kind": "sourceBindingDigest",
+          "lines": [
+            {
+              "line": 19,
+              "text": "EXPECTED_SOURCE_BINDING_SHA256 = '712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714'"
+            },
+            {
+              "line": 34,
+              "text": "assert execution_acceptance['sourceBindingSha256'] == '712c3c5a8e1543bf5005cbb54d321c6874b7443afb7e01805f393434fe5cd714'"
+            }
+          ],
+          "occurrences": 2
+        },
+        {
+          "kind": "sourceIdentity",
+          "lines": [
+            {
+              "line": 175,
+              "text": "        elif not (inner['exit']==0 and inner['accepted'] is True and inner['sourceUnchanged'] is True and inner['sourceIdentity']=='f6baa7922feea80b9ae9641abc08ed79c339ff719769cc95162fe87ddc70bc65' and inner['forcedCleanup'] is False and inner['errors']==[] and inner['remainingProcesses']==[] and inner['runtimeDirectoriesStillPresent']==[]): failure = failure or 'inner-not-accepted'"
+            }
+          ],
+          "occurrences": 1
+        }
+      ],
+      "rawExitZeroAssignmentsPrepublished": 2,
+      "stage": "bind-workspace-tools",
+      "unresolvedGateAssignmentCount": 1,
+      "unresolvedManifestAssignmentCount": 1
+    }
+  ]
+}
