@@ -1,0 +1,37 @@
+{
+  "actualRuntimeReleased": false,
+  "everyOther110Prepared105Impl679Source17PriorRunRemainExact": true,
+  "exactAfterCandidate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/execution-gate.proposed.json",
+    "sha256": "18a440d47c2b4e7aef7e46afc73f627a27d13e51cae8b990cd2feade33c774a4"
+  },
+  "findingsDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-root-final-acceptance-1/findings-disposition.json",
+    "sha256": "2b45804d069b3c101b2c4ff79950c2cb7d9ba5e5bf527f10588afd1349369af7"
+  },
+  "immutablePreparedClosedSha256": "4a87b45d714a6bd28a94fd50a389defe4b5582dc5f42ec56fd827c7cf5b01e76",
+  "kind": "EXACT_ONE_FILE_AD5_TO_NEXT5_CANDIDATE_WRITE_AFTER_COMPLETE_COMPOSITE_AUTHORITY_DURABILITY",
+  "liveWritePerformed": false,
+  "noAutomaticRetryOrReclaim": true,
+  "noRuntimeReleasedByThisDocumentAlone": true,
+  "onlyThreeFieldsDiffer": [
+    "approvedStages",
+    "workspaceTools",
+    "rootDisposition"
+  ],
+  "preconditions": [
+    "COMPLETE selected newnative72+erratum3+erratumnative10+ROOT5+sole plus existing source/control/helper/capture/proof/acceptedfirst4-root authority composite raw/Git modes/directcritical readback.",
+    "Exact current ad5, candidate18, source1eca/HEADcce/tree675/branch/f87d/tenunstaged/105implementation/other110prepared/17priorrun/11tools/control references verified; no new stage outputs.",
+    "One separately guarded write of exactcandidate to only livepath; retain fullbefore/after/controlpair activation evidence, no actual runtime atwrite.",
+    "Separate COMPLETE actual activation publication/readback BEFORE ONE typecheck actualA/B/C; fullraw600/EOF/terminals/census/reap/strict115outer120 and per-stage actualnative/ROOTdurability."
+  ],
+  "qualityPass": false,
+  "requiredBeforeSha256": "ad5b647e6b2f1aba93981d1a85fdb7ef0930062418012cf4acf90073de202919",
+  "requiredPublicationReceipt": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-next5-final-authority-publication-1.remote-readback.json",
+  "rootFinalAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-root-final-acceptance-1/acceptance.json",
+    "sha256": "9b1e82162923c34d0ad90bc8387fb24d5d028fbcbbb6e77e30494034c2bfeb83"
+  },
+  "session": "2026-10-18T02:16:24Z-549f",
+  "soleLivePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+}
