@@ -1,0 +1,149 @@
+{
+  "accepted": true,
+  "actualBuildBindingNativeClosure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-bind-fresh-build-actual-native-audit-1/closure.json",
+    "sha256": "8e51e0357ae3319a935bc1c843625827693694697a507e2f1960af4365f6c91b"
+  },
+  "actualBuildBindingNativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-bind-fresh-build-actual-native-audit-1/index.json",
+    "sha256": "9973a7049e43b4cc088e8a1e322e79b97e93775531402aeb081ae282595043f8"
+  },
+  "actualBuildBindingRootDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-bind-fresh-build-root-final-disposition-1/disposition.json",
+    "sha256": "af7d1c0a6026964e7d68f4cf7d465125883c46801dacfd76f009311e416a8772"
+  },
+  "actualFullBuildMap": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/build-artifacts.json",
+    "sha256": "8a0241044612922b2801e6b5d1670919d37671d8191f567e5d36807a223ed56a"
+  },
+  "approvedProposedPrefix": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "g09-service-source",
+    "audit-g09-service-source",
+    "g09-schema-source",
+    "audit-g09-schema-source",
+    "legacy-schema-source",
+    "audit-legacy-schema-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source"
+  ],
+  "baselineCells": {
+    "A": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/cells/bind-fresh-build.A.txt",
+      "sha256": "a46d1c9df940a1ee6cd67b2e2d85f3899a4427e3e27ad700872746f9d4768466"
+    },
+    "B": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/cells/bind-fresh-build.B.txt",
+      "sha256": "29aefd9978b6b5f12cc2d829afabf4610b93e457c9e472d34613653f67fb4af6"
+    },
+    "C": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/cells/bind-fresh-build.C.txt",
+      "sha256": "1c72fa8e0fed3871f6ee728efafbe77803a66c83fc99417ac46f0014cd854d85"
+    }
+  },
+  "baselineSourceIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/index.json",
+    "sha256": "d4365b9a615dd859f005dd19182330a51648703ff587ffa75c2e3d48d51321a8"
+  },
+  "candidateOnlyChanges": [
+    "approvedStages:prefix9->prefix17",
+    "rootBuildAcceptance:exact accepted actual build-binding ROOT disposition",
+    "rootDisposition:new conditional source-pairs-only bridge"
+  ],
+  "candidateOther23FieldsUnchanged": true,
+  "completedFirst9NeverRepeat": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build"
+  ],
+  "currentCommands": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/commands.json",
+    "sha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f"
+  },
+  "currentImplementation": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/implementation-hashes.json",
+    "sha256": "c2a7d11deb63169052434c3b45c62bd30664009d4ea6a3e9b42c4cd85bd649a6"
+  },
+  "currentLiveGate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+    "sha256": "18a440d47c2b4e7aef7e46afc73f627a27d13e51cae8b990cd2feade33c774a4"
+  },
+  "currentSourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/source-binding.json",
+    "sha256": "e0252cb07ac1896fac0faab395e10e50ea58eac263b6d33ee224e378413c2d68"
+  },
+  "kind": "SOURCE_ONLY_CLOSED_DATA_CONTROL_AUTHORING",
+  "later17MustRemainClosed": [
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "g09-installed-01",
+    "audit-g09-installed-01",
+    "g09-installed-02",
+    "audit-g09-installed-02",
+    "schema-installed-positive",
+    "audit-schema-installed-positive",
+    "required-check-boundaries",
+    "required-e2e-ready-preflight",
+    "required-smoke",
+    "required-evidence-verify"
+  ],
+  "liveGateWriteAuthority": false,
+  "newProposedStages": [
+    "g09-service-source",
+    "audit-g09-service-source",
+    "g09-schema-source",
+    "audit-g09-schema-source",
+    "legacy-schema-source",
+    "audit-legacy-schema-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source"
+  ],
+  "nextPacketPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-source-pairs-closed-control-source-1",
+  "noIncomingMainSpecAbsorption": true,
+  "noSemanticOrSourceContractChange": true,
+  "packetContents": [
+    "closed candidate gate and exact gate delta",
+    "acyclic conditional bridge and execution manifest",
+    "24 literal reviewed-protocol-derived cells plus complete counted LF deltas and full inverse checks",
+    "source/helper/build/source-map/export/tool/actual9/prior authority origins and qualified current reference pins",
+    "full closed source freeze/index and dependency graph",
+    "explicit no-current-runtime report and unresolved future root acceptance/publication/activation barriers"
+  ],
+  "preserve": [
+    "strict schemas/selection/full names/source/budgets/default caps/raw0",
+    "immediate ordered test/audit pairs and exact original report grammar",
+    "actual original failed attempts and unknown cleanup",
+    "provisionalfalse/pending/raw wireUNRETAINED/finite-process limits",
+    "no new framework/import/eval/AST/compile/test/tool/build/cell execution while authoring DATA"
+  ],
+  "productSourceAuthoringAuthority": false,
+  "qualityPass": false,
+  "releaseDoesNotInvokeRuntime": true,
+  "requiredFutureDurability": "Complete current and prior composite source/control/helper/evidence authority raw/Git modes and critical bodies readback BEFORE exact one-path gate write, then separate full actual activation readback BEFORE one actual stage10",
+  "requiredIndependentReview": "OTHER-native entire closed source/control mechanics precision and ROOT independent source/index/origins/ledger/acyclic checks/findings disposition before any future gate write",
+  "requiredTextChanges": "Same reviewed literal A/B/C protocol only; enumerate every complete-LF forward/inverse substitution and exact counts for eight distinct stages; actual terminal placeholders remain unresolved DATA, comparisons and RAWEXIT0 remain unchanged. All new descriptive scope must explicitly say eight stages/24 cells and conditional runtime after separate final release.",
+  "requiresComplete98SelectedRawGitModesCriticalReadbackBeforeAuthoring": true,
+  "reviewerInvocationAuthority": false,
+  "runtimeInvocationAuthority": false,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "wholeWriteCredit": false
+}

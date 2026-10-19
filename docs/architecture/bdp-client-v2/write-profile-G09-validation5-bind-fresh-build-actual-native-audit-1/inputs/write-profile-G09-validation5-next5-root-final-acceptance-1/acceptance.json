@@ -1,0 +1,89 @@
+{
+  "accepted": true,
+  "actualRuntimeReleased": false,
+  "approvedProposedPrefix": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build"
+  ],
+  "commands": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/commands.json",
+    "sha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f"
+  },
+  "erratum": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-bridge-scope-root-erratum-1/erratum.json",
+    "sha256": "76af896cdb09ab1f179f78e003dcd0aec8c7cada13382bd3652f9a5bf74d4289"
+  },
+  "erratumNative10AllExactAnd10RefsVerified": true,
+  "erratumNativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-scope-erratum-native-precision-1/index.json",
+    "sha256": "55390565815eb25c0cbf5360a3140be883f60d4d45035f078cafa8f6f98c21ba"
+  },
+  "exactCandidate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/execution-gate.proposed.json",
+    "sha256": "18a440d47c2b4e7aef7e46afc73f627a27d13e51cae8b990cd2feade33c774a4"
+  },
+  "exactManifest": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/execution-manifest.json",
+    "sha256": "84d98d3a56b09f8c0305ffbabf88174bc6d960f6bd3123fef2f9576240f707a4"
+  },
+  "findingsDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-root-final-acceptance-1/findings-disposition.json",
+    "sha256": "2b45804d069b3c101b2c4ff79950c2cb7d9ba5e5bf527f10588afd1349369af7"
+  },
+  "freshActualToolMap": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/workspace-tools.json",
+    "sha256": "69713067eef866d61e8e9e3c49d695bd2d534d1cb7d0913c977da4f3f7d2cdb0"
+  },
+  "implementation": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/implementation-hashes.json",
+    "sha256": "c2a7d11deb63169052434c3b45c62bd30664009d4ea6a3e9b42c4cd85bd649a6"
+  },
+  "invocableNewStagesOnly": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build"
+  ],
+  "later25Authorized": false,
+  "liveWriteOnlyConditionallyReleased": true,
+  "liveWriteRequiresCompleteSelectedCompositeAuthorityPublicationAndReadback": true,
+  "nativeCurrentLedgerInputsVerified": 2405,
+  "nativeIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-control-native-precision-1/index.json",
+    "sha256": "d31642ba1ada645f1b6c60658fddb0e3dccee95f063c2ef17f9e040be05ea52b"
+  },
+  "nativeOriginsVerified": 63,
+  "nativePhysicalFilesVerified": 72,
+  "neverRepeatAcceptedFirst4": true,
+  "originalNativeAcceptedFalsePreserved": true,
+  "originalSourceAndProvisionalFailuresAndUnknownsPreserved": true,
+  "perStageActualNativeRootDispositionAndDurabilityRequiredBeforeNext": true,
+  "qualityPass": false,
+  "rootIndependentSourceInspection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-next5-independent-source-inspection-1.json",
+    "sha256": "1b26af03c3da4491ab579bc73baaf293d7b22343e4f1851a157cb9b3a0815aa4"
+  },
+  "rootReadOnlyDraftRefShapeCorrection": "Earlier check compared EN metadata object to SHA string and refused before all ROOT writes; all10 actual metadata objects now independently equal. No subject/action retry.",
+  "scope": "FINAL_STATIC_NEXT5_FIXED_SOURCE_CONTROL_MANIFEST_PLUS_EXACT_DESCRIPTIVE_ERRATUM_ONLY",
+  "separateActivationPublicationAndReadbackBeforeOneTypecheck": true,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/source-binding.json",
+    "sha256": "e0252cb07ac1896fac0faab395e10e50ea58eac263b6d33ee224e378413c2d68"
+  },
+  "sourceIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/index.json",
+    "sha256": "d4365b9a615dd859f005dd19182330a51648703ff587ffa75c2e3d48d51321a8"
+  },
+  "sourcePhysicalFiles": 60,
+  "subject19Origins2314Refs141StructuredPins60NodeDAG65LFChangesIndependentlyVerified": true,
+  "wholeWriteCredit": false
+}

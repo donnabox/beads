@@ -1,0 +1,1579 @@
+{
+  "actualIssuedSourceAssignmentOnlyWholeInverse": true,
+  "actualPhaseToolIds": {
+    "A": "eddb49",
+    "B": "9bf2ed",
+    "C": "ba2703"
+  },
+  "actualProbeDirectReaped": true,
+  "actualPsRowsFullyInspected": 1381,
+  "actualRootCommonClockSeconds": 12.407569958362728,
+  "all3ActualOrdinaryTerminalsZero": true,
+  "all9EvidencePlus13ActualMirrorsAndMetadata": true,
+  "allRootAndCensusStreamFacts": [
+    {
+      "actualRecordedDescriptor600EOFFullCountsClose": true,
+      "bytes": 732,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/bind-fresh-build/bind-fresh-build.stdout",
+      "sha256": "decc333344268c79e0577df122f278e44ad0c468230ee769f66822affc4ca2fa"
+    },
+    {
+      "actualRecordedDescriptor600EOFFullCountsClose": true,
+      "bytes": 0,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/bind-fresh-build/bind-fresh-build.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "actualRecordedDescriptor600EOFFullCountsClose": true,
+      "bytes": 205426,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/bind-fresh-build/postterminal-census.stdout",
+      "sha256": "d7081964acdc62fb08c1901a6c403759f94a90fb9ef4f1af7ea73a1b20f7ae55"
+    },
+    {
+      "actualRecordedDescriptor600EOFFullCountsClose": true,
+      "bytes": 0,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/bind-fresh-build/postterminal-census.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "completeActualBuildBinding": {
+    "actualFreshBuildStartExitLogPinsExact": true,
+    "actualFullInventoryFiles": 476,
+    "all236EmittedMapsLinkToCurrentFrozenSource": [
+      {
+        "map": "packages/adapter-bd/dist/index.d.ts.map",
+        "sources": [
+          "packages/adapter-bd/src/index.ts"
+        ]
+      },
+      {
+        "map": "packages/adapter-bd/dist/index.js.map",
+        "sources": [
+          "packages/adapter-bd/src/index.ts"
+        ]
+      },
+      {
+        "map": "packages/adapter-in-memory/dist/index.d.ts.map",
+        "sources": [
+          "packages/adapter-in-memory/src/index.ts"
+        ]
+      },
+      {
+        "map": "packages/adapter-in-memory/dist/index.js.map",
+        "sources": [
+          "packages/adapter-in-memory/src/index.ts"
+        ]
+      },
+      {
+        "map": "packages/bd-domain/dist/index.d.ts.map",
+        "sources": [
+          "packages/bd-domain/src/index.ts"
+        ]
+      },
+      {
+        "map": "packages/bd-domain/dist/index.js.map",
+        "sources": [
+          "packages/bd-domain/src/index.ts"
+        ]
+      },
+      {
+        "map": "packages/bd-domain/dist/ready-output.d.ts.map",
+        "sources": [
+          "packages/bd-domain/src/ready-output.ts"
+        ]
+      },
+      {
+        "map": "packages/bd-domain/dist/ready-output.js.map",
+        "sources": [
+          "packages/bd-domain/src/ready-output.ts"
+        ]
+      },
+      {
+        "map": "packages/client/dist/continuations.d.ts.map",
+        "sources": [
+          "packages/client/src/continuations.ts"
+        ]
+      },
+      {
+        "map": "packages/client/dist/continuations.js.map",
+        "sources": [
+          "packages/client/src/continuations.ts"
+        ]
+      },
+      {
+        "map": "packages/client/dist/history-session.d.ts.map",
+        "sources": [
+          "packages/client/src/history-session.ts"
+        ]
+      },
+      {
+        "map": "packages/client/dist/history-session.js.map",
+        "sources": [
+          "packages/client/src/history-session.ts"
+        ]
+      },
+      {
+        "map": "packages/client/dist/index.d.ts.map",
+        "sources": [
+          "packages/client/src/index.ts"
+        ]
+      },
+      {
+        "map": "packages/client/dist/index.js.map",
+        "sources": [
+          "packages/client/src/index.ts"
+        ]
+      },
+      {
+        "map": "packages/client/dist/read-record-validation.d.ts.map",
+        "sources": [
+          "packages/client/src/read-record-validation.ts"
+        ]
+      },
+      {
+        "map": "packages/client/dist/read-record-validation.js.map",
+        "sources": [
+          "packages/client/src/read-record-validation.ts"
+        ]
+      },
+      {
+        "map": "packages/client/dist/read-session.d.ts.map",
+        "sources": [
+          "packages/client/src/read-session.ts"
+        ]
+      },
+      {
+        "map": "packages/client/dist/read-session.js.map",
+        "sources": [
+          "packages/client/src/read-session.ts"
+        ]
+      },
+      {
+        "map": "packages/client/dist/read-update-transport.d.ts.map",
+        "sources": [
+          "packages/client/src/read-update-transport.ts"
+        ]
+      },
+      {
+        "map": "packages/client/dist/read-update-transport.js.map",
+        "sources": [
+          "packages/client/src/read-update-transport.ts"
+        ]
+      },
+      {
+        "map": "packages/client/dist/read-update.d.ts.map",
+        "sources": [
+          "packages/client/src/read-update.ts"
+        ]
+      },
+      {
+        "map": "packages/client/dist/read-update.js.map",
+        "sources": [
+          "packages/client/src/read-update.ts"
+        ]
+      },
+      {
+        "map": "packages/config/dist/index.d.ts.map",
+        "sources": [
+          "packages/config/src/index.ts"
+        ]
+      },
+      {
+        "map": "packages/config/dist/index.js.map",
+        "sources": [
+          "packages/config/src/index.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/artifact-bundle.d.ts.map",
+        "sources": [
+          "packages/conformance/src/artifact-bundle.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/artifact-bundle.js.map",
+        "sources": [
+          "packages/conformance/src/artifact-bundle.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/canonical-json.d.ts.map",
+        "sources": [
+          "packages/conformance/src/canonical-json.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/canonical-json.js.map",
+        "sources": [
+          "packages/conformance/src/canonical-json.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/catalog.d.ts.map",
+        "sources": [
+          "packages/conformance/src/catalog.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/catalog.js.map",
+        "sources": [
+          "packages/conformance/src/catalog.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/cohort-artifact.d.ts.map",
+        "sources": [
+          "packages/conformance/src/cohort-artifact.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/cohort-artifact.js.map",
+        "sources": [
+          "packages/conformance/src/cohort-artifact.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/cohort-verification.d.ts.map",
+        "sources": [
+          "packages/conformance/src/cohort-verification.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/cohort-verification.js.map",
+        "sources": [
+          "packages/conformance/src/cohort-verification.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/conditional-header.d.ts.map",
+        "sources": [
+          "packages/conformance/src/conditional-header.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/conditional-header.js.map",
+        "sources": [
+          "packages/conformance/src/conditional-header.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/executable-manifest.d.ts.map",
+        "sources": [
+          "packages/conformance/src/executable-manifest.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/executable-manifest.js.map",
+        "sources": [
+          "packages/conformance/src/executable-manifest.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/http-executor.d.ts.map",
+        "sources": [
+          "packages/conformance/src/http-executor.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/http-executor.js.map",
+        "sources": [
+          "packages/conformance/src/http-executor.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/index.d.ts.map",
+        "sources": [
+          "packages/conformance/src/index.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/index.js.map",
+        "sources": [
+          "packages/conformance/src/index.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/markdown.d.ts.map",
+        "sources": [
+          "packages/conformance/src/markdown.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/markdown.js.map",
+        "sources": [
+          "packages/conformance/src/markdown.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/profile-contract-selection.d.ts.map",
+        "sources": [
+          "packages/conformance/src/profile-contract-selection.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/profile-contract-selection.js.map",
+        "sources": [
+          "packages/conformance/src/profile-contract-selection.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/raw-http-scenario-target.d.ts.map",
+        "sources": [
+          "packages/conformance/src/raw-http-scenario-target.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/raw-http-scenario-target.js.map",
+        "sources": [
+          "packages/conformance/src/raw-http-scenario-target.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/report.d.ts.map",
+        "sources": [
+          "packages/conformance/src/report.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/report.js.map",
+        "sources": [
+          "packages/conformance/src/report.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/result-state.d.ts.map",
+        "sources": [
+          "packages/conformance/src/result-state.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/result-state.js.map",
+        "sources": [
+          "packages/conformance/src/result-state.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/runner.d.ts.map",
+        "sources": [
+          "packages/conformance/src/runner.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/runner.js.map",
+        "sources": [
+          "packages/conformance/src/runner.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/scenario-action.d.ts.map",
+        "sources": [
+          "packages/conformance/src/scenario-action.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/scenario-action.js.map",
+        "sources": [
+          "packages/conformance/src/scenario-action.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/schema-read-projection.d.ts.map",
+        "sources": [
+          "packages/conformance/src/schema-read-projection.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/schema-read-projection.js.map",
+        "sources": [
+          "packages/conformance/src/schema-read-projection.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/schema-validator.d.ts.map",
+        "sources": [
+          "packages/conformance/src/schema-validator.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/schema-validator.js.map",
+        "sources": [
+          "packages/conformance/src/schema-validator.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/selection.d.ts.map",
+        "sources": [
+          "packages/conformance/src/selection.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/selection.js.map",
+        "sources": [
+          "packages/conformance/src/selection.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/symbolic-url.d.ts.map",
+        "sources": [
+          "packages/conformance/src/symbolic-url.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/symbolic-url.js.map",
+        "sources": [
+          "packages/conformance/src/symbolic-url.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/transactional-observation.d.ts.map",
+        "sources": [
+          "packages/conformance/src/transactional-observation.ts"
+        ]
+      },
+      {
+        "map": "packages/conformance/dist/transactional-observation.js.map",
+        "sources": [
+          "packages/conformance/src/transactional-observation.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/history-values.d.ts.map",
+        "sources": [
+          "packages/protocol/src/history-values.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/history-values.js.map",
+        "sources": [
+          "packages/protocol/src/history-values.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/index.d.ts.map",
+        "sources": [
+          "packages/protocol/src/index.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/index.js.map",
+        "sources": [
+          "packages/protocol/src/index.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/json-admission.d.ts.map",
+        "sources": [
+          "packages/protocol/src/json-admission.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/json-admission.js.map",
+        "sources": [
+          "packages/protocol/src/json-admission.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/json-values.d.ts.map",
+        "sources": [
+          "packages/protocol/src/json-values.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/json-values.js.map",
+        "sources": [
+          "packages/protocol/src/json-values.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/link-header.d.ts.map",
+        "sources": [
+          "packages/protocol/src/link-header.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/link-header.js.map",
+        "sources": [
+          "packages/protocol/src/link-header.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/property-validation.d.ts.map",
+        "sources": [
+          "packages/protocol/src/property-validation.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/property-validation.js.map",
+        "sources": [
+          "packages/protocol/src/property-validation.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/protocol-errors.d.ts.map",
+        "sources": [
+          "packages/protocol/src/protocol-errors.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/protocol-errors.js.map",
+        "sources": [
+          "packages/protocol/src/protocol-errors.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/read-update-preflight.d.ts.map",
+        "sources": [
+          "packages/protocol/src/read-update-preflight.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/read-update-preflight.js.map",
+        "sources": [
+          "packages/protocol/src/read-update-preflight.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/read-update-problems.d.ts.map",
+        "sources": [
+          "packages/protocol/src/read-update-problems.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/read-update-problems.js.map",
+        "sources": [
+          "packages/protocol/src/read-update-problems.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/read-update-values.d.ts.map",
+        "sources": [
+          "packages/protocol/src/read-update-values.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/read-update-values.js.map",
+        "sources": [
+          "packages/protocol/src/read-update-values.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/read-values.d.ts.map",
+        "sources": [
+          "packages/protocol/src/read-values.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/read-values.js.map",
+        "sources": [
+          "packages/protocol/src/read-values.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/reference-domain.d.ts.map",
+        "sources": [
+          "packages/protocol/src/reference-domain.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/reference-domain.js.map",
+        "sources": [
+          "packages/protocol/src/reference-domain.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/schema-formats.d.ts.map",
+        "sources": [
+          "packages/protocol/src/schema-formats.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/schema-formats.js.map",
+        "sources": [
+          "packages/protocol/src/schema-formats.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/transaction-discovery-values.d.ts.map",
+        "sources": [
+          "packages/protocol/src/transaction-discovery-values.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/transaction-discovery-values.js.map",
+        "sources": [
+          "packages/protocol/src/transaction-discovery-values.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/type-conformance.d.ts.map",
+        "sources": [
+          "packages/protocol/src/type-conformance.ts"
+        ]
+      },
+      {
+        "map": "packages/protocol/dist/type-conformance.js.map",
+        "sources": [
+          "packages/protocol/src/type-conformance.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/alias-evaluator.d.ts.map",
+        "sources": [
+          "packages/server/src/alias-evaluator.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/alias-evaluator.js.map",
+        "sources": [
+          "packages/server/src/alias-evaluator.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/authority-read.d.ts.map",
+        "sources": [
+          "packages/server/src/authority-read.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/authority-read.js.map",
+        "sources": [
+          "packages/server/src/authority-read.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/development-authority.d.ts.map",
+        "sources": [
+          "packages/server/src/development-authority.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/development-authority.js.map",
+        "sources": [
+          "packages/server/src/development-authority.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/development-composition.d.ts.map",
+        "sources": [
+          "packages/server/src/development-composition.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/development-composition.js.map",
+        "sources": [
+          "packages/server/src/development-composition.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/development-contracts.d.ts.map",
+        "sources": [
+          "packages/server/src/development-contracts.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/development-contracts.js.map",
+        "sources": [
+          "packages/server/src/development-contracts.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/development-runtime.d.ts.map",
+        "sources": [
+          "packages/server/src/development-runtime.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/development-runtime.js.map",
+        "sources": [
+          "packages/server/src/development-runtime.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/development.d.ts.map",
+        "sources": [
+          "packages/server/src/development.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/development.js.map",
+        "sources": [
+          "packages/server/src/development.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/index.d.ts.map",
+        "sources": [
+          "packages/server/src/index.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/index.js.map",
+        "sources": [
+          "packages/server/src/index.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-contract-artifact.d.ts.map",
+        "sources": [
+          "packages/server/src/installed-contract-artifact.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-contract-artifact.js.map",
+        "sources": [
+          "packages/server/src/installed-contract-artifact.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-payload.d.ts.map",
+        "sources": [
+          "packages/server/src/installed-payload.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-payload.js.map",
+        "sources": [
+          "packages/server/src/installed-payload.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-reference-configuration.d.ts.map",
+        "sources": [
+          "packages/server/src/installed-reference-configuration.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-reference-configuration.js.map",
+        "sources": [
+          "packages/server/src/installed-reference-configuration.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-reference-process.d.ts.map",
+        "sources": [
+          "packages/server/src/installed-reference-process.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-reference-process.js.map",
+        "sources": [
+          "packages/server/src/installed-reference-process.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-reference.d.ts.map",
+        "sources": [
+          "packages/server/src/installed-reference.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-reference.js.map",
+        "sources": [
+          "packages/server/src/installed-reference.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-schema-builtins.d.ts.map",
+        "sources": [
+          "packages/server/src/installed-schema-builtins.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-schema-builtins.js.map",
+        "sources": [
+          "packages/server/src/installed-schema-builtins.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-schema-decimal.d.ts.map",
+        "sources": [
+          "packages/server/src/installed-schema-decimal.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-schema-decimal.js.map",
+        "sources": [
+          "packages/server/src/installed-schema-decimal.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-schema-evaluator.d.ts.map",
+        "sources": [
+          "packages/server/src/installed-schema-evaluator.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-schema-evaluator.js.map",
+        "sources": [
+          "packages/server/src/installed-schema-evaluator.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-schema-graph.d.ts.map",
+        "sources": [
+          "packages/server/src/installed-schema-graph.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-schema-graph.js.map",
+        "sources": [
+          "packages/server/src/installed-schema-graph.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-schema-pattern.d.ts.map",
+        "sources": [
+          "packages/server/src/installed-schema-pattern.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-schema-pattern.js.map",
+        "sources": [
+          "packages/server/src/installed-schema-pattern.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-schema-recursion.d.ts.map",
+        "sources": [
+          "packages/server/src/installed-schema-recursion.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-schema-recursion.js.map",
+        "sources": [
+          "packages/server/src/installed-schema-recursion.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-schema-shape.d.ts.map",
+        "sources": [
+          "packages/server/src/installed-schema-shape.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-schema-shape.js.map",
+        "sources": [
+          "packages/server/src/installed-schema-shape.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-schema-uri.d.ts.map",
+        "sources": [
+          "packages/server/src/installed-schema-uri.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-schema-uri.js.map",
+        "sources": [
+          "packages/server/src/installed-schema-uri.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-schema-value.d.ts.map",
+        "sources": [
+          "packages/server/src/installed-schema-value.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/installed-schema-value.js.map",
+        "sources": [
+          "packages/server/src/installed-schema-value.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/json-value-equality.d.ts.map",
+        "sources": [
+          "packages/server/src/json-value-equality.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/json-value-equality.js.map",
+        "sources": [
+          "packages/server/src/json-value-equality.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/member-executor.d.ts.map",
+        "sources": [
+          "packages/server/src/member-executor.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/member-executor.js.map",
+        "sources": [
+          "packages/server/src/member-executor.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/member-identity.d.ts.map",
+        "sources": [
+          "packages/server/src/member-identity.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/member-identity.js.map",
+        "sources": [
+          "packages/server/src/member-identity.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/member-numeric-diagnostics.d.ts.map",
+        "sources": [
+          "packages/server/src/member-numeric-diagnostics.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/member-numeric-diagnostics.js.map",
+        "sources": [
+          "packages/server/src/member-numeric-diagnostics.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/node-http-disconnect.d.ts.map",
+        "sources": [
+          "packages/server/src/node-http-disconnect.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/node-http-disconnect.js.map",
+        "sources": [
+          "packages/server/src/node-http-disconnect.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/node-http-target.d.ts.map",
+        "sources": [
+          "packages/server/src/node-http-target.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/node-http-target.js.map",
+        "sources": [
+          "packages/server/src/node-http-target.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/read-conformance-capability.d.ts.map",
+        "sources": [
+          "packages/server/src/read-conformance-capability.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/read-conformance-capability.js.map",
+        "sources": [
+          "packages/server/src/read-conformance-capability.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/read-http-routing.d.ts.map",
+        "sources": [
+          "packages/server/src/read-http-routing.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/read-http-routing.js.map",
+        "sources": [
+          "packages/server/src/read-http-routing.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/read-http.d.ts.map",
+        "sources": [
+          "packages/server/src/read-http.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/read-http.js.map",
+        "sources": [
+          "packages/server/src/read-http.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/read-pagination.d.ts.map",
+        "sources": [
+          "packages/server/src/read-pagination.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/read-pagination.js.map",
+        "sources": [
+          "packages/server/src/read-pagination.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/read-request.d.ts.map",
+        "sources": [
+          "packages/server/src/read-request.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/read-request.js.map",
+        "sources": [
+          "packages/server/src/read-request.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/read-selector.d.ts.map",
+        "sources": [
+          "packages/server/src/read-selector.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/read-selector.js.map",
+        "sources": [
+          "packages/server/src/read-selector.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/read-sequence-lifecycle.d.ts.map",
+        "sources": [
+          "packages/server/src/read-sequence-lifecycle.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/read-sequence-lifecycle.js.map",
+        "sources": [
+          "packages/server/src/read-sequence-lifecycle.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/read-update-runtime-limits.d.ts.map",
+        "sources": [
+          "packages/server/src/read-update-runtime-limits.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/read-update-runtime-limits.js.map",
+        "sources": [
+          "packages/server/src/read-update-runtime-limits.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/recovery-store.d.ts.map",
+        "sources": [
+          "packages/server/src/recovery-store.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/recovery-store.js.map",
+        "sources": [
+          "packages/server/src/recovery-store.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/resource-evaluator.d.ts.map",
+        "sources": [
+          "packages/server/src/resource-evaluator.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/resource-evaluator.js.map",
+        "sources": [
+          "packages/server/src/resource-evaluator.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/retained-disclosure.d.ts.map",
+        "sources": [
+          "packages/server/src/retained-disclosure.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/retained-disclosure.js.map",
+        "sources": [
+          "packages/server/src/retained-disclosure.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/semantic-identity.d.ts.map",
+        "sources": [
+          "packages/server/src/semantic-identity.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/semantic-identity.js.map",
+        "sources": [
+          "packages/server/src/semantic-identity.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/sequence-executor.d.ts.map",
+        "sources": [
+          "packages/server/src/sequence-executor.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/sequence-executor.js.map",
+        "sources": [
+          "packages/server/src/sequence-executor.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-authorization.d.ts.map",
+        "sources": [
+          "packages/server/src/transaction-authorization.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-authorization.js.map",
+        "sources": [
+          "packages/server/src/transaction-authorization.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-batch.d.ts.map",
+        "sources": [
+          "packages/server/src/transaction-batch.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-batch.js.map",
+        "sources": [
+          "packages/server/src/transaction-batch.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-changefeed.d.ts.map",
+        "sources": [
+          "packages/server/src/transaction-changefeed.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-changefeed.js.map",
+        "sources": [
+          "packages/server/src/transaction-changefeed.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-comparison.d.ts.map",
+        "sources": [
+          "packages/server/src/transaction-comparison.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-comparison.js.map",
+        "sources": [
+          "packages/server/src/transaction-comparison.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-consistency.d.ts.map",
+        "sources": [
+          "packages/server/src/transaction-consistency.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-consistency.js.map",
+        "sources": [
+          "packages/server/src/transaction-consistency.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-dependencies.d.ts.map",
+        "sources": [
+          "packages/server/src/transaction-dependencies.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-dependencies.js.map",
+        "sources": [
+          "packages/server/src/transaction-dependencies.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-discovery.d.ts.map",
+        "sources": [
+          "packages/server/src/transaction-discovery.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-discovery.js.map",
+        "sources": [
+          "packages/server/src/transaction-discovery.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-events.d.ts.map",
+        "sources": [
+          "packages/server/src/transaction-events.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-events.js.map",
+        "sources": [
+          "packages/server/src/transaction-events.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-http.d.ts.map",
+        "sources": [
+          "packages/server/src/transaction-http.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-http.js.map",
+        "sources": [
+          "packages/server/src/transaction-http.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-installed-configuration.d.ts.map",
+        "sources": [
+          "packages/server/src/transaction-installed-configuration.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-installed-configuration.js.map",
+        "sources": [
+          "packages/server/src/transaction-installed-configuration.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-installed-process.d.ts.map",
+        "sources": [
+          "packages/server/src/transaction-installed-process.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-installed-process.js.map",
+        "sources": [
+          "packages/server/src/transaction-installed-process.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-installed.d.ts.map",
+        "sources": [
+          "packages/server/src/transaction-installed.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-installed.js.map",
+        "sources": [
+          "packages/server/src/transaction-installed.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-read.d.ts.map",
+        "sources": [
+          "packages/server/src/transaction-read.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-read.js.map",
+        "sources": [
+          "packages/server/src/transaction-read.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-runtime-configuration.d.ts.map",
+        "sources": [
+          "packages/server/src/transaction-runtime-configuration.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-runtime-configuration.js.map",
+        "sources": [
+          "packages/server/src/transaction-runtime-configuration.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-runtime.d.ts.map",
+        "sources": [
+          "packages/server/src/transaction-runtime.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-runtime.js.map",
+        "sources": [
+          "packages/server/src/transaction-runtime.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-schema-http.d.ts.map",
+        "sources": [
+          "packages/server/src/transaction-schema-http.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-schema-http.js.map",
+        "sources": [
+          "packages/server/src/transaction-schema-http.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-sequence.d.ts.map",
+        "sources": [
+          "packages/server/src/transaction-sequence.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-sequence.js.map",
+        "sources": [
+          "packages/server/src/transaction-sequence.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-service.d.ts.map",
+        "sources": [
+          "packages/server/src/transaction-service.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-service.js.map",
+        "sources": [
+          "packages/server/src/transaction-service.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-set.d.ts.map",
+        "sources": [
+          "packages/server/src/transaction-set.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-set.js.map",
+        "sources": [
+          "packages/server/src/transaction-set.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-snapshot.d.ts.map",
+        "sources": [
+          "packages/server/src/transaction-snapshot.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-snapshot.js.map",
+        "sources": [
+          "packages/server/src/transaction-snapshot.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-sse.d.ts.map",
+        "sources": [
+          "packages/server/src/transaction-sse.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-sse.js.map",
+        "sources": [
+          "packages/server/src/transaction-sse.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-store.d.ts.map",
+        "sources": [
+          "packages/server/src/transaction-store.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-store.js.map",
+        "sources": [
+          "packages/server/src/transaction-store.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-submission.d.ts.map",
+        "sources": [
+          "packages/server/src/transaction-submission.ts"
+        ]
+      },
+      {
+        "map": "packages/server/dist/transaction-submission.js.map",
+        "sources": [
+          "packages/server/src/transaction-submission.ts"
+        ]
+      },
+      {
+        "map": "apps/bdp/dist/main.d.ts.map",
+        "sources": [
+          "apps/bdp/src/main.ts"
+        ]
+      },
+      {
+        "map": "apps/bdp/dist/main.js.map",
+        "sources": [
+          "apps/bdp/src/main.ts"
+        ]
+      },
+      {
+        "map": "apps/bdpbd/dist/main.d.ts.map",
+        "sources": [
+          "apps/bdpbd/src/main.ts"
+        ]
+      },
+      {
+        "map": "apps/bdpbd/dist/main.js.map",
+        "sources": [
+          "apps/bdpbd/src/main.ts"
+        ]
+      },
+      {
+        "map": "apps/bdpbd/dist/server-composition.d.ts.map",
+        "sources": [
+          "apps/bdpbd/src/server-composition.ts"
+        ]
+      },
+      {
+        "map": "apps/bdpbd/dist/server-composition.js.map",
+        "sources": [
+          "apps/bdpbd/src/server-composition.ts"
+        ]
+      },
+      {
+        "map": "apps/bdptest/dist/development-main.d.ts.map",
+        "sources": [
+          "apps/bdptest/src/development-main.ts"
+        ]
+      },
+      {
+        "map": "apps/bdptest/dist/development-main.js.map",
+        "sources": [
+          "apps/bdptest/src/development-main.ts"
+        ]
+      },
+      {
+        "map": "apps/bdptest/dist/main.d.ts.map",
+        "sources": [
+          "apps/bdptest/src/main.ts"
+        ]
+      },
+      {
+        "map": "apps/bdptest/dist/main.js.map",
+        "sources": [
+          "apps/bdptest/src/main.ts"
+        ]
+      },
+      {
+        "map": "apps/bdptest/dist/server-composition.d.ts.map",
+        "sources": [
+          "apps/bdptest/src/server-composition.ts"
+        ]
+      },
+      {
+        "map": "apps/bdptest/dist/server-composition.js.map",
+        "sources": [
+          "apps/bdptest/src/server-composition.ts"
+        ]
+      }
+    ],
+    "all476CurrentHashesExact": true,
+    "allConfiguredLocalExportTargets": [
+      "packages/adapter-bd/dist/index.d.ts",
+      "packages/adapter-bd/dist/index.js",
+      "packages/adapter-in-memory/dist/index.d.ts",
+      "packages/adapter-in-memory/dist/index.js",
+      "packages/bd-domain/dist/index.d.ts",
+      "packages/bd-domain/dist/index.js",
+      "packages/client/dist/index.d.ts",
+      "packages/client/dist/index.js",
+      "packages/config/dist/index.d.ts",
+      "packages/config/dist/index.js",
+      "packages/conformance/dist/index.d.ts",
+      "packages/conformance/dist/index.js",
+      "packages/conformance/catalog/read-v1.json",
+      "packages/conformance/fixtures/read-reference-v1.json",
+      "packages/conformance/fixtures/read-bdpbd-v1.json",
+      "packages/conformance/matrices/read-v1.json",
+      "packages/protocol/dist/index.d.ts",
+      "packages/protocol/dist/index.js",
+      "packages/protocol/schemas/bdp-v0.schema.json",
+      "packages/server/dist/index.d.ts",
+      "packages/server/dist/index.js",
+      "packages/server/dist/development.d.ts",
+      "packages/server/dist/development.js"
+    ],
+    "buildArtifactsSha256": "8a0241044612922b2801e6b5d1670919d37671d8191f567e5d36807a223ed56a",
+    "fresh11ToolsAndInstallLockJoinsExact": true,
+    "headTreeAndSourceIdentityExact": true,
+    "later25StagesStillClosed": true,
+    "noOldBuildOrCountOnlyInference": true
+  },
+  "currentNext5Source2314RefsOnlyOneExplicitLiveProjection": true,
+  "fresh11ToolMapAndInstallLockSourceJoinsExact": true,
+  "innerElapsedSeconds": 7.726245291996747,
+  "innerRows": 85,
+  "innerSamples": 45,
+  "knownPgids": [
+    33237,
+    33250,
+    33953
+  ],
+  "knownPids": [
+    33249,
+    33250,
+    33953,
+    33976,
+    33997,
+    34015,
+    34036,
+    34057,
+    34077,
+    34099,
+    34141,
+    34248,
+    34267,
+    34357,
+    34583,
+    34738,
+    34893,
+    35155,
+    35175,
+    35193,
+    35213,
+    35232,
+    35252,
+    35273,
+    35294,
+    35316,
+    35335,
+    35355,
+    35376,
+    35395,
+    35424,
+    35448,
+    35468,
+    35489,
+    35506,
+    35545,
+    35565,
+    35583,
+    35584
+  ],
+  "matchingRows": [],
+  "nativeAudit": "PENDING",
+  "nextStageReleased": false,
+  "observedBuildBindingLog": "Empty actual log; typed terminal0; extra actual build-artifacts.json verified separately",
+  "observerSelfAbsenceOrUnseenGlobalContainmentClaim": false,
+  "qualityPass": false,
+  "referenceTables": {
+    "write-profile-G09-validation-preparation-5": {
+      "oneExplicitLiveProjection": 0,
+      "records": 1857
+    },
+    "write-profile-G09-validation5-fixed-text-proof-correction-1": {
+      "oneExplicitLiveProjection": 1,
+      "records": 2207
+    },
+    "write-profile-G09-validation5-root-fixed-protocol-preparation-1": {
+      "oneExplicitLiveProjection": 1,
+      "records": 2082
+    },
+    "write-profile-G09-validation5-root-proposed-authority-1": {
+      "oneExplicitLiveProjection": 1,
+      "records": 2206
+    }
+  },
+  "rootFinalAccepted": false,
+  "scope": "ONE actual build-binding capture and full current476-file inventory/source-map/export/build-log/tool joins; next validation control remains CLOSED",
+  "scratchRetained": {
+    "entriesAtStaticRead": [],
+    "existsAtStaticRead": true,
+    "noCleanupPerformed": true,
+    "notGlobalOrRuntimeDescendantCleanupProof": true,
+    "path": "/private/tmp/vickie-tx-discovery-validation-bind-fresh-build-4l1tric2"
+  },
+  "source679Helper105Other110Exact": true,
+  "stage": "bind-fresh-build",
+  "toolTerminals": "Trusted-root normalized actual tool result attribution; independently decoded raw tool receipts UNRETAINED"
+}
