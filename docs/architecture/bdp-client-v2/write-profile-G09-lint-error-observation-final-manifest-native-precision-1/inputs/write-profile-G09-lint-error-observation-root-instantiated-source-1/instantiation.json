@@ -1,0 +1,80 @@
+{
+  "session": "2026-10-18T02:16:24Z-549f",
+  "scope": "FROZEN_ROOT_LITERAL_SOURCE_AUTHORING_ONLY_NOT_EXECUTION",
+  "authorOnlyRelease": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-rendering-authoring-release-1/release.json",
+    "sha256": "5f0bfcf0544644115c6762c424a5bd2d1845b13cf03c09abeb4c465e4675be19"
+  },
+  "authoringPublication": "5ad23ee7de9812369c6214fd107d0fd34507fbae",
+  "manifest": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-execution-acceptance-1/acceptance.json",
+    "sha256": "1018563f6f4514e3d2918c2a852e64b0d9f0cd0fe00f9fd81c5c6288d16ae0f0"
+  },
+  "placeholder": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-fixed-protocol-preparation-1/proposals/lint-error-observation.capture.txt",
+    "sha256": "9b4c8f7b9e3b6f74c4ce8e94ddf311107486c7179582d31959c61b5d7f427162"
+  },
+  "inactiveCandidate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-proposed-authority-1/execution-gate.proposed.json",
+    "sha256": "c127ce33601f47b6f15e0e0ad76fe812403c3edffc99a7663da71b5eac02fbe2"
+  },
+  "wholeRendered": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-instantiated-source-1/templates/lint-error-observation.capture.txt",
+    "sha256": "182842dd1e4f4eb7f2223b3057d3006b2902e577b405c6e3cd1b36a931ee4120"
+  },
+  "exactWholeLFBindings": [
+    {
+      "beforeLine": "APPROVED_GATE_SHA256 = 'UNRESOLVED_FUTURE_ROOT_ACTIVATED_GATE_SHA256'\n",
+      "afterLine": "APPROVED_GATE_SHA256 = 'c127ce33601f47b6f15e0e0ad76fe812403c3edffc99a7663da71b5eac02fbe2'\n",
+      "count": 1
+    },
+    {
+      "beforeLine": "APPROVED_EXECUTION_ACCEPTANCE_SHA256 = 'UNRESOLVED_FUTURE_ROOT_EXECUTION_ACCEPTANCE_SHA256'\n",
+      "afterLine": "APPROVED_EXECUTION_ACCEPTANCE_SHA256 = '1018563f6f4514e3d2918c2a852e64b0d9f0cd0fe00f9fd81c5c6288d16ae0f0'\n",
+      "count": 1
+    }
+  ],
+  "fullInverseRestoresPlaceholder": true,
+  "allOtherBytesUnchanged": true,
+  "cells": {
+    "A": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-instantiated-source-1/cells/lint-error-observation.A.txt",
+      "sha256": "3f7d88d3b51105dc09fa7d331adab77ad29599de38dfe006498057b08aff36fa",
+      "bytes": 16175,
+      "startByte": 0,
+      "endByteExclusive": 16175,
+      "placeholderSectionSha256": "d98c4fff4655a907eb46adf5d153b468d943219b4755076f23c7a47680279d0b"
+    },
+    "B": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-instantiated-source-1/cells/lint-error-observation.B.txt",
+      "sha256": "28bbf0853275a32afe4dc3f269941d80809bbcc22f1756aa26c9083790159ea8",
+      "bytes": 6929,
+      "startByte": 18988,
+      "endByteExclusive": 25917,
+      "placeholderSectionSha256": "28bbf0853275a32afe4dc3f269941d80809bbcc22f1756aa26c9083790159ea8"
+    },
+    "C": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-root-instantiated-source-1/cells/lint-error-observation.C.txt",
+      "sha256": "7361d347affea2a965f44653fcc39c0698a16b8f7f21865ed6cdc495372838da",
+      "bytes": 2010,
+      "startByte": 27792,
+      "endByteExclusive": 29802,
+      "placeholderSectionSha256": "7361d347affea2a965f44653fcc39c0698a16b8f7f21865ed6cdc495372838da"
+    }
+  },
+  "actualToolIds": "UNRESOLVED until actual preceding tool0; no late binding/cell evaluation occurred",
+  "RAW_EXIT0AndProtectiveGuardsUnchanged": true,
+  "liveHelperStillClosed": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-lint-error-observation-preparation-1/execution-gate.json",
+    "sha256": "771887f040a1ac188df56442820aff56595e1d2da559c0a8292b1d01da7321fe"
+  },
+  "originalP3StillClosed": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-3/execution-gate.json",
+    "sha256": "f6724552f8d880dcf1481c05aba6e616451e9607e0ecedcfd5d8f77e5559d655"
+  },
+  "acyclicDirection": "Manifest pins upstream/placeholder only, not self or rendered hashes. This external record pins completed manifest and rendering.",
+  "needsFinalOtherNativeRootCurrentScopeAndTwoPublications": true,
+  "executionAuthorized": false,
+  "liveGateWritten": false,
+  "actualDiagnosticInvoked": false
+}
