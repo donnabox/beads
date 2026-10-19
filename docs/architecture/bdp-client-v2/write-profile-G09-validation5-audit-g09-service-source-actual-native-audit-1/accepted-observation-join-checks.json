@@ -1,0 +1,136 @@
+{
+  "acceptedObservationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/g09-service-source.accepted-observation.json",
+  "acceptedObservationSha256": "b0b4098cd521d58490a29404c5405a35d574e07076dc5ebc997fcd3ec86cedbe",
+  "actualAuditorZeroAndOutputJoinVerified": true,
+  "claimEligible": false,
+  "exact8Keys": true,
+  "limitationsExact": "Private exact source/build/archive/consumer only. Historical lanes distinct. Failure/partial records remain raw, never reconstructed; no public Write qualification/admission claim.",
+  "originalRecordLineHashes": [
+    {
+      "line": 5,
+      "rawLineSha256": "7eb6b016c851c15ba5327eab931589e0a7647b4b2a40fe9054465da0844150b3"
+    },
+    {
+      "line": 8,
+      "rawLineSha256": "0fd85ec3f40daa0a7fad6cc42557f74fece645f4f0388a46882acd81e58e0b81"
+    },
+    {
+      "line": 11,
+      "rawLineSha256": "b0f1706cf32b43fb40da6ef9f1ada61cacebf1e507b9df752b2bae0ae902d5c8"
+    }
+  ],
+  "originalStrictServiceKeysCountsPositionsEpochViewChecked": true,
+  "privatePairFinalDisposition": "PENDING ROOT full actual disposition+durability",
+  "publicProfileOrWholeWriteCredit": false,
+  "reportsExactOriginalLogObjects": [
+    {
+      "calls": 4,
+      "closeCalls": 1,
+      "closed": true,
+      "contexts": [
+        {
+          "authorizationView": "development-all-visible",
+          "scopeEpoch": "dbc9da39-c11f-4d2e-ad97-6ed4eea4fdc3",
+          "scopePosition": "pos-0"
+        },
+        {
+          "authorizationView": "development-all-visible",
+          "scopeEpoch": "dbc9da39-c11f-4d2e-ad97-6ed4eea4fdc3",
+          "scopePosition": "pos-0"
+        },
+        {
+          "authorizationView": "development-all-visible",
+          "scopeEpoch": "dbc9da39-c11f-4d2e-ad97-6ed4eea4fdc3",
+          "scopePosition": "pos-0"
+        },
+        {
+          "authorizationView": "development-all-visible",
+          "scopeEpoch": "dbc9da39-c11f-4d2e-ad97-6ed4eea4fdc3",
+          "scopePosition": "pos-0"
+        },
+        {
+          "authorizationView": "development-all-visible",
+          "scopeEpoch": "dbc9da39-c11f-4d2e-ad97-6ed4eea4fdc3",
+          "scopePosition": "pos-1"
+        }
+      ],
+      "entries": 5,
+      "failureCount": 0,
+      "observation": "G09-S01",
+      "removed": true
+    },
+    {
+      "calls": 2,
+      "closeCalls": 1,
+      "closed": true,
+      "contexts": [
+        {
+          "authorizationView": "development-all-visible",
+          "scopeEpoch": "134df108-0a20-4ef4-8d11-49148fa5ecd3",
+          "scopePosition": "pos-0"
+        },
+        {
+          "authorizationView": "development-all-visible",
+          "scopeEpoch": "134df108-0a20-4ef4-8d11-49148fa5ecd3",
+          "scopePosition": "pos-0"
+        }
+      ],
+      "entries": 2,
+      "failureCount": 0,
+      "observation": "G09-S02",
+      "removed": true
+    },
+    {
+      "calls": 3,
+      "closeCalls": 1,
+      "closed": true,
+      "contexts": [
+        {
+          "authorizationView": "development-all-visible",
+          "scopeEpoch": "fe2fdb88-e2cd-42dc-9f3b-fdd238796993",
+          "scopePosition": "pos-0"
+        },
+        {
+          "authorizationView": "development-all-visible",
+          "scopeEpoch": "fe2fdb88-e2cd-42dc-9f3b-fdd238796993",
+          "scopePosition": "pos-0"
+        },
+        {
+          "authorizationView": "development-all-visible",
+          "scopeEpoch": "fe2fdb88-e2cd-42dc-9f3b-fdd238796993",
+          "scopePosition": "pos-0"
+        },
+        {
+          "authorizationView": "development-all-visible",
+          "scopeEpoch": "fe2fdb88-e2cd-42dc-9f3b-fdd238796993",
+          "scopePosition": "pos-0"
+        },
+        {
+          "authorizationView": "development-all-visible",
+          "scopeEpoch": "fe2fdb88-e2cd-42dc-9f3b-fdd238796993",
+          "scopePosition": "pos-0"
+        }
+      ],
+      "entries": 5,
+      "failureCount": 0,
+      "observation": "G09-S03",
+      "removed": true
+    }
+  ],
+  "selectedExactlyOnce": [
+    "G09-S01 schemaObserved zero-min/current and captured supplied tuple",
+    "G09-S02 schemaObserved epoch and view errors",
+    "G09-S03 schemaObserved ahead and opaque bounded attempts"
+  ],
+  "sourceBindingJoin": true,
+  "sourceIdentityJoin": true,
+  "sourceLog": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/g09-service-source.log",
+    "sha256": "10270d0ea58c8691c294758cd4bb0493d4c553199a6a4aa270611269250fd949"
+  },
+  "sourceResults": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/g09-service-source.results.json",
+    "sha256": "21f88dfdeef6f8d6021f6f1ed4bacffdcf5deb48fba8b016d861d6539488372a"
+  },
+  "unselectedSkipped": 112
+}
