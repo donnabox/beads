@@ -1,0 +1,90 @@
+{
+  "actualIssuedSourceAssignmentOnlyWholeInverse": true,
+  "actualPhaseToolIds": {
+    "A": "270143",
+    "B": "9ebe12",
+    "C": "ed7372"
+  },
+  "actualProbeDirectReaped": true,
+  "actualPsRowsFullyInspected": 1380,
+  "actualRootCommonClockSeconds": 8.588768958114088,
+  "all3ActualOrdinaryTerminalsZero": true,
+  "all9EvidencePlus12RawMirrorsAndMetadata": true,
+  "allRootAndCensusStreamFacts": [
+    {
+      "actualRecordedDescriptor600EOFFullCountsClose": true,
+      "bytes": 477,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/pnpm-version/pnpm-version.stdout",
+      "sha256": "95a0ffe013224d1cb314dda10ef958b45317370f0fe86c33dff4a7bf202728fc"
+    },
+    {
+      "actualRecordedDescriptor600EOFFullCountsClose": true,
+      "bytes": 0,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/pnpm-version/pnpm-version.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "actualRecordedDescriptor600EOFFullCountsClose": true,
+      "bytes": 205143,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/pnpm-version/postterminal-census.stdout",
+      "sha256": "cce38a1d49fda84c38460be345c5e4bc37f5ad5c9d2b25fec06f2a4ed11dc8e8"
+    },
+    {
+      "actualRecordedDescriptor600EOFFullCountsClose": true,
+      "bytes": 0,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/pnpm-version/postterminal-census.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "innerElapsedSeconds": 3.9093565000221133,
+  "innerRows": 4,
+  "innerSamples": 4,
+  "knownPgids": [
+    51864,
+    51868,
+    52564
+  ],
+  "knownPids": [
+    51867,
+    51868,
+    52564
+  ],
+  "matchingRows": [],
+  "nativeAudit": "PENDING",
+  "nextStageReleased": false,
+  "observedVersion": "11.20.0",
+  "observerSelfAbsenceOrUnseenGlobalContainmentClaim": false,
+  "qualityPass": false,
+  "referenceTables": {
+    "write-profile-G09-validation-preparation-5": {
+      "oneExplicitLiveProjection": 0,
+      "records": 1857
+    },
+    "write-profile-G09-validation5-fixed-text-proof-correction-1": {
+      "oneExplicitLiveProjection": 1,
+      "records": 2207
+    },
+    "write-profile-G09-validation5-root-fixed-protocol-preparation-1": {
+      "oneExplicitLiveProjection": 1,
+      "records": 2082
+    },
+    "write-profile-G09-validation5-root-proposed-authority-1": {
+      "oneExplicitLiveProjection": 1,
+      "records": 2206
+    }
+  },
+  "rootFinalAccepted": false,
+  "scope": "ONE actual version-stage capture only; no compiler/lint/test/build/install/profile/fullWrite claim",
+  "scratchRetained": {
+    "entriesAtStaticRead": [
+      "node-compile-cache"
+    ],
+    "existsAtStaticRead": true,
+    "noCleanupPerformed": true,
+    "notGlobalOrRuntimeDescendantCleanupProof": true,
+    "path": "/private/tmp/vickie-tx-discovery-validation-pnpm-version-i3hg12zo"
+  },
+  "source679Helper105Other110Exact": true,
+  "stage": "pnpm-version",
+  "toolTerminals": "Trusted-root normalized actual tool result attribution; independently decoded raw tool receipts UNRETAINED"
+}

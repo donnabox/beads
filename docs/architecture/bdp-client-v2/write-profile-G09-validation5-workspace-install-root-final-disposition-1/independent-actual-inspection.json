@@ -1,0 +1,90 @@
+{
+  "actualIssuedSourceAssignmentOnlyWholeInverse": true,
+  "actualPhaseToolIds": {
+    "A": "500ac0",
+    "B": "fea40e",
+    "C": "c5b630"
+  },
+  "actualProbeDirectReaped": true,
+  "actualPsRowsFullyInspected": 1385,
+  "actualRootCommonClockSeconds": 9.28374187508598,
+  "all3ActualOrdinaryTerminalsZero": true,
+  "all9EvidencePlus12RawMirrorsAndMetadata": true,
+  "allRootAndCensusStreamFacts": [
+    {
+      "actualRecordedDescriptor600EOFFullCountsClose": true,
+      "bytes": 481,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/workspace-install/workspace-install.stdout",
+      "sha256": "c15b8663509c9d0fd664cfaca78574cb8345444864ea36cbd239cefd790515f3"
+    },
+    {
+      "actualRecordedDescriptor600EOFFullCountsClose": true,
+      "bytes": 0,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/workspace-install/workspace-install.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "actualRecordedDescriptor600EOFFullCountsClose": true,
+      "bytes": 206033,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/workspace-install/postterminal-census.stdout",
+      "sha256": "8ceb8d84e5fdebae21702d252fb7b45008defd4c97be1d19c80d5babca3d25d5"
+    },
+    {
+      "actualRecordedDescriptor600EOFFullCountsClose": true,
+      "bytes": 0,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/workspace-install/postterminal-census.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "innerElapsedSeconds": 4.141560290940106,
+  "innerRows": 6,
+  "innerSamples": 6,
+  "knownPgids": [
+    57811,
+    57815,
+    59396
+  ],
+  "knownPids": [
+    57814,
+    57815,
+    59396
+  ],
+  "matchingRows": [],
+  "nativeAudit": "PENDING",
+  "nextStageReleased": false,
+  "observedInstallation": "offline frozen-lockfile completed, reused61/downloaded0/added61",
+  "observerSelfAbsenceOrUnseenGlobalContainmentClaim": false,
+  "qualityPass": false,
+  "referenceTables": {
+    "write-profile-G09-validation-preparation-5": {
+      "oneExplicitLiveProjection": 0,
+      "records": 1857
+    },
+    "write-profile-G09-validation5-fixed-text-proof-correction-1": {
+      "oneExplicitLiveProjection": 1,
+      "records": 2207
+    },
+    "write-profile-G09-validation5-root-fixed-protocol-preparation-1": {
+      "oneExplicitLiveProjection": 1,
+      "records": 2082
+    },
+    "write-profile-G09-validation5-root-proposed-authority-1": {
+      "oneExplicitLiveProjection": 1,
+      "records": 2206
+    }
+  },
+  "rootFinalAccepted": false,
+  "scope": "ONE actual version-stage capture only; no compiler/lint/test/build/install/profile/fullWrite claim",
+  "scratchRetained": {
+    "entriesAtStaticRead": [
+      "node-compile-cache"
+    ],
+    "existsAtStaticRead": true,
+    "noCleanupPerformed": true,
+    "notGlobalOrRuntimeDescendantCleanupProof": true,
+    "path": "/private/tmp/vickie-tx-discovery-validation-workspace-install-k0k0qrhe"
+  },
+  "source679Helper105Other110Exact": true,
+  "stage": "workspace-install",
+  "toolTerminals": "Trusted-root normalized actual tool result attribution; independently decoded raw tool receipts UNRETAINED"
+}

@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+Workspace-install actual audit COMPLETE: native55 accepted/no findings; ROOT verified55/41origins/2434currentledger plus fullownactualinspectionbfe594dc and invalidpartialvsoriginaltoolstate distinction. [ROOT final disposition](write-profile-G09-validation5-workspace-install-root-final-disposition-1/disposition.json) accepts ONE actualofflineinstallation capture only, reused61/downloaded0/added61/common9.283741875<115; explicitlyqualifies inheritedversionwording in unchangedpendinginspection. Originalinvalidpartial1+failure2 preserved/not adopted; correctedE2 originalsource/actualterminals remainauthority/rawtoolreceiptsUNRETAINED. Bind-workspace-tools ONE exactreviewed A/B/C conditionally released ONLY AFTER allnative55+ROOT3+failure3+sole raw/Gitmodes/criticalreadback. Prioractualstages neverrepeat; fresh11toolmapstillUNRESOLVED/later30unreleased/fullWriteOPEN.
+
+
 ONE actual workspace-install A/B/C COMPLETE functions3076 after durable pnpm final disposition4ac798d6: normalized actualterminals500ac0/fea40e/c5b630 all0, offline frozenlock install reused61/downloaded0/added61, innerexit0/source1eca unchanged4.141560291s/common9.283741875<115. [Frozen installation evidence9](write-profile-G09-validation5-workspace-install-root-tool-evidence-2/report.md)+root8/inner4 retained; no retry/secondcensus. Full actual native+ROOT audit/disposition/durability REQUIRED before bind-workspace-tools. Originalprovisionalfalse/pending retained, rawtoolreceiptsUNRETAINED/no cleanup/globalclaim. Fresh actual11toolmap stillUNRESOLVED, next31stagesunattempted/later30unreleased/fullWriteOPEN.
 
 

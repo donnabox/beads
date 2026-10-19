@@ -1,0 +1,67 @@
+{
+  "accepted": false,
+  "actualFunctionsCellId": "3076",
+  "actualInnerElapsedSeconds": 4.141560290940106,
+  "actualInnerExit": 0,
+  "actualPhaseTerminalObservations": [
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "500ac0",
+      "phase": "A"
+    },
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "fea40e",
+      "phase": "B"
+    },
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "c5b630",
+      "phase": "C"
+    }
+  ],
+  "censusRawStreamBytes": [
+    206033,
+    0
+  ],
+  "cleanupNotPerformedByThisStaticPacket": true,
+  "firstPostBTerminalWitnessMonotonic": 2260553.154969333,
+  "fullIndependentConjunctionAudit": "PENDING",
+  "independentlyDecodedRawToolReceipts": "UNRETAINED_SOURCE_ATTRIBUTED_NORMALIZED_TOOL_RESULTS_ONLY",
+  "matchingTaskRows": [],
+  "measuredCompletedInvocationAndObservationUpperBoundSeconds": 9.28374187508598,
+  "nextStageReleased": false,
+  "observedWorkspaceInstallLog": {
+    "bytes": 706,
+    "exactText": "Scope: all 12 workspace projects\n\u2713 Lockfile passes supply-chain policies (verified 6d ago)\nLockfile is up to date, resolution step is skipped\nProgress: resolved 1, reused 0, downloaded 0, added 0\nPackages: +61\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\nPackages are cloned from the content-addressable store to the virtual store.\n  Content-addressable store is at: /Users/dbox/Library/pnpm/store/v11\n  Virtual store is at:             node_modules/.pnpm\nProgress: resolved 61, reused 61, downloaded 0, added 61, done\n\ndevDependencies:\n+ @babel/parser 8.0.4\n+ @biomejs/biome 2.5.7\n+ @types/node 24.13.3\n+ ajv 8.17.1\n+ typescript 7.0.2\n+ vitest 4.1.10\n\nDone in 477ms using pnpm v11.20.0\n",
+    "mode": "0o644",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/workspace-install.log",
+    "sha256": "060619d49b5a941230ae9d2f036f33db0cc9f3962c311399abd91bfd4be2cf17"
+  },
+  "observerSelfAbsenceOrGlobalContainmentClaim": false,
+  "ordinaryToolRecords": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-workspace-install-root-tool-evidence-2/dispatch-state.json",
+    "sha256": "6adb5e99bd41d0a965a77a847ad746b770cbb872c73dbaaee301d3e45e991299"
+  },
+  "probeDirectReaped": true,
+  "qualityPass": false,
+  "recordedTaskPGIDs": [
+    57811,
+    57815,
+    59396
+  ],
+  "recordedTaskPIDs": [
+    57814,
+    57815,
+    59396
+  ],
+  "rootOriginMonotonic": 2260543.871227458,
+  "rootRawStreamBytes": [
+    481,
+    0
+  ],
+  "session": "2026-10-18T02:16:24Z-549f",
+  "stage": "workspace-install",
+  "strictUnder115": true,
+  "temporaryDirectory": "/private/tmp/vickie-tx-discovery-validation-workspace-install-k0k0qrhe"
+}
