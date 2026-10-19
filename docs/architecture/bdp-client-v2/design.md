@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+ONE actual bind-workspace-tools A/B/C COMPLETE functions3097 after fullinstallationdisposition1594f3fb: actualterminals35b935/7a8572/bad624 all0, innerexit0/source1eca unchanged7.926844875s/common12.685341000<115. [Frozen fresh toolbinding evidence9](write-profile-G09-validation5-bind-workspace-tools-root-tool-evidence-1/report.md)+root8/inner4+fresh11toolmap retained. Full actual native+ROOT audit/disposition/durability before any later30 source/control release. Existing first4manifest cannot authorize later30. No retry/secondcensus/cleanup/globalclaim; rawtoolreceiptsUNRETAINED/no compiler/test/build/profile/fullWrite credit.
+
+
 Workspace-install actual audit COMPLETE: native55 accepted/no findings; ROOT verified55/41origins/2434currentledger plus fullownactualinspectionbfe594dc and invalidpartialvsoriginaltoolstate distinction. [ROOT final disposition](write-profile-G09-validation5-workspace-install-root-final-disposition-1/disposition.json) accepts ONE actualofflineinstallation capture only, reused61/downloaded0/added61/common9.283741875<115; explicitlyqualifies inheritedversionwording in unchangedpendinginspection. Originalinvalidpartial1+failure2 preserved/not adopted; correctedE2 originalsource/actualterminals remainauthority/rawtoolreceiptsUNRETAINED. Bind-workspace-tools ONE exactreviewed A/B/C conditionally released ONLY AFTER allnative55+ROOT3+failure3+sole raw/Gitmodes/criticalreadback. Prioractualstages neverrepeat; fresh11toolmapstillUNRESOLVED/later30unreleased/fullWriteOPEN.
 
 
