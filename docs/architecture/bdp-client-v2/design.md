@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+ALL432composite authority/source/helper/capture/proof/acceptedfirst4ROOT raw/Gitmodes+10criticalbodies freshlyverified durable05ea96bd5e7ad81656711dde0dabcd9876898dfb BEFORE [ONE next5 liveactivation](write-profile-G09-validation5-next5-root-activation-1/activation.json). SoleP/livegatead5->exactcandidate18, only3JSONfields approvedprefix9/workspace11map/rootconditionalbridge; fullbefore/active/controlpair retained. Other110prepared/105impl/679source/17priorrun/HEADcce/tree675/branch/f87d/tenunstaged unchanged; new2314refs ONLYexactlivead5->18 and olddomains ONLYsame4a->ad5->18 qualified, no repair. Actualtypecheck/new5stillUNATTEMPTED: separatefullactivationpublication/readback REQUIREDBEFORE ONEtypecheckA/B/C, fullactualnative/ROOTdurabledisposition before eachnext. First4nevrepeat/later25closed/fullWriteOPEN.
+
+
 Next5 FULL native72 d31642ba/966adba0 preservesacceptedfalse and oneLowP5-NEXT5-N1 inheritedfirst4/12cellprose. [ExactROOTbridgeerratum3](write-profile-G09-validation5-next5-bridge-scope-root-erratum-1/erratum.json)76af896c qualifiesONLY3pointers/effectivenext5/15cellscope. SeparateFULLnativeerratum10 55390565/127fc49a acceptsstaticclosurecondition/nofindings, originals60/native72unchanged. ROOT independently verifiesall72/63origins2405ledger/erratum3/native10+10refs and own60source/19origins2314refs/141pins/65LFinverses/60nodeDAG. [ROOTfinalacceptance5](write-profile-G09-validation5-next5-root-final-acceptance-1/acceptance.json) closesLowthroughadditiveerratum/finalSTATICcontrolscope only. COMPLETE selected composite authority/native/root/erratum raw/Gitmodes/directreadbacks REQUIREDBEFORE separatelyauthorizedsolelivead5->candidate18write. Separatefullactivationdurability stillBEFOREONEtypecheck; no currentlivewrite/runtime/quality/fullWritecredit. Completedfirst4nevrepeat/later25closed.
 
 
