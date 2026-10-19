@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+[ONE actual package-directory preparation](write-profile-G09-validation5-prepare-package-directory-root-tool-evidence-1/report.md) COMPLETE A889e55/B e1c2f6/C d53e4d all0; A actualsession13026/polls retained/no retry. Common18.246213542s<115/inner11.064842625s/emptylog/source1eca unchanged; run/packages created empty ONLY. Full3349authorityd4cd9c5d beforef16->34 plus separateactivation00fa9c5b BEFOREactual. Full actual independent native+ROOT conjunction/durable disposition required BEFOREpack-protocol, stillUNATTEMPTED. No archives/consumer/installedstartup/publicprofile/fullWrite credit; first17neverrepeat/later13closed/pinnedbasis unchanged.
+
+
 COMPLETE3349 current/prior authority raw/Gitmodes/15critical bodies DURABLE d4cd9c5d296473d8081a5cce6d631bbae9dc3bec BEFORE [ONE package4 gate activation](write-profile-G09-validation5-package4-root-activation-1/activation.json). SoleP/gatef16->34 only2fields/prefix21; other188helper/78run/679source/105impl/other110prepared/476build/11tools/Git exact. Full6892currentrefs and all nativecurrentledgers ONLYsame livepath f16->34 phase, older domains preserve exact4a/ad5/18 history; allcopies/indices unchanged. Separateactivationpublication/readback REQUIRED BEFORE ONEprepare-package-directory A/B/C. First17neverrepeat/later13closed/all17lateractualsUNATTEMPTED; archive/consumer/lock/installedproof unresolved. FullWriteOPEN/no incomingsemantics or mainrequest.
 
 
