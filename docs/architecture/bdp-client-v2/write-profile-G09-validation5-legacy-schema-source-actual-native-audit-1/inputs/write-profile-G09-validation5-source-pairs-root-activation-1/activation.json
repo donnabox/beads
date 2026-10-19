@@ -1,0 +1,135 @@
+{
+  "activeBytes": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-source-pairs-root-activation-1/execution-gate.active.json",
+    "sha256": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8"
+  },
+  "actualBuildMap476Current": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/build-artifacts.json",
+    "sha256": "8a0241044612922b2801e6b5d1670919d37671d8191f567e5d36807a223ed56a"
+  },
+  "actualExecutionBegun": false,
+  "afterSha256": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8",
+  "all1805CompositeRawGitModesAnd12CriticalReadbacksBeforeWrite": true,
+  "all25LaterStagesStillUnattemptedAtWrite": true,
+  "approvedPrefix": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "g09-service-source",
+    "audit-g09-service-source",
+    "g09-schema-source",
+    "audit-g09-schema-source",
+    "legacy-schema-source",
+    "audit-legacy-schema-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source"
+  ],
+  "at": "2026-10-19T03:23:36.003091+00:00",
+  "authorityCommit": "803920ab3d49ca13cecfa0601777c5fd03926e13",
+  "authorityPublicationReceipt": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-source-pairs-final-authority-publication-1.remote-readback.json",
+    "sha256": "af472b36b3b4f10499ca749e47722dab59ecf0fb6ba4c302e1eb1caa5656e128"
+  },
+  "beforeBytes": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-source-pairs-root-activation-1/execution-gate.before.json",
+    "sha256": "18a440d47c2b4e7aef7e46afc73f627a27d13e51cae8b990cd2feade33c774a4"
+  },
+  "beforeSha256": "18a440d47c2b4e7aef7e46afc73f627a27d13e51cae8b990cd2feade33c774a4",
+  "controlPair": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-source-pairs-root-activation-1/control-pair.json",
+    "sha256": "9b70b480db8135606612db7375f6e13aead855ab4de4c159bbfd4c40ec0b3adc"
+  },
+  "first9AlreadyAcceptedNeverRepeat": true,
+  "fresh11ToolsExact": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/workspace-tools.json",
+    "sha256": "69713067eef866d61e8e9e3c49d695bd2d534d1cb7d0913c977da4f3f7d2cdb0"
+  },
+  "gitSourceReadOnlyVerified": {
+    "branch": "codex/vickie-schema-lint-correction-minimum",
+    "dirtyBinarySha256": "f87d60ddc56b23737c46ed14e1675cc751c0062c7ab3466c33606398ae305df6",
+    "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+    "parent": "a56254d682cf4623cab22a552e3d2f695f691795",
+    "status": " M apps/bdptest/src/transactional-discovery-installed.test.ts\n M apps/bdptest/src/transactional-schema-installed.test.ts\n M packages/server/src/transaction-changefeed.test.ts\n M packages/server/src/transaction-http.test.ts\n M packages/server/src/transaction-http.ts\n M packages/server/src/transaction-installed-contracts.test.ts\n M packages/server/src/transaction-schema-http.test.ts\n M packages/server/src/transaction-schema-http.ts\n M packages/server/src/transaction-service.test.ts\n M packages/server/src/transaction-service.ts\n",
+    "tree": "6757829bd5b700faf28df39071190a272add90c9"
+  },
+  "historicalReferenceDomains": {
+    "write-profile-G09-validation-preparation-5": {
+      "exactOther": 1857,
+      "soleLiveHistorical4aThroughAcceptedAd5And18ToF16": 0,
+      "total": 1857
+    },
+    "write-profile-G09-validation5-fixed-text-proof-correction-1": {
+      "exactOther": 2206,
+      "soleLiveHistorical4aThroughAcceptedAd5And18ToF16": 1,
+      "total": 2207
+    },
+    "write-profile-G09-validation5-next5-closed-control-source-1": {
+      "exactOther": 2313,
+      "soleHistoricalAd5Through18ToF16": 1,
+      "total": 2314
+    },
+    "write-profile-G09-validation5-root-fixed-protocol-preparation-1": {
+      "exactOther": 2081,
+      "soleLiveHistorical4aThroughAcceptedAd5And18ToF16": 1,
+      "total": 2082
+    },
+    "write-profile-G09-validation5-root-proposed-authority-1": {
+      "exactOther": 2205,
+      "soleLiveHistorical4aThroughAcceptedAd5And18ToF16": 1,
+      "total": 2206
+    }
+  },
+  "invocableNewStagesOnly": [
+    "g09-service-source",
+    "audit-g09-service-source",
+    "g09-schema-source",
+    "audit-g09-schema-source",
+    "legacy-schema-source",
+    "audit-legacy-schema-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source"
+  ],
+  "kind": "ONE_EXACT_SOURCE_PAIRS_ACTIVATION_EFFECTIVE_ONLY_AFTER_SEPARATE_FULL_PUBLICATION_READBACK",
+  "later17Authorized": false,
+  "livePath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json",
+  "manifest": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-source-pairs-closed-control-source-1/execution-manifest.json",
+    "sha256": "fca6f5f586215109fc28bf3837a95df0e363a67caad4023932cc2ba688e6a872"
+  },
+  "new3510SourceRefsOnlyOneExplicitLiveProjection": 1,
+  "noRetry": true,
+  "onlyOneLivePathChanged": true,
+  "onlyThreeCandidateFieldsChanged": [
+    "approvedStages",
+    "rootBuildAcceptance",
+    "rootDisposition"
+  ],
+  "perStageActualNativeRootDurabilityBeforeNext": true,
+  "preparedClosed4aAndHistoricalIndicesUnchanged": true,
+  "priorNative3743CurrentLedgerOnlyExactLive18ToF16Projection": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/execution-gate.json"
+  ],
+  "qualityPass": false,
+  "rootFinal": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-source-pairs-root-final-acceptance-1/acceptance.json",
+    "sha256": "c295b60b555240ab8c95d1ca1367de604e1e482dc350e15d2e39193ac8ff10c8"
+  },
+  "rootWriteRelease": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-source-pairs-root-final-acceptance-1/write-release.json",
+    "sha256": "61d801e958a20e14337069eb8c782b0cdcff3b649fdabaaf30d8c6637302b66e"
+  },
+  "secondPublicationReadbackRequiredBeforeG09ServiceSourceA": true,
+  "session": "2026-10-18T02:16:24Z-549f",
+  "source679Impl105Other110Prepared38PriorRunBuild476Exact": true,
+  "sourceIndex": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-source-pairs-closed-control-source-1/index.json",
+    "sha256": "a1f550af52d2a53b91175f7fb6fcc6e121257971512ddc63a25e3c86b7656c65"
+  },
+  "wholeWriteCredit": false
+}

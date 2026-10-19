@@ -1,0 +1,23 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum
+
+ ✓ packages/server/src/transaction-schema-http.test.ts > serves exact captured root and transitive bytes without retaining mutable input 50ms
+ ↓ packages/server/src/transaction-schema-http.test.ts > applies selection once and retains exact byte length and current context
+ ✓ packages/server/src/transaction-schema-http.test.ts > preserves receiving refusals and foreign schema minima before conditionals 26ms
+ ↓ packages/server/src/transaction-schema-http.test.ts > preserves accepted offline configuration and unserved aliases: differing-id
+ ↓ packages/server/src/transaction-schema-http.test.ts > preserves accepted offline configuration and unserved aliases: outside-namespace
+ ↓ packages/server/src/transaction-schema-http.test.ts > preserves accepted offline configuration and unserved aliases: query-retrieval
+ ↓ packages/server/src/transaction-schema-http.test.ts > discards a disconnected schema delivery and leaves the runtime usable
+ ↓ packages/server/src/transaction-schema-http.test.ts > sanitizes a selected schema observation fault without stale response metadata
+ ↓ packages/server/src/transaction-schema-http.test.ts > G09-S04 schema selector receiving and exact identity
+ ↓ packages/server/src/transaction-schema-http.test.ts > G09-S05 schema selector HTTP/min failure order
+ ↓ packages/server/src/transaction-schema-http.test.ts > G09-S06 schema runtime satisfied and context errors
+ ↓ packages/server/src/transaction-schema-http.test.ts > G09-S07 schema runtime ahead before conditional
+ ↓ packages/server/src/transaction-schema-http.test.ts > G09-S08 schema runtime unknown before HEAD/media
+
+ Test Files  1 passed (1)
+      Tests  2 passed | 11 skipped (13)
+   Start at  21:02:03
+   Duration  445ms (transform 224ms, setup 19ms, import 291ms, tests 76ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/legacy-schema-source.results.json

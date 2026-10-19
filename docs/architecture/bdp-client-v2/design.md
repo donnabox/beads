@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+Legacy schema source capture FULLnative90 index29631ad0/closureb6393209 accepted/no findings. ROOT independently verified90/74origins6107currentledger plus own full actual inspectioned467da9. [ROOT final legacy source capture disposition](write-profile-G09-validation5-legacy-schema-source-root-final-disposition-1/disposition.json) accepts ONE actual capture/exact selected2PASS/11UNSELECTEDskipped/finite observation conjunction only: inner0/source1eca unchanged/common10.641013667<115/full2055Blog8309b375. ZERO report objects expected/observed; legacy regressions give zero new G09direct/wire credit. Official audit-legacy-schema-source NOT_ATTEMPTED/pair incomplete. ONE existing strict auditor exact S2baseline conditionally released ONLY AFTER native90+ROOT3+sole94 raw/Gitmodes/critical readback. Original false/pending/UNRETAINED wire+fullENV/source207acceptedfalse/finiteprocess/scratch/P3P4 limits unchanged. No publicprofile/fullWrite pass/later17closed.
+
+
 ONE actual legacy-schema-source COMPLETE functions3306 A d29e2a/B1a3874/Ce97b62 all0 AFTER private HTTP/schema pair FULLnative92/ROOT3/all96pubfaba6dbe. [Frozen legacy schema source capture](write-profile-G09-validation5-legacy-schema-source-root-tool-evidence-1/report.md) retains original sources/normalized terminals/full log+results/root8+inner5/all23. Legacy regression observations add no new G09 direct/wire credit. Full independent actual native+ROOT disposition/durability BEFORE immediate existing audit-legacy-schema-source; official audit NOT_ATTEMPTED/pair incomplete. Original false/pending/UNRETAINED wire+fullENV/finiteprocess/scratch/failed history unchanged; no publicprofile/fullWrite qualification/later17closed.
 
 
