@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/node_modules/vitest/vitest.mjs",
+    "run",
+    "packages/server/src/transaction-service.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/g09-service-source.results.json",
+    "--testNamePattern",
+    "^(?:G09\\-S01\\ schemaObserved\\ zero\\-min/current\\ and\\ captured\\ supplied\\ tuple|G09\\-S02\\ schemaObserved\\ epoch\\ and\\ view\\ errors|G09\\-S03\\ schemaObserved\\ ahead\\ and\\ opaque\\ bounded\\ attempts)$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+  "head": "cce884ccea1db97cbc6fd7bff876d4d6091f9081",
+  "tree": "6757829bd5b700faf28df39071190a272add90c9",
+  "sourceIdentity": "1ecaf2e47369cc12cc26bc3ed693c5d4d3b9cffa4714b13dbe5567f9e46bfb15",
+  "rootGateSha256": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8",
+  "outerSeconds": 120,
+  "automaticRetries": 0,
+  "overrides": {},
+  "temporaryDirectory": "/private/tmp/vickie-tx-discovery-validation-g09-service-source-aor_3ldg",
+  "npmCache": "/private/tmp/vickie-tx-discovery-validation-g09-service-source-aor_3ldg/npm-cache"
+}

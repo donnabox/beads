@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+ONE actual g09-service-source COMPLETE functions3233 A0ca869/B01aab3/C660eb9 all0 afterfull1805authority803920ab/separate6activationc4bb2f09. Actualselected3PASS/112unselectedSKIPPED/0failed, inner0/source1eca unchanged4.697510584/common9.829497917<115/full20394Blog10270d0e+JSONresult retained. [Frozen source capture9](write-profile-G09-validation5-g09-service-source-root-tool-evidence-1/report.md)+root8+inner5/all23/no retry/secondcensus. FULL actualnative/ROOTcaptureacceptance/durability BEFORE existing next audit-g09-service-source; official strict reportaudit NOT_ATTEMPTED/source-auditpair notcomplete/no profile/fullWritepass. Originalfalse/pending/raw wireUNRETAINED/finiteprocess/scratch limits preserved.
+
+
 COMPLETE1805 current/prior composite authority source/helper/accepted9 evidence plus raw/Gitmodes/12criticalbodies DURABLE 803920ab3d49ca13cecfa0601777c5fd03926e13 BEFORE [ONE source-pairs live activation](write-profile-G09-validation5-source-pairs-root-activation-1/activation.json). SoleP/gate18->f16 only3fields approvedprefix17/rootBuildAcceptanceactualaf7d/rootconditionalbridge; exactbefore/active/controlpair retained. Other148currenthelper/110prepared/105impl/679source/38actualrun/476build/11tools/Git identity unchanged. S2refs3510 ONLYsameexactlive18->f16; oldfourdomains ONLYsame4a->ad5->18->f16, priorS2314samead5->18->f16, priornative3743sameexactlive18->f16; allhistoricalindices unchanged. Separatefullactivationpublication/readback REQUIREDBEFORE ONEg09-service-sourceA/B/C. First9NEVERrepeat/allnew8unattempted/later17closed; perstage fullactualnative/ROOTdurability before next and each immediateauditpair order preserved. FullWriteOPEN/no incomingsemantics.
 
 
