@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+[ONE actual server package capture](write-profile-G09-validation5-pack-server-root-tool-evidence-1/report.md) COMPLETE A769d24/B6c5f04/Cd5949d all0/eachsingle terminal/no polls or retries. Common9.733994459s<115/inner4.289953458s/source1eca unchanged/full logad530958. Actual445045B servertgzf5cf974e; priorprotocol68665Btgz4683cb6c unchanged. Priorprotocol FULLnative94/ROOT4893384e/all101pub3ff44b15 BEFOREactual. Full actual native+ROOT conjunction/durability REQUIRED BEFOREoriginalverify-archives, UNATTEMPTED. Combinedarchiveprovenance/consumer/installedproof unresolved/no publicprofile/fullWrite. Historicalfalse/pending/failed/wire+fullENVUNRETAINED/finitecensus/scratch limits preserved.
+
+
 Actualprotocol capture FULLnative94 index406275113b9253492719c0945a1d6b9b5488790dd0a889e42aa7e987b1b21dab/closure9025d0c82edffca2d252d636d723c900bcbc44915c54929d118d0477e1b808c8 accepted/no findings; ROOTverified94/74origins8016currentledger plus ownb8e1f4ae all1387censusrows/4samples/3PIDs3groups/raw0600/clock10.553203000<115/source679/105impl/110prepared/P198run87/build476/tools11. [ROOT final protocol disposition](write-profile-G09-validation5-pack-protocol-root-final-disposition-1/disposition.json) accepts ONE capture/68665B protocolarchive4683cb6c/63safeuniqueregularmembers/sourcebuildbytesexact and exactpublishedpollchainerratumf9b33fb6. Originalincorrectno-pollsprose preserved/qualified: Ainitialce7211/session68202 then completionpollf2e587 actual0; B63fea1/C92f1af0. ONEpack-server conditional ONLY AFTER fullnative+ROOT6+sole raw/Gitmodes/criticaldurability, UNATTEMPTED. Bothactualarchiveverification/provenance/consumer/installedproof remainunresolved/no publicprofile/fullWrite. First19neverrepeat/later13closed/no incomingsemantics/mainrequest.
 
 
