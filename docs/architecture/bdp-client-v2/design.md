@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+COMPLETE3349 current/prior authority raw/Gitmodes/15critical bodies DURABLE d4cd9c5d296473d8081a5cce6d631bbae9dc3bec BEFORE [ONE package4 gate activation](write-profile-G09-validation5-package4-root-activation-1/activation.json). SoleP/gatef16->34 only2fields/prefix21; other188helper/78run/679source/105impl/other110prepared/476build/11tools/Git exact. Full6892currentrefs and all nativecurrentledgers ONLYsame livepath f16->34 phase, older domains preserve exact4a/ad5/18 history; allcopies/indices unchanged. Separateactivationpublication/readback REQUIRED BEFORE ONEprepare-package-directory A/B/C. First17neverrepeat/later13closed/all17lateractualsUNATTEMPTED; archive/consumer/lock/installedproof unresolved. FullWriteOPEN/no incomingsemantics or mainrequest.
+
+
 [Package4 full ROOT control acceptance](write-profile-G09-validation5-package4-root-final-acceptance-1/acceptance.json): DIFFERENT native116 index0b332f9f/closure2351296d accepted/no findings; ROOT independently verified116/102origins7752currentledger plus complete source427/342origins6892refs/12cells52LF/15genuinepairs/1171typedpins(1161strict+10exactqualifications)/34295retainedmaps(34292strict+3exactqualifications)/427node9055edge acyclic full raw graph. Own sourceb946e147/raw752988b3; author/reviewer/ROOT DATAchecker histories and original sourceacceptedfalse/pending preserved. Conditional write-release ONLY2gatefields/prefix17->21; COMPLETE current+prior composite raw/Gitmodes/critical durability required BEFORE one exactlivef16->34 write; separateactivationpublication required BEFORE ONEprepare-package-directory. No actual package commands run; first17 neverrepeat/later13 closed. FullWriteOPEN/pinnedsource1eca/basea562/contract677/no incomingsemantics or main request.
 
 
