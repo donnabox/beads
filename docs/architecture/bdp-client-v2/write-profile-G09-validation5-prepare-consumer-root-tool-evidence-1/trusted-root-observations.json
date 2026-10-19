@@ -1,0 +1,124 @@
+{
+  "accepted": false,
+  "actualArchivesAcceptedConsumerManifestCreatedLockInstalledProofUnresolved": true,
+  "actualTaskPGIDs": [
+    82475,
+    82480,
+    83186
+  ],
+  "actualTaskPIDs": [
+    82479,
+    82480,
+    83186,
+    83196,
+    83212,
+    83229,
+    83246,
+    83263,
+    83279,
+    83295,
+    83311,
+    83326,
+    83356,
+    83402,
+    83419,
+    83433,
+    83446,
+    83461,
+    83476,
+    83492,
+    83508,
+    83523,
+    83537,
+    83554,
+    83569,
+    83583,
+    83600,
+    83616,
+    83630,
+    83647,
+    83677,
+    83693,
+    83724,
+    83742,
+    83756,
+    83772,
+    83790,
+    83822,
+    83838,
+    83855,
+    83870,
+    83886,
+    83906,
+    83925,
+    83939,
+    83940
+  ],
+  "actualTerminalTools": [
+    {
+      "actualExit": 0,
+      "actualTerminalToolId": "8d3acd",
+      "baselineSha256": "1d74c111960dca035939002dbcdcfc23246631b986b9b633c2ce3e28d9e844b9",
+      "issuedSha256": "1d74c111960dca035939002dbcdcfc23246631b986b9b633c2ce3e28d9e844b9",
+      "normalizedResultCount": 4,
+      "phase": "A",
+      "sourceRelation": "EXACT_A"
+    },
+    {
+      "actualExit": 0,
+      "actualTerminalToolId": "f4d73c",
+      "baselineSha256": "f80985409b127734dddf9266f13e3c3507ccaac2c697368e2cfa6727a60c7801",
+      "issuedSha256": "66fb1f381e057d9f031a066ca05679b96a97717df3b8cd411b1ab5d079f6096a",
+      "normalizedResultCount": 1,
+      "phase": "B",
+      "sourceRelation": "ONE_COMPLETE_LF_PRECEDING_ACTUAL_TERMINAL_ID_ONLY_FULL_INVERSE"
+    },
+    {
+      "actualExit": 0,
+      "actualTerminalToolId": "0f9dcf",
+      "baselineSha256": "ad0f8e6ba5d4484c6beb6a6b9139483cd1eadbdb177c7362d42281edab1a8c54",
+      "issuedSha256": "82b39673bf61388a410e62ca57df70e6b6e4d7deef9fee95658cbdbcc888453d",
+      "normalizedResultCount": 1,
+      "phase": "C",
+      "sourceRelation": "ONE_COMPLETE_LF_PRECEDING_ACTUAL_TERMINAL_ID_ONLY_FULL_INVERSE"
+    }
+  ],
+  "censusRawStreamBytes": [
+    212033,
+    0
+  ],
+  "cleanupPerformedByStaticPacket": false,
+  "completedInvocationAndObservationUpperBoundSeconds": 16.209989667404443,
+  "emptyLog": {
+    "bytes": 0,
+    "mode": "0o644",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "fullIndependentAudit": "PENDING",
+  "globalOrObserverSelfAbsenceClaim": false,
+  "innerAccepted": true,
+  "innerElapsedSeconds": 10.010259083006531,
+  "innerExit": 0,
+  "matchingTaskRows": [],
+  "nextStageReleased": false,
+  "outputDirectory": {
+    "entries": [
+      "package.json",
+      "pnpm-workspace.yaml"
+    ],
+    "mode": "0o755",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/consumer"
+  },
+  "probeDirectReaped": true,
+  "qualityPass": false,
+  "rawWireAndFullEnvironment": "UNRETAINED",
+  "rootRawStreamBytes": [
+    782,
+    0
+  ],
+  "sourceIdentity": "1ecaf2e47369cc12cc26bc3ed693c5d4d3b9cffa4714b13dbe5567f9e46bfb15",
+  "sourceUnchanged": true,
+  "stage": "prepare-consumer",
+  "strictUnder115": true,
+  "temporaryDirectory": "/private/tmp/vickie-tx-discovery-validation-prepare-consumer-z2gvy_72"
+}

@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+[ONE actual fresh consumer preparation](write-profile-G09-validation5-prepare-consumer-root-tool-evidence-1/report.md) COMPLETE Ainitialaf270d/session82036/pollsf5baaf-76dada/terminal8d3acd0; Bf4d73c0/C0f9dcf0/no retry. Common16.209989667404443s<115/inner10.010259083006531s/emptylog/source1eca unchanged. Actual fresh externalconsumer package.json+pnpm-workspace.yaml created; lock/node_modules/installedproof absent. Full4458authorityd79385a6 before34->437 plus separateactivation6readback3b6edceb BEFOREactual. Full actual native+ROOT conjunction/durability REQUIRED BEFOREconsumer-install, UNATTEMPTED. First21neverrepeat/later11closed/stopbefore24actualROOTgeneratedNONFROZENlockacceptance. P214=111prepared+103run; no installed/publicprofile/fullWrite credit/incomingsemantics.
+
+
 COMPLETE4458 current/prior authority raw/Gitmodes/15critical bodies DURABLE d79385a6163f3530f4c29fb0ded8ffd3cf5eb433 BEFORE [ONE consumer2 gate activation](write-profile-G09-validation5-consumer2-root-activation-1/activation.json). SoleP/gate34->437 only3fields/prefix23; other207helper/97run/679source/105impl/other110prepared/476build/11tools/Git exact. Full8472currentrefs and all nativecurrentledgers ONLYsame livepath34->437 phase, older domains preserve exact4a/ad5/18/f16/34 history; allcopies/indices unchanged. Separateactivationpublication/readback REQUIRED BEFORE ONEprepare-consumer A/B/C. First21neverrepeat/later11closed/all13lateractualsUNATTEMPTED; actualarchives accepted/consumer-lock-installedproof unresolved. FullWriteOPEN/no incomingsemantics or mainrequest.
 
 
