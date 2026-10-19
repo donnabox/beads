@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+Actualserver capture FULLnativeNATIVE_FILES indexNATIVE_INDEX_SHA/closureNATIVE_CLOSURE_SHA accepted/no findings; ROOTverifiedNATIVE_FILES/NATIVE_INPUTSoriginsNATIVE_LEDGERcurrentledger plus owna010209f all1387censusrows/4samples/3PIDs3groups/raw0600/common9.733994459<115/source679/105impl/110prepared/P203run92/build476/tools11. [ROOT final server disposition](write-profile-G09-validation5-pack-server-root-final-disposition-1/disposition.json) accepts ONE capture/445045B serverarchivef5cf974e/258safeuniqueregularmembers/fullsourcebuildbytesexceptspecifiedprotocoldependencyrewrite. Priorprotocolarchive4683cb6c unchanged. ONEoriginalverify-archives conditional ONLY AFTER fullnative+ROOT3+sole raw/Gitmodes/criticaldurability, UNATTEMPTED. Combinedactualarchiveprovenance/consumer/installedproof stillunresolved/no publicprofile/fullWrite. First20neverrepeat/later13closed/pinnedsourceunchanged.
+
+
 [ONE actual server package capture](write-profile-G09-validation5-pack-server-root-tool-evidence-1/report.md) COMPLETE A769d24/B6c5f04/Cd5949d all0/eachsingle terminal/no polls or retries. Common9.733994459s<115/inner4.289953458s/source1eca unchanged/full logad530958. Actual445045B servertgzf5cf974e; priorprotocol68665Btgz4683cb6c unchanged. Priorprotocol FULLnative94/ROOT4893384e/all101pub3ff44b15 BEFOREactual. Full actual native+ROOT conjunction/durability REQUIRED BEFOREoriginalverify-archives, UNATTEMPTED. Combinedarchiveprovenance/consumer/installedproof unresolved/no publicprofile/fullWrite. Historicalfalse/pending/failed/wire+fullENVUNRETAINED/finitecensus/scratch limits preserved.
 
 

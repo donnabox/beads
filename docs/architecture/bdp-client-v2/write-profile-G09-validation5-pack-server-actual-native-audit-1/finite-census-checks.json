@@ -1,0 +1,85 @@
+{
+  "administrativeRowsNotSelfAbsence": [
+    {
+      "birth": "Sun Oct 18 22:00:18 2026",
+      "comm": "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+      "pgid": 21255,
+      "pid": 21258,
+      "ppid": 21255,
+      "state": "S"
+    },
+    {
+      "birth": "Sun Oct 18 22:00:19 2026",
+      "comm": "/bin/ps",
+      "pgid": 21259,
+      "pid": 21259,
+      "ppid": 21258,
+      "state": "Rs"
+    }
+  ],
+  "censusRows": 1387,
+  "globalUnseenTaskAbsenceClaim": false,
+  "matchingRows": [],
+  "observerTerminal": "ROOT-attributed0",
+  "probeBothEOF": true,
+  "probeDirectReaped": true,
+  "probePid": 21259,
+  "recordedTaskPGIDs": [
+    19840,
+    19847,
+    20559
+  ],
+  "recordedTaskPIDs": [
+    19846,
+    19847,
+    20559
+  ],
+  "registryOriginsExact": true,
+  "sampleRows": 4,
+  "samples": [
+    {
+      "group": [
+        [
+          "20559",
+          "19847",
+          "20559",
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node"
+        ]
+      ],
+      "seconds": 0.058495540637522936
+    },
+    {
+      "group": [
+        [
+          "20559",
+          "19847",
+          "20559",
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node"
+        ]
+      ],
+      "seconds": 0.1520788329653442
+    },
+    {
+      "group": [
+        [
+          "20559",
+          "19847",
+          "20559",
+          "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node"
+        ]
+      ],
+      "seconds": 0.25008533289656043
+    },
+    {
+      "group": [
+        [
+          "20559",
+          "19847",
+          "20559",
+          "(node)"
+        ]
+      ],
+      "seconds": 0.34457299998030066
+    }
+  ]
+}
