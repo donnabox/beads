@@ -1,0 +1,29 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-source-pairs-closed-control-source-1/cells/audit-schema-confinement-source.B.txt
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/cells/bind-fresh-build.B.txt
+@@ -2,7 +2,7 @@
+ OBSERVER_FIRST = time.monotonic()
+ import os, json, subprocess, hashlib
+ from pathlib import Path
+-ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/audit-schema-confinement-source')
++ROOT = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/bind-fresh-build')
+ ACTUAL_A_TOOL_ID = 'UNRESOLVED_ACTUAL_TOOL_ID'
+ ACTUAL_A_TOOL_RAW_EXIT = 0
+ # These root-source observations must come from the actual ordinary-tool result,
+@@ -14,7 +14,7 @@
+ origin=json.loads(origin_raw); provisional=json.loads(provisional_raw)
+ ORIGIN=origin['originMonotonic']
+ assert type(ACTUAL_A_TOOL_RAW_EXIT) is int and ACTUAL_A_TOOL_RAW_EXIT==0
+-assert provisional['stage']=='audit-schema-confinement-source' and provisional['accepted'] is False
++assert provisional['stage']=='bind-fresh-build' and provisional['accepted'] is False
+ assert provisional['failure'] is None and provisional['rawExit']==0 and provisional['forcedTermination'] is False and provisional['pipeCloseSucceeded'] is True
+ assert time.monotonic()-ORIGIN<115
+ known_pids=provisional['knownTaskRegistry']['pids']
+@@ -79,7 +79,7 @@
+         for pipe in [p.stdout,p.stderr]:
+             try:pipe.close()
+             except OSError as exc:failure=failure or type(exc).__name__
+-    value={'stage':'audit-schema-confinement-source','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None}
++    value={'stage':'bind-fresh-build','phaseAToolId':ACTUAL_A_TOOL_ID,'phaseAToolRawExit':ACTUAL_A_TOOL_RAW_EXIT,'phaseAToolReceiptAttribution':'trusted root actual ordinary-tool observation; independently decoded raw tool receipt UNRETAINED unless separately actually supplied','originReceiptSha256':hashlib.sha256(origin_raw).hexdigest(),'provisionalReceiptSha256':hashlib.sha256(provisional_raw).hexdigest(),'rootOriginMonotonic':ORIGIN,'observerPid':os.getpid(),'observerPgid':os.getpgrp(),'probePid':p.pid if p is not None else None,'probeCreationPgid':p.pid if p is not None else None,'probeRawExit':p.returncode if p is not None else None,'probeBothEOF':complete,'probeDirectReaped':complete and p is not None and p.returncode is not None,'streams':facts,'taskPIDs':known_pids,'taskPGIDs':known_groups,'selectionOrigins':provisional['knownTaskRegistry']['origins'],'matchingTaskRows':matching if complete else None,'censusEndMonotonic':time.monotonic(),'failure':failure,'accepted':False,'actualObserverToolTerminal':None,'finalClockWitness':None}
+     try:
+         assert time.monotonic()-ORIGIN<120
+         with (ROOT/'postterminal-census.json').open('x') as f:f.write(json.dumps(value,allow_nan=False)+'\n')

@@ -1,0 +1,38 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/cells/bind-fresh-build.A.txt
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-source-pairs-closed-control-source-1/cells/g09-service-source.A.txt
+@@ -8,20 +8,20 @@
+ ORIGIN = time.monotonic()
+ import os, json, hashlib, subprocess, select
+ from pathlib import Path
+-STAGE = 'bind-fresh-build'
+-ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py', 'final', 'bind-fresh-build']
++STAGE = 'g09-service-source'
++ARGV = ['/opt/homebrew/opt/python@3.14/bin/python3.14', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run.py', 'final', 'g09-service-source']
+ CWD = '/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum'
+ P = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5')
+ # Root must prepare/review/publish these exact replacements in a future literal
+ # command before invoking; this CLOSED proposal refuses unbound placeholders.
+-APPROVED_GATE_SHA256 = '18a440d47c2b4e7aef7e46afc73f627a27d13e51cae8b990cd2feade33c774a4'
++APPROVED_GATE_SHA256 = 'f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8'
+ EXPECTED_IMPLEMENTATION_SHA256 = 'c2a7d11deb63169052434c3b45c62bd30664009d4ea6a3e9b42c4cd85bd649a6'
+ EXPECTED_SOURCE_BINDING_SHA256 = 'e0252cb07ac1896fac0faab395e10e50ea58eac263b6d33ee224e378413c2d68'
+ EXPECTED_COMMANDS_SHA256 = 'ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f'
+-OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/bind-fresh-build'
++OWNED_ROOT_OUTPUT = '/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-root-first4-dispatch-1/g09-service-source'
+ # Additive exact externally pinned root execution acceptance; charged to ORIGIN.
+-APPROVED_EXECUTION_ACCEPTANCE_SHA256 = '84d98d3a56b09f8c0305ffbabf88174bc6d960f6bd3123fef2f9576240f707a4'
+-EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/execution-manifest.json')
++APPROVED_EXECUTION_ACCEPTANCE_SHA256 = 'fca6f5f586215109fc28bf3837a95df0e363a67caad4023932cc2ba688e6a872'
++EXECUTION_ACCEPTANCE_PATH = Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-source-pairs-closed-control-source-1/execution-manifest.json')
+ assert type(APPROVED_EXECUTION_ACCEPTANCE_SHA256) is str and len(APPROVED_EXECUTION_ACCEPTANCE_SHA256)==64 and all(c in '0123456789abcdef' for c in APPROVED_EXECUTION_ACCEPTANCE_SHA256)
+ assert EXECUTION_ACCEPTANCE_PATH.is_file() and not EXECUTION_ACCEPTANCE_PATH.is_symlink()
+ execution_acceptance_raw = EXECUTION_ACCEPTANCE_PATH.read_bytes()
+@@ -34,7 +34,7 @@
+ assert execution_acceptance['sourceBindingSha256'] == 'e0252cb07ac1896fac0faab395e10e50ea58eac263b6d33ee224e378413c2d68'
+ assert execution_acceptance['implementationIndexSha256'] == 'c2a7d11deb63169052434c3b45c62bd30664009d4ea6a3e9b42c4cd85bd649a6'
+ assert execution_acceptance['commandsSha256'] == 'ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f'
+-assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version', 'pnpm-version', 'workspace-install', 'bind-workspace-tools', 'typecheck', 'format-check', 'lint', 'fresh-build', 'bind-fresh-build']
++assert type(execution_acceptance['approvedStages']) is list and execution_acceptance['approvedStages'] == ['node-version', 'pnpm-version', 'workspace-install', 'bind-workspace-tools', 'typecheck', 'format-check', 'lint', 'fresh-build', 'bind-fresh-build', 'g09-service-source', 'audit-g09-service-source', 'g09-schema-source', 'audit-g09-schema-source', 'legacy-schema-source', 'audit-legacy-schema-source', 'schema-confinement-source', 'audit-schema-confinement-source']
+ assert STAGE in execution_acceptance['approvedStages']
+ assert type(execution_acceptance['activeGate']) is dict and set(execution_acceptance['activeGate']) == {'path','sha256'}
+ assert execution_acceptance['activeGate'] == {'path':str(P/'execution-gate.json'),'sha256':APPROVED_GATE_SHA256}
