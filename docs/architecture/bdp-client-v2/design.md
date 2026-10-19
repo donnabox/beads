@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+[ONE actual combined archive verifier capture](write-profile-G09-validation5-verify-archives-root-tool-evidence-1/report.md) COMPLETE Ainitialaa5b49/session63832 then completionpoll72f7990/B9b2d0c/C468fc0eachsingle0/no retry. Originalpackages.py tar actually ran/emptylog/source1ecaunchanged/common14.412029458s<115/inner8.705028833s. Actual131894B tar-source-provenanceadb24bc4 binds protocol63/server258members/archives4683cb6c-f5cf974e to frozen dirtysource/freshbuild; cleanfalse/baseHEADtree+current679source, notchildattested. PriorserverFULLnative92/ROOTa3c4e143/all96pub302f9f8a BEFOREactual. Full actual independentnative+ROOT conjunction/durability required BEFOREfinalarchiveacceptance or any separateCLOSEDconsumer-sourceauthorrelease. Prefix21exhausted/later13runtimeCLOSED. Consumer/lock/installedproofabsent/no installed/publicprofile/fullWrite; originalfalse/pending/failed/UNRETAINEDwire+fullENV/finitecensus/scratch retained.
+
+
 Actualserver capture FULLnativeNATIVE_FILES indexNATIVE_INDEX_SHA/closureNATIVE_CLOSURE_SHA accepted/no findings; ROOTverifiedNATIVE_FILES/NATIVE_INPUTSoriginsNATIVE_LEDGERcurrentledger plus owna010209f all1387censusrows/4samples/3PIDs3groups/raw0600/common9.733994459<115/source679/105impl/110prepared/P203run92/build476/tools11. [ROOT final server disposition](write-profile-G09-validation5-pack-server-root-final-disposition-1/disposition.json) accepts ONE capture/445045B serverarchivef5cf974e/258safeuniqueregularmembers/fullsourcebuildbytesexceptspecifiedprotocoldependencyrewrite. Priorprotocolarchive4683cb6c unchanged. ONEoriginalverify-archives conditional ONLY AFTER fullnative+ROOT3+sole raw/Gitmodes/criticaldurability, UNATTEMPTED. Combinedactualarchiveprovenance/consumer/installedproof stillunresolved/no publicprofile/fullWrite. First20neverrepeat/later13closed/pinnedsourceunchanged.
 
 
