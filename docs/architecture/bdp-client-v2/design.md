@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+[Combined archive provenance descriptive count correction](write-profile-G09-validation5-archive-provenance-keycount-descriptive-erratum-1/exact-keycount-erratum.json): actualadb24bc4 has EXACT11 top-level keys matching frozenpackages.py write. ROOTfa152 source comparator already used exact11-keyset and whole321member maps; outputlabel all12KeysAnd321MemberRecordsReproducedExactly and task/bus/launch prose count12 are descriptive errors superseded by this exactowner/pointer correction. Originalproof/inspection/source bytes unchanged; no missingfield, broadskip or runtime retry. Nativeaudit continues comparing actualsource-defined11-key WHOLE object; no successor runtime release.
+
+
 [ONE actual combined archive verifier capture](write-profile-G09-validation5-verify-archives-root-tool-evidence-1/report.md) COMPLETE Ainitialaa5b49/session63832 then completionpoll72f7990/B9b2d0c/C468fc0eachsingle0/no retry. Originalpackages.py tar actually ran/emptylog/source1ecaunchanged/common14.412029458s<115/inner8.705028833s. Actual131894B tar-source-provenanceadb24bc4 binds protocol63/server258members/archives4683cb6c-f5cf974e to frozen dirtysource/freshbuild; cleanfalse/baseHEADtree+current679source, notchildattested. PriorserverFULLnative92/ROOTa3c4e143/all96pub302f9f8a BEFOREactual. Full actual independentnative+ROOT conjunction/durability required BEFOREfinalarchiveacceptance or any separateCLOSEDconsumer-sourceauthorrelease. Prefix21exhausted/later13runtimeCLOSED. Consumer/lock/installedproofabsent/no installed/publicprofile/fullWrite; originalfalse/pending/failed/UNRETAINEDwire+fullENV/finitecensus/scratch retained.
 
 
