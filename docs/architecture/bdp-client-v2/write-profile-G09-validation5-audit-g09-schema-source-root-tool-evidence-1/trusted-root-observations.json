@@ -1,0 +1,129 @@
+{
+  "accepted": false,
+  "actualAcceptedObservation": {
+    "bytes": 11138,
+    "mode": "0o644",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/g09-schema-source.accepted-observation.json",
+    "sha256": "ca4f192d726c65fd70e3fd44d26c98aebac9d65b4b4ab2e12e7a460c6628798d"
+  },
+  "actualEmptyAuditorLog": {
+    "bytes": 0,
+    "mode": "0o644",
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/audit-g09-schema-source.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "actualFunctionsCellId": "3282",
+  "actualInnerElapsedSeconds": 10.102295249700546,
+  "actualInnerExit": 0,
+  "actualPhaseTerminalObservations": [
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "49d417",
+      "phase": "A"
+    },
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "10d414",
+      "phase": "B"
+    },
+    {
+      "actualRawExit": 0,
+      "actualTerminalToolId": "7aeaf3",
+      "phase": "C"
+    }
+  ],
+  "actualPrivateClaimEligible": false,
+  "actualReportIds": [
+    "G09-S04",
+    "G09-S05",
+    "G09-S06",
+    "G09-S07",
+    "G09-S08"
+  ],
+  "censusRawStreamBytes": [
+    205860,
+    0
+  ],
+  "cleanupPerformedByStaticPacket": false,
+  "completedInvocationAndObservationUpperBoundSeconds": 16.02008212497458,
+  "firstPostBTerminalWitnessMonotonic": 2267791.397847125,
+  "fullIndependentConjunctionAudit": "PENDING",
+  "matchingTaskRows": [],
+  "nextStageReleased": false,
+  "observerSelfAbsenceOrGlobalContainmentClaim": false,
+  "ordinaryToolRecords": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-audit-g09-schema-source-root-tool-evidence-1/dispatch-state.json",
+    "sha256": "e505455bdd16cc7a79ff3cc299b2c16602099952d41f63974665efc20d974d09"
+  },
+  "privateSourceAuditPairFinalAccepted": false,
+  "probeDirectReaped": true,
+  "qualityPass": false,
+  "rawWireToolReceipts": "UNRETAINED_SOURCE_ATTRIBUTED_NORMALIZED_RESULTS",
+  "recordedTaskPGIDs": [
+    21946,
+    21952,
+    22676
+  ],
+  "recordedTaskPIDs": [
+    21951,
+    21952,
+    22676,
+    22687,
+    22700,
+    22716,
+    22730,
+    22747,
+    22765,
+    22781,
+    22794,
+    22810,
+    22823,
+    22839,
+    22853,
+    22866,
+    22881,
+    22893,
+    22909,
+    22924,
+    22937,
+    22970,
+    22987,
+    23005,
+    23037,
+    23051,
+    23069,
+    23085,
+    23102,
+    23115,
+    23130,
+    23146,
+    23160,
+    23178,
+    23192,
+    23206,
+    23221,
+    23234,
+    23245,
+    23259,
+    23271,
+    23283,
+    23298,
+    23319,
+    23330,
+    23343,
+    23377,
+    23392,
+    23407,
+    23427,
+    23433,
+    23435
+  ],
+  "rootOriginMonotonic": 2267775.377765,
+  "rootRawStreamBytes": [
+    831,
+    0
+  ],
+  "stage": "audit-g09-schema-source",
+  "strictUnder115": true,
+  "temporaryDirectory": "/private/tmp/vickie-tx-discovery-validation-audit-g09-schema-source-ds8c0g74"
+}
