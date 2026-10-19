@@ -1,0 +1,896 @@
+{
+  "bootstrapReuse": [],
+  "bounds": {
+    "automaticRetries": 0,
+    "installedCallbackMs": 60000,
+    "installedTotalCleanupMs": 10000,
+    "installedWorkMs": 45000,
+    "newDCleanupInclusiveStopMs": 4000,
+    "newDWorkMs": 3000,
+    "outerStageMs": 120000,
+    "recorderMs": 5000,
+    "requestMs": 5000,
+    "sourceDefaultCallbackMs": 5000,
+    "sourceDrainMs": 1000,
+    "sourceLatchMs": 1000,
+    "termAtMs": 115000
+  },
+  "closedPreparation": true,
+  "commands": {
+    "audit-g09-installed-01": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-4/audit.py",
+        "g09-installed-01"
+      ],
+      "automaticRetries": 0,
+      "contract": "IMMEDIATE exact selected result/report grammar/source/cleanup audit; missing extra invalid partial records never receive positive credit",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "audit-g09-installed-01",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "requiresConsumerProof": true,
+      "termAtSeconds": 115
+    },
+    "audit-g09-installed-02": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-4/audit.py",
+        "g09-installed-02"
+      ],
+      "automaticRetries": 0,
+      "contract": "IMMEDIATE exact selected result/report grammar/source/cleanup audit; missing extra invalid partial records never receive positive credit",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "audit-g09-installed-02",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "requiresConsumerProof": true,
+      "termAtSeconds": 115
+    },
+    "audit-g09-schema-source": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-4/audit.py",
+        "g09-schema-source"
+      ],
+      "automaticRetries": 0,
+      "contract": "IMMEDIATE exact selected result/report grammar/source/cleanup audit; missing extra invalid partial records never receive positive credit",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "audit-g09-schema-source",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "termAtSeconds": 115
+    },
+    "audit-g09-service-source": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-4/audit.py",
+        "g09-service-source"
+      ],
+      "automaticRetries": 0,
+      "contract": "IMMEDIATE exact selected result/report grammar/source/cleanup audit; missing extra invalid partial records never receive positive credit",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "audit-g09-service-source",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "termAtSeconds": 115
+    },
+    "audit-legacy-schema-source": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-4/audit.py",
+        "legacy-schema-source"
+      ],
+      "automaticRetries": 0,
+      "contract": "IMMEDIATE exact selected result/report grammar/source/cleanup audit; missing extra invalid partial records never receive positive credit",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "audit-legacy-schema-source",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "termAtSeconds": 115
+    },
+    "audit-schema-confinement-source": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-4/audit.py",
+        "schema-confinement-source"
+      ],
+      "automaticRetries": 0,
+      "contract": "IMMEDIATE exact selected result/report grammar/source/cleanup audit; missing extra invalid partial records never receive positive credit",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "audit-schema-confinement-source",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "requiresConsumerProof": false,
+      "termAtSeconds": 115
+    },
+    "audit-schema-installed-positive": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-4/audit.py",
+        "schema-installed-positive"
+      ],
+      "automaticRetries": 0,
+      "contract": "IMMEDIATE exact selected result/report grammar/source/cleanup audit; missing extra invalid partial records never receive positive credit",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "audit-schema-installed-positive",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "requiresConsumerProof": true,
+      "termAtSeconds": 115
+    },
+    "bind-fresh-build": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-4/audit.py",
+        "build"
+      ],
+      "automaticRetries": 0,
+      "contract": "Fresh dist/map/package inventory binds authored source+actual build log/exit and tools; include full required dist exports and schema bytes. No old build/filecount/hash inference.",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "bind-fresh-build",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "bind-workspace-tools": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-4/audit.py",
+        "tools"
+      ],
+      "automaticRetries": 0,
+      "contract": "Bind actual completed install log/exit plus Biome/TypeScript/Vitest/package-manager tool identities and full dependency input invariance. Failure/timeout means stop, no online retry.",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "bind-workspace-tools",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "consumer-install": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-4/run/consumer",
+      "id": "consumer-install",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "format-check": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/node_modules/@biomejs/biome/bin/biome",
+        "format",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/biome.json",
+        "apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "apps/bdptest/src/transactional-schema-installed.test.ts",
+        "packages/server/src/transaction-changefeed.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-installed-contracts.test.ts",
+        "packages/server/src/transaction-schema-http.test.ts",
+        "packages/server/src/transaction-schema-http.ts",
+        "packages/server/src/transaction-service.test.ts",
+        "packages/server/src/transaction-service.ts"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "format-check",
+      "kind": "supervised-command",
+      "mutatesSource": false,
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "fresh-build": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "build"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "fresh-build",
+      "kind": "supervised-command",
+      "mustPrecede": "Any source test module collection or installed entry resolution; build script cleans then tsc -b",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "g09-installed-01": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-schema-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-4/run/g09-installed-01.results.json",
+        "--testNamePattern",
+        "^(?:G09\\-I01\\ installed\\ exact\\ schema\\ current\\ minimum)$"
+      ],
+      "automaticRetries": 0,
+      "callbackMs": 60000,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "expectedObservation": "G09-I01",
+      "id": "g09-installed-01",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "prospectiveWorkload": {
+        "callbacks": 1,
+        "children": 1,
+        "prospective": true,
+        "wire": 14
+      },
+      "requestMs": 5000,
+      "requiresConsumerProof": true,
+      "selectedFilesByFullName": {
+        "G09-I01 installed exact schema current minimum": "apps/bdptest/src/transactional-schema-installed.test.ts"
+      },
+      "selectedFullNames": [
+        "G09-I01 installed exact schema current minimum"
+      ],
+      "termAtSeconds": 115,
+      "totalCleanupMs": 10000,
+      "workMs": 45000
+    },
+    "g09-installed-02": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-schema-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-4/run/g09-installed-02.results.json",
+        "--testNamePattern",
+        "^(?:G09\\-I02\\ installed\\ receiving\\ and\\ exact\\ retrieval\\ membership)$"
+      ],
+      "automaticRetries": 0,
+      "callbackMs": 60000,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "expectedObservation": "G09-I02",
+      "id": "g09-installed-02",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "prospectiveWorkload": {
+        "callbacks": 1,
+        "children": 1,
+        "prospective": true,
+        "wire": 16
+      },
+      "requestMs": 5000,
+      "requiresConsumerProof": true,
+      "selectedFilesByFullName": {
+        "G09-I02 installed receiving and exact retrieval membership": "apps/bdptest/src/transactional-schema-installed.test.ts"
+      },
+      "selectedFullNames": [
+        "G09-I02 installed receiving and exact retrieval membership"
+      ],
+      "termAtSeconds": 115,
+      "totalCleanupMs": 10000,
+      "workMs": 45000
+    },
+    "g09-schema-source": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-schema-http.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-4/run/g09-schema-source.results.json",
+        "--testNamePattern",
+        "^(?:G09\\-S04\\ schema\\ selector\\ receiving\\ and\\ exact\\ identity|G09\\-S05\\ schema\\ selector\\ HTTP/min\\ failure\\ order|G09\\-S06\\ schema\\ runtime\\ satisfied\\ and\\ context\\ errors|G09\\-S07\\ schema\\ runtime\\ ahead\\ before\\ conditional|G09\\-S08\\ schema\\ runtime\\ unknown\\ before\\ HEAD/media)$"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "g09-schema-source",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "prospectiveWorkload": {
+        "callbacks": 5,
+        "direct": 17,
+        "wire": 9
+      },
+      "selectedFilesByFullName": {
+        "G09-S04 schema selector receiving and exact identity": "packages/server/src/transaction-schema-http.test.ts",
+        "G09-S05 schema selector HTTP/min failure order": "packages/server/src/transaction-schema-http.test.ts",
+        "G09-S06 schema runtime satisfied and context errors": "packages/server/src/transaction-schema-http.test.ts",
+        "G09-S07 schema runtime ahead before conditional": "packages/server/src/transaction-schema-http.test.ts",
+        "G09-S08 schema runtime unknown before HEAD/media": "packages/server/src/transaction-schema-http.test.ts"
+      },
+      "selectedFullNames": [
+        "G09-S04 schema selector receiving and exact identity",
+        "G09-S05 schema selector HTTP/min failure order",
+        "G09-S06 schema runtime satisfied and context errors",
+        "G09-S07 schema runtime ahead before conditional",
+        "G09-S08 schema runtime unknown before HEAD/media"
+      ],
+      "termAtSeconds": 115
+    },
+    "g09-service-source": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-service.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-4/run/g09-service-source.results.json",
+        "--testNamePattern",
+        "^(?:G09\\-S01\\ schemaObserved\\ zero\\-min/current\\ and\\ captured\\ supplied\\ tuple|G09\\-S02\\ schemaObserved\\ epoch\\ and\\ view\\ errors|G09\\-S03\\ schemaObserved\\ ahead\\ and\\ opaque\\ bounded\\ attempts)$"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "g09-service-source",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "prospectiveWorkload": {
+        "callbacks": 3,
+        "direct": 9,
+        "wire": 0
+      },
+      "selectedFilesByFullName": {
+        "G09-S01 schemaObserved zero-min/current and captured supplied tuple": "packages/server/src/transaction-service.test.ts",
+        "G09-S02 schemaObserved epoch and view errors": "packages/server/src/transaction-service.test.ts",
+        "G09-S03 schemaObserved ahead and opaque bounded attempts": "packages/server/src/transaction-service.test.ts"
+      },
+      "selectedFullNames": [
+        "G09-S01 schemaObserved zero-min/current and captured supplied tuple",
+        "G09-S02 schemaObserved epoch and view errors",
+        "G09-S03 schemaObserved ahead and opaque bounded attempts"
+      ],
+      "termAtSeconds": 115
+    },
+    "legacy-schema-source": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-schema-http.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-4/run/legacy-schema-source.results.json",
+        "--testNamePattern",
+        "^(?:serves\\ exact\\ captured\\ root\\ and\\ transitive\\ bytes\\ without\\ retaining\\ mutable\\ input|preserves\\ receiving\\ refusals\\ and\\ foreign\\ schema\\ minima\\ before\\ conditionals)$"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "legacy-schema-source",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "prospectiveWorkload": {
+        "callbacks": 2,
+        "legacyRegression": true,
+        "newG09DirectCredit": 0,
+        "newG09WireCredit": 0
+      },
+      "selectedFilesByFullName": {
+        "preserves receiving refusals and foreign schema minima before conditionals": "packages/server/src/transaction-schema-http.test.ts",
+        "serves exact captured root and transitive bytes without retaining mutable input": "packages/server/src/transaction-schema-http.test.ts"
+      },
+      "selectedFullNames": [
+        "serves exact captured root and transitive bytes without retaining mutable input",
+        "preserves receiving refusals and foreign schema minima before conditionals"
+      ],
+      "termAtSeconds": 115
+    },
+    "lint": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/node_modules/@biomejs/biome/bin/biome",
+        "lint",
+        "--config-path=/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/biome.json",
+        "apps/bdptest/src/transactional-discovery-installed.test.ts",
+        "apps/bdptest/src/transactional-schema-installed.test.ts",
+        "packages/server/src/transaction-changefeed.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-installed-contracts.test.ts",
+        "packages/server/src/transaction-schema-http.test.ts",
+        "packages/server/src/transaction-schema-http.ts",
+        "packages/server/src/transaction-service.test.ts",
+        "packages/server/src/transaction-service.ts"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "lint",
+      "kind": "supervised-command",
+      "mutatesSource": false,
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "node-version": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "expectedStdout": "v24.16.0",
+      "id": "node-version",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "pack-protocol": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-4/run/packages"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "pack-protocol",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "pack-server": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-4/run/packages"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "pack-server",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "pnpm-version": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--version"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "expectedStdout": "11.20.0",
+      "id": "pnpm-version",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "prepare-consumer": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-4/packages.py",
+        "consumer"
+      ],
+      "automaticRetries": 0,
+      "contract": "Exclusively create ${EXECUTION_ROOT}/run/consumer outside workspace; manifest uses actual archive file paths and pnpm-workspace overrides for protocol and frozen transitive versions; actual closure derived from frozen lock. No old consumer/entry/lock reused.",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "prepare-consumer",
+      "kind": "supervised-owned-preparation-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "prepare-package-directory": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-4/packages.py",
+        "directory"
+      ],
+      "automaticRetries": 0,
+      "contract": "Exclusively create new task-owned ${EXECUTION_ROOT}/run/packages; refuse existing contents, no deletion/reuse.",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "prepare-package-directory",
+      "kind": "supervised-owned-preparation-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "required-check-boundaries": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "check:boundaries"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "required-check-boundaries",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "required-e2e-ready-preflight": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "e2e:ready:preflight"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "required-e2e-ready-preflight",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "required-evidence-verify": {
+      "acceptedRawExitCodes": [
+        0,
+        2
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "evidence:verify"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "required-evidence-verify",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "rawExitMeaning": {
+        "0": "Existing claimed Read evidence verified only for its bound claim",
+        "1": "Claimed but unproved: failure",
+        "2": "No evidence claim; explicit fail-closed no-claim accepted by current CI policy, never Write/RU/TX qualification",
+        "3": "Unable to inspect claim/stale build: failure"
+      },
+      "termAtSeconds": 115
+    },
+    "required-smoke": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "smoke"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "required-smoke",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "schema-confinement-source": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-schema-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-4/run/schema-confinement-source.results.json",
+        "--testNamePattern",
+        "^(?:confines\\ observed\\ Type\\ and\\ schema\\ traversal\\ to\\ exact\\ administrative\\ identities)$"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "schema-confinement-source",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "prospectiveWorkload": {
+        "callbacks": 1,
+        "children": 0,
+        "wire": 0
+      },
+      "selectedFilesByFullName": {
+        "confines observed Type and schema traversal to exact administrative identities": "apps/bdptest/src/transactional-schema-installed.test.ts"
+      },
+      "selectedFullNames": [
+        "confines observed Type and schema traversal to exact administrative identities"
+      ],
+      "termAtSeconds": 115
+    },
+    "schema-installed-positive": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-schema-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-4/run/schema-installed-positive.results.json",
+        "--testNamePattern",
+        "^(?:traverses\\ installed\\ local\\ schema\\ bytes\\ with\\ current\\ context\\ within14requests)$"
+      ],
+      "automaticRetries": 0,
+      "callbackMs": 120000,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "expectedObservation": "private-installed-local-schemas",
+      "id": "schema-installed-positive",
+      "inheritedBudgetException": "actual legacy source90swork/120scallback retained; outer120/TERM115 remains fail-closed, may stop before callback cap",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "prospectiveWorkload": {
+        "callbacks": 1,
+        "children": 1,
+        "existingSupersededExchanges": 1,
+        "wire": 14
+      },
+      "requestMs": 5000,
+      "requiresConsumerProof": true,
+      "selectedFilesByFullName": {
+        "traverses installed local schema bytes with current context within14requests": "apps/bdptest/src/transactional-schema-installed.test.ts"
+      },
+      "selectedFullNames": [
+        "traverses installed local schema bytes with current context within14requests"
+      ],
+      "termAtSeconds": 115,
+      "totalCleanupMs": "existing child.close launcher bound; no new aggregate bound inferred",
+      "workMs": 90000
+    },
+    "typecheck": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "typecheck",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "verify-archives": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-4/packages.py",
+        "tar"
+      ],
+      "automaticRetries": 0,
+      "contract": "Rehash actual archives and safe members; compare complete expected fresh dist/schema/license/package metadata maps to frozen source/build. Only expected workspace-protocol dependency rewrite is allowed; no extraction traversal/duplicates/symlinks. Archive names/digests/member counts UNRESOLVED until actual pack.",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "verify-archives",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "verify-installed-consumer": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-4/packages.py",
+        "installed"
+      ],
+      "automaticRetries": 0,
+      "contract": "Reproduce complete package-member linkage, resolved production dependency graph within owned consumer, actual lock and payload recursive hash; bind entry literal+realpath+bytes and full inventory/symlinks; no workspace fallback. Emit actual installed-provenance/inventory records.",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "id": "verify-installed-consumer",
+      "kind": "supervised-readonly-helper",
+      "mustCompleteBeforeNextStage": true,
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    },
+    "workspace-install": {
+      "acceptedRawExitCodes": [
+        0
+      ],
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ],
+      "automaticRetries": 0,
+      "configurationFinalized": true,
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum",
+      "expectedSourceChange": "none; install outputs/tool maps separately measured",
+      "id": "workspace-install",
+      "kind": "supervised-command",
+      "outerSeconds": 120,
+      "termAtSeconds": 115
+    }
+  },
+  "configurationFinalized": true,
+  "executionRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-4",
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "finalOrder": [
+    "node-version",
+    "pnpm-version",
+    "workspace-install",
+    "bind-workspace-tools",
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build",
+    "g09-service-source",
+    "audit-g09-service-source",
+    "g09-schema-source",
+    "audit-g09-schema-source",
+    "legacy-schema-source",
+    "audit-legacy-schema-source",
+    "schema-confinement-source",
+    "audit-schema-confinement-source",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "g09-installed-01",
+    "audit-g09-installed-01",
+    "g09-installed-02",
+    "audit-g09-installed-02",
+    "schema-installed-positive",
+    "audit-schema-installed-positive",
+    "required-check-boundaries",
+    "required-e2e-ready-preflight",
+    "required-smoke",
+    "required-evidence-verify"
+  ],
+  "freshPipeline": true,
+  "rootBarriers": [
+    "OTHER-native helper mechanics + same-source root CODE disposition before stage1",
+    "fresh11tools after4",
+    "fresh complete build before10",
+    "all source/audit pairs before18",
+    "actual archives accepted before22",
+    "actual generated lock manifest settings accepted before24",
+    "actual full consumer proof accepted before25 and each installed/audit",
+    "34actual local terminals+independent/root acceptance before separate fullsuite/publication/exactCI"
+  ],
+  "sourceRoot": "/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum"
+}
