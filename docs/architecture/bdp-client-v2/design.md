@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+ONE actual format-check A/B/C COMPLETE functions3152 after typecheckfullacceptance/all68readback7a55be2f: actualnormalizedterminals894526/523458/2c2aff all0; exact10files/no fixes/innerexit0/source1eca unchanged4.285535833s/common9.313092125<115. [Frozen formatter capture9](write-profile-G09-validation5-format-check-root-tool-evidence-1/report.md)+root8+inner4 retained/no retry/secondcensus. FULLindependentactualnative+ROOTdisposition/durability REQUIREDBEFORE lint; originalfalse/pending/rawwiretoolreceiptsUNRETAINED/retainedscratch/no globalclaim remain. Allnext28commandsunattempted/later25closed/no lint,test,build,profile,fullWritepass.
+
+
 Typecheck actual FULLnative64 d24fb05a/91689981 accepted/no findings. ROOT independently verified64/50origins2656currentledger and ownactualinspection8db6c0f7. [ROOTfinaltypecheckdisposition](write-profile-G09-validation5-typecheck-root-final-disposition-1/disposition.json) acceptsONEactualcompilerconjunction only/inner0/source1eca unchanged/common9.847113583<115. Originalprovisionalfalse/pending and rawwiretoolreceiptsUNRETAINED preserved; nativepublicationcheck90static+10critical is narrower than ROOTfull432remotereadbackbeforewrite. ONEformat-check exactSbaseline conditionallyreleased ONLYAFTER allnative64+ROOT3+sole68 raw/Gitmodes/criticalreadback. No currentformatruntime, priorstagesnevrepeat/later25closed/no lint,test,build,profile,fullWritecredit.
 
 
