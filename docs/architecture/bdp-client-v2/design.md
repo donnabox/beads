@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+ONE actual pnpm-version A/B/C COMPLETE functions3059 after durable Node final disposition873d2df5: actual normalized terminals270143/9ebe12/ed7372 all0, exact log11.20.0+LF, innerexit0/source1eca unchanged3.9093565s, common8.588768958<115. [Frozen actual pnpm evidence9](write-profile-G09-validation5-pnpm-version-root-tool-evidence-1/report.md)+root8/inner4 retained; no retry/secondcensus. Full actual native+ROOT audit/disposition/durability REQUIRED before workspace-install. Original provisionalfalse/pending flags preserved; independent rawtoolreceiptsUNRETAINED. No quality/profile/fullWrite credit, allnext32stages unattempted/later30unreleased.
+
+
 Node-version actual audit COMPLETE: independent native55 accepted/no findings, ROOT independently verified all55 files/42 origins/2665 current ledger inputs and raw descriptor identities. [ROOT final disposition](write-profile-G09-validation5-node-version-root-final-disposition-1/disposition.json) accepts only ONE actual Node v24.16.0 capture, common8.820629875<115, finite3PID3PGID absence/actual terminals0. Original provisionalfalse/pending snapshots and raw tool receipts UNRETAINED remain honest; no quality/profile/fullWrite credit or cleanup. NEXT pnpm-version ONE exact reviewed A/B/C is conditionally released ONLY AFTER full native55+ROOT3+soleplan raw/Gitmodes/critical readback. Never repeat node-version. All later stages remain separately gated; first4only/later30unreleased.
 
 

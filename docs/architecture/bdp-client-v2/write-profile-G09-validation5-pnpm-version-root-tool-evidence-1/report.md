@@ -1,0 +1,3 @@
+# Actual P5 pnpm-version capture — pending independent audit
+
+ONE actual A/B/C completed in functions3059, actual normalized ordinary terminals270143/9ebe12/ed7372 all0. Prior Node final disposition was published/read back873d2df5 before this attempt. Exact log11.20.0+LF, inner exit0/source1eca unchanged, common completed capture/census interval8.588768958114088<115. Original sources/full tool results and12 actual records retained. No retry or second census. Full independent native/ROOT audit and durable disposition precede workspace-install. Provisional false/pending fields preserved; raw wire/tool receipts UNRETAINED, finite process selection only, scratch retained/no cleanup. No compiler/lint/test/build/install/profile/fullWrite pass.
