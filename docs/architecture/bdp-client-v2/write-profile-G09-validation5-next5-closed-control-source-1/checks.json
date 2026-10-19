@@ -1,0 +1,41 @@
+{
+  "actualRuntimeReleased": false,
+  "allFullInversesExact": true,
+  "authoringAfterAll63Durability": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/root-G09-validation5-bind-workspace-tools-final-disposition-source-release-publication-1.remote-readback.json",
+    "sha256": "103e5525668f743c849ca0d8326b59ce332749edb0aae62264635d4fcbbcd120"
+  },
+  "candidate": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/execution-gate.proposed.json",
+    "sha256": "18a440d47c2b4e7aef7e46afc73f627a27d13e51cae8b990cd2feade33c774a4"
+  },
+  "candidateKeys": 26,
+  "countedCompleteLFChanges": 65,
+  "freshToolMap": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation-preparation-5/run/workspace-tools.json",
+    "sha256": "69713067eef866d61e8e9e3c49d695bd2d534d1cb7d0913c977da4f3f7d2cdb0"
+  },
+  "inputCopies": 19,
+  "literalCells": 15,
+  "liveControlStillBeforeExact": true,
+  "manifest": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-profile-G09-validation5-next5-closed-control-source-1/execution-manifest.json",
+    "sha256": "84d98d3a56b09f8c0305ffbabf88174bc6d960f6bd3123fef2f9576240f707a4"
+  },
+  "noCellEvalImportASTCompile": true,
+  "onlyCandidateChangedFields": [
+    "approvedStages",
+    "rootDisposition",
+    "workspaceTools"
+  ],
+  "qualityPass": false,
+  "references": 2314,
+  "sourceOnly": true,
+  "stages": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "fresh-build",
+    "bind-fresh-build"
+  ]
+}
