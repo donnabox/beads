@@ -1,0 +1,2 @@
+from pathlib import Path
+p=Path('/Users/dbox/repos/wt/vickie/vickie-schema-lint-correction-minimum/scripts/smoke-executables.mjs');s=p.read_text().splitlines();print('\n'.join(f'{i+1}:{s[i]}' for i in range(1120,1130)));print('\n'.join(f'{i+1}:{s[i]}' for i in range(110,129)))

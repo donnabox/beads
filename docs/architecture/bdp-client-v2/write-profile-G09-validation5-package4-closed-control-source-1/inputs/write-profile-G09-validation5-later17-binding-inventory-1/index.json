@@ -1,0 +1,230 @@
+{
+  "accepted": false,
+  "currentLiveGateUnchanged": true,
+  "dataOnly": true,
+  "files": {
+    "binding-creation-and-gate-transitions.json": {
+      "bytes": 11807,
+      "mode": "0o644",
+      "sha256": "4a985974b6c0fcab087dabd37ae3bdb08f7c1980a786c75bf3d167541af80fe1"
+    },
+    "checks.json": {
+      "bytes": 711,
+      "mode": "0o644",
+      "sha256": "d88d10c0f76eceadf0f9a4ed9dd7d1826c3e472bdba5d2719b2db4f55fe96de0"
+    },
+    "closure.json": {
+      "bytes": 1530,
+      "mode": "0o644",
+      "sha256": "e4d3f319cfbaf40a6e3522b8cf2dad980490f703b1f316fde504d8d4bef1a1a5"
+    },
+    "findings-and-planning-blockers.json": {
+      "bytes": 3258,
+      "mode": "0o644",
+      "sha256": "0c5aed4b7684d378cce0001f32763e22734ca11ba6f123ba8d15dd829035a51b"
+    },
+    "future-boundaries.json": {
+      "bytes": 3278,
+      "mode": "0o644",
+      "sha256": "cc13b2e768396a0150d3e4f9a22d9411a64e6f99ba67756d4968ce359f6dcc77"
+    },
+    "input-ledger.json": {
+      "bytes": 10332,
+      "mode": "0o644",
+      "sha256": "17bf41ca8d1812147af7d7cc3461c6ff191674abb1d0791435a0234a027ecb5b"
+    },
+    "input-origins.json": {
+      "bytes": 13478,
+      "mode": "0o644",
+      "sha256": "67b6f6a8d2ad683fd7523cc3b0766503153f5c3147765a8c35fe8ef87bb480f4"
+    },
+    "inputs/00-commands.json.observed.txt": {
+      "bytes": 35792,
+      "mode": "0o644",
+      "sha256": "ef7d5889c4cdb6263d746d3d1ad698429d6a96d5c0dbd1e4d6764819b060ba8f"
+    },
+    "inputs/01-gate.py.observed.txt": {
+      "bytes": 12599,
+      "mode": "0o644",
+      "sha256": "6260f0878ca0bb30cc5b6de69d8357751fd09276eec7f90142f301ac87206a9f"
+    },
+    "inputs/02-packages.py.observed.txt": {
+      "bytes": 8760,
+      "mode": "0o644",
+      "sha256": "162e4f04ffe9aeffe886b194c7ed41241c6ce3cf37e9c93f92fec0969095aea9"
+    },
+    "inputs/03-run.py.observed.txt": {
+      "bytes": 5357,
+      "mode": "0o644",
+      "sha256": "16049341d6d810ea5c46a88220da30f9a04e436ee7fea0061cc26e58ba76ba70"
+    },
+    "inputs/04-audit.py.observed.txt": {
+      "bytes": 46796,
+      "mode": "0o644",
+      "sha256": "1892c8b723126ea69d33053ce0ec6e2461e299dbf9e8b886be35905c132412a2"
+    },
+    "inputs/05-selection.json.observed.txt": {
+      "bytes": 8213,
+      "mode": "0o644",
+      "sha256": "ec7c2e9cd4ef481a4e97fb7e78ffcc0a1575fdae97aa4259b66e8658ef54fa8b"
+    },
+    "inputs/06-report-schemas.json.observed.txt": {
+      "bytes": 149689,
+      "mode": "0o644",
+      "sha256": "01b4407a1f4a8196fba282d4d269b487f3e0e5040a6c4ae6ae54e87a94fc509c"
+    },
+    "inputs/07-audit-expectations.json.observed.txt": {
+      "bytes": 709,
+      "mode": "0o644",
+      "sha256": "b1b209eb563b5b02b27d9612d04255014af6a9e2974d8f2016286b938ce652b0"
+    },
+    "inputs/08-source-binding.json.observed.txt": {
+      "bytes": 94380,
+      "mode": "0o644",
+      "sha256": "e0252cb07ac1896fac0faab395e10e50ea58eac263b6d33ee224e378413c2d68"
+    },
+    "inputs/09-implementation-hashes.json.observed.txt": {
+      "bytes": 11860,
+      "mode": "0o644",
+      "sha256": "c2a7d11deb63169052434c3b45c62bd30664009d4ea6a3e9b42c4cd85bd649a6"
+    },
+    "inputs/10-execution-gate.json.observed.txt": {
+      "bytes": 3601,
+      "mode": "0o644",
+      "sha256": "f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8"
+    },
+    "inputs/11-build-artifacts.json.observed.txt": {
+      "bytes": 58567,
+      "mode": "0o644",
+      "sha256": "8a0241044612922b2801e6b5d1670919d37671d8191f567e5d36807a223ed56a"
+    },
+    "inputs/12-workspace-tools.json.observed.txt": {
+      "bytes": 4402,
+      "mode": "0o644",
+      "sha256": "69713067eef866d61e8e9e3c49d695bd2d534d1cb7d0913c977da4f3f7d2cdb0"
+    },
+    "inputs/13-execution-manifest.json.observed.txt": {
+      "bytes": 17063,
+      "mode": "0o644",
+      "sha256": "fca6f5f586215109fc28bf3837a95df0e363a67caad4023932cc2ba688e6a872"
+    },
+    "inputs/14-root-disposition.proposed.json.observed.txt": {
+      "bytes": 19454,
+      "mode": "0o644",
+      "sha256": "40fef117923935d76a39a63ed605edefd62ad991d482e4e8989abb68f117dc65"
+    },
+    "inputs/15-g09-service-source.A.txt.observed.txt": {
+      "bytes": 15319,
+      "mode": "0o644",
+      "sha256": "71cfaf50c9caaf9f9a9a42c747e24da4e87fc8aaa8f3356263e4830cbbf62da8"
+    },
+    "inputs/16-activation.json.observed.txt": {
+      "bytes": 6619,
+      "mode": "0o644",
+      "sha256": "a55b8050040cefd879505a3e45005da5777eecc3c634734c0a69d25ae38038cb"
+    },
+    "inputs/17-acceptance.json.observed.txt": {
+      "bytes": 5885,
+      "mode": "0o644",
+      "sha256": "c295b60b555240ab8c95d1ca1367de604e1e482dc350e15d2e39193ac8ff10c8"
+    },
+    "inputs/18-design.md.observed.txt": {
+      "bytes": 453114,
+      "mode": "0o644",
+      "sha256": "34f08408227d1df86845fb44160a2256cf3ad303028488f6213a27469195da69"
+    },
+    "inputs/19-package.json.observed.txt": {
+      "bytes": 1337,
+      "mode": "0o644",
+      "sha256": "f081baa3202b4815663d360d3ad1608206efe1b023086a4c8feff4d7fb97d8d0"
+    },
+    "inputs/20-pnpm-lock.yaml.observed.txt": {
+      "bytes": 38851,
+      "mode": "0o644",
+      "sha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d"
+    },
+    "inputs/21-transactional-schema-installed.test.ts.observed.txt": {
+      "bytes": 39433,
+      "mode": "0o644",
+      "sha256": "63b5892abebe9ef6e9688dd05eae5c4fbe18ede0698caad5b9f7ec2213c1bd7a"
+    },
+    "inputs/22-transactional-execution-binding.ts.observed.txt": {
+      "bytes": 7378,
+      "mode": "0o644",
+      "sha256": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89"
+    },
+    "inputs/23-transaction-installed-observation.mjs.observed.txt": {
+      "bytes": 3264,
+      "mode": "0o644",
+      "sha256": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b"
+    },
+    "inputs/24-installed-payload.ts.observed.txt": {
+      "bytes": 3594,
+      "mode": "0o644",
+      "sha256": "d1095a8fa641c77ddef32b1d432273572f46b14499c526dbb0a85cfde82113f9"
+    },
+    "inputs/25-transaction-installed-process.ts.observed.txt": {
+      "bytes": 2630,
+      "mode": "0o644",
+      "sha256": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7"
+    },
+    "inputs/26-check-dependency-boundaries.mjs.observed.txt": {
+      "bytes": 6666,
+      "mode": "0o644",
+      "sha256": "31a3c2c7f4aaf16fd9fa102831e4068455d7b622e605d9a65c15b99178f295e4"
+    },
+    "inputs/27-e2e-ready.test.mjs.observed.txt": {
+      "bytes": 9848,
+      "mode": "0o644",
+      "sha256": "0e80b8d05641386c4aa355fc80f865654304c716f95ddb9d1d00110795a8beaa"
+    },
+    "inputs/28-smoke-executables.mjs.observed.txt": {
+      "bytes": 43245,
+      "mode": "0o644",
+      "sha256": "adeaea6e334f8fb6f7af5d09f0cb7ee0b729864affc45cb6baf84a95f1d4d9ae"
+    },
+    "inputs/29-read-cohort-evidence.mjs.observed.txt": {
+      "bytes": 15170,
+      "mode": "0o644",
+      "sha256": "451d77cf880329238f044e3f0e92d681d6493c509fcb3b050f6e292ce3f2a21e"
+    },
+    "inventory-authoring-checker-observation-1.json": {
+      "bytes": 848,
+      "mode": "0o644",
+      "sha256": "38c86507e35903255f3d1fe007d37ca5ae7e05dba60f7ed3ce4c16098e59ed64"
+    },
+    "later17-stage-table.md": {
+      "bytes": 15967,
+      "mode": "0o644",
+      "sha256": "6953334e72969a66a9b79b040aa04d25fb9229025353a181b9b1ffd6937ffa9e"
+    },
+    "original-later17-stage-table.json": {
+      "bytes": 81267,
+      "mode": "0o644",
+      "sha256": "5846bfcea8a3d8ac28c631a21b2d83320c4d878d6b4a9b845bd7f6dee9596bcc"
+    },
+    "report.md": {
+      "bytes": 4911,
+      "mode": "0o644",
+      "sha256": "768aec192a001cdd12184dcdf9fadd24aba6143932ac457c4e6effcdad27ae11"
+    },
+    "source-observations.json": {
+      "bytes": 9110,
+      "mode": "0o644",
+      "sha256": "11f5ac5bceb47cbafbf6063dfbd6224c38c673fc270e8520c2feaa339ffea633"
+    },
+    "unresolved-bindings.json": {
+      "bytes": 2448,
+      "mode": "0o644",
+      "sha256": "c28e8787e38e246104b02554bd9e5094ee2bed8de5a7df2f1a6d13ce57659ee0"
+    }
+  },
+  "independentReviewPending": true,
+  "indexedFiles": 43,
+  "newExecutableControlsCellsOrScripts": 0,
+  "physicalFiles": 44,
+  "runtimeAuthority": false,
+  "selfExcluded": [
+    "index.json"
+  ]
+}
