@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+ONE actual workspace-install A/B/C COMPLETE functions3076 after durable pnpm final disposition4ac798d6: normalized actualterminals500ac0/fea40e/c5b630 all0, offline frozenlock install reused61/downloaded0/added61, innerexit0/source1eca unchanged4.141560291s/common9.283741875<115. [Frozen installation evidence9](write-profile-G09-validation5-workspace-install-root-tool-evidence-2/report.md)+root8/inner4 retained; no retry/secondcensus. Full actual native+ROOT audit/disposition/durability REQUIRED before bind-workspace-tools. Originalprovisionalfalse/pending retained, rawtoolreceiptsUNRETAINED/no cleanup/globalclaim. Fresh actual11toolmap stillUNRESOLVED, next31stagesunattempted/later30unreleased/fullWriteOPEN.
+
+
 Pnpm-version actual audit COMPLETE: independent native51 accepted/no findings, ROOT verified all51/38origins/2531currentledger plus fullownactualinspection71c1377b. [ROOT final disposition](write-profile-G09-validation5-pnpm-version-root-final-disposition-1/disposition.json) acceptsONEversioncapture only,11.20.0+LF/common8.588768958<115/actualterminals0/finite3PID3PGIDabsence. Scratch retained with compilecache, no emptiness predicate or cleanup/globalclaim; rawtoolreceiptsUNRETAINED. Workspace-install ONE exactreviewed A/B/C conditionally released ONLY AFTER complete native51+ROOT3+soleplan raw/Gitmodes/criticalreadback. Never repeat Node or pnpm. Allotherstages separateactualauditbarriers/later30unreleased/fullWriteOPEN.
 
 
