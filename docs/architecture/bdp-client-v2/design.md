@@ -8,6 +8,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 <!-- VICKIE-CURRENT-START -->
 
+[Package4 full ROOT control acceptance](write-profile-G09-validation5-package4-root-final-acceptance-1/acceptance.json): DIFFERENT native116 index0b332f9f/closure2351296d accepted/no findings; ROOT independently verified116/102origins7752currentledger plus complete source427/342origins6892refs/12cells52LF/15genuinepairs/1171typedpins(1161strict+10exactqualifications)/34295retainedmaps(34292strict+3exactqualifications)/427node9055edge acyclic full raw graph. Own sourceb946e147/raw752988b3; author/reviewer/ROOT DATAchecker histories and original sourceacceptedfalse/pending preserved. Conditional write-release ONLY2gatefields/prefix17->21; COMPLETE current+prior composite raw/Gitmodes/critical durability required BEFORE one exactlivef16->34 write; separateactivationpublication required BEFORE ONEprepare-package-directory. No actual package commands run; first17 neverrepeat/later13 closed. FullWriteOPEN/pinnedsource1eca/basea562/contract677/no incomingsemantics or main request.
+
+
 [Package4 CLOSED control SOURCE427](write-profile-G09-validation5-package4-closed-control-source-1/report.md) FROZEN after full105readbackf87ff. Indexc89de2f1/closure121395bf originalacceptedfalse preserved; candidate34c333aa/bridge50f88b42/manifest26f834f0,342 exactorigins6892currentrefs/12cells52wholeLFchanges15genuinepairs. Only2candidatefields/prefix21,other24same/source679/helper105/P189run78/build476/tools11 unchanged. Authorgraph427nodes9055edges/acyclic and originaltypedpass1105=1095current+10exactqualifications retained; final exhaustive recomputation required by DIFFERENTnative/ROOT. Source428raw/Gitmodes/criticaldurability required before full DIFFERENTnative A review; authorD cannotselfaccept. No livewrite/runtime/actualpackage/wholeWrite release; later17closed.
 
 
