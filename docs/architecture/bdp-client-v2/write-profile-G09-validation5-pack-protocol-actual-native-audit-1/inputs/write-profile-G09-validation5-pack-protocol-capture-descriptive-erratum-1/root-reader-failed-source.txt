@@ -1,0 +1,111 @@
+from pathlib import Path
+import json,hashlib,stat,subprocess
+L=Path('/Users/dbox/repos/wt/vickie/bdp-integration-logs');C=Path('/Users/dbox/repos/wt/vickie/bdp-client-design/checkout');D=C/'docs/architecture/bdp-client-v2';P=L/'write-profile-G09-validation-preparation-5';S=L/'write-profile-G09-validation5-package4-closed-control-source-1';E=L/'write-profile-G09-validation5-pack-protocol-root-tool-evidence-1';R=L/'write-profile-G09-validation5-root-first4-dispatch-1/pack-protocol';stage='pack-protocol'
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def strict(p):
+ def pairs(v):
+  d=dict(v);assert len(d)==len(v);return d
+ return json.loads(p.read_text(),object_pairs_hook=pairs,parse_constant=lambda v:(_ for _ in ()).throw(ValueError(v)))
+def meta(p):return {'bytes':p.stat().st_size,'sha256':sha(p),'mode':oct(stat.S_IMODE(p.stat().st_mode))}
+eix=strict(E/'index.json');assert len(eix['files'])==8
+for n,m in eix['files'].items():assert meta(E/n)==m and meta(E/n)==meta(D/E.name/n),n
+b=strict(E/'binding.json')
+for n,m in b['actualRawFiles'].items():assert meta(Path(n))==m and meta(Path(n))==meta(D/Path(n).relative_to(L)),n
+state=strict(E/'dispatch-state.json');assert state['completedPhases']==['A','B','C'] and set(state['toolRecords'])=={'A','B','C'} and state['status']=='COMPLETE_CAPTURE_PENDING_INDEPENDENT_AUDIT'
+terminals={}
+for phase,records in state['toolRecords'].items():
+ final=records[-1];assert final['exit_code']==0 and not final.get('session_id');terminals[phase]=final['chunk_id']
+ for earlier in records[:-1]:assert earlier.get('session_id')==records[0]['session_id'] and 'exit_code' not in earlier
+ if phase!='A':assert len(records)==1
+assert [terminals[p] for p in 'ABC']==['f2e587','63fea1','92f1af']
+assert len(state['toolRecords']['A'])==1
+for phase in 'ABC':
+ baseline=(S/f'cells/{stage}.{phase}.txt').read_text();actual=(E/f'actual-{phase}.txt').read_text();assert actual==state['issuedSources'][phase]
+ if phase=='A':assert actual==baseline
+ else:
+  key='ACTUAL_A_TOOL_ID' if phase=='B' else 'ACTUAL_B_TOOL_ID';token='UNRESOLVED_ACTUAL_TOOL_ID' if phase=='B' else 'UNRESOLVED_ACTUAL_B_TOOL_ID';tid=terminals['A' if phase=='B' else 'B'];old=f"{key} = '{token}'\n";new=f"{key} = '{tid}'\n";assert baseline.count(old)==1 and baseline.replace(old,new)==actual and actual.replace(new,old)==baseline
+col=strict(R/'collector-provisional.json');cen=strict(R/'postterminal-census.json');wit=strict(R/'final-clock-witness.json');origin=strict(R/'origin.json');inner=strict(P/'run'/f'{stage}.exit.json')
+assert type(inner['exit']) is int and inner['exit']==0 and inner['accepted'] is True and inner['sourceUnchanged'] is True and inner['forcedCleanup'] is False
+assert inner['errors']==inner['remainingProcesses']==inner['runtimeDirectoriesStillPresent']==[]
+assert inner==strict(R/f'{stage}.stdout')
+assert sha(P/'run'/f'{stage}.log')==inner['logSha256']=='7063c8332fb9b67af18223c81d339466aebb796e28170ca61a55bccf833d06a8'
+assert col['accepted'] is False and col['rawExit']==0 and col['failure'] is None and not col['forcedTermination'] and col['pipeCloseSucceeded']
+streams=[]
+for record in [col,cen]:
+ for s in record['streams']:
+  p=Path(s['path']);st=p.stat();f=s['fileIdentity'];raw=p.read_bytes()
+  assert (st.st_dev,st.st_ino,st.st_mode,st.st_uid,st.st_size)==(f['device'],f['inode'],f['mode'],f['uid'],f['bytes'])
+  assert stat.S_IMODE(st.st_mode)==0o600 and st.st_uid==501
+  assert s['actualEOF'] and s['rawDescriptorClosed'] and s['hashKnown'] and s['writeOrCloseError'] is None
+  assert s['receivedBytes']==s['savedBytes']==s['hashedPrefixBytes']==f['bytes']==len(raw)
+  assert sha(p)==s['fullStreamSha256']==s['savedPrefixSha256'] and s['fullStreamState']=='COMPLETE_ACTUAL_CAPTURE'
+  streams.append({'path':str(p),'bytes':len(raw),'sha256':sha(p),'actual0600EOFCloseCountsHash':True})
+samples=[json.loads(v) for v in (P/'run'/f'{stage}.processes.jsonl').read_text().splitlines()];rows=[r for s in samples for r in s['group']]
+pids={col['collectorPid'],col['creationPid'],*inner['sampledPids'],*(int(r[0]) for r in rows)};pgids={col['collectorPgid'],col['creationPgid'],*(int(r[2]) for r in rows)}
+assert sorted(pids)==cen['taskPIDs']==col['knownTaskRegistry']['pids'] and sorted(pgids)==cen['taskPGIDs']==col['knownTaskRegistry']['pgids']
+allrows=[];matching=[]
+for line in (R/'postterminal-census.stdout').read_text().splitlines():
+ f=line.split(None,4);assert len(f)==5;pid,ppid,pgid=map(int,f[:3]);allrows.append(f)
+ if pid in pids or pgid in pgids:matching.append(line)
+assert not matching and cen['matchingTaskRows']==[] and cen['probeRawExit']==0 and cen['probeBothEOF'] and cen['probeDirectReaped'] and cen['failure'] is None
+assert cen['phaseAToolId']==terminals['A'] and wit['phaseBActualToolId']==terminals['B']
+assert origin['originMonotonic']==col['originMonotonic']==cen['rootOriginMonotonic']==wit['rootOriginMonotonic']
+elapsed=wit['postTerminalWitnessMonotonic']-origin['originMonotonic'];assert 0<elapsed<115 and elapsed==wit['completedInvocationAndObservationUpperBoundSeconds'] and wit['strictUnder115']
+source=strict(P/'source-binding.json');W=Path(source['worktree']);assert len(source['trackedSourceFiles'])==679
+for n,h in source['trackedSourceFiles'].items():assert sha(W/n)==h,n
+impl=strict(P/'implementation-hashes.json');assert len(impl['files'])==105
+for n,h in impl['files'].items():assert sha(P/n)==h,n
+active='34c333aa5b688d7abe944363b558e0bd431dd512ec84a24f8e0440d9d2bdf7ea';f16='f16d895808b965918bade0cbe1e7552d828423b96930485ec34f74f051e884c8';live=P/'execution-gate.json';assert sha(live)==active
+prep=strict(P/'preparation-index.json');assert len(prep['files'])==110
+for n,m in prep['files'].items():
+ if n=='execution-gate.json':assert m['sha256']=='4a87b45d714a6bd28a94fd50a389defe4b5582dc5f42ec56fd827c7cf5b01e76'
+ else:assert meta(P/n)==m,n
+refs={}
+for stem,count,original,project in [('write-profile-G09-validation5-root-proposed-authority-1',2206,'4a87b45d714a6bd28a94fd50a389defe4b5582dc5f42ec56fd827c7cf5b01e76',1),('write-profile-G09-validation5-root-fixed-protocol-preparation-1',2082,'4a87b45d714a6bd28a94fd50a389defe4b5582dc5f42ec56fd827c7cf5b01e76',1),('write-profile-G09-validation5-fixed-text-proof-correction-1',2207,'4a87b45d714a6bd28a94fd50a389defe4b5582dc5f42ec56fd827c7cf5b01e76',1),('write-profile-G09-validation-preparation-5',1857,None,0),('write-profile-G09-validation5-next5-closed-control-source-1',2314,'ad5b647e6b2f1aba93981d1a85fdb7ef0930062418012cf4acf90073de202919',1),('write-profile-G09-validation5-source-pairs-closed-control-source-1',3510,'18a440d47c2b4e7aef7e46afc73f627a27d13e51cae8b990cd2feade33c774a4',1),('write-profile-G09-validation5-package4-closed-control-source-1',6892,f16,1)]:
+ table=strict(L/stem/'reference-pins.json');assert len(table)==count;changes=[]
+ for n,h in table.items():
+  current=sha(Path(n))
+  if current!=h:assert n==str(live) and h==original and current==active;changes.append(n)
+ assert len(changes)==project;refs[stem]={'total':count,'soleExactLiveGateHistoricalPhase':changes,'originalGate':original,'currentGate':active}
+ledgerfacts={}
+for file,count,old in [(L/'write-profile-G09-validation5-source-pairs-control-native-precision-1/current-input-ledger.json',3743,'18a440d47c2b4e7aef7e46afc73f627a27d13e51cae8b990cd2feade33c774a4'),(L/'write-profile-G09-validation5-package4-control-native-precision-1/input-ledger.json',7752,f16),(L/'write-profile-G09-validation5-audit-schema-confinement-source-actual-native-audit-1/input-ledger.json',6548,f16)]:
+ table=strict(file);assert len(table)==count;changes=[]
+ for n,m in table.items():
+  actual=meta(Path(n));expected={k:m[k] for k in ['bytes','mode','sha256']}
+  if actual!=expected:
+   assert n==str(live) and m['sha256']==old and actual['sha256']==active and actual['bytes']==3693 and actual['mode']==m['mode']=='0o644';changes.append(n)
+ assert changes==[str(live)];ledgerfacts[str(file)]={'total':count,'onlySameLiveGateExactPhase':changes,'originalGate':old,'currentGate':active}
+toolmap=strict(P/'run/workspace-tools.json');assert len(toolmap['tools'])==11
+for n,m in toolmap['tools'].items():assert str(Path(n).resolve(strict=True))==m['realpath'] and sha(Path(n))==m['sha256']
+assert toolmap['sourceIdentity']==source['sourceIdentity'] and toolmap['sourceLockSha256']==sha(W/'pnpm-lock.yaml') and toolmap['installExitSha256']==sha(P/'run/workspace-install.exit.json') and toolmap['installLogSha256']==sha(P/'run/workspace-install.log')
+build=strict(P/'run/build-artifacts.json');assert len(build['artifacts'])==476
+for n,h in build['artifacts'].items():assert sha(W/n)==h,n
+pfiles=[p for p in P.rglob('*') if p.is_file()];runfiles=[p for p in (P/'run').rglob('*') if p.is_file()];assert len(pfiles)==198 and len(runfiles)==87
+pk=P/'run/packages';assert pk.is_dir() and not pk.is_symlink() and sorted(p.name for p in pk.iterdir())==['bdp-protocol-0.0.0.tgz']
+assert sorted(p.name for p in (P/'run').iterdir() if p.is_dir())==['packages']
+assert not list((P/'run').glob('pack-server.*')) and not list((P/'run').glob('verify-archives.*'))
+# Independent static protocol archive read; no product/helper/runtime invocation.
+import tarfile
+archive=pk/'bdp-protocol-0.0.0.tgz';assert sha(archive)=='4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227' and archive.stat().st_size==68665
+members={};root=W/'packages/protocol'
+with tarfile.open(archive,'r:gz') as tar:
+ for member in tar.getmembers():
+  assert member.isfile() and member.name.startswith('package/')
+  rel=member.name[len('package/'):];assert '..' not in Path(rel).parts and not Path(rel).is_absolute() and rel not in members
+  raw=tar.extractfile(member).read();origin=W/'LICENSE' if rel=='LICENSE' else root/rel
+  if rel=='package.json':assert json.loads(raw)==strict(origin)
+  else:assert raw==origin.read_bytes()
+  members[rel]={'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest(),'source':str(origin),'sourceSha256':sha(origin)}
+required={'package.json','LICENSE'}
+for sub in ['dist','schemas']:required.update(p.relative_to(root).as_posix() for p in (root/sub).rglob('*') if p.is_file())
+assert set(members)==required
+archiveInspection={'path':str(archive),'sha256':sha(archive),'bytes':archive.stat().st_size,'members':members,'memberCount':len(members),'allSafeRegularUniquePathsFullSourceBuildBytesExact':True,'actualCombinedVerifyArchivesStageNotYetRun':True}
+# Previous actual directory native current ledger remains strict after adding new outputs.
+priorfile=L/'write-profile-G09-validation5-prepare-package-directory-actual-native-audit-1/input-ledger.json';priorledger=strict(priorfile);assert len(priorledger)==7949
+for n,m in priorledger.items():assert meta(Path(n))=={k:m[k] for k in ['bytes','mode','sha256']},n
+def git(args):return subprocess.check_output(['git',*args],cwd=W)
+assert git(['rev-parse','HEAD']).decode().strip()==source['head'] and git(['rev-parse','HEAD^{tree}']).decode().strip()==source['tree']
+diff=hashlib.sha256(git(['diff','--binary'])).hexdigest();assert diff==source['binaryDiffSha256'];status=git(['status','--porcelain=v1','--untracked-files=all']).decode().splitlines();assert len(status)==10 and all(v.startswith(' M ') for v in status)
+scratch=Path(inner['temporaryDirectory'])
+out={'scope':'ONE_ACTUAL_PROTOCOL_PACKAGE_CAPTURE_FULL_ROOT_MECHANICS_AND_ARCHIVE_ONLY','stage':stage,'actualTerminalTools':terminals,'AExactOneActualTerminalF2e587NoPolls':True,'issuedAExactBCOnlyWholeLFActualIDsFullInverse':True,'evidence9AndRaw13FullBytesModesMirrorsExact':True,'fullStreams':streams,'allCensusRowsVerified':len(allrows),'allInnerSamplesVerified':len(samples),'recordedTaskPIDs':sorted(pids),'recordedTaskPGIDs':sorted(pgids),'allRecordedTaskRowsAbsent':True,'probeActualDirectReaped':True,'commonClockSeconds':elapsed,'strictUnder115':True,'innerElapsedSeconds':inner['elapsedSeconds'],'innerExit0AcceptedSourceUnchanged':True,'sourceIdentity':source['sourceIdentity'],'source679Impl105Other110Helper198Run87Build476Tools11GitLockExact':True,'allReferenceDomains':refs,'allThreeNativeLedgers':ledgerfacts,'actualOutputPackagesDirectory':{'path':str(pk),'mode':oct(stat.S_IMODE(pk.stat().st_mode)),'oneProtocolArchiveAtStaticObservation':True,'archiveInspection':archiveInspection},'actualFullLog':meta(P/'run'/f'{stage}.log'),'scratch':{'path':str(scratch),'existsAtStaticRead':scratch.is_dir(),'entriesAtStaticRead':[p.name for p in scratch.iterdir()] if scratch.is_dir() else None,'cleanupPerformed':False},'finiteRecordedSetOnlyNoGlobalOrObserverSelfAbsenceClaim':True,'wireReceiptsAndFullEnvironment':'UNRETAINED/source-attributed normalized records','archiveConsumerInstalledProofUnknown':True,'nextStageReleased':False,'qualityPass':False,'nativeAudit':'PENDING','rootFinalAcceptance':False}
+OUT=L/'root-G09-validation5-pack-protocol-independent-actual-inspection-1.json';assert not OUT.exists();OUT.write_text(json.dumps(out,indent=2,sort_keys=True)+'\n');print(json.dumps({'inspection':str(OUT),'sha256':sha(OUT),'censusRows':len(allrows),'innerSamples':len(samples),'pids':len(pids),'pgids':len(pgids),'clock':elapsed,'runtimeAction':False}))
