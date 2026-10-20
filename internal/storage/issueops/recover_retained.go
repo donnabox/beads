@@ -45,7 +45,9 @@ func RecoverRetainedIssueInTx(ctx context.Context, tx *sql.Tx, accepted *types.I
 	}
 	// This is retained admission evidence, never mintCreate's automatic admission
 	// of a previously legacy row. The caller refused a NULL generation first.
-	if _, err := tx.ExecContext(ctx, `UPDATE issues SET participation_generation=? WHERE id=?`, generation, next.ID); err != nil {
+	// This write is still private to recovery; its final token is read below
+	// before any result or retained revision is published.
+	if _, err := tx.ExecContext(ctx, `UPDATE issues SET participation_generation=?, row_lock=? WHERE id=?`, generation, freshRowLock(), next.ID); err != nil {
 		return err
 	}
 	stored, err := GetIssueInTx(ctx, tx, next.ID)
