@@ -571,6 +571,7 @@ func TestHistoricalMemoryAcquisitionBudget(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
 			ctx, _, s := memoryDeleteStore(t, engine)
+			ctx = currentReadBudgetContext(t, ctx)
 			original, err := s.Create(ctx, CreateRequest{Path: "beads/budget", Title: "Budget", Body: strings.Repeat("a", 6<<20)})
 			if err != nil {
 				t.Fatal(err)
@@ -618,6 +619,7 @@ func TestHistoricalMemoryTerminalDescriptorBudget(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
 			ctx, _, s := memoryDeleteStore(t, engine)
+			ctx = currentReadBudgetContext(t, ctx)
 			if _, err := s.Create(ctx, CreateRequest{Path: "beads/descriptor", Title: "Descriptor"}); err != nil {
 				t.Fatal(err)
 			}
@@ -680,6 +682,7 @@ func TestHistoricalMemoryUpdateCumulativeAcquisitionBudget(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
 			ctx, _, s := memoryDeleteStore(t, engine)
+			ctx = currentReadBudgetContext(t, ctx)
 			first, err := s.Create(ctx, CreateRequest{Path: "beads/budget", Title: "Budget", Body: strings.Repeat("a", 6<<20)})
 			if err != nil {
 				t.Fatal(err)

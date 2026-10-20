@@ -268,6 +268,7 @@ func TestHistoricalIssueCumulativeAcquisitionBudget(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
 			ctx, _, s := memoryDeleteStore(t, engine)
+			ctx = currentReadBudgetContext(t, ctx)
 			request := plainIssue("Large retained source")
 			request.Issue.Description = strings.Repeat("s", 7<<20)
 			source, err := s.CreateIssue(ctx, "beads/large", request)

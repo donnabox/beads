@@ -570,6 +570,7 @@ func TestHistoricalIssueRecoveryCumulativeInputs(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
 			ctx, _, s := memoryDeleteStore(t, engine)
+			ctx = currentReadBudgetContext(t, ctx)
 			request := plainIssue("Large historical source")
 			request.Issue.Description = strings.Repeat("s", 10<<20)
 			source, err := s.CreateIssue(ctx, "beads/large", request)
@@ -623,6 +624,7 @@ func TestHistoricalIssueHistoryDescriptorCumulativeBudget(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
 			ctx, _, s := memoryDeleteStore(t, engine)
+			ctx = currentReadBudgetContext(t, ctx)
 			if _, err := s.CreateIssue(ctx, "beads/history", plainIssue("History")); err != nil {
 				t.Fatal(err)
 			}
