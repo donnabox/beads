@@ -89,7 +89,9 @@ func TestEmbeddedBootstrapCreateReopen(t *testing.T) {
 	wrong.Binding.ScopeURL = "https://example.test/wrong/"
 	// Recheck within the mutation as well as the initial open.
 	s.options = wrong
-	if _, err = s.Create(ctx, CreateRequest{Title: "Wrong", Path: "beads/wrong"}); !errors.Is(err, ErrInvalidStore) {
+	// Keep the requested Type installed so catalog admission does not mask
+	// the transaction's independent persisted-binding guard.
+	if _, err = s.Create(ctx, CreateRequest{Title: "Wrong", Path: "beads/wrong", TypeURL: MemoryTypeURL(o.Binding.ScopeURL)}); !errors.Is(err, ErrInvalidStore) {
 		t.Fatalf("wrong binding mutation: %v", err)
 	}
 	s.options = o
