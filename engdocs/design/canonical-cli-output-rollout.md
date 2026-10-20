@@ -1,7 +1,7 @@
 # Canonical CLI output implementation plan
 
-Status: design ready for review, October 19, 2026. The implementation sequence
-is proposed; the first output slice is queued, not underway or qualified. The source contract is
+Status: design ready for review, October 19, 2026. The isolated common-output
+foundation is underway; command adapters and qualification remain pending. The source contract is
 [selection-and-output.md](../../docs/reference/bdp/cli/selection-and-output.md).
 
 ## Scope
@@ -271,7 +271,7 @@ must never carry migration hints mixed with result data.
 
 ## Validation and ownership
 
-Implement O01–O16 from the spec through shared-contract tests and a small set of
+Implement O01–O17 from the spec through shared-contract tests and a small set of
 real command journeys. A flag-help snapshot is not runtime evidence.
 
 Required journeys include complete/non-Issue/owned-Link Resource reads; missing
@@ -291,11 +291,18 @@ contract; Melinda owns query semantics; Trish owns shared BDP/Types contracts;
 Iris owns interchange. The separate symmetric-edit work and BDP empty-array PR
 retain their existing review and ordering holds; this plan does not release them.
 
-No implementation or runtime test run is included with this plan. Janet confirmed
-that the first output pair has no assigned writer, qualified baseline or source
-reservation yet. Its handshake follows PR114 landing, then the Type CLI, then
-the symmetric Link CLI. The first assignment should be the shared Resource-output
-foundation plus both show adapters, followed by the collection/JSONL slice.
+This remains a documentation-only PR. After Donna approved implementation,
+Janet assigned Cleo a bounded new `internal/clioutput/` package on integration
+baseline `5b8cdefe055b8f08cf9eb385e946396c1b5799d7`. Foundation source and pure
+tests are underway: descriptor-driven masks and single-Resource JSON/detail/raw/
+error rendering, with no store/transport reads. The baseline is not qualification
+of the new output contract. Existing command files, BUILD/module metadata,
+formatting and runtime tests remain Janet's responsibility.
+
+The `show`/`link show` command-wiring handoff still follows PR114 and the active
+Type/symmetric Link CLI handshakes. The foundation does not make new flags
+available or establish provider/command conformance. Exact schema/cutover review
+questions and public adapter corpus checks remain gates before wiring.
 
 Trish's [bounded BDP review](https://github.com/donnabox/agent-coordination/blob/7fbe9e41413198b3af9ed04ddae6a82adb0e7be1/context/trish/output-contract-review-20261019.md)
 confirms that client-side projection and framing need no new protocol envelope.
