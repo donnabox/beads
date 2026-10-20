@@ -51,7 +51,7 @@ func cloneProtection(p *Protection, active map[*Protection]bool) (*Protection, e
 func project(raw json.RawMessage, context *Protection, include, omit *mask, full, root bool, path string) (json.RawMessage, bool, error) {
 	if omit.selectsAll() {
 		if root {
-			return nil, false, fmt.Errorf("cannot omit the Resource root")
+			return nil, false, fmt.Errorf("%w: cannot omit the Resource root", ErrInvalidProjection)
 		}
 		return nil, false, nil
 	}
@@ -101,7 +101,13 @@ func projectObject(raw json.RawMessage, context *Protection, include, omit *mask
 			out[key] = value
 		}
 	}
-	if !full && !root && len(out) == 0 {
+	// A selected embedded Resource remains represented even when an omit mask
+	// removes its only selected field. Restore/check its mandatory context below;
+	// pruning first would turn a forbidden identity omission into silent removal
+	// of the whole Resource. An include path absent from the original is still
+	// a no-op, and whole-member/element omissions were already handled by project.
+	selectedContext := context != nil && len(context.Required) != 0 && selectsExistingValue(raw, include)
+	if !full && !root && len(out) == 0 && !selectedContext {
 		return nil, false, nil
 	}
 	if context != nil {
@@ -113,13 +119,13 @@ func projectObject(raw json.RawMessage, context *Protection, include, omit *mask
 			if !exists {
 				return nil, false, fmt.Errorf("missing mandatory context %q", pointerChild(path, key))
 			}
-			if removesValue(value, omit.child(key)) {
-				return nil, false, fmt.Errorf("cannot omit mandatory context %q", pointerChild(path, key))
+			if selectsExistingValue(value, omit.child(key)) {
+				return nil, false, fmt.Errorf("%w: cannot omit mandatory context %q", ErrInvalidProjection, pointerChild(path, key))
 			}
 			out[key] = value
 		}
 	}
-	encoded, err := json.Marshal(out)
+	encoded, err := marshalValue(out)
 	return encoded, true, err
 }
 
@@ -152,13 +158,13 @@ func projectArray(raw json.RawMessage, context *Protection, include, omit *mask,
 	if !full && len(out) == 0 {
 		return nil, false, nil
 	}
-	encoded, err := json.Marshal(out)
+	encoded, err := marshalValue(out)
 	return encoded, true, err
 }
 
-// removesValue detects only paths present in the original value. An absent path
-// remains a no-op, including inside an otherwise protected member.
-func removesValue(raw json.RawMessage, omit *mask) bool {
+// selectsExistingValue detects only paths present in the original value. An
+// absent path remains a no-op, including inside an otherwise protected member.
+func selectsExistingValue(raw json.RawMessage, omit *mask) bool {
 	if omit == nil {
 		return false
 	}
@@ -173,7 +179,7 @@ func removesValue(raw json.RawMessage, omit *mask) bool {
 			return false // Input JSON was validated before projection.
 		}
 		for key, value := range members {
-			if removesValue(value, omit.child(key)) {
+			if selectsExistingValue(value, omit.child(key)) {
 				return true
 			}
 		}
@@ -183,7 +189,7 @@ func removesValue(raw json.RawMessage, omit *mask) bool {
 			return false
 		}
 		for i, value := range items {
-			if removesValue(value, omit.child(strconv.Itoa(i))) {
+			if selectsExistingValue(value, omit.child(strconv.Itoa(i))) {
 				return true
 			}
 		}

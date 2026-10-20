@@ -3,10 +3,18 @@ package clioutput
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sort"
 	"strings"
 )
+
+// SchemaVersion versions the CLI envelope and CLI-derived result shapes.
+const SchemaVersion = 2
+
+// ErrInvalidProjection distinguishes a user mask refusal from invalid provider
+// data or an adapter descriptor bug. It may be discovered after payload read.
+var ErrInvalidProjection = errors.New("invalid projection")
 
 // Descriptor identifies the payload contract actually supplied by the adapter.
 // It must not name a newer BDP contract while emitting an older DTO. Protection
@@ -14,6 +22,10 @@ import (
 type Descriptor struct {
 	BDPSpec    string
 	Protection *Protection
+	// ResultKind identifies the CLI payload shape governed by schema_version.
+	// Empty means resource. BDPSpec independently identifies contained BDP values;
+	// it does not claim that a CLI-derived comparison is a BDP operation result.
+	ResultKind string
 	// Expandable lists JSON Pointer subtrees that admit nested field masks.
 	// Whole root members are addressable by default; mandatory context still
 	// cannot be removed. These are descriptor paths, not user wildcards.
@@ -35,6 +47,7 @@ type Options struct {
 // retain responsibility for legacy-mode dispatch, provider errors and IO errors.
 type Renderer struct {
 	bdpSpec    string
+	resultKind string
 	protection *Protection
 	format     string
 	raw        bool
@@ -72,6 +85,16 @@ func New(descriptor Descriptor, options Options) (*Renderer, error) {
 	if descriptor.Protection == nil || len(descriptor.Protection.Required) == 0 {
 		return nil, fmt.Errorf("a Resource protection descriptor is required")
 	}
+	kind := descriptor.ResultKind
+	if kind == "" {
+		kind = "resource"
+	}
+	switch kind {
+	case "resource", "resource_collection", "version_collection", "history",
+		"comparison", "graph", "rows", "aggregate", "mutation":
+	default:
+		return nil, fmt.Errorf("unsupported result kind %q", kind)
+	}
 	format, err := resolveFormat(options.Formats, options.JSON)
 	if err != nil {
 		return nil, err
@@ -90,18 +113,18 @@ func New(descriptor Descriptor, options Options) (*Renderer, error) {
 	}
 	include, err := parseMask(options.Include)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: %v", ErrInvalidProjection, err)
 	}
 	omit, err := parseMask(omitPaths)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: %v", ErrInvalidProjection, err)
 	}
 	if omit.terminal {
-		return nil, fmt.Errorf("cannot omit the Resource root")
+		return nil, fmt.Errorf("%w: cannot omit the Resource root", ErrInvalidProjection)
 	}
 	for _, key := range descriptor.Protection.Required {
 		if omit.child(key).selectsAll() {
-			return nil, fmt.Errorf("cannot omit mandatory context %q", pointerChild("", key))
+			return nil, fmt.Errorf("%w: cannot omit mandatory context %q", ErrInvalidProjection, pointerChild("", key))
 		}
 	}
 	expandable, err := parseMask(descriptor.Expandable)
@@ -109,10 +132,10 @@ func New(descriptor Descriptor, options Options) (*Renderer, error) {
 		return nil, err
 	}
 	if err := validateDepth(options.Include, expandable); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: %v", ErrInvalidProjection, err)
 	}
 	if err := validateDepth(omitPaths, expandable); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: %v", ErrInvalidProjection, err)
 	}
 	protection, err := cloneProtection(descriptor.Protection, make(map[*Protection]bool))
 	if err != nil {
@@ -126,7 +149,7 @@ func New(descriptor Descriptor, options Options) (*Renderer, error) {
 		}
 	}
 	return &Renderer{
-		bdpSpec: descriptor.BDPSpec, protection: protection, format: format,
+		bdpSpec: descriptor.BDPSpec, resultKind: kind, protection: protection, format: format,
 		raw: raw, include: include, omit: omit, projection: projection,
 	}, nil
 }
@@ -190,16 +213,16 @@ func (r *Renderer) Render(resource json.RawMessage) ([]byte, error) {
 		return document(projected)
 	}
 	return document(envelope{
-		SchemaVersion: 2, BDPSpec: r.bdpSpec, ResultKind: "resource",
+		SchemaVersion: SchemaVersion, BDPSpec: r.bdpSpec, ResultKind: r.resultKind,
 		Outcome: "success", Data: projected, Projection: r.projection,
 	})
 }
 
-// RenderFailure frames a read failure using the proposal's candidate error
+// RenderFailure frames a read failure using the common error
 // wrapper. The adapter supplies the original BDP problem or its chosen CLI
 // problem object; this package invents neither codes nor retry/exit semantics.
-// The candidate wrapper and command error mapping require acceptance before
-// public command wiring. Human/raw modes return no stdout; diagnostics and a
+// Command adapters preserve their established error codes. Human/raw modes
+// return no stdout; diagnostics and a
 // nonzero status remain the caller's responsibility. Mutation outcomes are not
 // admitted by this single-Resource read renderer.
 func (r *Renderer) RenderFailure(origin string, problem json.RawMessage) ([]byte, error) {
@@ -210,17 +233,41 @@ func (r *Renderer) RenderFailure(origin string, problem json.RawMessage) ([]byte
 	if !json.Valid(value) || value[0] != '{' {
 		return nil, fmt.Errorf("problem must be a JSON object")
 	}
+	if origin == "cli" {
+		var fields map[string]json.RawMessage
+		if err := json.Unmarshal(value, &fields); err != nil {
+			return nil, err
+		}
+		for _, name := range []string{"code", "message"} {
+			var text string
+			if err := json.Unmarshal(fields[name], &text); err != nil || strings.TrimSpace(text) == "" {
+				return nil, fmt.Errorf("CLI problem requires nonempty string %s", name)
+			}
+		}
+	}
 	if r.raw || r.format != "json" {
 		return nil, nil
 	}
 	return document(envelope{
-		SchemaVersion: 2, BDPSpec: r.bdpSpec, ResultKind: "resource", Outcome: "failure",
+		SchemaVersion: SchemaVersion, BDPSpec: r.bdpSpec, ResultKind: r.resultKind, Outcome: "failure",
 		Projection: r.projection, Error: &problemWrapper{Origin: origin, Problem: value},
 	})
 }
 
+// marshalValue preserves JSON string values without HTML-specific escaping.
+// CLI output is not embedded in an HTML document.
+func marshalValue(value any) ([]byte, error) {
+	var out bytes.Buffer
+	encoder := json.NewEncoder(&out)
+	encoder.SetEscapeHTML(false)
+	if err := encoder.Encode(value); err != nil {
+		return nil, err
+	}
+	return bytes.TrimSuffix(out.Bytes(), []byte("\n")), nil
+}
+
 func document(value any) ([]byte, error) {
-	encoded, err := json.Marshal(value)
+	encoded, err := marshalValue(value)
 	if err != nil {
 		return nil, err
 	}
@@ -241,7 +288,7 @@ func renderDetail(raw json.RawMessage) ([]byte, error) {
 	for _, key := range keys {
 		// JSON string encoding makes arbitrary field names and control characters
 		// visible without letting them alter the terminal presentation.
-		label, err := json.Marshal(key)
+		label, err := marshalValue(key)
 		if err != nil {
 			return nil, err
 		}
