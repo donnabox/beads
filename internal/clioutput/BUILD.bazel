@@ -3,10 +3,14 @@ load("@rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "clioutput",
     srcs = [
+        "collection.go",
+        "collection_paging.go",
         "doc.go",
+        "jsonl.go",
         "pointer.go",
         "projection.go",
         "render.go",
+        "table.go",
     ],
     importpath = "github.com/steveyegge/beads/internal/clioutput",
     visibility = ["//:__subpackages__"],
@@ -14,7 +18,10 @@ go_library(
 
 go_test(
     name = "clioutput_test",
-    srcs = ["render_test.go"],
+    srcs = [
+        "collection_test.go",
+        "render_test.go",
+    ],
     data = glob(["testdata/**"]),
     deps = [":clioutput"],
 )
