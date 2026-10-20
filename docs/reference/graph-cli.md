@@ -680,6 +680,52 @@ BDP HTTP History, as-of selection or restoration. `bd status --graph` reports
 History profile. The [technical reference](/reference/graph-cli-specification-draft#list-a-resources-versions)
 details ordering and refusal behavior.
 
+### Canonical retained-reader output
+
+In a graph workspace, `--output-format` opts retained readers into the canonical
+output contract. Existing `--json` and `--format` behavior remains unchanged.
+Do not combine either legacy flag with `--output-format`, even when both request
+JSON; the command refuses the ambiguous contract choice.
+
+| Commands | Canonical formats |
+| --- | --- |
+| `versions`, `history`, `link versions` | `default` (table), `table`, `detail`, `json` |
+| `compare`, `link compare` | `default` (detail), `detail`, `json` |
+
+```bash
+bd versions policy --output-format json
+bd link versions links/related --output-format table
+bd versions policy --output-format json --include /change_at
+bd compare policy --from FIRST_TOKEN --to SECOND_TOKEN --output-format json
+bd link compare links/related --from FIRST_TOKEN --to SECOND_TOKEN \
+  --output-format json --omit envelope
+```
+
+Canonical JSON uses `schema_version: 2`, an exact `bdp_spec` identifier, and
+`result_kind: "version_collection"` or `"comparison"`. These result kinds
+identify CLI-defined structures; they do not claim to implement BDP HTTP History.
+`--omit envelope` emits the native result object alone.
+
+Version projections apply to each summary row. An explicit `--include` selects
+optional fields; the exact `version` token always remains. The enclosing
+`resource` and `kind` values remain present, and human output includes them as
+subject context. The native `resource` value is Scope-relative, so interpreting
+its subject and version tokens requires the originating workspace Scope.
+`--omit /version` refuses. Projection never fetches full
+Resource snapshots to fill absent summary fields.
+
+Version output returns the provider's complete bounded result or refuses. It
+does not silently truncate at a default page size, invent continuation cursors,
+or support JSONL or paging flags. Comparison output preserves the chosen operand
+order, exact tokens, differences and coverage. Repeated `--from` or `--to` values
+must agree; conflicting values refuse before reading. Its operands are references, so
+data `--include` and `--omit` masks refuse; `--omit envelope` remains supported.
+
+An ordinary JSON read failure emits a complete failure envelope and a diagnostic
+on stderr, with a nonzero exit status. Raw JSON and human failures use stderr and
+the exit status without adding a result object. Output failures after a write
+has started do not append a second document.
+
 ## Discover installed Types
 
 `bd types` lists the selected workspace's public Bead and Link Types.
@@ -716,3 +762,99 @@ workspaces retain their existing Issue classification inventory.
 ## Import an ordinary export
 
 The independent legacy import workstream adds bounded `bd import` for a fresh graph workspace. See the [legacy import contract](/reference/graph-legacy-import) for supported data, identity mappings and refusals. This candidate capability is pending release integration; graph-format import follows graph export.
+
+## Canonical Resource output
+
+In a graph workspace, opt into the canonical output contract with
+`--output-format`. Root `show` accepts a Bead or Link identity; `link show`
+accepts a Link identity. Both use the same BDP Resource representation:
+
+```sh
+bd show beads/plan --output-format json
+bd link show links/note --output-format json
+bd show beads/plan@REVISION --output-format json
+bd show beads/plan --output-format detail --omit /metadata
+bd show beads/plan --output-format json --include /properties/title
+bd show beads/plan --output-format json --omit envelope
+```
+
+`default` and `detail` show labeled fields; `json` emits a schema-version-2
+CLI envelope with the exact BDP contract identifier and Resource in `data`.
+Current records include their inline owned Links. Reading or displaying them
+never retrieves target Resources. Exact retained reads use the retained state,
+including its owned Links, without filling fields from current state.
+
+JSON Pointer masks are repeatable. Includes select optional fields while retaining
+identity, Type and revision; Link endpoints are mandatory too. Omission wins.
+Nested paths are supported within `properties` and `metadata`; other top-level
+sections, including `ownedLinks`, are selected or omitted as whole values.
+Omitting mandatory context refuses the request. Masks do not filter which
+Resources exist or change the selected graph.
+
+`--omit envelope` emits the selected Resource directly. A failed raw read emits
+no stdout; always check the command's exit status. Framed JSON failures contain
+`outcome: "failure"` and an error origin/problem wrapper. Diagnostics use stderr.
+
+Existing `--json` and `--format` behavior remains available. Combining either
+explicit flag with `--output-format` refuses, including `--json=false`. These
+existing command paths require `--output-format` when using `--include` or
+`--omit`. This opt-in currently requires a graph workspace and exactly one
+Resource per `show` invocation.
+
+### Canonical collections
+
+Use `bd list` for current Beads and `bd link list` for current Links. Canonical
+collections retain the public BDP records, including inline owned Links, without
+retrieving endpoint Resources:
+
+```sh
+bd list --output-format json --unpaged
+bd list --output-format table --unpaged --include /properties/title
+bd link list --output-format json --unpaged --source beads/plan
+bd link list --output-format jsonl --incident-to beads/plan --direction in
+bd link list --output-format json --unpaged --omit envelope
+```
+
+`--type` selects an exact canonical absolute HTTP(S) Type URI;
+`--conforms-to` requires the same URI grammar and also admits Types conforming
+to that Type. Use the full Type identity, for example
+`https://example.test/project/types/note`. Canonical selection does not resolve
+Issue classifications such as `bug`, bare names, `types/NAME`, or Dependency
+aliases; those remain available on legacy paths. Link selection accepts
+`--source`, `--target`, and `--incident-to`.
+An incident selection can use `--direction in`, `out`, or `both`. These filters
+combine with AND. Canonical collection selection includes every current matching
+Bead, without a default filter for Issue status. It refuses Issue workflow filters, including `--all`, and
+does not accept the textual query language. Legacy `bd list --all` retains its
+selection meaning; it is not a pagination flag.
+
+`default` and `table` display generic identity columns; `detail` displays each
+selected record. The same JSON Pointer masks select optional fields for every
+format. Framed JSON puts the native `{items, next}` collection in `data`, with
+completion information alongside it. `--omit envelope` returns that native
+collection directly.
+
+JSONL defaults to the complete selection. Its first record is a header, each
+Resource has an item record, and its last record reports completion or failure.
+With `--omit envelope`, JSONL contains only Resource records: no header, terminal,
+or error record. Check the exit status even when some records were written.
+
+The current local provider supports a complete selection from one snapshot,
+with limits of 1,000 live Resources and 16 MiB of current-state inventory.
+Table, detail and JSON default to a page boundary of 50; use `--unpaged` for a
+larger complete selection. `--page-size` requests a per-page delivery boundary;
+`--limit` requests a total delivery bound, with `0` meaning unlimited. This complete-result provider can
+satisfy a requested bound only when the whole selection fits. It does not yet
+support returning a smaller subset: if the selection exceeds the requested page
+or total bound, the adapter refuses with `capability_unavailable` and emits no
+items after reading the selection. In particular, the default JSON/table/detail
+invocation refuses for 51 or more matching records. Use `--unpaged --limit 0` or
+narrow the selection. The failure identifies the unsatisfied bound; it does not
+return a truncated collection as exhausted.
+`--continue` also refuses because this local provider cannot retain a cursor
+across CLI invocations. Persistent paging is not yet available on these paths.
+
+These collection controls require `--output-format`, except the existing root
+`list --limit` flag, whose legacy behavior is unchanged. Combining canonical
+output with explicit `--json` or `--format` refuses. The Issue/dependency commands
+and Memory facades keep their existing output contracts.

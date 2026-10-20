@@ -94,7 +94,8 @@ func TestListLimitPolicyIsResolvedBeforeTheRequest(t *testing.T) {
 
 // GH#6069: the --limit flag help must describe the switch pinned above, in
 // the switch's own order, not claim an unconditional "default 50". The whole
-// usage string is pinned verbatim: a substring check would accept a clause
+// usage string is pinned verbatim, including the separately scoped canonical
+// delivery-boundary statement: a substring check would accept a clause
 // scoped wider than its arm (an earlier draft's "--all is always unlimited"
 // contained every needle and was still false, because an explicit --limit
 // outranks --all). The cases below tie the three claims a reader is most
@@ -104,7 +105,9 @@ func TestListLimitHelpDescribesPipedBehavior(t *testing.T) {
 	if flag == nil {
 		t.Fatal("listCmd has no --limit flag registered")
 	}
-	const want = "Limit results (an explicit --limit always wins, 0 meaning unlimited; otherwise --all is unlimited; otherwise a configured list.limit applies; otherwise unlimited when piped, else 20 in agent mode at a terminal, else 50)"
+	const legacyPolicy = "Limit results (an explicit --limit always wins, 0 meaning unlimited; otherwise --all is unlimited; otherwise a configured list.limit applies; otherwise unlimited when piped, else 20 in agent mode at a terminal, else 50)"
+	const canonicalBoundary = ". With --output-format, requests a total delivery bound; the local provider refuses larger selections without emitting a subset"
+	const want = legacyPolicy + canonicalBoundary
 	if flag.Usage != want {
 		t.Errorf("--limit help = %q\nwant %q", flag.Usage, want)
 	}
