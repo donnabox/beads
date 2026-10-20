@@ -26,11 +26,14 @@ func TestHistoricalMemoryUpdateComposition(t *testing.T) {
 			if _, err := s.Create(ctx, CreateRequest{Path: "beads/target", Title: "Target", Body: "target"}); err != nil {
 				t.Fatal(err)
 			}
-			link, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/owned", SourcePath: "beads/subject", TargetPath: "beads/target", ExpectedSourceRevision: later.Memory.Revision})
+			link, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/owned", TypeURL: s.ScopeURL() + "types/superseded-by", SourcePath: "beads/subject", TargetPath: "beads/target", ExpectedSourceRevision: later.Memory.Revision})
 			if err != nil {
 				t.Fatal(err)
 			}
 			current := link.Source.(Record)
+			if len(current.Owned) != 1 {
+				t.Fatal("fixture must exercise owned membership")
+			}
 			result, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/subject", FromRevision: original.Revision, ExpectedRevision: current.Revision, Actor: "historical-editor", Metadata: publicops.MetadataPatch{Set: map[string]json.RawMessage{"explicit": json.RawMessage(`7`)}}})
 			if err != nil {
 				t.Fatal(err)
