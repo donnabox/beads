@@ -46,6 +46,11 @@ created from that candidate, not a claim that these commands have landed in the
 fork integration branch or a released binary. The draft specification keeps
 the older pinned integration ledger separate from this candidate inventory.
 
+The selected Memory Type examples and catalog below describe the Preview 3
+candidate in [PR130](https://github.com/donnabox/beads/pull/130). Check the
+[release ledger](https://github.com/gastownhall/beads/issues/7656) for its actual
+integration and qualification status before choosing a build.
+
 In a graph workspace, a Bead is an Issue or a Memory. Its canonical identity
 is under `beads/`. In CLI arguments, `policy` means `beads/policy`; a Link
 still needs an explicit `links/ID` where a command accepts either kind of
