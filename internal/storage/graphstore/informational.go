@@ -373,6 +373,10 @@ func (s *Store) finishInformationalWriteInTx(ctx context.Context, tx *sql.Tx, pa
 }
 
 func (s *Store) recordOwnedMemoryInTx(ctx context.Context, tx *sql.Tx, sourcePath, actor string, source any) (any, error) {
+	return s.recordOwnedMemoryWithContextInTx(ctx, tx, sourcePath, actor, source, nil)
+}
+
+func (s *Store) recordOwnedMemoryWithContextInTx(ctx context.Context, tx *sql.Tx, sourcePath, actor string, source any, historical *HistoricalUpdateContext) (any, error) {
 	var err error
 	if issue, ok := source.(IssueRecord); ok {
 		unscope := issueops.ScopeVersionedHistoryTransaction(tx, true)
@@ -396,6 +400,7 @@ func (s *Store) recordOwnedMemoryInTx(ctx context.Context, tx *sql.Tx, sourcePat
 		}
 		memory.Version = memory.Revision
 		memory.Attribution = writeAttribution(actor)
+		memory.Attribution.HistoricalUpdate = historical
 		if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_catalog SET revision=? WHERE path=?`, memory.Revision, sourcePath); err != nil {
 			return nil, err
 		}

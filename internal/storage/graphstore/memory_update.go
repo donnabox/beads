@@ -1,6 +1,7 @@
 package graphstore
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
 	"encoding/json"
@@ -23,6 +24,7 @@ type MemoryUpdateRequest struct {
 	Properties       Properties
 	Actor            string
 	ExpectedRevision string
+	FromRevision     string
 	Unconditional    bool
 	Metadata         publicops.MetadataPatch
 }
@@ -40,7 +42,7 @@ func (s *Store) UpdateMemory(ctx context.Context, request MemoryUpdateRequest) (
 	return s.writeMemory(ctx, memoryWriteRequest{
 		typeURL: request.TypeURL, completeProperties: &request.Properties,
 		path: request.Path, actor: request.Actor, expectedRevision: request.ExpectedRevision,
-		unconditional: request.Unconditional, title: request.Properties.Title, body: request.Properties.Body,
+		unconditional: request.Unconditional, fromRevision: request.FromRevision, title: request.Properties.Title, body: request.Properties.Body,
 		hasTitle: true, hasBody: true, metadataPatch: request.Metadata,
 	})
 }
@@ -58,6 +60,7 @@ type MemoryPatchRequest struct {
 	PropertiesProvided bool
 	Actor              string
 	ExpectedRevision   string
+	FromRevision       string
 	Unconditional      bool
 	Metadata           publicops.MetadataPatch
 }
@@ -68,7 +71,7 @@ func (s *Store) PatchMemory(ctx context.Context, request MemoryPatchRequest) (Me
 	patch := memoryWriteRequest{path: request.Path, actor: request.Actor,
 		typeURL:          request.TypeURL,
 		expectedRevision: request.ExpectedRevision, unconditional: request.Unconditional, metadataPatch: request.Metadata,
-		propertiesProvided: request.PropertiesProvided}
+		propertiesProvided: request.PropertiesProvided, fromRevision: request.FromRevision}
 	if len(request.PropertiesMerge) != 0 {
 		if len(request.PropertiesJSON) != 0 || request.Title != nil || request.Body != nil {
 			return MemoryMutationResult{}, fmt.Errorf("%w: property merge cannot accompany replacement fields", storage.ErrValidation)
@@ -106,6 +109,7 @@ func (s *Store) PatchMemory(ctx context.Context, request MemoryPatchRequest) (Me
 
 type memoryWriteRequest struct {
 	path, actor, expectedRevision string
+	fromRevision                  string
 	unconditional                 bool
 	title, body                   string
 	typeURL                       string
@@ -121,7 +125,12 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 	if err := validatePath(request.path); err != nil {
 		return MemoryMutationResult{}, fmt.Errorf("%w: %v", storage.ErrValidation, err)
 	}
-	if request.typeURL == "" && request.completeProperties == nil && !request.hasTitle && !request.hasBody && request.propertiesPatch == nil && !request.propertiesProvided && !hasCommonMetadataPatch(request.metadataPatch) {
+	if request.fromRevision != "" {
+		if err := validateVersionToken(request.fromRevision); err != nil {
+			return MemoryMutationResult{}, err
+		}
+	}
+	if request.fromRevision == "" && request.typeURL == "" && request.completeProperties == nil && !request.hasTitle && !request.hasBody && request.propertiesPatch == nil && !request.propertiesProvided && !hasCommonMetadataPatch(request.metadataPatch) {
 		return MemoryMutationResult{}, fmt.Errorf("%w: at least one Memory field must be supplied", storage.ErrValidation)
 	}
 	if request.propertiesPatch != nil && (request.hasTitle || request.hasBody) {
@@ -149,7 +158,33 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 		if err := checkRevisionGuard(request.expectedRevision, request.unconditional, revision, true, "Memory"); err != nil {
 			return err
 		}
-		next := memory.Properties
+		base := memory
+		if request.fromRevision != "" {
+			if request.typeURL != "" && request.typeURL != memory.Type {
+				return fmt.Errorf("%w: historical Update preserves the current Type", storage.ErrValidation)
+			}
+			selected, err := s.readVersionInTx(ctx, tx, request.path, request.fromRevision)
+			if err != nil {
+				return err
+			}
+			retained, ok := selected.(Record)
+			if !ok || retained.ID != memory.ID {
+				return fmt.Errorf("%w: historical source requires the same Memory identity", ErrCapabilityUnavailable)
+			}
+			base.Properties = retained.Properties
+			base.Metadata = retained.Metadata
+			catalog, err := s.selectedTypes()
+			if err != nil {
+				return err
+			}
+			if catalog.evaluationType(memory.Type) {
+				base.Properties, err = historicalEvaluationBase(memory.Properties, base.Properties)
+				if err != nil {
+					return err
+				}
+			}
+		}
+		next := base.Properties
 		nextType := memory.Type
 		if request.typeURL != "" {
 			nextType = request.typeURL
@@ -170,12 +205,12 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 			next.Body = request.body
 		}
 		if request.propertiesPatch != nil {
-			next, err = applyMemoryPropertiesPatch(request.propertiesPatch, memory.Properties)
+			next, err = applyMemoryPropertiesPatch(request.propertiesPatch, base.Properties)
 			if err != nil {
 				return err
 			}
 		}
-		metadata, metadataChanged, err := issueops.ApplyMetadataPatch(memory.Metadata, request.metadataPatch)
+		metadata, _, err := issueops.ApplyMetadataPatch(base.Metadata, request.metadataPatch)
 		if err != nil {
 			return err
 		}
@@ -206,7 +241,7 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 				return err
 			}
 		}
-		if memory.Properties == next && memory.Type == nextType && !metadataChanged {
+		if memory.Properties == next && memory.Type == nextType && bytes.Equal(memory.Metadata, metadata) {
 			result = MemoryMutationResult{Memory: memory}
 			return nil
 		}
@@ -226,14 +261,18 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 			return err
 		}
 		memory.Metadata = metadata
-		accepted, err := s.recordOwnedMemoryInTx(ctx, tx, request.path, request.actor, memory)
+		var historical *HistoricalUpdateContext
+		if request.fromRevision != "" {
+			historical = &HistoricalUpdateContext{FromRevision: request.fromRevision, PreviousRevision: revision}
+		}
+		accepted, err := s.recordOwnedMemoryWithContextInTx(ctx, tx, request.path, request.actor, memory, historical)
 		if err != nil {
 			return err
 		}
 		// New ordered patches must not publish a state that exceeds the existing
 		// current-read acquisition budget. Existing replacement/field routes retain
 		// their prior admission behavior. A no-op above writes nothing.
-		if request.propertiesPatch != nil || hasCommonMetadataPatch(request.metadataPatch) {
+		if request.fromRevision != "" || request.propertiesPatch != nil || hasCommonMetadataPatch(request.metadataPatch) {
 			if err := checkCurrentReadBytes(ctx, tx); err != nil {
 				return err
 			}
@@ -321,4 +360,36 @@ func (s *Store) preserveRetainedEvaluationGroup(ctx context.Context, tx *sql.Tx,
 		}
 	}
 	return nil
+}
+
+// The selected Evaluation subject group is initialized once per identity. A
+// historical content source never rolls it back; explicit edits are still
+// checked by the ordinary preserveEvaluationSubjectGroup admission below.
+func historicalEvaluationBase(current, source Properties) (Properties, error) {
+	currentJSON, err := canonicalJSON(current)
+	if err != nil {
+		return Properties{}, err
+	}
+	sourceJSON, err := canonicalJSON(source)
+	if err != nil {
+		return Properties{}, err
+	}
+	var currentFields, sourceFields map[string]json.RawMessage
+	if err := json.Unmarshal(currentJSON, &currentFields); err != nil {
+		return Properties{}, err
+	}
+	if err := json.Unmarshal(sourceJSON, &sourceFields); err != nil {
+		return Properties{}, err
+	}
+	if len(currentFields["subjects"]) == 0 {
+		return Properties{}, fmt.Errorf("%w: current Evaluation subject baseline is unavailable", ErrInvalidStore)
+	}
+	sourceFields["subjects"] = currentFields["subjects"]
+	raw, err := canonicalJSON(sourceFields)
+	if err != nil {
+		return Properties{}, err
+	}
+	var result Properties
+	err = json.Unmarshal(raw, &result)
+	return result, err
 }

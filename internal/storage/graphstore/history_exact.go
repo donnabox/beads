@@ -215,6 +215,11 @@ func sameVersionJSON(raw []byte, value any) bool {
 }
 
 func validVersionAttribution(value Attribution, actor string) bool {
+	if h := value.HistoricalUpdate; h != nil {
+		if validateVersionToken(h.FromRevision) != nil || validateVersionToken(h.PreviousRevision) != nil {
+			return false
+		}
+	}
 	at, err := time.Parse(time.RFC3339Nano, value.RecordedAt)
 	return err == nil && at.UTC().Format(time.RFC3339Nano) == value.RecordedAt && utf8.ValidString(actor) &&
 		value.Actor == actor && ((actor == "" && value.Status == "unknown") || (actor != "" && value.Status == "claimed"))

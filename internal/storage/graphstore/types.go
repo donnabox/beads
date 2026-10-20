@@ -85,10 +85,18 @@ type Record struct {
 
 // Attribution records only what this write supplies. RecordedAt is an observed
 // UTC wall-clock time, not an acceptance-order token or an as-of boundary.
+// HistoricalUpdateContext distinguishes the retained content source from the actual
+// predecessor replaced by this operation. It is output-only, per-version state.
+type HistoricalUpdateContext struct {
+	FromRevision     string `json:"fromRevision"`
+	PreviousRevision string `json:"previousRevision"`
+}
+
 type Attribution struct {
-	Actor      string `json:"actor"`
-	Status     string `json:"status"`
-	RecordedAt string `json:"recordedAt"`
+	Actor            string                   `json:"actor"`
+	Status           string                   `json:"status"`
+	RecordedAt       string                   `json:"recordedAt"`
+	HistoricalUpdate *HistoricalUpdateContext `json:"historicalUpdate,omitempty"`
 }
 
 // IssueRecord projects the authoritative specialized Issue aggregate. It is a
