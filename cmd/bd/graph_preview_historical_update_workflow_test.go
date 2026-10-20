@@ -119,3 +119,49 @@ func TestGraphPreviewHistoricalOrderedPatchBase(t *testing.T) {
 		})
 	}
 }
+
+func TestGraphPreviewHistoricalNativeIssueWorkflow(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := graphListWorkspace(t, bd, engine, "https://example.invalid/native-history/")
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+			}
+			original := graphMixedResult[graphstore.IssueRecord](t, call("create", "Original", "--id", "beads/subject", "--description", "original body", "--metadata", `{"old":null}`))
+			current := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "subject", "--properties", `{"title":"Current","description":"current body"}`, "--replace-metadata", `{"current":true}`))
+			applied := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "subject", "--from-revision", original.Revision, "--if-revision", current.Issue.Revision, "--properties", `{"title":"Explicit"}`, "--set-metadata", "explicit=7"))
+			if !applied.Changed || applied.Issue.Properties.Title != "Explicit" || applied.Issue.Properties.Description != original.Properties.Description || string(applied.Issue.Metadata) != `{"explicit":7,"old":null}` || applied.Issue.Attribution.HistoricalUpdate == nil || applied.Issue.Attribution.HistoricalUpdate.PreviousRevision != current.Issue.Revision || applied.Issue.Attribution.Inception != original.Attribution.Inception {
+				t.Fatalf("wrong historical native result: %+v", applied)
+			}
+			noop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "subject", "--from_revision", applied.Issue.Revision))
+			if noop.Changed || !reflect.DeepEqual(noop.Issue, applied.Issue) {
+				t.Fatal("native historical no-op rewrote envelope")
+			}
+			for _, tc := range []struct {
+				code string
+				args []string
+			}{
+				{"revision_conflict", []string{"update", "subject", "--from-revision", original.Revision, "--if-revision", current.Issue.Revision}},
+				{"revision_unknown", []string{"update", "subject", "--from-revision", "unknown"}},
+				{"capability_unavailable", []string{"update", "subject", "--from-revision", original.Revision, "--patch", `[{"op":"replace","path":"/title","value":"Patch"}]`}},
+			} {
+				graphPolicyCLI(t, bd, work, home, nil, tc.code, append(tc.args, "--json")...)
+			}
+			got := graphMixedResult[graphstore.IssueRecord](t, call("show", "subject", "--format", "graph-json"))
+			if !reflect.DeepEqual(got, applied.Issue) {
+				t.Fatal("refusal changed native destination")
+			}
+			exact := graphMixedResult[graphstore.IssueRecord](t, call("show", "subject", "--version", applied.Issue.Revision))
+			want := applied.Issue
+			properties := *want.Properties
+			properties.ContentHash = ""
+			properties.RowVersion = 0
+			want.Properties = &properties
+			if !reflect.DeepEqual(exact, want) {
+				t.Fatal("native historical context not retained")
+			}
+		})
+	}
+}

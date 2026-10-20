@@ -1,6 +1,6 @@
-# Historical content in graph Memory updates
+# Historical content in graph updates
 
-In an experimental graph workspace, `bd update ID --from-revision TOKEN` uses an exact retained revision of the same Memory as its editable content base. This implementation supports live Memory updates and same-ID Memory recovery. Native Issue historical updates and recovery are not implemented by this slice.
+In an experimental graph workspace, `bd update ID --from-revision TOKEN` uses an exact retained revision of the same Bead as its editable content base. This implementation supports live Memory and admitted native Issue updates, plus same-ID Memory recovery. Native Issue recovery is not implemented by this slice.
 
 ```sh
 bd versions plan --json
@@ -14,9 +14,9 @@ Composition starts with the source's editable properties and common metadata, th
 
 An effective write creates one fresh revision. The native preview result's `attribution.historicalUpdate` names `fromRevision` and the actual `previousRevision`; actor and time describe the new operation. These are native preview fields, not a claim that a new public BDP provenance profile or wire encoding has been activated.
 
-For a live Memory, if the final content equals the current content, the operation returns `changed: false` and preserves the entire current envelope, including earlier historical context. Selecting a source alone never creates an audit revision.
+For a live Bead, if the final content equals the current content, the operation returns `changed: false` and preserves the entire current envelope, including earlier historical context. Selecting a source alone never creates an audit revision.
 
-An unknown, foreign, invalid, or unavailable source refuses without writing. Link historical updates refuse. Ordinary native Issue updates with this flag also refuse in this initial slice; shipping `bd restore` behavior is unchanged.
+An unknown, foreign, invalid, or unavailable source refuses without writing. Link historical updates refuse. Shipping `bd restore` behavior is unchanged.
 
 ## Recovering a deleted Memory
 
@@ -34,4 +34,11 @@ The service separately acquires the retained last-current Type and protected ini
 
 A lost commit response remains an unknown outcome. The service does not automatically replay it; a supplied stale D guard refuses if a recovery already committed. Existing guard omission stays valid under ordinary unconditional Update behavior.
 
-The approved recovery direction is tracked in [beads #7719](https://github.com/gastownhall/beads/issues/7719). This page documents the Memory slice. Native Issue, executable BDP schemas/SDK, and full release qualification remain separate work.
+The approved recovery direction is tracked in [beads #7719](https://github.com/gastownhall/beads/issues/7719). Native Issue recovery, executable BDP schemas/SDK, and full release qualification remain separate work.
+
+
+## Live native Issue updates
+
+A live native Issue supports source-only historical updates, `--properties` edits and common-metadata edits. Admitted editable fields are title, description, design, acceptance criteria, priority, nullable estimate, assignee, notes, external reference, spec ID and due date. Existing notes overwrite and active-assignment protections apply; use `--force` only when deliberately replacing notes. Current labels, parent and owned structure stay current, including when the selected snapshot contains older Links.
+
+Changed native members outside that setter list, such as status or issue type, refuse with a native-domain-mapping diagnostic. Historical native `--patch` and `--replace-properties` also refuse in this slice. A removed retained native source refuses using its recorded availability information; the service never substitutes another revision. The implementation crosswalk is recorded in `engdocs/GRAPH_NATIVE_HISTORICAL_UPDATE.md`.

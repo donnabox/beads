@@ -21,7 +21,7 @@ import (
 // Notes replacement uses the native writer's overwrite fence; clear is an
 // explicit CLI intent, not a special storage operation.
 // EstimatedMinutes nil preserves the nullable estimate; zero sets a present zero.
-// Clearing to null is not admitted. The existing Issue validator and SQL column
+// ClearEstimatedMinutes explicitly clears it to null. The existing Issue validator and SQL column
 // retain their ordinary bounds; no scheduler or duration interpretation is added.
 // ExternalRef and SpecID preserve literal values; empty clears the external
 // reference to NULL and the spec ID to an empty string, as in ordinary update.
@@ -156,8 +156,13 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		return IssueMutationResult{}, fmt.Errorf("%w: Issue update requires an admitted field", storage.ErrValidation)
 	}
 	attempt := publicops.UpdateRequest{Actor: request.Actor, Patch: patch, IssuePlaneOnly: true, ForceNotesOverwrite: request.ForceNotesOverwrite, ForceAssigneeTransfer: request.ForceAssigneeTransfer}
-	if err := issueops.ValidateUpdateRequest(attempt); err != nil {
-		return IssueMutationResult{}, err
+	// Historical composition supplies native setters (including Notes) before
+	// validating setter-dependent force intent. The composed request still goes
+	// through the same validator and native authorization fences in the transaction.
+	if request.FromRevision == "" {
+		if err := issueops.ValidateUpdateRequest(attempt); err != nil {
+			return IssueMutationResult{}, err
+		}
 	}
 	var result IssueMutationResult
 	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
@@ -175,6 +180,11 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 				return err
 			}
 		}
+		if request.FromRevision != "" {
+			if err := checkCurrentReadBytes(ctx, tx); err != nil {
+				return err
+			}
+		}
 		current, revision, err := s.beadEndpointInTx(ctx, tx, path)
 		if err != nil {
 			return err
@@ -187,6 +197,9 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 			return err
 		}
 		if request.FromRevision != "" {
+			if err := checkHistoricalIssueReadBytes(ctx, tx, path, request.FromRevision); err != nil {
+				return err
+			}
 			patch, err = s.historicalIssuePatchInTx(ctx, tx, path, request.FromRevision, before, patch)
 			if err != nil {
 				return err
@@ -273,7 +286,7 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		}
 		// Charge the new retained head as well as current data; an unreadable
 		// notes or metadata edit rolls back every write effect.
-		if patch.Notes.Set || patch.AppendNotes.Set || metadataChanged {
+		if request.FromRevision != "" || patch.Notes.Set || patch.AppendNotes.Set || metadataChanged {
 			if err := checkCurrentReadBytes(ctx, tx); err != nil {
 				return err
 			}

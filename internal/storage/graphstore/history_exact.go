@@ -12,12 +12,13 @@ import (
 	"unicode/utf8"
 
 	graph "github.com/steveyegge/beads/graphops"
+	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/typecatalog"
 	"github.com/steveyegge/beads/internal/types"
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
-// ErrVersionUnknown means this subject has no retained mapping for the token.
+// ErrVersionUnknown means this subject has no available retained mapping for the token.
 // It does not assert pruning, erasure, replacement, or non-participation.
 var ErrVersionUnknown = errors.New("graph preview retained version is unknown")
 
@@ -346,13 +347,21 @@ func (s *Store) readIssueVersionInTx(ctx context.Context, tx *sql.Tx, path, vers
 		return IssueRecord{}, fmt.Errorf("%w: invalid Issue retained mapping", ErrInvalidStore)
 	}
 	var bodySize uint64
-	err = tx.QueryRowContext(ctx, `SELECT OCTET_LENGTH(durable_state)+OCTET_LENGTH(change_actor)+OCTET_LENGTH(attribution_status)
- FROM issue_versions WHERE issue_id=? AND revision=?`, issueID, ordinal).Scan(&bodySize)
+	var removedAt sql.NullTime
+	var removedReason, removedRestriction sql.NullString
+	err = tx.QueryRowContext(ctx, `SELECT OCTET_LENGTH(durable_state)+OCTET_LENGTH(change_actor)+OCTET_LENGTH(attribution_status),removed_at,removed_reason,removed_restriction
+ FROM issue_versions WHERE issue_id=? AND revision=?`, issueID, ordinal).Scan(&bodySize, &removedAt, &removedReason, &removedRestriction)
 	if errors.Is(err, sql.ErrNoRows) {
 		return IssueRecord{}, fmt.Errorf("%w: mapped Issue retained body is missing", ErrInvalidStore)
 	}
 	if err != nil {
 		return IssueRecord{}, err
+	}
+	// A retained graph mapping does not authorize a native row marked removed.
+	// Match retained-reference admission and report the selected row's recorded
+	// restriction/reason, without hydrating it or falling back to another row.
+	if removedAt.Valid {
+		return IssueRecord{}, fmt.Errorf("%w: %s: %s", ErrVersionUnknown, issueops.NormalizeRemovedRestriction(removedRestriction.String), removedReason.String)
 	}
 	if ownedSize > PreviewCurrentReadByteLimit || bodySize > PreviewCurrentReadByteLimit-ownedSize {
 		return IssueRecord{}, fmt.Errorf("%w: retained Issue exceeds acquisition budget", ErrLimitExceeded)

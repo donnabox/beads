@@ -108,3 +108,12 @@ func (s *Store) historicalIssuePatchInTx(ctx context.Context, tx *sql.Tx, path, 
 	}
 	return composeHistoricalIssuePatch(current, source, edit)
 }
+
+func checkHistoricalIssueReadBytes(ctx context.Context, tx *sql.Tx, path, revision string) error {
+	var size uint64
+	if err := tx.QueryRowContext(ctx, `SELECT CAST(LEAST(COALESCE(SUM(OCTET_LENGTH(m.owned)+COALESCE(OCTET_LENGTH(m.revision_context),0)+OCTET_LENGTH(v.durable_state)+OCTET_LENGTH(v.change_actor)+OCTET_LENGTH(v.attribution_status)+256),0),?) AS UNSIGNED)
+ FROM graph_preview_issue_versions m JOIN issue_versions v ON v.issue_id=m.issue_id AND v.revision=m.issue_revision WHERE m.path=? AND m.version=?`, PreviewCurrentReadByteLimit+1, path, revision).Scan(&size); err != nil {
+		return err
+	}
+	return checkCurrentReadBytesAdditional(ctx, tx, size)
+}
