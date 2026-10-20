@@ -1,6 +1,6 @@
 ---
 title: "Revision-aware CLI references"
-description: "Graph preview input selectors, exact retained reads, and safe refusal of unsupported endpoint pins."
+description: "Graph preview selectors, exact retained reads, and persistent local Link endpoint pins."
 ---
 
 Use a saved revision to read the exact state that informed a decision. Revision
@@ -22,7 +22,7 @@ integrated before it becomes a release capability.
 | --- | --- |
 | `ID`, `beads/PATH`, or `links/PATH` | Identity without an explicit revision; resource kind remains command-driven. |
 | `ID@TOKEN` | Local identity plus an exact, opaque retained revision. The first raw `@` separates the identity and token. |
-| `ID@current` | Select current state on a read. On endpoint creation this requests an exact pin resolved at admission, which this candidate refuses. |
+| `ID@current` | Select current state on a read. On informational endpoint creation this resolves an exact pin inside the writer transaction. |
 | `ID@unpinned` | Explicitly select current state on a read or a floating endpoint at creation. |
 | Unwrapped locator containing `://` | Literal URL candidate, including any `@`. Existing canonical Scope URL and authority checks still apply. |
 | `'[URL]@TOKEN'` | Canonical HTTP(S) Scope URL plus exact revision. Brackets wrap the entire URL; nested IPv6 host brackets are allowed. |
@@ -60,8 +60,26 @@ protect them from shell expansion.
 | --- | --- |
 | `bd show RESOURCE`, `bd link show LINK` | Bare identity reads current. An exact suffix reads that retained state, even after a later update or deletion. `@current` and `@unpinned` read current. `--version TOKEN` remains an exact-token alternative. Refuse a suffix together with `--version`, even when their values match. |
 | `bd link SOURCE TARGET`, `bd link create SOURCE TARGET` | Resolve each endpoint selector separately. Bare and `@unpinned` endpoints remain floating. `--source-revision TOKEN` and `--target-revision TOKEN` are alternatives to suffixes, with the same reserved words. A suffix and its flag on the same endpoint conflict. |
-| Endpoint exact pins or `@current` | Refuse with `capability_unavailable` (exit 5), before mutation. Do not silently drop the pin, resolve it in a separate client read, or imply that path-only storage preserves it. |
+| Local informational endpoint exact pins or `@current` | Persist the selected exact revision separately from endpoint URI identity. Resolve `current` inside the writer transaction. Native Dependency pins and owned-source pins refuse with `capability_unavailable` (exit 5), atomically. |
 | `bd update RESOURCE`, `bd link update LINK`, `bd delete BEAD`, `bd forget BEAD`, `bd link delete LINK` | Require bare identities or literal canonical URLs. Refuse every revision suffix, including `@current` and `@unpinned`, with `invalid_selector` (exit 2). A suffix never supplies a write guard. |
+
+For an informational Link, `bd update LINK` and `bd link update LINK` also
+accept `--source-revision TOKEN` and `--target-revision TOKEN`. An omitted flag
+preserves that endpoint's existing pin. `unpinned` explicitly removes it;
+`current` resolves an exact pin inside the writer transaction. An exact token
+selects its retained Bead state. These flags do not change either endpoint URI
+or the Link's Type or identity. A pin edit may combine atomically with property
+merge, replacement, ordered patch and metadata edits; omitted documents remain
+unchanged. Endpoint flags require an explicit Link ID.
+
+A changed complete Reference mints a new revision of the same Link. An owned
+target re-pin also revises its current owning source atomically, while old Link
+and source snapshots retain their old pins. A no-op preserves both revisions,
+after guard and admission checks. Owned-source pins remain deferred: both
+exact and `current` source pins refuse without a partial write. No source
+observation point before or after the owner write is implied. Native Dependency
+endpoints remain floating; native `bd dep` operands keep their existing literal
+ID semantics.
 
 `--if-revision` remains a comparison against the current resource revision.
 `--if-source-revision` independently compares the current owning source;
@@ -77,7 +95,9 @@ stdout and do not change the source or its Links.
 bd show policy@SAVED_TOKEN --json
 bd show '[https://example.org/team/beads/policy]@SAVED_TOKEN' --json
 bd show https://example.org/team/beads/plan@draft --json
-bd link plan@unpinned target --type types/references --target-revision unpinned
+bd link plan@current target@current --type types/references --id citation
+bd update links/citation --target-revision current --if-revision LINK_REVISION
+bd link update links/citation --target-revision unpinned --if-revision LINK_REVISION
 bd update policy --if-revision OBSERVED_TOKEN --properties '{"body":"Revised"}'
 ```
 
@@ -99,12 +119,12 @@ existing behavior; use `bd show` when a summary does not supply the current
 revision. Current human references use `'[URL]@TOKEN'` syntax; a removed Link has
 no new current Link revision to advertise.
 
-This CLI stage still refuses persistent endpoint pins and same-ID re-pin.
-The storage/read companion preserves endpoint pins, but it does not enable
-these CLI writes. It requires a fresh graph workspace with schema version 8;
-older graph workspaces refuse admission rather than upgrading automatically.
-Type revision selection, external Link admission, and a new History contract
-remain outside this stage. `bd
+Local informational endpoint pins and same-ID re-pin require a fresh graph
+workspace with schema version 8; older graph workspaces refuse admission rather
+than upgrading automatically. Pins survive current and retained Link reads,
+owned source snapshots and structured HTTP graph-read output. This does not
+advertise export historical-closure qualification, public HTTP Write support,
+Type revision selection, external Link admission or a new History contract. `bd
 recall` retains its existing `--version` interface. Other unselected command
 positions keep their existing selector rules. In particular,
 `bd remember --update` selectors retain literal Memory-ID semantics, including
