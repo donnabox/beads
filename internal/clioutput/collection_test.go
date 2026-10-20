@@ -404,3 +404,87 @@ func TestJSONLLateFailurePreservesDeliveredBoundary(t *testing.T) {
 		t.Fatalf("lost failure boundary: %s", out.Bytes())
 	}
 }
+
+// Table layout follows the command's declared presentation order, or the user's
+// explicit include order. Repeated fields and mandatory context appear once.
+func TestCollectionTablePreservesColumnOrder(t *testing.T) {
+	descriptor := clioutput.CollectionDescriptor{
+		Item:       clioutput.Descriptor{BDPSpec: "fixture-only:versions-v1", Protection: &clioutput.Protection{Required: []string{"version"}}},
+		ResultKind: "version_collection", ItemsMember: "versions",
+		DefaultColumns: []string{"/version", "/local_revision", "/change_at", "/actor", "/version"},
+	}
+	for _, tc := range []struct {
+		name    string
+		include []string
+		want    string
+	}{
+		{"declared", nil, `"/version" "/local_revision" "/change_at" "/actor"`},
+		{"explicit", []string{"/change_at", "/actor", "/change_at"}, `"/change_at" "/actor" "/version"`},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			renderer, err := clioutput.NewCollection(descriptor, clioutput.Options{Formats: []string{"table"}, Include: tc.include})
+			if err != nil {
+				t.Fatal(err)
+			}
+			out, err := renderer.Render(json.RawMessage(`{"versions":[{"version":"opaque-v","local_revision":7,"change_at":"now","actor":"writer"}]}`), complete(1))
+			if err != nil {
+				t.Fatal(err)
+			}
+			header := strings.Join(strings.Fields(strings.SplitN(string(out), "\n", 2)[0]), " ")
+			if header != tc.want {
+				t.Fatalf("column order changed: got %s, want %s\n%s", header, tc.want, out)
+			}
+		})
+	}
+}
+
+func TestCollectionJSONItemEncodingMatchesSingleAndJSONL(t *testing.T) {
+	item := json.RawMessage(`{"id":"b:1","revision":"r1","properties":{"title":"<tag>&value>"}}`)
+	single, err := clioutput.New(clioutput.Descriptor{BDPSpec: "fixture-only:collection-v1", Protection: &clioutput.Protection{Required: []string{"id", "revision"}}}, clioutput.Options{Formats: []string{"json"}, Omit: []string{"envelope"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want, err := single.Render(item)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want = bytes.TrimSpace(want)
+	if !bytes.Contains(want, []byte(`<tag>&value>`)) {
+		t.Fatalf("single fixture unexpectedly escaped: %s", want)
+	}
+	for _, raw := range []bool{false, true} {
+		var omit []string
+		if raw {
+			omit = []string{"envelope"}
+		}
+		out, err := collection(t, "json", nil, omit).Render(json.RawMessage(`{"items":[`+string(item)+`]}`), complete(1))
+		if err != nil {
+			t.Fatal(err)
+		}
+		object := decode(t, out)
+		if !raw {
+			object = decode(t, object["data"])
+		}
+		var items []json.RawMessage
+		if err := json.Unmarshal(object["items"], &items); err != nil {
+			t.Fatal(err)
+		}
+		if len(items) != 1 || !bytes.Equal(items[0], want) {
+			t.Fatalf("collection changed item encoding (raw=%t): %s; want %s", raw, out, want)
+		}
+	}
+	var streamed bytes.Buffer
+	stream, err := collection(t, "jsonl", nil, []string{"envelope"}).NewJSONL(&streamed)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := stream.Item(item); err != nil {
+		t.Fatal(err)
+	}
+	if err := stream.Finish(true, "exhausted", nil); err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(bytes.TrimSpace(streamed.Bytes()), want) {
+		t.Fatalf("JSONL changed item encoding: %s; want %s", streamed.Bytes(), want)
+	}
+}
