@@ -163,7 +163,11 @@ metadata-only update uses the same Resource and owning-source guards.
 Generic updates accept the current state when --if-revision is omitted.
 Informational Links owned by a Memory may also use --if-source-revision TOKEN;
 without it, the current source is
-accepted. Native Dependency properties and metadata are not editable here. Issue scalar
+accepted. --source-revision TOKEN and --target-revision TOKEN re-pin an
+informational Link without changing its ID or endpoint identities. Use current
+to resolve an exact pin inside the transaction or unpinned to float it; omission
+preserves the existing pin. Pins can combine atomically with properties and
+metadata. Owned-source pins remain unavailable. Native Dependency properties and metadata are not editable here. Issue scalar
 edits and standalone --claim are separate graph operations. Without an ID,
 interactive Issue update uses the last-touched Issue; scripts require an ID
 unless BD_LAST_TOUCHED_FALLBACK=1 explicitly enables the fallback.`},
@@ -220,8 +224,10 @@ selects a bare Link ID or links/PATH; --properties supplies informational Link p
 Memory-owned Links accept the current source by default, or use
 --if-source-revision TOKEN to reject a stale source. Endpoint @unpinned suffixes
 or --source-revision unpinned/--target-revision unpinned keep endpoints floating.
-Exact endpoint revisions and current refuse before mutation; these selectors
-are separate from --if-source-revision. --metadata JSON supplies
+Exact endpoint revisions persist on local informational Links; current resolves
+an exact pin inside the writer transaction. Owned-source pins remain unavailable.
+Native Dependency endpoints remain floating. Endpoint selectors are separate
+from --if-source-revision. --metadata JSON supplies
 an initial open metadata object for informational Links; native Dependencies
 do not accept it. The single Type types/dependency
 requires Issue endpoints. Add --if-source-revision TOKEN to reject a stale source.`},

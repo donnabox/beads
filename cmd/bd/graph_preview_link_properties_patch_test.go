@@ -126,3 +126,19 @@ func TestGraphPreviewLinkPropertiesPatchSyntaxBeforeStore(t *testing.T) {
 		})
 	}
 }
+
+func TestGraphPreviewLinkPropertiesPatchPinIntents(t *testing.T) {
+	cmd := memoryPropertiesPatchCommand(t, `--patch=[{"op":"add","path":"/note","value":"keep"}]`, "--if-revision=link-old", "--if-source-revision=source-now")
+	cmd.Flags().String("source-revision", "", "")
+	cmd.Flags().String("target-revision", "", "")
+	if err := cmd.Flags().Set("source-revision", "unpinned"); err != nil {
+		t.Fatal(err)
+	}
+	if err := cmd.Flags().Set("target-revision", "current"); err != nil {
+		t.Fatal(err)
+	}
+	got, err := graphPreviewLinkPropertiesPatchRequest(cmd, "links/context")
+	if err != nil || got.SourcePin == nil || *got.SourcePin != (graphstore.EndpointPin{}) || got.TargetPin == nil || !got.TargetPin.Current || got.ExpectedRevision != "link-old" || got.ExpectedSourceRevision != "source-now" {
+		t.Fatalf("patch lost independent pins/guards: %+v %v", got, err)
+	}
+}

@@ -32,7 +32,7 @@ func runGraphPreviewLinkPropertiesPatch(cmd *cobra.Command, path string) error {
 
 func graphPreviewLinkPropertiesPatchRequest(cmd *cobra.Command, path string) (graphstore.LinkPropertiesPatchRequest, error) {
 	var request graphstore.LinkPropertiesPatchRequest
-	if err := graphPreviewFlags(cmd, "patch", "replace-properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision"); err != nil {
+	if err := graphPreviewFlags(cmd, "patch", "replace-properties", "source-revision", "target-revision", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision"); err != nil {
 		return request, err
 	}
 	if err := graph.ValidateLinkPath(path); err != nil {
@@ -54,6 +54,10 @@ func graphPreviewLinkPropertiesPatchRequest(cmd *cobra.Command, path string) (gr
 			return request, graphFailure("invalid_selector", fmt.Sprintf("--%s requires a UTF-8 token of at most %d bytes", token.name, graphstore.PreviewVersionTokenLimit), 2)
 		}
 	}
+	sourcePin, targetPin, err := graphPreviewLinkPinIntents(cmd)
+	if err != nil {
+		return request, err
+	}
 	raw, err := graphPreviewPropertyOperations(cmd)
 	if err != nil {
 		return request, graphFailure("invalid_properties", err.Error(), 2)
@@ -62,5 +66,5 @@ func graphPreviewLinkPropertiesPatchRequest(cmd *cobra.Command, path string) (gr
 	if err != nil {
 		return request, err
 	}
-	return graphstore.LinkPropertiesPatchRequest{Path: path, Patch: raw, Actor: getActorWithGit(), ExpectedRevision: revision, Unconditional: unconditional, ExpectedSourceRevision: sourceRevision, UnconditionalSource: unconditionalSource, Metadata: metadata}, nil
+	return graphstore.LinkPropertiesPatchRequest{Path: path, Patch: raw, SourcePin: sourcePin, TargetPin: targetPin, Actor: getActorWithGit(), ExpectedRevision: revision, Unconditional: unconditional, ExpectedSourceRevision: sourceRevision, UnconditionalSource: unconditionalSource, Metadata: metadata}, nil
 }

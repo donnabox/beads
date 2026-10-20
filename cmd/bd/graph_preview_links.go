@@ -172,19 +172,21 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 		return graphFailure("invalid_selector", "graph Link creation requires two Bead IDs or beads/PATH selectors", 2)
 	}
 	resolved := make([]string, 2)
+	pins := make([]graphstore.EndpointPin, 2)
 	for i, endpoint := range []struct{ name, value string }{{"source-revision", args[0]}, {"target-revision", args[1]}} {
 		flag, _ := cmd.Flags().GetString(endpoint.name)
 		ref, err := graphPreviewReferenceWithFlag(endpoint.value, flag, cmd.Flags().Changed(endpoint.name))
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		if ref.Explicit && ref.Revision != "unpinned" {
-			return graphFailure("capability_unavailable", "pinned Link endpoints require graphstore Reference persistence; this preview only writes floating endpoints", 5)
-		}
+		pins[i] = graphPreviewEndpointPin(ref)
 		resolved[i] = ref.Identity
 	}
 	args = resolved
 	if _, native := graphPreviewNativeDependencyType(graphPreviewConfig.GraphScopeURL, typ); typ == "" || native {
+		if pins[0] != (graphstore.EndpointPin{}) || pins[1] != (graphstore.EndpointPin{}) {
+			return graphFailure("capability_unavailable", "native Dependency endpoints must remain floating", 5)
+		}
 		return runGraphPreviewAddDependency(cmd, args)
 	}
 	if err := graphPreviewWritePolicy(); err != nil {
@@ -235,7 +237,7 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 			return nil, "", err
 		}
 		result, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{
-			Path: path, TypeURL: typ, SourcePath: paths[0], TargetPath: paths[1], Properties: properties, Metadata: metadata,
+			Path: path, TypeURL: typ, SourcePath: paths[0], TargetPath: paths[1], SourcePin: pins[0], TargetPin: pins[1], Properties: properties, Metadata: metadata,
 			Actor: getActorWithGit(), ExpectedSourceRevision: revision, UnconditionalSource: unconditional,
 		})
 		return graphPreviewReplacementResult(result, fmt.Sprintf("Created %s: %s → %s", result.Link.ID, args[0], args[1]), result.ReplacedSource, err)
@@ -246,7 +248,7 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision"); err != nil {
+	if err := graphPreviewFlags(cmd, "properties", "source-revision", "target-revision", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision"); err != nil {
 		return err
 	}
 	if len(args) != 1 {
@@ -259,8 +261,12 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 	if err := graph.ValidateLinkPath(path); err != nil {
 		return graphFailure("capability_unavailable", "this preview updates informational Link properties only", 5)
 	}
-	if !cmd.Flags().Changed("properties") {
-		return graphFailure("invalid_properties", "Link update requires --properties to merge named top-level properties", 2)
+	sourcePin, targetPin, err := graphPreviewLinkPinIntents(cmd)
+	if err != nil {
+		return err
+	}
+	if !cmd.Flags().Changed("properties") && sourcePin == nil && targetPin == nil {
+		return graphFailure("invalid_properties", "Link update requires --properties or an endpoint revision flag", 2)
 	}
 	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
 	if err != nil {
@@ -270,10 +276,13 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	input, _ := cmd.Flags().GetString("properties")
-	properties, err := graphPreviewProperties(input, cmd.InOrStdin())
-	if err != nil {
-		return graphFailure("invalid_properties", err.Error(), 2)
+	var properties map[string]any
+	if cmd.Flags().Changed("properties") {
+		input, _ := cmd.Flags().GetString("properties")
+		properties, err = graphPreviewProperties(input, cmd.InOrStdin())
+		if err != nil {
+			return graphFailure("invalid_properties", err.Error(), 2)
+		}
 	}
 	metadata, err := graphPreviewMetadataPatch(cmd)
 	if err != nil {
@@ -281,7 +290,7 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		result, err := store.UpdateLink(ctx, graphstore.LinkUpdateRequest{
-			Path: path, Properties: properties, MergeProperties: true, Metadata: metadata, Actor: getActorWithGit(), ExpectedRevision: revision,
+			Path: path, Properties: properties, MergeProperties: cmd.Flags().Changed("properties"), SourcePin: sourcePin, TargetPin: targetPin, Metadata: metadata, Actor: getActorWithGit(), ExpectedRevision: revision,
 			Unconditional: unconditional, ExpectedSourceRevision: sourceRevision, UnconditionalSource: unconditionalSource,
 		})
 		verb := "Updated"
@@ -290,4 +299,34 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 		}
 		return graphPreviewReplacementResult(result, fmt.Sprintf("%s %s", verb, result.Link.ID), result.ReplacedSource, err)
 	})
+}
+
+func graphPreviewEndpointPin(ref graphPreviewReference) graphstore.EndpointPin {
+	if !ref.Explicit || ref.Revision == "unpinned" {
+		return graphstore.EndpointPin{}
+	}
+	if ref.Revision == "current" {
+		return graphstore.EndpointPin{Current: true}
+	}
+	return graphstore.EndpointPin{Revision: ref.Revision}
+}
+
+func graphPreviewLinkPinFlagsChanged(cmd *cobra.Command) bool {
+	return cmd.Flags().Changed("source-revision") || cmd.Flags().Changed("target-revision")
+}
+
+func graphPreviewLinkPinIntents(cmd *cobra.Command) (*graphstore.EndpointPin, *graphstore.EndpointPin, error) {
+	var pins [2]*graphstore.EndpointPin
+	for i, name := range []string{"source-revision", "target-revision"} {
+		if !cmd.Flags().Changed(name) {
+			continue
+		}
+		value, _ := cmd.Flags().GetString(name)
+		if err := graphPreviewReferenceRevision(value); err != nil {
+			return nil, nil, graphFailure("invalid_selector", err.Error(), 2)
+		}
+		pin := graphPreviewEndpointPin(graphPreviewReference{Revision: value, Explicit: true})
+		pins[i] = &pin
+	}
+	return pins[0], pins[1], nil
 }
