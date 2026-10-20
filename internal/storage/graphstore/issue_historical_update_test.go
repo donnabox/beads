@@ -3,12 +3,17 @@
 package graphstore
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"net"
 	"reflect"
+	"strconv"
 	"strings"
+	"sync"
 	"testing"
+	"time"
 
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
@@ -271,5 +276,135 @@ func TestHistoricalIssueCumulativeAcquisitionBudget(t *testing.T) {
 				t.Fatalf("native current+source budget not atomic: %v", err)
 			}
 		})
+	}
+}
+
+func TestHistoricalIssueConcurrentWriters(t *testing.T) {
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			parent, options, first := memoryDeleteStore(t, engine)
+			ctx, cancel := context.WithTimeout(parent, 90*time.Second)
+			defer cancel()
+			source, err := first.CreateIssue(ctx, "beads/race", plainIssue("Historical"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			current, err := first.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/race", Title: issueEditString("Current"), Actor: "current", Unconditional: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+			second := &Store{db: first.db, options: options}
+			if engine == "server" {
+				second, err = OpenExisting(ctx, options)
+				if err != nil {
+					t.Fatal(err)
+				}
+				defer second.Close()
+			}
+			reached, release := make(chan struct{}, 2), make(chan struct{})
+			if engine == "server" {
+				barrier := func(stage string) error {
+					if stage != "source-retained" {
+						return nil
+					}
+					reached <- struct{}{}
+					select {
+					case <-release:
+						return nil
+					case <-ctx.Done():
+						return ctx.Err()
+					}
+				}
+				first.afterWrite, second.afterWrite = barrier, barrier
+			}
+			results := make(chan error, 2)
+			var writers sync.WaitGroup
+			for _, s := range []*Store{first, second} {
+				writers.Add(1)
+				go func() {
+					defer writers.Done()
+					_, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/race", FromRevision: source.Revision, ExpectedRevision: current.Issue.Revision, Actor: "historical"})
+					results <- err
+				}()
+			}
+			defer func() { cancel(); writers.Wait() }()
+			if engine == "server" {
+				for range 2 {
+					select {
+					case <-reached:
+					case err := <-results:
+						t.Fatalf("writer before overlap: %v", err)
+					case <-ctx.Done():
+						t.Fatal(ctx.Err())
+					}
+				}
+				close(release)
+			}
+			success, conflict := 0, 0
+			for range 2 {
+				select {
+				case err := <-results:
+					if err == nil {
+						success++
+					} else if errors.Is(err, ErrConflict) && !errors.Is(err, ErrOutcomeUnknown) {
+						conflict++
+					} else {
+						t.Fatalf("unexpected race: %v", err)
+					}
+				case <-ctx.Done():
+					t.Fatal(ctx.Err())
+				}
+			}
+			writers.Wait()
+			first.afterWrite, second.afterWrite = nil, nil
+			if success != 1 || conflict != 1 {
+				t.Fatalf("success=%d conflict=%d", success, conflict)
+			}
+			history, err := first.History(ctx, "beads/race")
+			if err != nil || len(history.Versions) != 3 {
+				t.Fatalf("partial/duplicate history: %+v %v", history, err)
+			}
+		})
+	}
+}
+
+func TestHistoricalIssueLostCommitResponse(t *testing.T) {
+	ctx, options, direct := memoryDeleteStore(t, "server")
+	source, err := direct.CreateIssue(ctx, "beads/unknown", plainIssue("Historical"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	current, err := direct.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/unknown", Title: issueEditString("Current"), Actor: "current", Unconditional: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	port, observed := startCommitLossProxy(t, net.JoinHostPort(options.ServerHost, strconv.Itoa(options.ServerPort)))
+	proxied := options
+	proxied.ServerPort = port
+	s, err := OpenExisting(ctx, proxied)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer s.Close()
+	result, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/unknown", FromRevision: source.Revision, ExpectedRevision: current.Issue.Revision, Actor: "historical"})
+	if !errors.Is(err, ErrOutcomeUnknown) || !reflect.ValueOf(result).IsZero() {
+		t.Fatalf("lost response claimed success: %+v %v", result, err)
+	}
+	select {
+	case packet := <-observed:
+		if len(packet) == 0 || packet[0] != 0 {
+			t.Fatalf("no commit witness: %x", packet)
+		}
+	case <-ctx.Done():
+		t.Fatal(ctx.Err())
+	}
+	now, err := direct.ShowIssue(ctx, "beads/unknown")
+	if err != nil || now.Attribution.HistoricalUpdate == nil || now.Attribution.HistoricalUpdate.PreviousRevision != current.Issue.Revision {
+		t.Fatalf("witnessed native update incomplete: %+v %v", now, err)
+	}
+	before := workflowState(t, ctx, direct)
+	_, err = direct.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/unknown", FromRevision: source.Revision, ExpectedRevision: current.Issue.Revision, Actor: "historical"})
+	if !errors.Is(err, ErrConflict) || !reflect.DeepEqual(before, workflowState(t, ctx, direct)) {
+		t.Fatalf("guarded replay rewrote: %v", err)
 	}
 }
