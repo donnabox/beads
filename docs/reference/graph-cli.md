@@ -674,6 +674,51 @@ BDP HTTP History, as-of selection or restoration. `bd status --graph` reports
 History profile. The [technical reference](/reference/graph-cli-specification-draft#list-a-resources-versions)
 details ordering and refusal behavior.
 
+### Canonical retained-reader output
+
+In a graph workspace, `--output-format` opts retained readers into the canonical
+output contract. Existing `--json` and `--format` behavior remains unchanged.
+Do not combine either legacy flag with `--output-format`, even when both request
+JSON; the command refuses the ambiguous contract choice.
+
+| Commands | Canonical formats |
+| --- | --- |
+| `versions`, `history`, `link versions` | `default` (table), `table`, `detail`, `json` |
+| `compare`, `link compare` | `default` (detail), `detail`, `json` |
+
+```bash
+bd versions policy --output-format json
+bd link versions links/related --output-format table
+bd versions policy --output-format json --include /change_at
+bd compare policy --from FIRST_TOKEN --to SECOND_TOKEN --output-format json
+bd link compare links/related --from FIRST_TOKEN --to SECOND_TOKEN \
+  --output-format json --omit envelope
+```
+
+Canonical JSON uses `schema_version: 2`, an exact `bdp_spec` identifier, and
+`result_kind: "version_collection"` or `"comparison"`. These result kinds
+identify CLI-defined structures; they do not claim to implement BDP HTTP History.
+`--omit envelope` emits the native result object alone.
+
+Version projections apply to each summary row. An explicit `--include` selects
+optional fields; the exact `version` token always remains. The enclosing
+`resource` and `kind` values remain present, and human output includes them as
+subject context. The native `resource` value is Scope-relative, so interpreting
+its subject and version tokens requires the originating workspace Scope.
+`--omit /version` refuses. Projection never fetches full
+Resource snapshots to fill absent summary fields.
+
+Version output returns the provider's complete bounded result or refuses. It
+does not silently truncate at a default page size, invent continuation cursors,
+or support JSONL or paging flags. Comparison output preserves the chosen operand
+order, exact tokens, differences and coverage. Its operands are references, so
+data `--include` and `--omit` masks refuse; `--omit envelope` remains supported.
+
+An ordinary JSON read failure emits a complete failure envelope and a diagnostic
+on stderr, with a nonzero exit status. Raw JSON and human failures use stderr and
+the exit status without adding a result object. Output failures after a write
+has started do not append a second document.
+
 ## Discover installed Types
 
 `bd types` reads the descriptors **installed in this workspace** and lists

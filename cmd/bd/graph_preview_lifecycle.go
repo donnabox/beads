@@ -123,6 +123,9 @@ var linkVersionsCmd = &cobra.Command{
 	Use: "versions LINK", Short: "List a Link's retained versions",
 	Args: cobra.ExactArgs(1), SilenceUsage: true, SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if canonicalOutputSelected(cmd) {
+			return runGraphPreviewVersions(cmd, args)
+		}
 		path, err := graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, args[0])
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
@@ -135,6 +138,9 @@ var linkCompareCmd = &cobra.Command{
 	Use: "compare LINK --from TOKEN --to TOKEN", Short: "Compare two retained Link versions",
 	Args: cobra.ExactArgs(1), SilenceUsage: true, SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if canonicalOutputSelected(cmd) {
+			return runGraphPreviewCompare(cmd, args)
+		}
 		path, err := graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, args[0])
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
