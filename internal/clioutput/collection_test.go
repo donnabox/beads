@@ -384,3 +384,23 @@ func TestCollectionHumanKeepsDeclaredSubjectContext(t *testing.T) {
 		}
 	}
 }
+
+func TestJSONLLateFailurePreservesDeliveredBoundary(t *testing.T) {
+	var out bytes.Buffer
+	stream, err := collection(t, "jsonl", nil, nil).NewJSONL(&out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := stream.Item(json.RawMessage(`{"id":"b","revision":"r"}`)); err != nil {
+		t.Fatal(err)
+	}
+	token := json.RawMessage(`{"cursor":"resume-after-b","offset":9007199254740993}`)
+	if err := stream.FailureWithContinuation("bdp", json.RawMessage(`{"code":"temporarily-unavailable"}`), token); err != nil {
+		t.Fatal(err)
+	}
+	lines := bytes.Split(bytes.TrimSpace(out.Bytes()), []byte("\n"))
+	terminal := decode(t, lines[len(lines)-1])
+	if string(terminal["continuation"]) != string(token) || string(terminal["outcome"]) != `"failure"` {
+		t.Fatalf("lost failure boundary: %s", out.Bytes())
+	}
+}
