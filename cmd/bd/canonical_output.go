@@ -44,10 +44,16 @@ func canonicalFailureRendererFor(cmd *cobra.Command) canonicalFailureRenderer {
 	}
 	opts.Omit = omit
 	if factory := canonicalFailureFactories[cmd]; factory != nil {
-		r, _ := factory(opts)
+		r, err := factory(opts)
+		if err != nil {
+			return nil
+		}
 		return r
 	}
-	r, _ := clioutput.New(canonicalResourceDescriptor(), opts)
+	r, err := clioutput.New(canonicalResourceDescriptor(), opts)
+	if err != nil {
+		return nil
+	}
 	return r
 }
 
@@ -76,6 +82,15 @@ func canonicalOutputOptions(cmd *cobra.Command) (clioutput.Options, bool, error)
 	}
 	selected := canonicalOutputSelected(cmd)
 	if !selected {
+		var canonicalOnly string
+		cmd.Flags().Visit(func(f *pflag.Flag) {
+			if len(f.Annotations["canonical-output-only"]) != 0 && canonicalOnly == "" {
+				canonicalOnly = f.Name
+			}
+		})
+		if canonicalOnly != "" {
+			return opts, false, fmt.Errorf("--%s requires --output-format on this legacy command path", canonicalOnly)
+		}
 		if cmd.Flags().Changed("include") || cmd.Flags().Changed("omit") {
 			return opts, false, fmt.Errorf("--include and --omit require --output-format on this legacy command path")
 		}
@@ -147,7 +162,7 @@ func canonicalFailure(cmd *cobra.Command, renderer canonicalFailureRenderer, cod
 			}
 		}
 	}
-	fmt.Fprintf(cmd.ErrOrStderr(), "%s: %s\n", code, message)
+	fmt.Fprintf(cmd.ErrOrStderr(), "%s: %s\n", code, message) //nolint:gosec // G705: CLI stderr diagnostics are not HTML.
 	return &exitError{Code: exit}
 }
 

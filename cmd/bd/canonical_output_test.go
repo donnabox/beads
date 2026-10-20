@@ -97,3 +97,52 @@ func TestCanonicalOutputShortWrite(t *testing.T) {
 		t.Fatal("short write accepted")
 	}
 }
+
+func TestCanonicalInvalidFormatFailureDoesNotPanic(t *testing.T) {
+	for _, formats := range [][]string{{"bogus"}, {"detail", "json"}} {
+		cmd := &cobra.Command{}
+		registerCanonicalOutputFlags(cmd)
+		for _, format := range formats {
+			if err := cmd.Flags().Set("output-format", format); err != nil {
+				t.Fatal(err)
+			}
+		}
+		var out, diagnostic bytes.Buffer
+		cmd.SetOut(&out)
+		cmd.SetErr(&diagnostic)
+		renderer := canonicalFailureRendererFor(cmd)
+		if renderer != nil {
+			t.Fatal("ambiguous format returned renderer")
+		}
+		if err := canonicalFailure(cmd, renderer, "invalid_selector", "invalid format", 2); err == nil {
+			t.Fatal("failure succeeded")
+		}
+		if out.Len() != 0 || !strings.Contains(diagnostic.String(), "invalid_selector") {
+			t.Fatalf("unexpected refusal: %s / %s", &out, &diagnostic)
+		}
+	}
+}
+
+func TestCanonicalOnlyFlagsRequireOptIn(t *testing.T) {
+	cmd := &cobra.Command{}
+	registerCanonicalOutputFlags(cmd)
+	cmd.Flags().Bool("paged", false, "")
+	cmd.Flags().Lookup("paged").Annotations = map[string][]string{"canonical-output-only": {"true"}}
+	if err := cmd.ParseFlags([]string{"--paged"}); err != nil {
+		t.Fatal(err)
+	}
+	if _, _, err := canonicalOutputOptions(cmd); err == nil {
+		t.Fatal("canonical paging silently accepted on legacy route")
+	}
+}
+
+func TestLegacyIncludeIsNotCanonicalProjection(t *testing.T) {
+	cmd := &cobra.Command{Use: "legacy"}
+	cmd.Flags().String("include", "", "")
+	if err := cmd.ParseFlags([]string{"--include=upstream"}); err != nil {
+		t.Fatal(err)
+	}
+	if _, selected, err := canonicalOutputOptions(cmd); err != nil || selected {
+		t.Fatalf("legacy flag reinterpreted: %v", err)
+	}
+}
