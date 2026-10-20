@@ -161,6 +161,8 @@ func TestCanonicalShowWorkflow(t *testing.T) {
 				{[]string{"show", "beads/plan", "--output-format=json", "--json=false"}, "invalid_selector", false, true},
 				{[]string{"show", "beads/plan", "--graph-mode=invalid"}, "invalid_selector", false, false},
 				{[]string{"show", "beads/plan", "--omit=/revision"}, "invalid_selector", false, false},
+				{[]string{"show", "beads/plan", "--version=first", "--version=second"}, "invalid_selector", false, false},
+				{[]string{"link", "show", linkPath, "--version=first", "--version=second"}, "invalid_selector", false, false},
 				{[]string{"link", "show"}, "invalid_selector", false, false},
 				{[]string{"show", "beads/plan"}, "capability_unavailable", true, false},
 			} {
