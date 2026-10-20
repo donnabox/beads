@@ -24,14 +24,19 @@ integrated before it becomes a release capability.
 | `ID@TOKEN` | Local identity plus an exact, opaque retained revision. The first raw `@` separates the identity and token. |
 | `ID@current` | Select current state on a read. On endpoint creation this requests an exact pin resolved at admission, which this candidate refuses. |
 | `ID@unpinned` | Explicitly select current state on a read or a floating endpoint at creation. |
-| Absolute URI | Literal identity, including any `@` in the URI. Never split an unwrapped absolute URI on `@`. |
-| `'[URI]@TOKEN'` | URI plus exact revision. Brackets wrap the entire URI; nested IPv6 host brackets are allowed. |
+| Unwrapped locator containing `://` | Literal URL candidate, including any `@`. Existing canonical Scope URL and authority checks still apply. |
+| `'[URL]@TOKEN'` | Canonical HTTP(S) Scope URL plus exact revision. Brackets wrap the entire URL; nested IPv6 host brackets are allowed. |
 
 An existing local ID containing raw `@` must be addressed by its complete
 canonical Scope URI in these positions. For example,
 `https://example.org/team/beads/plan@draft` selects that literal identity;
 `plan@draft` selects revision `draft` of `plan`. Do not resolve this ambiguity
-by looking up both possibilities. No stored identity changes.
+by looking up both possibilities. The existing CLI URL boundary is lexical:
+unwrapped inputs containing `://` remain literal URL candidates; colon-only
+spellings use local syntax. Thus `plan:v1@r7` selects revision `r7` of
+`plan:v1`, and `urn:x@y` selects revision `y` of the local ID `urn:x`. A
+literal ID `plan:v1@r7` is addressed by
+`https://example.org/team/beads/plan:v1@r7`. No stored identity changes.
 
 A revision is nonempty UTF-8 of at most 4,096 bytes; its bytes convey no time
 or ordering. `current` and `unpinned` are reserved suffix words. On exact reads,
@@ -40,7 +45,11 @@ to either word. There is no additional suffix escape in this candidate.
 Malformed brackets, empty selectors/tokens, invalid UTF-8, and a suffix
 combined with its alternative flag must refuse with `invalid_selector`
 (exit 2). URI brackets outside the host-literal syntax must be percent-encoded.
-Quote bracketed operands to protect them from shell expansion.
+Bracketed operands must be canonical HTTP(S) Scope URL candidates with an
+authority. Opaque URI spellings such as `[urn:x@y]@r7`, no-authority URLs,
+and malformed URLs refuse; they must never lower to local IDs. Scope
+membership remains a separate admission check. Quote bracketed operands to
+protect them from shell expansion.
 
 ## Selected command behavior
 
@@ -69,7 +78,7 @@ bd link plan@unpinned target --type types/preview-related --target-revision unpi
 bd update policy --if-revision OBSERVED_TOKEN --properties '{"body":"Revised"}'
 ```
 
-An absolute URI outside this workspace remains literal during parsing. Existing
+A locator URL outside this workspace remains literal during parsing. Existing
 local-only admission still refuses it; this syntax does not authorize external
 endpoint storage or dereferencing.
 
@@ -77,18 +86,25 @@ endpoint storage or dereferencing.
 
 The CLI must keep identity and revision separate in JSON and persisted records.
 It must not store `ID@TOKEN` as an identity or invent a pinned Reference in
-output. Human mutation summaries label the writer-returned current revision
-separately from any replaced predecessor. Owned-Link creation additionally
-discloses the writer-returned current source revision for a subsequent guarded
-write. Current human references use `'[URI]@TOKEN'` syntax; a removed Link has
+output. Property/metadata edits through `bd update` and `bd link update`,
+existing-Memory edits through `bd remember`, and Link creation disclose the
+writer-returned current revision separately from any replaced predecessor.
+Owned-Link creation and covered informational Link writes additionally disclose
+the writer-returned current source revision for a subsequent guarded write.
+Other creation and Issue lifecycle summaries retain their existing behavior;
+use `bd show` when a summary does not supply the current revision. Current human references use `'[URI]@TOKEN'` syntax; a removed Link has
 no new current Link revision to advertise.
 
 This stage does not deliver persistent endpoint pins, same-ID re-pin, Type
 revision selection, external Link admission, or a new History contract. `bd
 recall` retains its existing `--version` interface. Other unselected command
 positions keep their existing selector rules. In particular, ordinary Issue
-mode and legacy `--deps`/`--parent` values retain literal Issue-ID semantics;
-this stage does not parse revision suffixes there.
+mode, native `bd dep add`/`bd dep remove` operands, and legacy `--deps`/`--parent`
+values retain literal Issue-ID semantics; this stage does not parse revision
+suffixes there. The graph `bd link` form and native `bd dep add` perform the
+same underlying dependency operation for bare Issue IDs, but their selected
+input syntaxes differ. `bd unlink` is not registered in this candidate; remove
+a Link by its ID with `bd link delete`.
 
 For a walkthrough of the existing graph commands, see the
 [graph CLI guide](/reference/graph-cli).
