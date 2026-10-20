@@ -673,6 +673,20 @@ func TestLegacyImportAtomicityAndPersistence(t *testing.T) {
 			if err != nil || len(versions) != 1 {
 				t.Fatalf("initial versions=%+v %v", versions, err)
 			}
+			if b.Attribution.Inception != "" || b.Attribution.HistoricalUpdate != nil {
+				t.Fatalf("legacy import invented operation context: %+v", b.Attribution)
+			}
+			retained, err := s.ReadVersion(operationContext(t), "beads/old-b", versions[0].Version)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got := retained.(IssueRecord); got.ID != b.ID || got.Revision != b.Revision || !reflect.DeepEqual(got.Attribution, b.Attribution) {
+				t.Fatalf("legacy initial retained context differs: %+v", got.Attribution)
+			}
+			var absent bool
+			if err := s.db.QueryRowContext(operationContext(t), `SELECT revision_context IS NULL FROM graph_preview_issue_versions WHERE path=? AND version=?`, "beads/old-b", b.Revision).Scan(&absent); err != nil || !absent {
+				t.Fatalf("legacy absent context is not SQL NULL: %v", err)
+			}
 			imported := state(t)
 			for _, dry := range []bool{false, true} {
 				if _, err := s.ImportLegacy(operationContext(t), batch, "importer", dry); err == nil {

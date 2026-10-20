@@ -98,6 +98,16 @@ func TestCreateChildIssueAtomicNativeParentLink(t *testing.T) {
 				len(created.Child.Owned) != 1 {
 				t.Fatalf("child Issue and Link disagree: %+v", created)
 			}
+			if created.Child.Attribution.Inception != "create" || created.Child.Attribution.HistoricalUpdate != nil {
+				t.Fatalf("child initial context: %+v", created.Child.Attribution)
+			}
+			retained, err := store.ReadVersion(ctx, strings.TrimPrefix(created.Child.ID, options.Binding.ScopeURL), created.Child.Revision)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got := retained.(IssueRecord); got.ID != created.Child.ID || got.Revision != created.Child.Revision || !reflect.DeepEqual(got.Attribution, created.Child.Attribution) {
+				t.Fatalf("child initial retained context differs: %+v", got.Attribution)
+			}
 			if !reflect.DeepEqual(created.Child.Properties.Labels, []string{"child-label", "parent-label"}) {
 				t.Fatalf("parent labels were not inherited once: %+v", created.Child.Properties.Labels)
 			}

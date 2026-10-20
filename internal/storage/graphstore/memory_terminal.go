@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 )
 
@@ -178,6 +179,9 @@ func checkDeletedMemoryReadBytes(ctx context.Context, tx *sql.Tx, path, head, so
  LEFT JOIN graph_preview_versions b ON b.path=d.path AND b.version=CASE WHEN JSON_VALID(CAST(d.snapshot AS CHAR)) THEN JSON_UNQUOTE(JSON_EXTRACT(CAST(d.snapshot AS CHAR),'$.previousVersion')) ELSE NULL END
  LEFT JOIN graph_preview_versions s ON s.path=d.path AND s.version=?
  WHERE d.path=? AND d.version=?`, source, path, head).Scan(&size); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return fmt.Errorf("%w: current retained version is missing", ErrInvalidStore)
+		}
 		return err
 	}
 	if size > PreviewCurrentReadByteLimit {
