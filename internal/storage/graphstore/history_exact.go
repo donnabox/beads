@@ -93,6 +93,9 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 	}
 	if state == "deleted" {
 		if backing == "generic" {
+			if err := checkDeletedMemoryReadBytes(ctx, tx, path, head, version); err != nil {
+				return nil, err
+			}
 			memory, terminal, err := s.deletedMemoryStateInTx(ctx, tx, path)
 			if err != nil {
 				return nil, err
@@ -101,6 +104,9 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 				if terminal != nil {
 					return nil, ErrGone
 				}
+				return memory, nil
+			}
+			if version == memory.Version {
 				return memory, nil
 			}
 		} else if backing == "issue" {
@@ -154,21 +160,33 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 		}
 		return link, nil
 	}
-	// Terminal revisions remain terminal even after a subsequent recovery.
+	expectedType := ""
+	if version == head {
+		expectedType = typ.String
+	}
+	return s.decodeExactMemoryVersion(ctx, tx, path, expectedType, version, raw, actor)
+}
+
+func (s *Store) readMemoryVersionInTx(ctx context.Context, tx *sql.Tx, path, typ, version, head string) (Record, error) {
+	raw, actor, err := readVersionBytes(ctx, tx, path, version, head)
+	if err != nil {
+		return Record{}, err
+	}
+	return s.decodeExactMemoryVersion(ctx, tx, path, typ, version, raw, actor)
+}
+
+func (s *Store) decodeExactMemoryVersion(ctx context.Context, tx *sql.Tx, path, typ, version string, raw []byte, actor string) (Record, error) {
+	// Terminal evidence stays terminal after recovery and is never a source.
 	var marker struct {
 		State string `json:"state"`
 	}
 	if json.Unmarshal(raw, &marker) == nil && marker.State != "" {
 		if _, err := s.decodeMemoryTerminal(path, version, raw, actor); err != nil {
-			return nil, err
+			return Record{}, err
 		}
-		return nil, ErrGone
+		return Record{}, ErrGone
 	}
-	expectedType := ""
-	if version == head {
-		expectedType = typ.String
-	}
-	return s.decodeMemoryVersion(ctx, tx, path, expectedType, version, raw, actor)
+	return s.decodeMemoryVersion(ctx, tx, path, typ, version, raw, actor)
 }
 
 func (s *Store) decodeMemoryVersion(ctx context.Context, tx *sql.Tx, path, typ, version string, raw []byte, actor string) (Record, error) {

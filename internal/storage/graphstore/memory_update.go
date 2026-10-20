@@ -148,13 +148,22 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		current, revision, err := s.beadEndpointInTx(ctx, tx, request.path)
-		var terminal *MemoryTerminalState
-		if errors.Is(err, ErrGone) && request.fromRevision != "" {
-			var backing string
-			if err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=?`, request.path).Scan(&backing); err != nil {
+		if request.fromRevision != "" {
+			if err := checkCurrentReadBytes(ctx, tx); err != nil {
 				return err
 			}
+		}
+		var current any
+		var revision string
+		var terminal *MemoryTerminalState
+		var err error
+		var state, backing string
+		if err := tx.QueryRowContext(ctx, `SELECT allocation_state,backing FROM graph_preview_catalog WHERE path=?`, request.path).Scan(&state, &backing); errors.Is(err, sql.ErrNoRows) {
+			return ErrNotFound
+		} else if err != nil {
+			return err
+		}
+		if state == "deleted" && request.fromRevision != "" {
 			if backing != "generic" {
 				return fmt.Errorf("%w: historical native Issue recovery is not supported by the Memory writer", ErrCapabilityUnavailable)
 			}
@@ -165,10 +174,12 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 			if deleted == nil {
 				return fmt.Errorf("%w: recovery requires an actual retained deletion revision", ErrCapabilityUnavailable)
 			}
-			current, revision, terminal, err = baseline, deleted.Revision, deleted, nil
-		}
-		if err != nil {
-			return err
+			current, revision, terminal = baseline, deleted.Revision, deleted
+		} else {
+			current, revision, err = s.beadEndpointInTx(ctx, tx, request.path)
+			if err != nil {
+				return err
+			}
 		}
 		memory, ok := current.(Record)
 		if !ok {
@@ -182,12 +193,17 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 			if request.typeURL != "" && request.typeURL != memory.Type {
 				return fmt.Errorf("%w: historical Update preserves the current Type", storage.ErrValidation)
 			}
-			selected, err := s.readVersionInTx(ctx, tx, request.path, request.fromRevision)
+			if err := checkHistoricalMemoryReadBytes(ctx, tx, request.path, request.fromRevision); err != nil {
+				return err
+			}
+			// Current allocation/baseline was validated above in this transaction;
+			// reuse the exact Memory decoder without hydrating that baseline twice.
+			selected, err := s.readMemoryVersionInTx(ctx, tx, request.path, "", request.fromRevision, revision)
 			if err != nil {
 				return err
 			}
-			retained, ok := selected.(Record)
-			if !ok || retained.ID != memory.ID {
+			retained := selected
+			if retained.ID != memory.ID {
 				return fmt.Errorf("%w: historical source requires the same Memory identity", ErrCapabilityUnavailable)
 			}
 			base.Properties = retained.Properties
@@ -370,7 +386,7 @@ func preserveEvaluationSubjectGroup(previous, next Properties) error {
 // group. Ordinary Memory extension fields never establish that binding. Retained
 // history is the authority; incomplete or oversized history refuses admission.
 func (s *Store) preserveRetainedEvaluationGroup(ctx context.Context, tx *sql.Tx, path, head string, next Properties) error {
-	versions, err := previewVersionsInTx(ctx, tx, path, head, "", shippedVersionBounds())
+	versions, err := previewVersionsInTx(ctx, tx, path, head, "", true, shippedVersionBounds())
 	if err != nil {
 		return err
 	}

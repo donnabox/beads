@@ -73,6 +73,9 @@ func TestGraphPreviewRemovedLinkVersionsTwoEngines(t *testing.T) {
 			call("update", "links/edge", "--properties", `{"note":"changed"}`)
 			removed := graphMixedResult[graphstore.LinkDeleteResult](t, call("link", "delete", "--force", "links/edge"))
 			listed := call("versions", "links/edge")
+			if result := graphMixedResult[map[string]any](t, listed); result["terminal_versions"] != nil || result["currentState"] != nil {
+				t.Fatal("Memory recovery carrier leaked into existing Link history")
+			}
 			_, kind, rows, members := graphVersionsListed(t, listed)
 			if kind != "link" || len(rows) != 2 {
 				t.Fatalf("removed Link listed %q with %d citable versions: %s", kind, len(rows), listed)

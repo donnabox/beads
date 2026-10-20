@@ -4,6 +4,7 @@ package graphstore
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -863,6 +864,63 @@ func TestVersionsIsAReadOnlyOperation(t *testing.T) {
 			}
 			if before != after {
 				t.Fatal("listing versions changed writer coordination state")
+			}
+		})
+	}
+}
+
+// Link terminal interpretation remains the existing current-head-only contract.
+// An unexpected root member in an older Link snapshot is a read-time corruption
+// refusal, not permission for History to hide that row as a deletion marker.
+func TestVersionsLinkTerminalClassificationBoundary(t *testing.T) {
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			ctx, _, s := memoryDeleteStore(t, engine)
+			source, err := s.Create(ctx, CreateRequest{Path: "beads/source", Title: "Source"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/target", Title: "Target"}); err != nil {
+				t.Fatal(err)
+			}
+			first, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/boundary", SourcePath: "beads/source", TargetPath: "beads/target", ExpectedSourceRevision: source.Revision})
+			if err != nil {
+				t.Fatal(err)
+			}
+			second, err := s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/boundary", Properties: map[string]any{"note": "second"}, ExpectedRevision: first.Link.Revision, UnconditionalSource: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+			raw, err := canonicalJSON(first.Link)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var fields map[string]json.RawMessage
+			if err := json.Unmarshal(raw, &fields); err != nil {
+				t.Fatal(err)
+			}
+			fields["state"] = json.RawMessage(`"deleted"`)
+			corrupt, err := canonicalJSON(fields)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.db.ExecContext(ctx, `UPDATE graph_preview_versions SET snapshot=? WHERE path=? AND version=?`, corrupt, "links/boundary", first.Link.Revision); err != nil {
+				t.Fatal(err)
+			}
+			_, rows, err := s.Versions(ctx, "links/boundary")
+			if err != nil || len(rows) != 2 || rows[0].Removed || rows[1].Removed {
+				t.Fatalf("live/older Link state marker changed listing contract: %+v %v", rows, err)
+			}
+			if _, err := s.ReadVersion(ctx, "links/boundary", first.Link.Revision); !errors.Is(err, ErrInvalidStore) {
+				t.Fatalf("unexpected Link member became terminal instead of corrupt: %v", err)
+			}
+			removed, err := s.Unlink(ctx, LinkDeleteRequest{Path: "links/boundary", ExpectedRevision: second.Link.Revision, UnconditionalSource: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, rows, err = s.Versions(ctx, "links/boundary")
+			if err != nil || len(rows) != 3 || !rows[0].Removed || rows[1].Removed || rows[2].Removed || rows[0].Version != removed.Link.Revision {
+				t.Fatalf("only current deleted Link head may be removed: %+v %v", rows, err)
 			}
 		})
 	}

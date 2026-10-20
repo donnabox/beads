@@ -224,7 +224,7 @@ func (s *Store) versionsInTx(ctx context.Context, tx *sql.Tx, path string, bound
 		// Memory history may include terminal states, even while currently live.
 		// The shared reader classifies root terminal state without acquiring
 		// payload snapshots into Go.
-		rows, err := previewVersionsInTx(ctx, tx, path, head, "", bounds)
+		rows, err := previewVersionsInTx(ctx, tx, path, head, "", true, bounds)
 		return KindMemory, rows, err
 	case backing == "informational" && kind == "link" && IsInformationalTypeURL(s.ScopeURL(), typ.String),
 		backing == "dependency" && kind == "link" && isNativeDependencyLinkType(s.ScopeURL(), issueType, typ.String):
@@ -246,7 +246,7 @@ func (s *Store) versionsInTx(ctx context.Context, tx *sql.Tx, path string, bound
 		if state == "deleted" {
 			marker = head
 		}
-		rows, err := previewVersionsInTx(ctx, tx, path, head, marker, bounds)
+		rows, err := previewVersionsInTx(ctx, tx, path, head, marker, false, bounds)
 		return KindLink, rows, err
 	}
 	return "", nil, fmt.Errorf("%w: unsupported retained allocation", ErrInvalidStore)
@@ -357,7 +357,7 @@ func issueVersionsInTx(ctx context.Context, tx *sql.Tx, path, backingKey, head s
 // rather than the Issue domain. Every retained row is reported, including a
 // deleted Link's deletion marker, which marker names so it can be flagged
 // Removed; see Versions.
-func previewVersionsInTx(ctx context.Context, tx *sql.Tx, path, head, marker string, bounds versionBounds) ([]VersionRow, error) {
+func previewVersionsInTx(ctx context.Context, tx *sql.Tx, path, head, marker string, memoryTerminals bool, bounds versionBounds) ([]VersionRow, error) {
 	var retained int
 	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_versions WHERE path=?`, path).Scan(&retained); err != nil {
 		return nil, err
@@ -386,8 +386,8 @@ func previewVersionsInTx(ctx context.Context, tx *sql.Tx, path, head, marker str
 		return nil, fmt.Errorf("%w: retained version list exceeds the %d-byte acquisition budget", ErrLimitExceeded, bounds.bytes)
 	}
 	rows, err := tx.QueryContext(ctx, `SELECT ordinal,version,change_at,actor,
- CASE WHEN JSON_VALID(CAST(snapshot AS CHAR)) THEN COALESCE(JSON_UNQUOTE(JSON_EXTRACT(CAST(snapshot AS CHAR),'$.state'))='deleted',FALSE) ELSE FALSE END
- FROM graph_preview_versions WHERE path=? ORDER BY ordinal DESC`, path)
+ CASE WHEN ? AND JSON_VALID(CAST(snapshot AS CHAR)) THEN COALESCE(JSON_UNQUOTE(JSON_EXTRACT(CAST(snapshot AS CHAR),'$.state'))='deleted',FALSE) ELSE FALSE END
+ FROM graph_preview_versions WHERE path=? ORDER BY ordinal DESC`, memoryTerminals, path)
 	if err != nil {
 		return nil, err
 	}

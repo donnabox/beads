@@ -43,6 +43,9 @@ func (s *Store) deletedMemoryStateInTx(ctx context.Context, tx *sql.Tx, path str
 	if err := s.validDeletedMemoryAllocationInTx(ctx, tx, path, kind, typ, revision, state, backing, key); err != nil {
 		return Record{}, nil, err
 	}
+	if err := checkDeletedMemoryReadBytes(ctx, tx, path, revision, ""); err != nil {
+		return Record{}, nil, err
+	}
 	raw, actor, err := readVersionBytes(ctx, tx, path, revision, revision)
 	if err != nil {
 		return Record{}, nil, err
@@ -106,7 +109,7 @@ func (s *Store) History(ctx context.Context, path string) (VersionHistoryResult,
 				return err
 			}
 			if state == "deleted" {
-				_, result.CurrentState, err = s.deletedMemoryStateInTx(ctx, tx, path)
+				result.CurrentState, err = s.memoryTerminalDescriptorInTx(ctx, tx, path, result.Versions)
 				return err
 			}
 		}
@@ -116,4 +119,57 @@ func (s *Store) History(ctx context.Context, path string) (VersionHistoryResult,
 		return VersionHistoryResult{}, err
 	}
 	return result, nil
+}
+
+// A History descriptor discloses D alone. It never needs to hydrate the last
+// live payload (which recovery separately acquires and validates).
+func (s *Store) memoryTerminalDescriptorInTx(ctx context.Context, tx *sql.Tx, path string, rows []VersionRow) (*MemoryTerminalState, error) {
+	var head string
+	var terminal bool
+	if err := tx.QueryRowContext(ctx, `SELECT c.revision,CASE WHEN JSON_VALID(CAST(v.snapshot AS CHAR)) THEN COALESCE(JSON_UNQUOTE(JSON_EXTRACT(CAST(v.snapshot AS CHAR),'$.state'))='deleted',FALSE) ELSE FALSE END
+ FROM graph_preview_catalog c JOIN graph_preview_versions v ON v.path=c.path AND v.version=c.revision WHERE c.path=?`, path).Scan(&head, &terminal); err != nil {
+		return nil, err
+	}
+	if !terminal {
+		return nil, nil
+	}
+	var used uint64
+	for _, row := range rows {
+		used += uint64(len(row.Actor)) + 256
+	}
+	var size uint64
+	if err := tx.QueryRowContext(ctx, `SELECT OCTET_LENGTH(snapshot)+OCTET_LENGTH(actor) FROM graph_preview_versions WHERE path=? AND version=?`, path, head).Scan(&size); err != nil {
+		return nil, err
+	}
+	if used > PreviewCurrentReadByteLimit || size > PreviewCurrentReadByteLimit-used {
+		return nil, fmt.Errorf("%w: History metadata and terminal descriptor exceed acquisition budget", ErrLimitExceeded)
+	}
+	raw, actor, err := readVersionBytes(ctx, tx, path, head, head)
+	if err != nil {
+		return nil, err
+	}
+	descriptor, err := s.decodeMemoryTerminal(path, head, raw, actor)
+	if err != nil {
+		return nil, err
+	}
+	return &descriptor, nil
+}
+
+// A deleted exact read can acquire D, its baseline and a separate selected
+// snapshot. Charge those roles together before decoding any of them.
+func checkDeletedMemoryReadBytes(ctx context.Context, tx *sql.Tx, path, head, source string) error {
+	var size uint64
+	if err := tx.QueryRowContext(ctx, `SELECT OCTET_LENGTH(d.snapshot)+OCTET_LENGTH(d.actor)
+ +COALESCE(OCTET_LENGTH(b.snapshot)+OCTET_LENGTH(b.actor),0)
+ +CASE WHEN s.version<>d.version AND s.version<>COALESCE(b.version,'') THEN OCTET_LENGTH(s.snapshot)+OCTET_LENGTH(s.actor) ELSE 0 END
+ FROM graph_preview_versions d
+ LEFT JOIN graph_preview_versions b ON b.path=d.path AND b.version=CASE WHEN JSON_VALID(CAST(d.snapshot AS CHAR)) THEN JSON_UNQUOTE(JSON_EXTRACT(CAST(d.snapshot AS CHAR),'$.previousVersion')) ELSE NULL END
+ LEFT JOIN graph_preview_versions s ON s.path=d.path AND s.version=?
+ WHERE d.path=? AND d.version=?`, source, path, head).Scan(&size); err != nil {
+		return err
+	}
+	if size > PreviewCurrentReadByteLimit {
+		return fmt.Errorf("%w: deleted Memory terminal, baseline and selected snapshot exceed acquisition budget", ErrLimitExceeded)
+	}
+	return nil
 }

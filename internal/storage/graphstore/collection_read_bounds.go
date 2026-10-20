@@ -16,8 +16,8 @@ import (
 // per acquired row. This measures read acquisition, not a schema limit or an
 // exact Go heap/SQL-engine memory bound. Append-only preview
 // operations also reuse it as a transaction postcondition to prevent unreadable
-// growth when no inverse operation is admitted. Historical revisions
-// which are not current are neither acquired nor charged.
+// growth when no inverse operation is admitted. Ordinary current reads do not acquire or charge unselected historical
+// revisions. Historical Update additionally charges its selected retained input.
 const PreviewCurrentReadByteLimit = 16 << 20
 
 type currentReadSizeQuery struct {
@@ -62,7 +62,17 @@ func currentReadSizeQueries() []currentReadSizeQuery {
 }
 
 func checkCurrentReadBytes(ctx context.Context, tx *sql.Tx) error {
-	var used uint64
+	return checkCurrentReadBytesAdditional(ctx, tx, 0)
+}
+
+// Additional retained input is charged before acquisition together with all
+// current state this operation can hydrate. This is the same 16 MiB budget,
+// not a separate per-input allowance.
+func checkCurrentReadBytesAdditional(ctx context.Context, tx *sql.Tx, additional uint64) error {
+	if additional > PreviewCurrentReadByteLimit {
+		return fmt.Errorf("%w: historical input exceeds acquisition budget", ErrLimitExceeded)
+	}
+	used := additional
 	for _, part := range currentReadSizeQueries() {
 		fields := []string{"256"}
 		for _, column := range strings.Split(part.columns, ",") {
@@ -94,4 +104,12 @@ func checkCurrentReadBytes(ctx context.Context, tx *sql.Tx) error {
 		return fmt.Errorf("%w: live graph Issue also names a wisp", ErrInvalidStore)
 	}
 	return nil
+}
+
+func checkHistoricalMemoryReadBytes(ctx context.Context, tx *sql.Tx, path, revision string) error {
+	var size uint64
+	if err := tx.QueryRowContext(ctx, `SELECT CAST(LEAST(COALESCE(SUM(OCTET_LENGTH(snapshot)+OCTET_LENGTH(actor)+256),0),?) AS UNSIGNED) FROM graph_preview_versions WHERE path=? AND version=?`, PreviewCurrentReadByteLimit+1, path, revision).Scan(&size); err != nil {
+		return err
+	}
+	return checkCurrentReadBytesAdditional(ctx, tx, size)
 }
