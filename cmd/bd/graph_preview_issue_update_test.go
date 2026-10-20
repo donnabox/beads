@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/spf13/cobra"
+	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
 )
 
@@ -257,6 +258,25 @@ func TestGraphPreviewIssueAssigneeRefusals(t *testing.T) {
 			var failure *exitError
 			if !errors.As(err, &failure) || failure.Code != tc.code {
 				t.Fatalf("expected exit%d, got %v", tc.code, err)
+			}
+		})
+	}
+}
+
+func TestGraphPreviewHistoricalPropertiesForceDefersToComposedNotes(t *testing.T) {
+	for _, historical := range []bool{false, true} {
+		t.Run(fmt.Sprint(historical), func(t *testing.T) {
+			cmd := issueTextCommand(t, "--force")
+			request := graphstore.UpdateIssueRequest{Path: "beads/work"}
+			if historical {
+				request.FromRevision = "opaque-source"
+			}
+			err := graphPreviewApplyIssueProperties(cmd, &request, map[string]any{"title": "Explicit"})
+			if historical && err != nil {
+				t.Fatalf("historical notes setter is not available until storage composition: %v", err)
+			}
+			if !historical && err == nil {
+				t.Fatal("ordinary non-notes force guard was weakened")
 			}
 		})
 	}

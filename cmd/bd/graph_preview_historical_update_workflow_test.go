@@ -129,10 +129,10 @@ func TestGraphPreviewHistoricalNativeIssueWorkflow(t *testing.T) {
 				t.Helper()
 				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 			}
-			original := graphMixedResult[graphstore.IssueRecord](t, call("create", "Original", "--id", "beads/subject", "--description", "original body", "--metadata", `{"old":null}`))
-			current := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "subject", "--properties", `{"title":"Current","description":"current body"}`, "--replace-metadata", `{"current":true}`))
-			applied := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "subject", "--from-revision", original.Revision, "--if-revision", current.Issue.Revision, "--properties", `{"title":"Explicit"}`, "--set-metadata", "explicit=7"))
-			if !applied.Changed || applied.Issue.Properties.Title != "Explicit" || applied.Issue.Properties.Description != original.Properties.Description || string(applied.Issue.Metadata) != `{"explicit":7,"old":null}` || applied.Issue.Attribution.HistoricalUpdate == nil || applied.Issue.Attribution.HistoricalUpdate.PreviousRevision != current.Issue.Revision || applied.Issue.Attribution.Inception != original.Attribution.Inception {
+			original := graphMixedResult[graphstore.IssueRecord](t, call("create", "Original", "--id", "beads/subject", "--description", "original body", "--notes", "historical notes", "--metadata", `{"old":null}`))
+			current := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "subject", "--properties", `{"title":"Current","description":"current body"}`, "--replace-metadata", `{"current":true}`, "--notes", "current notes", "--force"))
+			applied := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "subject", "--from-revision", original.Revision, "--if-revision", current.Issue.Revision, "--properties", `{"title":"Explicit"}`, "--set-metadata", "explicit=7", "--force"))
+			if !applied.Changed || applied.Issue.Properties.Title != "Explicit" || applied.Issue.Properties.Description != original.Properties.Description || applied.Issue.Properties.Notes != original.Properties.Notes || string(applied.Issue.Metadata) != `{"explicit":7,"old":null}` || applied.Issue.Attribution.HistoricalUpdate == nil || applied.Issue.Attribution.HistoricalUpdate.PreviousRevision != current.Issue.Revision || applied.Issue.Attribution.Inception != original.Attribution.Inception {
 				t.Fatalf("wrong historical native result: %+v", applied)
 			}
 			noop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "subject", "--from_revision", applied.Issue.Revision))
