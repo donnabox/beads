@@ -283,6 +283,7 @@ func validateExportComment(comment types.Comment) error {
 // Retain only its selected Type for later source ownership checks.
 func (s *Store) validateExportEndpointPinsInTx(ctx context.Context, tx *sql.Tx, snapshot Snapshot) error {
 	seen := make(map[EndpointReference]string)
+	ownedByHistoricalType := make(map[string][]string)
 	for _, record := range snapshot.Records {
 		link, ok := record.(LinkRecord)
 		if !ok {
@@ -320,11 +321,14 @@ func (s *Store) validateExportEndpointPinsInTx(ctx context.Context, tx *sql.Tx, 
 			seen[ref] = recordType(value)
 		}
 		if source := seen[link.SourceReference()]; link.SourceRevision != "" {
-			ownedTypes, err := s.SelectedOwnedLinkTypes(source)
-			if err != nil {
-				return err
+			if _, known := ownedByHistoricalType[source]; !known {
+				ownedTypes, err := s.SelectedOwnedLinkTypes(source)
+				if err != nil {
+					return err
+				}
+				ownedByHistoricalType[source] = ownedTypes
 			}
-			if slices.Contains(ownedTypes, link.Type) {
+			if slices.Contains(ownedByHistoricalType[source], link.Type) {
 				return fmt.Errorf("%w: pinned owned source observation point is not selected", ErrCapabilityUnavailable)
 			}
 		}

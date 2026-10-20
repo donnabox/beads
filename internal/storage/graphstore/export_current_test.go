@@ -753,8 +753,11 @@ func TestExportEndpointPinsCurrentAndRetained(t *testing.T) {
 			}
 			// Corrupt only an older selected payload, while current rows still fit.
 			// The byte preflight must refuse before decoding that historical JSON.
-			reachedEndpoints := false
+			reachedEndpoints, reachedPreflight := false, false
 			s.afterWrite = func(stage string) error {
+				if stage == "export-preflight" {
+					reachedPreflight = true
+				}
 				if stage == "export-endpoints" {
 					reachedEndpoints = true
 				}
@@ -771,8 +774,8 @@ func TestExportEndpointPinsCurrentAndRetained(t *testing.T) {
 				return nil
 			})
 			s.afterWrite = nil
-			if budgetErr != nil || reachedEndpoints {
-				t.Fatalf("historical preflight budget: reached=%t %v", reachedEndpoints, budgetErr)
+			if budgetErr != nil || reachedEndpoints || reachedPreflight {
+				t.Fatalf("historical preflight budget: endpoints=%t preflight=%t %v", reachedEndpoints, reachedPreflight, budgetErr)
 			}
 			// Corruption/unavailability robustness: keep valid current heads but remove
 			// a selected older exact endpoint; this is not a normal writer action.
@@ -813,6 +816,43 @@ func TestExportEndpointRemovedIssueVersionRefuses(t *testing.T) {
 			}
 			if _, err := s.ExportCurrentSnapshot(ctx); err != nil {
 				t.Fatal(err)
+			}
+			// Corruption fixtures, not admitted writer states: each old Issue
+			// payload arm must be charged before any current/historical decoding.
+			beforeBudget := exportSourceState(t, ctx, s)
+			for name, query := range map[string]string{
+				"durable-state": `UPDATE issue_versions v JOIN graph_preview_issue_versions m ON m.issue_id=v.issue_id AND m.issue_revision=v.revision SET v.durable_state=REPEAT('x',?) WHERE m.path=? AND m.version=?`,
+				"owned":         `UPDATE graph_preview_issue_versions m JOIN issue_versions v ON m.issue_id=v.issue_id AND m.issue_revision=v.revision SET m.owned=REPEAT('x',?) WHERE m.path=? AND m.version=?`,
+			} {
+				t.Run("budget-"+name, func(t *testing.T) {
+					preflight, endpoints := false, false
+					s.afterWrite = func(stage string) error {
+						if stage == "export-preflight" {
+							preflight = true
+						}
+						if stage == "export-endpoints" {
+							endpoints = true
+						}
+						return nil
+					}
+					bounded := s.withTx(ctx, false, func(tx *sql.Tx) error {
+						if _, err := tx.ExecContext(ctx, query, PreviewCurrentReadByteLimit, "beads/issue", issue.Revision); err != nil {
+							return err
+						}
+						got, err := s.exportCurrentSnapshotInTx(ctx, tx)
+						if !errors.Is(err, ErrLimitExceeded) || !reflect.DeepEqual(got, ExportCurrentState{}) {
+							return fmt.Errorf("retained Issue budget did not refuse before decoding: %+v %v", got, err)
+						}
+						return nil
+					})
+					s.afterWrite = nil
+					if bounded != nil || preflight || endpoints {
+						t.Fatalf("retained Issue %s bound: preflight=%t endpoints=%t %v", name, preflight, endpoints, bounded)
+					}
+					if !reflect.DeepEqual(beforeBudget, exportSourceState(t, ctx, s)) {
+						t.Fatal("rollback-only Issue corruption fixture changed source")
+					}
+				})
 			}
 			if err := s.withTx(ctx, true, func(tx *sql.Tx) error {
 				_, err := tx.ExecContext(ctx, `UPDATE issue_versions v JOIN graph_preview_issue_versions m ON m.issue_id=v.issue_id AND m.issue_revision=v.revision SET v.removed_at=CURRENT_TIMESTAMP WHERE m.path=? AND m.version=?`, "beads/issue", issue.Revision)
@@ -855,9 +895,7 @@ func TestExportEndpointDistinctValidationBudget(t *testing.T) {
 			}
 			for i := 0; i < 5; i++ {
 				request := LinkCreateRequest{Path: fmt.Sprintf("links/pin%d", i), SourcePath: "beads/source", TargetPath: "beads/target", TargetPin: EndpointPin{Revision: old.Revision}}
-				if i == 0 {
-					request.SourcePin = EndpointPin{Revision: source.Revision}
-				}
+				request.SourcePin = EndpointPin{Revision: source.Revision}
 				if _, err := s.AddInformationalLink(ctx, request); err != nil {
 					t.Fatalf("writer-admitted repeated pin %d: %v", i, err)
 				}
@@ -914,8 +952,11 @@ func TestExportEndpointDistinctValidationBudget(t *testing.T) {
 			if !errors.Is(err, context.Canceled) || !reflect.DeepEqual(got, ExportCurrentState{}) {
 				t.Fatalf("endpoint-stage cancellation: %+v %v", got, err)
 			}
-			reached := false
+			reached, reachedPreflight := false, false
 			s.afterWrite = func(stage string) error {
+				if stage == "export-preflight" {
+					reachedPreflight = true
+				}
 				if stage == "export-endpoints" {
 					reached = true
 				}
@@ -936,8 +977,8 @@ func TestExportEndpointDistinctValidationBudget(t *testing.T) {
 				return nil
 			})
 			s.afterWrite = nil
-			if bounded != nil || reached {
-				t.Fatalf("over-budget exact validation ran: %t %v", reached, bounded)
+			if bounded != nil || reached || reachedPreflight {
+				t.Fatalf("over-budget exact validation ran: endpoints=%t preflight=%t %v", reached, reachedPreflight, bounded)
 			}
 			if !reflect.DeepEqual(before, exportSourceState(t, ctx, s)) {
 				t.Fatal("validation/fault/bounds changed source")
