@@ -13,6 +13,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/steveyegge/beads/internal/storage"
 )
@@ -616,6 +617,10 @@ func TestMemoryPropertiesPatchDeletedBudget(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, _, s, original, _, _ := memoryPropertiesPatchFixture(t, backend)
+			// The repeated near-budget retained-head reads need a separate,
+			// bounded window under the race detector on hosted macOS runners.
+			ctx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 3*time.Minute)
+			defer cancel()
 			deleted := propertiesPatchDeletedFiller(t, ctx, s)
 			if _, err := s.Read(ctx, "beads/plan"); err != nil {
 				t.Fatalf("deleted filler fixture unreadable: %v", err)
