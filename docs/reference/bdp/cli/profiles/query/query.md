@@ -17,7 +17,10 @@ It proposes CLI spelling and records its required translation. The eventual BDP
 Query specification should own portable semantics and its operation/extension
 contract. The Beads CLI specification should own sugar and its exact mapping.
 The [common selection/output contract](https://github.com/donnabox/beads/pull/122)
-continues to own representation, framing and field masks. No second output schema or runtime implementation is introduced.
+continues to own representation, framing and field masks. Its current reference
+snapshot is [3fd5e4356](https://github.com/donnabox/beads/blob/3fd5e4356ed9f9096ac22e7356809f317c885287/docs/reference/bdp/cli/selection-and-output.md),
+including CLI/result versioning, error framing, completion and legacy/canonical
+output flags. This citation does not move a runtime BDP contract pin. No second output schema or runtime implementation is introduced.
 The earlier combined language draft is retained as authoring history; this
 facade exercise is the current CLI surface and mapping proposal.
 
@@ -354,7 +357,8 @@ not an executed product qualification.
 | Metadata scalar textual comparison | Legacy adapter behavior; no automatic JSON value/string equivalence |
 | Existing Issue/default closed filter | Wrapper-specific disclosed population policy; pure query has none |
 
-No compatibility mode name/default/cutover flag is selected here. Existing
+No predicate-language compatibility mode/default/cutover is selected here.
+Output-format transition follows the common contract cited above. Existing
 remember/recall/memories/forget and Issue/Dependency-specific commands remain
 outside this rollout. Future Link/Memory facades will conform when implemented;
 this note does not authorize implementation of them.
@@ -385,7 +389,7 @@ Open decisions: the actual standards-compatible graph extension/wire contract;
 complete RFC/BDP comparison and numeric policy; Type extension/reference mapping;
 substring extension argument behavior and Unicode version; scope/binding frame
 representation; current-hop source spelling; graph witnesses/limits; aggregate
-syntax and legacy cutover. These must be settled in their authoritative specs,
+syntax and predicate-language legacy cutover. These must be settled in their authoritative specs,
 not treated as implicit choices made by this note.
 
 Primary reference: [RFC 9535 filter scope](https://www.rfc-editor.org/rfc/rfc9535.html#section-2.3.5.1)
