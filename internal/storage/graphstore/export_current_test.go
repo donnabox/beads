@@ -753,10 +753,10 @@ func TestExportEndpointPinsCurrentAndRetained(t *testing.T) {
 			}
 			// Corrupt only an older selected payload, while current rows still fit.
 			// The byte preflight must refuse before decoding that historical JSON.
-			reachedPreflight := false
+			reachedEndpoints := false
 			s.afterWrite = func(stage string) error {
 				if stage == "export-endpoints" {
-					reachedPreflight = true
+					reachedEndpoints = true
 				}
 				return nil
 			}
@@ -771,8 +771,8 @@ func TestExportEndpointPinsCurrentAndRetained(t *testing.T) {
 				return nil
 			})
 			s.afterWrite = nil
-			if budgetErr != nil || reachedPreflight {
-				t.Fatalf("historical preflight budget: reached=%t %v", reachedPreflight, budgetErr)
+			if budgetErr != nil || reachedEndpoints {
+				t.Fatalf("historical preflight budget: reached=%t %v", reachedEndpoints, budgetErr)
 			}
 			// Corruption/unavailability robustness: keep valid current heads but remove
 			// a selected older exact endpoint; this is not a normal writer action.
@@ -849,7 +849,8 @@ func TestExportEndpointDistinctValidationBudget(t *testing.T) {
 			}
 			filler := plainIssue("Current bytes")
 			filler.Issue.Description = strings.Repeat("f", 1<<20)
-			if _, err := s.CreateIssue(ctx, "beads/filler", filler); err != nil {
+			fillerIssue, err := s.CreateIssue(ctx, "beads/filler", filler)
+			if err != nil {
 				t.Fatal(err)
 			}
 			for i := 0; i < 5; i++ {
@@ -860,6 +861,28 @@ func TestExportEndpointDistinctValidationBudget(t *testing.T) {
 				if _, err := s.AddInformationalLink(ctx, request); err != nil {
 					t.Fatalf("writer-admitted repeated pin %d: %v", i, err)
 				}
+			}
+			// This nonincident native Issue is outside selected Type validation,
+			// while current acquisition reads both its live body and retained head.
+			// Prove the old per-Link predicate's lower bound really exceeds 16 MiB.
+			if err := s.withTx(ctx, false, func(tx *sql.Tx) error {
+				var repeated, live, retained uint64
+				if err := tx.QueryRowContext(ctx, `SELECT CAST(COALESCE(SUM(OCTET_LENGTH(v.snapshot)),0) AS UNSIGNED) FROM graph_preview_links l JOIN graph_preview_versions v ON v.path=l.target_path AND v.version=l.target_revision WHERE l.target_revision<>''`).Scan(&repeated); err != nil {
+					return err
+				}
+				if err := tx.QueryRowContext(ctx, "SELECT OCTET_LENGTH(description) FROM issues WHERE id=?", fillerIssue.Properties.ID).Scan(&live); err != nil {
+					return err
+				}
+				if err := tx.QueryRowContext(ctx, `SELECT OCTET_LENGTH(v.durable_state) FROM graph_preview_issue_versions m JOIN graph_preview_catalog c ON c.path=m.path AND c.revision=m.version JOIN issue_versions v ON v.issue_id=m.issue_id AND v.revision=m.issue_revision WHERE m.path=?`, "beads/filler").Scan(&retained); err != nil {
+					return err
+				}
+				t.Logf("old per-Link charge lower bound=%d; export limit=%d", repeated+live+retained, PreviewCurrentReadByteLimit)
+				if repeated+live+retained <= PreviewCurrentReadByteLimit {
+					return fmt.Errorf("fixture does not defeat old per-Link charge: %d", repeated+live+retained)
+				}
+				return nil
+			}); err != nil {
+				t.Fatal(err)
 			}
 			before := exportSourceState(t, ctx, s)
 			got, err := s.ExportCurrentSnapshot(ctx)
@@ -898,6 +921,8 @@ func TestExportEndpointDistinctValidationBudget(t *testing.T) {
 				}
 				return nil
 			}
+			// Deliberate corruption/unadmittable state: two distinct retained
+			// payloads individually fit, but their combined validation does not.
 			bounded := s.withTx(ctx, false, func(tx *sql.Tx) error {
 				for _, address := range []struct{ path, revision string }{{"beads/source", source.Revision}, {"beads/target", old.Revision}} {
 					if _, err := tx.ExecContext(ctx, "UPDATE graph_preview_versions SET snapshot=REPEAT('x',?) WHERE path=? AND version=?", 9<<20, address.path, address.revision); err != nil {

@@ -38,8 +38,9 @@ const exportCommentLimit = PreviewCurrentReadByteLimit / exportReadRowOverhead
 // of deleted allocations in one rollback-only transaction. Exact endpoints
 // are dereferenced for availability in that transaction; their historical
 // payloads are validation-only and never enter Snapshot or the comment feed.
-// Other history, event journals, counters and unrelated configuration are not
-// acquired. This is neither a database archive nor portable retained closure.
+// Deleted Bead final heads are also read for validation. These integrity reads
+// do not add archival history to the returned inventory or establish archive
+// completeness. Event journals, counters and unrelated configuration are excluded.
 //
 // Present wisp data or legacy KV Memories are refused: they are alternative
 // live data planes not represented by this graph inventory. Orphan durable
