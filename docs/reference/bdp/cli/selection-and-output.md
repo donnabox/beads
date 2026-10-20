@@ -534,8 +534,9 @@ BDP conformance from a local convenience implementation.
 
 For a BDP amendment, update the normative contract, schemas, shared implementation
 and conformance evidence together, then pin downstream adoption in Beads.
-Trish owns shared-contract reconciliation; the existing BDP implementation owners
-and Janet coordinate realization and downstream qualification. This table is a
+Trish owns shared-contract reconciliation; BDP implementation owners and Janet
+coordinate shared adoption. Each adapter author owns implementation, validation,
+review and publication under independent author ownership. This table is a
 dependency disposition, not a claim that every possible extension is required
 before the first CLI read adapter or already implemented.
 
@@ -556,8 +557,11 @@ protocol change or permission to move a pin independently.
 
 Each adapter must identify the contract it actually emits. An integration-head
 commit in `bdp_spec` is inaccurate when the payload still uses an older schema.
-Janet owns the coordinated adoption and qualification; the first output slice
-must freeze its actual payload contract after that handoff.
+Janet coordinates shared wire adoption; it is not a prerequisite for authoring or
+qualifying an adapter against the currently consumed contract. The first output
+adapters pin `de99030d13a57e77f4f2660b91ea3c39b82823cb` and preserve its actual
+fields. A future adoption updates payloads, the declared pin and conformance
+evidence together.
 
 ## Related sources and remaining dependencies
 
