@@ -259,7 +259,7 @@ func graphPreviewApplyIssueProperties(cmd *cobra.Command, request *graphstore.Up
 			return graphFailure("invalid_properties", "Issue property "+name+" is not writable through update", 2)
 		}
 	}
-	if cmd.Flags().Changed("force") && !cmd.Flags().Changed("notes") && request.Notes == nil {
+	if cmd.Flags().Changed("force") && !cmd.Flags().Changed("notes") && request.Notes == nil && request.FromRevision == "" {
 		return graphFailure("invalid_properties", "graph Issue update accepts --force only with a notes edit", 2)
 	}
 	return nil

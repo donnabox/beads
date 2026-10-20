@@ -21,7 +21,7 @@ import (
 // Notes replacement uses the native writer's overwrite fence; clear is an
 // explicit CLI intent, not a special storage operation.
 // EstimatedMinutes nil preserves the nullable estimate; zero sets a present zero.
-// Clearing to null is not admitted. The existing Issue validator and SQL column
+// ClearEstimatedMinutes explicitly clears it to null. The existing Issue validator and SQL column
 // retain their ordinary bounds; no scheduler or duration interpretation is added.
 // ExternalRef and SpecID preserve literal values; empty clears the external
 // reference to NULL and the spec ID to an empty string, as in ordinary update.
@@ -33,6 +33,8 @@ import (
 // Unconditional bypasses the ordinary active-assignment transfer fence.
 type UpdateIssueRequest struct {
 	Path, Actor, ExpectedRevision                             string
+	FromRevision                                              string
+	PropertiesPatch                                           []byte
 	NativeID                                                  string
 	Unconditional, ForceNotesOverwrite, ForceAssigneeTransfer bool
 	PropertiesProvided, ClearEstimatedMinutes                 bool
@@ -52,6 +54,11 @@ type UpdateIssueRequest struct {
 func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (IssueMutationResult, error) {
 	if err := validateIssueSelector(IssueSelector{Path: request.Path, NativeID: request.NativeID}); err != nil {
 		return IssueMutationResult{}, fmt.Errorf("%w: %v", storage.ErrValidation, err)
+	}
+	if request.FromRevision != "" {
+		if err := validateVersionToken(request.FromRevision); err != nil {
+			return IssueMutationResult{}, err
+		}
 	}
 	if request.Actor == "" || !utf8.ValidString(request.Actor) {
 		return IssueMutationResult{}, fmt.Errorf("%w: Issue update requires a nonempty UTF-8 actor", storage.ErrValidation)
@@ -139,6 +146,10 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		patch.DueAt = publicops.Field[*time.Time]{Set: true, Value: value}
 		count++
 	}
+	scalarCount := count
+	if len(request.PropertiesPatch) > 0 && (request.FromRevision == "" || scalarCount > 0) {
+		return IssueMutationResult{}, fmt.Errorf("%w: native property operations require a historical source and cannot combine with scalar setters", storage.ErrValidation)
+	}
 	if err := validateCommonMetadataPatch(request.Metadata); err != nil {
 		return IssueMutationResult{}, err
 	}
@@ -146,12 +157,17 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		patch.Metadata = request.Metadata
 		count++
 	}
-	if count == 0 && !request.PropertiesProvided {
+	if count == 0 && !request.PropertiesProvided && request.FromRevision == "" {
 		return IssueMutationResult{}, fmt.Errorf("%w: Issue update requires an admitted field", storage.ErrValidation)
 	}
 	attempt := publicops.UpdateRequest{Actor: request.Actor, Patch: patch, IssuePlaneOnly: true, ForceNotesOverwrite: request.ForceNotesOverwrite, ForceAssigneeTransfer: request.ForceAssigneeTransfer}
-	if err := issueops.ValidateUpdateRequest(attempt); err != nil {
-		return IssueMutationResult{}, err
+	// Historical composition supplies native setters (including Notes) before
+	// validating setter-dependent force intent. The composed request still goes
+	// through the same validator and native authorization fences in the transaction.
+	if request.FromRevision == "" {
+		if err := issueops.ValidateUpdateRequest(attempt); err != nil {
+			return IssueMutationResult{}, err
+		}
 	}
 	var result IssueMutationResult
 	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
@@ -169,15 +185,74 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 				return err
 			}
 		}
-		current, revision, err := s.beadEndpointInTx(ctx, tx, path)
-		if err != nil {
+		if request.FromRevision != "" {
+			if err := checkCurrentReadBytes(ctx, tx); err != nil {
+				return err
+			}
+		}
+		var err error
+		var before IssueRecord
+		var revision string
+		var terminal *BeadTerminalState
+		var generation sql.NullInt64
+		var state, backing string
+		if err := tx.QueryRowContext(ctx, `SELECT allocation_state,backing,revision FROM graph_preview_catalog WHERE path=?`, path).Scan(&state, &backing, &revision); err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return ErrNotFound
+			}
 			return err
 		}
-		before, ok := current.(IssueRecord)
-		if !ok {
-			return fmt.Errorf("%w: Issue update requires the experimental Issue Type", ErrCapabilityUnavailable)
+		if state == "deleted" && backing == "issue" && request.FromRevision != "" {
+			if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, revision, true, "Issue"); err != nil {
+				return err
+			}
+			if err := checkHistoricalIssueReadBytes(ctx, tx, path, request.FromRevision); err != nil {
+				return err
+			}
+			var err error
+			before, terminal, generation, err = s.deletedIssueStateInTx(ctx, tx, path)
+			if err != nil {
+				return err
+			}
+			if terminal == nil {
+				return fmt.Errorf("%w: legacy native deletion has no distinct deletion revision", ErrCapabilityUnavailable)
+			}
+			if request.FromRevision == terminal.Revision {
+				return ErrGone
+			}
+		} else {
+			current, actual, err := s.beadEndpointInTx(ctx, tx, path)
+			if err != nil {
+				return err
+			}
+			var ok bool
+			before, ok = current.(IssueRecord)
+			if !ok {
+				return fmt.Errorf("%w: Issue update requires the experimental Issue Type", ErrCapabilityUnavailable)
+			}
+			revision = actual
 		}
 		if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, revision, true, "Issue"); err != nil {
+			return err
+		}
+		if request.FromRevision != "" {
+			if terminal == nil {
+				if err := checkHistoricalIssueReadBytes(ctx, tx, path, request.FromRevision); err != nil {
+					return err
+				}
+			}
+			patch, err = s.historicalIssuePatchInTx(ctx, tx, path, request.FromRevision, before, patch, request.PropertiesPatch, terminal != nil)
+			if err != nil {
+				return err
+			}
+			attempt.Patch = patch
+			if err := issueops.ValidateUpdateRequest(attempt); err != nil {
+				return err
+			}
+		}
+		if terminal != nil {
+			var err error
+			result, err = s.recoverIssueInTx(ctx, tx, path, before, *terminal, generation, attempt, request.FromRevision)
 			return err
 		}
 		beforeNative := *before.Properties
@@ -248,12 +323,16 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		if err := s.afterStage("issue-retained"); err != nil {
 			return err
 		}
-		if err := s.recordIssueMappingInTx(ctx, tx, path, before.Properties.ID); err != nil {
+		var historical *HistoricalUpdateContext
+		if request.FromRevision != "" {
+			historical = &HistoricalUpdateContext{FromRevision: request.FromRevision, PreviousRevision: revision}
+		}
+		if err := s.recordIssueMappingWithContextInTx(ctx, tx, path, before.Properties.ID, historical); err != nil {
 			return err
 		}
 		// Charge the new retained head as well as current data; an unreadable
 		// notes or metadata edit rolls back every write effect.
-		if patch.Notes.Set || patch.AppendNotes.Set || metadataChanged {
+		if request.FromRevision != "" || patch.Notes.Set || patch.AppendNotes.Set || metadataChanged {
 			if err := checkCurrentReadBytes(ctx, tx); err != nil {
 				return err
 			}

@@ -59,7 +59,7 @@ func TestMemoryDeleteLifecycle(t *testing.T) {
 			}
 			after := workflowState(t, ctx, s)
 			for table, value := range before {
-				if table != "graph_preview_scope" && table != "graph_preview_catalog" && table != "graph_preview_payloads" && after[table] != value {
+				if table != "graph_preview_scope" && table != "graph_preview_catalog" && table != "graph_preview_payloads" && table != "graph_preview_versions" && after[table] != value {
 					t.Fatalf("delete changed %s", table)
 				}
 			}
@@ -148,7 +148,7 @@ func TestMemoryDeleteRefusalRollback(t *testing.T) {
 					t.Fatalf("%s changed state", tc.name)
 				}
 			}
-			for _, stage := range []string{"coordination", "memory-delete-allocation", "memory-delete-payload"} {
+			for _, stage := range []string{"coordination", "memory-delete-allocation", "memory-delete-payload", "memory-delete-retained"} {
 				fault := errors.New("injected delete failure")
 				s.afterWrite = func(at string) error {
 					if at == stage {
@@ -495,7 +495,7 @@ func TestMemoryDeleteConcurrentWriters(t *testing.T) {
 					t.Fatalf("race changed unowned Issue source: %+v %v", got, err)
 				}
 				wantVersions := 1
-				if other == "memory-update" && readErr == nil {
+				if errors.Is(readErr, ErrGone) || (other == "memory-update" && readErr == nil) {
 					wantVersions = 2
 				}
 				var versions int
@@ -558,8 +558,12 @@ func TestMemoryDeleteLostCommitResponse(t *testing.T) {
 	if old, err := reopened.ReadVersion(ctx, "beads/plan", memory.Version); err != nil || !reflect.DeepEqual(old, memory) {
 		t.Fatalf("witnessed retention: %+v %v", old, err)
 	}
-	if after := workflowState(t, ctx, reopened); after["graph_preview_versions"] != before["graph_preview_versions"] {
-		t.Fatal("deletion minted a version")
+	if after := workflowState(t, ctx, reopened); after["graph_preview_versions"] == before["graph_preview_versions"] {
+		t.Fatal("witnessed deletion lost its retained terminal version")
+	}
+	history, err := reopened.History(ctx, "beads/plan")
+	if err != nil || history.CurrentState == nil || history.CurrentState.PreviousVersion != memory.Revision {
+		t.Fatalf("unknown outcome terminal evidence: %+v %v", history, err)
 	}
 }
 

@@ -99,6 +99,7 @@ var versionedEntryPoints = []string{
 	// create — the singular path mints in place; the batch path defers the
 	// mint past PersistDependenciesWithOptionsResult so the first version
 	// carries the creation-time edge set.
+	"RecoverRetainedIssueInTx", // same-ID graph recovery uses the native journal/version seams
 	"CreateIssueInTx",
 	"CreateIssueInTxWithResult",
 	"CreateIssuesInTx",

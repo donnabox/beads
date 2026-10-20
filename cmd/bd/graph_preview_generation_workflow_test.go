@@ -156,11 +156,11 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 	if err != nil || cfg == nil {
 		t.Fatalf("read initialized binding: %v", err)
 	}
-	if cfg.GraphSchemaVersion != 7 {
-		t.Fatalf("graph_schema_version = %d, want 7", cfg.GraphSchemaVersion)
+	if cfg.GraphSchemaVersion != 8 {
+		t.Fatalf("graph_schema_version = %d, want 8", cfg.GraphSchemaVersion)
 	}
-	if persisted := graphGenerationQueryInt(t, cfg, `SELECT schema_version FROM graph_preview_scope WHERE singleton = 1`); persisted != 7 {
-		t.Fatalf("persisted schema_version = %d, want 7", persisted)
+	if persisted := graphGenerationQueryInt(t, cfg, `SELECT schema_version FROM graph_preview_scope WHERE singleton = 1`); persisted != 8 {
+		t.Fatalf("persisted schema_version = %d, want 8", persisted)
 	}
 	var installed struct {
 		Result struct {

@@ -88,16 +88,16 @@ func TestUnspecifiedStoreGenerationRequiresCompleteFreshTypes(t *testing.T) {
 	}
 }
 
-// The common-metadata columns change the preview storage layout and require
-// SchemaVersion 7. Older workspaces remain pinned to their original binary;
+// The common-metadata and endpoint-pin columns change the preview storage
+// layout and require SchemaVersion 8. Older workspaces remain pinned to their original binary;
 // this binary refuses them rather than silently upgrading their data. The
 // workspace marker generation still describes the installed Type set.
 //
 // Counting Types is plain SQL over graph_preview_types and identical on both
 // engines, so only the embedded engine is exercised here.
 func TestPreviewSchemaVersionAndInstalledTypeCounts(t *testing.T) {
-	if SchemaVersion != 7 {
-		t.Fatalf("SchemaVersion is %d, want 7 for common metadata", SchemaVersion)
+	if SchemaVersion != 8 {
+		t.Fatalf("SchemaVersion is %d, want 8 for endpoint pins", SchemaVersion)
 	}
 	ctx, o := issueExperimentOptions(t, "embedded")
 	s, err := OpenExisting(ctx, o)

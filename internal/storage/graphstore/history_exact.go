@@ -12,12 +12,13 @@ import (
 	"unicode/utf8"
 
 	graph "github.com/steveyegge/beads/graphops"
+	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/typecatalog"
 	"github.com/steveyegge/beads/internal/types"
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
-// ErrVersionUnknown means this subject has no retained mapping for the token.
+// ErrVersionUnknown means this subject has no available retained mapping for the token.
 // It does not assert pruning, erasure, replacement, or non-participation.
 var ErrVersionUnknown = errors.New("graph preview retained version is unknown")
 
@@ -93,16 +94,35 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 	}
 	if state == "deleted" {
 		if backing == "generic" {
-			memory, err := s.deletedMemoryInTx(ctx, tx, path)
+			if err := checkDeletedMemoryReadBytes(ctx, tx, path, head, version); err != nil {
+				return nil, err
+			}
+			memory, terminal, err := s.deletedMemoryStateInTx(ctx, tx, path)
 			if err != nil {
 				return nil, err
 			}
 			if version == head {
+				if terminal != nil {
+					return nil, ErrGone
+				}
+				return memory, nil
+			}
+			if version == memory.Version {
 				return memory, nil
 			}
 		} else if backing == "issue" {
 			if err := s.validDeletedIssueAllocationInTx(ctx, tx, path, kind, typ.String, head, state, backing, key); err != nil {
 				return nil, err
+			}
+			if err := checkNativeIssueExactReadBytes(ctx, tx, path, head, version); err != nil {
+				return nil, err
+			}
+			terminal, _, err := s.issueTerminalInTx(ctx, tx, path, head)
+			if err != nil {
+				return nil, err
+			}
+			if terminal != nil && version == head {
+				return nil, ErrGone
 			}
 		} else if !s.validDeletedLinkAllocation(kind, typ.String, backing, key, issueType) {
 			return nil, fmt.Errorf("%w: unsupported deleted subject", ErrInvalidStore)
@@ -112,7 +132,7 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 		if kind != "bead" || typ.String != issueType || !key.Valid || key.String == "" {
 			return nil, fmt.Errorf("%w: invalid Issue allocation", ErrInvalidStore)
 		}
-		return s.readIssueVersionInTx(ctx, tx, path, version, head, key.String)
+		return s.readNativeIssueRetainedInTx(ctx, tx, path, version, head, key.String)
 	}
 	dependencyType := isNativeDependencyLinkType(s.ScopeURL(), issueType, typ.String)
 	if !((backing == "generic" && kind == "bead" && s.isMemoryType(typ.String)) ||
@@ -155,7 +175,29 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 	if version == head {
 		expectedType = typ.String
 	}
-	return s.decodeMemoryVersion(ctx, tx, path, expectedType, version, raw, actor)
+	return s.decodeExactMemoryVersion(ctx, tx, path, expectedType, version, raw, actor)
+}
+
+func (s *Store) readMemoryVersionInTx(ctx context.Context, tx *sql.Tx, path, typ, version, head string) (Record, error) {
+	raw, actor, err := readVersionBytes(ctx, tx, path, version, head)
+	if err != nil {
+		return Record{}, err
+	}
+	return s.decodeExactMemoryVersion(ctx, tx, path, typ, version, raw, actor)
+}
+
+func (s *Store) decodeExactMemoryVersion(ctx context.Context, tx *sql.Tx, path, typ, version string, raw []byte, actor string) (Record, error) {
+	// Terminal evidence stays terminal after recovery and is never a source.
+	var marker struct {
+		State string `json:"state"`
+	}
+	if json.Unmarshal(raw, &marker) == nil && marker.State != "" {
+		if _, err := s.decodeMemoryTerminal(path, version, raw, actor); err != nil {
+			return Record{}, err
+		}
+		return Record{}, ErrGone
+	}
+	return s.decodeMemoryVersion(ctx, tx, path, typ, version, raw, actor)
 }
 
 func (s *Store) decodeMemoryVersion(ctx context.Context, tx *sql.Tx, path, typ, version string, raw []byte, actor string) (Record, error) {
@@ -215,6 +257,11 @@ func sameVersionJSON(raw []byte, value any) bool {
 }
 
 func validVersionAttribution(value Attribution, actor string) bool {
+	if h := value.HistoricalUpdate; h != nil {
+		if validateVersionToken(h.FromRevision) != nil || validateVersionToken(h.PreviousRevision) != nil {
+			return false
+		}
+	}
 	at, err := time.Parse(time.RFC3339Nano, value.RecordedAt)
 	return err == nil && at.UTC().Format(time.RFC3339Nano) == value.RecordedAt && utf8.ValidString(actor) &&
 		value.Actor == actor && ((actor == "" && value.Status == "unknown") || (actor != "" && value.Status == "claimed"))
@@ -239,6 +286,9 @@ func (s *Store) validateVersionLink(ctx context.Context, tx *sql.Tx, link LinkRe
 	issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
 	if err != nil {
 		return err
+	}
+	if link.SourceRevision != "" || link.TargetRevision != "" {
+		return fmt.Errorf("%w: native Dependencies cannot carry endpoint pins", ErrInvalidStore)
 	}
 	depType, hasKind := link.Properties["dep_type"].(string)
 	if !isNativeDependencyLinkType(s.ScopeURL(), issueType, link.Type) ||
@@ -292,7 +342,7 @@ func (s *Store) readIssueVersionInTx(ctx context.Context, tx *sql.Tx, path, vers
 	var issueID string
 	var ordinal int64
 	var ownedSize uint64
-	err := tx.QueryRowContext(ctx, `SELECT issue_id,issue_revision,OCTET_LENGTH(owned)
+	err := tx.QueryRowContext(ctx, `SELECT issue_id,issue_revision,OCTET_LENGTH(owned)+COALESCE(OCTET_LENGTH(revision_context),0)
  FROM graph_preview_issue_versions WHERE path=? AND version=?`, path, version).Scan(&issueID, &ordinal, &ownedSize)
 	if errors.Is(err, sql.ErrNoRows) {
 		if version == head {
@@ -307,23 +357,31 @@ func (s *Store) readIssueVersionInTx(ctx context.Context, tx *sql.Tx, path, vers
 		return IssueRecord{}, fmt.Errorf("%w: invalid Issue retained mapping", ErrInvalidStore)
 	}
 	var bodySize uint64
-	err = tx.QueryRowContext(ctx, `SELECT OCTET_LENGTH(durable_state)+OCTET_LENGTH(change_actor)+OCTET_LENGTH(attribution_status)
- FROM issue_versions WHERE issue_id=? AND revision=?`, issueID, ordinal).Scan(&bodySize)
+	var removedAt sql.NullTime
+	var removedReason, removedRestriction sql.NullString
+	err = tx.QueryRowContext(ctx, `SELECT OCTET_LENGTH(durable_state)+COALESCE(OCTET_LENGTH(change_actor),0)+COALESCE(OCTET_LENGTH(attribution_status),0),removed_at,removed_reason,removed_restriction
+ FROM issue_versions WHERE issue_id=? AND revision=?`, issueID, ordinal).Scan(&bodySize, &removedAt, &removedReason, &removedRestriction)
 	if errors.Is(err, sql.ErrNoRows) {
 		return IssueRecord{}, fmt.Errorf("%w: mapped Issue retained body is missing", ErrInvalidStore)
 	}
 	if err != nil {
 		return IssueRecord{}, err
 	}
+	// A retained graph mapping does not authorize a native row marked removed.
+	// Match retained-reference admission and report the selected row's recorded
+	// restriction/reason, without hydrating it or falling back to another row.
+	if removedAt.Valid {
+		return IssueRecord{}, fmt.Errorf("%w: %s: %s", ErrVersionUnknown, issueops.NormalizeRemovedRestriction(removedRestriction.String), removedReason.String)
+	}
 	if ownedSize > PreviewCurrentReadByteLimit || bodySize > PreviewCurrentReadByteLimit-ownedSize {
 		return IssueRecord{}, fmt.Errorf("%w: retained Issue exceeds acquisition budget", ErrLimitExceeded)
 	}
-	var raw, owned []byte
-	var actor, status string
+	var raw, owned, revisionContext []byte
+	var actor, status sql.NullString
 	var at time.Time
-	err = tx.QueryRowContext(ctx, `SELECT v.durable_state,v.change_actor,v.attribution_status,v.change_at,m.owned
+	err = tx.QueryRowContext(ctx, `SELECT v.durable_state,v.change_actor,v.attribution_status,v.change_at,m.owned,m.revision_context
  FROM graph_preview_issue_versions m JOIN issue_versions v ON v.issue_id=m.issue_id AND v.revision=m.issue_revision
- WHERE m.path=? AND m.version=?`, path, version).Scan(&raw, &actor, &status, &at, &owned)
+ WHERE m.path=? AND m.version=?`, path, version).Scan(&raw, &actor, &status, &at, &owned, &revisionContext)
 	if err != nil {
 		return IssueRecord{}, err
 	}
@@ -333,10 +391,14 @@ func (s *Store) readIssueVersionInTx(ctx context.Context, tx *sql.Tx, path, vers
 		return IssueRecord{}, err
 	}
 	result := IssueRecord{ID: s.ScopeURL() + path, Type: issueType, Revision: version, Version: version,
-		Attribution: Attribution{Actor: actor, Status: status, RecordedAt: at.UTC().Format(time.RFC3339Nano)}}
+		Attribution: Attribution{Actor: actor.String, Status: status.String, RecordedAt: at.UTC().Format(time.RFC3339Nano)}}
+	result.Attribution, err = applyIssueRevisionContext(result.Attribution, revisionContext)
+	if err != nil {
+		return IssueRecord{}, err
+	}
 	if json.Unmarshal(raw, &issue) != nil || !sameVersionJSON(raw, &issue) || issue.ID != issueID ||
 		json.Unmarshal(owned, &result.Owned) != nil || !sameVersionJSON(owned, result.Owned) ||
-		!validVersionAttribution(result.Attribution, actor) {
+		!validVersionAttribution(result.Attribution, actor.String) {
 		return IssueRecord{}, fmt.Errorf("%w: invalid retained Issue state", ErrInvalidStore)
 	}
 	if err := s.validateVersionOwned(ctx, tx, result.ID, result.Type, result.Owned); err != nil {

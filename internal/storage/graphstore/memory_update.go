@@ -1,9 +1,11 @@
 package graphstore
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"unicode/utf8"
 
@@ -23,6 +25,7 @@ type MemoryUpdateRequest struct {
 	Properties       Properties
 	Actor            string
 	ExpectedRevision string
+	FromRevision     string
 	Unconditional    bool
 	Metadata         publicops.MetadataPatch
 }
@@ -40,7 +43,7 @@ func (s *Store) UpdateMemory(ctx context.Context, request MemoryUpdateRequest) (
 	return s.writeMemory(ctx, memoryWriteRequest{
 		typeURL: request.TypeURL, completeProperties: &request.Properties,
 		path: request.Path, actor: request.Actor, expectedRevision: request.ExpectedRevision,
-		unconditional: request.Unconditional, title: request.Properties.Title, body: request.Properties.Body,
+		unconditional: request.Unconditional, fromRevision: request.FromRevision, title: request.Properties.Title, body: request.Properties.Body,
 		hasTitle: true, hasBody: true, metadataPatch: request.Metadata,
 	})
 }
@@ -58,6 +61,7 @@ type MemoryPatchRequest struct {
 	PropertiesProvided bool
 	Actor              string
 	ExpectedRevision   string
+	FromRevision       string
 	Unconditional      bool
 	Metadata           publicops.MetadataPatch
 }
@@ -68,7 +72,7 @@ func (s *Store) PatchMemory(ctx context.Context, request MemoryPatchRequest) (Me
 	patch := memoryWriteRequest{path: request.Path, actor: request.Actor,
 		typeURL:          request.TypeURL,
 		expectedRevision: request.ExpectedRevision, unconditional: request.Unconditional, metadataPatch: request.Metadata,
-		propertiesProvided: request.PropertiesProvided}
+		propertiesProvided: request.PropertiesProvided, fromRevision: request.FromRevision}
 	if len(request.PropertiesMerge) != 0 {
 		if len(request.PropertiesJSON) != 0 || request.Title != nil || request.Body != nil {
 			return MemoryMutationResult{}, fmt.Errorf("%w: property merge cannot accompany replacement fields", storage.ErrValidation)
@@ -106,6 +110,7 @@ func (s *Store) PatchMemory(ctx context.Context, request MemoryPatchRequest) (Me
 
 type memoryWriteRequest struct {
 	path, actor, expectedRevision string
+	fromRevision                  string
 	unconditional                 bool
 	title, body                   string
 	typeURL                       string
@@ -121,7 +126,12 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 	if err := validatePath(request.path); err != nil {
 		return MemoryMutationResult{}, fmt.Errorf("%w: %v", storage.ErrValidation, err)
 	}
-	if request.typeURL == "" && request.completeProperties == nil && !request.hasTitle && !request.hasBody && request.propertiesPatch == nil && !request.propertiesProvided && !hasCommonMetadataPatch(request.metadataPatch) {
+	if request.fromRevision != "" {
+		if err := validateVersionToken(request.fromRevision); err != nil {
+			return MemoryMutationResult{}, err
+		}
+	}
+	if request.fromRevision == "" && request.typeURL == "" && request.completeProperties == nil && !request.hasTitle && !request.hasBody && request.propertiesPatch == nil && !request.propertiesProvided && !hasCommonMetadataPatch(request.metadataPatch) {
 		return MemoryMutationResult{}, fmt.Errorf("%w: at least one Memory field must be supplied", storage.ErrValidation)
 	}
 	if request.propertiesPatch != nil && (request.hasTitle || request.hasBody) {
@@ -138,9 +148,38 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		current, revision, err := s.beadEndpointInTx(ctx, tx, request.path)
-		if err != nil {
+		if request.fromRevision != "" {
+			if err := checkCurrentReadBytes(ctx, tx); err != nil {
+				return err
+			}
+		}
+		var current any
+		var revision string
+		var terminal *MemoryTerminalState
+		var err error
+		var state, backing string
+		if err := tx.QueryRowContext(ctx, `SELECT allocation_state,backing FROM graph_preview_catalog WHERE path=?`, request.path).Scan(&state, &backing); errors.Is(err, sql.ErrNoRows) {
+			return ErrNotFound
+		} else if err != nil {
 			return err
+		}
+		if state == "deleted" && request.fromRevision != "" {
+			if backing != "generic" {
+				return fmt.Errorf("%w: historical native Issue recovery is not supported by the Memory writer", ErrCapabilityUnavailable)
+			}
+			baseline, deleted, readErr := s.deletedMemoryStateInTx(ctx, tx, request.path)
+			if readErr != nil {
+				return readErr
+			}
+			if deleted == nil {
+				return fmt.Errorf("%w: recovery requires an actual retained deletion revision", ErrCapabilityUnavailable)
+			}
+			current, revision, terminal = baseline, deleted.Revision, deleted
+		} else {
+			current, revision, err = s.beadEndpointInTx(ctx, tx, request.path)
+			if err != nil {
+				return err
+			}
 		}
 		memory, ok := current.(Record)
 		if !ok {
@@ -149,7 +188,38 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 		if err := checkRevisionGuard(request.expectedRevision, request.unconditional, revision, true, "Memory"); err != nil {
 			return err
 		}
-		next := memory.Properties
+		base := memory
+		if request.fromRevision != "" {
+			if request.typeURL != "" && request.typeURL != memory.Type {
+				return fmt.Errorf("%w: historical Update preserves the current Type", storage.ErrValidation)
+			}
+			if err := checkHistoricalMemoryReadBytes(ctx, tx, request.path, request.fromRevision); err != nil {
+				return err
+			}
+			// Current allocation/baseline was validated above in this transaction;
+			// reuse the exact Memory decoder without hydrating that baseline twice.
+			selected, err := s.readMemoryVersionInTx(ctx, tx, request.path, "", request.fromRevision, revision)
+			if err != nil {
+				return err
+			}
+			retained := selected
+			if retained.ID != memory.ID {
+				return fmt.Errorf("%w: historical source requires the same Memory identity", ErrCapabilityUnavailable)
+			}
+			base.Properties = retained.Properties
+			base.Metadata = retained.Metadata
+			catalog, err := s.selectedTypes()
+			if err != nil {
+				return err
+			}
+			if catalog.evaluationType(memory.Type) {
+				base.Properties, err = historicalEvaluationBase(memory.Properties, base.Properties)
+				if err != nil {
+					return err
+				}
+			}
+		}
+		next := base.Properties
 		nextType := memory.Type
 		if request.typeURL != "" {
 			nextType = request.typeURL
@@ -170,12 +240,12 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 			next.Body = request.body
 		}
 		if request.propertiesPatch != nil {
-			next, err = applyMemoryPropertiesPatch(request.propertiesPatch, memory.Properties)
+			next, err = applyMemoryPropertiesPatch(request.propertiesPatch, base.Properties)
 			if err != nil {
 				return err
 			}
 		}
-		metadata, metadataChanged, err := issueops.ApplyMetadataPatch(memory.Metadata, request.metadataPatch)
+		metadata, _, err := issueops.ApplyMetadataPatch(base.Metadata, request.metadataPatch)
 		if err != nil {
 			return err
 		}
@@ -206,34 +276,60 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 				return err
 			}
 		}
-		if memory.Properties == next && memory.Type == nextType && !metadataChanged {
+		if terminal == nil && memory.Properties == next && memory.Type == nextType && bytes.Equal(memory.Metadata, metadata) {
 			result = MemoryMutationResult{Memory: memory}
 			return nil
 		}
 		if err := s.touchCoordination(ctx, tx); err != nil {
 			return err
 		}
-		if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_payloads SET properties=?, metadata=? WHERE path=?`, properties, metadata, request.path); err != nil {
-			return err
+		if terminal == nil {
+			if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_payloads SET properties=?, metadata=? WHERE path=?`, properties, metadata, request.path); err != nil {
+				return err
+			}
+		} else {
+			changed, err := tx.ExecContext(ctx, `UPDATE graph_preview_catalog SET allocation_state='live' WHERE path=? AND allocation_state='deleted' AND revision=?`, request.path, revision)
+			if err != nil {
+				return err
+			}
+			if n, err := changed.RowsAffected(); err != nil {
+				return err
+			} else if n != 1 {
+				return fmt.Errorf("%w: recovery lost its deletion predecessor", ErrConflict)
+			}
+			if err := s.afterStage("memory-recover-allocation"); err != nil {
+				return err
+			}
+			if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_payloads(path,properties,metadata) VALUES(?,?,?)`, request.path, properties, metadata); err != nil {
+				return err
+			}
+			memory.Attribution.Inception = "revert"
 		}
 		if err := s.afterStage("memory-payload"); err != nil {
 			return err
 		}
 		replaced := replacedMemory(memory, request.unconditional)
+		if terminal != nil {
+			replaced = nil
+		}
 		memory.Properties = next
 		memory.Type = nextType
 		if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_catalog SET type_url=? WHERE path=?`, nextType, request.path); err != nil {
 			return err
 		}
 		memory.Metadata = metadata
-		accepted, err := s.recordOwnedMemoryInTx(ctx, tx, request.path, request.actor, memory)
+		var historical *HistoricalUpdateContext
+		if request.fromRevision != "" {
+			historical = &HistoricalUpdateContext{FromRevision: request.fromRevision, PreviousRevision: revision}
+		}
+		accepted, err := s.recordOwnedMemoryWithContextInTx(ctx, tx, request.path, request.actor, memory, historical)
 		if err != nil {
 			return err
 		}
 		// New ordered patches must not publish a state that exceeds the existing
 		// current-read acquisition budget. Existing replacement/field routes retain
 		// their prior admission behavior. A no-op above writes nothing.
-		if request.propertiesPatch != nil || hasCommonMetadataPatch(request.metadataPatch) {
+		if request.fromRevision != "" || request.propertiesPatch != nil || hasCommonMetadataPatch(request.metadataPatch) {
 			if err := checkCurrentReadBytes(ctx, tx); err != nil {
 				return err
 			}
@@ -290,7 +386,7 @@ func preserveEvaluationSubjectGroup(previous, next Properties) error {
 // group. Ordinary Memory extension fields never establish that binding. Retained
 // history is the authority; incomplete or oversized history refuses admission.
 func (s *Store) preserveRetainedEvaluationGroup(ctx context.Context, tx *sql.Tx, path, head string, next Properties) error {
-	versions, err := previewVersionsInTx(ctx, tx, path, head, "", shippedVersionBounds())
+	versions, err := previewVersionsInTx(ctx, tx, path, head, "", true, shippedVersionBounds())
 	if err != nil {
 		return err
 	}
@@ -312,6 +408,12 @@ func (s *Store) preserveRetainedEvaluationGroup(ctx context.Context, tx *sql.Tx,
 		if err != nil {
 			return err
 		}
+		if versions[i].Removed {
+			if _, err := s.decodeMemoryTerminal(path, version, raw, actor); err != nil {
+				return err
+			}
+			continue
+		}
 		memory, err := s.decodeMemoryVersion(ctx, tx, path, "", version, raw, actor)
 		if err != nil {
 			return err
@@ -321,4 +423,36 @@ func (s *Store) preserveRetainedEvaluationGroup(ctx context.Context, tx *sql.Tx,
 		}
 	}
 	return nil
+}
+
+// The selected Evaluation subject group is initialized once per identity. A
+// historical content source never rolls it back; explicit edits are still
+// checked by the ordinary preserveEvaluationSubjectGroup admission below.
+func historicalEvaluationBase(current, source Properties) (Properties, error) {
+	currentJSON, err := canonicalJSON(current)
+	if err != nil {
+		return Properties{}, err
+	}
+	sourceJSON, err := canonicalJSON(source)
+	if err != nil {
+		return Properties{}, err
+	}
+	var currentFields, sourceFields map[string]json.RawMessage
+	if err := json.Unmarshal(currentJSON, &currentFields); err != nil {
+		return Properties{}, err
+	}
+	if err := json.Unmarshal(sourceJSON, &sourceFields); err != nil {
+		return Properties{}, err
+	}
+	if len(currentFields["subjects"]) == 0 {
+		return Properties{}, fmt.Errorf("%w: current Evaluation subject baseline is unavailable", ErrInvalidStore)
+	}
+	sourceFields["subjects"] = currentFields["subjects"]
+	raw, err := canonicalJSON(sourceFields)
+	if err != nil {
+		return Properties{}, err
+	}
+	var result Properties
+	err = json.Unmarshal(raw, &result)
+	return result, err
 }
