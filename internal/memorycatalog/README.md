@@ -2,7 +2,7 @@
 
 This pure package projects nine Bead and nine Link Type declarations from
 [`bdp@afec911`](https://github.com/gastownhall/bdp/blob/afec9117914bd1c1fe0027c2067e4d89677e40a3/specs/types/memory/memory.md).
-The independently fetched source is 105,123 bytes, SHA256
+The independently fetched source is 106,334 bytes, SHA256
 `1f97f8a80f725b2a44a0c715b4ccf09918f02af2abb9885797c3395255dc9e34`.
 `SelectedSource` retains that exact publication identity. This successor records
 Donna's selection of Evaluation refining Memory, owning Conformance-family
