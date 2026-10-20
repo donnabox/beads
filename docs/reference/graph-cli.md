@@ -749,3 +749,41 @@ the graph Type catalog.
 ## Import an ordinary export
 
 The independent legacy import workstream adds bounded `bd import` for a fresh graph workspace. See the [legacy import contract](/reference/graph-legacy-import) for supported data, identity mappings and refusals. This candidate capability is pending release integration; graph-format import follows graph export.
+
+## Canonical Resource output
+
+In a graph workspace, opt into the canonical output contract with
+`--output-format`. Root `show` accepts a Bead or Link identity; `link show`
+accepts a Link identity. Both use the same BDP Resource representation:
+
+```sh
+bd show beads/plan --output-format json
+bd link show links/note --output-format json
+bd show beads/plan@REVISION --output-format json
+bd show beads/plan --output-format detail --omit /metadata
+bd show beads/plan --output-format json --include /properties/title
+bd show beads/plan --output-format json --omit envelope
+```
+
+`default` and `detail` show labeled fields; `json` emits a schema-version-2
+CLI envelope with the exact BDP contract identifier and Resource in `data`.
+Current records include their inline owned Links. Reading or displaying them
+never retrieves target Resources. Exact retained reads use the retained state,
+including its owned Links, without filling fields from current state.
+
+JSON Pointer masks are repeatable. Includes select optional fields while retaining
+identity, Type and revision; Link endpoints are mandatory too. Omission wins.
+Nested paths are supported within `properties` and `metadata`; other top-level
+sections, including `ownedLinks`, are selected or omitted as whole values.
+Omitting mandatory context refuses the request. Masks do not filter which
+Resources exist or change the selected graph.
+
+`--omit envelope` emits the selected Resource directly. A failed raw read emits
+no stdout; always check the command's exit status. Framed JSON failures contain
+`outcome: "failure"` and an error origin/problem wrapper. Diagnostics use stderr.
+
+Existing `--json` and `--format` behavior remains available. Combining either
+explicit flag with `--output-format` refuses, including `--json=false`. These
+existing command paths require `--output-format` when using `--include` or
+`--omit`. This opt-in currently requires a graph workspace and exactly one
+Resource per `show` invocation.

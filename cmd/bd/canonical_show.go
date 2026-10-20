@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"os"
 	"strings"
 	"unicode/utf8"
 
@@ -52,6 +53,9 @@ func runCanonicalShow(cmd *cobra.Command, args []string, linkOnly bool) error {
 	}
 	if err := canonicalGraphFlags(cmd, renderer, "version"); err != nil {
 		return err
+	}
+	if err := canonicalScalarOccurrences(cmd, os.Args[1:], "version"); err != nil {
+		return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
 	}
 	ref, err := graphPreviewParseReference(args[0])
 	if err != nil {
