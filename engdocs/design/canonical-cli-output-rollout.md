@@ -153,8 +153,10 @@ Before code is assigned:
   masks, including mandatory assessment context and strict continuation.
 - Map existing flags/output for each overlapping root path, with examples from
   shipping v1.3.1 and the selected Preview 3 integration commit.
-- Reserve exact files and integration order with Janet. Source observations in
-  the older design checkout do not grant write ownership on the current branch.
+- Check for actual shared-file conflicts with other owners and Janet. Work in
+  isolated checkouts and record any agreed collision order under
+  [MEM-POL-003](https://github.com/gastownhall/beads/issues/7656#mem-pol-003-independent-ownership-and-green-ci-code-flow);
+  hypothetical overlap is not a publication or merge hold.
 
 The unresolved `--allow-partial` extension does not need to block strict `show`
 and ordinary collection output. Do not silently admit it before its completion
@@ -291,17 +293,22 @@ preparation for their isolated slice. Cleo owns this output contract and the
 database/service use, release integration and installed-product qualification;
 that coordination does not gate independent package validation or PR preparation.
 Melinda owns query semantics; Trish owns shared BDP/Types contracts; Iris owns
-interchange. The separate symmetric-edit work and BDP empty-array PR retain their
-existing review and ordering holds; this plan does not release them.
+interchange. [MEM-POL-003](https://github.com/gastownhall/beads/issues/7656#mem-pol-003-independent-ownership-and-green-ci-code-flow)
+supersedes earlier blanket authoring, validation and publication holds, including
+agent-only ordering holds. A real collision requires both owners' and Janet's
+agreement and an entry in the policy's visible hold register; explicit
+Donna-requested exceptions and repository protections remain in force.
 
 This remains a documentation-only PR. After Donna approved implementation,
 Janet assigned Cleo a bounded new `internal/clioutput/` package on integration
 baseline `5b8cdefe055b8f08cf9eb385e946396c1b5799d7`. Foundation source and pure
 tests cover descriptor-driven masks and single-Resource JSON/detail/raw/error
-rendering, with no store/transport reads. The baseline is not qualification of the
-new output contract. Cleo prepares the package's generated BUILD references and
-runs its validation in an isolated checkout. Existing command files and shared
-integration work remain coordinated with Janet.
+rendering, with no store/transport reads. The implementation is published in
+[PR123](https://github.com/donnabox/beads/pull/123), including its focused validation
+results and outstanding full-suite qualification. The baseline is not
+qualification of the new output contract. Cleo prepares the package's generated
+BUILD references and runs its validation in an isolated checkout. Existing command
+files and shared integration work remain coordinated with Janet.
 
 The `show`/`link show` command-wiring handoff still follows PR114 and the active
 Type/symmetric Link CLI handshakes. The foundation does not make new flags
@@ -331,9 +338,9 @@ established proposal workflow, the full proposal body and documentation PR shoul
 cross-link, with draft/accepted/implemented status explicit. The documentation review branch is `codex/cli-selection-output-spec`, based on
 Preview 3 integration commit `5b8cdefe055b8f08cf9eb385e946396c1b5799d7`.
 This is a documentation checkpoint, not an implementation qualification claim.
-Shared CLI index/navigation assembly remains reserved to Janet; its proposed
-additive diff is prepared separately for assembly with PR121's Memory child and
-the other queued CLI documentation. This branch does not edit those reserved files.
+The shared CLI index/navigation additive diff is prepared separately for assembly
+with PR121's Memory child and the other CLI documentation. This branch does not
+edit those files; that scope choice does not create a publication or merge hold.
 
 Melinda's separate selection/output/query delivery note supplied compatible
 sequencing and acceptance recommendations. This document is the consolidated
