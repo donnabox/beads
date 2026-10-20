@@ -73,6 +73,11 @@ func TestMemoryDeletionCurrentReadAndRetainedPages(t *testing.T) {
 			if _, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: "links/survivor", SourcePath: "beads/work", TargetPath: "beads/alpha", Actor: "human:link-author"}); err != nil {
 				t.Fatal(err)
 			}
+			// Fixture installation does not consume the bounded read/deletion
+			// exercise budget on slower race-enabled hosts.
+			cancel()
+			ctx, cancel = context.WithTimeout(context.Background(), 3*time.Minute)
+			defer cancel()
 			reader := New(store)
 			before := checkInventory(t, ctx, reader, 3, 2)
 			if before.Beads[1].ID != scope+"beads/plan" || before.Links[0].ID != scope+"links/context" {
