@@ -251,6 +251,7 @@ func TestMemoryPatchIndependentOfCurrentReadBudget(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, _, s, original, _, _ := selectedMemoryPatchFixture(t, backend)
+			ctx = currentReadBudgetContext(t, ctx)
 			// Its current payload and complete retained snapshot exceed the global
 			// current-read acquisition budget, while this write's subject stays small.
 			if _, err := s.Create(ctx, CreateRequest{Path: "beads/large", Title: "Large", Body: strings.Repeat("x", PreviewCurrentReadByteLimit/2)}); err != nil {

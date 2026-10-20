@@ -346,6 +346,7 @@ func TestLinkPropertiesPatchReadBudget(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, _, s, original, target, link := disclosureFixture(t, backend)
+			ctx = currentReadBudgetContext(t, ctx)
 			// The unchanged filler fits the established current-read budget. Multiple
 			// copies of a changed Link (including its owner) would exceed that budget.
 			if _, err := s.Create(ctx, CreateRequest{Path: "beads/filler", Title: "Fixture", Body: strings.Repeat("f", PreviewCurrentReadByteLimit/2-(512<<10))}); err != nil {
@@ -658,6 +659,7 @@ func TestLinkPropertiesPatchDeletedBudget(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, _, s, original, target, link := disclosureFixture(t, backend)
+			ctx = currentReadBudgetContext(t, ctx)
 			deleted := propertiesPatchDeletedFiller(t, ctx, s)
 			if _, err := s.Read(ctx, "links/out"); err != nil {
 				t.Fatalf("deleted filler fixture unreadable: %v", err)

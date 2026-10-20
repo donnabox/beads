@@ -254,6 +254,7 @@ func TestIssueInitialNotesPreservesCurrentReadBudget(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, s := createFieldsStore(t, backend)
+			ctx = currentReadBudgetContext(t, ctx)
 			original, err := s.CreateIssue(ctx, "beads/existing", initialNotesRequest("Existing readable Issue"))
 			if err != nil {
 				t.Fatal(err)

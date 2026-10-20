@@ -674,6 +674,7 @@ func TestLinkUnlinkDefaultSourceReadBudget(t *testing.T) {
 			for _, selection := range []string{"id-default", "pair-default", "id-explicit"} {
 				t.Run(selection, func(t *testing.T) {
 					ctx, _, s, original, target, link := disclosureFixture(t, backend)
+					ctx = currentReadBudgetContext(t, ctx)
 					if _, err := s.Create(ctx, CreateRequest{Path: "beads/filler", Title: "Fixture", Body: strings.Repeat("f", PreviewCurrentReadByteLimit/2-(512<<10))}); err != nil {
 						t.Fatal(err)
 					}

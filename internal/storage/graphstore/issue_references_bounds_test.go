@@ -16,6 +16,7 @@ func TestIssueReferencesExceedsCurrentReadBudget(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, _, s, original, target, dependency := reopenFixture(t, backend)
+			ctx = currentReadBudgetContext(t, ctx)
 			withReferences, err := s.UpdateIssue(ctx, UpdateIssueRequest{
 				Path: "beads/work", Actor: "reference-author", ExpectedRevision: original.Revision,
 				ExternalRef: issueEditString(strings.Repeat("e", 200)), SpecID: issueEditString(strings.Repeat("s", 900)),
