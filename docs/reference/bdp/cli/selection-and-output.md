@@ -250,11 +250,20 @@ defaults to detail; generic collections and generic graph views default to table
 A domain command may explicitly choose tree. Commands admit only the formats
 appropriate to their result contract.
 
-Retain `--json` as shorthand. `--json --output-format json` is equivalent;
+On canonical paths, retain `--json` as shorthand. `--json --output-format json` is equivalent;
 `--json --output-format table` refuses. Conflicting repeated scalar flags refuse
 rather than selecting the last value. Explicitly repeatable selectors/masks
 accumulate. Existing `--format`, `--pretty`, brief and body-only contracts require
 an explicit compatibility mapping, not silent reinterpretation.
+
+For the Preview 3 transition on existing legacy command paths, `--json` and
+`--format` retain their existing contracts. An explicit `--output-format` selects
+the canonical contract. Combining it with either explicit legacy flag refuses,
+even for `--output-format json --json`, `--json=false`, or identical format names;
+flag order does not change this rule. `--include` and `--omit` on these paths
+require explicit `--output-format`. Commands that do not adopt canonical output
+keep their existing behavior. Only an explicitly canonical command path uses the
+shorthand equivalence above. Each adapter must test this boundary.
 
 Detail shows labeled fields/sections without silently truncating selected values.
 Tables may visibly abbreviate long cells; full detail remains available through
@@ -319,7 +328,9 @@ rows to make it streamable. Each adapter declares its delivery unit.
 ```
 
 This is a schematic envelope, not a valid Resource example. `schema_version` is
-numeric `2`, advancing shipping Beads' numeric `1`. `bdp_spec` identifies the exact
+numeric `2`, advancing shipping Beads' numeric `1`. It versions both the CLI
+envelope and CLI-defined payload shapes, including comparisons; no separate
+CLI result-schema version is needed. `bdp_spec` independently identifies the exact
 selected BDP contract, never just the executable version. A CLI-derived graph or
 computed result must not claim a BDP operation schema that BDP does not define;
 the identifier governs the BDP values it contains, while `result_kind` identifies
@@ -347,7 +358,7 @@ a complete failure envelope. Start with in-memory buffering; disk spooling is
 not a required feature or new flag. Output buffering does not make mutations
 transactional or undo effects that occurred before a rendering failure.
 
-**Candidate envelope additions:** `error` carries `{ "origin": "bdp" | "cli",
+`error` carries `{ "origin": "bdp" | "cli",
 "problem": ... }`; preserve an available BDP problem unchanged. Local problems
 have a stable code and message and are explicitly CLI-originated. Failure may
 retain an available operation result in `data` when needed to disclose actual
@@ -356,10 +367,11 @@ error. Exact local error-code registry is an implementation prerequisite.
 
 For collections, an outer `completion` reports `returned`, `exhausted` and
 `stop_reason` (`exhausted`, `page`, `limit`, `error`). When a failure prevents
-determining exhaustion, encode it as unknown rather than false certainty.
+determining exhaustion, encode `exhausted: null` with `stop_reason: "error"`.
+Otherwise `exhausted` is boolean; null means unknown, never false or exhausted.
 Only report emitted item counts, not a fabricated total matching count.
 Protocol continuation remains in its native JSON payload location.
-These exact `completion` field names are candidate schema details.
+These completion field names and the null encoding are part of schema version 2.
 
 Successful no-match queries have empty results and zero status. Finding cycles
 is data; an explicit validation/check command may fail on violations. Preserve
@@ -491,18 +503,6 @@ These are required implementation checks, not tests already executed.
 These are unresolved review details, not replacements for the accepted pure
 model. They do not authorize new commands or expand the current rollout.
 
-- The legacy transition must explicitly decide mixed `--json` and
-  `--output-format` invocations and default/cutover behavior on each legacy path.
-  Their equivalence above is the pure canonical contract, not proof that mixing
-  legacy and canonical modes is already safe. Preserve old consumers until that
-  mapping and their corpus checks are qualified.
-- CLI-derived payloads need an explicit schema-evolution rule, whether tied to
-  `schema_version` or a separate result-schema identifier. Decide this before
-  admitting graph/row/aggregate/comparison adapters; a result-kind name alone
-  does not version a payload shape.
-- Collection adapters must resolve the exact encoding of unknown exhaustion
-  and its relationship to `stop_reason`. The candidate completion fields above
-  do not yet supply that encoding.
 - Inventory actual exit behavior at the selected baseline before promising to
   preserve it. Verify help against behavior and coordinate the resulting public
   corpus with consumers; this does not authorize a numeric-code normalization.
