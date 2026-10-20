@@ -629,15 +629,39 @@ else
     fi
 
     # 3. Wisps must stay writable — this is the storage_class default path.
-    if cand update "$WISP_ID" --notes "smoke wisp mutation" >/dev/null 2>&1; then
-        SHOW_OUT=$(cand show "$WISP_ID" 2>/dev/null || echo "")
-        if echo "$SHOW_OUT" | grep -q "smoke wisp mutation"; then
+    # Capture the existing update -> human show pair, without extra bd reads.
+    WISP_OBSERVATION_DIR=""
+    WISP_UPDATE_STDOUT=/dev/null
+    WISP_UPDATE_STDERR=/dev/null
+    WISP_SHOW_STDERR=/dev/null
+    if WISP_OBSERVATION_DIR=$(mktemp -d -t bd-upgrade-wisp-observation-XXXXXX); then
+        WISP_UPDATE_STDOUT="$WISP_OBSERVATION_DIR/update.stdout"
+        WISP_UPDATE_STDERR="$WISP_OBSERVATION_DIR/update.stderr"
+        WISP_SHOW_STDERR="$WISP_OBSERVATION_DIR/show.stderr"
+    fi
+    WISP_PAIR_FAILED=false
+    WISP_UPDATE_STATUS=0
+    WISP_SHOW_STATUS="not run"
+    SHOW_OUT=""
+    if cand update "$WISP_ID" --notes "smoke wisp mutation" >"$WISP_UPDATE_STDOUT" 2>"$WISP_UPDATE_STDERR"; then
+        if SHOW_OUT=$(cand show "$WISP_ID" 2>"$WISP_SHOW_STDERR"); then
+            WISP_SHOW_STATUS=0
+        else
+            WISP_SHOW_STATUS=$?
+        fi
+        if [ "$WISP_SHOW_STATUS" -ne 0 ]; then
+            fail "bd show on a migrated wisp errors after update (exit $WISP_SHOW_STATUS)"
+            WISP_PAIR_FAILED=true
+        elif echo "$SHOW_OUT" | grep -q "smoke wisp mutation"; then
             pass "Wisp writable after upgrade (mutation persisted)"
         else
             fail "Wisp mutation did not persist after upgrade"
+            WISP_PAIR_FAILED=true
         fi
     else
-        fail "bd update on a migrated wisp errors after upgrade"
+        WISP_UPDATE_STATUS=$?
+        fail "bd update on a migrated wisp errors after upgrade (exit $WISP_UPDATE_STATUS)"
+        WISP_PAIR_FAILED=true
     fi
 
     if cand doctor quick >/dev/null 2>&1; then
@@ -646,7 +670,52 @@ else
         fail "bd doctor quick fails after the wisp upgrade"
     fi
 
-    rm -rf "$WS"
+    if $WISP_PAIR_FAILED; then
+        # Diagnostics and preservation are best effort: never replace the
+        # assertion's failure status with an archive/printing failure.
+        printf '  Wisp update exit: %s; show exit: %s\n' "$WISP_UPDATE_STATUS" "$WISP_SHOW_STATUS" >&2 || true
+        printf '  --- update stdout ---\n' >&2 || true
+        cat "$WISP_UPDATE_STDOUT" >&2 || true
+        printf '  --- update stderr ---\n' >&2 || true
+        cat "$WISP_UPDATE_STDERR" >&2 || true
+        printf '  --- show stdout ---\n%s\n' "$SHOW_OUT" >&2 || true
+        printf '  --- show stderr ---\n' >&2 || true
+        cat "$WISP_SHOW_STDERR" >&2 || true
+        if [ -n "$WISP_OBSERVATION_DIR" ]; then
+            printf '%s\n' "$SHOW_OUT" >"$WISP_OBSERVATION_DIR/show.stdout" || true
+            printf 'update=%s\nshow=%s\n' "$WISP_UPDATE_STATUS" "$WISP_SHOW_STATUS" >"$WISP_OBSERVATION_DIR/exit-status.txt" || true
+        else
+            printf '  Warning: capture directory unavailable; stdout/stderr files were not saved.\n' >&2 || true
+        fi
+
+        WISP_ARCHIVE_DIR="${TEST_UNDECLARED_OUTPUTS_DIR:-}"
+        if [ -z "$WISP_ARCHIVE_DIR" ] || ! mkdir -p "$WISP_ARCHIVE_DIR"; then
+            WISP_ARCHIVE_DIR=$(mktemp -d -t bd-upgrade-wisp-failure-XXXXXX) || WISP_ARCHIVE_DIR=""
+        fi
+        WISP_ARCHIVE_INPUTS=(-C "$(dirname "$WS")" "$(basename "$WS")")
+        if [ -n "$WISP_OBSERVATION_DIR" ]; then
+            WISP_ARCHIVE_INPUTS+=(-C "$(dirname "$WISP_OBSERVATION_DIR")" "$(basename "$WISP_OBSERVATION_DIR")")
+        fi
+        WISP_FIXTURE_ARCHIVED=false
+        if [ -n "$WISP_ARCHIVE_DIR" ]; then
+            WISP_ARCHIVE="$WISP_ARCHIVE_DIR/wisp-failure-${PREV_VERSION}-$(basename "$WS").tar.gz"
+            if tar -czf "$WISP_ARCHIVE" "${WISP_ARCHIVE_INPUTS[@]}"; then
+                printf '  Failed Wisp fixture and available command captures: %s\n' "$WISP_ARCHIVE" >&2 || true
+                WISP_FIXTURE_ARCHIVED=true
+            else
+                printf '  Warning: archive failed: %s\n' "$WISP_ARCHIVE" >&2 || true
+            fi
+        fi
+        if $WISP_FIXTURE_ARCHIVED; then
+            rm -rf "$WS" || true
+            if [ -n "$WISP_OBSERVATION_DIR" ]; then rm -rf "$WISP_OBSERVATION_DIR" || true; fi
+        else
+            printf '  Failed Wisp fixture retained at: %s\nCommand captures retained at: %s\n' "$WS" "$WISP_OBSERVATION_DIR" >&2 || true
+        fi
+    else
+        rm -rf "$WS"
+        if [ -n "$WISP_OBSERVATION_DIR" ]; then rm -rf "$WISP_OBSERVATION_DIR" || true; fi
+    fi
     finish_scenario
 fi
 
