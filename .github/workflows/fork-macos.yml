@@ -15,7 +15,7 @@ name: Fork macOS
 
 on:
   pull_request:
-    branches: [ integration ]
+    branches: [ integration, 'codex/preview3-integration' ]
   workflow_dispatch:
 
 concurrency:
