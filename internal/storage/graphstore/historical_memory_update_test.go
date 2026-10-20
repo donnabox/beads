@@ -3,10 +3,15 @@
 package graphstore
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
+	"net"
 	"reflect"
+	"strconv"
+	"sync"
 	"testing"
+	"time"
 
 	publicops "github.com/steveyegge/beads/issueops"
 )
@@ -173,6 +178,389 @@ func TestHistoricalMemoryUpdateCurrentTypeAndProtectedEvaluation(t *testing.T) {
 			_, err = s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/evaluation", FromRevision: original.Revision, TypeURL: original.Type, Unconditional: true})
 			if err == nil || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
 				t.Fatalf("historical retype accepted or wrote: %v", err)
+			}
+		})
+	}
+}
+
+func TestHistoricalMemoryRecoveryTerminalGuardAndRollback(t *testing.T) {
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			ctx, _, s := memoryDeleteStore(t, engine)
+			first, err := s.Create(ctx, CreateRequest{Path: "beads/recover", Title: "Before", Body: "first", Actor: "creator"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			last, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/recover", Body: historicalBody("last"), Unconditional: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+			previewBefore := workflowState(t, ctx, s)
+			preview, err := s.DeleteMemory(ctx, MemoryDeleteRequest{Path: "beads/recover", Preview: true})
+			if err != nil || preview.Deleted || preview.Terminal != nil || !reflect.DeepEqual(previewBefore, workflowState(t, ctx, s)) {
+				t.Fatalf("preview minted terminal: %+v %v", preview, err)
+			}
+			deleted, err := s.DeleteMemory(ctx, MemoryDeleteRequest{Path: "beads/recover", Actor: "deleter", ExpectedRevision: last.Memory.Revision})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if deleted.Terminal == nil || deleted.Terminal.Revision == last.Memory.Revision || deleted.Terminal.PreviousVersion != last.Memory.Revision || deleted.Memory.Revision != last.Memory.Revision || deleted.Terminal.Attribution.Inception != first.Attribution.Inception {
+				t.Fatalf("not a real separate terminal: %+v", deleted)
+			}
+			d := deleted.Terminal.Revision
+			if _, err := s.Show(ctx, "beads/recover"); !errors.Is(err, ErrGone) {
+				t.Fatalf("ordinary deleted read: %v", err)
+			}
+			if _, err := s.ReadVersion(ctx, "beads/recover", d); !errors.Is(err, ErrGone) {
+				t.Fatalf("terminal became live source: %v", err)
+			}
+			history, err := s.History(ctx, "beads/recover")
+			if err != nil || !reflect.DeepEqual(history.CurrentState, deleted.Terminal) || len(history.Versions) != 3 || !history.Versions[0].Removed {
+				t.Fatalf("terminal history: %+v %v", history, err)
+			}
+			before := workflowState(t, ctx, s)
+			for _, guard := range []string{first.Revision, last.Memory.Revision} {
+				_, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/recover", FromRevision: first.Revision, ExpectedRevision: guard})
+				if !errors.Is(err, ErrConflict) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+					t.Fatalf("fake D guard accepted/wrote: %v", err)
+				}
+			}
+			injected := errors.New("recovery rollback")
+			for _, stage := range []string{"coordination", "memory-recover-allocation", "memory-payload", "source-catalog", "source-retained"} {
+				s.afterWrite = func(at string) error {
+					if at == stage {
+						return injected
+					}
+					return nil
+				}
+				_, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/recover", FromRevision: first.Revision, ExpectedRevision: d})
+				s.afterWrite = nil
+				if !errors.Is(err, injected) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+					t.Fatalf("%s rollback failed: %v", stage, err)
+				}
+			}
+			recovered, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/recover", FromRevision: first.Revision, ExpectedRevision: d, Actor: "recoverer"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			h := recovered.Memory.Attribution.HistoricalUpdate
+			if !recovered.Changed || recovered.Memory.ID != first.ID || recovered.Memory.Revision == d || recovered.Memory.Revision == first.Revision || recovered.Memory.Properties != first.Properties || recovered.Memory.Attribution.Inception != "revert" || h == nil || h.PreviousRevision != d || h.FromRevision != first.Revision || len(recovered.Memory.Owned) != 0 {
+				t.Fatalf("wrong recovery: %+v", recovered)
+			}
+			if _, err := s.ReadVersion(ctx, "beads/recover", d); !errors.Is(err, ErrGone) {
+				t.Fatalf("historical D became snapshot after recovery: %v", err)
+			}
+			history, err = s.History(ctx, "beads/recover")
+			if err != nil || history.CurrentState != nil || len(history.Versions) != 4 || !history.Versions[1].Removed {
+				t.Fatalf("recovery lost D history: %+v %v", history, err)
+			}
+			ordinary, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/recover", Body: historicalBody("ordinary"), Unconditional: true})
+			if err != nil || ordinary.Memory.Attribution.Inception != "revert" || ordinary.Memory.Attribution.HistoricalUpdate != nil {
+				t.Fatalf("ordinary mint provenance: %+v %v", ordinary, err)
+			}
+			secondDelete, err := s.DeleteMemory(ctx, MemoryDeleteRequest{Path: "beads/recover", Unconditional: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+			// Optional current guards stay optional; equal historical content is
+			// still a presence-changing recovery and must mint a fresh revision.
+			again, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/recover", FromRevision: ordinary.Memory.Revision, Unconditional: true})
+			if err != nil || !again.Changed || again.Memory.Attribution.HistoricalUpdate.PreviousRevision != secondDelete.Terminal.Revision {
+				t.Fatalf("unguarded/equal-content recovery: %+v %v", again, err)
+			}
+		})
+	}
+}
+
+func TestHistoricalMemoryRecoveryProtectedBaselineAndEvaluationLifetime(t *testing.T) {
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			ctx, _, s := memoryDeleteStore(t, engine)
+			a, err := s.Create(ctx, CreateRequest{Path: "beads/a", Title: "A"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			b, err := s.Create(ctx, CreateRequest{Path: "beads/b", Title: "B"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			props := func(subject Record) json.RawMessage {
+				raw, err := json.Marshal(map[string]any{"title": "Evaluation", "body": "", "subjects": []any{map[string]string{"uri": subject.ID, "revision": subject.Revision}}})
+				if err != nil {
+					t.Fatal(err)
+				}
+				return raw
+			}
+			for _, previouslyEvaluation := range []bool{false, true} {
+				path := "beads/new-evaluation"
+				if previouslyEvaluation {
+					path = "beads/prior-evaluation"
+				}
+				initial, err := s.Create(ctx, CreateRequest{Path: path, Title: "Initial"})
+				if err != nil {
+					t.Fatal(err)
+				}
+				if previouslyEvaluation {
+					if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: path, TypeURL: s.ScopeURL() + "types/evaluation", PropertiesJSON: props(a), Unconditional: true}); err != nil {
+						t.Fatal(err)
+					}
+					if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: path, TypeURL: s.ScopeURL() + "types/constraint", PropertiesJSON: json.RawMessage(`{"title":"Constraint","body":""}`), Unconditional: true}); err != nil {
+						t.Fatal(err)
+					}
+				}
+				deleted, err := s.DeleteMemory(ctx, MemoryDeleteRequest{Path: path, Unconditional: true})
+				if err != nil {
+					t.Fatal(err)
+				}
+				if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: path, FromRevision: initial.Revision, ExpectedRevision: deleted.Terminal.Revision}); err != nil {
+					t.Fatal(err)
+				}
+				if previouslyEvaluation {
+					before := workflowState(t, ctx, s)
+					if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: path, TypeURL: s.ScopeURL() + "types/evaluation", PropertiesJSON: props(b), Unconditional: true}); err == nil || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+						t.Fatalf("recovery reset lifetime group: %v", err)
+					}
+				}
+				if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: path, TypeURL: s.ScopeURL() + "types/evaluation", PropertiesJSON: props(a), Unconditional: true}); err != nil {
+					t.Fatalf("valid first/prior group blocked by D: %v", err)
+				}
+			}
+			lost, err := s.Create(ctx, CreateRequest{Path: "beads/lost-baseline", Title: "Last current"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			deleted, err := s.DeleteMemory(ctx, MemoryDeleteRequest{Path: "beads/lost-baseline", Unconditional: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+			// D is retained evidence, never an admitted live subject snapshot.
+			fakeSubject := lost
+			fakeSubject.Revision = deleted.Terminal.Revision
+			before := workflowState(t, ctx, s)
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/terminal-assessment", TypeURL: s.ScopeURL() + "types/evaluation", PropertiesJSON: props(fakeSubject)}); err == nil || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("terminal admitted as live subject or wrote: %v", err)
+			}
+			if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_versions WHERE path=? AND version=?`, "beads/lost-baseline", lost.Revision); err != nil {
+				t.Fatal(err)
+			}
+			before = workflowState(t, ctx, s)
+			if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/lost-baseline", FromRevision: lost.Revision, ExpectedRevision: deleted.Terminal.Revision}); !errors.Is(err, ErrInvalidStore) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("missing protected baseline fell back or wrote: %v", err)
+			}
+		})
+	}
+}
+
+func TestHistoricalMemoryRecoveryDoesNotResurrectOwnedLinks(t *testing.T) {
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			ctx, _, s := memoryDeleteStore(t, engine)
+			owner, err := s.Create(ctx, CreateRequest{Path: "beads/owner", Title: "Owner"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/target", Title: "Target"}); err != nil {
+				t.Fatal(err)
+			}
+			link, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/old", TypeURL: s.ScopeURL() + "types/superseded-by", SourcePath: "beads/owner", TargetPath: "beads/target", ExpectedSourceRevision: owner.Revision})
+			if err != nil {
+				t.Fatal(err)
+			}
+			source := link.Source.(Record)
+			if len(source.Owned) != 1 {
+				t.Fatal("fixture has no owned Link")
+			}
+			if _, err := s.Unlink(ctx, LinkDeleteRequest{Path: "links/old", ExpectedRevision: link.Link.Revision, ExpectedSourceRevision: source.Revision}); err != nil {
+				t.Fatal(err)
+			}
+			d, err := s.DeleteMemory(ctx, MemoryDeleteRequest{Path: "beads/owner", Unconditional: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+			recovered, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/owner", FromRevision: source.Revision, ExpectedRevision: d.Terminal.Revision})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if len(recovered.Memory.Owned) != 0 {
+				t.Fatalf("resurrected owned membership: %+v", recovered.Memory)
+			}
+			if _, err := s.ShowLink(ctx, "links/old"); !errors.Is(err, ErrGone) {
+				t.Fatalf("resurrected removed Link: %v", err)
+			}
+			if old, err := s.ReadVersion(ctx, "beads/owner", source.Revision); err != nil || !reflect.DeepEqual(old, source) {
+				t.Fatalf("rewrote historical owned state: %+v %v", old, err)
+			}
+		})
+	}
+}
+
+func TestHistoricalMemoryRecoveryConcurrentWriters(t *testing.T) {
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			parent, options, first := memoryDeleteStore(t, engine)
+			ctx, cancel := context.WithTimeout(parent, 90*time.Second)
+			defer cancel()
+			original, err := first.Create(ctx, CreateRequest{Path: "beads/race", Title: "Race"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			d, err := first.DeleteMemory(ctx, MemoryDeleteRequest{Path: "beads/race", Unconditional: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+			// Embedded uses its ordinary one-session pool. Opening the same
+			// filesystem engine twice would test a file lock, not write races.
+			second := &Store{db: first.db, options: options}
+			if engine == "server" {
+				second, err = OpenExisting(ctx, options)
+				if err != nil {
+					t.Fatal(err)
+				}
+				defer second.Close()
+			}
+			reached, release := make(chan struct{}, 2), make(chan struct{})
+			if engine == "server" {
+				barrier := func(stage string) error {
+					if stage != "source-retained" {
+						return nil
+					}
+					reached <- struct{}{}
+					select {
+					case <-release:
+						return nil
+					case <-ctx.Done():
+						return ctx.Err()
+					}
+				}
+				first.afterWrite, second.afterWrite = barrier, barrier
+			}
+			results := make(chan error, 2)
+			var writers sync.WaitGroup
+			for _, s := range []*Store{first, second} {
+				writers.Add(1)
+				go func() {
+					defer writers.Done()
+					_, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/race", FromRevision: original.Revision, ExpectedRevision: d.Terminal.Revision})
+					results <- err
+				}()
+			}
+			defer func() { cancel(); writers.Wait() }()
+			if engine == "server" {
+				for range 2 {
+					select {
+					case <-reached:
+					case err := <-results:
+						t.Fatalf("writer before overlap: %v", err)
+					case <-ctx.Done():
+						t.Fatal(ctx.Err())
+					}
+				}
+				close(release)
+			}
+			success, conflict := 0, 0
+			for range 2 {
+				select {
+				case err := <-results:
+					if err == nil {
+						success++
+					} else if errors.Is(err, ErrConflict) && !errors.Is(err, ErrOutcomeUnknown) {
+						conflict++
+					} else {
+						t.Fatalf("unexpected race outcome: %v", err)
+					}
+				case <-ctx.Done():
+					t.Fatal(ctx.Err())
+				}
+			}
+			writers.Wait()
+			first.afterWrite, second.afterWrite = nil, nil
+			if success != 1 || conflict != 1 {
+				t.Fatalf("success=%d conflict=%d", success, conflict)
+			}
+			history, err := first.History(ctx, "beads/race")
+			if err != nil || history.CurrentState != nil || len(history.Versions) != 3 || !history.Versions[1].Removed {
+				t.Fatalf("race retained duplicate/partial recovery: %+v %v", history, err)
+			}
+		})
+	}
+}
+
+func TestHistoricalMemoryRecoveryLostCommitResponse(t *testing.T) {
+	ctx, options, direct := memoryDeleteStore(t, "server")
+	original, err := direct.Create(ctx, CreateRequest{Path: "beads/unknown", Title: "Unknown outcome"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	d, err := direct.DeleteMemory(ctx, MemoryDeleteRequest{Path: "beads/unknown", Unconditional: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	port, observed := startCommitLossProxy(t, net.JoinHostPort(options.ServerHost, strconv.Itoa(options.ServerPort)))
+	proxied := options
+	proxied.ServerPort = port
+	s, err := OpenExisting(ctx, proxied)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer s.Close()
+	result, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/unknown", FromRevision: original.Revision, ExpectedRevision: d.Terminal.Revision})
+	if !errors.Is(err, ErrOutcomeUnknown) || !reflect.ValueOf(result).IsZero() {
+		t.Fatalf("uncertain recovery claimed success: %+v %v", result, err)
+	}
+	select {
+	case packet := <-observed:
+		if len(packet) == 0 || packet[0] != 0 {
+			t.Fatalf("no commit witness: %x", packet)
+		}
+	case <-ctx.Done():
+		t.Fatal(ctx.Err())
+	}
+	current, err := direct.Show(ctx, "beads/unknown")
+	if err != nil || current.Attribution.HistoricalUpdate == nil || current.Attribution.HistoricalUpdate.PreviousRevision != d.Terminal.Revision {
+		t.Fatalf("witnessed recovery incomplete: %+v %v", current, err)
+	}
+	before := workflowState(t, ctx, direct)
+	if _, err := direct.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/unknown", FromRevision: original.Revision, ExpectedRevision: d.Terminal.Revision}); !errors.Is(err, ErrConflict) || !reflect.DeepEqual(before, workflowState(t, ctx, direct)) {
+		t.Fatalf("guarded replay minted another revision: %v", err)
+	}
+}
+
+func TestHistoricalMemoryRecoveryUnsupportedBaselineBoundaries(t *testing.T) {
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			ctx, _, s := memoryDeleteStore(t, engine)
+			issue, err := s.CreateIssue(ctx, "beads/native", plainIssue("Native"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.DeleteIssue(ctx, IssueDeleteRequest{Path: "beads/native", Unconditional: true}); err != nil {
+				t.Fatal(err)
+			}
+			before := workflowState(t, ctx, s)
+			if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/native", FromRevision: issue.Revision, Unconditional: true}); !errors.Is(err, ErrCapabilityUnavailable) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("unsupported native recovery implied corruption or wrote: %v", err)
+			}
+			memory, err := s.Create(ctx, CreateRequest{Path: "beads/legacy-delete", Title: "Legacy"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			d, err := s.DeleteMemory(ctx, MemoryDeleteRequest{Path: "beads/legacy-delete", Unconditional: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+			// Model the pre-terminal preview representation, not a migration.
+			if _, err := s.db.ExecContext(ctx, `UPDATE graph_preview_catalog SET revision=? WHERE path=?`, memory.Revision, "beads/legacy-delete"); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_versions WHERE path=? AND version=?`, "beads/legacy-delete", d.Terminal.Revision); err != nil {
+				t.Fatal(err)
+			}
+			if old, err := s.ReadVersion(ctx, "beads/legacy-delete", memory.Revision); err != nil || !reflect.DeepEqual(old, memory) {
+				t.Fatalf("legacy retained read changed: %+v %v", old, err)
+			}
+			before = workflowState(t, ctx, s)
+			if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/legacy-delete", FromRevision: memory.Revision, ExpectedRevision: memory.Revision}); !errors.Is(err, ErrCapabilityUnavailable) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("legacy last-live token substituted for D: %v", err)
 			}
 		})
 	}

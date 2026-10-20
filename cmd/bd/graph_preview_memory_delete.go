@@ -49,7 +49,11 @@ func runGraphPreviewDeleteMemory(cmd *cobra.Command, args []string, forget bool)
 		if result.Preview {
 			verb = "Would delete"
 		}
-		return result, fmt.Sprintf("%s %s at final live revision %s; identity and prior snapshots remain retained", verb, result.Memory.ID, result.Memory.Revision), nil
+		summary := fmt.Sprintf("%s %s at final live revision %s; identity and prior snapshots remain retained", verb, result.Memory.ID, result.Memory.Revision)
+		if result.Terminal != nil {
+			summary += fmt.Sprintf("; deletion revision %s", result.Terminal.Revision)
+		}
+		return result, summary, nil
 	})
 }
 

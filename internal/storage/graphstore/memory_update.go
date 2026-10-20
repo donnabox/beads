@@ -5,6 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"unicode/utf8"
 
@@ -148,6 +149,24 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 			return err
 		}
 		current, revision, err := s.beadEndpointInTx(ctx, tx, request.path)
+		var terminal *MemoryTerminalState
+		if errors.Is(err, ErrGone) && request.fromRevision != "" {
+			var backing string
+			if err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=?`, request.path).Scan(&backing); err != nil {
+				return err
+			}
+			if backing != "generic" {
+				return fmt.Errorf("%w: historical native Issue recovery is not supported by the Memory writer", ErrCapabilityUnavailable)
+			}
+			baseline, deleted, readErr := s.deletedMemoryStateInTx(ctx, tx, request.path)
+			if readErr != nil {
+				return readErr
+			}
+			if deleted == nil {
+				return fmt.Errorf("%w: recovery requires an actual retained deletion revision", ErrCapabilityUnavailable)
+			}
+			current, revision, terminal, err = baseline, deleted.Revision, deleted, nil
+		}
 		if err != nil {
 			return err
 		}
@@ -241,20 +260,42 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 				return err
 			}
 		}
-		if memory.Properties == next && memory.Type == nextType && bytes.Equal(memory.Metadata, metadata) {
+		if terminal == nil && memory.Properties == next && memory.Type == nextType && bytes.Equal(memory.Metadata, metadata) {
 			result = MemoryMutationResult{Memory: memory}
 			return nil
 		}
 		if err := s.touchCoordination(ctx, tx); err != nil {
 			return err
 		}
-		if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_payloads SET properties=?, metadata=? WHERE path=?`, properties, metadata, request.path); err != nil {
-			return err
+		if terminal == nil {
+			if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_payloads SET properties=?, metadata=? WHERE path=?`, properties, metadata, request.path); err != nil {
+				return err
+			}
+		} else {
+			changed, err := tx.ExecContext(ctx, `UPDATE graph_preview_catalog SET allocation_state='live' WHERE path=? AND allocation_state='deleted' AND revision=?`, request.path, revision)
+			if err != nil {
+				return err
+			}
+			if n, err := changed.RowsAffected(); err != nil {
+				return err
+			} else if n != 1 {
+				return fmt.Errorf("%w: recovery lost its deletion predecessor", ErrConflict)
+			}
+			if err := s.afterStage("memory-recover-allocation"); err != nil {
+				return err
+			}
+			if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_payloads(path,properties,metadata) VALUES(?,?,?)`, request.path, properties, metadata); err != nil {
+				return err
+			}
+			memory.Attribution.Inception = "revert"
 		}
 		if err := s.afterStage("memory-payload"); err != nil {
 			return err
 		}
 		replaced := replacedMemory(memory, request.unconditional)
+		if terminal != nil {
+			replaced = nil
+		}
 		memory.Properties = next
 		memory.Type = nextType
 		if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_catalog SET type_url=? WHERE path=?`, nextType, request.path); err != nil {
@@ -350,6 +391,12 @@ func (s *Store) preserveRetainedEvaluationGroup(ctx context.Context, tx *sql.Tx,
 		raw, actor, err := readVersionBytes(ctx, tx, path, version, head)
 		if err != nil {
 			return err
+		}
+		if versions[i].Removed {
+			if _, err := s.decodeMemoryTerminal(path, version, raw, actor); err != nil {
+				return err
+			}
+			continue
 		}
 		memory, err := s.decodeMemoryVersion(ctx, tx, path, "", version, raw, actor)
 		if err != nil {

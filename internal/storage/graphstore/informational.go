@@ -399,7 +399,9 @@ func (s *Store) recordOwnedMemoryWithContextInTx(ctx context.Context, tx *sql.Tx
 			return nil, err
 		}
 		memory.Version = memory.Revision
+		inception := memory.Attribution.Inception
 		memory.Attribution = writeAttribution(actor)
+		memory.Attribution.Inception = inception
 		memory.Attribution.HistoricalUpdate = historical
 		if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_catalog SET revision=? WHERE path=?`, memory.Revision, sourcePath); err != nil {
 			return nil, err

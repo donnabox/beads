@@ -285,7 +285,8 @@ func (s *Store) checkRetainedSubjectReference(ctx context.Context, tx *sql.Tx, p
 	var exists bool
 	switch {
 	case backing == "generic" && s.isMemoryType(typ.String) && !key.Valid:
-		if err := tx.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM graph_preview_versions WHERE path=? AND version=?)`, path, revision).Scan(&exists); err != nil {
+		if err := tx.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM graph_preview_versions WHERE path=? AND version=?
+ AND NOT(CASE WHEN JSON_VALID(CAST(snapshot AS CHAR)) THEN COALESCE(JSON_UNQUOTE(JSON_EXTRACT(CAST(snapshot AS CHAR),'$.state'))='deleted',FALSE) ELSE FALSE END))`, path, revision).Scan(&exists); err != nil {
 			return err
 		}
 	case backing == "issue" && typ.String == IssueTypeURL(s.ScopeURL()) && key.Valid:

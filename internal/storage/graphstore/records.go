@@ -55,7 +55,7 @@ func (s *Store) Create(ctx context.Context, req CreateRequest) (Record, error) {
 			return Record{}, err
 		}
 	}
-	r.Attribution = Attribution{Actor: req.Actor, Status: "unknown", RecordedAt: time.Now().UTC().Format(time.RFC3339Nano)}
+	r.Attribution = Attribution{Inception: "create", Actor: req.Actor, Status: "unknown", RecordedAt: time.Now().UTC().Format(time.RFC3339Nano)}
 	if req.Actor != "" {
 		r.Attribution.Status = "claimed"
 	}

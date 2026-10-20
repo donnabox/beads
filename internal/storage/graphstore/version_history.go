@@ -34,14 +34,10 @@ const (
 // ReadVersionPair. ChangeAt is for display and time-based selection only; it is
 // an observed wall clock, never the ordering key, and nothing here sorts by it.
 //
-// Removed means "listed, but this token is not citable": the row is a real
-// retained version and belongs in the history, yet handing its Version to
-// ReadVersion yields ErrGone rather than a Resource. Exactly one row can carry
-// it — a deleted Link's final retained version, which is its private deletion
-// marker. Nothing is filtered out on that account: a removal is information the
-// caller renders, so this flag tells the caller which row to render as a removal
-// and to leave out of any "cite this token" guidance. Deleted Memory and
-// Issue allocations preserve their final live version without a marker.
+// Removed distinguishes retained terminal evidence from live snapshots. Such a
+// token is listed, but ReadVersion refuses it with ErrGone. Multiple Memory
+// terminal rows can remain after successive recoveries. Native Issue deletion
+// still retains only its final live version in this implementation.
 //
 // The JSON member names are fixed. Ordinal is deliberately not spelled
 // "revision": graph records already use revision for the opaque token, and a
@@ -108,15 +104,9 @@ func shippedVersionBounds() versionBounds {
 // capability_unavailable code, which is a collision worth knowing about when
 // reading user-facing output; it is not this reader's answer.
 //
-// It supplies no snapshots, lineage, or diffs; ReadVersion resolves a returned
-// token to a record. A deleted subject still has a history, so this reader does
-// not refuse one, and it reports exactly what the retained tables hold. One
-// listed token is therefore not resolvable as a Resource: a deleted Link's final
-// retained version is its private deletion marker, which ReadVersion refuses
-// with ErrGone. That row is flagged Removed rather than withheld, because a
-// removal is part of the history. A deleted Memory's final live head is a real
-// retained Resource (deletedMemoryInTx reads it) and is not flagged. The same
-// holds for a deleted Issue's final native retained snapshot.
+// It supplies no payload snapshots or diffs. Deleted allocations retain their
+// ordered history. Terminal rows are flagged Removed, including earlier Memory
+// deletion states after recovery; live snapshots remain independently citable.
 func (s *Store) Versions(ctx context.Context, path string) (ResourceKind, []VersionRow, error) {
 	return s.versionsWithin(ctx, path, shippedVersionBounds())
 }
@@ -231,9 +221,9 @@ func (s *Store) versionsInTx(ctx context.Context, tx *sql.Tx, path string, bound
 		rows, err := issueVersionsInTx(ctx, tx, path, key.String, head, bounds)
 		return KindIssue, rows, err
 	case backing == "generic" && kind == "bead" && s.isMemoryType(typ.String):
-		// A deleted Memory mints no successor version, so its head stays a real
-		// retained Resource: there is no deletion marker on this backing and no
-		// row to flag (deletedMemoryInTx reads that same head).
+		// Memory history may include terminal states, even while currently live.
+		// The shared reader classifies root terminal state without acquiring
+		// payload snapshots into Go.
 		rows, err := previewVersionsInTx(ctx, tx, path, head, "", bounds)
 		return KindMemory, rows, err
 	case backing == "informational" && kind == "link" && IsInformationalTypeURL(s.ScopeURL(), typ.String),
@@ -395,21 +385,22 @@ func previewVersionsInTx(ctx context.Context, tx *sql.Tx, path, head, marker str
 	if size > bounds.bytes {
 		return nil, fmt.Errorf("%w: retained version list exceeds the %d-byte acquisition budget", ErrLimitExceeded, bounds.bytes)
 	}
-	rows, err := tx.QueryContext(ctx, `SELECT ordinal,version,change_at,actor FROM graph_preview_versions
- WHERE path=? ORDER BY ordinal DESC`, path)
+	rows, err := tx.QueryContext(ctx, `SELECT ordinal,version,change_at,actor,
+ CASE WHEN JSON_VALID(CAST(snapshot AS CHAR)) THEN COALESCE(JSON_UNQUOTE(JSON_EXTRACT(CAST(snapshot AS CHAR),'$.state'))='deleted',FALSE) ELSE FALSE END
+ FROM graph_preview_versions WHERE path=? ORDER BY ordinal DESC`, path)
 	if err != nil {
 		return nil, err
 	}
 	result := []VersionRow{}
 	for rows.Next() {
 		var row VersionRow
-		if err := rows.Scan(&row.Ordinal, &row.Version, &row.ChangeAt, &row.Actor); err != nil {
+		if err := rows.Scan(&row.Ordinal, &row.Version, &row.ChangeAt, &row.Actor, &row.Removed); err != nil {
 			return nil, errors.Join(err, rows.Close())
 		}
 		row.ChangeAt = row.ChangeAt.UTC()
 		// The deletion marker is listed, not withheld, but it is not citable:
 		// ReadVersion refuses this exact token with ErrGone.
-		row.Removed = marker != "" && row.Version == marker
+		row.Removed = row.Removed || (marker != "" && row.Version == marker)
 		// Attribution stays empty: this plane records an actor and derives
 		// claimed/unknown from it at read time (validVersionAttribution). There
 		// is no stored status column to report, and synthesizing one here would

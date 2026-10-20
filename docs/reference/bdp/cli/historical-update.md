@@ -1,6 +1,6 @@
 # Historical content in graph Memory updates
 
-In an experimental graph workspace, `bd update ID --from-revision TOKEN` uses an exact retained revision of the same Memory as its editable content base. This initial implementation supports live Memory updates; deleted recovery and native Issue updates are not implemented by this slice.
+In an experimental graph workspace, `bd update ID --from-revision TOKEN` uses an exact retained revision of the same Memory as its editable content base. This implementation supports live Memory updates and same-ID Memory recovery. Native Issue historical updates and recovery are not implemented by this slice.
 
 ```sh
 bd versions plan --json
@@ -14,8 +14,24 @@ Composition starts with the source's editable properties and common metadata, th
 
 An effective write creates one fresh revision. The native preview result's `attribution.historicalUpdate` names `fromRevision` and the actual `previousRevision`; actor and time describe the new operation. These are native preview fields, not a claim that a new public BDP provenance profile or wire encoding has been activated.
 
-If the final content equals the current content, the operation returns `changed: false` and preserves the entire current envelope, including earlier historical context. Selecting a source alone never creates an audit revision.
+For a live Memory, if the final content equals the current content, the operation returns `changed: false` and preserves the entire current envelope, including earlier historical context. Selecting a source alone never creates an audit revision.
 
 An unknown, foreign, invalid, or unavailable source refuses without writing. Link historical updates refuse. Ordinary native Issue updates with this flag also refuse in this initial slice; shipping `bd restore` behavior is unchanged.
 
-The approved recovery direction is tracked in [beads #7719](https://github.com/gastownhall/beads/issues/7719). This page documents the implemented live slice and does not claim the recovery feature is complete.
+## Recovering a deleted Memory
+
+Deletion creates a fresh terminal revision D and keeps the final live snapshot separate. `bd versions ID --json` returns D in `result.currentState.revision`; `result.terminal_versions` lists retained terminal rows separately from citable live snapshots. Human output also shows the current deletion revision. Ordinary `bd show ID` remains a `gone` refusal. A terminal token is never a live historical content source, including after recovery.
+
+```sh
+bd delete plan --force --json
+bd versions plan --json
+bd update plan --from-revision LIVE_SOURCE_TOKEN --if-revision DELETION_TOKEN --json
+```
+
+The current guard, when supplied, checks D. The last live revision and the historical source cannot substitute for D. Recovery preserves the allocated ID and creates one fresh live revision even when the selected content equals the final live content. The native result records `attribution.inception: "revert"`, with the historical source and D recorded separately. New ordinary writes preserve the current Inception and clear any previous operation's historical context; no-ops preserve the complete envelope.
+
+The service separately acquires the retained last-current Type and protected initialization facts. Missing or corrupt baseline/source state refuses atomically. A legacy preview deletion that never retained a distinct D remains readable through its existing history, but cannot be recovered by pretending its last live token is D. Recovery does not recreate removed Links or historical owned membership. The first Evaluation subject group remains bound to the identity through deletion, recovery and later Type changes.
+
+A lost commit response remains an unknown outcome. The service does not automatically replay it; a supplied stale D guard refuses if a recovery already committed. Existing guard omission stays valid under ordinary unconditional Update behavior.
+
+The approved recovery direction is tracked in [beads #7719](https://github.com/gastownhall/beads/issues/7719). This page documents the Memory slice. Native Issue, executable BDP schemas/SDK, and full release qualification remain separate work.
