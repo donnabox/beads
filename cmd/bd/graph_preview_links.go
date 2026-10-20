@@ -173,13 +173,29 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+	if len(args) != 2 {
+		return graphFailure("invalid_selector", "graph Link creation requires two Bead IDs or beads/PATH selectors", 2)
+	}
+	resolved := make([]string, 2)
+	for i, endpoint := range []struct{ name, value string }{{"source-revision", args[0]}, {"target-revision", args[1]}} {
+		flag, _ := cmd.Flags().GetString(endpoint.name)
+		ref, err := graphPreviewReferenceWithFlag(endpoint.value, flag, cmd.Flags().Changed(endpoint.name))
+		if err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
+		if ref.Explicit && ref.Revision != "unpinned" {
+			return graphFailure("capability_unavailable", "pinned Link endpoints require graphstore Reference persistence; this preview only writes floating endpoints", 5)
+		}
+		resolved[i] = ref.Identity
+	}
+	args = resolved
 	if _, native := graphPreviewNativeDependencyType(graphPreviewConfig.GraphScopeURL, typ); typ == "" || native {
 		return runGraphPreviewAddDependency(cmd, args)
 	}
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "type", "source", "target", "id", "properties", "metadata", "if-source-revision"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "source", "target", "source-revision", "target-revision", "id", "properties", "metadata", "if-source-revision"); err != nil {
 		return err
 	}
 	if !graphstore.IsInformationalTypeURL(graphPreviewConfig.GraphScopeURL, typ) {

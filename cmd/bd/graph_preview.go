@@ -99,6 +99,8 @@ func init() {
 	linkCmd.Flags().String("id", "", "New informational Link ID or links/PATH (bare ID is shorthand for links/ID)")
 	linkCmd.Flags().String("properties", "", "Informational Link properties as JSON, @file, or @- (graph preview only)")
 	linkCmd.Flags().String("metadata", "", "Initial informational Link metadata as a JSON object or @file (graph preview only)")
+	linkCmd.Flags().String("source-revision", "", "Source endpoint revision: unpinned is supported; exact tokens and current refuse in this preview (distinct from --if-source-revision)")
+	linkCmd.Flags().String("target-revision", "", "Target endpoint revision: unpinned is supported; exact tokens and current refuse in this preview")
 	updateCmd.Flags().String("patch", "", "Apply ordered Issue, Memory or informational Link property operations from JSON, @file, or @- (graph preview only)")
 	updateCmd.Flags().String("properties", "", "Shallowly merge named Issue, Memory or informational Link properties from JSON, @file, or @- (graph preview only)")
 	updateCmd.Flags().String("replace-properties", "", "Replace all writable Issue, Memory or informational Link properties with a JSON object, @file, or @- (graph preview only)")
@@ -330,7 +332,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		if cmd == createCmd && (cmd.Flags().Changed("properties") || graphPreviewNominalTypeFlagChanged(cmd)) {
 			return true, graphFailure("capability_unavailable", "generic create options require a workspace initialized with graph_mode link", 5)
 		}
-		if cmd == linkCmd && (cmd.Flags().Changed("id") || cmd.Flags().Changed("properties") || cmd.Flags().Changed("metadata") || cmd.Flags().Changed("if-source-revision")) {
+		if cmd == linkCmd && (cmd.Flags().Changed("id") || cmd.Flags().Changed("properties") || cmd.Flags().Changed("metadata") || cmd.Flags().Changed("source-revision") || cmd.Flags().Changed("target-revision") || cmd.Flags().Changed("if-source-revision")) {
 			return true, graphFailure("capability_unavailable", "generic Link options require a workspace initialized with graph_mode link", 5)
 		}
 		if cmd == depAddCmd && cmd.Flags().Changed("id") {
@@ -681,12 +683,24 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 	if len(args) != 1 {
 		return graphFailure("invalid_selector", "graph show requires one Bead ID (or beads/PATH) or explicit links/PATH", 2)
 	}
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
+	ref, err := graphPreviewParseReference(args[0])
+	if err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
+	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, ref.Identity)
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
 	version, _ := cmd.Flags().GetString("version")
 	versioned := cmd.Flags().Changed("version")
+	if ref.Explicit {
+		if versioned {
+			return graphFailure("invalid_selector", "choose ID@revision or --version, not both", 2)
+		}
+		if ref.Revision != "current" && ref.Revision != "unpinned" {
+			version, versioned = ref.Revision, true
+		}
+	}
 	if versioned && (cmd.Flags().Changed("include-dependents") || cmd.Flags().Changed("include-comments") || cmd.Flags().Changed("brief-deps")) {
 		return graphFailure("capability_unavailable", "Issue detail flags cannot describe an exact retained version", 5)
 	}
