@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"flag"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -19,6 +20,8 @@ import (
 	"github.com/steveyegge/beads/internal/httpapi/graphread"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
+
+var updateCanonicalShowCorpus = flag.Bool("canonical-show-update", false, "regenerate canonical show corpus from real CLI output")
 
 func TestCanonicalShowWorkflow(t *testing.T) {
 	bd := buildBDUnderTest(t)
@@ -80,8 +83,12 @@ func TestCanonicalShowWorkflow(t *testing.T) {
 					t.Fatalf("JSON mismatch:\n%s\n%s", a, b)
 				}
 			}
-			bead := decode(call("show", "beads/plan", "--output-format=json"))
-			link := decode(call("link", "show", linkPath, "--output-format=json"))
+			beadOutput := call("show", "beads/plan", "--output-format=json")
+			canonicalShowGolden(t, "bead-owned", beadOutput)
+			bead := decode(beadOutput)
+			linkOutput := call("link", "show", linkPath, "--output-format=json")
+			canonicalShowGolden(t, "link", linkOutput)
+			link := decode(linkOutput)
 			equalJSON(link, decode(call("show", linkPath, "--output-format=json")))
 			// Compare public CLI payloads to the real protocol projector, with store
 			// lifetime entirely outside child processes.
@@ -190,5 +197,47 @@ func TestCanonicalShowWorkflow(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+// Only protocol revision tokens are normalized. Properties, metadata, identities,
+// References and the actual BDP pin are kept exactly as emitted by the process.
+func canonicalShowGolden(t *testing.T, name, output string) {
+	t.Helper()
+	decoder := json.NewDecoder(strings.NewReader(output))
+	decoder.UseNumber()
+	var frame map[string]any
+	if err := decoder.Decode(&frame); err != nil {
+		t.Fatal(err)
+	}
+	data := frame["data"].(map[string]any)
+	data["revision"] = "REVISION"
+	if groups, ok := data["ownedLinks"].(map[string]any); ok {
+		for _, group := range groups {
+			for _, item := range group.([]any) {
+				item.(map[string]any)["revision"] = "REVISION"
+			}
+		}
+	}
+	raw, err := json.MarshalIndent(frame, "", "  ")
+	if err != nil {
+		t.Fatal(err)
+	}
+	raw = append(raw, '\n')
+	path := filepath.Join("testdata", "canonical-show", name+".json")
+	if *updateCanonicalShowCorpus {
+		if err := os.MkdirAll(filepath.Dir(path), 0750); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(path, raw, 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	want, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(raw, want) {
+		t.Fatalf("canonical public corpus changed: %s\n%s", path, raw)
 	}
 }
