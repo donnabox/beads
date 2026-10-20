@@ -122,8 +122,8 @@ try {
     assert.equal(descriptor.name, name);
     assert.equal(descriptor.describes, 'link');
     assert.deepEqual(descriptor.conformsTo, parents);
-    assert.deepEqual(descriptor.source, { conformsTo: [], external: 'none' });
-    assert.deepEqual(descriptor.target, { conformsTo: [], external: 'none' });
+    assert.deepEqual(descriptor.source, { conformsTo: [] });
+    assert.deepEqual(descriptor.target, { conformsTo: [] });
     assert.equal(descriptor.ownsOutgoing, undefined);
     artifacts.selectedLinkTypes[typeID] = descriptor;
   }
