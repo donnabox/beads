@@ -102,8 +102,6 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 			bare := call("link", "show", "links/bare")
 			refuse("invalid_selector", "link", "update", "links/bare@stale", "--properties", `{"note":"wrong target"}`)
 			refuse("invalid_selector", "link", "delete", "links/bare@stale", "--force")
-			refuse("invalid_selector", "unlink", "links/bare@current", "--unconditional")
-			refuse("invalid_selector", "unlink", "source@unpinned", "target", "--type", "types/preview-related", "--unconditional")
 			if got := call("link", "show", "links/bare"); got != bare {
 				t.Fatal("historical write-target syntax changed the bare Link")
 			}
@@ -197,14 +195,12 @@ func TestGraphPreviewCanonicalURIAtIdentityWorkflow(t *testing.T) {
 			if got := call("link", "show", "["+linkURI+"]@"+shown.Revision); got != call("link", "show", linkURI, "--version", shown.Revision) {
 				t.Fatal("canonical raw@ Link exact read mismatch")
 			}
-			call("link", "delete", linkURI, "--force", "--unconditional")
-			call("link", memoryURI, "target", "--type", "types/preview-related", "--id", "links/unlink@literal")
-			call("unlink", scope+"links/unlink@literal", "--unconditional")
-			call("link", memoryURI, "target", "--type", "types/preview-related", "--id", "links/pair@literal")
-			call("unlink", memoryURI, scope+"beads/target", "--type", "types/preview-related", "--unconditional")
-			call("delete", memoryURI, "--force", "--unconditional")
+			call("link", "delete", linkURI, "--force")
+			call("link", memoryURI, "target", "--type", "types/preview-related", "--id", "links/shorthand@literal")
+			call("link", "delete", scope+"links/shorthand@literal", "--force")
+			call("delete", memoryURI, "--force")
 			call("remember", "Forget raw at", "--id", "beads/forget@literal")
-			call("forget", scope+"beads/forget@literal", "--unconditional")
+			call("forget", scope+"beads/forget@literal")
 			// Plain mutation output discloses the writer's actual current
 			// revision, not the replaced predecessor or input guard.
 			call("remember", "Before disclosure", "--id", "beads/disclosure")

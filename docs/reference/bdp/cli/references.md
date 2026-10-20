@@ -49,12 +49,14 @@ Quote bracketed operands to protect them from shell expansion.
 | `bd show RESOURCE`, `bd link show LINK` | Bare identity reads current. An exact suffix reads that retained state, even after a later update or deletion. `@current` and `@unpinned` read current. `--version TOKEN` remains an exact-token alternative. Refuse a suffix together with `--version`, even when their values match. |
 | `bd link SOURCE TARGET`, `bd link create SOURCE TARGET` | Resolve each endpoint selector separately. Bare and `@unpinned` endpoints remain floating. `--source-revision TOKEN` and `--target-revision TOKEN` are alternatives to suffixes, with the same reserved words. A suffix and its flag on the same endpoint conflict. |
 | Endpoint exact pins or `@current` | Refuse with `capability_unavailable` (exit 5), before mutation. Do not silently drop the pin, resolve it in a separate client read, or imply that path-only storage preserves it. |
-| `bd update RESOURCE`, `bd link update LINK`, `bd delete BEAD`, `bd forget BEAD`, `bd link delete LINK`, `bd unlink LINK` or its endpoint pair | Require bare identities or literal canonical URIs. Refuse every revision suffix, including `@current` and `@unpinned`, with `invalid_selector` (exit 2). A suffix never supplies a write guard. |
+| `bd update RESOURCE`, `bd link update LINK`, `bd delete BEAD`, `bd forget BEAD`, `bd link delete LINK` | Require bare identities or literal canonical URIs. Refuse every revision suffix, including `@current` and `@unpinned`, with `invalid_selector` (exit 2). A suffix never supplies a write guard. |
 
 `--if-revision` remains a comparison against the current resource revision.
 `--if-source-revision` independently compares the current owning source;
 `--source-revision` is an endpoint selector and cannot substitute for it.
-Existing stale-guard refusals remain `revision_conflict` (exit 4). An exact
+Omitting a guard retains the selected command's current-state default; no
+`--unconditional` flag is introduced. Existing stale-guard refusals remain
+`revision_conflict` (exit 4). An exact
 retained token absent from the preview store refuses with `revision_unknown`
 (exit 3); it must not fall back to current state. Refusals emit no success
 stdout and do not change the source or its Links.
