@@ -5,7 +5,6 @@ package main
 import (
 	"reflect"
 	"testing"
-	"time"
 
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
@@ -39,7 +38,7 @@ func TestGraphPreviewHistoricalUpdateWorkflow(t *testing.T) {
 				{"invalid_selector", []string{"update", "subject@current", "--from-revision", original.Revision}},
 				{"capability_unavailable", []string{"update", "links/not-created", "--from-revision", original.Revision}},
 			} {
-				graphPatchProcess(t, bd, work, home, nil, tc.code, 90*time.Second, append(tc.args, "--json")...)
+				graphPolicyCLI(t, bd, work, home, nil, tc.code, append(tc.args, "--json")...)
 			}
 			if got := graphMixedResult[graphstore.Record](t, call("show", "subject")); !reflect.DeepEqual(got, applied.Memory) {
 				t.Fatal("refusal changed target")

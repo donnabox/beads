@@ -37,14 +37,11 @@ func runGraphPreviewHistoricalUpdate(cmd *cobra.Command, path string) error {
 			return graphFailure("invalid_properties", "--properties cannot combine with --patch or --replace-properties", 2)
 		}
 		input, _ := cmd.Flags().GetString("properties")
-		values, err := graphPreviewProperties(input, cmd.InOrStdin())
+		values, err := graphPreviewPropertiesJSON(input, cmd.InOrStdin())
 		if err != nil {
 			return graphFailure("invalid_properties", err.Error(), 2)
 		}
-		request.Title, request.Body, err = graphPreviewMemoryProperties(values)
-		if err != nil {
-			return graphFailure("invalid_properties", err.Error(), 2)
-		}
+		request.PropertiesMerge = values
 		request.PropertiesProvided = true
 	}
 	var patch []byte

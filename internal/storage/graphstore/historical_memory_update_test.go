@@ -23,7 +23,7 @@ func TestHistoricalMemoryUpdateComposition(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if _, err := s.Create(ctx, CreateRequest{Path: "beads/target", Body: "target"}); err != nil {
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/target", Title: "Target", Body: "target"}); err != nil {
 				t.Fatal(err)
 			}
 			link, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/owned", SourcePath: "beads/subject", TargetPath: "beads/target", ExpectedSourceRevision: later.Memory.Revision})
@@ -78,7 +78,7 @@ func TestHistoricalMemoryUpdateRefusalsAndRollback(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
 			ctx, _, s := memoryDeleteStore(t, engine)
-			first, err := s.Create(ctx, CreateRequest{Path: "beads/subject", Body: "first"})
+			first, err := s.Create(ctx, CreateRequest{Path: "beads/subject", Title: "Subject", Body: "first"})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -86,7 +86,7 @@ func TestHistoricalMemoryUpdateRefusalsAndRollback(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			other, err := s.Create(ctx, CreateRequest{Path: "beads/other", Body: "other"})
+			other, err := s.Create(ctx, CreateRequest{Path: "beads/other", Title: "Other", Body: "other"})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -127,6 +127,49 @@ func TestHistoricalMemoryUpdateRefusalsAndRollback(t *testing.T) {
 						t.Fatal("partial rollback")
 					}
 				})
+			}
+		})
+	}
+}
+
+func TestHistoricalMemoryUpdateCurrentTypeAndProtectedEvaluation(t *testing.T) {
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			ctx, _, s := memoryDeleteStore(t, engine)
+			original, err := s.Create(ctx, CreateRequest{Path: "beads/evaluation", Title: "Before Evaluation", Body: "historical content"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			subject, err := s.Create(ctx, CreateRequest{Path: "beads/subject", Title: "Assessed subject"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			subjects, err := json.Marshal(map[string]any{"subjects": []any{map[string]string{"uri": subject.ID, "revision": subject.Revision}}, "body": "current content"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			current, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/evaluation", TypeURL: s.ScopeURL() + "types/evaluation", PropertiesMerge: subjects, Unconditional: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+			result, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/evaluation", FromRevision: original.Revision, PropertiesMerge: json.RawMessage(`{"title":"Edited historical title"}`), ExpectedRevision: current.Memory.Revision})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !result.Changed || result.Memory.Type != current.Memory.Type || result.Memory.Properties.Title != "Edited historical title" || result.Memory.Properties.Body != original.Properties.Body {
+				t.Fatalf("wrong final Type/content: %+v", result)
+			}
+			if err := preserveEvaluationSubjectGroup(current.Memory.Properties, result.Memory.Properties); err != nil {
+				t.Fatalf("lost protected group: %v", err)
+			}
+			before := workflowState(t, ctx, s)
+			_, err = s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/evaluation", FromRevision: original.Revision, PropertiesMerge: json.RawMessage(`{"subjects":[]}`), Unconditional: true})
+			if err == nil || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("protected group edit accepted or wrote: %v", err)
+			}
+			_, err = s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/evaluation", FromRevision: original.Revision, TypeURL: original.Type, Unconditional: true})
+			if err == nil || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("historical retype accepted or wrote: %v", err)
 			}
 		})
 	}
