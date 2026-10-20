@@ -309,3 +309,61 @@ func TestCanonicalCollectionPreservesLegacyArgs(t *testing.T) {
 		}
 	}
 }
+
+func TestCanonicalCollectionDefaultPageBoundary(t *testing.T) {
+	records := make([]json.RawMessage, 51)
+	for i := range records {
+		records[i] = canonicalCollectionRecord(fmt.Sprintf("b%02d", i))
+	}
+	for _, format := range []string{"default", "table", "detail", "json"} {
+		t.Run(format, func(t *testing.T) {
+			cmd, out, diagnostics := canonicalCollectionTestCommand(t, false, "--output-format", format)
+			plan, failure := canonicalCollectionTestPlan(t, cmd, false)
+			var exit *exitError
+			if err := renderCanonicalCollection(cmd, plan, records, failure); !errors.As(err, &exit) || exit.Code != 5 {
+				t.Fatalf("default bound not refused: %v", err)
+			}
+			if !strings.Contains(diagnostics.String(), "requested page boundary of 50") || !strings.Contains(diagnostics.String(), "no items were emitted") {
+				t.Fatalf("unclear bound diagnostic: %s", diagnostics)
+			}
+			if bytes.Contains(out.Bytes(), []byte(`"next":null`)) || bytes.Contains(out.Bytes(), []byte(`"outcome":"success"`)) {
+				t.Fatalf("false complete collection: %s", out)
+			}
+		})
+	}
+}
+
+func TestCanonicalCollectionRejectsIssueAllSelection(t *testing.T) {
+	for _, flag := range []string{"--all", "--all=false"} {
+		cmd, out, diagnostics := canonicalCollectionTestCommand(t, false, "--output-format=json", flag)
+		var exit *exitError
+		if err := runCanonicalCollection(cmd, false); !errors.As(err, &exit) || exit.Code != 5 {
+			t.Fatalf("Issue selection flag silently admitted: %v", err)
+		}
+		if !strings.Contains(diagnostics.String(), "does not implement --all") || !bytes.Contains(out.Bytes(), []byte(`"outcome":"failure"`)) {
+			t.Fatalf("missing explicit refusal: %s %s", out, diagnostics)
+		}
+	}
+}
+
+func TestCanonicalCollectionTypeGrammarDiagnostics(t *testing.T) {
+	for _, links := range []bool{false, true} {
+		for _, flag := range []string{"type", "conforms-to"} {
+			for _, value := range []string{"bug", "preview-dependency", "types/note", canonicalCollectionScope + "beads/note"} {
+				cmd, _, _ := canonicalCollectionTestCommand(t, links, "--output-format=json", "--"+flag, value)
+				options, _, _ := canonicalOutputOptions(cmd)
+				_, err := canonicalCollectionRequest(cmd, links, options)
+				if err == nil || !strings.Contains(err.Error(), "--"+flag) || !strings.Contains(err.Error(), "canonical absolute HTTP(S) Type URI") || strings.Contains(err.Error(), "conformsTo") {
+					t.Fatalf("value=%q flag=%s diagnostic=%v", value, flag, err)
+				}
+			}
+			for _, value := range []string{canonicalCollectionScope + "types/note", "https://types.example.test/external-note"} {
+				cmd, _, _ := canonicalCollectionTestCommand(t, links, "--output-format=json", "--"+flag, value)
+				options, _, _ := canonicalOutputOptions(cmd)
+				if _, err := canonicalCollectionRequest(cmd, links, options); err != nil {
+					t.Fatalf("canonical Type URI %s refused: %v", value, err)
+				}
+			}
+		}
+	}
+}

@@ -34,7 +34,7 @@ func init() {
 			return canonicalCollectionFailure{renderer: renderer, jsonl: jsonl}, nil
 		}
 	}
-	linkListCmd.Flags().Int("limit", 0, "Maximum total canonical items; 0 means unlimited; local truncation is unavailable")
+	linkListCmd.Flags().Int("limit", 0, "Requested total delivery bound; 0 means unlimited; canonical local reads refuse larger selections without emitting a subset")
 	linkListCmd.Flags().Lookup("limit").Annotations = map[string][]string{"canonical-output-only": {"true"}}
 }
 
@@ -50,7 +50,7 @@ func registerCanonicalCollectionFlags(cmd *cobra.Command) {
 	}
 	registerCanonicalOutputFlags(cmd)
 	cmd.Flags().Lookup("output-format").Usage = "Canonical collection output: default, table, detail, json or jsonl; cannot mix legacy --json/--format"
-	cmd.Flags().String("conforms-to", "", "Select the exact Type URI or its conformance family in canonical output")
+	cmd.Flags().String("conforms-to", "", "Select a canonical absolute HTTP(S) Type URI and its conformance family; canonical output does not resolve Type aliases")
 	cmd.Flags().Bool("paged", false, "Return one page in canonical output; current local provider refuses truncation")
 	cmd.Flags().Bool("unpaged", false, "Return the complete bounded current selection in canonical output")
 	cmd.Flags().Int("page-size", 50, "Canonical page size; use --unpaged if the complete local selection exceeds this boundary")
@@ -181,6 +181,14 @@ func canonicalCollectionRequest(cmd *cobra.Command, links bool, options clioutpu
 		}
 	}
 	plan.selection, err = graphread.CompileCollection(graphPreviewConfig.GraphScopeURL, collection, parameters, graphread.SelectorLimits{Bytes: 16384, Depth: 256, Nodes: 2048})
+	var parameter *graphread.ParameterError
+	if errors.As(err, &parameter) && (parameter.Name == "type" || parameter.Name == "conformsTo") {
+		flag := "type"
+		if parameter.Name == "conformsTo" {
+			flag = "conforms-to"
+		}
+		return plan, fmt.Errorf("--%s requires a canonical absolute HTTP(S) Type URI (for a local Type, %stypes/NAME); canonical output does not resolve Issue classifications, bare names, or types/NAME", flag, graphPreviewConfig.GraphScopeURL)
+	}
 	return plan, err
 }
 
@@ -208,13 +216,11 @@ func runCanonicalCollection(cmd *cobra.Command, links bool) error {
 	allowed := []string{"type", "conforms-to", "paged", "unpaged", "page-size", "limit", "continue"}
 	if links {
 		allowed = append(allowed, "source", "target", "incident-to", "direction")
-	} else {
-		allowed = append(allowed, "all")
 	}
 	if err := canonicalGraphFlags(cmd, failure, allowed...); err != nil {
 		return err
 	}
-	if err := canonicalScalarOccurrences(cmd, os.Args[1:], "type", "conforms-to", "source", "target", "incident-to", "direction", "paged", "unpaged", "page-size", "limit", "continue", "all"); err != nil {
+	if err := canonicalScalarOccurrences(cmd, os.Args[1:], "type", "conforms-to", "source", "target", "incident-to", "direction", "paged", "unpaged", "page-size", "limit", "continue"); err != nil {
 		return canonicalFailure(cmd, failure, "invalid_selector", err.Error(), 2)
 	}
 	plan, err := canonicalCollectionRequest(cmd, links, options)
@@ -249,7 +255,11 @@ func renderCanonicalCollection(cmd *cobra.Command, plan canonicalCollectionPlan,
 	unpaged, _ := cmd.Flags().GetBool("unpaged")
 	onePage := paged || (!unpaged && !plan.jsonl)
 	if boundary.Take != len(records) || (onePage && len(records) > size) {
-		return canonicalFailure(cmd, failure, "capability_unavailable", "local collection provider cannot retain continuation for a truncated result; use --unpaged with --limit 0 or a narrower selection", 5)
+		bound := fmt.Sprintf("requested page boundary of %d", size)
+		if boundary.Take != len(records) {
+			bound = fmt.Sprintf("requested total delivery limit of %d", boundary.Take)
+		}
+		return canonicalFailure(cmd, failure, "capability_unavailable", fmt.Sprintf("complete selection of %d items exceeds the %s; local collection reads cannot satisfy this bound with a safe continuation, so no items were emitted; use --unpaged --limit 0 or a narrower selection", len(records), bound), 5)
 	}
 	descriptor, err := canonicalCollectionDescriptor(plan.links, records)
 	if err != nil {
