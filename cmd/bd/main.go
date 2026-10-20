@@ -1226,6 +1226,9 @@ var rootCmd = &cobra.Command{
 		_ = cmd.Help() // Help() always returns nil for cobra commands
 	},
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) (retErr error) {
+		if err := validateCanonicalOutputInvocation(cmd); err != nil {
+			return err
+		}
 		if err := clearWorktreeGitRoutingEnv(cmd); err != nil {
 			return err
 		}
@@ -1297,8 +1300,11 @@ var rootCmd = &cobra.Command{
 		}
 
 		// Admit persisted graph format before legacy store discovery or maintenance.
-		if handled, err := admitGraphPreview(cmd); handled || err != nil {
+		if handled, err := admitCanonicalGraphPreview(cmd); handled || err != nil {
 			return err
+		}
+		if canonicalOutputSelected(cmd) {
+			return canonicalFailure(cmd, canonicalFailureRendererFor(cmd), "capability_unavailable", "canonical Resource output requires a graph workspace", 5)
 		}
 
 		// Block dangerous env var overrides that could cause data fragmentation (bd-hevyw).

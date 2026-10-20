@@ -170,6 +170,19 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 			if _, err := s.UpdateLink(ctx, graphstore.LinkUpdateRequest{Path: "links/a", Actor: "human:Donna", Unconditional: true, UnconditionalSource: true, Properties: map[string]any{"note": "revised"}}); err != nil {
 				t.Fatal(err)
 			}
+			for _, historical := range []struct {
+				path, revision string
+				want           any
+			}{
+				{"beads/plan", first.Revision, first},
+				{"beads/plan", linked.Revision, linked},
+				{"links/a", group[0].Revision, group[0]},
+			} {
+				got, err := r.ResourceVersion(ctx, historical.path, historical.revision)
+				if err != nil || !reflect.DeepEqual(got, historical.want) {
+					t.Fatalf("historical BDP projection %s: got %#v want %#v (%v)", historical.path, got, historical.want, err)
+				}
+			}
 			updated := readBead("beads/plan")
 			updatedInventory := checkInventory(t, ctx, r, 4, 3)
 			if updatedInventory.WriterToken == inventory.WriterToken {
