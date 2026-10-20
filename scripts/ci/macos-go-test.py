@@ -254,14 +254,19 @@ def verify_events(path, packages, expected_roots=None):
                 packages=sorted(packages))
 
 
-def execute(root, output, go="go", package_parallel=None, test_parallel=None, json_output=None, scope="all", source_sha=None):
-    require(scope in ("all", "graphstore", "remaining"), "unknown execution scope")
-    require(source_sha is None or re.fullmatch(r"[0-9a-f]{40}", source_sha), "invalid source revision")
+def policy_flags(package_parallel=None, test_parallel=None):
     flags = list(FLAGS)
     for flag, value in (("-p", package_parallel), ("-parallel", test_parallel)):
         if value is not None:
             require(type(value) is int and value > 0, f"{flag} must be a positive integer")
             flags.extend([flag, str(value)])
+    return flags
+
+
+def execute(root, output, go="go", package_parallel=None, test_parallel=None, json_output=None, scope="all", source_sha=None):
+    require(scope in ("all", "graphstore", "remaining"), "unknown execution scope")
+    require(source_sha is None or re.fullmatch(r"[0-9a-f]{40}", source_sha), "invalid source revision")
+    flags = policy_flags(package_parallel, test_parallel)
     json_flags = [flag for flag in flags if flag != "-v"]
     output.mkdir(parents=True, exist_ok=False)
     if json_output is not None:
@@ -322,11 +327,13 @@ def execute(root, output, go="go", package_parallel=None, test_parallel=None, js
         print(json.dumps(summary, sort_keys=True), flush=True)
 
 
-def verify_scopes(root, source_sha):
+def verify_scopes(root, source_sha, package_parallel=None, test_parallel=None):
     """Recheck both disjoint real-output scopes before the existing Mac gate passes."""
     require(re.fullmatch(r"[0-9a-f]{40}", source_sha or ""), "missing aggregate source revision")
-    summaries = sorted(root.glob("*/summary.json"))
+    summaries = sorted(root.rglob("summary.json"))
     require(len(summaries) == 2, "both and only both scope artifacts are required")
+    flags = policy_flags(package_parallel, test_parallel)
+    json_flags = [flag for flag in flags if flag != "-v"]
     scopes, coverage, packages = set(), Counter(), None
     for path in summaries:
         directory = path.parent
@@ -338,7 +345,7 @@ def verify_scopes(root, source_sha):
         require(summary.get("passed") is True and summary.get("failure") is None and summary.get("scope") == scope,
                 "scope did not complete successfully")
         require(plan.get("source") == summary.get("source") == source_sha, "scope source revision differs")
-        require(plan.get("flags") == FLAGS and plan.get("jsonFlags") == JSON_FLAGS, "scope changed test policy")
+        require(plan.get("flags") == flags and plan.get("jsonFlags") == json_flags, "scope changed test policy")
         discovered = plan.get("packages")
         require(isinstance(discovered, list) and discovered == sorted(set(discovered)) and
                 {GRAPHSTORE, COMMAND} <= set(discovered), "invalid complete package discovery")
@@ -398,7 +405,7 @@ def main():
     signal.signal(signal.SIGINT, interrupted)
     try:
         if args.verify_scopes is not None:
-            print(json.dumps(verify_scopes(args.verify_scopes.resolve(), args.source_sha), sort_keys=True))
+            print(json.dumps(verify_scopes(args.verify_scopes.resolve(), args.source_sha, args.package_parallel, args.test_parallel), sort_keys=True))
         else:
             execute(Path(__file__).resolve().parents[2], args.output.resolve(),
                     package_parallel=args.package_parallel, test_parallel=args.test_parallel, json_output=args.json_output,
