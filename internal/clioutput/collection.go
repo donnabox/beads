@@ -88,13 +88,19 @@ func NewCollection(descriptor CollectionDescriptor, options Options) (*Collectio
 	for _, required := range item.protection.Required {
 		columns = append(columns, pointerChild("", required))
 	}
-	for i, column := range columns {
+	orderedColumns := make([]string, 0, len(columns))
+	seenColumns := make(map[string]bool, len(columns))
+	for _, column := range columns {
 		if _, err := pointerParts(column); err != nil {
 			return nil, fmt.Errorf("table column: %w", err)
 		}
-		columns[i] = protectedColumn(column, item.protection)
+		column = protectedColumn(column, item.protection)
+		if !seenColumns[column] {
+			seenColumns[column] = true
+			orderedColumns = append(orderedColumns, column)
+		}
 	}
-	return &CollectionRenderer{item: item, kind: descriptor.ResultKind, itemsMember: descriptor.ItemsMember, format: format, raw: raw, columns: canonicalPaths(columns), contextMembers: canonicalPaths(descriptor.ContextMembers)}, nil
+	return &CollectionRenderer{item: item, kind: descriptor.ResultKind, itemsMember: descriptor.ItemsMember, format: format, raw: raw, columns: orderedColumns, contextMembers: canonicalPaths(descriptor.ContextMembers)}, nil
 }
 
 func collectionFormat(formats []string, shorthand bool) (string, error) {
@@ -187,7 +193,7 @@ func (r *CollectionRenderer) Render(payload json.RawMessage, completion Completi
 		}
 		return collectionHumanContext(context, out.Bytes())
 	}
-	object[r.itemsMember], err = json.Marshal(projected)
+	object[r.itemsMember], err = marshalValue(projected)
 	if err != nil {
 		return nil, err
 	}
