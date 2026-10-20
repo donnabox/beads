@@ -93,11 +93,18 @@ func (s *JSONLWriter) Finish(exhausted bool, stopReason string, continuation jso
 // diagnostics and nonzero status; successful terminal delivery is not success of
 // the operation. Exhaustion is unknown because execution did not finish.
 func (s *JSONLWriter) Failure(origin string, problem json.RawMessage) error {
+	return s.FailureWithContinuation(origin, problem, nil)
+}
+
+// FailureWithContinuation preserves an available provider continuation at the
+// last successfully delivered boundary. The caller must not pass the next-page
+// token when part of that page was not delivered. Nil reports no continuation.
+func (s *JSONLWriter) FailureWithContinuation(origin string, problem, continuation json.RawMessage) error {
 	wrapper, err := collectionProblem(origin, problem)
 	if err != nil {
 		return err
 	}
-	return s.terminal("failure", Completion{Returned: s.returned, StopReason: "error"}, nil, wrapper)
+	return s.terminal("failure", Completion{Returned: s.returned, StopReason: "error"}, continuation, wrapper)
 }
 
 func (s *JSONLWriter) terminal(outcome string, completion Completion, continuation json.RawMessage, problem *problemWrapper) error {
