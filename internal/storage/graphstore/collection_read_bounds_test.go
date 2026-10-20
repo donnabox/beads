@@ -8,6 +8,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 )
 
 // Real engines, normal schema initialization and only public graph authoring
@@ -19,6 +20,7 @@ func TestCurrentReadAcquisitionBudget(t *testing.T) {
 			for _, scenario := range []string{"memory", "issue-hydration", "owned-link-and-history"} {
 				t.Run(scenario, func(t *testing.T) {
 					ctx, o := issueExperimentOptions(t, backend)
+					ctx = currentReadBudgetContext(t, ctx)
 					s, err := OpenExisting(ctx, o)
 					if err != nil {
 						t.Fatal(err)
@@ -104,4 +106,15 @@ func assertCurrentReadBudgetRefusal(t *testing.T, ctx context.Context, s *Store,
 			t.Fatalf("exact read %s must enforce whole-workspace budget: %v; nonnil=%t", path, err, value != nil)
 		}
 	}
+}
+
+// currentReadBudgetContext bounds the operation phase of near-16MiB fixtures
+// independently from initialization. Repeated retained/current state checks
+// exceed the ordinary fixture window under concurrent hosted race tests; this
+// is a test workload allowance, not an acquisition limit or timing assertion.
+func currentReadBudgetContext(t *testing.T, fixture context.Context) context.Context {
+	t.Helper()
+	ctx, cancel := context.WithTimeout(context.WithoutCancel(fixture), 3*time.Minute)
+	t.Cleanup(cancel)
+	return ctx
 }

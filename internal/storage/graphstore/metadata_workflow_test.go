@@ -137,6 +137,7 @@ func TestIssueMetadataPatchPreservesCurrentReadBudget(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, o := issueExperimentOptions(t, backend)
+			ctx = currentReadBudgetContext(t, ctx)
 			s, err := OpenExisting(ctx, o)
 			if err != nil {
 				t.Fatal(err)

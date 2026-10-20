@@ -13,7 +13,6 @@ import (
 	"strings"
 	"sync"
 	"testing"
-	"time"
 
 	"github.com/steveyegge/beads/internal/storage"
 )
@@ -296,6 +295,7 @@ func TestMemoryPropertiesPatchReadBudget(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, _, s, original, target, _ := memoryPropertiesPatchFixture(t, backend)
+			ctx = currentReadBudgetContext(t, ctx)
 			// Two current copies of 7.5MiB fit; adding two 768KiB subject copies does not.
 			if _, err := s.Create(ctx, CreateRequest{Path: "beads/filler", Title: "Filler", Body: strings.Repeat("f", PreviewCurrentReadByteLimit/2-(512<<10))}); err != nil {
 				t.Fatal(err)
@@ -617,10 +617,7 @@ func TestMemoryPropertiesPatchDeletedBudget(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, _, s, original, _, _ := memoryPropertiesPatchFixture(t, backend)
-			// The repeated near-budget retained-head reads need a separate,
-			// bounded window under the race detector on hosted macOS runners.
-			ctx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 3*time.Minute)
-			defer cancel()
+			ctx = currentReadBudgetContext(t, ctx)
 			deleted := propertiesPatchDeletedFiller(t, ctx, s)
 			if _, err := s.Read(ctx, "beads/plan"); err != nil {
 				t.Fatalf("deleted filler fixture unreadable: %v", err)
