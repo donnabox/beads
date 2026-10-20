@@ -50,6 +50,35 @@ func (s *Store) ownsLink(source any, linkType string) (bool, error) {
 	return c.types.Owns(typecatalog.Reference{URI: recordType(source)}, typecatalog.Reference{URI: linkType})
 }
 
+// SelectedOwnedLinkTypes supplies effective ownership for complete record
+// projection. Partial inventory descriptors cannot carry family ownership.
+// This is a pure lookup in the fixed selected catalog, not a storage read or
+// a new declaration of finite semantic maxima.
+func (s *Store) SelectedOwnedLinkTypes(beadType string) ([]string, error) {
+	c, err := s.selectedTypes()
+	if err != nil {
+		return nil, err
+	}
+	definition, ok := c.types.Definition(beadType)
+	if !ok || definition.Kind != graph.KindBead {
+		return nil, fmt.Errorf("%w: unknown selected Bead ownership contract", ErrInvalidStore)
+	}
+	result := []string{}
+	for _, link := range c.types.Public(graph.KindLink) {
+		if link.Abstract {
+			continue
+		}
+		owns, err := c.types.Owns(typecatalog.Reference{URI: beadType}, link.Identity)
+		if err != nil {
+			return nil, err
+		}
+		if owns {
+			result = append(result, link.Identity.URI)
+		}
+	}
+	return result, nil
+}
+
 func newSelectedMemoryProjection(scope string) (*memorycatalog.Projection, error) {
 	if err := graph.ValidateScopeURL(scope); err != nil {
 		return nil, err

@@ -22,6 +22,9 @@ type Snapshot struct {
 	WriterToken string
 	Records     []any
 	Types       []graph.TypeDescriptor
+	// OwnedLinkTypes captures effective selected ownership beside the checked
+	// installed Types. It is projection metadata, not a public wire descriptor.
+	OwnedLinkTypes map[string][]string
 }
 
 // CurrentSnapshot returns a complete bounded current inventory, or zero state
@@ -49,7 +52,7 @@ func (s *Store) currentSnapshotInTx(ctx context.Context, tx *sql.Tx) (Snapshot, 
 	if err := s.checkCollectionMappingsInTx(ctx, tx); err != nil {
 		return Snapshot{}, err
 	}
-	result := Snapshot{Records: []any{}, Types: []graph.TypeDescriptor{}}
+	result := Snapshot{Records: []any{}, Types: []graph.TypeDescriptor{}, OwnedLinkTypes: map[string][]string{}}
 	if err := tx.QueryRowContext(ctx, `SELECT writer_token FROM graph_preview_scope WHERE singleton=1`).Scan(&result.WriterToken); err != nil {
 		return Snapshot{}, err
 	}
@@ -57,6 +60,16 @@ func (s *Store) currentSnapshotInTx(ctx context.Context, tx *sql.Tx) (Snapshot, 
 	result.Types, err = installedPreviewTypes(ctx, tx, s.ScopeURL())
 	if err != nil {
 		return Snapshot{}, err
+	}
+	for _, descriptor := range result.Types {
+		if descriptor.Describes() != graph.KindBead {
+			continue
+		}
+		owned, err := s.SelectedOwnedLinkTypes(descriptor.ID())
+		if err != nil {
+			return Snapshot{}, err
+		}
+		result.OwnedLinkTypes[descriptor.ID()] = owned
 	}
 	sort.Slice(result.Types, func(i, j int) bool { return graph.CompareCodeUnits(result.Types[i].ID(), result.Types[j].ID()) < 0 })
 	var invalid int
