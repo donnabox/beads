@@ -359,7 +359,8 @@ func TestExportOrphanFixtureRollbackFailureDiscardsConnection(t *testing.T) {
 func TestExportCurrentSnapshotAcquisitionBounds(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
-			ctx, _, s := memoryDeleteStore(t, backend)
+			ctx, options, s := memoryDeleteStore(t, backend)
+			t.Logf("isolated fixture workspace=%s", options.Binding.WorkspaceID)
 			work, err := s.CreateIssue(ctx, "beads/work", plainIssue("Work"))
 			if err != nil {
 				t.Fatal(err)
@@ -421,8 +422,9 @@ func TestExportCurrentSnapshotAcquisitionBounds(t *testing.T) {
 			if !reflect.DeepEqual(before, exportSourceState(t, ctx, s)) {
 				t.Fatal("deleted-head baseline isolation escaped rollback")
 			}
-			// Deleted Issue validation decodes its final retained head, despite
-			// excluding it from live output; its acquisition also has a budget.
+			// A real native D is acquired without its retained predecessor.
+			// Legacy deletion instead validates its final native live head, so
+			// only that legacy shape acquires and charges the large body below.
 			request := plainIssue("Final retained head")
 			request.Issue.Description = strings.Repeat("d", 40<<10)
 			deleted, err := s.CreateIssue(ctx, "beads/removed", request)
@@ -444,8 +446,28 @@ func TestExportCurrentSnapshotAcquisitionBounds(t *testing.T) {
 				if _, err := tx.ExecContext(ctx, "UPDATE graph_preview_catalog SET allocation_state='deleted' WHERE path='beads/filler'"); err != nil {
 					return err
 				}
+				if _, err := checkExportReadBoundsAtLimit(ctx, tx, exportCommentLimit, deletedHeadByteLimit); err != nil {
+					return fmt.Errorf("unacquired native D predecessor consumed export budget: %v", err)
+				}
+				if err := s.validateDeletedIssueInTx(ctx, tx, "beads/removed"); err != nil {
+					return fmt.Errorf("validate real native D: %w", err)
+				}
+				// Controlled compatibility fixture: point the deleted allocation
+				// at the final native live mapping instead of its separate D.
+				if _, err := tx.ExecContext(ctx, "UPDATE graph_preview_catalog SET revision=? WHERE path='beads/removed'", deleted.Revision); err != nil {
+					return err
+				}
+				if err := s.validateDeletedIssueInTx(ctx, tx, "beads/removed"); err != nil {
+					return fmt.Errorf("validate legacy deleted native head: %w", err)
+				}
+				// The <=40 KiB baseline plus one ~40 KiB legacy head fits
+				// this window; charging that head twice does not. Keep the
+				// stricter refusal below to protect aggregate accounting too.
+				if _, err := checkExportReadBoundsAtLimit(ctx, tx, exportCommentLimit, 88<<10); err != nil {
+					return fmt.Errorf("legacy deleted final head charged more than once: %v", err)
+				}
 				if _, err := checkExportReadBoundsAtLimit(ctx, tx, exportCommentLimit, deletedHeadByteLimit); !errors.Is(err, ErrLimitExceeded) {
-					return fmt.Errorf("deleted final head escaped aggregate budget: %v", err)
+					return fmt.Errorf("acquired legacy deleted final head escaped aggregate budget: %v", err)
 				}
 				return nil
 			}); err != nil {

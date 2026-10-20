@@ -38,7 +38,7 @@ const exportCommentLimit = PreviewCurrentReadByteLimit / exportReadRowOverhead
 // of deleted allocations in one rollback-only transaction. Exact endpoints
 // are dereferenced for availability in that transaction; their historical
 // payloads are validation-only and never enter Snapshot or the comment feed.
-// Deleted Bead final heads are also read for validation. These integrity reads
+// Deleted Beads are validated through their terminal or legacy final head. These integrity reads
 // do not add archival history to the returned inventory or establish archive
 // completeness. Event journals, counters and unrelated configuration are excluded.
 //
@@ -134,16 +134,15 @@ func exportReadSizeQueries() []currentReadSizeQuery {
 		if strings.HasPrefix(parts[i].from, "comments ") {
 			parts[i] = currentReadSizeQuery{"comments", "id,issue_id,author,text,created_at", 1}
 		}
+		if strings.Contains(parts[i].from, "c.allocation_state='deleted' AND c.backing='issue' AND d.version IS NULL AND m.version=c.revision") {
+			// Shared current accounting already charges the legacy final head
+			// and context decoded by collection mapping validation. Include its
+			// remaining acquired metadata without charging the body twice.
+			// A real native D is charged separately and does not read this head.
+			parts[i].columns += ",m.issue_id,v.change_at"
+		}
 	}
-	// Collection mapping validation also decodes deleted Issues' final retained
-	// heads. They are not returned as live data, but must share this acquisition
-	// budget rather than passing separate per-resource history guards.
-	// Legacy native revision_context is already charged by the shared current
-	// projection. A real native terminal D does not hydrate its baseline here.
-	return append(parts, currentReadSizeQuery{
-		"graph_preview_issue_versions m JOIN graph_preview_catalog c ON c.path=m.path AND c.revision=m.version JOIN issue_versions v ON v.issue_id=m.issue_id AND v.revision=m.issue_revision WHERE c.allocation_state='deleted' AND c.backing='issue'",
-		"m.issue_id,m.owned,v.durable_state,v.change_actor,v.attribution_status,v.change_at", 1,
-	})
+	return parts
 }
 
 // UNION deduplicates a selected address across both endpoint roles before
