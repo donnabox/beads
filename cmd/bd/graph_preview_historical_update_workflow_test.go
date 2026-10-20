@@ -223,11 +223,19 @@ func TestGraphPreviewHistoricalNativeRecovery(t *testing.T) {
 				t.Helper()
 				raw := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "subject", "--output-format", "json")
 				var envelope struct {
-					SchemaVersion int           `json:"schema_version"`
-					Data          historyResult `json:"data"`
+					SchemaVersion int `json:"schema_version"`
+					Data          struct {
+						CurrentState *struct{ ID, Revision, PreviousVersion, State string } `json:"currentState"`
+						Terminal     []map[string]any                                       `json:"terminal_versions"`
+						Versions     []map[string]any                                       `json:"versions"`
+					} `json:"data"`
 				}
-				if err := json.Unmarshal([]byte(raw), &envelope); err != nil || envelope.SchemaVersion != 2 || !reflect.DeepEqual(envelope.Data, want) {
+				if err := json.Unmarshal([]byte(raw), &envelope); err != nil || envelope.SchemaVersion != 2 || !reflect.DeepEqual(envelope.Data.Terminal, want.Terminal) || !reflect.DeepEqual(envelope.Data.Versions, want.Versions) {
 					t.Fatalf("canonical native history lost terminal/ordinal context: decode=%v got=%s want=%+v", err, raw, want)
+				}
+				state := envelope.Data.CurrentState
+				if (state == nil) != (want.CurrentState == nil) || (state != nil && (state.ID != want.CurrentState.ID || state.Revision != want.CurrentState.Revision || state.PreviousVersion != want.CurrentState.PreviousVersion || state.State != "deleted")) {
+					t.Fatalf("canonical history lost current deletion identity: %s", raw)
 				}
 			}
 			history := graphMixedResult[historyResult](t, call("versions", "subject"))

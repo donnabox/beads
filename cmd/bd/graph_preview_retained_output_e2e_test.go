@@ -23,7 +23,7 @@ func TestGraphCanonicalRetainedOutputCLI(t *testing.T) {
 	call("init", "--graph-mode", "link", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
 	call("create", "Source", "--id", "beads/source", "--json")
 	call("create", "Target", "--id", "beads/target", "--json")
-	call("link", "create", "beads/source", "beads/target", "--id", "links/edge", "--type", scope+"types/preview-related", "--json")
+	call("link", "create", "beads/source", "beads/target", "--id", "links/edge", "--type", scope+"types/related", "--json")
 	call("link", "update", "links/edge", "--properties", `{"note":"second"}`, "--json")
 
 	var legacy struct {
