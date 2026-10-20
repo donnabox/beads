@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"reflect"
 	"testing"
+
+	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
 // This process test covers command registration, legacy/canonical dispatch,
@@ -13,17 +15,23 @@ import (
 // cover masks and exact-value preservation without opening any store.
 func TestGraphCanonicalRetainedOutputCLI(t *testing.T) {
 	isolateBeadsDirForTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) { graphCanonicalRetainedOutputCLI(t, engine) })
+	}
+}
+
+func graphCanonicalRetainedOutputCLI(t *testing.T, engine string) {
+	t.Helper()
 	bd := buildBDUnderTest(t)
-	work, home := t.TempDir(), t.TempDir()
 	const scope = "https://example.invalid/canonical-retained/"
+	work, home := graphListWorkspace(t, bd, engine, scope)
 	call := func(args ...string) string {
 		t.Helper()
 		return graphVersionsOK(t, bd, work, home, args...)
 	}
-	call("init", "--graph-mode", "link", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
-	call("create", "Source", "--id", "beads/source", "--json")
-	call("create", "Target", "--id", "beads/target", "--json")
-	call("link", "create", "beads/source", "beads/target", "--id", "links/edge", "--type", scope+"types/preview-related", "--json")
+	call("remember", "Source", "--id", "beads/source", "--json")
+	call("create", "Target", "--id", "beads/target", "--type", "types/constraint", "--json")
+	call("link", "create", "beads/source", "beads/target", "--id", "links/edge", "--type", graphstore.RelatedTypeURL(scope), "--json")
 	call("link", "update", "links/edge", "--properties", `{"note":"second"}`, "--json")
 
 	var legacy struct {
