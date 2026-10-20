@@ -130,7 +130,7 @@ func ownedLinks(source string, descriptor graph.TypeDescriptor, records []json.R
 
 func link(v graphstore.LinkRecord) (bdpwire.LinkRecord, error) {
 	result := bdpwire.LinkRecord{ID: v.ID, Type: v.Type, Revision: v.Revision,
-		Source: bdpwire.Reference{URI: v.Source}, Target: bdpwire.Reference{URI: v.Target}}
+		Source: bdpwire.Reference{URI: v.Source, Revision: v.SourceRevision}, Target: bdpwire.Reference{URI: v.Target, Revision: v.TargetRevision}}
 	var err error
 	result.Properties, err = projectProperties(v.Properties)
 	if err != nil {

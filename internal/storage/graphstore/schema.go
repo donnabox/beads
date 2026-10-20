@@ -23,7 +23,9 @@ import (
 var previewDDL = []string{
 	`CREATE TABLE graph_preview_links (
         path VARBINARY(1024) PRIMARY KEY, source_path VARBINARY(1024) NOT NULL,
-        target_path VARBINARY(1024) NOT NULL, properties LONGBLOB NOT NULL,
+        target_path VARBINARY(1024) NOT NULL,
+        source_revision VARBINARY(4096) NOT NULL DEFAULT '',
+        target_revision VARBINARY(4096) NOT NULL DEFAULT '', properties LONGBLOB NOT NULL,
         metadata LONGBLOB NULL,
         attribution LONGBLOB NOT NULL, INDEX source_links (source_path))`,
 	`CREATE TABLE graph_preview_scope (
@@ -264,7 +266,7 @@ func checkBinding(ctx context.Context, tx *sql.Tx, o Options) error {
 	for _, query := range []string{
 		`SELECT path, resource_kind, type_url, revision, allocation_state, backing, backing_key FROM graph_preview_catalog LIMIT 0`,
 		`SELECT path, properties, metadata FROM graph_preview_payloads LIMIT 0`,
-		`SELECT path, source_path, target_path, properties, metadata, attribution FROM graph_preview_links LIMIT 0`,
+		`SELECT path, source_path, target_path, source_revision, target_revision, properties, metadata, attribution FROM graph_preview_links LIMIT 0`,
 		`SELECT path, version, snapshot, actor, ordinal, change_at FROM graph_preview_versions LIMIT 0`,
 		`SELECT path, version, issue_id, issue_revision, owned FROM graph_preview_issue_versions LIMIT 0`,
 		`SELECT issue_id, revision, durable_state, attribution_status FROM issue_versions LIMIT 0`,

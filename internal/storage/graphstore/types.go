@@ -12,7 +12,7 @@ import (
 )
 
 // SchemaVersion identifies this explicitly experimental storage layout.
-const SchemaVersion = 7
+const SchemaVersion = 8
 
 // TypeGeneration changes when the selected fresh Type installation changes.
 // It is an admission marker, never an automatic migration of existing stores.
@@ -131,17 +131,20 @@ type DependencyRequest struct {
 }
 
 // LinkRecord projects an authoritative specialized Dependency or generic Link.
-// All preview endpoints are unpinned live local Beads.
+// Endpoint identity remains URI-based; optional revision pins are carried
+// separately and encoded as structured References in JSON.
 type LinkRecord struct {
-	ID          string          `json:"id"`
-	Type        string          `json:"type"`
-	Revision    string          `json:"revision"`
-	Version     string          `json:"version"`
-	Source      string          `json:"source"`
-	Target      string          `json:"target"`
-	Properties  map[string]any  `json:"properties"`
-	Metadata    json.RawMessage `json:"metadata"`
-	Attribution Attribution     `json:"attribution"`
+	ID             string          `json:"id"`
+	Type           string          `json:"type"`
+	Revision       string          `json:"revision"`
+	Version        string          `json:"version"`
+	Source         string          `json:"source"`
+	Target         string          `json:"target"`
+	SourceRevision string          `json:"-"`
+	TargetRevision string          `json:"-"`
+	Properties     map[string]any  `json:"properties"`
+	Metadata       json.RawMessage `json:"metadata"`
+	Attribution    Attribution     `json:"attribution"`
 }
 
 type DependencyResult struct {
@@ -183,16 +186,19 @@ type LinkCreateRequest struct {
 	// TypeURL selects an installed informational Type; empty preserves the original Related Type.
 	TypeURL                             string
 	Path, SourcePath, TargetPath, Actor string
+	SourcePin, TargetPin                EndpointPin
 	Properties                          map[string]any
 	Metadata                            json.RawMessage
 	ExpectedSourceRevision              string
 	UnconditionalSource                 bool
 }
 
-// LinkUpdateRequest changes properties without changing Type or endpoints.
+// LinkUpdateRequest changes payload and optional endpoint pins without changing
+// Type or endpoint identities. Nil pin intent preserves the stored Reference.
 // A guard is mandatory for the Link and, when owned, its source Memory.
 type LinkUpdateRequest struct {
 	Path, Actor            string
+	SourcePin, TargetPin   *EndpointPin
 	Properties             map[string]any
 	Metadata               publicops.MetadataPatch
 	MetadataOnly           bool

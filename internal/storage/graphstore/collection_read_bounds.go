@@ -42,7 +42,7 @@ func currentReadSizeQueries() []currentReadSizeQuery {
 		// Owner enumeration acquires paths before validating their allocation.
 		// Count orphan rows too, so corruption cannot create an unbounded path
 		// slice before the existing mapping/authority refusal.
-		{"graph_preview_links l", "l.path,l.source_path,l.target_path,l.properties,l.metadata,l.attribution", 2},
+		{"graph_preview_links l", "l.path,l.source_path,l.target_path,l.source_revision,l.target_revision,l.properties,l.metadata,l.attribution", 2},
 		{"graph_preview_versions v JOIN graph_preview_catalog c ON c.path=v.path AND c.revision=v.version WHERE " + live + " AND c.resource_kind='bead'", "v.snapshot,v.actor", 1},
 		{"graph_preview_versions v JOIN graph_preview_catalog c ON c.path=v.path AND c.revision=v.version WHERE " + live + " AND c.resource_kind='link'", "v.snapshot,v.actor", 2},
 		// Deleted Memory current-state validation inspects the preserved final
