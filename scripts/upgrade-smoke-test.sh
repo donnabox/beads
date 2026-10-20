@@ -689,8 +689,10 @@ else
         fi
 
         WISP_ARCHIVE_DIR="${TEST_UNDECLARED_OUTPUTS_DIR:-}"
+        WISP_ARCHIVE_IS_TEMPORARY=false
         if [ -z "$WISP_ARCHIVE_DIR" ] || ! mkdir -p "$WISP_ARCHIVE_DIR"; then
             WISP_ARCHIVE_DIR=$(mktemp -d -t bd-upgrade-wisp-failure-XXXXXX) || WISP_ARCHIVE_DIR=""
+            WISP_ARCHIVE_IS_TEMPORARY=true
         fi
         WISP_ARCHIVE_INPUTS=(-C "$(dirname "$WS")" "$(basename "$WS")")
         if [ -n "$WISP_OBSERVATION_DIR" ]; then
@@ -700,7 +702,11 @@ else
         if [ -n "$WISP_ARCHIVE_DIR" ]; then
             WISP_ARCHIVE="$WISP_ARCHIVE_DIR/wisp-failure-${PREV_VERSION}-$(basename "$WS").tar.gz"
             if tar -czf "$WISP_ARCHIVE" "${WISP_ARCHIVE_INPUTS[@]}"; then
-                printf '  Failed Wisp fixture and available command captures: %s\n' "$WISP_ARCHIVE" >&2 || true
+                if $WISP_ARCHIVE_IS_TEMPORARY; then
+                    printf '  Temporary failed Wisp fixture archive: %s (the test runner may reclaim it)\n' "$WISP_ARCHIVE" >&2 || true
+                else
+                    printf '  Failed Wisp fixture and available command captures: %s\n' "$WISP_ARCHIVE" >&2 || true
+                fi
                 WISP_FIXTURE_ARCHIVED=true
             else
                 printf '  Warning: archive failed: %s\n' "$WISP_ARCHIVE" >&2 || true
@@ -710,7 +716,10 @@ else
             rm -rf "$WS" || true
             if [ -n "$WISP_OBSERVATION_DIR" ]; then rm -rf "$WISP_OBSERVATION_DIR" || true; fi
         else
-            printf '  Failed Wisp fixture retained at: %s\nCommand captures retained at: %s\n' "$WS" "$WISP_OBSERVATION_DIR" >&2 || true
+            printf '  Temporary failed Wisp fixture remains at: %s (the test runner may reclaim it)\n' "$WS" >&2 || true
+            if [ -n "$WISP_OBSERVATION_DIR" ]; then
+                printf '  Temporary command captures remain at: %s (the test runner may reclaim them)\n' "$WISP_OBSERVATION_DIR" >&2 || true
+            fi
         fi
     else
         rm -rf "$WS"

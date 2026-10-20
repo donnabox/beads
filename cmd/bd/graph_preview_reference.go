@@ -19,9 +19,10 @@ type graphPreviewReference struct {
 	Wrapped  bool
 }
 
-// graphPreviewParseReference keeps every unwrapped absolute URI literal. This
-// includes @ in userinfo and path, and IPv6 authority brackets. A URI with a
-// revision uses [URI]@revision; nested IPv6 brackets are balanced here.
+// graphPreviewParseReference uses the existing CLI URL boundary: unwrapped
+// locator forms containing :// stay literal, including @ and IPv6 brackets.
+// Colon-only spellings remain local shorthand, even when they resemble opaque
+// URIs. A canonical Scope URL with a revision uses [URL]@revision.
 func graphPreviewParseReference(input string) (graphPreviewReference, error) {
 	if input == "" || !utf8.ValidString(input) {
 		return graphPreviewReference{}, fmt.Errorf("reference must be nonempty UTF-8")
@@ -51,8 +52,10 @@ func graphPreviewParseReference(input string) (graphPreviewReference, error) {
 		}
 		identity := input[1:end]
 		parsed, err := url.Parse(identity)
-		if err != nil || parsed.Scheme == "" || graphPreviewURIHasRawPathBrackets(identity) {
-			return graphPreviewReference{}, fmt.Errorf("bracketed reference requires an absolute URI")
+		if err != nil || !strings.Contains(identity, "://") || parsed.Host == "" || parsed.Opaque != "" ||
+			(!strings.EqualFold(parsed.Scheme, "http") && !strings.EqualFold(parsed.Scheme, "https")) ||
+			graphPreviewURIHasRawPathBrackets(identity) {
+			return graphPreviewReference{}, fmt.Errorf("bracketed reference requires a canonical HTTP(S) Scope URL; local IDs use ID@revision")
 		}
 		suffix := input[end+1:]
 		if !strings.HasPrefix(suffix, "@") || len(suffix) == 1 {
@@ -63,16 +66,16 @@ func graphPreviewParseReference(input string) (graphPreviewReference, error) {
 		}
 		return graphPreviewReference{Identity: identity, Revision: suffix[1:], Explicit: true, Wrapped: true}, nil
 	}
-	parsed, err := url.Parse(input)
-	if err != nil && strings.Contains(input, "://") {
-		return graphPreviewReference{}, fmt.Errorf("invalid absolute URI reference")
-	}
-	if err == nil && parsed.Scheme != "" {
+	if strings.Contains(input, "://") {
+		parsed, err := url.Parse(input)
+		if err != nil || parsed.Scheme == "" {
+			return graphPreviewReference{}, fmt.Errorf("invalid absolute URI reference")
+		}
 		return graphPreviewReference{Identity: input}, nil
 	}
 	if i := strings.IndexByte(input, '@'); i >= 0 {
 		if i == 0 || i == len(input)-1 {
-			return graphPreviewReference{}, fmt.Errorf("local reference requires ID@revision")
+			return graphPreviewReference{}, fmt.Errorf("local reference requires ID@revision; address an ID containing @ by its full canonical Scope URI")
 		}
 		revision := input[i+1:]
 		if err := graphPreviewReferenceRevision(revision); err != nil {
@@ -115,7 +118,7 @@ func graphPreviewWritableIdentity(input string) (string, error) {
 		return "", err
 	}
 	if ref.Explicit {
-		return "", fmt.Errorf("write targets use a bare identity; use --if-revision for a revision guard")
+		return "", fmt.Errorf("write targets use a bare identity; use --if-revision for a revision guard; address an ID containing @ by its full canonical Scope URI")
 	}
 	return ref.Identity, nil
 }

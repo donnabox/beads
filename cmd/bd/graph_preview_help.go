@@ -128,10 +128,12 @@ fields refuse. Fresh workspaces create types/preview-issue Issues.`},
 		{showCmd, `Use bd show ID (equivalent to beads/ID) for a current Memory or
 Issue; use bd show links/ID for a Link. ID@TOKEN or '[URI]@TOKEN' selects
 one exact retained record; --version TOKEN remains an alternative (not both).
-@current and @unpinned read current. Bare absolute URIs are literal, including
-raw @ in IDs; use the full canonical URI to escape local @ shorthand.
-Suffixes are unavailable on update/delete/unlink targets; use --if-revision
-for write comparison. --version treats current and unpinned as exact tokens.
+@current and @unpinned read current. Unwrapped URL forms containing :// are
+literal, including raw @; use the full canonical Scope URL to escape local
+@ shorthand. Colon-only forms such as plan:v1@TOKEN use local syntax.
+Bracketed operands require canonical HTTP(S) Scope URLs, not opaque URIs.
+Suffixes are rejected on the selected update and deletion targets; use
+--if-revision for write comparison. --version treats current and unpinned as exact tokens.
 Endpoint pins remain unavailable. This is not an ordered history listing.
 A current Issue's
 --json uses the ordinary detail array with Scope-relative Bead IDs and its
@@ -182,14 +184,16 @@ the second positional argument. For a single edge, --no-cycle-check only
 suppresses a post-add warning; the domain writer still validates cycles.
 bd dep blocker --blocks issue is the same operation with reversed arguments.
 Memory endpoints, remote routing and bulk dependency flags are unavailable
-in this preview.`},
+in this preview. Native dep operands retain literal Issue-ID semantics,
+including @; use bd link for the selected revision-aware endpoint syntax.`},
 		{depRemoveCmd, `Use bd dep remove issue blocker (or bd dep rm) to
 remove one local blocking Dependency by its Issue pair. An absent pair is a
 successful no-op and reports status not_found with --json. A real removal
 records one native dependency_removed event and one source Issue version;
 the target Issue is unchanged. Bare native Issue IDs are accepted when their
 graph path is unambiguous; use explicit beads/PATH if a different Bead claims
-that bare name. For Link-ID removal use bd link delete ID --force.`},
+that bare name. These native pair operands retain literal Issue-ID semantics,
+including @. For Link-ID removal use bd link delete ID --force.`},
 		{linkCmd, `The canonical graph Link namespace is bd link
 create/list/show/update/delete/versions/compare/count. Create requires
 --type and SOURCE TARGET (or --source and --target); list and count query complete current
@@ -197,7 +201,9 @@ Link collections within the preview's advertised bounds. Delete previews
 by default and --force applies the checked mutation.
 
 Without --type, bd link SOURCE TARGET creates the ordinary
-blocking Dependency between two live Issues. To create any native Dependency
+blocking Dependency between two live Issues. In graph workspaces this form
+also parses the selected revision syntax; bd dep add/remove keep literal Issue
+IDs, so the input syntaxes are not interchangeable. To create any native Dependency
 kind through the canonical namespace, use
   bd link create --type blocks --source ISSUE --target ISSUE
 Only built-in Dependency kinds are accepted. The resulting Link has a dep_type property.

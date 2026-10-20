@@ -133,6 +133,12 @@ func TestGraphPreviewExactReadIDRevisionRoutesToRetainedState(t *testing.T) {
 				t.Fatal("exact and floating/current Bead selectors were conflated")
 			}
 			graphPatchProcess(t, bd, work, home, nil, "invalid_selector", 90*time.Second, "show", "beads/plan@"+created.Revision, "--version", created.Revision, "--json")
+			// Unknown suffixes must not fall back to the current record. The
+			// existing raw-read helper verifies numeric exit3 and no stdout.
+			for _, selector := range []string{"plan@no-such-token", "[https://example.invalid/reference-read/beads/plan]@no-such-token"} {
+				graphMemoryReadRaw(t, bd, work, home, "", "revision_unknown", "show", selector)
+			}
+			graphPatchProcess(t, bd, work, home, nil, "capability_unavailable", 90*time.Second, "show", "plan@"+created.Revision, "--include-dependents", "--json")
 			for _, word := range []string{"current", "unpinned"} {
 				// The flag is an exact-token escape, even for reserved suffix
 				// words. These words aren't retained tokens in this fixture,
@@ -154,6 +160,9 @@ func TestGraphPreviewExactReadIDRevisionRoutesToRetainedState(t *testing.T) {
 			call("create", "Target", "--id", "beads/target")
 			linked := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "plan", "target", "--type", "types/preview-related", "--id", "links/context"))
 			call("link", "update", "links/context", "--properties", `{"note":"changed"}`)
+			graphMemoryReadRaw(t, bd, work, home, "", "revision_unknown", "link", "show", "links/context@no-such-token")
+			graphMemoryReadRaw(t, bd, work, home, "", "revision_unknown", "link", "show", "[https://example.invalid/reference-read/links/context]@no-such-token")
+			graphPatchProcess(t, bd, work, home, nil, "invalid_selector", 90*time.Second, "link", "show", "links/context@"+linked.Link.Revision, "--version", linked.Link.Revision, "--json")
 			linkByFlag := call("link", "show", "links/context", "--version", linked.Link.Revision)
 			linkBySuffix := call("link", "show", "links/context@"+linked.Link.Revision)
 			if linkBySuffix != linkByFlag || linkBySuffix == call("link", "show", "links/context") {
@@ -218,6 +227,111 @@ func TestGraphPreviewCanonicalURIAtIdentityWorkflow(t *testing.T) {
 			}
 			call("link", "create", "disclosure", "target", "--type", "types/preview-related", "--id", "links/guarded", "--if-source-revision", owner.Revision)
 			graphPatchProcess(t, bd, work, home, nil, "revision_conflict", 90*time.Second, "link", "create", "disclosure", "target", "--type", "types/preview-related", "--id", "links/stale", "--if-source-revision", owner.Revision, "--json")
+		})
+	}
+}
+
+// Colon-only spellings are local selectors even when net/url would call them
+// opaque URIs. Literal-@ siblings are accessible only by canonical Scope URL.
+func TestGraphPreviewColonReferencePrecedenceWorkflow(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			const scope = "https://example.invalid/colon-reference/"
+			work, home := graphListWorkspace(t, bd, engine, scope)
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+			}
+			refuse := func(code string, args ...string) {
+				t.Helper()
+				graphPatchProcess(t, bd, work, home, nil, code, 90*time.Second, append(args, "--json")...)
+			}
+			call("create", "Target", "--id", "beads/target")
+			for _, tc := range []struct{ name, id, unknown string }{
+				{"colon local", "plan:v1", "unknown-token"},
+				{"opaque looking local", "urn:x", "y"},
+			} {
+				t.Run(tc.name, func(t *testing.T) {
+					created := graphMixedResult[graphstore.Record](t, call("remember", "Subject", "--id", "beads/"+tc.id))
+					subject := scope + "beads/" + tc.id
+					sibling := subject + "@" + tc.unknown
+					literal := graphMixedResult[graphstore.Record](t, call("remember", "Literal sibling", "--id", "beads/"+tc.id+"@"+tc.unknown))
+					call("update", subject, "--properties", `{"body":"Later subject"}`)
+					beforeSubject, beforeSibling := call("show", subject), call("show", sibling)
+					beforeLinks := call("link", "list", "--source", subject)
+					for _, prefix := range []string{"", "beads/"} {
+						if got := call("show", prefix+tc.id+"@"+created.Revision); got != call("show", subject, "--version", created.Revision) {
+							t.Fatal("colon selector did not select the exact retained subject")
+						}
+						selector := prefix + tc.id + "@" + tc.unknown
+						graphMemoryReadRaw(t, bd, work, home, "", "revision_unknown", "show", selector)
+						for _, command := range []string{"update", "delete", "forget"} {
+							args := []string{command, selector}
+							if command == "update" {
+								args = append(args, "--properties", `{"body":"Must not land"}`)
+							}
+							if command == "delete" {
+								args = append(args, "--force")
+							}
+							refuse("invalid_selector", args...)
+						}
+						refuse("capability_unavailable", "link", "create", selector, "target", "--type", "types/preview-related")
+						refuse("capability_unavailable", "link", "create", "target", selector, "--type", "types/preview-related")
+					}
+					if call("show", subject) != beforeSubject || call("show", sibling) != beforeSibling || call("link", "list", "--source", subject) != beforeLinks {
+						t.Fatal("a refused colon selector changed subject, literal sibling or Links")
+					}
+					// Canonical URL fallback addresses the literal colon+@ identity
+					// for both writes and exact reads, without touching the subject.
+					call("update", sibling, "--properties", `{"body":"Literal sibling updated"}`)
+					if call("show", sibling) == beforeSibling || call("show", subject) != beforeSubject {
+						t.Fatal("canonical colon+@ mutation selected the wrong identity")
+					}
+					if got := call("show", "["+sibling+"]@"+literal.Revision); got != call("show", sibling, "--version", literal.Revision) || got == call("show", sibling) {
+						t.Fatal("canonical colon+@ exact read did not retain the literal sibling")
+					}
+				})
+			}
+			linked := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "plan:v1", "target", "--type", "types/preview-related", "--id", "links/context:v1"))
+			call("link", "create", "plan:v1", "target", "--type", "types/preview-related", "--id", "links/context:v1@unknown-token")
+			const link = scope + "links/context:v1"
+			const literalLink = link + "@unknown-token"
+			beforeLink, beforeLiteralLink := call("link", "show", link), call("link", "show", literalLink)
+			for _, prefix := range []string{"", "links/"} {
+				if got := call("link", "show", prefix+"context:v1@"+linked.Link.Revision); got != call("link", "show", link, "--version", linked.Link.Revision) {
+					t.Fatal("colon Link selector did not select exact retained Link")
+				}
+				selector := prefix + "context:v1@unknown-token"
+				graphMemoryReadRaw(t, bd, work, home, "", "revision_unknown", "link", "show", selector)
+				refuse("invalid_selector", "link", "update", selector, "--properties", `{"note":"Must not land"}`)
+				refuse("invalid_selector", "link", "delete", selector, "--force")
+			}
+			if call("link", "show", link) != beforeLink || call("link", "show", literalLink) != beforeLiteralLink {
+				t.Fatal("refused colon Link mutation selected a literal-@ sibling")
+			}
+			call("link", "update", literalLink, "--properties", `{"note":"Literal Link updated"}`)
+			if call("link", "show", literalLink) == beforeLiteralLink || call("link", "show", link) != beforeLink {
+				t.Fatal("canonical colon+@ Link mutation selected the wrong identity")
+			}
+			beforeSubject := call("show", "plan:v1")
+			beforeLinks := call("link", "list", "--source", "plan:v1")
+			for _, tc := range []struct{ name, selector string }{
+				{"opaque bracket", "[urn:x@y]@unpinned"},
+				{"no authority bracket", "[https:///beads/plan:v1]@unpinned"},
+				{"malformed bracket", "[https://[broken/beads/plan:v1]@unpinned"},
+				{"foreign bracket", "[https://foreign.example/beads/plan:v1]@unpinned"},
+			} {
+				t.Run(tc.name, func(t *testing.T) {
+					refuse("invalid_selector", "show", tc.selector)
+					refuse("invalid_selector", "link", "show", tc.selector)
+					refuse("invalid_selector", "update", tc.selector, "--properties", `{"body":"Must not land"}`)
+					refuse("invalid_selector", "link", "create", "plan:v1", tc.selector, "--type", "types/preview-related")
+				})
+			}
+			if call("show", "plan:v1") != beforeSubject || call("link", "list", "--source", "plan:v1") != beforeLinks {
+				t.Fatal("refused bracketed locator changed current state")
+			}
 		})
 	}
 }

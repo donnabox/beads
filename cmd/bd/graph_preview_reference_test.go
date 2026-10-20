@@ -16,6 +16,8 @@ func TestGraphPreviewParseReference(t *testing.T) {
 		explicit, wrapped               bool
 	}{
 		{"bare local", "beads/plan", "beads/plan", "", false, false},
+		{"rooted colon local pin", "beads/plan:v1@r7", "beads/plan:v1", "r7", true, false},
+		{"canonical colon literal at", "https://example.test/beads/plan:v1@r7", "https://example.test/beads/plan:v1@r7", "", false, false},
 		{"local pin", "plan@r7", "plan", "r7", true, false},
 		{"local current", "plan@current", "plan", "current", true, false},
 		{"local floating", "plan@unpinned", "plan", "unpinned", true, false},
@@ -54,6 +56,14 @@ func TestGraphPreviewReferenceRefusals(t *testing.T) {
 		if _, err := graphPreviewWritableIdentity(input); err == nil {
 			t.Errorf("accepted suffixed mutation target %q", input)
 		}
+	}
+	for _, input := range []string{"@donna", "draft@"} {
+		if _, err := graphPreviewParseReference(input); err == nil || !strings.Contains(err.Error(), "full canonical Scope URI") {
+			t.Errorf("missing literal-@ escape guidance for %q: %v", input, err)
+		}
+	}
+	if _, err := graphPreviewWritableIdentity("beads/@donna"); err == nil || !strings.Contains(err.Error(), "full canonical Scope URI") {
+		t.Fatalf("missing writable literal-@ escape guidance: %v", err)
 	}
 	for _, revision := range []string{string([]byte{255}), strings.Repeat("x", graphstore.PreviewVersionTokenLimit+1)} {
 		if _, err := graphPreviewReferenceWithFlag("plan", revision, true); err == nil {
@@ -102,5 +112,55 @@ func TestGraphPreviewCanonicalLocalIDCanContainAt(t *testing.T) {
 	}
 	if err := graph.ValidateLinkPath("links/a@b"); err != nil {
 		t.Fatalf("current canonical Link ID refuses @: %v", err)
+	}
+}
+
+// URI-looking local segments obey the same first-raw-@ rule as other IDs.
+// This decision is lexical; an existing literal-@ sibling cannot select it.
+func TestGraphPreviewColonReferencePrecedence(t *testing.T) {
+	for _, tc := range []struct{ input, identity, revision string }{
+		{"plan:v1@r7", "plan:v1", "r7"},
+		{"urn:x@y", "urn:x", "y"},
+		{"plan:v1@r@7", "plan:v1", "r@7"},
+		{"beads/plan:v1@r7", "beads/plan:v1", "r7"},
+		{"context:v1@r7", "context:v1", "r7"},
+	} {
+		t.Run(tc.input, func(t *testing.T) {
+			got, err := graphPreviewParseReference(tc.input)
+			if err != nil || got.Identity != tc.identity || got.Revision != tc.revision || !got.Explicit || got.Wrapped {
+				t.Fatalf("local precedence = %+v, %v", got, err)
+			}
+			if _, err := graphPreviewWritableIdentity(tc.input); err == nil {
+				t.Fatal("colon-bearing revision selector accepted as mutation identity")
+			}
+		})
+	}
+	for _, identity := range []string{"plan:v1", "urn:x", "https://example.test/beads/plan:v1@r7"} {
+		if got, err := graphPreviewWritableIdentity(identity); err != nil || got != identity {
+			t.Errorf("bare identity %q = %q, %v", identity, got, err)
+		}
+	}
+}
+
+func TestGraphPreviewBracketedLocatorAdmission(t *testing.T) {
+	for _, input := range []string{
+		"[urn:x@y]@r7", "[https:plan]@r7", "[https:/plan]@r7",
+		"[https:///beads/plan]@r7", "[file:///beads/plan]@r7",
+		"[ftp://example.test/beads/plan]@r7", "[//example.test/beads/plan]@r7",
+		"[https://[broken/beads/plan]@r7",
+	} {
+		t.Run(input, func(t *testing.T) {
+			if _, err := graphPreviewParseReference(input); err == nil {
+				t.Fatal("noncanonical bracketed locator accepted")
+			}
+		})
+	}
+	if _, err := graphPreviewParseReference("[urn:x@y]@r7"); err == nil || !strings.Contains(err.Error(), "canonical HTTP(S) Scope URL") {
+		t.Fatalf("opaque URI refusal lacks canonical Scope guidance: %v", err)
+	}
+	// Scope membership is checked downstream; parsing must preserve a foreign
+	// canonical locator verbatim rather than reinterpret it as a local ID.
+	if got, err := graphPreviewParseReference("[https://foreign.example/beads/plan]@r7"); err != nil || got.Identity != "https://foreign.example/beads/plan" || !got.Wrapped {
+		t.Fatalf("foreign locator parsing = %+v, %v", got, err)
 	}
 }
