@@ -58,7 +58,7 @@ func property(t *testing.T, d m.Definition, name string) m.Property {
 
 func TestSelectedSourceAndInventory(t *testing.T) {
 	p := project(t, inputs())
-	want := m.Source{Repository: "gastownhall/bdp", Commit: "bbd97f4b57ddbcea8ee5ca38adc2ec7d0a784f00", Path: "specs/types/memory/memory.md", SHA256: "25905e496f36ab7f95046c5c98ed681aeb9aa0bb1c832d63beb6038120bd0ac5", Bytes: 105123}
+	want := m.Source{Repository: "gastownhall/bdp", Commit: "afec9117914bd1c1fe0027c2067e4d89677e40a3", Path: "specs/types/memory/memory.md", SHA256: "1f97f8a80f725b2a44a0c715b4ccf09918f02af2abb9885797c3395255dc9e34", Bytes: 106334}
 	if p.Source() != want || m.SelectedSource() != want {
 		t.Fatal("publication pin/digest changed")
 	}
