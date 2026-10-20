@@ -45,7 +45,7 @@ def require(condition, message):
 
 def require_memory_creation(record, scope):
     require(record.get("id") == scope + "beads/plan"
-            and record.get("type") == scope + "types/preview-memory"
+            and record.get("type") == scope + "types/memory"
             and record.get("properties") == {"title": "Plan", "body": "Durable C0 body — 記憶"}
             and record.get("owned") == []
             and isinstance(record.get("revision"), str) and bool(record["revision"])
@@ -141,16 +141,16 @@ def verify_clean_receipt(receipt, listener=False):
 def verify_http_capture(root, binary_hash):
     summary = json.loads((root / "summary.json").read_text())
     require(summary.get("passed") is True and summary.get("failure") is None
-            and summary.get("active_children") == 0 and summary.get("cli_commands") == 16,
+            and summary.get("active_children") == 0 and summary.get("cli_commands") == 18,
             "incomplete installed HTTP capture")
     require(summary.get("client_pin") == "de99030d13a57e77f4f2660b91ea3c39b82823cb"
             and summary.get("installed_binary_sha256") == binary_hash, "HTTP source/binary provenance mismatch")
-    require(summary.get("python") == {"passed": True, "beads": 4, "limit": 1,
+    require(summary.get("python") == {"passed": True, "beads": 5, "limit": 1,
             "authenticated": True, "mechanism": "unchanged standard-library example over BDP HTTP"},
             "Python BDP consumer proof missing")
-    require(summary.get("python_pages") == 4, "Python continuation observations missing")
+    require(summary.get("python_pages") == 5, "Python continuation observations missing")
     processes = list(root.glob("*/receipt.json"))
-    require(len(processes) == 21, "missing seed/delete/serve/client/Python process receipt")
+    require(len(processes) == 23, "missing seed/delete/serve/client/Python process receipt")
     for path in processes:
         receipt = json.loads(path.read_text())
         verify_clean_receipt(receipt, listener=path.parent.name == "serve")
@@ -201,7 +201,7 @@ def verify_issue_append_capture(root, summary, binary_hash, network):
             and after["attribution"]["basis"] == "writer-supplied"
             and after["ownedLinks"] == claimed["ownedLinks"] == before["ownedLinks"], "append ownership/revision proof missing")
     require(notes["properties"] == after["properties"] and notes["inventory"]["next"] is None
-            and len(notes["inventory"]["items"]) == 4
+            and len(notes["inventory"]["items"]) == 5
             and [item for item in notes["inventory"]["items"] if item["id"] == work_id] == [after]
             and notes["incident"] == artifacts["issueEdit"]["incidentAfter"], "append BDP views disagree")
     require(notes["etagBefore"] and notes["etagAfter"] and notes["etagBefore"] != notes["etagAfter"],
@@ -275,7 +275,7 @@ def verify_issue_authoring_capture(root, summary, binary_hash, network):
                 and item["attribution"]["basis"] == "writer-supplied" for item in (edited, after)),
             "authoring attribution missing or has wrong basis")
     require(proof["properties"] == after["properties"] and proof["inventory"]["next"] is None
-            and len(proof["inventory"]["items"]) == 4
+            and len(proof["inventory"]["items"]) == 5
             and [item for item in proof["inventory"]["items"] if item["id"] == resource] == [after], "authoring BDP current/properties/inventory disagree")
     require([item for item in data("python-after-delete/stdout.log") if item["id"] == resource] == [after],
             "unchanged Python consumer lost final authored Issue")
@@ -322,20 +322,20 @@ def verify_memory_deletion_capture(root, summary):
     alpha = data("02-memory-create/stdout.log")["result"]
     scope = summary["scope"]
     require(alpha["id"] == scope + "beads/alpha", "wrong deletion fixture identity")
-    deletion = data("16-memory-delete/stdout.log")
+    deletion = data("18-memory-delete/stdout.log")
     require(deletion.get("preview") is True and deletion.get("schemaVersion") == 1
             and deletion.get("result") == {"memory": alpha, "preview": False, "deleted": True},
             "deletion did not retain/disclose exact final live state")
-    argv = data("16-memory-delete/receipt.json")["argv"]
+    argv = data("18-memory-delete/receipt.json")["argv"]
     require(argv == [data("02-memory-create/receipt.json")["argv"][0], "delete", "beads/alpha", "--force",
                      "--if-revision", alpha["revision"], "--json"], "deletion did not use original observed guard")
     require(summary.get("memory_delete") == {"passed": True, "id": alpha["id"], "final_live_revision": alpha["revision"]},
             "Memory deletion summary missing")
-    require(summary.get("python_after_delete") == {"passed": True, "beads": 3, "limit": 1,
+    require(summary.get("python_after_delete") == {"passed": True, "beads": 4, "limit": 1,
             "authenticated": True, "mechanism": "unchanged standard-library example over BDP HTTP"}
-            and summary.get("python_after_delete_pages") == 3, "post-delete Python summary missing")
+            and summary.get("python_after_delete_pages") == 4, "post-delete Python summary missing")
     observations = data("python-after-delete-network.json")
-    require(len(observations) == 4 and observations[0]["url"] == scope + "bdp.json"
+    require(len(observations) == 5 and observations[0]["url"] == scope + "bdp.json"
             and observations[0]["document"]["scope"] == scope
             and observations[0]["document"]["profile"] == "read", "post-delete discovery missing")
     next_url, records = scope + "beads/?limit=1", []
@@ -349,8 +349,8 @@ def verify_memory_deletion_capture(root, summary):
                 "post-delete Python did not follow actual one-record next page")
         records.extend(page["items"])
         next_url = page["next"]
-    require(next_url is None and len(records) == 3 and {item["id"] for item in records} ==
-            {scope + "beads/" + name for name in ["plan", "work", "prereq"]}
+    require(next_url is None and len(records) == 4 and {item["id"] for item in records} ==
+            {scope + "beads/" + name for name in ["constraint", "plan", "work", "prereq"]}
             and data("python-after-delete/stdout.log") == records,
             "post-delete Python enumeration retained deleted state or omitted survivors")
 
