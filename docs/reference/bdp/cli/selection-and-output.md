@@ -444,7 +444,8 @@ The generic readers, collectors and writers are the intended adopters:
 | Generic graph view | Shared Link selectors and topology-preserving table/tree/machine output. |
 | Generic create/update/delete and Link variants | Shared envelope and meaningful result projection; preserve effect/no-op/unknown semantics. Do not add meaningless paging/traversal flags. |
 | Generic search/count/Types inspection when admitted | Reuse the common machinery with their own hit/aggregate/Resource contracts. No declaration that today's domain forms are already generic. |
-| Memory facades and export | Later explicit adapters; retain assessment and interchange-specific context. |
+| Memory and future Link facades | `remember`, `recall`, `memories`, `forget`, and new Link/Memory facades are outside the current rollout. Context-protection rules constrain future adapters but do not authorize those commands. |
+| Export | Separate interchange contract; future integration must preserve package and completion semantics. |
 | `dep`, Issue/Dependency workflows and operational commands | No retrofit of this flag family or new JSON contract. Preserve supported compatibility behavior. |
 
 Do not silently switch existing scripts to envelope 2. The rollout must map
