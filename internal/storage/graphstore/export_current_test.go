@@ -364,7 +364,7 @@ func TestExportCurrentSnapshotAcquisitionBounds(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if _, err := s.Create(ctx, CreateRequest{Path: "beads/filler", Body: strings.Repeat("m", 12<<10)}); err != nil {
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/filler", Title: "Filler", Body: strings.Repeat("m", 12<<10)}); err != nil {
 				t.Fatal(err)
 			}
 			const byteLimit = 64 << 10
@@ -750,6 +750,29 @@ func TestExportEndpointPinsCurrentAndRetained(t *testing.T) {
 			rawLink, _ := canonicalJSON(retainedLink)
 			if string(rawOwner) != string(oldOwner) || string(rawLink) != string(oldLink) {
 				t.Fatal("repin rewrote retained owner/Link")
+			}
+			// Corrupt only an older selected payload, while current rows still fit.
+			// The byte preflight must refuse before decoding that historical JSON.
+			reachedPreflight := false
+			s.afterWrite = func(stage string) error {
+				if stage == "export-preflight" {
+					reachedPreflight = true
+				}
+				return nil
+			}
+			budgetErr := s.withTx(ctx, false, func(tx *sql.Tx) error {
+				if _, err := tx.ExecContext(ctx, "UPDATE graph_preview_versions SET snapshot=REPEAT('x',?) WHERE path=? AND version=?", PreviewCurrentReadByteLimit, "beads/target", target.Revision); err != nil {
+					return err
+				}
+				got, err := s.exportCurrentSnapshotInTx(ctx, tx)
+				if !errors.Is(err, ErrLimitExceeded) || !reflect.DeepEqual(got, ExportCurrentState{}) {
+					return fmt.Errorf("historical payload decoded before aggregate bound: %+v %v", got, err)
+				}
+				return nil
+			})
+			s.afterWrite = nil
+			if budgetErr != nil || reachedPreflight {
+				t.Fatalf("historical preflight budget: reached=%t %v", reachedPreflight, budgetErr)
 			}
 			// Keep valid current heads, but remove a selected older exact endpoint.
 			// A reader that substitutes the current target would incorrectly succeed.

@@ -66,7 +66,8 @@ func TestExportSnapshotClosure(t *testing.T) {
 			link.Target = scope + "links/context"
 			s.Records[3] = link
 		},
-		"missing-type": func(s *Snapshot) { s.Types = nil },
+		"missing-type":               func(s *Snapshot) { s.Types = nil },
+		"missing-ownership-metadata": func(s *Snapshot) { delete(s.OwnedLinkTypes, MemoryTypeURL(scope)) },
 		"wrong-type-kind": func(s *Snapshot) {
 			memory := s.Records[0].(Record)
 			memory.Type = scope + "types/references"
@@ -124,13 +125,21 @@ func TestExportSnapshotClosure(t *testing.T) {
 
 func exportClosureFixture(t *testing.T, scope string) Snapshot {
 	t.Helper()
-	snapshot := Snapshot{}
+	snapshot := Snapshot{OwnedLinkTypes: map[string][]string{}}
+	store := &Store{options: Options{Binding: Binding{ScopeURL: scope}}}
 	for _, definition := range previewTypeDefinitions() {
 		descriptor, err := definition.build(scope)
 		if err != nil {
 			t.Fatal(err)
 		}
 		snapshot.Types = append(snapshot.Types, descriptor)
+		if descriptor.Describes() == "bead" {
+			owned, err := store.SelectedOwnedLinkTypes(descriptor.ID())
+			if err != nil {
+				t.Fatal(err)
+			}
+			snapshot.OwnedLinkTypes[descriptor.ID()] = owned
+		}
 	}
 	links := []LinkRecord{
 		{ID: scope + "links/block", Type: DependencyTypeURL(scope), Source: scope + "beads/work", Target: scope + "beads/prereq", Properties: map[string]any{}},

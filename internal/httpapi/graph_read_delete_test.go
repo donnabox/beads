@@ -64,7 +64,7 @@ func TestGraphReadMemoryDeletionHTTP(t *testing.T) {
 	if _, err := store.CreateIssue(ctx, "beads/work", issueops.CreateRequest{Issue: &issueops.Issue{Title: "Surviving Issue", Status: "open", IssueType: "task", Priority: 2}, Actor: "human:issue-author"}); err != nil {
 		t.Fatal(err)
 	}
-	contextLink, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: "links/context", SourcePath: "beads/plan", TargetPath: "beads/alpha", UnconditionalSource: true, Actor: "human:link-author"})
+	contextLink, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: "links/context", TypeURL: scope + "types/superseded-by", SourcePath: "beads/plan", TargetPath: "beads/alpha", UnconditionalSource: true, Actor: "human:link-author"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -162,7 +162,7 @@ func TestGraphReadMemoryDeletionHTTP(t *testing.T) {
 	}
 	var final bdpwire.BeadRecord
 	finalResponse := read(scope+"beads/plan", &final)
-	if final.Revision == plan.Revision || len(final.OwnedLinks) != 0 || final.Attribution == nil || final.Attribution.Principal != "human:unlinker" || finalResponse.Header.Get("ETag") == "" {
+	if final.Revision == plan.Revision || len(final.OwnedLinks) != 2 || len(final.OwnedLinks[contextLink.Link.Type]) != 0 || len(final.OwnedLinks[scope+"types/subject-to"]) != 0 || final.Attribution == nil || final.Attribution.Principal != "human:unlinker" || finalResponse.Header.Get("ETag") == "" {
 		t.Fatal("explicit unlink did not expose final current Memory")
 	}
 	deleted, err := store.DeleteMemory(ctx, graphstore.MemoryDeleteRequest{Path: "beads/plan", ExpectedRevision: final.Revision, Actor: "human:deleter"})

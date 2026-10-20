@@ -262,8 +262,10 @@ The internal reader consumes the shared endpoint carrier from PR133
 (`202bbf215ce8cb7995bd237855a0669892c958e4`). Endpoint identity and optional
 revision remain separate. Floating references remain floating. Complete
 canonical Link bytes, including both pins, must agree with source-owned state;
-ownership comes from the selected Type catalog because installed inventory
-Type descriptors deliberately omit some selected constraints.
+ownership comes from `Snapshot.OwnedLinkTypes`, captured in the same transaction
+by the published Type bridge `716af68f7e531108e4b1f09ae47cacefa18ee93a`. Missing
+metadata refuses. Installed inventory Type descriptors deliberately omit some
+selected constraints and are not an ownership fallback.
 
 Export validates distinct exact endpoint addresses using the existing retained
 reader inside the same rollback-only transaction. Shared retained-availability

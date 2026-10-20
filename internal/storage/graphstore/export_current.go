@@ -7,11 +7,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"slices"
 	"strings"
 	"unicode/utf8"
 
 	graph "github.com/steveyegge/beads/graphops"
-	"github.com/steveyegge/beads/internal/typecatalog"
 	"github.com/steveyegge/beads/internal/types"
 )
 
@@ -319,10 +319,6 @@ func (s *Store) validateExportEndpointPinsInTx(ctx context.Context, tx *sql.Tx, 
 // endpoint closure. Complete Link serialization preserves each endpoint's pin;
 // URI map keys below establish identity membership only.
 func exportSnapshotClosure(scope string, snapshot Snapshot) (map[string]string, error) {
-	catalog, err := newSelectedTypeCatalog(scope)
-	if err != nil {
-		return nil, err
-	}
 	typesByID := make(map[string]graph.TypeDescriptor, len(snapshot.Types))
 	for _, descriptor := range snapshot.Types {
 		if _, exists := typesByID[descriptor.ID()]; exists || descriptor.IsZero() {
@@ -369,6 +365,11 @@ func exportSnapshotClosure(scope string, snapshot Snapshot) (map[string]string, 
 		if !ok || descriptor.Describes() != kind {
 			return nil, fmt.Errorf("%w: acquired record Type is missing or has the wrong kind", ErrInvalidStore)
 		}
+		if kind == graph.KindBead {
+			if _, present := snapshot.OwnedLinkTypes[typ]; !present {
+				return nil, fmt.Errorf("%w: acquired Bead ownership metadata missing", ErrInvalidStore)
+			}
+		}
 	}
 	expected := make(map[string]map[string][]byte)
 	for id, link := range links {
@@ -376,11 +377,7 @@ func exportSnapshotClosure(scope string, snapshot Snapshot) (map[string]string, 
 		if _, targetOK := beads[link.Target]; !sourceOK || !targetOK {
 			return nil, fmt.Errorf("%w: acquired Link endpoint missing", ErrInvalidStore)
 		}
-		owns, err := catalog.types.Owns(typecatalog.Reference{URI: source.typ}, typecatalog.Reference{URI: link.Type})
-		if err != nil {
-			return nil, err
-		}
-		if owns {
+		if slices.Contains(snapshot.OwnedLinkTypes[source.typ], link.Type) {
 			if link.SourceReference().Revision != "" {
 				return nil, fmt.Errorf("%w: pinned owned source observation point is not selected", ErrCapabilityUnavailable)
 			}
