@@ -146,8 +146,25 @@ func TestGraphCanonicalRetainedOutputCLI(t *testing.T) {
 		{"compare", "missing", "--from", from, "--to", to, "--output-format", "json", "--include", "/properties"},
 	} {
 		stdout, stderr, code := graphVersionsProcess(t, bd, work, home, args...)
-		if code != 2 || stdout != "" || stderr == "" {
+		if code != 2 || stderr == "" {
 			t.Fatalf("unsupported projection/format was not refused before read: %v code=%d out=%q err=%q", args, code, stdout, stderr)
+		}
+		if args[len(args)-1] == "jsonl" {
+			if stdout != "" {
+				t.Fatalf("unsupported JSONL emitted a record: %q", stdout)
+			}
+			continue
+		}
+		var failed struct {
+			Outcome string `json:"outcome"`
+			Error   struct {
+				Problem struct {
+					Code string `json:"code"`
+				} `json:"problem"`
+			} `json:"error"`
+		}
+		if err := json.Unmarshal([]byte(stdout), &failed); err != nil || failed.Outcome != "failure" || failed.Error.Problem.Code != "invalid_selector" {
+			t.Fatalf("invalid mask lost JSON failure contract: %v code=%d out=%q err=%q decode=%v", args, code, stdout, stderr, err)
 		}
 	}
 	stdout, stderr, code := graphVersionsProcess(t, bd, work, home, "versions", "missing", "--output-format", "json", "--omit", "envelope")

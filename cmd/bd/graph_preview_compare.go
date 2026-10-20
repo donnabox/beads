@@ -40,7 +40,7 @@ func runGraphPreviewCompare(cmd *cobra.Command, args []string) error {
 	if canonical {
 		renderer, err = newGraphComparisonOutput(options)
 		if err != nil {
-			return canonicalFailure(cmd, nil, "invalid_selector", err.Error(), 2)
+			return canonicalFailure(cmd, canonicalFailureRendererFor(cmd), "invalid_selector", err.Error(), 2)
 		}
 		if len(args) != 1 {
 			return canonicalFailure(cmd, renderer, "invalid_selector", "canonical compare requires exactly one Resource identity", 2)

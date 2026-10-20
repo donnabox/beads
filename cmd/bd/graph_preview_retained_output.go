@@ -94,7 +94,7 @@ func graphComparisonOptions(options clioutput.Options) (clioutput.Options, error
 func runCanonicalGraphVersions(cmd *cobra.Command, args []string, options clioutput.Options) error {
 	renderer, err := newGraphVersionOutput(bdpwire.Pin, options)
 	if err != nil {
-		return canonicalFailure(cmd, nil, "invalid_selector", err.Error(), 2)
+		return canonicalFailure(cmd, canonicalFailureRendererFor(cmd), "invalid_selector", err.Error(), 2)
 	}
 	if len(args) != 1 {
 		return canonicalFailure(cmd, renderer, "invalid_selector", "canonical versions requires exactly one Resource identity", 2)
