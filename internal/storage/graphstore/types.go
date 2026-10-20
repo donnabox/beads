@@ -93,6 +93,7 @@ type HistoricalUpdateContext struct {
 }
 
 type Attribution struct {
+	Inception        string                   `json:"inception,omitempty"`
 	Actor            string                   `json:"actor"`
 	Status           string                   `json:"status"`
 	RecordedAt       string                   `json:"recordedAt"`

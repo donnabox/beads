@@ -93,11 +93,14 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 	}
 	if state == "deleted" {
 		if backing == "generic" {
-			memory, err := s.deletedMemoryInTx(ctx, tx, path)
+			memory, terminal, err := s.deletedMemoryStateInTx(ctx, tx, path)
 			if err != nil {
 				return nil, err
 			}
 			if version == head {
+				if terminal != nil {
+					return nil, ErrGone
+				}
 				return memory, nil
 			}
 		} else if backing == "issue" {
@@ -150,6 +153,16 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 			return nil, err
 		}
 		return link, nil
+	}
+	// Terminal revisions remain terminal even after a subsequent recovery.
+	var marker struct {
+		State string `json:"state"`
+	}
+	if json.Unmarshal(raw, &marker) == nil && marker.State != "" {
+		if _, err := s.decodeMemoryTerminal(path, version, raw, actor); err != nil {
+			return nil, err
+		}
+		return nil, ErrGone
 	}
 	expectedType := ""
 	if version == head {
