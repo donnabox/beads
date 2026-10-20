@@ -219,10 +219,22 @@ func TestGraphPreviewHistoricalNativeRecovery(t *testing.T) {
 				Terminal     []map[string]any              `json:"terminal_versions"`
 				Versions     []map[string]any              `json:"versions"`
 			}
+			assertCanonicalHistory := func(want historyResult) {
+				t.Helper()
+				raw := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "subject", "--output-format", "json")
+				var envelope struct {
+					SchemaVersion int           `json:"schema_version"`
+					Data          historyResult `json:"data"`
+				}
+				if err := json.Unmarshal([]byte(raw), &envelope); err != nil || envelope.SchemaVersion != 2 || !reflect.DeepEqual(envelope.Data, want) {
+					t.Fatalf("canonical native history lost terminal/ordinal context: decode=%v got=%s want=%+v", err, raw, want)
+				}
+			}
 			history := graphMixedResult[historyResult](t, call("versions", "subject"))
 			if !reflect.DeepEqual(history.CurrentState, deleted.Terminal) || len(history.Terminal) != 1 || len(history.Versions) != 2 {
 				t.Fatalf("native history carrier: %+v", history)
 			}
+			assertCanonicalHistory(history)
 			refuse("gone", "show", "subject")
 			refuse("gone", "show", "subject", "--version", deleted.Terminal.Revision)
 			refuse("revision_conflict", "update", "subject", "--from-revision", source.Revision, "--if-revision", current.Issue.Revision)
@@ -236,6 +248,19 @@ func TestGraphPreviewHistoricalNativeRecovery(t *testing.T) {
 			if !reflect.DeepEqual(got, recovered.Issue) {
 				t.Fatal("native recovery not visible to fresh process")
 			}
+			for _, selection := range [][]string{nil, {"--version", recovered.Issue.Revision}} {
+				args := append([]string{"show", "subject", "--output-format", "json"}, selection...)
+				raw := graphPolicyCLI(t, bd, work, home, nil, "", args...)
+				var envelope struct {
+					Data struct {
+						ID, Revision string
+						Metadata     json.RawMessage
+					} `json:"data"`
+				}
+				if err := json.Unmarshal([]byte(raw), &envelope); err != nil || envelope.Data.ID != recovered.Issue.ID || envelope.Data.Revision != recovered.Issue.Revision || string(envelope.Data.Metadata) != string(recovered.Issue.Metadata) {
+					t.Fatalf("canonical native recovered metadata changed: decode=%v got=%s", err, raw)
+				}
+			}
 			before := call("show", "subject", "--format", "graph-json")
 			refuse("revision_conflict", "update", "subject", "--from-revision", source.Revision, "--if-revision", deleted.Terminal.Revision)
 			if after := call("show", "subject", "--format", "graph-json"); after != before {
@@ -245,11 +270,17 @@ func TestGraphPreviewHistoricalNativeRecovery(t *testing.T) {
 			if history.CurrentState != nil || len(history.Terminal) != 1 || len(history.Versions) != 3 {
 				t.Fatalf("native recovered history lost D: %+v", history)
 			}
+			assertCanonicalHistory(history)
 			secondDelete := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", "subject", "--force"))
 			equal := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "subject", "--from_revision", recovered.Issue.Revision))
 			if !equal.Changed || equal.Issue.Revision == recovered.Issue.Revision || equal.Issue.Attribution.HistoricalUpdate.PreviousRevision != secondDelete.Terminal.Revision {
 				t.Fatal("same-content native recovery was no-op or alias lost D")
 			}
+			history = graphMixedResult[historyResult](t, call("versions", "subject"))
+			if history.CurrentState != nil || len(history.Terminal) != 2 || len(history.Versions) != 4 {
+				t.Fatalf("repeated native recovery lost terminal or citable rows: %+v", history)
+			}
+			assertCanonicalHistory(history)
 			refuse("gone", "show", "subject", "--version", secondDelete.Terminal.Revision)
 		})
 	}

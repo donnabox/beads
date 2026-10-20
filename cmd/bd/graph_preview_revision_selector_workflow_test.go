@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/steveyegge/beads/internal/httpapi/bdpwire"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
@@ -388,6 +389,15 @@ func TestGraphPreviewEndpointRepinWorkflow(t *testing.T) {
 			if got := call("link", "show", created.Link.ID, "--version", created.Link.Revision); got != old {
 				t.Fatal("repin changed old retained Link")
 			}
+			for _, expected := range []graphstore.LinkRecord{created.Link, repinned.Link} {
+				raw := graphPolicyCLI(t, bd, work, home, nil, "", "link", "show", expected.ID, "--version", expected.Revision, "--output-format", "json")
+				var envelope struct {
+					Data bdpwire.LinkRecord `json:"data"`
+				}
+				if err := json.Unmarshal([]byte(raw), &envelope); err != nil || envelope.Data.ID != expected.ID || envelope.Data.Revision != expected.Revision || envelope.Data.Source.URI != expected.Source || envelope.Data.Source.Revision != expected.SourceRevision || envelope.Data.Target.URI != expected.Target || envelope.Data.Target.Revision != expected.TargetRevision {
+					t.Fatalf("canonical retained Link lost exact endpoint References: decode=%v got=%s", err, raw)
+				}
+			}
 			same := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", created.Link.ID, "--target-revision", changedTarget.Revision, "--if-revision", repinned.Link.Revision))
 			if same.Changed || !reflect.DeepEqual(same.Link, repinned.Link) {
 				t.Fatal("same full Reference minted a revision")
@@ -417,6 +427,23 @@ func TestGraphPreviewEndpointRepinWorkflow(t *testing.T) {
 			}
 			if call("show", source.ID, "--version", owner.Revision) != oldOwner {
 				t.Fatal("owned re-pin rewrote old source")
+			}
+			for _, expected := range []graphstore.Record{owner, ownerNext} {
+				raw := graphPolicyCLI(t, bd, work, home, nil, "", "show", expected.ID, "--version", expected.Revision, "--output-format", "json")
+				var envelope struct {
+					Data bdpwire.BeadRecord `json:"data"`
+				}
+				if err := json.Unmarshal([]byte(raw), &envelope); err != nil {
+					t.Fatal(err)
+				}
+				group := envelope.Data.OwnedLinks[scope+"types/subject-to"]
+				var wanted graphstore.LinkRecord
+				if err := json.Unmarshal(expected.Owned[0], &wanted); err != nil {
+					t.Fatal(err)
+				}
+				if envelope.Data.Revision != expected.Revision || len(group) != 1 || group[0].ID != wanted.ID || group[0].Target.URI != wanted.Target || group[0].Target.Revision != wanted.TargetRevision {
+					t.Fatalf("canonical retained selected-Type ownership lost endpoint pin: got=%s", raw)
+				}
 			}
 			before = call("show", source.ID)
 			refuse("capability_unavailable", "update", owned.Link.ID, "--source-revision", "current", "--if-revision", ownedNext.Link.Revision, "--if-source-revision", ownerNext.Revision)
