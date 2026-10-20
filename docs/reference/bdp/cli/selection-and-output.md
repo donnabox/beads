@@ -530,7 +530,6 @@ BDP conformance from a local convenience implementation.
 | Assessment context and Type display declarations | Result descriptors protect collective assessment meaning; render declared labels without fetching hidden data. | Type/Memory contracts define subjects, References, claims and any display declaration. CLI output cannot invent a metatype property or new Memory semantics. Missing shared declarations go through their BDP owners. |
 | Errors, revision effects and unknown writes | Keep diagnostics separate, preserve BDP problems/effects, and identify local failures. Do not infer rollback or safe retry from output failure. | Existing Write/History/ownership contracts remain authoritative. Amend BDP only for missing shared outcome semantics, not to add CLI exit codes or `record_type`. |
 | Envelope, JSONL, table/detail/tree, scalar-flag conflicts | Entirely Beads: schema 2, formats, process status and finite-stream framing. | No BDP wire envelope change is required. BDP Resource schemas must not acquire CLI headers, table fields or terminal records. |
-| Output-schema discovery | Future Beads `--json-schema` introspection identifies command envelopes and their payload contracts. | Reuse published BDP schema identifiers. New protocol discovery is separate work if a concrete need is selected. |
 
 For a BDP amendment, update the normative contract, schemas, shared implementation
 and conformance evidence together, then pin downstream adoption in Beads.
@@ -577,10 +576,6 @@ The query extension contract for opt-in partial answers is required only for
 adapters admitting that capability; it does not block strict Resource reads or
 ordinary collections. None of these prerequisites is satisfied merely by adding
 flag declarations or changing a JSON printer.
-
-`--json-schema` discovery is Memory V1 design scope, outside Preview 3. It must
-distinguish CLI result schemas from Type property schemas and account for
-projection, raw output and JSONL.
 
 Shipping comparison: [Beads schema version 1](https://github.com/gastownhall/beads/blob/c1c4b642ac1c08d8c828007a1c2f96e47e43ef7c/cmd/bd/output.go#L13);
 [Gas City buffering and failure handling](https://github.com/gastownhall/gascity/blob/f66474617d2bb7fbe51a3d746da5f3ceab2b8517/cmd/gc/main.go#L210).
