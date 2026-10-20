@@ -62,14 +62,15 @@ class MemoryCreationProjection(unittest.TestCase):
         scope = "https://example.invalid/ci-c0/embedded/"
         record = {
             "id": scope + "beads/plan",
-            "type": scope + "types/preview-memory",
+            "type": scope + "types/memory",
             "properties": {"title": "Plan", "body": "Durable C0 body — 記憶"},
             "owned": [],
             "revision": "opaque-token",
         }
         module.require_memory_creation(record, scope)
         for change in ({"revision": ""}, {"revision": None}, {"version": "duplicate-token"},
-                       {"owned": ["unexpected"]}, {"type": scope + "types/preview-issue"},
+                       {"owned": ["unexpected"]}, {"type": scope + "types/preview-memory"},
+                       {"type": scope + "types/preview-issue"},
                        {"properties": {"title": "Plan"}}):
             with self.subTest(change=change), self.assertRaisesRegex(RuntimeError, "incomplete/non-Memory creation"):
                 module.require_memory_creation(dict(record, **change), scope)
@@ -326,6 +327,42 @@ class ProcessCleanup(unittest.TestCase):
                 child.kill()
             reaper.join(timeout=5)
         self.assertFalse(reaper.is_alive())
+
+
+class CaptureIsolationControls(unittest.TestCase):
+    def capture_module(self):
+        source = Path(__file__).resolve().parents[1] / "graph-c0-smoke.py"
+        spec = importlib.util.spec_from_file_location("capture_isolation", source)
+        capture = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(capture)
+        return capture
+
+    def test_explicit_private_temporary_root_is_used(self):
+        capture = self.capture_module()
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory).resolve()
+            args = type("Args", (), dict(output_dir=base / "output", bd=Path(sys.executable),
+                server_port=0, server_root=None, total_timeout=10, command_timeout=5))()
+            with mock.patch.object(capture.tempfile, "gettempdir", return_value=str(base)):
+                result = capture.Capture(args)
+            self.assertEqual(result.root.parent, base)
+            self.assertEqual(Path(result.env["HOME"]).parent, result.root)
+            self.assertEqual(Path(result.env["TMPDIR"]).parent, result.root)
+            self.assertEqual(result.active, set())
+
+    def test_selected_temporary_root_keeps_ancestor_guard(self):
+        capture = self.capture_module()
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory).resolve()
+            (base / ".beads").mkdir()
+            private = base / "private"
+            private.mkdir()
+            args = type("Args", (), dict(output_dir=base / "output"))()
+            with mock.patch.object(capture.tempfile, "gettempdir", return_value=str(private)), \
+                 mock.patch.object(capture.tempfile, "mkdtemp") as create:
+                with self.assertRaisesRegex(RuntimeError, "ancestor .beads"):
+                    capture.Capture(args)
+                create.assert_not_called()
 
 
 class NestedOwnershipControls(unittest.TestCase):

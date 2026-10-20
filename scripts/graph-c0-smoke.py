@@ -44,7 +44,9 @@ class Capture:
         self.args = args
         self.output = args.output_dir
         self.output.mkdir(mode=0o700, parents=True, exist_ok=False)
-        base = Path("/private/tmp") if Path("/private/tmp").is_dir() else Path("/tmp")
+        # Honor the caller's private temporary root; never inherit a foreign
+        # workspace merely because the platform-wide /tmp directory exists.
+        base = Path(tempfile.gettempdir()).resolve()
         for ancestor in [base, *base.parents]:
             require(not (ancestor / ".beads").exists(), f"ancestor .beads: {ancestor}")
         self.root = Path(tempfile.mkdtemp(prefix="bd-c0-", dir=base)).resolve()
