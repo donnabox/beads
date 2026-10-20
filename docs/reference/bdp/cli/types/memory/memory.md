@@ -14,7 +14,7 @@ qualification are pending; these examples are acceptance cases, not transcripts
 from a released build.
 
 The inspected integration source is
-[Beads `5b8cdefe`](https://github.com/donnabox/beads/commit/5b8cdefe055b8f08cf9eb385e946396c1b5799d7).
+[Beads `04996869`](https://github.com/donnabox/beads/commit/0499686941260268ae4520c996ab2603f81248a6).
 The new catalog, validation and retyping candidate is separate from that source.
 This page is a preview specification and does not describe the pinned stable
 release. It does not change the documentation release pin.
@@ -27,9 +27,9 @@ lane. A `bd type` management tree is not required for this facade.
 | Area | Candidate status | Remaining acceptance |
 | --- | --- | --- |
 | Selected catalog and reusable validation | Authored; focused pure checks passed on an exact candidate | Installed provider and combined product checks |
-| Properties, Memory-family retyping, ownership and exact Evaluation subjects | Authored; selected storage checks passed | Complete focused embedded and server cases |
+| Properties, Memory-family retyping, ownership and exact Evaluation subjects | Authored; targeted cases passed on both backends | Broader affected backend and combined checks |
 | `bd types` provider-driven inventory | Authored separately | Combined installed CLI and workspace checks |
-| Typed create/update/show/list/filter/delete routing | Integration work pending | Command cases below on the qualified combined source |
+| Typed create/update/show/list/filter/delete routing | Authored; targeted installed command cases passed | Broader affected CLI checks and integration landing |
 | Integration and release | Pending | Reviewed exact source, required checks and approved integration landing |
 
 These states describe the candidate, not feature availability in the integration
@@ -60,14 +60,17 @@ Existing Issue classifications and Dependency behavior remain available.
 The selected Memory Bead Types are Memory, Constraint, Policy, Decision,
 Procedure, Requirement, Scenario, Specification and Evaluation. The selected
 Link Types are References, Superseded By, Requires, Defines, Subject To,
-Conformance, Addresses, Satisfies and Violates. Conformance is abstract: it can
-appear in the inventory, but cannot be used to create a
-direct unspecialized Link.
+Conformance, Addresses, Satisfies and Violates. Conformance is abstract: it
+appears in the inventory and is a valid Type-filter selector, but cannot be
+used to create a direct unspecialized Link. Filter admission does not promise
+that an exact declared-Type filter expands to matching descendants.
 
 Type, BeadType, LinkType, ConformsTo and Refines are intrinsic implementation
 Types. They are absent from public inventories and invalid as user Type
-selections or filters. Active `example-*` and `preview-*` registrations are
-removed rather than merely hidden from the printed list.
+selections or filters. Active `example-*` and `preview-*` nominal Type
+registrations are removed rather than merely hidden from the printed list.
+Existing configured native
+Issue classification names remain valid, including names with those prefixes.
 
 Use the Type selector reported for the selected workspace. Examples below use
 variables for those values; they do not prescribe canonical Type identities or
@@ -128,6 +131,14 @@ property is a nonempty array of exact Bead references, each with `uri` and
 `revision`. Floating subject references are refused. The current candidate
 admits canonical local Bead identities with an available retained revision;
 foreign-subject admission is not implemented.
+
+The first subject group recorded while an identity is an Evaluation remains
+bound to that identity for its lifetime. Retyping it away from Evaluation and
+back does not reset the group; a different group requires a new Evaluation.
+An ordinary Memory extension named `subjects` before its first Evaluation
+revision does not establish this binding. This accepted clarification is
+recorded in the [lifetime-group decision and implementation receipt](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6282549426);
+it supplements the exact typedef input above until editorial reconciliation.
 
 The Evaluation owns its Conformance-family claims. Each claim concerns the
 Evaluation's whole subject group collectively. Adding a claim revises its
@@ -204,6 +215,7 @@ using an empty subject list must refuse without creating an Evaluation.
 | Edit one property, leaving an extension object untouched | The extension survives current and retained readback without numeric conversion |
 | Retype and explicitly edit properties together | Admit the complete valid result or publish no change |
 | Supply a stale explicit revision guard | Refuse without overwriting the current record |
+| Retype an Evaluation away and back with a different subject group | Refuse atomically; permit its original group and preserve the lifetime binding |
 | Create an abstract Conformance Link or a claim from an ordinary Memory | Refuse without revising any owner or endpoint |
 | Create a valid Evaluation-owned Satisfies Link | Revise only the Link and its Evaluation owner; preserve the assessed group and target |
 | Exceed a selected Link-family limit, create a forbidden cycle or identity self-Link | Refuse atomically according to the typedef rules |
