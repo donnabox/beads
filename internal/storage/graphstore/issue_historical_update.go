@@ -23,6 +23,7 @@ var historicalIssueCurrentMembers = map[string]bool{
 	"started_at": true, "closed_at": true, "close_reason": true, "closed_by_session": true,
 	"lease_expires_at": true, "heartbeat_at": true, "lease_granted_node": true,
 	"is_blocked": true, "source_system": true, "storage_class": true,
+	"labels": true, "parent": true, "parent_id": true, "dependencies": true,
 	"compaction_level": true, "compacted_at": true, "compacted_at_commit": true, "original_size": true,
 	"source_formula": true, "source_location": true,
 }

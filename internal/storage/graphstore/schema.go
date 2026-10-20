@@ -50,7 +50,7 @@ var previewDDL = []string{
         PRIMARY KEY (path, version), UNIQUE KEY one_path_ordinal (path, ordinal))`,
 	`CREATE TABLE graph_preview_issue_versions (
         path VARBINARY(1024) NOT NULL, version VARBINARY(32) NOT NULL,
-        issue_id VARBINARY(255) NOT NULL, issue_revision BIGINT NOT NULL, owned LONGBLOB NOT NULL,
+        issue_id VARBINARY(255) NOT NULL, issue_revision BIGINT NOT NULL, owned LONGBLOB NOT NULL, revision_context LONGBLOB NULL,
         PRIMARY KEY (path, version), UNIQUE KEY one_issue_version (issue_id, issue_revision))`,
 }
 
@@ -268,7 +268,7 @@ func checkBinding(ctx context.Context, tx *sql.Tx, o Options) error {
 		`SELECT path, properties, metadata FROM graph_preview_payloads LIMIT 0`,
 		`SELECT path, source_path, target_path, source_revision, target_revision, properties, metadata, attribution FROM graph_preview_links LIMIT 0`,
 		`SELECT path, version, snapshot, actor, ordinal, change_at FROM graph_preview_versions LIMIT 0`,
-		`SELECT path, version, issue_id, issue_revision, owned FROM graph_preview_issue_versions LIMIT 0`,
+		`SELECT path, version, issue_id, issue_revision, owned, revision_context FROM graph_preview_issue_versions LIMIT 0`,
 		`SELECT issue_id, revision, durable_state, attribution_status FROM issue_versions LIMIT 0`,
 	} {
 		rows, err := tx.QueryContext(ctx, query)

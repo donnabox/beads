@@ -384,6 +384,19 @@ func (s *Store) ownedLinksInTx(ctx context.Context, tx *sql.Tx, issueID string) 
 // recordIssueMappingInTx links the fresh Jim snapshot to opaque graph identity
 // and captures the full canonical owned set. It stores no second Issue payload.
 func (s *Store) recordIssueMappingInTx(ctx context.Context, tx *sql.Tx, path, issueID string) error {
+	return s.recordIssueMappingWithContextInTx(ctx, tx, path, issueID, nil)
+}
+
+func (s *Store) recordIssueMappingWithContextInTx(ctx context.Context, tx *sql.Tx, path, issueID string, historical *HistoricalUpdateContext) error {
+	previous, err := currentIssueRevisionContextInTx(ctx, tx, path)
+	if err != nil {
+		return err
+	}
+	previous.HistoricalUpdate = historical
+	contextJSON, err := encodeIssueRevisionContext(previous)
+	if err != nil {
+		return err
+	}
 	var ordinal int64
 	if err := tx.QueryRowContext(ctx, `SELECT current_revision FROM issues WHERE id=?`, issueID).Scan(&ordinal); err != nil {
 		return err
@@ -406,7 +419,7 @@ func (s *Store) recordIssueMappingInTx(ctx context.Context, tx *sql.Tx, path, is
 	if err := s.afterStage("source-catalog"); err != nil {
 		return err
 	}
-	if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_issue_versions (path,version,issue_id,issue_revision,owned) VALUES (?,?,?,?,?)`, path, revision, issueID, ordinal, snapshot); err != nil {
+	if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_issue_versions (path,version,issue_id,issue_revision,owned,revision_context) VALUES (?,?,?,?,?,?)`, path, revision, issueID, ordinal, snapshot, contextJSON); err != nil {
 		return err
 	}
 	return s.afterStage("source-retained")

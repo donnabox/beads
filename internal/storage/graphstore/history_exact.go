@@ -313,7 +313,7 @@ func (s *Store) readIssueVersionInTx(ctx context.Context, tx *sql.Tx, path, vers
 	var issueID string
 	var ordinal int64
 	var ownedSize uint64
-	err := tx.QueryRowContext(ctx, `SELECT issue_id,issue_revision,OCTET_LENGTH(owned)
+	err := tx.QueryRowContext(ctx, `SELECT issue_id,issue_revision,OCTET_LENGTH(owned)+COALESCE(OCTET_LENGTH(revision_context),0)
  FROM graph_preview_issue_versions WHERE path=? AND version=?`, path, version).Scan(&issueID, &ordinal, &ownedSize)
 	if errors.Is(err, sql.ErrNoRows) {
 		if version == head {
@@ -339,12 +339,12 @@ func (s *Store) readIssueVersionInTx(ctx context.Context, tx *sql.Tx, path, vers
 	if ownedSize > PreviewCurrentReadByteLimit || bodySize > PreviewCurrentReadByteLimit-ownedSize {
 		return IssueRecord{}, fmt.Errorf("%w: retained Issue exceeds acquisition budget", ErrLimitExceeded)
 	}
-	var raw, owned []byte
+	var raw, owned, revisionContext []byte
 	var actor, status string
 	var at time.Time
-	err = tx.QueryRowContext(ctx, `SELECT v.durable_state,v.change_actor,v.attribution_status,v.change_at,m.owned
+	err = tx.QueryRowContext(ctx, `SELECT v.durable_state,v.change_actor,v.attribution_status,v.change_at,m.owned,m.revision_context
  FROM graph_preview_issue_versions m JOIN issue_versions v ON v.issue_id=m.issue_id AND v.revision=m.issue_revision
- WHERE m.path=? AND m.version=?`, path, version).Scan(&raw, &actor, &status, &at, &owned)
+ WHERE m.path=? AND m.version=?`, path, version).Scan(&raw, &actor, &status, &at, &owned, &revisionContext)
 	if err != nil {
 		return IssueRecord{}, err
 	}
@@ -355,6 +355,10 @@ func (s *Store) readIssueVersionInTx(ctx context.Context, tx *sql.Tx, path, vers
 	}
 	result := IssueRecord{ID: s.ScopeURL() + path, Type: issueType, Revision: version, Version: version,
 		Attribution: Attribution{Actor: actor, Status: status, RecordedAt: at.UTC().Format(time.RFC3339Nano)}}
+	result.Attribution, err = applyIssueRevisionContext(result.Attribution, revisionContext)
+	if err != nil {
+		return IssueRecord{}, err
+	}
 	if json.Unmarshal(raw, &issue) != nil || !sameVersionJSON(raw, &issue) || issue.ID != issueID ||
 		json.Unmarshal(owned, &result.Owned) != nil || !sameVersionJSON(owned, result.Owned) ||
 		!validVersionAttribution(result.Attribution, actor) {

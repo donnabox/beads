@@ -264,7 +264,11 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		if err := s.afterStage("issue-retained"); err != nil {
 			return err
 		}
-		if err := s.recordIssueMappingInTx(ctx, tx, path, before.Properties.ID); err != nil {
+		var historical *HistoricalUpdateContext
+		if request.FromRevision != "" {
+			historical = &HistoricalUpdateContext{FromRevision: request.FromRevision, PreviousRevision: revision}
+		}
+		if err := s.recordIssueMappingWithContextInTx(ctx, tx, path, before.Properties.ID, historical); err != nil {
 			return err
 		}
 		// Charge the new retained head as well as current data; an unreadable

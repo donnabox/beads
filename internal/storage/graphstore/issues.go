@@ -132,7 +132,7 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		}
 		// This is an identity mapping, not a second snapshot. The local ordinal
 		// never escapes as the graph Version or as a portable History address.
-		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_issue_versions (path,version,issue_id,issue_revision,owned) VALUES (?,?,?,?,'[]')`, path, revision, created.Issue.ID, ordinal); err != nil {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_issue_versions (path,version,issue_id,issue_revision,owned,revision_context) VALUES (?,?,?,?,'[]','{"inception":"create"}')`, path, revision, created.Issue.ID, ordinal); err != nil {
 			return err
 		}
 		if err := s.afterStage("retained"); err != nil {
@@ -272,13 +272,13 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 	if err != nil {
 		return IssueRecord{}, fmt.Errorf("%w: Issue backing: %v", ErrInvalidStore, err)
 	}
-	var snapshot, retainedOwned []byte
+	var snapshot, retainedOwned, revisionContext []byte
 	var actor, status string
 	var at time.Time
 	var ordinal, current int64
-	err = tx.QueryRowContext(ctx, `SELECT m.issue_revision,v.durable_state,v.change_actor,v.attribution_status,v.change_at,i.current_revision,m.owned
+	err = tx.QueryRowContext(ctx, `SELECT m.issue_revision,v.durable_state,v.change_actor,v.attribution_status,v.change_at,i.current_revision,m.owned,m.revision_context
         FROM graph_preview_issue_versions m JOIN issue_versions v ON v.issue_id=m.issue_id AND v.revision=m.issue_revision
-        JOIN issues i ON i.id=m.issue_id WHERE m.path=? AND m.version=? AND m.issue_id=?`, path, revision, issueID).Scan(&ordinal, &snapshot, &actor, &status, &at, &current, &retainedOwned)
+        JOIN issues i ON i.id=m.issue_id WHERE m.path=? AND m.version=? AND m.issue_id=?`, path, revision, issueID).Scan(&ordinal, &snapshot, &actor, &status, &at, &current, &retainedOwned, &revisionContext)
 	if err != nil {
 		return IssueRecord{}, fmt.Errorf("%w: Issue retained mapping: %v", ErrInvalidStore, err)
 	}
@@ -323,8 +323,12 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 	}
 	issue.Dependencies = nil
 	issue.Metadata = nil
+	attribution, err := applyIssueRevisionContext(Attribution{Actor: actor, Status: status, RecordedAt: at.UTC().Format(time.RFC3339Nano)}, revisionContext)
+	if err != nil {
+		return IssueRecord{}, err
+	}
 	return IssueRecord{ID: graph.CanonicalURL(s.options.Binding.ScopeURL, path), Type: typ, Revision: revision, Version: revision,
-		Properties: issue, Metadata: metadata, Owned: owned, Attribution: Attribution{Actor: actor, Status: status, RecordedAt: at.UTC().Format(time.RFC3339Nano)}}, nil
+		Properties: issue, Metadata: metadata, Owned: owned, Attribution: attribution}, nil
 }
 
 // The installed Type set, already fingerprint-checked by checkBinding, uses
