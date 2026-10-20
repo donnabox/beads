@@ -285,19 +285,23 @@ invariants, golden public payloads where stability matters, and injected provide
 failures. Verify embedded/shared-server paths where admitted; report unsupported
 capabilities explicitly.
 
-Janet owns integration and runtime qualification, including Go/gofmt/build/test/
-Bazel/generation runs under the current coordination rules. Cleo owns this output
-contract; Melinda owns query semantics; Trish owns shared BDP/Types contracts;
-Iris owns interchange. The separate symmetric-edit work and BDP empty-array PR
-retain their existing review and ordering holds; this plan does not release them.
+Each implementation owner owns formatting, build metadata, tests, review and PR
+preparation for their isolated slice. Cleo owns this output contract and the
+`internal/clioutput/` foundation. Janet coordinates shared command files,
+database/service use, release integration and installed-product qualification;
+that coordination does not gate independent package validation or PR preparation.
+Melinda owns query semantics; Trish owns shared BDP/Types contracts; Iris owns
+interchange. The separate symmetric-edit work and BDP empty-array PR retain their
+existing review and ordering holds; this plan does not release them.
 
 This remains a documentation-only PR. After Donna approved implementation,
 Janet assigned Cleo a bounded new `internal/clioutput/` package on integration
 baseline `5b8cdefe055b8f08cf9eb385e946396c1b5799d7`. Foundation source and pure
-tests are underway: descriptor-driven masks and single-Resource JSON/detail/raw/
-error rendering, with no store/transport reads. The baseline is not qualification
-of the new output contract. Existing command files, BUILD/module metadata,
-formatting and runtime tests remain Janet's responsibility.
+tests cover descriptor-driven masks and single-Resource JSON/detail/raw/error
+rendering, with no store/transport reads. The baseline is not qualification of the
+new output contract. Cleo prepares the package's generated BUILD references and
+runs its validation in an isolated checkout. Existing command files and shared
+integration work remain coordinated with Janet.
 
 The `show`/`link show` command-wiring handoff still follows PR114 and the active
 Type/symmetric Link CLI handshakes. The foundation does not make new flags
