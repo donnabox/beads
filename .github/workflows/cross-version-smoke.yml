@@ -65,7 +65,13 @@ jobs:
           run('09-prev-dependency',[prev,'dep','add',wisp,blocker],False)
           run('10-cand-migrate',[cand,'migrate','schema'],False);run('11-cand-init',[cand,'init','--quiet','--non-interactive','--skip-hooks','--skip-agents'],False)
           run('12-list',[cand,'mol','wisp','list','--all']);run('13-ready',[cand,'ready']);run('14-blocked',[cand,'blocked'])
-          update=run('15-update',[cand,'update',wisp,'--notes','smoke wisp mutation'],False);show=run('16-show',[cand,'show',wisp],False);machine=run('17-show-json',[cand,'show',wisp,'--json'],False)
+          # Capture immediate update -> human show before any Python logging or JSON read.
+          update=subprocess.run([str(cand),'update',wisp,'--notes','smoke wisp mutation'],cwd=ws,text=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=120)
+          show=subprocess.run([str(cand),'show',wisp],cwd=ws,text=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=120)
+          for name,args,pair in [('15-update',[cand,'update',wisp,'--notes','smoke wisp mutation'],update),('16-show',[cand,'show',wisp],show)]:
+           (phase/(name+'.stdout')).write_text(pair.stdout);(phase/(name+'.stderr')).write_text(pair.stderr);rows.append({'step':name,'argv':[str(x) for x in args],'exit':pair.returncode});print(name,pair.returncode,pair.stdout.strip()[:350],pair.stderr.strip()[:180],flush=True)
+          (phase/'commands.json').write_text(json.dumps(rows,indent=2)+'\n')
+          machine=run('17-show-json',[cand,'show',wisp,'--json'],False)
           result={'wisp':wisp,'blocker':blocker,'update_exit':update.returncode,'human_exit':show.returncode,'human_notes_present':'smoke wisp mutation' in show.stdout,'json_exit':machine.returncode,'json_notes_present':'smoke wisp mutation' in machine.stdout};(phase/'result.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result),flush=True)
           shutil.copytree(ws,phase/'workspace-snapshot')
           assert result['update_exit']==0 and result['human_exit']==0 and result['human_notes_present'],result
