@@ -294,8 +294,21 @@ func renderDetail(raw json.RawMessage) ([]byte, error) {
 		}
 		out.Write(label)
 		out.WriteString(": ")
+		// Protocol values may already contain HTML escapes in RawMessage fields.
+		// Decode with UseNumber before human rendering so values stay exact while
+		// literal text is readable; control characters remain JSON-escaped.
+		decoder := json.NewDecoder(bytes.NewReader(fields[key]))
+		decoder.UseNumber()
+		var decoded any
+		if err := decoder.Decode(&decoded); err != nil {
+			return nil, err
+		}
+		encoded, err := marshalValue(decoded)
+		if err != nil {
+			return nil, err
+		}
 		var value bytes.Buffer
-		if err := json.Indent(&value, fields[key], "  ", "  "); err != nil {
+		if err := json.Indent(&value, encoded, "  ", "  "); err != nil {
 			return nil, err
 		}
 		out.Write(value.Bytes())
