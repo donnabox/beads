@@ -174,7 +174,8 @@ func (s *Store) CreateChildIssue(ctx context.Context, request IssueChildCreateRe
 		if err := s.afterStage("child-link-retained"); err != nil {
 			return err
 		}
-		if err := s.recordIssueMappingInTx(ctx, tx, childPath, created.Issue.ID); err != nil {
+		// The child has no prior graph mapping whose context could be preserved.
+		if err := s.recordIssueMappingContextInTx(ctx, tx, childPath, created.Issue.ID, issueRevisionContext{Inception: "create"}); err != nil {
 			return err
 		}
 		if err := s.afterStage("child-retained"); err != nil {

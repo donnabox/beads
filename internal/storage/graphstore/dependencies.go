@@ -401,6 +401,12 @@ func (s *Store) recordIssueMappingContextInTx(ctx context.Context, tx *sql.Tx, p
 	if err != nil {
 		return err
 	}
+	// Bind absent context as SQL NULL, not a typed nil byte slice that may
+	// become an empty blob. Empty bytes are malformed context, not absence.
+	var storedContext any
+	if contextJSON != nil {
+		storedContext = contextJSON
+	}
 	var ordinal int64
 	if err := tx.QueryRowContext(ctx, `SELECT current_revision FROM issues WHERE id=?`, issueID).Scan(&ordinal); err != nil {
 		return err
@@ -427,7 +433,7 @@ func (s *Store) recordIssueMappingContextInTx(ctx context.Context, tx *sql.Tx, p
 	if err := s.afterStage("source-catalog"); err != nil {
 		return err
 	}
-	if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_issue_versions (path,version,issue_id,issue_revision,owned,revision_context,history_ordinal) VALUES (?,?,?,?,?,?,?)`, path, revision, issueID, ordinal, snapshot, contextJSON, historyOrdinal); err != nil {
+	if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_issue_versions (path,version,issue_id,issue_revision,owned,revision_context,history_ordinal) VALUES (?,?,?,?,?,?,?)`, path, revision, issueID, ordinal, snapshot, storedContext, historyOrdinal); err != nil {
 		return err
 	}
 	return s.afterStage("source-retained")

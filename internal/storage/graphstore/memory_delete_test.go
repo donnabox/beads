@@ -341,6 +341,8 @@ func TestMemoryDeleteCorruptAbsentState(t *testing.T) {
 				{"incident-row", `INSERT INTO graph_preview_links(path,source_path,target_path,properties,attribution) VALUES('links/corrupt','beads/work','beads/plan','{}','{}')`},
 				{"payload", `INSERT INTO graph_preview_payloads(path,properties) VALUES('beads/plan','{"title":"","body":""}')`},
 				{"missing-head", `DELETE FROM graph_preview_versions WHERE path='beads/plan'`},
+				{"missing-terminal", fmt.Sprintf("DELETE FROM graph_preview_versions WHERE path='beads/plan' AND version<>'%s'", memory.Version)},
+				{"missing-baseline", fmt.Sprintf("DELETE FROM graph_preview_versions WHERE path='beads/plan' AND version='%s'", memory.Version)},
 				{"malformed-head", `UPDATE graph_preview_versions SET snapshot='{}' WHERE path='beads/plan'`},
 				{"wrong-type", `UPDATE graph_preview_catalog SET type_url='https://wrong.example/memory' WHERE path='beads/plan'`},
 				{"wrong-backing", `UPDATE graph_preview_catalog SET backing='issue' WHERE path='beads/plan'`},
