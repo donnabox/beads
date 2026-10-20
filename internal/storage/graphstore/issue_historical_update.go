@@ -97,16 +97,17 @@ func composeHistoricalIssuePatch(current, source IssueRecord, edit publicops.Iss
 	return patch, nil
 }
 
-func (s *Store) historicalIssuePatchInTx(ctx context.Context, tx *sql.Tx, path, sourceRevision string, current IssueRecord, edit publicops.IssuePatch, propertiesPatch []byte) (publicops.IssuePatch, error) {
-	value, err := s.readVersionInTx(ctx, tx, path, sourceRevision)
-	if err != nil {
-		return publicops.IssuePatch{}, err
-	}
-	source, ok := value.(IssueRecord)
-	if !ok {
-		return publicops.IssuePatch{}, fmt.Errorf("%w: historical Issue source requires a live native Issue snapshot", ErrCapabilityUnavailable)
+func (s *Store) historicalIssuePatchInTx(ctx context.Context, tx *sql.Tx, path, sourceRevision string, current IssueRecord, edit publicops.IssuePatch, propertiesPatch []byte, recovering bool) (publicops.IssuePatch, error) {
+	source := current
+	if !recovering || sourceRevision != current.Revision {
+		var err error
+		source, err = s.readNativeIssueRetainedInTx(ctx, tx, path, sourceRevision, current.Revision, current.Properties.ID)
+		if err != nil {
+			return publicops.IssuePatch{}, err
+		}
 	}
 	if len(propertiesPatch) > 0 {
+		var err error
 		edit, err = historicalIssuePropertiesPatch(source.Properties, propertiesPatch, edit.Metadata)
 		if err != nil {
 			return publicops.IssuePatch{}, err
@@ -117,8 +118,14 @@ func (s *Store) historicalIssuePatchInTx(ctx context.Context, tx *sql.Tx, path, 
 
 func checkHistoricalIssueReadBytes(ctx context.Context, tx *sql.Tx, path, revision string) error {
 	var size uint64
-	if err := tx.QueryRowContext(ctx, `SELECT CAST(LEAST(COALESCE(SUM(OCTET_LENGTH(m.owned)+COALESCE(OCTET_LENGTH(m.revision_context),0)+OCTET_LENGTH(v.durable_state)+OCTET_LENGTH(v.change_actor)+OCTET_LENGTH(v.attribution_status)+256),0),?) AS UNSIGNED)
- FROM graph_preview_issue_versions m JOIN issue_versions v ON v.issue_id=m.issue_id AND v.revision=m.issue_revision WHERE m.path=? AND m.version=? AND v.removed_at IS NULL`, PreviewCurrentReadByteLimit+1, path, revision).Scan(&size); err != nil {
+	if err := tx.QueryRowContext(ctx, `SELECT CAST(LEAST(
+ COALESCE((SELECT SUM(OCTET_LENGTH(m.owned)+COALESCE(OCTET_LENGTH(m.revision_context),0)+OCTET_LENGTH(v.durable_state)+COALESCE(OCTET_LENGTH(v.change_actor),0)+COALESCE(OCTET_LENGTH(v.attribution_status),0)+256)
+ FROM graph_preview_issue_versions m JOIN issue_versions v ON v.issue_id=m.issue_id AND v.revision=m.issue_revision
+ JOIN graph_preview_catalog c ON c.path=m.path LEFT JOIN graph_preview_versions d ON d.path=c.path AND d.version=c.revision
+ WHERE m.path=? AND m.version=? AND v.removed_at IS NULL AND NOT(c.allocation_state='deleted' AND JSON_VALID(CAST(d.snapshot AS CHAR)) AND m.version=JSON_UNQUOTE(JSON_EXTRACT(CAST(d.snapshot AS CHAR),'$.previousVersion')))),0)
+ +COALESCE((SELECT SUM(OCTET_LENGTH(m.owned)+COALESCE(OCTET_LENGTH(m.revision_context),0)+OCTET_LENGTH(v.durable_state)+COALESCE(OCTET_LENGTH(v.change_actor),0)+COALESCE(OCTET_LENGTH(v.attribution_status),0)+256)
+ FROM graph_preview_catalog c JOIN graph_preview_versions d ON d.path=c.path AND d.version=c.revision JOIN graph_preview_issue_versions m ON m.path=c.path AND m.version=CASE WHEN JSON_VALID(CAST(d.snapshot AS CHAR)) THEN JSON_UNQUOTE(JSON_EXTRACT(CAST(d.snapshot AS CHAR),'$.previousVersion')) ELSE NULL END JOIN issue_versions v ON v.issue_id=m.issue_id AND v.revision=m.issue_revision WHERE c.path=? AND c.allocation_state='deleted' AND c.backing='issue'),0)
+ +COALESCE((SELECT OCTET_LENGTH(v.snapshot)+OCTET_LENGTH(v.actor)+256 FROM graph_preview_versions v JOIN graph_preview_catalog c ON c.path=v.path WHERE v.path=? AND v.version=? AND NOT(c.allocation_state='deleted' AND c.revision=v.version)),0),?) AS UNSIGNED)`, path, revision, path, path, revision, PreviewCurrentReadByteLimit+1).Scan(&size); err != nil {
 		return err
 	}
 	return checkCurrentReadBytesAdditional(ctx, tx, size)

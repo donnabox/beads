@@ -64,9 +64,17 @@ func TestGraphPreviewIssueDeleteWorkflow(t *testing.T) {
 			refuse("gone", "show", "work")
 			refuse("gone", "delete", "work", "--force")
 			refuse("identity_reserved", "create", "Replacement", "--id", "beads/work")
-			if after := call("versions", "work"); after != before {
-				t.Fatal("deletion invented or lost an Issue version")
+			type terminalHistory struct {
+				CurrentState *graphstore.BeadTerminalState `json:"currentState"`
+				Versions     []map[string]any              `json:"versions"`
+				Terminal     []map[string]any              `json:"terminal_versions"`
 			}
+			prior := graphMixedResult[terminalHistory](t, before)
+			after := graphMixedResult[terminalHistory](t, call("versions", "work"))
+			if deleted.Terminal == nil || !reflect.DeepEqual(after.CurrentState, deleted.Terminal) || !reflect.DeepEqual(after.Versions, prior.Versions) || len(after.Terminal) != 1 {
+				t.Fatal("native deletion lost prior snapshots or distinct D")
+			}
+
 			if old := graphMixedResult[graphstore.IssueRecord](t, call("show", "work", "--version", final.Revision)); old.ID != final.ID || old.Revision != final.Revision {
 				t.Fatal("final live snapshot unavailable")
 			}

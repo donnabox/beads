@@ -116,7 +116,7 @@ func runGraphPreviewVersions(cmd *cobra.Command, args []string) error {
 		terminalRows := make([]graphstore.VersionRow, 0)
 		for _, row := range rows {
 			if row.Removed {
-				if (kind != graphstore.KindLink && kind != graphstore.KindMemory) || (kind == graphstore.KindLink && removed) {
+				if (kind != graphstore.KindLink && kind != graphstore.KindMemory && kind != graphstore.KindIssue) || (kind == graphstore.KindLink && removed) {
 					return nil, "", fmt.Errorf("%w: invalid deletion marker in version history", graphstore.ErrInvalidStore)
 				}
 				removed = true
@@ -136,7 +136,7 @@ func runGraphPreviewVersions(cmd *cobra.Command, args []string) error {
 		if history.CurrentState != nil {
 			result["currentState"] = history.CurrentState
 		}
-		if kind == graphstore.KindMemory && len(terminalRows) != 0 {
+		if (kind == graphstore.KindMemory || kind == graphstore.KindIssue) && len(terminalRows) != 0 {
 			result["terminal_versions"] = graphVersionRowsJSON(terminalRows)
 		}
 		summary := renderGraphVersions(args[0], kind, citable, removed)

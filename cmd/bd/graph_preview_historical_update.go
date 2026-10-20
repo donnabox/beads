@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"strings"
 	"unicode/utf8"
@@ -56,11 +55,11 @@ func runGraphPreviewHistoricalUpdate(cmd *cobra.Command, path string) error {
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		// This dispatch reads only the current backing. Historical acquisition and
 		// composition remain inside UpdateIssue's single storage transaction.
-		current, readErr := store.Read(ctx, path)
-		if readErr != nil && !errors.Is(readErr, graphstore.ErrGone) {
-			return nil, "", readErr
+		native, err := store.NativeIssueAllocation(ctx, path)
+		if err != nil {
+			return nil, "", err
 		}
-		if _, native := current.(graphstore.IssueRecord); native {
+		if native {
 			nativeRequest := graphstore.UpdateIssueRequest{Path: path, FromRevision: source, Actor: request.Actor, ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata, PropertiesPatch: patch}
 			nativeRequest.ForceNotesOverwrite, _ = cmd.Flags().GetBool("force")
 			if request.PropertiesProvided {
@@ -86,7 +85,6 @@ func runGraphPreviewHistoricalUpdate(cmd *cobra.Command, path string) error {
 			return nil, "", graphFailure("invalid_properties", "--force applies only to a native Issue notes edit", 2)
 		}
 		var result graphstore.MemoryMutationResult
-		var err error
 		if patch != nil {
 			result, err = store.PatchMemoryProperties(ctx, graphstore.MemoryPropertiesPatchRequest{Path: path, FromRevision: source, Patch: patch, Actor: request.Actor, ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata})
 		} else {

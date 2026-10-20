@@ -132,7 +132,7 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		}
 		// This is an identity mapping, not a second snapshot. The local ordinal
 		// never escapes as the graph Version or as a portable History address.
-		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_issue_versions (path,version,issue_id,issue_revision,owned,revision_context) VALUES (?,?,?,?,'[]','{"inception":"create"}')`, path, revision, created.Issue.ID, ordinal); err != nil {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_issue_versions (path,version,issue_id,issue_revision,owned,revision_context,history_ordinal) VALUES (?,?,?,?,'[]','{"inception":"create"}',?)`, path, revision, created.Issue.ID, ordinal, ordinal); err != nil {
 			return err
 		}
 		if err := s.afterStage("retained"); err != nil {

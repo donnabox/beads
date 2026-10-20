@@ -393,12 +393,20 @@ func (s *Store) recordIssueMappingWithContextInTx(ctx context.Context, tx *sql.T
 		return err
 	}
 	previous.HistoricalUpdate = historical
+	return s.recordIssueMappingContextInTx(ctx, tx, path, issueID, previous)
+}
+
+func (s *Store) recordIssueMappingContextInTx(ctx context.Context, tx *sql.Tx, path, issueID string, previous issueRevisionContext) error {
 	contextJSON, err := encodeIssueRevisionContext(previous)
 	if err != nil {
 		return err
 	}
 	var ordinal int64
 	if err := tx.QueryRowContext(ctx, `SELECT current_revision FROM issues WHERE id=?`, issueID).Scan(&ordinal); err != nil {
+		return err
+	}
+	historyOrdinal, err := nextIssueHistoryOrdinalInTx(ctx, tx, path, ordinal)
+	if err != nil {
 		return err
 	}
 	revision, err := freshToken()
@@ -419,7 +427,7 @@ func (s *Store) recordIssueMappingWithContextInTx(ctx context.Context, tx *sql.T
 	if err := s.afterStage("source-catalog"); err != nil {
 		return err
 	}
-	if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_issue_versions (path,version,issue_id,issue_revision,owned,revision_context) VALUES (?,?,?,?,?,?)`, path, revision, issueID, ordinal, snapshot, contextJSON); err != nil {
+	if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_issue_versions (path,version,issue_id,issue_revision,owned,revision_context,history_ordinal) VALUES (?,?,?,?,?,?,?)`, path, revision, issueID, ordinal, snapshot, contextJSON, historyOrdinal); err != nil {
 		return err
 	}
 	return s.afterStage("source-retained")

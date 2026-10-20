@@ -190,22 +190,58 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 				return err
 			}
 		}
-		current, revision, err := s.beadEndpointInTx(ctx, tx, path)
-		if err != nil {
+		var err error
+		var before IssueRecord
+		var revision string
+		var terminal *BeadTerminalState
+		var generation sql.NullInt64
+		var state, backing string
+		if err := tx.QueryRowContext(ctx, `SELECT allocation_state,backing,revision FROM graph_preview_catalog WHERE path=?`, path).Scan(&state, &backing, &revision); err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return ErrNotFound
+			}
 			return err
 		}
-		before, ok := current.(IssueRecord)
-		if !ok {
-			return fmt.Errorf("%w: Issue update requires the experimental Issue Type", ErrCapabilityUnavailable)
+		if state == "deleted" && backing == "issue" && request.FromRevision != "" {
+			if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, revision, true, "Issue"); err != nil {
+				return err
+			}
+			if err := checkHistoricalIssueReadBytes(ctx, tx, path, request.FromRevision); err != nil {
+				return err
+			}
+			var err error
+			before, terminal, generation, err = s.deletedIssueStateInTx(ctx, tx, path)
+			if err != nil {
+				return err
+			}
+			if terminal == nil {
+				return fmt.Errorf("%w: legacy native deletion has no distinct deletion revision", ErrCapabilityUnavailable)
+			}
+			if request.FromRevision == terminal.Revision {
+				return ErrGone
+			}
+		} else {
+			current, actual, err := s.beadEndpointInTx(ctx, tx, path)
+			if err != nil {
+				return err
+			}
+			var ok bool
+			before, ok = current.(IssueRecord)
+			if !ok {
+				return fmt.Errorf("%w: Issue update requires the experimental Issue Type", ErrCapabilityUnavailable)
+			}
+			revision = actual
 		}
 		if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, revision, true, "Issue"); err != nil {
 			return err
 		}
 		if request.FromRevision != "" {
-			if err := checkHistoricalIssueReadBytes(ctx, tx, path, request.FromRevision); err != nil {
-				return err
+			if terminal == nil {
+				if err := checkHistoricalIssueReadBytes(ctx, tx, path, request.FromRevision); err != nil {
+					return err
+				}
 			}
-			patch, err = s.historicalIssuePatchInTx(ctx, tx, path, request.FromRevision, before, patch, request.PropertiesPatch)
+			patch, err = s.historicalIssuePatchInTx(ctx, tx, path, request.FromRevision, before, patch, request.PropertiesPatch, terminal != nil)
 			if err != nil {
 				return err
 			}
@@ -213,6 +249,11 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 			if err := issueops.ValidateUpdateRequest(attempt); err != nil {
 				return err
 			}
+		}
+		if terminal != nil {
+			var err error
+			result, err = s.recoverIssueInTx(ctx, tx, path, before, *terminal, generation, attempt, request.FromRevision)
+			return err
 		}
 		beforeNative := *before.Properties
 		beforeNative.Metadata = before.Metadata

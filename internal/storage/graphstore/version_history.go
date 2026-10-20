@@ -15,8 +15,8 @@ import (
 // not a public BDP Type, a Type URL, or a wire enumeration. Two backings
 // ("informational" and "dependency") share one kind because both are Links
 // whose versions are retained identically; Issues are separated from Memory
-// because their ordered history lives on Jim's native issue_versions table
-// rather than in graph_preview_versions.
+// because their snapshots live on the native issue_versions table, with
+// graph-only terminal evidence retained separately.
 type ResourceKind string
 
 const (
@@ -36,8 +36,8 @@ const (
 //
 // Removed distinguishes retained terminal evidence from live snapshots. Such a
 // token is listed, but ReadVersion refuses it with ErrGone. Multiple Memory
-// terminal rows can remain after successive recoveries. Native Issue deletion
-// still retains only its final live version in this implementation.
+// terminal rows can remain after successive recoveries. Native Issue graph
+// history includes graph D while preserving the separate native snapshot order.
 //
 // The JSON member names are fixed. Ordinal is deliberately not spelled
 // "revision": graph records already use revision for the opaque token, and a
@@ -211,14 +211,14 @@ func (s *Store) versionsInTx(ctx context.Context, tx *sql.Tx, path string, bound
 	}
 	switch {
 	case backing == "issue" && kind == "bead":
-		// The Issue plane's ordinal is the native revision, so the mapping must
+		// Native snapshots retain their native revision mapping, and must
 		// name the same Issue the catalog is bound to before it is trusted. The
 		// type URL is compared too: backing alone was never enough to establish
 		// that this allocation is the kind of thing it claims to be.
 		if typ.String != issueType || !key.Valid || key.String == "" {
 			return "", nil, fmt.Errorf("%w: invalid Issue allocation", ErrInvalidStore)
 		}
-		rows, err := issueVersionsInTx(ctx, tx, path, key.String, head, bounds)
+		rows, err := s.nativeIssueVersionsInTx(ctx, tx, path, key.String, head, bounds)
 		return KindIssue, rows, err
 	case backing == "generic" && kind == "bead" && s.isMemoryType(typ.String):
 		// Memory history may include terminal states, even while currently live.
@@ -252,8 +252,8 @@ func (s *Store) versionsInTx(ctx context.Context, tx *sql.Tx, path string, bound
 	return "", nil, fmt.Errorf("%w: unsupported retained allocation", ErrInvalidStore)
 }
 
-// issueVersionsInTx orders a graph Issue's history by the native revision the
-// preview mapping points at. Those native rows exist in every graph workspace
+// issueVersionsInTx orders native graph mappings by their graph-local ordinal,
+// retaining native ordinal interpretation for older mappings without one. Those native rows exist in every graph workspace
 // even though config versioned-history.enabled defaults to false: each graph
 // Issue write path scopes its own transaction with
 // issueops.ScopeVersionedHistoryTransaction(tx, true), which forces recording on
@@ -286,9 +286,9 @@ func issueVersionsInTx(ctx context.Context, tx *sql.Tx, path, backingKey, head s
 	}
 	// change_actor and attribution_status are VARCHAR on the native plane, so
 	// the row count above already bounds this acquisition; no blob is selected.
-	rows, err := tx.QueryContext(ctx, `SELECT m.issue_id,m.issue_revision,m.version,v.change_at,v.change_actor,v.attribution_status
+	rows, err := tx.QueryContext(ctx, `SELECT m.issue_id,COALESCE(m.history_ordinal,m.issue_revision),m.version,v.change_at,v.change_actor,v.attribution_status
  FROM graph_preview_issue_versions m JOIN issue_versions v ON v.issue_id=m.issue_id AND v.revision=m.issue_revision
- WHERE m.path=? ORDER BY v.revision DESC`, path)
+ WHERE m.path=? ORDER BY COALESCE(m.history_ordinal,m.issue_revision) DESC`, path)
 	if err != nil {
 		return nil, err
 	}
@@ -327,26 +327,14 @@ func issueVersionsInTx(ctx context.Context, tx *sql.Tx, path, backingKey, head s
 	// descending, just missing its newest version. Same refusal and wording
 	// readIssueVersionInTx makes when the head's mapping is absent.
 	//
-	// No density check belongs here. These ordinals are native revisions this
-	// reader does not own: recordIssueMappingInTx maps whatever current_revision
-	// then reads, so any native write that advances an Issue's revision without
-	// a graph mapping leaves a legitimate gap. Requiring dense 1..N would refuse
-	// healthy Issues, which is worse than the gap it would catch.
-	//
-	// SO THIS PLANE HAS ONE UNDETECTED CORRUPTION, stated plainly rather than
-	// left for a reader to infer from the absence of a check: deleting a MIDDLE
-	// mapping row keeps the head present and lowers the mapping count and the
-	// join count together, so neither guard fires and the list comes back
-	// complete-looking with a version missing. The head check closes the
-	// newest-row case only. Density is the wrong instrument, not a forgotten
-	// one. A correct guard would have to compare the native revisions for this
-	// issue_id against the mapped set, which means deciding whether a graph
-	// writer may ever advance a revision without minting a mapping -- a
-	// question about the write paths, not about this reader. Measured on the
-	// four paths the suite exercises, native revisions are in fact dense
-	// (logged by the Issue-plane test), but four call sites are evidence, not
-	// an invariant graphstore enforces.
-	if !listsVersion(result, head) {
+	// Do not require density: older mappings use native ordinals and may
+	// contain legitimate native-write gaps. Shared graph ordering after D
+	// does not retroactively make that older history dense. Losing a middle
+	// mapping can still leave a complete-looking list; this reader closes
+	// missing-current and missing-body cases without claiming full history
+	// completeness or inventing a replacement ordinal.
+
+	if head != "" && !listsVersion(result, head) {
 		return nil, fmt.Errorf("%w: current Issue retained mapping is missing", ErrInvalidStore)
 	}
 	return result, nil

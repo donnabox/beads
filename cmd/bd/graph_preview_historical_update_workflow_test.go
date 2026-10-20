@@ -194,3 +194,63 @@ func TestGraphPreviewHistoricalNativeOrderedPatch(t *testing.T) {
 		})
 	}
 }
+
+func TestGraphPreviewHistoricalNativeRecovery(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := graphListWorkspace(t, bd, engine, "https://example.invalid/native-recovery/")
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+			}
+			refuse := func(code string, args ...string) {
+				t.Helper()
+				graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
+			}
+			source := graphMixedResult[graphstore.IssueRecord](t, call("create", "Original", "--id", "beads/subject", "--description", "historical body", "--labels", "old", "--metadata", `{"source":true}`))
+			current := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "subject", "--properties", `{"description":"last current"}`, "--replace-metadata", `{"current":true}`))
+			deleted := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", "subject", "--force", "--if-revision", current.Issue.Revision))
+			if deleted.Terminal == nil || deleted.Terminal.Revision == current.Issue.Revision {
+				t.Fatal("native delete omitted actual D")
+			}
+			type historyResult struct {
+				CurrentState *graphstore.BeadTerminalState `json:"currentState"`
+				Terminal     []map[string]any              `json:"terminal_versions"`
+				Versions     []map[string]any              `json:"versions"`
+			}
+			history := graphMixedResult[historyResult](t, call("versions", "subject"))
+			if !reflect.DeepEqual(history.CurrentState, deleted.Terminal) || len(history.Terminal) != 1 || len(history.Versions) != 2 {
+				t.Fatalf("native history carrier: %+v", history)
+			}
+			refuse("gone", "show", "subject")
+			refuse("gone", "show", "subject", "--version", deleted.Terminal.Revision)
+			refuse("revision_conflict", "update", "subject", "--from-revision", source.Revision, "--if-revision", current.Issue.Revision)
+			refuse("gone", "update", "subject", "--from-revision", deleted.Terminal.Revision, "--if-revision", deleted.Terminal.Revision)
+			recovered := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "subject", "--from-revision", source.Revision, "--if-revision", deleted.Terminal.Revision, "--patch", `[{"op":"replace","path":"/title","value":"Recovered"}]`, "--set-metadata", "explicit=7", "--actor", "restorer"))
+			h := recovered.Issue.Attribution.HistoricalUpdate
+			if !recovered.Changed || recovered.Issue.ID != source.ID || recovered.Issue.Type != source.Type || recovered.Issue.Properties.ID != source.Properties.ID || recovered.Issue.Properties.Title != "Recovered" || recovered.Issue.Properties.Description != "historical body" || string(recovered.Issue.Metadata) != `{"explicit":7,"source":true}` || h == nil || h.FromRevision != source.Revision || h.PreviousRevision != deleted.Terminal.Revision || recovered.Issue.Attribution.Actor != "restorer" || recovered.Issue.Attribution.Inception != "revert" || len(recovered.Issue.Properties.Labels) != 0 || !recovered.Issue.Properties.CreatedAt.Equal(current.Issue.Properties.CreatedAt) {
+				t.Fatalf("native CLI recovered wrong state: %+v", recovered)
+			}
+			got := graphMixedResult[graphstore.IssueRecord](t, call("show", "subject", "--format", "graph-json"))
+			if !reflect.DeepEqual(got, recovered.Issue) {
+				t.Fatal("native recovery not visible to fresh process")
+			}
+			before := call("show", "subject", "--format", "graph-json")
+			refuse("revision_conflict", "update", "subject", "--from-revision", source.Revision, "--if-revision", deleted.Terminal.Revision)
+			if after := call("show", "subject", "--format", "graph-json"); after != before {
+				t.Fatal("stale native recovery replay changed state")
+			}
+			history = graphMixedResult[historyResult](t, call("versions", "subject"))
+			if history.CurrentState != nil || len(history.Terminal) != 1 || len(history.Versions) != 3 {
+				t.Fatalf("native recovered history lost D: %+v", history)
+			}
+			secondDelete := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", "subject", "--force"))
+			equal := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "subject", "--from_revision", recovered.Issue.Revision))
+			if !equal.Changed || equal.Issue.Revision == recovered.Issue.Revision || equal.Issue.Attribution.HistoricalUpdate.PreviousRevision != secondDelete.Terminal.Revision {
+				t.Fatal("same-content native recovery was no-op or alias lost D")
+			}
+			refuse("gone", "show", "subject", "--version", secondDelete.Terminal.Revision)
+		})
+	}
+}

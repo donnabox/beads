@@ -7,10 +7,10 @@ import (
 	"fmt"
 )
 
-// MemoryTerminalState is retained deletion evidence, not a live Memory snapshot.
+// BeadTerminalState is retained deletion evidence, not a live Bead snapshot.
 // It deliberately omits the Type, properties, metadata and owned Links. The
 // previous live snapshot supplies the separately acquired protected baseline.
-type MemoryTerminalState struct {
+type BeadTerminalState struct {
 	ID              string      `json:"id"`
 	Revision        string      `json:"revision"`
 	Version         string      `json:"version"`
@@ -19,6 +19,9 @@ type MemoryTerminalState struct {
 	Attribution     Attribution `json:"attribution"`
 }
 
+// MemoryTerminalState retains the existing Go name for the shared Bead carrier.
+type MemoryTerminalState = BeadTerminalState
+
 func (s *Store) decodeMemoryTerminal(path, version string, raw []byte, actor string) (MemoryTerminalState, error) {
 	var terminal MemoryTerminalState
 	if json.Unmarshal(raw, &terminal) != nil || !sameVersionJSON(raw, terminal) ||
@@ -26,7 +29,7 @@ func (s *Store) decodeMemoryTerminal(path, version string, raw []byte, actor str
 		terminal.State != "deleted" || !authorityID.MatchString(version) ||
 		!authorityID.MatchString(terminal.PreviousVersion) || terminal.PreviousVersion == version ||
 		terminal.Attribution.HistoricalUpdate != nil || !validVersionAttribution(terminal.Attribution, actor) {
-		return MemoryTerminalState{}, fmt.Errorf("%w: invalid retained Memory deletion marker", ErrInvalidStore)
+		return MemoryTerminalState{}, fmt.Errorf("%w: invalid retained Bead deletion marker", ErrInvalidStore)
 	}
 	return terminal, nil
 }
@@ -103,12 +106,21 @@ func (s *Store) History(ctx context.Context, path string) (VersionHistoryResult,
 		if err != nil {
 			return err
 		}
-		if result.Kind == KindMemory {
+		if result.Kind == KindMemory || result.Kind == KindIssue {
 			var state string
 			if err := tx.QueryRowContext(ctx, `SELECT allocation_state FROM graph_preview_catalog WHERE path=?`, path).Scan(&state); err != nil {
 				return err
 			}
 			if state == "deleted" {
+				if result.Kind == KindIssue {
+					var retained int
+					if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_versions v JOIN graph_preview_catalog c ON c.path=v.path AND c.revision=v.version WHERE c.path=?`, path).Scan(&retained); err != nil {
+						return err
+					}
+					if retained == 0 {
+						return nil
+					} // Legacy Issue deletion retained only a live head.
+				}
 				result.CurrentState, err = s.memoryTerminalDescriptorInTx(ctx, tx, path, result.Versions)
 				return err
 			}

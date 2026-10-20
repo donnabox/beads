@@ -50,6 +50,10 @@ func currentReadSizeQueries() []currentReadSizeQuery {
 		{"graph_preview_versions v JOIN graph_preview_catalog c ON c.path=v.path AND c.revision=v.version WHERE c.allocation_state='deleted' AND c.backing='generic'", "v.snapshot,v.actor", 1},
 		// A real terminal head also acquires its protected last-current baseline.
 		{"graph_preview_versions v JOIN graph_preview_catalog c ON c.path=v.path JOIN graph_preview_versions d ON d.path=c.path AND d.version=c.revision WHERE c.allocation_state='deleted' AND c.backing='generic' AND v.version=CASE WHEN JSON_VALID(CAST(d.snapshot AS CHAR)) THEN JSON_UNQUOTE(JSON_EXTRACT(CAST(d.snapshot AS CHAR),'$.previousVersion')) ELSE NULL END", "v.snapshot,v.actor", 1},
+		// Native graph deletion keeps D separate from its native last-current
+		// body. Legacy deletions use their final live mapping directly.
+		{"graph_preview_versions d JOIN graph_preview_catalog c ON c.path=d.path AND c.revision=d.version WHERE c.allocation_state='deleted' AND c.backing='issue'", "d.snapshot,d.actor,d.native_participation_generation", 1},
+		{"graph_preview_issue_versions m JOIN graph_preview_catalog c ON c.path=m.path LEFT JOIN graph_preview_versions d ON d.path=c.path AND d.version=c.revision JOIN issue_versions v ON v.issue_id=m.issue_id AND v.revision=m.issue_revision WHERE c.allocation_state='deleted' AND c.backing='issue' AND d.version IS NULL AND m.version=c.revision", "m.owned,m.revision_context,v.durable_state,v.change_actor,v.attribution_status", 1},
 		{"issues i JOIN graph_preview_catalog c ON c.backing='issue' AND c.backing_key=i.id " + sqlbuild.LeaseJoin("i") + " WHERE " + live, sqlbuild.QualifyColumns(sqlbuild.IssueBaseColumns, "i.") + ", " + sqlbuild.LeaseSelectColumns, 1},
 		{"graph_preview_issue_versions m JOIN graph_preview_catalog c ON c.path=m.path AND c.revision=m.version JOIN issue_versions v ON v.issue_id=m.issue_id AND v.revision=m.issue_revision WHERE " + live, "m.owned,m.revision_context,v.durable_state,v.change_actor,v.attribution_status", 1},
 		// Full hydration reads labels twice. Comments are acquired before the existing
