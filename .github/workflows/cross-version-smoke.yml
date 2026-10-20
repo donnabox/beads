@@ -727,7 +727,21 @@ jobs:
           SMOKEPROBE
           cp scripts/upgrade-smoke-diagnostic.sh "$PROBE_ROOT/upgrade-smoke-diagnostic.sh"
           cp "$RUNNER_TEMP/candidate/build-manifest.txt" "$RUNNER_TEMP/candidate/SHA256SUMS" "$RUNNER_TEMP/"
+          # Controlled CPU contention; fresh runner, no memory pressure or external services.
+          pressure_pids=()
+          trap 'for pid in "${pressure_pids[@]}"; do kill "$pid" 2>/dev/null || true; done; wait || true' EXIT
+          for i in 1 2 3 4; do python3 -c 'while True: pass' >/dev/null 2>&1 & pressure_pids+=("$!"); done
+          cat /proc/pressure/cpu > "$PROBE_ROOT/cpu-pressure-before.txt"
+          set +e
           bash tools/bazel/test_env.sh bash scripts/upgrade-smoke-diagnostic.sh v1.3.0
+          probe_status=$?
+          set -e
+          cat /proc/pressure/cpu > "$PROBE_ROOT/cpu-pressure-after.txt"
+          for pid in "${pressure_pids[@]}"; do kill "$pid" 2>/dev/null || true; done
+          wait || true
+          pressure_pids=()
+          if [[ -d "$PROBE_ROOT/workspace-snapshot" ]]; then tar -czf "$PROBE_ROOT/workspace-snapshot.tar.gz" -C "$PROBE_ROOT" workspace-snapshot; fi
+          exit "$probe_status"
       - name: Preserve actual diagnostic evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
