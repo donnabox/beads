@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"os"
 	"unicode/utf8"
 
 	"github.com/spf13/cobra"
@@ -44,6 +45,9 @@ func runGraphPreviewCompare(cmd *cobra.Command, args []string) error {
 		}
 		if len(args) != 1 {
 			return canonicalFailure(cmd, renderer, "invalid_selector", "canonical compare requires exactly one Resource identity", 2)
+		}
+		if err := canonicalScalarOccurrences(cmd, os.Args[1:], "from", "to"); err != nil {
+			return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
 		}
 		err = canonicalGraphFlags(cmd, renderer, "from", "to")
 	} else {

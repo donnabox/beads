@@ -111,6 +111,36 @@ func TestGraphCanonicalRetainedOutputCLI(t *testing.T) {
 		t.Fatalf("operand direction changed: %v %s", err, canonical.Data)
 	}
 
+	for _, route := range [][]string{{"compare", "links/edge"}, {"link", "compare", "links/edge"}} {
+		base := append(append([]string(nil), route...), "--from", from, "--to", to)
+		repeated := append(append([]string(nil), base...), "--from="+from, "--to="+to, "--output-format", "json")
+		if got := call(repeated...); got != compared {
+			t.Fatalf("identical repeated comparison operands changed result: %v\n%s\n%s", repeated, got, compared)
+		}
+		for _, conflict := range []string{"--from=" + to, "--to=" + from} {
+			args := append(append([]string(nil), base...), conflict, "--output-format", "json")
+			stdout, stderr, code := graphVersionsProcess(t, bd, work, home, args...)
+			var failed struct {
+				Kind    string `json:"result_kind"`
+				Outcome string `json:"outcome"`
+				Error   struct {
+					Problem struct {
+						Code string `json:"code"`
+					} `json:"problem"`
+				} `json:"error"`
+			}
+			if err := json.Unmarshal([]byte(stdout), &failed); err != nil || code != 2 || stderr == "" || failed.Kind != "comparison" || failed.Outcome != "failure" || failed.Error.Problem.Code != "invalid_selector" {
+				t.Fatalf("conflicting operands lost canonical failure contract: %v code=%d out=%q err=%q decode=%v", args, code, stdout, stderr, err)
+			}
+		}
+		// Canonical occurrence checks must not change legacy last-value parsing.
+		legacyBase := append(append([]string(nil), base...), "--json")
+		legacyRepeated := append(append([]string(nil), route...), "--from", "unknown", "--to", "unknown", "--from", from, "--to", to, "--json")
+		if got, want := call(legacyRepeated...), call(legacyBase...); got != want {
+			t.Fatalf("legacy repeated operand behavior changed: %v\n%s\n%s", route, got, want)
+		}
+	}
+
 	for _, flags := range [][]string{{"--json"}, {"--format", "json"}, {"--json", "--format", "json"}} {
 		args := append([]string{"link", "versions", "links/edge", "--output-format", "json"}, flags...)
 		stdout, stderr, code := graphVersionsProcess(t, bd, work, home, args...)

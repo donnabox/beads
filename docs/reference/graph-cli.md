@@ -711,7 +711,8 @@ Resource snapshots to fill absent summary fields.
 Version output returns the provider's complete bounded result or refuses. It
 does not silently truncate at a default page size, invent continuation cursors,
 or support JSONL or paging flags. Comparison output preserves the chosen operand
-order, exact tokens, differences and coverage. Its operands are references, so
+order, exact tokens, differences and coverage. Repeated `--from` or `--to` values
+must agree; conflicting values refuse before reading. Its operands are references, so
 data `--include` and `--omit` masks refuse; `--omit envelope` remains supported.
 
 An ordinary JSON read failure emits a complete failure envelope and a diagnostic
