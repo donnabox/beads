@@ -33,6 +33,7 @@ import (
 // Unconditional bypasses the ordinary active-assignment transfer fence.
 type UpdateIssueRequest struct {
 	Path, Actor, ExpectedRevision                             string
+	FromRevision                                              string
 	NativeID                                                  string
 	Unconditional, ForceNotesOverwrite, ForceAssigneeTransfer bool
 	PropertiesProvided, ClearEstimatedMinutes                 bool
@@ -52,6 +53,11 @@ type UpdateIssueRequest struct {
 func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (IssueMutationResult, error) {
 	if err := validateIssueSelector(IssueSelector{Path: request.Path, NativeID: request.NativeID}); err != nil {
 		return IssueMutationResult{}, fmt.Errorf("%w: %v", storage.ErrValidation, err)
+	}
+	if request.FromRevision != "" {
+		if err := validateVersionToken(request.FromRevision); err != nil {
+			return IssueMutationResult{}, err
+		}
 	}
 	if request.Actor == "" || !utf8.ValidString(request.Actor) {
 		return IssueMutationResult{}, fmt.Errorf("%w: Issue update requires a nonempty UTF-8 actor", storage.ErrValidation)
@@ -146,7 +152,7 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		patch.Metadata = request.Metadata
 		count++
 	}
-	if count == 0 && !request.PropertiesProvided {
+	if count == 0 && !request.PropertiesProvided && request.FromRevision == "" {
 		return IssueMutationResult{}, fmt.Errorf("%w: Issue update requires an admitted field", storage.ErrValidation)
 	}
 	attempt := publicops.UpdateRequest{Actor: request.Actor, Patch: patch, IssuePlaneOnly: true, ForceNotesOverwrite: request.ForceNotesOverwrite, ForceAssigneeTransfer: request.ForceAssigneeTransfer}
@@ -179,6 +185,16 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		}
 		if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, revision, true, "Issue"); err != nil {
 			return err
+		}
+		if request.FromRevision != "" {
+			patch, err = s.historicalIssuePatchInTx(ctx, tx, path, request.FromRevision, before, patch)
+			if err != nil {
+				return err
+			}
+			attempt.Patch = patch
+			if err := issueops.ValidateUpdateRequest(attempt); err != nil {
+				return err
+			}
 		}
 		beforeNative := *before.Properties
 		beforeNative.Metadata = before.Metadata
