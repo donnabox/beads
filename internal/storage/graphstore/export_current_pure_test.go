@@ -167,7 +167,7 @@ func exportClosureFixture(t *testing.T, scope string) Snapshot {
 }
 
 func TestExportReadProjectionIncludesUnjoinedComments(t *testing.T) {
-	var comments, deletedIssues int
+	var comments, terminals, legacyHeads int
 	for _, part := range exportReadSizeQueries() {
 		if strings.HasPrefix(part.from, "comments") {
 			comments++
@@ -176,11 +176,35 @@ func TestExportReadProjectionIncludesUnjoinedComments(t *testing.T) {
 			}
 		}
 		if strings.Contains(part.from, "c.allocation_state='deleted' AND c.backing='issue'") {
-			deletedIssues++
+			switch {
+			case strings.HasPrefix(part.from, "graph_preview_versions d "):
+				terminals++
+				if part.columns != "d.snapshot,d.actor,d.native_participation_generation" || part.copies != 1 {
+					t.Fatalf("native terminal must be charged without its predecessor: %+v", part)
+				}
+			case strings.Contains(part.from, "d.version IS NULL AND m.version=c.revision"):
+				legacyHeads++
+				for _, column := range []string{"m.issue_id", "m.owned", "m.revision_context", "v.durable_state", "v.change_actor", "v.attribution_status", "v.change_at"} {
+					var copies int
+					for _, acquired := range strings.Split(part.columns, ",") {
+						if acquired == column {
+							copies++
+						}
+					}
+					if copies != 1 {
+						t.Fatalf("legacy acquired column %s must be charged once: %+v", column, part)
+					}
+				}
+				if part.copies != 1 {
+					t.Fatalf("legacy final head must be charged once: %+v", part)
+				}
+			default:
+				t.Fatalf("unexpected duplicate deleted-native projection: %+v", part)
+			}
 		}
 	}
-	if comments != 1 || deletedIssues != 1 {
-		t.Fatalf("projection omitted or duplicated required data: comments=%d deletedIssues=%d", comments, deletedIssues)
+	if comments != 1 || terminals != 1 || legacyHeads != 1 {
+		t.Fatalf("projection omitted or duplicated required data: comments=%d terminals=%d legacyHeads=%d", comments, terminals, legacyHeads)
 	}
 }
 
