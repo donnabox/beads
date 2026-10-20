@@ -1,149 +1,84 @@
-name: Cross-Version Smoke Tests
-
+name: PR114 v1.3.0 wisp diagnostic
 on:
-  # On tag push (release gate): test the last 30 releases for broad regression coverage
-  push:
-    tags:
-      - 'v*'
-
-  # On PR to main or a release branch: test only the last 5 releases for fast
-  # feedback. Release-targeted PRs are exactly the ones where cross-version
-  # upgrade breakage is most expensive to discover at tag time.
-  pull_request:
-    branches: [ main, 'release/**', 'hotfix/**', integration ]
-    # "Upgrade-relevant code" allowlist (spec-f7.md §2.4): kept identical
-    # (modulo each workflow's own file/script entries) across conformance.yml,
-    # migration-test.yml and cross-version-smoke.yml, and pinned by
-    # TestAdvisoryWorkflowPathFilters.
-    paths:
-      - '**.go'
-      - '!**_test.go'
-      - 'go.mod'
-      - 'go.sum'
-      - 'Makefile'
-      - '.buildflags'
-      - '.github/workflows/cross-version-smoke.yml'
-      - 'scripts/upgrade-smoke-test.sh'
-
-  # Allow manual trigger with custom version count
   workflow_dispatch:
-    inputs:
-      version_count:
-        description: 'Number of previous releases to test against'
-        required: false
-        default: '5'
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
-
-env:
-  BD_DISABLE_METRICS: "1"
-  BD_DISABLE_EVENT_FLUSH: "1"
-
+permissions:
+  contents: read
+  actions: read
 jobs:
-  # F7c: smoke's old 1-job-per-version matrix (up to 30 on tag push) folded
-  # into chunks of 5 versions each, resolved by the `versions` job below. Each
-  # chunk builds the candidate binary once and loops over
-  # upgrade-smoke-test.sh's own SMOKE_VERSIONS env var (which already
-  # self-reinvokes per version and collects failures, so a bad version in a
-  # chunk does not hide the rest).
-  smoke:
-    name: Upgrade smoke (chunk ${{ strategy.job-index }})
-    runs-on: ${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-latest' }}
-    timeout-minutes: 20
-
-    strategy:
-      fail-fast: false
-      matrix:
-        chunk: ${{ fromJson(needs.versions.outputs.chunks) }}
-
-    needs: versions
-
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      GH_TOKEN: ${{ github.token }}
+      BD_DISABLE_METRICS: "1"
+      BD_DISABLE_EVENT_FLUSH: "1"
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
-
-      - name: Set up Go
-        id: setup-go
-        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          go-version-file: 'go.mod'
-          cache: ${{ runner.environment == 'github-hosted' }}
-
-      - name: Configure Git
+          ref: 5f6b2a44390ebfc12f391d22d9d9147c38cfd913
+          persist-credentials: false
+      - name: Verify exact failed candidate and pinned previous release
         run: |
-          git config --global user.name "CI Bot"
-          git config --global user.email "ci@beads.test"
-
-      - name: Compute chunk cache key
-        id: chunk
-        env:
-          CHUNK_JSON: ${{ toJson(matrix.chunk) }}
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/candidate" "$RUNNER_TEMP/previous"
+          gh run download 39347418393 --repo donnabox/beads --name bazel-ci-build-artifacts --dir "$RUNNER_TEMP/candidate"
+          (cd "$RUNNER_TEMP/candidate" && sha256sum -c SHA256SUMS)
+          grep -Fx 'builder=bazel //cmd/bd:bd_for_tests' "$RUNNER_TEMP/candidate/build-manifest.txt"
+          grep -E '^commit=(36527acd9885f5714d6462e1c7d0712939248227|5f6b2a44390ebfc12f391d22d9d9147c38cfd913)$' "$RUNNER_TEMP/candidate/build-manifest.txt"
+          test "$(git rev-parse HEAD^{tree})" = 5ea91f10f2df3cf1877bc9d9aedfa0151ac7325d
+          gh release download v1.3.0 --repo gastownhall/beads --pattern beads_1.3.0_linux_amd64.tar.gz --dir "$RUNNER_TEMP/previous"
+          echo '2f92b904ecf35b607e44dc5c39229173af69c54f1183e8d709f1773540cdcf3b  '"$RUNNER_TEMP/previous/beads_1.3.0_linux_amd64.tar.gz" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/previous/beads_1.3.0_linux_amd64.tar.gz" -C "$RUNNER_TEMP/previous" bd
+          chmod +x "$RUNNER_TEMP/candidate/bd-linux-gms-pure" "$RUNNER_TEMP/previous/bd"
+      - name: Instrument only the failed wisp-upgrade scenario
         run: |
-          versions="$(jq -r '. | join(" ")' <<<"$CHUNK_JSON")"
-          hash="$(printf '%s' "$versions" | sha256sum | cut -c1-16)"
-          echo "versions=$versions" >> "$GITHUB_OUTPUT"
-          echo "hash=$hash" >> "$GITHUB_OUTPUT"
+          set -euo pipefail
+          export PROBE_ROOT="$RUNNER_TEMP/pr114-v130-evidence"
+          export PREV_BIN="$RUNNER_TEMP/previous/bd"
+          export CANDIDATE_BIN="$RUNNER_TEMP/candidate/bd-linux-gms-pure"
+          export BEADS_TEST_ENV_KEEP=1 BEADS_TEST_ENV_RUN_DOLT=1
+          source scripts/ci/lib/test-env.sh
+          beads_test_env_enter
+          git config --global user.name beads-test
+          git config --global user.email test@beads.local
+          cat > "$RUNNER_TEMP/probe.py" <<'PYPROBE'
+          import pathlib,subprocess,json,os,hashlib
+          phase=pathlib.Path(os.environ['PROBE_ROOT']);phase.mkdir(parents=True)
+          ws=phase/'bd-upgrade-I7xZMD';ws.mkdir()
+          prev=pathlib.Path(os.environ['PREV_BIN']);cand=pathlib.Path(os.environ['CANDIDATE_BIN'])
+          rows=[]
+          def run(name,args,required=True):
+           p=subprocess.run([str(x) for x in args],cwd=ws,text=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=120)
+           (phase/(name+'.stdout')).write_text(p.stdout);(phase/(name+'.stderr')).write_text(p.stderr)
+           rows.append({'step':name,'argv':[str(x) for x in args],'exit':p.returncode});(phase/'commands.json').write_text(json.dumps(rows,indent=2)+'\n');print(name,p.returncode,p.stdout.strip()[:350],p.stderr.strip()[:180],flush=True)
+           if required:assert p.returncode==0,(name,p.returncode,p.stderr)
+           return p
+          manifest={'source':'5f6b2a44390ebfc12f391d22d9d9147c38cfd913','host':'Linux/amd64 exact failed Bazel candidate artifact; instrumented scenario7 only','binaries':{str(x):hashlib.sha256(x.read_bytes()).hexdigest() for x in [prev,cand]},'purpose':'Only failed v1.3.0 wisp upgrade scenario with unsuppressed mutation and human/JSON readback; no passing scenario repeats'};(phase/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+          run('00-git-init',['git','init','--quiet']);run('01-name',['git','config','user.name','upgrade-test']);run('02-email',['git','config','user.email','test@beads.test'])
+          run('03-prev-version',[prev,'version']);run('04-cand-version',[cand,'version'])
+          run('05-prev-init',[prev,'init','--quiet','--non-interactive','--skip-hooks','--skip-agents'],False);run('06-role',['git','config','beads.role','maintainer'])
+          r=run('07-prev-wisp',[prev,'create','--silent','--ephemeral','--title','Smoke wisp','--type','task']);wisp=r.stdout.strip();assert wisp and '\n' not in wisp
+          r=run('08-prev-blocker',[prev,'create','--silent','--title','Wisp blocker task','--type','task','--priority','1']);blocker=r.stdout.strip();assert blocker and '\n' not in blocker
+          run('09-prev-dependency',[prev,'dep','add',wisp,blocker],False)
+          run('10-cand-migrate',[cand,'migrate','schema'],False);run('11-cand-init',[cand,'init','--quiet','--non-interactive','--skip-hooks','--skip-agents'],False)
+          run('12-list',[cand,'mol','wisp','list','--all']);run('13-ready',[cand,'ready']);run('14-blocked',[cand,'blocked'])
+          run('14b-show-json-before',[cand,'show',wisp,'--json'],False)
+          update=run('15-update',[cand,'update',wisp,'--notes','smoke wisp mutation'],False);show=run('16-show',[cand,'show',wisp],False);machine=run('17-show-json',[cand,'show',wisp,'--json'],False)
+          result={'wisp':wisp,'blocker':blocker,'update_exit':update.returncode,'human_exit':show.returncode,'human_notes_present':'smoke wisp mutation' in show.stdout,'json_exit':machine.returncode,'json_notes_present':'smoke wisp mutation' in machine.stdout};(phase/'result.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result),flush=True)
+          assert result['update_exit']==0 and result['human_exit']==0 and result['human_notes_present'],result
 
-      # actions/cache (bare) auto-saves at job end on any key miss, which
-      # would let a same-repo PR that changes the chunk's version set write a
-      # binaries cache entry another PR (or a later run) could then read back
-      # without re-downloading or re-verifying it. Restore-only here; the
-      # matching save below is gated off pull_request so only push/dispatch
-      # runs can populate this cache (B2, F7c implementation report).
-      - name: Restore previous release binaries cache
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v5
+          PYPROBE
+          cp "$RUNNER_TEMP/candidate/build-manifest.txt" "$RUNNER_TEMP/candidate/SHA256SUMS" "$RUNNER_TEMP/"
+          python3 "$RUNNER_TEMP/probe.py"
+      - name: Preserve actual diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          path: ~/.cache/beads-regression
-          key: smoke-binaries-${{ steps.chunk.outputs.hash }}-${{ runner.os }}
-
-      - name: Build candidate binary
-        run: go build -tags gms_pure_go -o /tmp/bd-candidate ./cmd/bd
-
-      - name: Run upgrade smoke tests
-        env:
-          CANDIDATE_BIN: /tmp/bd-candidate
-          SMOKE_VERSIONS: ${{ steps.chunk.outputs.versions }}
-        run: ./scripts/upgrade-smoke-test.sh
-
-      - name: Save previous release binaries cache
-        # Allow-list the two triggers this workflow actually intends to
-        # write from (push, workflow_dispatch), rather than deny-listing
-        # pull_request: a deny-list of `!= 'pull_request'` also admits a
-        # hypothetical future merge_group event, which this job's own
-        # runs-on expression already resolves to Blacksmith for - exactly
-        # the same same-repo-writer risk X1 closed for pull_request. Pinned
-        # by TestBlacksmithReachableAdvisoryJobsNeverSaveACache, which checks
-        # both the pull_request and merge_group trust contexts independently.
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v5
-        with:
-          path: ~/.cache/beads-regression
-          key: smoke-binaries-${{ steps.chunk.outputs.hash }}-${{ runner.os }}
-
-  versions:
-    name: Resolve versions to test
-    runs-on: ${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-2vcpu-ubuntu-2404' || 'ubuntu-latest' }}
-    timeout-minutes: 5
-    outputs:
-      chunks: ${{ steps.resolve.outputs.chunks }}
-    steps:
-      - name: Resolve release versions
-        id: resolve
-        env:
-          GH_TOKEN: ${{ github.token }}
-          # Tag push and manual dispatch test more versions; PRs test fewer for speed
-          VERSION_COUNT: ${{ (github.event_name == 'push' && '30') || (github.event_name == 'workflow_dispatch' && inputs.version_count) || '5' }}
-        run: |
-          VERSIONS=$(gh release list \
-            --repo gastownhall/beads \
-            --limit "$VERSION_COUNT" \
-            --json tagName \
-            --jq '[.[].tagName]')
-          # Chunks of 5: PRs (5 versions) get 1 chunk; tag pushes (30
-          # versions) get 6. Folds the old 1-job-per-version matrix down to
-          # one job per chunk in `smoke` above, without dropping any version.
-          CHUNKS=$(jq -c '[range(0; length; 5) as $i | .[$i:$i+5]]' <<<"$VERSIONS")
-          echo "chunks=$CHUNKS" >> "$GITHUB_OUTPUT"
-          echo "Testing versions: $VERSIONS"
-          echo "Chunks: $CHUNKS"
+          name: pr114-v130-wisp-diagnostic
+          path: |
+            ${{ runner.temp }}/pr114-v130-evidence
+            ${{ runner.temp }}/probe.py
+            ${{ runner.temp }}/build-manifest.txt
+            ${{ runner.temp }}/SHA256SUMS
+          retention-days: 7
+          if-no-files-found: warn
