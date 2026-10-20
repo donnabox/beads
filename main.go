@@ -2,4 +2,4 @@ package main
 
 import "fmt"
 
-func main() { fmt.Println("v2") }
+func main() { fmt.Println("v1") }
