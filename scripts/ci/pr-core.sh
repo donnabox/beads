@@ -20,8 +20,8 @@ beads_test_env_enter
 GO_TEST_PKG_PARALLEL="${GO_TEST_PKG_PARALLEL:-4}"
 GO_TEST_PARALLEL="${GO_TEST_PARALLEL:-4}"
 
-# Reuse the exhaustive sequential graphstore dispatcher. Each group retains
-# the same race/short/30m/TestEmbedded policy; all other packages still run once.
+# Reuse exhaustive sequential graphstore and cmd/bd root partitions. Each group
+# retains race/short/30m/TestEmbedded policy; remaining packages still run once.
 # Unique evidence directories preserve failed/repeated local invocations.
 mkdir -p "$REPO_ROOT/artifacts/pr-core-go-test"
 pr_core_evidence="$(mktemp -d "$REPO_ROOT/artifacts/pr-core-go-test/run.XXXXXX")"

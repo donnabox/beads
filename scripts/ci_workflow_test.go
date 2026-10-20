@@ -5864,11 +5864,13 @@ import json, os, sys
 from pathlib import Path
 mode = os.environ.get("DISPATCH_CASE", "good")
 graph = "github.com/steveyegge/beads/internal/storage/graphstore"
+command = "github.com/steveyegge/beads/cmd/bd"
 other = "github.com/steveyegge/beads/scripts"
 args = sys.argv[1:]
 with Path("calls.jsonl").open("a") as log: log.write(json.dumps(args) + "\n")
 if args[0] == "list":
     print(other)
+    if mode != "missing-command": print(command)
     if mode != "missing-package": print(graph)
     if mode == "duplicate-package": print(graph)
     sys.exit(0)
@@ -5883,13 +5885,13 @@ if "-list" in args:
     print("ok  " + graph + " 0.01s")
     sys.exit(0)
 pkg = args[-1]
-if (mode == "test-failure" and pkg == graph) or (mode == "other-failure" and pkg == other): sys.exit(9)
+if (mode == "test-failure" and pkg == graph) or (mode == "other-failure" and pkg == other) or (mode == "command-failure" and pkg == command): sys.exit(9)
 def event(action, name=None):
     print(json.dumps(dict(Action=action, Package=pkg, **({"Test":name} if name else {}))))
 event("start")
 if mode == "json-fail": event("fail")
 if mode == "build-fail": event("build-fail")
-if pkg == graph:
+if pkg in (graph, command):
     names = args[args.index("-run")+1][2:-2].split("|")
     if mode == "missing-root": names = names[1:]
     if mode == "extra-root": names += ["TestUnexpected"]
@@ -5928,7 +5930,12 @@ class DispatchControls(unittest.TestCase):
             calls = [json.loads(line) for line in (root / "calls.jsonl").read_text().splitlines()]
             self.assertEqual(calls[0], ["list", "-race", "-tags", "gms_pure_go", "./..."])
             executions = [call for call in calls if call[0] == "test" and "-list" not in call]
-            self.assertEqual(len(executions), 5)
+            self.assertEqual(len(executions), 9)
+            self.assertEqual(plan["command"]["excluded"], ["TestEmbeddedOld"])
+            self.assertEqual(sorted(sum(plan["command"]["groups"], [])), expected)
+            self.assertEqual(len(sum(plan["command"]["groups"], [])), len(expected))
+            self.assertEqual(len(summary["commandGroups"]), 4)
+            self.assertTrue(any(g["skipped"] for g in summary["commandGroups"]))
             for call in executions:
                 for flag in ["-race", "-short", "-timeout=30m", "-json"]: self.assertIn(flag, call)
                 self.assertNotIn("-v", call)
@@ -5936,8 +5943,12 @@ class DispatchControls(unittest.TestCase):
                 self.assertEqual(call[call.index("-skip")+1], "^TestEmbedded")
             self.assertEqual(executions[-1][-1], "github.com/steveyegge/beads/scripts")
             self.assertNotIn(m.GRAPHSTORE, executions[-1])
+            self.assertNotIn(m.COMMAND, executions[-1])
             for index, group in enumerate(plan["groups"], 1):
                 census = json.loads((output / ("graphstore-%d-census.json" % index)).read_text())
+                self.assertEqual(census["roots"], group)
+            for index, group in enumerate(plan["command"]["groups"], 1):
+                census = json.loads((output / ("cmd-bd-%d-census.json" % index)).read_text())
                 self.assertEqual(census["roots"], group)
 
     def test_pr_core_options_and_raw_json_compatibility(self):
@@ -5970,10 +5981,11 @@ class DispatchControls(unittest.TestCase):
                 eq_path = Path(m.__file__).resolve().parents[2] / "tools/bazel/equivalence.py"
                 eq_spec = importlib.util.spec_from_file_location("equivalence", eq_path)
                 eq = importlib.util.module_from_spec(eq_spec); eq_spec.loader.exec_module(eq)
-                statuses = eq.go_test_statuses(combined, {m.GRAPHSTORE: "internal/storage/graphstore", "github.com/steveyegge/beads/scripts": "scripts"})
+                statuses = eq.go_test_statuses(combined, {m.GRAPHSTORE: "internal/storage/graphstore", m.COMMAND: "cmd/bd", "github.com/steveyegge/beads/scripts": "scripts"})
                 self.assertEqual(set(statuses["internal/storage/graphstore"]), {"TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "ExampleValue", "FuzzSeeds"})
                 self.assertEqual(statuses["internal/storage/graphstore"]["TestServer"], "skipped")
                 self.assertEqual(statuses["internal/storage/graphstore"]["TestNew"], "passed")
+                self.assertEqual(statuses["cmd/bd"], statuses["internal/storage/graphstore"])
                 self.assertTrue(all(r["groupGone"] for r in receipts))
 
     def test_pr_core_shell_forwards_environment_and_failure(self):
@@ -6024,7 +6036,7 @@ class DispatchControls(unittest.TestCase):
 
     def test_complete_partition_and_existing_skip(self): self.exercise("good")
     def test_negative_receipts(self):
-        for case in ["missing-package", "duplicate-package", "discovery-failure", "empty", "excluded-only",
+        for case in ["missing-package", "missing-command", "command-failure", "duplicate-package", "discovery-failure", "empty", "excluded-only",
                      "duplicate-name", "test-failure", "other-failure", "missing-root", "extra-root",
                      "unfinished-child", "duplicate-terminal", "bad-json", "json-fail", "build-fail", "missing-package-terminal", "other-missing-terminal"]:
             with self.subTest(case=case): self.exercise(case)
