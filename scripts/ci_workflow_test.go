@@ -374,7 +374,7 @@ func TestPRCoreRequiresExcludeReadPermissionCoverage(t *testing.T) {
 		t.Error("PR Core must require actual exclude read-permission coverage")
 	}
 	upload := job.step(t, "Upload PR core grouped test evidence")
-	if upload.If != "always()" || upload.TimeoutMinutes != 5 || upload.With["name"] != "pr-core-go-test-${{ github.sha }}" || upload.With["path"] != "artifacts/pr-core-go-test" || upload.With["retention-days"] != "7" || upload.With["if-no-files-found"] != "warn" || actionFamily(upload.Uses) != "actions/upload-artifact" {
+	if upload.If != "always()" || upload.TimeoutMinutes != 5 || upload.With["name"] != "pr-core-go-test-${{ github.sha }}-${{ matrix.scope }}" || upload.With["path"] != "artifacts/pr-core-go-test" || upload.With["retention-days"] != "7" || upload.With["if-no-files-found"] != "warn" || actionFamily(upload.Uses) != "actions/upload-artifact" {
 		t.Error("PR Core grouped evidence must survive failure with a bounded commit-specific upload")
 	}
 	gate := workflow.job(t, "ci-gate")
@@ -385,6 +385,33 @@ func TestPRCoreRequiresExcludeReadPermissionCoverage(t *testing.T) {
 	if !contains(gate.Needs, "pr-core-wrapper") || evaluate.Env["PR_CORE_WRAPPER"] != "${{ needs.pr-core-wrapper.result }}" || !contains(strings.Fields(evaluate.Env["CI_GATE_REQUIRED"]), "PR_CORE_WRAPPER") {
 		t.Error("CI gate must require the PR Core result")
 	}
+	assertStepEnvValue(t, job, "Run PR core wrapper", "BEADS_PR_CORE_SCOPE", "${{ matrix.scope }}")
+	var raw struct {
+		Jobs map[string]struct {
+			Strategy struct {
+				FailFast bool           `yaml:"fail-fast"`
+				Matrix   map[string]any `yaml:"matrix"`
+			} `yaml:"strategy"`
+		} `yaml:"jobs"`
+	}
+	if err := yaml.Unmarshal([]byte(readPolicyFile(t, sourceRepoRoot(t), ".github/workflows/pr.yml")), &raw); err != nil {
+		t.Fatal(err)
+	}
+	strategy := raw.Jobs["pr-core-wrapper"].Strategy
+	if strategy.FailFast || !reflect.DeepEqual(strategy.Matrix, map[string]any{"scope": []any{"graphstore", "remaining"}}) {
+		t.Error("PR Core must run both disjoint scopes without fail-fast cancellation")
+	}
+	download := gate.step(t, "Download both PR core scope artifacts")
+	verify := gate.step(t, "Verify complete PR core coverage and cleanup")
+	if download.If != "needs.pr-core-wrapper.result == 'success'" || download.TimeoutMinutes != 3 || download.Uses != "actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c" || download.With["pattern"] != "pr-core-go-test-${{ github.sha }}-*" || download.With["path"] != "artifacts/pr-core-scope-results" {
+		t.Error("required CI gate must retrieve both exact-source scope artifacts")
+	}
+	if verify.If != download.If || verify.TimeoutMinutes != 2 || verify.ContinueOnError != nil {
+		t.Error("required CI gate must propagate bounded complete-union proof failures")
+	}
+	assertStepRunsExactly(t, gate, "Verify complete PR core coverage and cleanup", `python3 scripts/ci/macos-go-test.py --verify-scopes artifacts/pr-core-scope-results --source-sha "$(git rev-parse HEAD)" --package-parallel 4 --test-parallel 4`)
+	assertStepsBefore(t, gate, []string{"Download both PR core scope artifacts", "Verify complete PR core coverage and cleanup"}, []string{"Evaluate CI gate"})
+
 }
 
 func TestPRComplexityReportIsAdvisoryAndBestEffort(t *testing.T) {
@@ -5951,6 +5978,17 @@ class DispatchControls(unittest.TestCase):
                 census = json.loads((output / ("cmd-bd-%d-census.json" % index)).read_text())
                 self.assertEqual(census["roots"], group)
 
+    def test_macos_scope_policy_stays_distinct_from_pr_core(self):
+        source = "a" * 40
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); fake = root / "go"; fake.write_text(FAKE); fake.chmod(0o700)
+            output = root / "scopes"; output.mkdir()
+            with mock.patch.dict(os.environ, {"DISPATCH_CASE": "good"}):
+                for scope in ("graphstore", "remaining"):
+                    m.execute(root, output / scope, str(fake), scope=scope, source_sha=source)
+            self.assertTrue(m.verify_scopes(output, source)["passed"])
+            with self.assertRaises(RuntimeError): m.verify_scopes(output, source, 4, 4)
+
     def test_disjoint_scope_union_and_refusals(self):
         import shutil
         source = "a" * 40
@@ -5959,8 +5997,8 @@ class DispatchControls(unittest.TestCase):
             outputs = root / "scopes"; outputs.mkdir()
             with mock.patch.dict(os.environ, {"DISPATCH_CASE": "good"}):
                 for scope in ("graphstore", "remaining"):
-                    m.execute(root, outputs / scope, str(fake), scope=scope, source_sha=source)
-            proof = m.verify_scopes(outputs, source)
+                    m.execute(root, outputs / scope / "run.fixture" / "evidence", str(fake), scope=scope, source_sha=source, package_parallel=4, test_parallel=4)
+            proof = m.verify_scopes(outputs, source, 4, 4)
             self.assertTrue(proof["passed"])
             self.assertEqual(proof["scopes"], ["graphstore", "remaining"])
             calls = [json.loads(line) for line in (root / "calls.jsonl").read_text().splitlines()]
@@ -5971,7 +6009,7 @@ class DispatchControls(unittest.TestCase):
             for case in ("missing", "duplicate", "source", "flags", "packages", "raw", "failed", "cleanup", "receipt", "discovery"):
                 with self.subTest(case=case):
                     changed = root / case; shutil.copytree(outputs, changed)
-                    scope = changed / "remaining"
+                    scope = changed / "remaining" / "run.fixture" / "evidence"
                     if case == "missing": shutil.rmtree(scope)
                     elif case == "duplicate": shutil.copytree(scope, changed / "duplicate")
                     elif case == "raw": (scope / "other-packages.stdout").write_text("")
@@ -5987,7 +6025,7 @@ class DispatchControls(unittest.TestCase):
                         elif case == "receipt": value.pop()
                         path.write_text(json.dumps(value))
                     with self.assertRaises((RuntimeError, ValueError, FileNotFoundError)):
-                        m.verify_scopes(changed, source)
+                        m.verify_scopes(changed, source, 4, 4)
 
     def test_pr_core_options_and_raw_json_compatibility(self):
         for case in ("good", "json-fail", "other-failure"):
@@ -6031,7 +6069,7 @@ class DispatchControls(unittest.TestCase):
         # This proves shell quoting, defaults, opt-in JSON and failure propagation.
         import shutil
         repo = Path(m.__file__).resolve().parents[2]
-        for json_enabled, exit_code in ((False, 0), (True, 0), (True, 7)):
+        for json_enabled, exit_code, scope in ((False, 0, None), (True, 0, None), (True, 7, None), (False, 0, "remaining")):
             with self.subTest(json=json_enabled, exit=exit_code), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory)
                 for rel in (".buildflags", "scripts/ci/pr-core.sh", "scripts/ci/lib/timing.sh", "scripts/ci/lib/test-env.sh"):
@@ -6040,9 +6078,11 @@ class DispatchControls(unittest.TestCase):
                 python = binary / "python3"
                 python.write_text("#!" + sys.executable + "\nimport json,os,sys\nfrom pathlib import Path\nPath('invocation.json').write_text(json.dumps({'args':sys.argv[1:], 'tags':os.environ.get('GOFLAGS'), 'cgo':os.environ.get('CGO_ENABLED')}))\nsys.exit(int(os.environ['FAKE_EXIT']))\n")
                 python.chmod(0o700)
+                git = binary / "git"; git.write_text("#!/bin/sh\nprintf '%s\\n' " + "a" * 40 + "\n"); git.chmod(0o700)
                 env = dict(os.environ, PATH=str(binary) + os.pathsep + os.environ["PATH"], BEADS_TEST_ENV_DISABLE="1", FAKE_EXIT=str(exit_code))
-                for key in ("GO_TEST_PKG_PARALLEL", "GO_TEST_PARALLEL", "BEADS_PR_CORE_GO_TEST_JSON", "BEADS_CI_TEST_ENV_SH_LOADED", "BEADS_CI_TIMING_SH_LOADED", "GITHUB_STEP_SUMMARY"):
+                for key in ("GO_TEST_PKG_PARALLEL", "GO_TEST_PARALLEL", "BEADS_PR_CORE_GO_TEST_JSON", "BEADS_PR_CORE_SCOPE", "BEADS_CI_TEST_ENV_SH_LOADED", "BEADS_CI_TIMING_SH_LOADED", "GITHUB_STEP_SUMMARY"):
                     env.pop(key, None)
+                if scope: env["BEADS_PR_CORE_SCOPE"] = scope
                 if json_enabled:
                     env.update(GO_TEST_PKG_PARALLEL="3", GO_TEST_PARALLEL="2", BEADS_PR_CORE_GO_TEST_JSON=str(root / "combined events.json"))
                 process = m.subprocess.run(["bash", str(root / "scripts/ci/pr-core.sh")], cwd=root, env=env, capture_output=True, timeout=10)
@@ -6054,6 +6094,10 @@ class DispatchControls(unittest.TestCase):
                 self.assertIn("gms_pure_go", invocation["tags"])
                 evidence = Path(args[args.index("--output") + 1])
                 self.assertTrue(evidence.parent.is_dir()); self.assertFalse(evidence.exists())
+                if scope:
+                    self.assertEqual(args[args.index("--scope") + 1], scope)
+                    self.assertEqual(args[args.index("--source-sha") + 1], "a" * 40)
+                else: self.assertNotIn("--scope", args)
                 if json_enabled: self.assertEqual(args[args.index("--json-output") + 1], str(root / "combined events.json"))
                 else: self.assertNotIn("--json-output", args)
 
