@@ -65,37 +65,37 @@ func (s *Store) ReadType(ctx context.Context, path string) (graph.TypeDescriptor
 
 // readTypeInTx requires the caller to validate the binding in this transaction.
 func (s *Store) readTypeInTx(ctx context.Context, tx *sql.Tx, id string) (graph.TypeDescriptor, error) {
+	// Resolve against the complete selected installer definition set, rather than
+	// a hardcoded command alias switch or an unbounded persisted descriptor.
 	var name string
-	switch id {
-	case MemoryTypeURL(s.options.Binding.ScopeURL):
-		name = "memory"
-	case IssueTypeURL(s.options.Binding.ScopeURL):
-		name = "issue"
-	case DependencyTypeURL(s.options.Binding.ScopeURL):
-		name = "dependency"
-	case RelatedTypeURL(s.options.Binding.ScopeURL):
-		name = "related"
-	case ExampleFollowsTypeURL(s.ScopeURL()):
-		name = "example-follows"
-	case ExampleCitesTypeURL(s.ScopeURL()):
-		name = "example-cites"
-	default:
-		var ok bool
-		name, ok = relationshipDependencyInstallName(s.ScopeURL(), id)
-		if !ok {
-			return graph.TypeDescriptor{}, ErrNotFound
+	var expected graph.TypeDescriptor
+	for _, definition := range previewTypeDefinitions() {
+		if id != s.ScopeURL()+"types/"+definition.name {
+			continue
 		}
+		candidate, err := definition.build(s.ScopeURL())
+		if err != nil {
+			return graph.TypeDescriptor{}, err
+		}
+		if candidate.ID() != id {
+			return graph.TypeDescriptor{}, fmt.Errorf("%w: selected Type identity differs", ErrInvalidStore)
+		}
+		name, expected = definition.name, candidate
+		break
+	}
+	if name == "" {
+		return graph.TypeDescriptor{}, ErrNotFound
 	}
 	var raw []byte
 	var fingerprint string
-	if err := tx.QueryRowContext(ctx, `SELECT descriptor,fingerprint FROM graph_preview_types WHERE name=?`, name).Scan(&raw, &fingerprint); err != nil {
+	if err := tx.QueryRowContext(ctx, `SELECT descriptor,fingerprint FROM graph_preview_types WHERE name=? AND OCTET_LENGTH(descriptor)=?`, name, len(expected.CanonicalJSON())).Scan(&raw, &fingerprint); err != nil {
 		return graph.TypeDescriptor{}, fmt.Errorf("%w: read installed %s descriptor: %v", ErrInvalidStore, name, err)
 	}
 	parsed, err := graph.ParseTypeDescriptor(raw)
 	if err != nil {
 		return graph.TypeDescriptor{}, fmt.Errorf("%w: invalid installed %s descriptor: %v", ErrInvalidStore, name, err)
 	}
-	if parsed.ID() != id || !bytes.Equal(parsed.CanonicalJSON(), raw) || parsed.Fingerprint() != fingerprint {
+	if parsed.ID() != id || !bytes.Equal(parsed.CanonicalJSON(), raw) || !bytes.Equal(raw, expected.CanonicalJSON()) || parsed.Fingerprint() != fingerprint || fingerprint != expected.Fingerprint() {
 		return graph.TypeDescriptor{}, fmt.Errorf("%w: installed %s descriptor identity or fingerprint differs", ErrInvalidStore, name)
 	}
 	return parsed, nil

@@ -31,7 +31,7 @@ func TestGraphPreviewCreateParentNativeChildAndCanonicalLink(t *testing.T) {
 	}
 	var link graphstore.LinkRecord
 	if err := json.Unmarshal(child.Owned[0], &link); err != nil || link.Source != child.ID ||
-		link.Target != parent.ID || link.Type != scope+"types/preview-dependency" || link.Properties["dep_type"] != "parent-child" {
+		link.Target != parent.ID || link.Type != scope+"types/dependency" || link.Properties["dep_type"] != "parent-child" {
 		t.Fatalf("child has no canonical parent-child Link: %+v %v", link, err)
 	}
 	var children []struct {

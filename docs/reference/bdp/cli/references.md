@@ -77,7 +77,7 @@ stdout and do not change the source or its Links.
 bd show policy@SAVED_TOKEN --json
 bd show '[https://example.org/team/beads/policy]@SAVED_TOKEN' --json
 bd show https://example.org/team/beads/plan@draft --json
-bd link plan@unpinned target --type types/preview-related --target-revision unpinned
+bd link plan@unpinned target --type types/references --target-revision unpinned
 bd update policy --if-revision OBSERVED_TOKEN --properties '{"body":"Revised"}'
 ```
 

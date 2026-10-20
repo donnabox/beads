@@ -93,7 +93,7 @@ func TestGraphPreviewEditRevisionGuardDefaultsToCurrent(t *testing.T) {
 
 func TestGraphPreviewLocalTypeSelectors(t *testing.T) {
 	const scope = "https://example.invalid/demo/"
-	for _, selector := range []string{"preview-related", "types/preview-related", scope + "types/preview-related", "example-follows", "types/example-follows"} {
+	for _, selector := range []string{"references", "types/references", scope + "types/references", "subject-to", "types/subject-to"} {
 		got, err := graphPreviewTypeURL(scope, selector)
 		want := scope + "types/" + strings.TrimPrefix(strings.TrimPrefix(selector, scope), "types/")
 		if err != nil || got != want {
@@ -102,7 +102,7 @@ func TestGraphPreviewLocalTypeSelectors(t *testing.T) {
 	}
 	for _, selector := range []string{"preview-related-memory", "types/preview-related-memory", scope + "types/preview-related-memory"} {
 		got, err := graphPreviewTypeURL(scope, selector)
-		if err != nil || got != scope+"types/preview-related" {
+		if err != nil || got != scope+"types/preview-related-memory" {
 			t.Fatalf("%q: %q, %v", selector, got, err)
 		}
 	}
@@ -118,10 +118,10 @@ func TestGraphPreviewLinkDisplayKeepsForeignURLs(t *testing.T) {
 	graphPreviewConfig = &configfile.Config{GraphScopeURL: "https://example.invalid/demo/"}
 	t.Cleanup(func() { graphPreviewConfig = old })
 	for input, want := range map[string]string{
-		"https://example.invalid/demo/types/preview-related": "types/preview-related",
-		"https://example.invalid/demo/links/edge":            "links/edge",
-		"https://example.invalid/demo/beads/work":            "beads/work",
-		"https://remote.invalid/beads/work":                  "https://remote.invalid/beads/work",
+		"https://example.invalid/demo/types/references": "types/references",
+		"https://example.invalid/demo/links/edge":       "links/edge",
+		"https://example.invalid/demo/beads/work":       "beads/work",
+		"https://remote.invalid/beads/work":             "https://remote.invalid/beads/work",
 	} {
 		if got := graphPreviewDisplayLocalURL(input); got != want {
 			t.Errorf("%q displayed as %q, want %q", input, got, want)
@@ -139,9 +139,10 @@ func TestGraphPreviewLinkTypeFlags(t *testing.T) {
 		fail bool
 	}{
 		{nil, "", false},
-		{[]string{"--type", "types/preview-related"}, "https://example.invalid/demo/types/preview-related", false},
-		{[]string{"--type", "blocks"}, "https://example.invalid/demo/types/preview-dependency", false},
-		{[]string{"--type", "parent-child"}, "https://example.invalid/demo/types/preview-dependency", false},
+		{[]string{"--type", "types/references"}, "https://example.invalid/demo/types/references", false},
+		{[]string{"--type", "types/preview-related"}, "", true},
+		{[]string{"--type", "blocks"}, "https://example.invalid/demo/types/dependency", false},
+		{[]string{"--type", "parent-child"}, "https://example.invalid/demo/types/dependency", false},
 		{[]string{"--type", "random"}, "", true},
 		{[]string{"--type="}, "", true},
 	} {

@@ -169,7 +169,7 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 				return err
 			}
 		}
-		current, revision, _, err := s.beadEndpointInTx(ctx, tx, path)
+		current, revision, err := s.beadEndpointInTx(ctx, tx, path)
 		if err != nil {
 			return err
 		}

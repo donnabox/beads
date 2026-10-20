@@ -18,8 +18,8 @@ func TestInformationalDescriptorEndpointSemantics(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if parsed.ID() != scope+"types/preview-related" {
-		t.Fatal("corrected descriptor must have a fresh experimental identity")
+	if parsed.ID() != scope+"types/references" {
+		t.Fatal("legacy Related spelling must resolve to References")
 	}
 	source, hasSource := parsed.Source()
 	target, hasTarget := parsed.Target()
@@ -30,8 +30,8 @@ func TestInformationalDescriptorEndpointSemantics(t *testing.T) {
 		if required := endpoint.ConformsTo(); len(required) != 0 {
 			t.Fatalf("conformsTo requires ALL listed Types, so a list of alternatives rejects mixed endpoints: %v", required)
 		}
-		if external, present := endpoint.External(); !present || external != graph.ExternalNone {
-			t.Fatal("preview must refuse external endpoints")
+		if external := endpoint.EffectiveExternal(); external != graph.ExternalOpaque {
+			t.Fatal("partial inventory must not pretend to encode correlated endpoint rules")
 		}
 	}
 	// The blocking adapter remains specifically constrained to Issue endpoints.
@@ -51,13 +51,13 @@ func TestInformationalDescriptorEndpointSemantics(t *testing.T) {
 
 func TestDependencyDescriptorUsesOneNativeType(t *testing.T) {
 	const scope = "https://example.test/relationships/"
-	if IssueTypeURL(scope) != scope+"types/preview-issue" ||
-		MemoryTypeURL(scope) != scope+"types/preview-memory" ||
-		RelatedTypeURL(scope) != scope+"types/preview-related" ||
-		DependencyTypeURL(scope) != scope+"types/preview-dependency" {
+	if IssueTypeURL(scope) != scope+"types/issue" ||
+		MemoryTypeURL(scope) != scope+"types/memory" ||
+		RelatedTypeURL(scope) != scope+"types/references" ||
+		DependencyTypeURL(scope) != scope+"types/dependency" {
 		t.Fatal("a built-in Type has a duplicate or versioned identity")
 	}
-	want := []string{"memory", "issue", "dependency", "related", "example-follows", "example-cites"}
+	want := []string{"memory", "evaluation", "constraint", "policy", "decision", "procedure", "requirement", "scenario", "specification", "references", "superseded-by", "requires", "defines", "subject-to", "conformance", "addresses", "satisfies", "violates", "issue", "dependency"}
 	if got := FreshTypeNames(); !slices.Equal(got, want) {
 		t.Fatalf("fresh Type set = %v, want %v", got, want)
 	}

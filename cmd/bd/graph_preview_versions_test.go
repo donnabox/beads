@@ -68,8 +68,8 @@ func TestGraphPreviewRemovedLinkVersionsTwoEngines(t *testing.T) {
 			}
 			call(initArgs...)
 			call("create", "Source", "--id", "source")
-			call("create", "Target", "--id", "target")
-			call("link", "source", "target", "--id", "links/edge", "--type", scope+"types/preview-related")
+			call("remember", "Target", "--id", "target")
+			call("link", "source", "target", "--id", "links/edge", "--type", scope+"types/references")
 			call("update", "links/edge", "--properties", `{"note":"changed"}`)
 			removed := graphMixedResult[graphstore.LinkDeleteResult](t, call("link", "delete", "--force", "links/edge"))
 			listed := call("versions", "links/edge")
@@ -265,7 +265,7 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 		// The informational Link Type URL for this scope. `bd link` routes to
 		// dependency creation for any other value, so this constant decides
 		// which plane the Link fixture lands on.
-		relatedType = scope + "types/preview-related"
+		relatedType = scope + "types/references"
 		// An explicit actor keeps the human ACTOR column a single token, so the
 		// column regex can tell actor and attribution apart, and makes the
 		// Issue plane's derived attribution_status deterministic: a non-empty
@@ -284,7 +284,7 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 	// Issue plane: created, then renamed, so there are two versions to order
 	// and a second row to carry native attribution.
 	run(t, "create", "Issue subject", "--id", "beads/issue", "--actor", author, "--json")
-	run(t, "create", "Link target", "--id", "beads/target", "--actor", author, "--json")
+	run(t, "remember", "Link target", "--id", "beads/target", "--actor", author, "--json")
 	run(t, "update", "beads/issue", "--title", "Issue subject renamed", "--actor", author, "--json")
 	// Memory plane: created, then replaced. Memory records no attribution
 	// status at all, which is a different thing from recording an empty one.

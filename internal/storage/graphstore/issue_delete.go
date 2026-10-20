@@ -38,7 +38,13 @@ func (s *Store) DeleteIssue(ctx context.Context, request IssueDeleteRequest) (Is
 		}
 	}
 	var result IssueDeleteResult
-	err := s.withTx(ctx, !request.Preview, func(tx *sql.Tx) error {
+	transact := s.withTypeValidationTx
+	if request.Preview {
+		transact = func(ctx context.Context, fn func(*sql.Tx) error) error {
+			return s.withTx(ctx, false, fn)
+		}
+	}
+	err := transact(ctx, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}

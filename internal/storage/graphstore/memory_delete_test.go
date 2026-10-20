@@ -38,7 +38,7 @@ func TestMemoryDeleteLifecycle(t *testing.T) {
 			ctx, o, s := memoryDeleteStore(t, backend)
 			// sjarmak's gastownhall/beads#5964 highlighted that an empty value is
 			// present. This exercises that lesson on graph Memory, not the older KV API.
-			memory, err := s.Create(ctx, CreateRequest{Path: "beads/empty", Actor: "author"})
+			memory, err := s.Create(ctx, CreateRequest{Title: "Memory", Path: "beads/empty", Actor: "author"})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -78,7 +78,7 @@ func TestMemoryDeleteLifecycle(t *testing.T) {
 			if old, err := s.ReadVersion(ctx, "beads/empty", memory.Version); err != nil || !reflect.DeepEqual(old, memory) {
 				t.Fatalf("final live revision: %+v %v", old, err)
 			}
-			if _, err := s.Create(ctx, CreateRequest{Path: "beads/empty", Body: "reuse"}); !errors.Is(err, ErrAlreadyExists) {
+			if _, err := s.Create(ctx, CreateRequest{Title: "Memory", Path: "beads/empty", Body: "reuse"}); !errors.Is(err, ErrAlreadyExists) {
 				t.Fatalf("identity reused: %v", err)
 			}
 			for _, preview := range []bool{true, false} {
@@ -116,7 +116,7 @@ func TestMemoryDeleteRefusalRollback(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, _, s := memoryDeleteStore(t, backend)
-			memory, err := s.Create(ctx, CreateRequest{Path: "beads/plan", Body: "present"})
+			memory, err := s.Create(ctx, CreateRequest{Title: "Memory", Path: "beads/plan", Body: "present"})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -210,7 +210,7 @@ func TestMemoryDeleteIncidentLinks(t *testing.T) {
 					path := fmt.Sprintf("beads/target%d", i)
 					otherPath := fmt.Sprintf("beads/other%d", i)
 					linkPath := fmt.Sprintf("links/incident%d", i)
-					memory, err := s.Create(ctx, CreateRequest{Path: path, Body: "target"})
+					memory, err := s.Create(ctx, CreateRequest{Title: "Memory", Path: path, Body: "target"})
 					if err != nil {
 						t.Fatal(err)
 					}
@@ -226,7 +226,7 @@ func TestMemoryDeleteIncidentLinks(t *testing.T) {
 					} else if shape == "self" {
 						targetPath = path
 					} else {
-						other, err := s.Create(ctx, CreateRequest{Path: otherPath, Body: "other"})
+						other, err := s.Create(ctx, CreateRequest{Title: "Memory", Path: otherPath, Body: "other"})
 						if err != nil {
 							t.Fatal(err)
 						}
@@ -234,7 +234,21 @@ func TestMemoryDeleteIncidentLinks(t *testing.T) {
 							sourcePath, targetPath, sourceRevision = otherPath, path, other.Revision
 						}
 					}
-					link, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: linkPath, SourcePath: sourcePath, TargetPath: targetPath, ExpectedSourceRevision: sourceRevision})
+					typeURL := RelatedTypeURL(s.ScopeURL())
+					if shape == "incoming-owned" || shape == "outgoing-memory" {
+						typeURL = s.ScopeURL() + "types/superseded-by"
+					}
+					beforeLink := workflowState(t, ctx, s)
+					link, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: linkPath, TypeURL: typeURL, SourcePath: sourcePath, TargetPath: targetPath, ExpectedSourceRevision: sourceRevision})
+					if shape == "self" {
+						if !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(beforeLink, workflowState(t, ctx, s)) {
+							t.Fatalf("identity-self Link refusal changed state: %v", err)
+						}
+						if _, err := s.DeleteMemory(ctx, MemoryDeleteRequest{Path: path, ExpectedRevision: memory.Revision}); err != nil {
+							t.Fatal(err)
+						}
+						return
+					}
 					if err != nil {
 						t.Fatal(err)
 					}
@@ -296,14 +310,17 @@ func TestMemoryDeleteCorruptAbsentState(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, _, s := memoryDeleteStore(t, backend)
-			memory, err := s.Create(ctx, CreateRequest{Path: "beads/plan"})
+			memory, err := s.Create(ctx, CreateRequest{Title: "Memory", Path: "beads/plan"})
 			if err != nil {
 				t.Fatal(err)
 			}
 			if _, err := s.CreateIssue(ctx, "beads/work", plainIssue("Work")); err != nil {
 				t.Fatal(err)
 			}
-			linked, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/out", SourcePath: "beads/plan", TargetPath: "beads/work", ExpectedSourceRevision: memory.Revision})
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/context", Title: "Context"}); err != nil {
+				t.Fatal(err)
+			}
+			linked, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/out", TypeURL: s.ScopeURL() + "types/superseded-by", SourcePath: "beads/plan", TargetPath: "beads/context", ExpectedSourceRevision: memory.Revision})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -365,7 +382,7 @@ func TestMemoryDeleteConcurrentWriters(t *testing.T) {
 				ctx, o, first := memoryDeleteStore(t, backend)
 				ctx, cancel := context.WithCancel(ctx)
 				defer cancel()
-				memory, err := first.Create(ctx, CreateRequest{Path: "beads/plan", Body: "original"})
+				memory, err := first.Create(ctx, CreateRequest{Title: "Memory", Path: "beads/plan", Body: "original"})
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -415,7 +432,7 @@ func TestMemoryDeleteConcurrentWriters(t *testing.T) {
 					defer writers.Done()
 					var err error
 					if other == "memory-update" {
-						_, err = second.UpdateMemory(ctx, MemoryUpdateRequest{Path: "beads/plan", ExpectedRevision: memory.Revision, Properties: Properties{Body: "updated"}})
+						_, err = second.UpdateMemory(ctx, MemoryUpdateRequest{Path: "beads/plan", ExpectedRevision: memory.Revision, Properties: Properties{Title: "Memory", Body: "updated"}})
 					} else {
 						_, err = second.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/in", SourcePath: "beads/work", TargetPath: "beads/plan", ExpectedSourceRevision: issue.Revision})
 					}
@@ -495,7 +512,7 @@ func TestMemoryDeleteConcurrentWriters(t *testing.T) {
 
 func TestMemoryDeleteLostCommitResponse(t *testing.T) {
 	ctx, o, direct := memoryDeleteStore(t, "server")
-	memory, err := direct.Create(ctx, CreateRequest{Path: "beads/plan", Body: "retained"})
+	memory, err := direct.Create(ctx, CreateRequest{Title: "Memory", Path: "beads/plan", Body: "retained"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -552,7 +569,7 @@ func TestMemoryDeleteCurrentReadBudget(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, _, s := memoryDeleteStore(t, backend)
-			memory, err := s.Create(ctx, CreateRequest{Path: "beads/deleted", Body: strings.Repeat("d", 3<<20)})
+			memory, err := s.Create(ctx, CreateRequest{Title: "Memory", Path: "beads/deleted", Body: strings.Repeat("d", 3<<20)})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -562,12 +579,12 @@ func TestMemoryDeleteCurrentReadBudget(t *testing.T) {
 			if inventory, err := s.CurrentSnapshot(ctx); err != nil || len(inventory.Records) != 0 {
 				t.Fatalf("bounded deleted head: %+v %v", inventory, err)
 			}
-			if _, err := s.Create(ctx, CreateRequest{Path: "beads/small", Body: "small"}); err != nil {
+			if _, err := s.Create(ctx, CreateRequest{Title: "Memory", Path: "beads/small", Body: "small"}); err != nil {
 				t.Fatal(err)
 			}
 			// Filler has two current copies and alone fits; the retained deleted head
 			// takes the complete acquired state beyond the existing 16 MiB limit.
-			if _, err := s.Create(ctx, CreateRequest{Path: "beads/filler", Body: strings.Repeat("f", 7<<20)}); err != nil {
+			if _, err := s.Create(ctx, CreateRequest{Title: "Memory", Path: "beads/filler", Body: strings.Repeat("f", 7<<20)}); err != nil {
 				t.Fatal(err)
 			}
 			before := workflowState(t, ctx, s)

@@ -59,7 +59,7 @@ func (s *Store) ImportLegacyWithPrefix(ctx context.Context, input legacyimport.B
 	result := LegacyImportResult{IssuePrefix: prepared.prefix, Issues: len(batch.Issues), Memories: len(batch.Memories),
 		IDs: map[string]string{}, MemoryIDs: map[string]string{}, DependencyIDs: map[string]string{},
 		DryRun: dryRun, History: "current data only; new initial graph versions; source history is not present in legacy export"}
-	err = s.withTxPolicy(ctx, txPolicy{mayWrite: true, commit: !dryRun}, func(tx *sql.Tx) error {
+	err = s.withTxPolicy(ctx, txPolicy{mayWrite: true, commit: !dryRun, validateTypes: true}, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}

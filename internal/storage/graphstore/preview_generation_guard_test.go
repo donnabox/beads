@@ -4,9 +4,11 @@ package graphstore
 
 import (
 	"errors"
+	"reflect"
 	"slices"
 	"testing"
 
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/types"
 )
 
@@ -120,13 +122,57 @@ func TestPreviewSchemaVersionAndInstalledTypeCounts(t *testing.T) {
 		descriptors, err := installedPreviewTypes(ctx, tx, s.ScopeURL())
 		return len(descriptors), err
 	}
-	if count, err := installed(); err != nil || count != 6 {
-		t.Fatalf("fresh installation has %d Types with %v; want 6", count, err)
+	if count, err := installed(); err != nil || count != 20 {
+		t.Fatalf("fresh installation has %d Types with %v; want 20", count, err)
 	}
 	if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name='dependency'`); err != nil {
 		t.Fatal(err)
 	}
 	if count, err := installed(); !errors.Is(err, ErrInvalidStore) {
-		t.Fatalf("five-Type partial installation admitted: %d, %v", count, err)
+		t.Fatalf("partial selected Type installation admitted: %d, %v", count, err)
+	}
+}
+
+// A prior six-Type generation is rejected even when every old descriptor is
+// well-formed and fingerprinted. Read admission cannot adopt or rewrite it.
+func TestPriorPreviewTypeInstallationIsNotSilentlyAdopted(t *testing.T) {
+	ctx, options := issueExperimentOptions(t, "embedded")
+	store, err := OpenExisting(ctx, options)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if err := store.Close(); err != nil {
+			t.Error(err)
+		}
+	})
+	if _, err := store.db.ExecContext(ctx, `DELETE FROM graph_preview_types`); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{"memory", "issue", "dependency", "related", "example-follows", "example-cites"} {
+		path := "preview-" + name
+		if name == "example-follows" || name == "example-cites" {
+			path = name
+		}
+		spec := graph.TypeDescriptorSpec{ID: store.ScopeURL() + "types/" + path, Name: name, Describes: graph.KindBead}
+		if name != "memory" && name != "issue" {
+			spec.Describes = graph.KindLink
+			endpoint := graph.EndpointConstraint{}
+			spec.Source, spec.Target = &endpoint, &endpoint
+		}
+		descriptor, err := graph.NewTypeDescriptor(spec)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := store.db.ExecContext(ctx, `INSERT INTO graph_preview_types(name,descriptor,fingerprint) VALUES(?,?,?)`, name, descriptor.CanonicalJSON(), descriptor.Fingerprint()); err != nil {
+			t.Fatal(err)
+		}
+	}
+	before := workflowState(t, ctx, store)
+	if _, err := store.ListInstalledTypes(ctx); !errors.Is(err, ErrInvalidStore) {
+		t.Fatalf("older inventory admitted: %v", err)
+	}
+	if !reflect.DeepEqual(before, workflowState(t, ctx, store)) {
+		t.Fatal("refusing an old installation changed its data or coordination")
 	}
 }

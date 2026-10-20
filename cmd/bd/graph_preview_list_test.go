@@ -158,7 +158,7 @@ func TestGraphPreviewBeadListOutput(t *testing.T) {
 	const scope = "https://example.invalid/a/"
 	page := graphstore.BeadListPage{Items: []any{
 		graphstore.IssueRecord{ID: scope + "beads/work", Properties: &types.Issue{Title: "Ship the release", Status: types.StatusOpen, Priority: 1}},
-		graphstore.Record{ID: scope + "beads/plan", Properties: graphstore.Properties{Title: "Release plan"}},
+		graphstore.Record{ID: scope + "beads/plan", Type: scope + "types/memory", Properties: graphstore.Properties{Title: "Release plan"}},
 		graphstore.IssueRecord{ID: scope + "beads/odd", Properties: &types.Issue{Title: "quote\"\n雪", Status: "on-ice", Priority: 4}},
 	}}
 
@@ -167,7 +167,7 @@ func TestGraphPreviewBeadListOutput(t *testing.T) {
 	human, err := renderGraphBeadList(page, scope, false, "", false, false)
 	want := "Beads (3; more: false; graph preview)\n" +
 		"  beads/work  Issue   open  P1  Ship the release\n" +
-		"  beads/plan  Memory  Release plan\n" +
+		"  beads/plan  types/memory  Release plan\n" +
 		"  beads/odd  Issue   on-ice  P4  quote\"\\n雪\n"
 	if err != nil || human != want {
 		t.Fatalf("human=%q err=%v\nwant=%q", human, err, want)
@@ -304,9 +304,9 @@ func TestGraphPreviewListNoticeRendering(t *testing.T) {
 	}
 
 	const labelNotice = "directory.labels \"frontend\" is not applied to this Bead Type."
-	beads := graphstore.BeadListPage{Items: []any{graphstore.Record{ID: scope + "beads/plan", Properties: graphstore.Properties{Title: "Plan"}}}}
+	beads := graphstore.BeadListPage{Items: []any{graphstore.Record{ID: scope + "beads/plan", Type: scope + "types/memory", Properties: graphstore.Properties{Title: "Plan"}}}}
 	human, err = renderGraphBeadList(beads, scope, false, labelNotice, false, false)
-	if want := "Beads (1; more: false; graph preview)\n" + labelNotice + "\n  beads/plan  Memory  Plan\n"; err != nil || human != want {
+	if want := "Beads (1; more: false; graph preview)\n" + labelNotice + "\n  beads/plan  types/memory  Plan\n"; err != nil || human != want {
 		t.Fatalf("human=%q err=%v\nwant=%q", human, err, want)
 	}
 	if quiet, err := renderGraphBeadList(beads, scope, false, labelNotice, false, true); err != nil || quiet != "" {

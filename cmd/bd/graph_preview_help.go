@@ -120,13 +120,13 @@ metadata is {}. Metadata is separate from Type-validated properties.
 --properties JSON initializes the selected Type's writable fields, such as
 Issue description or Memory body. It may accompany shorthand flags only when
 they supply different fields; duplicate fields refuse.
-Use --type preview-memory to create a Memory instead:
-  bd create --type preview-memory --id policy --body 'Code flow policy'
-Use bd types to see Bead Types installed in this workspace. A short NAME,
-types/NAME, or a full local Type URL works. --type also accepts an Issue
-classification (for example task or bug); the CLI selects preview-issue for it. Memory creation
+Use --type types/memory to create a Memory instead:
+  bd create --type types/memory --id policy --body 'Code flow policy'
+Use bd types to see Bead Types installed in this workspace. Use types/NAME
+or a full local Type URL for nominal Types. Bare names select Issue
+classifications (for example task or bug); the CLI selects types/issue for them. Memory creation
 accepts body/description/message and an optional title; unsupported Issue-only
-fields refuse. Fresh workspaces create types/preview-issue Issues.`},
+fields refuse. Fresh workspaces create types/issue Issues.`},
 		{showCmd, `Use bd show ID (equivalent to beads/ID) for a current Memory or
 Issue; use bd show links/ID for a Link. ID@TOKEN or '[URL]@TOKEN' selects
 one exact retained record; --version TOKEN remains an alternative (not both).
@@ -213,7 +213,7 @@ kind through the canonical namespace, use
 Only built-in Dependency kinds are accepted. The resulting Link has a dep_type property.
 For a Memory or Issue endpoint,
 choose an installed informational Type, for example on a fresh workspace:
-  bd link policy work --type types/example-cites
+  bd link policy work --type types/references
 Use bd types to see Link Types installed in this workspace. --type
 accepts a built-in Dependency kind, types/NAME or a full local Type URL. An optional --id
 selects a bare Link ID or links/PATH; --properties supplies informational Link properties.
@@ -223,7 +223,7 @@ or --source-revision unpinned/--target-revision unpinned keep endpoints floating
 Exact endpoint revisions and current refuse before mutation; these selectors
 are separate from --if-source-revision. --metadata JSON supplies
 an initial open metadata object for informational Links; native Dependencies
-do not accept it. The single Type types/preview-dependency
+do not accept it. The single Type types/dependency
 requires Issue endpoints. Add --if-source-revision TOKEN to reject a stale source.`},
 		{closeCmd, `Close one or more local Issues by ID or beads/ID. One --reason
 applies to all IDs; repeat it once per ID for positional reasons, or use

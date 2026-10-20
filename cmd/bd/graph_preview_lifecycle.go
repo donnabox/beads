@@ -210,6 +210,11 @@ func runGraphPreviewLinks(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+		if typ != "" {
+			if err := graphPreviewRequireInstalledType(ctx, store, typ, graph.KindLink, false); err != nil {
+				return nil, "", err
+			}
+		}
 		result, err := store.ListLinks(ctx, graphstore.LinksRequest{BeadPath: path, Direction: direction, TypeURL: typ})
 		if err != nil {
 			return nil, "", err
@@ -311,6 +316,11 @@ func runGraphPreviewLinkCollection(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+		if request.TypeURL != "" {
+			if err := graphPreviewRequireInstalledType(ctx, store, request.TypeURL, graph.KindLink, false); err != nil {
+				return nil, "", err
+			}
+		}
 		links, err := store.CollectLinks(ctx, request)
 		if err != nil {
 			return nil, "", err

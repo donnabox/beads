@@ -40,7 +40,7 @@ const graphPreviewMarker = "graph-preview-format"
 // are not upgraded in place. Changing installed Types changes this marker.
 const (
 	graphPreviewGenerationPrefix = "link-preview-v"
-	graphPreviewGeneration       = "link-preview-v9\n"
+	graphPreviewGeneration       = "link-preview-v10\n"
 )
 
 var graphPreviewSupportedGenerations = []string{graphPreviewGeneration}
@@ -284,7 +284,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		if _, err := os.Lstat(dir); !os.IsNotExist(err) {
 			return true, graphFailure("graph_not_initialized", "graph_mode link initialization requires a fresh .beads directory; existing or incomplete stores are never replaced", 5)
 		}
-		graphPreviewActive, graphPreviewDir, graphPreviewTypeGeneration = true, dir, 9
+		graphPreviewActive, graphPreviewDir, graphPreviewTypeGeneration = true, dir, graphstore.TypeGeneration
 		return true, configureGraphPreview(cmd)
 	}
 	if requested != "" && requested != mode {
@@ -377,7 +377,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		return true, graphFailure("capability_unavailable", "this graph preview supports import of legacy data into fresh workspaces, remember, memories, recall, versions (and history as its alias here), compare, create, q, show, update, edit, assign, priority, note, comment, comments add, todo, delete, forget, dep add/remove/list/tree/cycles and dep --blocks, link and link create/list/show/update/delete/versions/compare/count, close, reopen, unclaim, heartbeat, reclaim, merge-slot create/check/acquire/release, state read, defer, undefer, ready, list/--format records-json and Issue-only list --json, children, search, count, query, blocked, graph ISSUE, graph check and graph --view generic, types, status and status --graph, statuses, project-local setup claude, claude-hook stop and shared-server serve; this command has not opened the legacy store", 5)
 	}
 	graphPreviewActive, graphPreviewConfig, graphPreviewDir = true, cfg, dir
-	graphPreviewTypeGeneration = 9
+	graphPreviewTypeGeneration = graphstore.TypeGeneration
 	if err := configureGraphPreview(cmd); err != nil {
 		return true, err
 	}

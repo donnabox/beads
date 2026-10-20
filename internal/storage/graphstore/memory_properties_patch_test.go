@@ -17,6 +17,44 @@ import (
 	"github.com/steveyegge/beads/internal/storage"
 )
 
+// Each test starts with an actually owned Link: Memory owns SubjectTo, whose
+// target is a Constraint. References is deliberately not used as an owner edge.
+func memoryPropertiesPatchFixture(t *testing.T, backend string) (context.Context, Options, *Store, Record, Record, LinkMutationResult) {
+	t.Helper()
+	ctx, options := issueExperimentOptions(t, backend)
+	store, err := OpenExisting(ctx, options)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if err := store.Close(); err != nil {
+			t.Error(err)
+		}
+	})
+	memory, err := store.Create(ctx, CreateRequest{Path: "beads/plan", PropertiesJSON: json.RawMessage(`{"title":"Plan","body":"original","status":"draft","extension":{"ready":true,"counts":[1,9007199254740992]}}`)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	target, err := store.Create(ctx, CreateRequest{Path: "beads/target", TypeURL: store.ScopeURL() + "types/constraint", Title: "Target", Body: "target", Actor: "target-author"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	link, err := store.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/out", SourcePath: "beads/plan", TargetPath: "beads/target", TypeURL: store.ScopeURL() + "types/subject-to", ExpectedSourceRevision: memory.Revision})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return ctx, options, store, link.Source.(Record), target, link
+}
+
+func memoryPatchPropertiesValue(t *testing.T, raw string) Properties {
+	t.Helper()
+	var properties Properties
+	if err := json.Unmarshal([]byte(raw), &properties); err != nil {
+		t.Fatal(err)
+	}
+	return properties
+}
+
 func memoryPropertiesOperation(t *testing.T, field, value string) []byte {
 	t.Helper()
 	data, err := json.Marshal([]map[string]any{{"op": "replace", "path": "/" + field, "value": value}})
@@ -44,25 +82,28 @@ func assertMemoryPropertiesTransition(t *testing.T, before Record, got MemoryMut
 func TestMemoryPropertiesPatchLifecycle(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
-			ctx, _, s, original, target, link := disclosureFixture(t, backend)
+			ctx, _, s, original, target, link := memoryPropertiesPatchFixture(t, backend)
 			retained := []Record{original}
 			title := "  記憶\r\n"
 			first, err := s.PatchMemoryProperties(ctx, MemoryPropertiesPatchRequest{Path: "beads/plan", Patch: memoryPropertiesOperation(t, "title", title), Actor: "editor", Unconditional: true})
 			if err != nil {
 				t.Fatal(err)
 			}
-			assertMemoryPropertiesTransition(t, original, first, Properties{Title: title, Body: original.Properties.Body}, "editor", true)
+			firstProperties := original.Properties
+			firstProperties.Title = title
+			assertMemoryPropertiesTransition(t, original, first, firstProperties, "editor", true)
 			// The fixture has unknown attribution; R14 must preserve that, not invent a principal.
 			if original.Attribution.Status != "unknown" || original.Attribution.Actor != "" {
 				t.Fatal("fixture attribution changed")
 			}
 			retained = append(retained, first.Memory)
-			temporary := []byte(`[{"op":"replace","path":"","value":{"title":"root","body":"body","scratch":["a"]}},{"op":"add","path":"/scratch/-","value":"b"},{"op":"remove","path":"/scratch/0"},{"op":"remove","path":"/scratch"},{"op":"replace","path":"/body","value":"  雪\r\n\n"}]`)
+			temporary := []byte(`[{"op":"replace","path":"","value":{"title":"root","body":"body","scratch":["a"],"extension":{"ready":false,"count":9007199254740992,"values":[null,true,"雪"]}}},{"op":"add","path":"/scratch/-","value":"b"},{"op":"remove","path":"/scratch/0"},{"op":"remove","path":"/scratch"},{"op":"replace","path":"/body","value":"  雪\r\n\n"}]`)
 			next, err := s.PatchMemoryProperties(ctx, MemoryPropertiesPatchRequest{Path: "beads/plan", Patch: temporary, Actor: "ordered", ExpectedRevision: first.Memory.Revision})
 			if err != nil {
 				t.Fatal(err)
 			}
-			assertMemoryPropertiesTransition(t, first.Memory, next, Properties{Title: "root", Body: "  雪\r\n\n"}, "ordered", false)
+			nextProperties := memoryPatchPropertiesValue(t, `{"title":"root","body":"  雪\r\n\n","extension":{"ready":false,"count":9007199254740992,"values":[null,true,"雪"]}}`)
+			assertMemoryPropertiesTransition(t, first.Memory, next, nextProperties, "ordered", false)
 			retained = append(retained, next.Memory)
 			before := workflowState(t, ctx, s)
 			for _, patch := range [][]byte{[]byte(`[{"op":"replace","path":"/title","value":"root"}]`), []byte(`[{"op":"replace","path":"/title","value":"temporary"},{"op":"replace","path":"/title","value":"root"}]`)} {
@@ -111,14 +152,16 @@ func TestMemoryPropertiesPatchLifecycle(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			assertMemoryPropertiesTransition(t, predecessor, copied, Properties{Title: "root", Body: "copied"}, "copier", true)
+			copiedProperties := predecessor.Properties
+			copiedProperties.Body = "copied"
+			assertMemoryPropertiesTransition(t, predecessor, copied, copiedProperties, "copier", true)
 			assertOwnedLink(t, copied.Memory, changedLink.Link)
 			retained = append(retained, copied.Memory)
-			clear, err := s.PatchMemoryProperties(ctx, MemoryPropertiesPatchRequest{Path: "beads/plan", Patch: []byte(`[{"op":"replace","path":"","value":{"title":"","body":""}}]`), ExpectedRevision: copied.Memory.Revision})
+			clear, err := s.PatchMemoryProperties(ctx, MemoryPropertiesPatchRequest{Path: "beads/plan", Patch: []byte(`[{"op":"replace","path":"","value":{"title":"cleared","body":""}}]`), ExpectedRevision: copied.Memory.Revision})
 			if err != nil {
 				t.Fatal(err)
 			}
-			assertMemoryPropertiesTransition(t, copied.Memory, clear, Properties{}, "", false)
+			assertMemoryPropertiesTransition(t, copied.Memory, clear, Properties{Title: "cleared"}, "", false)
 			retained = append(retained, clear.Memory)
 			if got, err := s.Show(ctx, "beads/plan"); err != nil || !reflect.DeepEqual(got, clear.Memory) {
 				t.Fatalf("current: %+v %v", got, err)
@@ -145,7 +188,7 @@ func TestMemoryPropertiesPatchLifecycle(t *testing.T) {
 func TestMemoryPropertiesPatchRefusalAndRollback(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
-			ctx, _, s, original, _, _ := disclosureFixture(t, backend)
+			ctx, _, s, original, _, _ := memoryPropertiesPatchFixture(t, backend)
 			if _, err := s.CreateIssue(ctx, "beads/work", plainIssue("Work")); err != nil {
 				t.Fatal(err)
 			}
@@ -167,7 +210,12 @@ func TestMemoryPropertiesPatchRefusalAndRollback(t *testing.T) {
 				{"missing-body", `[{"op":"remove","path":"/body"}]`},
 				{"null-title", `[{"op":"replace","path":"/title","value":null}]`},
 				{"null-body", `[{"op":"replace","path":"/body","value":null}]`},
-				{"extra-member", `[{"op":"add","path":"/extra","value":"x"}]`},
+				{"blank-status", `[{"op":"replace","path":"/status","value":" "}]`},
+				{"blank-title", `[{"op":"replace","path":"/title","value":" \t\n"}]`},
+				{"numeric-title", `[{"op":"replace","path":"/title","value":12}]`},
+				{"rounded-number", `[{"op":"add","path":"/rounded","value":9007199254740993}]`},
+				{"duplicate-member", `[{"op":"replace","path":"/title","value":"valid","value":"other"}]`},
+				{"invalid-unicode-escape", `[{"op":"replace","path":"/title","value":"\ud800"}]`},
 				{"array-final", `[{"op":"replace","path":"","value":[]}]`},
 				{"late-op", `[{"op":"replace","path":"/body","value":"early"},{"op":"remove","path":"/missing"}]`},
 			} {
@@ -246,9 +294,9 @@ func TestMemoryPropertiesPatchRefusalAndRollback(t *testing.T) {
 func TestMemoryPropertiesPatchReadBudget(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
-			ctx, _, s, original, target, _ := disclosureFixture(t, backend)
+			ctx, _, s, original, target, _ := memoryPropertiesPatchFixture(t, backend)
 			// Two current copies of 7.5MiB fit; adding two 768KiB subject copies does not.
-			if _, err := s.Create(ctx, CreateRequest{Path: "beads/filler", Body: strings.Repeat("f", PreviewCurrentReadByteLimit/2-(512<<10))}); err != nil {
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/filler", Title: "Filler", Body: strings.Repeat("f", PreviewCurrentReadByteLimit/2-(512<<10))}); err != nil {
 				t.Fatal(err)
 			}
 			if _, err := s.Read(ctx, "beads/plan"); err != nil {
@@ -284,7 +332,9 @@ func TestMemoryPropertiesPatchReadBudget(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			assertMemoryPropertiesTransition(t, legacy.Memory, recovered, Properties{Title: original.Properties.Title, Body: "small"}, "recovery", false)
+			recoveredProperties := original.Properties
+			recoveredProperties.Body = "small"
+			assertMemoryPropertiesTransition(t, legacy.Memory, recovered, recoveredProperties, "recovery", false)
 			if _, err := s.Read(ctx, "beads/plan"); err != nil {
 				t.Fatalf("shrink did not restore readability: %v", err)
 			}
@@ -304,7 +354,7 @@ func TestMemoryPropertiesPatchConcurrentOwnedWriter(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		for _, unconditional := range []bool{false, true} {
 			t.Run(fmt.Sprintf("%s/unconditional-%t", backend, unconditional), func(t *testing.T) {
-				base, o, first, original, target, link := disclosureFixture(t, backend)
+				base, o, first, original, target, link := memoryPropertiesPatchFixture(t, backend)
 				ctx, cancel := context.WithCancel(base)
 				defer cancel()
 				second := &Store{db: first.db, options: o}
@@ -491,7 +541,7 @@ func TestMemoryPropertiesPatchConcurrentOwnedWriter(t *testing.T) {
 }
 
 func TestMemoryPropertiesPatchLostCommitResponse(t *testing.T) {
-	ctx, o, direct, original, target, link := disclosureFixture(t, "server")
+	ctx, o, direct, original, target, link := memoryPropertiesPatchFixture(t, "server")
 	port, observed := startCommitLossProxy(t, net.JoinHostPort(o.ServerHost, strconv.Itoa(o.ServerPort)))
 	proxy := o
 	proxy.ServerPort = port
@@ -549,7 +599,7 @@ func propertiesPatchDeletedFiller(t *testing.T, ctx context.Context, s *Store) [
 	t.Helper()
 	var retained []Record
 	for _, path := range []string{"beads/deleted-filler-a", "beads/deleted-filler-b"} {
-		memory, err := s.Create(ctx, CreateRequest{Path: path, Body: strings.Repeat("f", PreviewCurrentReadByteLimit/2-(512<<10))})
+		memory, err := s.Create(ctx, CreateRequest{Path: path, Title: "Deleted filler", Body: strings.Repeat("f", PreviewCurrentReadByteLimit/2-(512<<10))})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -565,7 +615,7 @@ func propertiesPatchDeletedFiller(t *testing.T, ctx context.Context, s *Store) [
 func TestMemoryPropertiesPatchDeletedBudget(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
-			ctx, _, s, original, _, _ := disclosureFixture(t, backend)
+			ctx, _, s, original, _, _ := memoryPropertiesPatchFixture(t, backend)
 			deleted := propertiesPatchDeletedFiller(t, ctx, s)
 			if _, err := s.Read(ctx, "beads/plan"); err != nil {
 				t.Fatalf("deleted filler fixture unreadable: %v", err)

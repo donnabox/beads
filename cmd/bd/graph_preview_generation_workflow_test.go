@@ -172,8 +172,8 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 	if err := json.Unmarshal([]byte(out), &installed); err != nil {
 		t.Fatalf("read fresh Type inventory: %v\n%s", err, out)
 	}
-	if beads, links := len(installed.Result.BeadTypes), len(installed.Result.LinkTypes); beads != 2 || links != 4 {
-		t.Fatalf("fresh installed Types = %d Bead, %d Link; want 2 and 4", beads, links)
+	if beads, links := len(installed.Result.BeadTypes), len(installed.Result.LinkTypes); beads != 10 || links != 10 {
+		t.Fatalf("fresh installed Types = %d Bead, %d Link; want 10 and 10", beads, links)
 	}
 
 	refuse := func(marker, want string) {
@@ -187,10 +187,10 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 			t.Fatalf("marker %q: refused read changed workspace", marker)
 		}
 	}
-	for _, old := range []string{"link-preview-v5\n", "link-preview-v6\n", "link-preview-v7\n", "link-preview-v8\n"} {
+	for _, old := range []string{"link-preview-v5\n", "link-preview-v6\n", "link-preview-v7\n", "link-preview-v8\n", "link-preview-v9\n"} {
 		refuse(old, graphGenerationFirstGateRefusal)
 	}
-	refuse("link-preview-v10\n", "graph_mode workspace format link-preview-v10 is newer than this bd supports (link-preview-v9); upgrade bd; no database was opened")
+	refuse("link-preview-v11\n", "graph_mode workspace format link-preview-v11 is newer than this bd supports (link-preview-v10); upgrade bd; no database was opened")
 	refuse("link-preview-v9", graphGenerationFirstGateRefusal)
 	refuse("link-preview-v9x\n", graphGenerationFirstGateRefusal)
 
@@ -281,7 +281,7 @@ func TestGraphPreviewInstalledFreshTypedRelationships(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	const scope = "https://example.invalid/typed-relationships/"
 	for _, engine := range []string{"embedded", "server"} {
-		t.Run("v9-"+engine, func(t *testing.T) {
+		t.Run("v10-"+engine, func(t *testing.T) {
 			work, home := graphListWorkspace(t, bd, engine, scope)
 			call := func(args ...string) string {
 				t.Helper()

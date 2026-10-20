@@ -44,6 +44,17 @@ func (s *Store) Create(ctx context.Context, req CreateRequest) (Record, error) {
 	r := Record{ID: graph.CanonicalURL(s.options.Binding.ScopeURL, req.Path),
 		Type: MemoryTypeURL(s.options.Binding.ScopeURL), Revision: revision, Version: revision,
 		Properties: Properties{Title: req.Title, Body: req.Body}, Metadata: metadata, Owned: []json.RawMessage{}}
+	if req.TypeURL != "" {
+		r.Type = req.TypeURL
+	}
+	if len(req.PropertiesJSON) != 0 {
+		if req.Title != "" || req.Body != "" {
+			return Record{}, fmt.Errorf("%w: use either complete properties or title/body fields", graph.ErrValidation)
+		}
+		if err := json.Unmarshal(req.PropertiesJSON, &r.Properties); err != nil {
+			return Record{}, err
+		}
+	}
 	r.Attribution = Attribution{Actor: req.Actor, Status: "unknown", RecordedAt: time.Now().UTC().Format(time.RFC3339Nano)}
 	if req.Actor != "" {
 		r.Attribution.Status = "claimed"
@@ -52,11 +63,21 @@ func (s *Store) Create(ctx context.Context, req CreateRequest) (Record, error) {
 	if err != nil {
 		return Record{}, err
 	}
+	catalog, err := s.selectedTypes()
+	if err != nil {
+		return Record{}, err
+	}
+	if !catalog.memoryType(r.Type) {
+		return Record{}, fmt.Errorf("%w: generic creation requires an installed Memory-family Type", graph.ErrValidation)
+	}
+	if err := catalog.validateProperties(r.Type, properties, graph.KindBead); err != nil {
+		return Record{}, err
+	}
 	snapshot, err := canonicalJSON(r)
 	if err != nil {
 		return Record{}, err
 	}
-	err = s.withTx(ctx, true, func(tx *sql.Tx) error {
+	err = s.withTypeValidationTx(ctx, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
@@ -170,7 +191,7 @@ func (s *Store) showMemoryInTx(ctx context.Context, tx *sql.Tx, path string) (Re
 		}
 		return Record{}, ErrGone
 	}
-	if kind != "bead" || typ != MemoryTypeURL(s.options.Binding.ScopeURL) || !authorityID.MatchString(revision) || state != "live" || backing != "generic" {
+	if kind != "bead" || !s.isMemoryType(typ) || !authorityID.MatchString(revision) || state != "live" || backing != "generic" {
 		return Record{}, fmt.Errorf("%w: unsupported or corrupt allocation", ErrInvalidStore)
 	}
 	var payload, metadata, snapshot []byte
@@ -208,6 +229,13 @@ func (s *Store) showMemoryInTx(ctx context.Context, tx *sql.Tx, path string) (Re
 	canonicalPayload, err := canonicalJSON(record.Properties)
 	if err != nil {
 		return Record{}, err
+	}
+	catalog, err := s.selectedTypes()
+	if err != nil {
+		return Record{}, err
+	}
+	if err := catalog.validateProperties(typ, canonicalPayload, graph.KindBead); err != nil {
+		return Record{}, fmt.Errorf("%w: current payload violates its Type: %v", ErrInvalidStore, err)
 	}
 	canonicalSnapshot, err := canonicalJSON(record)
 	if err != nil {

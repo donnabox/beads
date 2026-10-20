@@ -68,12 +68,12 @@ func TestGraphPreviewCreateBeadTypeSelection(t *testing.T) {
 		{name: "classification-is-not-bead-type", flags: []string{"--type=bug"}, want: graphstore.IssueTypeURL(scope)},
 		{name: "unregistered-preview-classification", flags: []string{"--type=preview-task"}, code: 5},
 		{name: "unregistered-example-classification", flags: []string{"--type=example-task"}, code: 5},
-		{name: "short-issue", flags: []string{"--type=preview-issue"}, want: graphstore.IssueTypeURL(scope)},
-		{name: "relative-issue", flags: []string{"--type=types/preview-issue"}, want: graphstore.IssueTypeURL(scope)},
+		{name: "removed-short-issue", flags: []string{"--type=preview-issue"}, code: 5},
+		{name: "relative-issue", flags: []string{"--type=types/issue"}, want: graphstore.IssueTypeURL(scope)},
 		{name: "canonical-issue", flags: []string{"--type=" + graphstore.IssueTypeURL(scope)}, want: graphstore.IssueTypeURL(scope)},
-		{name: "short-memory", flags: []string{"--type=preview-memory"}, want: graphstore.MemoryTypeURL(scope)},
+		{name: "removed-short-memory", flags: []string{"--type=preview-memory"}, code: 5},
 		{name: "mistyped-memory", flags: []string{"--type=memory-preview"}, code: 5},
-		{name: "relative-memory", flags: []string{"--type=types/preview-memory"}, want: graphstore.MemoryTypeURL(scope)},
+		{name: "relative-memory", flags: []string{"--type=types/memory"}, want: graphstore.MemoryTypeURL(scope)},
 		{name: "canonical-memory", flags: []string{"--type=" + graphstore.MemoryTypeURL(scope)}, want: graphstore.MemoryTypeURL(scope)},
 		{name: "empty", flags: []string{"--type="}, code: 2},
 		{name: "foreign", flags: []string{"--type=https://foreign.invalid/types/preview-memory"}, code: 2},
@@ -98,7 +98,7 @@ func TestGraphPreviewCreateBeadTypeSelection(t *testing.T) {
 func TestGraphPreviewCreateBeadTypeUsesOneFreshIssueType(t *testing.T) {
 	const scope = "https://example.invalid/project/"
 	previous := graphPreviewTypeGeneration
-	graphPreviewTypeGeneration = 9
+	graphPreviewTypeGeneration = graphstore.TypeGeneration
 	t.Cleanup(func() { graphPreviewTypeGeneration = previous })
 	if got := graphPreviewBlockingTypeURL(scope); got != graphstore.DependencyTypeURL(scope) {
 		t.Fatalf("blocking Type = %q", got)
@@ -175,7 +175,7 @@ func TestGraphPreviewCreateMemoryInput(t *testing.T) {
 		{name: "issue-estimate", flags: []string{"--estimate=0"}, code: 5},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			cmd := graphCreateTypeCommand(t, append([]string{"--type=types/preview-memory"}, tc.flags...))
+			cmd := graphCreateTypeCommand(t, append([]string{"--type=types/memory"}, tc.flags...))
 			probe := &selectedRememberInputProbe{}
 			cmd.SetIn(probe)
 			title, body, err := graphPreviewCreateMemoryInput(cmd, tc.args)

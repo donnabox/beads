@@ -353,6 +353,15 @@ func (s *Store) ownedLinksInTx(ctx context.Context, tx *sql.Tx, issueID string) 
 	if err := errors.Join(rows.Err(), rows.Close()); err != nil {
 		return nil, err
 	}
+	var sourcePath string
+	if err := tx.QueryRowContext(ctx, `SELECT path FROM graph_preview_catalog WHERE backing='issue' AND backing_key=? AND allocation_state='live'`, issueID).Scan(&sourcePath); err != nil {
+		return nil, err
+	}
+	informational, err := s.informationalOwnedPathsInTx(ctx, tx, sourcePath)
+	if err != nil {
+		return nil, err
+	}
+	paths = append(paths, informational...)
 	if len(paths) > PreviewOwnedLinkLimit {
 		return nil, fmt.Errorf("%w: owned Link limit exceeded", ErrInvalidStore)
 	}

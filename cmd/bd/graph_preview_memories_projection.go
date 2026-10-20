@@ -63,7 +63,7 @@ func graphMemoryDiscovery(scope string, snapshot graphstore.Snapshot, search str
 	foldedSearch := cases.Fold().String(search)
 	for _, value := range snapshot.Records {
 		memory, ok := value.(graphstore.Record)
-		if !ok || memory.Type != graphstore.MemoryTypeURL(scope) {
+		if !ok || (memory.Type != graphstore.MemoryTypeURL(scope) && !graphPreviewTypeRefines(snapshot.Types, memory.Type, graphstore.MemoryTypeURL(scope))) {
 			continue
 		}
 		fields := []string{}

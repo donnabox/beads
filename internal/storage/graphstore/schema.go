@@ -52,28 +52,19 @@ var previewDDL = []string{
         PRIMARY KEY (path, version), UNIQUE KEY one_issue_version (issue_id, issue_revision))`,
 }
 
-// MemoryTypeURL is a Scope-local preview descriptor. Its payload is
-// title/body and it owns outgoing Links.
-func MemoryTypeURL(scope string) string { return scope + "types/preview-memory" }
+// MemoryTypeURL is the application-local identity of the selected Memory Type.
+func MemoryTypeURL(scope string) string { return scope + "types/memory" }
 
 func memoryDescriptor(scope string) (graph.TypeDescriptor, error) {
-	owns, err := graph.NewWildcardOwnedLinkDecl(PreviewOwnedLinkLimit)
-	if err != nil {
-		return graph.TypeDescriptor{}, err
-	}
-	return graph.NewTypeDescriptor(graph.TypeDescriptorSpec{
-		ID: MemoryTypeURL(scope), Name: "Preview Memory", Describes: graph.KindBead,
-		Description:  "Disposable C0 preview. The installed writer accepts exactly UTF-8 title and body strings, owns up to 1000 outgoing Links, and always records a complete retained snapshot. This descriptor does not claim the complete Memory or History contract.",
-		OwnsOutgoing: []graph.OwnedLinkDecl{owns},
-	})
+	return selectedMemoryDescriptor(scope, "memory")
 }
 
 // IssueTypeURL deliberately avoids settling the nominal Task/Bug discussion.
-func IssueTypeURL(scope string) string { return scope + "types/preview-issue" }
+func IssueTypeURL(scope string) string { return scope + "types/issue" }
 
 // DependencyTypeURL is the one native Dependency Link Type. The kind is stored
 // in the Link's dep_type property, not its nominal Type URL.
-func DependencyTypeURL(scope string) string { return scope + "types/preview-dependency" }
+func DependencyTypeURL(scope string) string { return scope + "types/dependency" }
 
 func dependencyDescriptor(scope string) (graph.TypeDescriptor, error) {
 	endpoint, err := graph.NewEndpointConstraint([]string{IssueTypeURL(scope)}, graph.ExternalNone)
@@ -81,7 +72,7 @@ func dependencyDescriptor(scope string) (graph.TypeDescriptor, error) {
 		return graph.TypeDescriptor{}, err
 	}
 	return graph.NewTypeDescriptor(graph.TypeDescriptorSpec{
-		ID: DependencyTypeURL(scope), Name: "Preview Dependency", Describes: graph.KindLink,
+		ID: DependencyTypeURL(scope), Name: "Dependency", Describes: graph.KindLink,
 		Description: "Issue-owned native Dependency with live unpinned local Issue endpoints. The required dep_type string property mirrors the native Dependency kind; no other properties or metadata edits are supported. One ordered Issue pair has at most one Dependency.",
 		Source:      &endpoint, Target: &endpoint,
 	})
@@ -99,7 +90,7 @@ func issueDescriptor(scope string) (graph.TypeDescriptor, error) {
 		owned = append(owned, link)
 	}
 	return graph.NewTypeDescriptor(graph.TypeDescriptorSpec{
-		ID: IssueTypeURL(scope), Name: "Preview Issue", Describes: graph.KindBead,
+		ID: IssueTypeURL(scope), Name: "Issue", Describes: graph.KindBead,
 		Description:  "Disposable specialized Issue adapter with source-owned Dependency Links. Issue classification remains a property. Native Issue writers own lifecycle and retained History; these Link Types do not define a close reason or authorize an edge-plus-close operation.",
 		OwnsOutgoing: owned,
 	})
@@ -115,7 +106,7 @@ type relationshipDependencyType struct {
 // Kept temporarily for the old installer seam while the fresh generation's
 // Type catalog is consolidated. Every valid kind uses one nominal Type.
 var relationshipDependencyTypes = [...]relationshipDependencyType{
-	{types.DepBlocks, "dependency", "types/preview-dependency", "Preview Dependency"},
+	{types.DepBlocks, "dependency", "types/dependency", "Dependency"},
 }
 
 func relationshipDependencyTypeURL(scope string, native types.DependencyType) (string, bool) {
@@ -162,22 +153,12 @@ func relationshipDependencyDescriptor(scope string, native types.DependencyType)
 	return graph.TypeDescriptor{}, fmt.Errorf("unsupported native relationship Dependency %q", native)
 }
 
-// RelatedTypeURL names the private experimental informational Link descriptor.
-func RelatedTypeURL(scope string) string { return scope + "types/preview-related" }
+// RelatedTypeURL retains the legacy command spelling as an alias for References.
+// No separate Related Type is installed.
+func RelatedTypeURL(scope string) string { return scope + "types/references" }
 
 func relatedDescriptor(scope string) (graph.TypeDescriptor, error) {
-	// Endpoint conformsTo is a conjunction, not an alternative-Type list.
-	// The preview admits only Issue and Memory Beads; an empty requirement set
-	// truthfully accepts either without claiming it conforms to both Types.
-	endpoint, err := graph.NewEndpointConstraint(nil, graph.ExternalNone)
-	if err != nil {
-		return graph.TypeDescriptor{}, err
-	}
-	return graph.NewTypeDescriptor(graph.TypeDescriptorSpec{
-		ID: RelatedTypeURL(scope), Name: "Preview Related", Describes: graph.KindLink,
-		Description: "Disposable informational Link with live unpinned local Issue or Memory endpoints and independent multiedge identity. Closed properties record admits only optional UTF-8 string note. Memory sources own outgoing Links; Issue sources do not own this Type. No scheduling effect or production Type contract.",
-		Source:      &endpoint, Target: &endpoint,
-	})
+	return selectedMemoryDescriptor(scope, "references")
 }
 
 func canonicalJSON(value any) ([]byte, error) {

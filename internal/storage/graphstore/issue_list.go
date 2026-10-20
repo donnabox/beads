@@ -344,7 +344,7 @@ func (s *Store) checkIssueListCatalogInTx(ctx context.Context, tx *sql.Tx) error
 		valid := validateResourcePath(path) == nil && authorityID.MatchString(revision)
 		switch backing {
 		case "generic":
-			valid = valid && kind == "bead" && strings.HasPrefix(path, "beads/") && typ == MemoryTypeURL(s.ScopeURL()) && !key.Valid && memoryExists
+			valid = valid && kind == "bead" && strings.HasPrefix(path, "beads/") && s.isMemoryType(typ) && !key.Valid && memoryExists
 		case "issue":
 			valid = valid && kind == "bead" && strings.HasPrefix(path, "beads/") && typ == issueType && key.Valid && key.String != "" && issueExists
 		case "dependency":

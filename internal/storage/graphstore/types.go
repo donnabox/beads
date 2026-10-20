@@ -14,6 +14,10 @@ import (
 // SchemaVersion identifies this explicitly experimental storage layout.
 const SchemaVersion = 7
 
+// TypeGeneration changes when the selected fresh Type installation changes.
+// It is an admission marker, never an automatic migration of existing stores.
+const TypeGeneration = 10
+
 // Binding is the exact identity expected by the local workspace metadata.
 // WorkspaceID is its canonical filesystem path; C0 does not support moving it.
 type Binding struct {
@@ -33,7 +37,7 @@ type Options struct {
 	Binding  Binding
 	// TypeGeneration is the admitted workspace marker generation. Zero lets
 	// direct storage callers inspect the checked fresh installation; the CLI
-	// supplies generation 9 and requires that marker's installed Type count.
+	// supplies TypeGeneration and requires that marker's exact installed catalog.
 	TypeGeneration int
 	ServerHost     string
 	ServerPort     int
@@ -48,17 +52,22 @@ type Options struct {
 
 // CreateRequest creates a new canonical Memory path; it is not a keyed upsert.
 type CreateRequest struct {
-	Path     string
-	Title    string
-	Body     string
-	Actor    string
-	Metadata json.RawMessage
+	TypeURL        string
+	PropertiesJSON json.RawMessage // complete object; exclusive with nonempty legacy Title/Body
+	Path           string
+	Title          string
+	Body           string
+	Actor          string
+	Metadata       json.RawMessage
 }
 
-// Properties is the complete payload supported by the preview descriptor.
+// Properties retains the common Memory fields and every other authored property.
+// Extra fields are held as canonical JSON so value copies remain independent
+// and comparable. JSON construction preserves values without numeric conversion.
 type Properties struct {
 	Title string `json:"title"`
 	Body  string `json:"body"`
+	extra string
 }
 
 // Record is a complete preview Memory record, including its outgoing owned Links.

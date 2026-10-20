@@ -97,7 +97,7 @@ func runGraphPreviewEpicCloseEligible(cmd *cobra.Command) error {
 }
 
 func requireGraphPreviewRelationshipGeneration() error {
-	if graphPreviewTypeGeneration != 9 {
+	if graphPreviewTypeGeneration != graphstore.TypeGeneration {
 		return graphFailure("capability_unavailable", "graph epic requires the current graph Type installation", 5)
 	}
 	return nil

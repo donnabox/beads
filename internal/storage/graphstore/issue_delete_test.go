@@ -35,7 +35,13 @@ func TestIssueDeleteRetainsHistoryAndRefusesIncidentLinks(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			link, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/relation", SourcePath: "beads/work", TargetPath: "beads/other", TypeURL: RelatedTypeURL(s.ScopeURL())})
+			// Preserve the native neighbor control while using a legal unowned
+			// Issue-to-Memory References Link for the incident-Link refusal.
+			contextMemory, err := s.Create(ctx, CreateRequest{Path: "beads/context", Title: "Context"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			link, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/relation", SourcePath: "beads/work", TargetPath: "beads/context", TypeURL: RelatedTypeURL(s.ScopeURL())})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -50,6 +56,9 @@ func TestIssueDeleteRetainsHistoryAndRefusesIncidentLinks(t *testing.T) {
 			}
 			if got, err := s.ShowIssue(ctx, "beads/other"); err != nil || !reflect.DeepEqual(got, other) {
 				t.Fatalf("refusal changed neighbor: %+v %v", got, err)
+			}
+			if got, err := s.Read(ctx, "beads/context"); err != nil || !reflect.DeepEqual(got, contextMemory) {
+				t.Fatalf("refusal changed Memory neighbor: %+v %v", got, err)
 			}
 			if _, err := s.Unlink(ctx, LinkDeleteRequest{Path: "links/relation", ExpectedRevision: link.Link.Revision, DefaultInformationalSource: true}); err != nil {
 				t.Fatal(err)

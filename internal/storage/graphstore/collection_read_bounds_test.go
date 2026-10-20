@@ -28,7 +28,7 @@ func TestCurrentReadAcquisitionBudget(t *testing.T) {
 							t.Error(err)
 						}
 					})
-					if _, err := s.Create(ctx, CreateRequest{Path: "beads/small", Body: "small"}); err != nil {
+					if _, err := s.Create(ctx, CreateRequest{Title: "Small", Path: "beads/small", TypeURL: s.ScopeURL() + "types/constraint", Body: "small"}); err != nil {
 						t.Fatal(err)
 					}
 					if snapshot, err := s.CurrentSnapshot(ctx); err != nil || len(snapshot.Records) != 1 {
@@ -36,14 +36,14 @@ func TestCurrentReadAcquisitionBudget(t *testing.T) {
 					}
 					switch scenario {
 					case "memory":
-						if _, err := s.Create(ctx, CreateRequest{Path: "beads/large", Body: strings.Repeat("x", PreviewCurrentReadByteLimit/2+1024)}); err != nil {
+						if _, err := s.Create(ctx, CreateRequest{Title: "Large", Path: "beads/large", Body: strings.Repeat("x", PreviewCurrentReadByteLimit/2+1024)}); err != nil {
 							t.Fatal(err)
 						}
 						assertCurrentReadBudgetRefusal(t, ctx, s, "beads/large")
 					case "issue-hydration":
 						// The filler alone fits. A legal TEXT-sized Issue description plus its
 						// current durable_state pushes acquisition over the remaining headroom.
-						if _, err := s.Create(ctx, CreateRequest{Path: "beads/filler", Body: strings.Repeat("x", PreviewCurrentReadByteLimit/2-(32<<10))}); err != nil {
+						if _, err := s.Create(ctx, CreateRequest{Title: "Filler", Path: "beads/filler", Body: strings.Repeat("x", PreviewCurrentReadByteLimit/2-(32<<10))}); err != nil {
 							t.Fatal(err)
 						}
 						if _, err := s.CurrentSnapshot(ctx); err != nil {
@@ -56,13 +56,13 @@ func TestCurrentReadAcquisitionBudget(t *testing.T) {
 						}
 						assertCurrentReadBudgetRefusal(t, ctx, s, "beads/issue")
 					case "owned-link-and-history":
-						source, err := s.Create(ctx, CreateRequest{Path: "beads/source"})
+						source, err := s.Create(ctx, CreateRequest{Title: "Source", Path: "beads/source"})
 						if err != nil {
 							t.Fatal(err)
 						}
 						// This note's two persisted Link copies plus the owner's retained copy
 						// would fit without accounting for repeated owned/top-level acquisition.
-						added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/large", SourcePath: "beads/source", TargetPath: "beads/small", ExpectedSourceRevision: source.Revision, Properties: map[string]any{"note": strings.Repeat("n", PreviewCurrentReadByteLimit/5+4096)}})
+						added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/large", TypeURL: s.ScopeURL() + "types/subject-to", SourcePath: "beads/source", TargetPath: "beads/small", ExpectedSourceRevision: source.Revision, Properties: map[string]any{"note": strings.Repeat("n", PreviewCurrentReadByteLimit/5+4096)}})
 						if err != nil {
 							t.Fatal(err)
 						}

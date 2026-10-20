@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -9,6 +10,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/spf13/cobra"
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/config"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
@@ -31,7 +33,7 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	if beadType == graphstore.MemoryTypeURL(graphPreviewConfig.GraphScopeURL) {
+	if beadType != graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) {
 		return runGraphPreviewCreateMemory(cmd, args)
 	}
 	if err := graphPreviewFlags(cmd, "id", "parent", "no-inherit-labels", "title", "description", "body", "message", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due", "metadata", "properties"); err != nil {
@@ -41,7 +43,7 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if cmd.Flags().Changed("parent") && parentSelector == "" {
 		return graphFailure("invalid_selector", "--parent requires an Issue ID", 2)
 	}
-	if parentSelector != "" && graphPreviewTypeGeneration != 9 {
+	if parentSelector != "" && graphPreviewTypeGeneration != graphstore.TypeGeneration {
 		return graphFailure("capability_unavailable", "create --parent requires a fresh graph workspace", 5)
 	}
 	if parentSelector != "" && cmd.Flags().Changed("id") {
@@ -387,8 +389,8 @@ func graphPreviewCreateBeadType(cmd *cobra.Command, scope string) (string, error
 	if err != nil {
 		return "", graphFailure("invalid_selector", err.Error(), 2)
 	}
-	if typeURL != issueType && typeURL != graphstore.MemoryTypeURL(scope) {
-		return "", graphFailure("capability_unavailable", "graph create supports only the installed Issue and Memory bead types", 5)
+	if !graphPreviewSelectedTypeCandidate(scope, typeURL) {
+		return "", graphFailure("capability_unavailable", "Type is not installed in this workspace", 5)
 	}
 	return typeURL, nil
 }
@@ -406,7 +408,7 @@ func graphPreviewCreateProperties(cmd *cobra.Command) (map[string]any, error) {
 }
 
 func runGraphPreviewCreateMemory(cmd *cobra.Command, args []string) error {
-	title, body, err := graphPreviewCreateMemoryInput(cmd, args)
+	properties, err := graphPreviewCreateMemoryPropertiesJSON(cmd, args)
 	if err != nil {
 		return err
 	}
@@ -419,7 +421,14 @@ func runGraphPreviewCreateMemory(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		record, err := store.Create(ctx, graphstore.CreateRequest{Path: path, Title: title, Body: body, Actor: getActorWithGit(), Metadata: metadata})
+		typeURL, err := graphPreviewCreateBeadType(cmd, store.ScopeURL())
+		if err != nil {
+			return nil, "", err
+		}
+		if err := graphPreviewRequireInstalledType(ctx, store, typeURL, graph.KindBead, true); err != nil {
+			return nil, "", err
+		}
+		record, err := store.Create(ctx, graphstore.CreateRequest{Path: path, TypeURL: typeURL, PropertiesJSON: properties, Actor: getActorWithGit(), Metadata: metadata})
 		if err != nil {
 			return nil, "", err
 		}
@@ -437,12 +446,15 @@ func graphPreviewCreateMemoryInput(cmd *cobra.Command, args []string) (string, s
 	if err != nil {
 		return "", "", err
 	}
-	for name := range properties {
-		if name != "title" && name != "body" {
-			return "", "", graphFailure("invalid_properties", "Memory properties do not include "+name, 2)
-		}
-		if _, ok := properties[name].(string); !ok {
-			return "", "", graphFailure("invalid_properties", "Memory "+name+" must be a JSON string", 2)
+	return graphPreviewCreateMemoryInputValues(cmd, args, properties)
+}
+
+func graphPreviewCreateMemoryInputValues(cmd *cobra.Command, args []string, properties map[string]any) (string, string, error) {
+	for _, name := range []string{"title", "body"} {
+		if value, present := properties[name]; present {
+			if _, ok := value.(string); !ok {
+				return "", "", graphFailure("invalid_properties", "Memory "+name+" must be a JSON string", 2)
+			}
 		}
 	}
 	if len(args) > 1 {
@@ -500,4 +512,47 @@ func graphPreviewCreateMemoryInput(cmd *cobra.Command, args []string) (string, s
 		return "", "", graphFailure("invalid_properties", "Memory title and body must be valid UTF-8", 2)
 	}
 	return title, body, nil
+}
+
+// Keep arbitrary authored property values as JSON bytes. Only the existing
+// title/body shorthand fields are decoded; the selected writer validates the
+// complete object, including extras and exact subject References.
+func graphPreviewCreateMemoryPropertiesJSON(cmd *cobra.Command, args []string) (json.RawMessage, error) {
+	if err := graphPreviewFlags(cmd, "type", "id", "title", "description", "body", "message", "metadata", "properties"); err != nil {
+		return nil, err
+	}
+	values := map[string]json.RawMessage{}
+	if cmd.Flags().Changed("properties") {
+		input, _ := cmd.Flags().GetString("properties")
+		raw, err := graphPreviewPropertiesJSON(input, cmd.InOrStdin())
+		if err != nil {
+			return nil, graphFailure("invalid_properties", err.Error(), 2)
+		}
+		if err := json.Unmarshal(raw, &values); err != nil {
+			return nil, err
+		}
+	}
+	textValues := map[string]any{}
+	for _, name := range []string{"title", "body"} {
+		if raw, present := values[name]; present {
+			var text string
+			if string(raw) == "null" || json.Unmarshal(raw, &text) != nil {
+				return nil, graphFailure("invalid_properties", "Memory "+name+" must be a JSON string", 2)
+			}
+			textValues[name] = text
+		}
+	}
+	title, body, err := graphPreviewCreateMemoryInputValues(cmd, args, textValues)
+	if err != nil {
+		return nil, err
+	}
+	values["title"], err = json.Marshal(title)
+	if err != nil {
+		return nil, err
+	}
+	values["body"], err = json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(values)
 }
