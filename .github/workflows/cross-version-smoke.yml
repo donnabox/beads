@@ -65,7 +65,6 @@ jobs:
           run('09-prev-dependency',[prev,'dep','add',wisp,blocker],False)
           run('10-cand-migrate',[cand,'migrate','schema'],False);run('11-cand-init',[cand,'init','--quiet','--non-interactive','--skip-hooks','--skip-agents'],False)
           run('12-list',[cand,'mol','wisp','list','--all']);run('13-ready',[cand,'ready']);run('14-blocked',[cand,'blocked'])
-          run('14b-show-json-before',[cand,'show',wisp,'--json'],False)
           update=run('15-update',[cand,'update',wisp,'--notes','smoke wisp mutation'],False);show=run('16-show',[cand,'show',wisp],False);machine=run('17-show-json',[cand,'show',wisp,'--json'],False)
           result={'wisp':wisp,'blocker':blocker,'update_exit':update.returncode,'human_exit':show.returncode,'human_notes_present':'smoke wisp mutation' in show.stdout,'json_exit':machine.returncode,'json_notes_present':'smoke wisp mutation' in machine.stdout};(phase/'result.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result),flush=True)
           shutil.copytree(ws,phase/'workspace-snapshot')
