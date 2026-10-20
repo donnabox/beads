@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Keep macOS race coverage exhaustive without one oversized graphstore process.
+"""Keep macOS race coverage exhaustive without oversized graphstore or CLI processes.
 
 The existing Linux name-shard helpers establish the exhaustive-discovery pattern.
 This lane uses Python so it does not require mapfile from Bash newer than macOS's.
@@ -20,6 +20,7 @@ import sys
 import time
 
 GRAPHSTORE = "github.com/steveyegge/beads/internal/storage/graphstore"
+COMMAND = "github.com/steveyegge/beads/cmd/bd"
 FLAGS = ["-tags", "gms_pure_go", "-v", "-race", "-short", "-timeout=30m", "-skip", "^TestEmbedded"]
 # -json supplies framed verbose output. Explicit -v would override its
 # test2json framing and let unterminated application output hide RUN/PASS.
@@ -203,7 +204,7 @@ class Runner:
 def partition(names):
     require(names and len(names) == len(set(names)), "empty or duplicate discovered test set")
     eligible = sorted(name for name in names if not name.startswith("TestEmbedded"))
-    require(eligible, "no eligible graphstore tests")
+    require(eligible, "no eligible package tests")
     groups = [eligible[index::GROUPS] for index in range(GROUPS)]
     require(Counter(name for group in groups for name in group) == Counter(eligible), "incomplete group partition")
     return groups
@@ -247,7 +248,7 @@ def verify_events(path, packages, expected_roots=None):
     require(set(started) == set(terminal), "missing test terminal receipt")
     require(package_ends == Counter({package: 1 for package in packages}), "missing or duplicate package terminal receipt")
     if expected_roots is not None:
-        require(roots == set(expected_roots), "executed graphstore roots differ from discovered selection")
+        require(roots == set(expected_roots), "executed package roots differ from discovered selection")
     return dict(roots=sorted(roots), tests=len(terminal),
                 skipped=sorted(f"{package}:{name}" for (package, name), action in terminal.items() if action == "skip"),
                 packages=sorted(packages))
@@ -266,31 +267,40 @@ def execute(root, output, go="go", package_parallel=None, test_parallel=None, js
         require(not json_output.is_relative_to(output.resolve()), "combined Go JSON must be outside individual evidence")
         json_output.write_bytes(b"")
     runner = Runner(root, output, json_output)
-    summary = dict(passed=False, failure=None, groups=[])
+    summary = dict(passed=False, failure=None, groups=[], commandGroups=[])
     try:
         packages_file = runner.run("package-discovery", [go, "list", "-race", "-tags", "gms_pure_go", "./..."], DISCOVERY_SECONDS)
         packages = packages_file.read_text().splitlines()
-        require(packages and len(packages) == len(set(packages)) and GRAPHSTORE in packages, "package discovery missing graphstore or contains duplicates")
+        require(packages and len(packages) == len(set(packages)) and {GRAPHSTORE, COMMAND} <= set(packages), "package discovery missing partitioned packages or contains duplicates")
         require(all(re.fullmatch(r"[A-Za-z0-9_./-]+", package) for package in packages), "malformed package discovery")
-        other = sorted(set(packages) - {GRAPHSTORE})
-        require(other, "missing non-graphstore package coverage")
-        names_file = runner.run("graphstore-discovery", [go, "test", *flags, "-list", ".", GRAPHSTORE], DISCOVERY_SECONDS)
-        names = discovered_names(names_file)
-        groups = partition(names)
-        write_json(output / "plan.json", dict(packages=sorted(packages), otherPackages=other, discovered=sorted(names),
-                   excluded=sorted(set(names) - set(sum(groups, []))), groups=groups, flags=flags, jsonFlags=json_flags))
-        # Separate Go processes reset only the package alarm, not any test body.
-        for index, group in enumerate(groups, 1):
-            label = f"graphstore-{index}"
-            write_json(output / (label + "-manifest.json"), group)
-            if not group:
-                summary["groups"].append(dict(label=label, roots=[], empty=True))
-                continue
-            selected = "^(" + "|".join(group) + ")$"
-            events = runner.run(label, [go, "test", *json_flags, "-json", "-count=1", "-run", selected, GRAPHSTORE], GROUP_SECONDS)
-            census = verify_events(events, [GRAPHSTORE], group)
-            write_json(output / (label + "-census.json"), census)
-            summary["groups"].append(dict(label=label, **census))
+        other = sorted(set(packages) - {GRAPHSTORE, COMMAND})
+        require(other, "missing remaining package coverage")
+        partitions = []
+        for label, package, summary_key in (("graphstore", GRAPHSTORE, "groups"), ("cmd-bd", COMMAND, "commandGroups")):
+            names_file = runner.run(label + "-discovery", [go, "test", *flags, "-list", ".", package], DISCOVERY_SECONDS)
+            names = discovered_names(names_file)
+            groups = partition(names)
+            plan = dict(package=package, discovered=sorted(names),
+                        excluded=sorted(set(names) - set(sum(groups, []))), groups=groups)
+            partitions.append((label, package, summary_key, plan))
+        # Keep the original graphstore fields for existing evidence consumers.
+        write_json(output / "plan.json", dict(packages=sorted(packages), otherPackages=other,
+                   **{key: partitions[0][3][key] for key in ("discovered", "excluded", "groups")},
+                   command=partitions[1][3], flags=flags, jsonFlags=json_flags))
+        # Separate Go processes reset only each package alarm, not any test body.
+        # The same total deadline and strict owned-process cleanup still apply.
+        for prefix, package, summary_key, plan in partitions:
+            for index, group in enumerate(plan["groups"], 1):
+                label = f"{prefix}-{index}"
+                write_json(output / (label + "-manifest.json"), group)
+                if not group:
+                    summary[summary_key].append(dict(label=label, roots=[], empty=True))
+                    continue
+                selected = "^(" + "|".join(group) + ")$"
+                events = runner.run(label, [go, "test", *json_flags, "-json", "-count=1", "-run", selected, package], GROUP_SECONDS)
+                census = verify_events(events, [package], group)
+                write_json(output / (label + "-census.json"), census)
+                summary[summary_key].append(dict(label=label, **census))
         events = runner.run("other-packages", [go, "test", *json_flags, "-json", *other], OTHER_SECONDS)
         summary["other"] = verify_events(events, other)
         summary["passed"] = True
