@@ -36,10 +36,10 @@ func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 		{"link", linkCmd, []string{
 			"Graph preview workspaces:", "bd link", "create/list/show/update/delete/versions/compare/count", "--type types/references", "Memory or Issue",
 			"accepts a built-in Dependency kind, types/NAME or a full local Type URL",
-			"The single Type types/dependency", "--if-source-revision TOKEN to reject a stale source.",
+			"The single Type types/dependency", "--if-source-revision TOKEN to reject a stale source.", "Owned-source pins remain unavailable.", "current resolves",
 		}},
 		{"show", showCmd, []string{"Graph preview workspaces:", "ordinary detail array", "--format graph-json"}},
-		{"update", updateCmd, []string{"Graph preview workspaces:", "--properties", "--replace-properties", "--replace-metadata", "--if-revision TOKEN"}},
+		{"update", updateCmd, []string{"Graph preview workspaces:", "--properties", "--replace-properties", "--replace-metadata", "--if-revision TOKEN", "omission", "preserves the existing pin"}},
 		{"unclaim", unclaimCmd, []string{"Graph preview workspaces:", "bd unclaim ID...", "--force", "--if-assignee HOLDER", "--reason TEXT", "bd comments ID"}},
 		{"comments", commentsCmd, []string{"Graph preview workspaces:", "bd comments ID", "outside the", "Issue version"}},
 		{"list", listCmd, []string{"Graph preview workspaces:", "all installed Bead Types", "--type types/NAME", "Issue-specific filters", "newest recorded change first", "hidden unless --all is given", "--all also removes the row limit", "BEADS_MAX_ROWS refuses a page of more Beads", "--sort, --reverse", "Issues only", "a line under the header saying Memories are", "it is simply not"}},

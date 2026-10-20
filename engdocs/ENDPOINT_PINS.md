@@ -1,9 +1,10 @@
 # Preview 3 endpoint-pin storage slice
 
 This implementation stores a local informational Link's source and target
-identity independently of each optional exact endpoint revision. It is an
-internal writer/read slice; CLI endpoint pins remain refused until the adapter
-slice lands. Export closure adaptation is separate work owned by its consumer.
+identity independently of each optional exact endpoint revision. The CLI
+adapter accepts endpoint selectors at Link creation and explicit source/target
+revision flags at Link update. Export closure adaptation is separate work owned
+by its consumer.
 It does not adopt a new public BDP contract or enable external endpoints.
 
 ## Carrier and writer API
@@ -67,3 +68,10 @@ See the named `EndpointPins`, `OwnedTargetRepin`, `OwnedSourcePins`,
 `PinnedEndpointValidationBudget`, and `VersionComparisonEndpointRepin` tests in
 [graphstore](../internal/storage/graphstore/endpoint_pins_test.go) and the
 [HTTP test](../internal/httpapi/graph_endpoint_pins_test.go).
+
+The CLI adapter's process workflows are `TestGraphPreviewLinkEndpointRevisionAdmission`
+and `TestGraphPreviewEndpointRepinWorkflow` in
+[revision selector workflows](../cmd/bd/graph_preview_revision_selector_workflow_test.go).
+They cover exact/current creation, same-ID re-pin/unpin/omission, combined
+metadata and ordered property patch edits, stale guards, owned-source refusal,
+owned-target snapshots and full canonical URL access to literal-`@` identities.

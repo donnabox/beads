@@ -3,11 +3,15 @@
 package graphstore
 
 import (
+	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"reflect"
 	"strings"
+	"sync"
 	"testing"
+	"time"
 
 	"github.com/steveyegge/beads/internal/storage"
 )
@@ -287,6 +291,143 @@ func TestOwnedSourcePinsRefuseBeforeAndAfterRetyping(t *testing.T) {
 			}
 			request.ExpectedSourceRevision = plain.Memory.Revision
 			assertRefusal()
+		})
+	}
+}
+
+func TestEndpointPinsConcurrentOwnedRepin(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			ctx, cancel := context.WithTimeout(ctx, time.Minute)
+			defer cancel()
+			first, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() {
+				if err := first.Close(); err != nil {
+					t.Error(err)
+				}
+			})
+			source, err := first.Create(ctx, CreateRequest{Path: "beads/source", Title: "Source"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			target, err := first.Create(ctx, CreateRequest{Path: "beads/target", Title: "Rule", TypeURL: first.ScopeURL() + "types/constraint"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			links := []LinkRecord{}
+			for _, path := range []string{"links/one", "links/two"} {
+				added, err := first.AddInformationalLink(ctx, LinkCreateRequest{Path: path, SourcePath: "beads/source", TargetPath: "beads/target", TypeURL: first.ScopeURL() + "types/subject-to", TargetPin: EndpointPin{Revision: target.Revision}, ExpectedSourceRevision: source.Revision})
+				if err != nil {
+					t.Fatal(err)
+				}
+				source = added.Source.(Record)
+				links = append(links, added.Link)
+			}
+			body := "Next rule"
+			targetNext, err := first.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/target", Body: &body, ExpectedRevision: target.Revision})
+			if err != nil {
+				t.Fatal(err)
+			}
+			second := &Store{db: first.db, options: options}
+			if backend == "server" {
+				second, err = OpenExisting(ctx, options)
+				if err != nil {
+					t.Fatal(err)
+				}
+				t.Cleanup(func() {
+					if err := second.Close(); err != nil {
+						t.Error(err)
+					}
+				})
+			}
+			reached, release := make(chan struct{}, 2), make(chan struct{})
+			pause := func(stage string) error {
+				if backend != "server" || stage != "source-retained" {
+					return nil
+				}
+				reached <- struct{}{}
+				select {
+				case <-release:
+					return nil
+				case <-ctx.Done():
+					return ctx.Err()
+				}
+			}
+			first.afterWrite, second.afterWrite = pause, pause
+			results := make(chan error, 2)
+			var writers sync.WaitGroup
+			defer func() { cancel(); writers.Wait() }()
+			for i, store := range []*Store{first, second} {
+				writers.Add(1)
+				go func() {
+					defer writers.Done()
+					_, err := store.UpdateLink(ctx, LinkUpdateRequest{Path: []string{"links/one", "links/two"}[i], ExpectedRevision: links[i].Revision, ExpectedSourceRevision: source.Revision, TargetPin: &EndpointPin{Current: true}})
+					results <- err
+				}()
+			}
+			if backend == "server" {
+				for range 2 {
+					select {
+					case <-reached:
+					case err := <-results:
+						t.Fatalf("writer before overlap: %v", err)
+					case <-ctx.Done():
+						t.Fatal(ctx.Err())
+					}
+				}
+				close(release)
+			}
+			won, conflicted := 0, 0
+			for range 2 {
+				select {
+				case err := <-results:
+					if err == nil {
+						won++
+					} else if errors.Is(err, ErrConflict) {
+						conflicted++
+					} else {
+						t.Fatalf("unexpected race result: %v", err)
+					}
+				case <-ctx.Done():
+					t.Fatal(ctx.Err())
+				}
+			}
+			writers.Wait()
+			first.afterWrite, second.afterWrite = nil, nil
+			if won != 1 || conflicted != 1 {
+				t.Fatalf("repin guard race: %d wins %d conflicts", won, conflicted)
+			}
+			owner, err := first.Show(ctx, "beads/source")
+			if err != nil || len(owner.Owned) != 2 || owner.Revision == source.Revision {
+				t.Fatalf("owner state: %+v %v", owner, err)
+			}
+			newPins := 0
+			for _, raw := range owner.Owned {
+				var owned LinkRecord
+				if err := json.Unmarshal(raw, &owned); err != nil {
+					t.Fatal(err)
+				}
+				current, err := first.ShowLink(ctx, strings.TrimPrefix(owned.ID, first.ScopeURL()))
+				if err != nil {
+					t.Fatal(err)
+				}
+				encoded, err := canonicalJSON(current)
+				if err != nil || !bytes.Equal(raw, encoded) {
+					t.Fatalf("split standalone/owner state: %v", err)
+				}
+				if current.TargetRevision == targetNext.Memory.Revision {
+					newPins++
+				} else if current.TargetRevision != target.Revision {
+					t.Fatal("unexpected endpoint revision")
+				}
+			}
+			if newPins != 1 {
+				t.Fatalf("race committed %d re-pins", newPins)
+			}
 		})
 	}
 }

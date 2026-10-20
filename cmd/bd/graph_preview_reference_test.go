@@ -91,7 +91,7 @@ func TestGraphPreviewLinkReferenceFlagsAreSeparateFromWriteGuard(t *testing.T) {
 	for _, command := range []struct {
 		name string
 		cmd  *cobra.Command
-	}{{"link", linkCmd}, {"link create", linkCreateCmd}} {
+	}{{"link", linkCmd}, {"link create", linkCreateCmd}, {"update", updateCmd}, {"link update", linkUpdateCmd}} {
 		for _, name := range []string{"source-revision", "target-revision", "if-source-revision"} {
 			if command.cmd.Flags().Lookup(name) == nil {
 				t.Errorf("%s lacks --%s", command.name, name)
@@ -162,5 +162,39 @@ func TestGraphPreviewBracketedLocatorAdmission(t *testing.T) {
 	// canonical locator verbatim rather than reinterpret it as a local ID.
 	if got, err := graphPreviewParseReference("[https://foreign.example/beads/plan]@r7"); err != nil || got.Identity != "https://foreign.example/beads/plan" || !got.Wrapped {
 		t.Fatalf("foreign locator parsing = %+v, %v", got, err)
+	}
+}
+
+func TestGraphPreviewEndpointPinIntents(t *testing.T) {
+	for _, tc := range []struct {
+		name           string
+		flags          []string
+		source, target *graphstore.EndpointPin
+		bad            bool
+	}{
+		{"omitted", nil, nil, nil, false},
+		{"explicit-unpin", []string{"--source-revision=unpinned"}, &graphstore.EndpointPin{}, nil, false},
+		{"current-independent-exact", []string{"--source-revision=current", "--target-revision=r@7"}, &graphstore.EndpointPin{Current: true}, &graphstore.EndpointPin{Revision: "r@7"}, false},
+		{"empty-refuses", []string{"--target-revision="}, nil, nil, true},
+		{"oversized-refuses", []string{"--target-revision=" + strings.Repeat("x", graphstore.PreviewVersionTokenLimit+1)}, nil, nil, true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			cmd := &cobra.Command{}
+			cmd.Flags().String("source-revision", "", "")
+			cmd.Flags().String("target-revision", "", "")
+			if err := cmd.ParseFlags(tc.flags); err != nil {
+				t.Fatal(err)
+			}
+			source, target, err := graphPreviewLinkPinIntents(cmd)
+			if (err != nil) != tc.bad {
+				t.Fatalf("error: %v", err)
+			}
+			equal := func(a, b *graphstore.EndpointPin) bool {
+				return (a == nil && b == nil) || (a != nil && b != nil && *a == *b)
+			}
+			if err == nil && (!equal(source, tc.source) || !equal(target, tc.target)) {
+				t.Fatalf("lost omission/pin intent: %+v %+v", source, target)
+			}
+		})
 	}
 }
