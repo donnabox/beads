@@ -1,0 +1,47 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/claude",
+    "-p",
+    "--safe-mode",
+    "--restricted",
+    "--tools",
+    "",
+    "--strict-mcp-config",
+    "--disable-slash-commands",
+    "--no-session-persistence",
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    "--include-partial-messages"
+  ],
+  "start": "2026-10-18T09:36:14.937254+00:00",
+  "cwd": "/Users/dbox/repos/wt/iris/graph-export-c678",
+  "source": "f870c97f527f7a763d8d3352e3da28c2b7a87bd1",
+  "tree": "63c3dbac02f92498f4d35469e4e1b10ac48540f4",
+  "base": "c67855b4f7c1e4fb24409eb22d142a52d19ab92f",
+  "parent": "e923b31528bfb1887ed08baa751f9217b22621a3",
+  "promptSHA256": "9f3dc6bcdd00cef2e2a22d2f29ba1982cd26d1b066b7b9c40cdcdfc61a94bf84",
+  "deadlineSeconds": 1800,
+  "scope": "Actual direct fresh frozen independent export adaptation review; no model/auth override/tools/hooks/delegation; raw stream local only",
+  "pid": 44803,
+  "exit": 0,
+  "status": "completed",
+  "end": "2026-10-18T09:41:40.249824+00:00",
+  "frozenSourceUnchanged": true,
+  "assistantMessages": 1,
+  "resultEvents": 1,
+  "invalidJSONLines": [],
+  "stderrBytes": 0,
+  "rawStreamSHA256": "12c130ec69442fa3a9a0d7176f89dfbedce07d1a8bc29009862edd1ec385cf8b",
+  "rawStreamLocation": "LOCAL ONLY; not published; internal thinking excluded from artifacts",
+  "resultSummary": [
+    {
+      "stop_reason": "end_turn",
+      "is_error": false,
+      "num_turns": 1,
+      "subtype": "success",
+      "type": "result",
+      "duration_ms": 323795
+    }
+  ]
+}

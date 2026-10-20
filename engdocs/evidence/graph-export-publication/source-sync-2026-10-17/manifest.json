@@ -1,0 +1,48 @@
+{
+  "head": "83f696c7cc54d9434ef78ebd1bfc4dd2eccff465",
+  "parents": [
+    "649350ba8534315d55ee1fddaed87c699dabf8a8",
+    "b5973def8e395e5acee6707ac02bb3bd654c03f1"
+  ],
+  "import_unique_commit_count": 23,
+  "import_unique_commit_intersection": [],
+  "source_sha256": {
+    "internal/storage/graphstore/export_current.go": "ab90e97f434284058db6e87d27808494b58ec0e7e41c6632b892c8437a50f8d2",
+    "internal/storage/graphstore/export_current_test.go": "881785de78089b3397b2a6846ae863831df9b525194d2b77a40365b55b7d1ada",
+    "internal/storage/graphstore/export_current_pure_test.go": "e909e67ef940c624520055a78595864ad914d9ea7c7c7b47a5603fc15a7f89ee",
+    "internal/storage/graphstore/export_cleanup_pure_test.go": "8b96ad83c57e18b089b10c9019f170aa0919734d2e4c7648e05c2b593f6920d3",
+    "internal/storage/graphstore/BUILD.bazel": "061b4bf0041d672a9e23c9ece51592ba0d2b96d4189f09ffe027901b2d959fdd",
+    "internal/graphoutput/publish.go": "7fbfc663c2e831e4ef01e0c97c801a9bef590707d2051d3c66bdaf2cd947f047",
+    "internal/graphoutput/publish_test.go": "5677d63a5de84cce9998688a9cf6d7cc6075fcaa2d8c5cff8929ef58cbd0f345",
+    "internal/graphoutput/BUILD.bazel": "b6bd229320c8233d5aa14727f5484b7f530a92677d6e192378fa5e3c612b7c39",
+    "internal/atomicfile/atomicfile.go": "4f580cad66a9ea2784643e8d791bfdad879fd9019dc2eba5ab3f14de1c6cc2e0"
+  },
+  "changed_from_publication_parent": [
+    "engdocs/evidence/graph-export-reader/README.md",
+    "engdocs/evidence/graph-export-reader/final-docs.log",
+    "engdocs/evidence/graph-export-reader/final-lint.log",
+    "engdocs/evidence/graph-export-reader/final-manifest.txt",
+    "engdocs/evidence/graph-export-reader/final-native.txt",
+    "engdocs/evidence/graph-export-reader/final-prompt.txt",
+    "engdocs/evidence/graph-export-reader/final-pure.log",
+    "engdocs/evidence/graph-export-reader/final-review-interrupted.json",
+    "engdocs/evidence/graph-export-reader/repair-claude.txt",
+    "internal/storage/graphstore/export_cleanup_pure_test.go",
+    "internal/storage/graphstore/export_current.go",
+    "internal/storage/graphstore/export_current_test.go"
+  ],
+  "pure": {
+    "log": "pure.log",
+    "sha256": "614dfd60f2010394758bc682798029011efa1d6c0f4296d5f2241e0a01e1dffa",
+    "pass_test_records": 68,
+    "fail_test_records": 0,
+    "skip_test_records": 0,
+    "package_results": [
+      "ok  \tgithub.com/steveyegge/beads/internal/storage/graphstore\t1.719s",
+      "ok  \tgithub.com/steveyegge/beads/internal/graphoutput\t0.389s"
+    ],
+    "runner_command": "Running: go test -p 4 -parallel 4 -timeout 90s -v -run ^(TestExportCurrentSnapshotContextBeforeOpen|TestExportCommentOriginalUTF8|TestExportSnapshotClosure|TestExportReadProjectionIncludesUnjoinedComments|TestExportCurrentSnapshotRollbackCleanup|TestExportCurrentSnapshotCommentRowsCleanup|TestExportCurrentSnapshotBadConnectionCleanup|TestExportCurrentSnapshotPhysicalCloseBoundary|TestExportCommentsScanAndCloseCleanup|TestExportCommentsFeedCleanup|TestExportCommentsNextCleanup|TestPublishFileReplacement|TestInvalidContextBeforeIO|TestPublishFileCreateFailure|TestPublishFileFailurePreservesDestination|TestPublishFileRealRenameFailure|TestPublishFileSuccessBoundary|TestWriteStreamShortWrite|TestWriteStreamCancellationAndCompletion|TestWriteStreamEmptyAndNilWriter|TestPublishFileEmptyPathBeforeIO)$ -count 1 ./internal/storage/graphstore ./internal/graphoutput",
+    "safe_selection": "Neither package has TestMain or init; explicit pure test names only; BEADS_TEST_SHARED_SERVER=0 and hermetic default Dolt skip; no recursive packages/CLI prebuild."
+  },
+  "hook_boundary": "Local git merge used core.hooksPath=/dev/null to honor explicit no engines/broad suites scope; focused canonical pure checks passed afterward. Full hooks/CI/runtime gates remain outstanding."
+}
