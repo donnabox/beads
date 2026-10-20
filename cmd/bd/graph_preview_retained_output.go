@@ -19,7 +19,10 @@ func init() {
 			if canonicalOutputSelected(cmd) {
 				return nil // The result adapter emits structured argument failures.
 			}
-			return legacyArgs(cmd, args)
+			if legacyArgs != nil {
+				return legacyArgs(cmd, args)
+			}
+			return nil
 		}
 	}
 	for _, cmd := range []*cobra.Command{versionsCmd, historyCmd, linkVersionsCmd} {
