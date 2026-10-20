@@ -17,7 +17,7 @@ retrofit effort on `bd dep`.
 | Adopt with dedicated result adapters | `versions`, `history`, `compare`, their explicit Link readers, and the generic graph view. |
 | Adopt for mutation results | Generic Bead `create/update/delete` and `bd link create/update/delete`. Kind-specific mutation dispatch remains unchanged. |
 | Adopt when their generic semantics are ready | Search hits, aggregates/count, Type Resource inspection, and a Link query wrapper if the query design admits it. |
-| Integrate later, without a second output engine | Memory facades and assessment views; export has a separate interchange contract. |
+| Excluded from this rollout | `remember`, `recall`, `memories`, `forget`, and future Link/Memory facades. Future adoption requires a separate scope decision; export retains its separate interchange contract. |
 | Leave on shipping contracts | `dep` and all its children; `ready`, `blocked`, Issue lifecycle, assignment/priority, comments, work hierarchy, epic/gate/state workflows, labels, formula/molecule/workflow conveniences. |
 | No normalization project here | Init/setup/doctor, serving, maintenance, sync, integrations, administrative reports, raw SQL, and other operational commands. |
 
@@ -84,13 +84,13 @@ a second round of command-local filter implementations.
 
 | Surface | Disposition and reason |
 | --- | --- |
-| `bd link query` | Proposed wrapper, not registered in the inspected baseline. Reconsider with Melinda after generic query/Link population works; do not implement a separate language. |
+| `bd link query` | Future facade, explicitly excluded from this rollout. Generic query can select Links through the shared population model; no new wrapper or separate language here. |
 | `bd link search`, `bd link history` | Not registered in the inspected Link command set. No new verbs in this output rollout; existing generic query/reader routes are the design inputs. |
 | `bd types` | Optional installed-catalog output adapter after A, using its actual descriptor shape. Type-as-Bead behavior waits for Trish's contract; configuration/aliases must not be labeled Resource rows. No new `link types` command. |
-| `bd memories` | Later Memory facade over shared family/text selection and output; coordinate with Melinda. |
-| `bd recall` | Later explicit facade adapter. Preserve its current body-only contract until an approved change; do not prepend an envelope to raw body output. |
-| `bd remember`, `bd forget` | Later Memory mutation-facade adapters; no independent mutation/projection implementation in this effort. |
-| New assessment/coverage/explanation commands | Proposed names/operations remain in Memory design. Adopt shared output only after the result contract preserves collective context and completeness. |
+| `bd memories` | Explicitly excluded from this rollout; preserve its current contract. |
+| `bd recall` | Explicitly excluded. Preserve its current body-only contract; do not prepend an envelope to raw body output. |
+| `bd remember`, `bd forget` | Explicitly excluded; preserve their existing mutation and output contracts. |
+| New assessment/coverage/explanation commands | Future Memory facades are explicitly excluded. The common output contract records context-preservation obligations for any separately approved future adapter; it does not authorize new commands. |
 | `bd export` | Iris coordinates selection reuse and packaging; generic JSONL is not a replacement for the transfer/legacy export format. |
 | `bd import` | No generic rendering rewrite here; preserve interchange/admission semantics. |
 | `bd batch` | Separate operation/transaction/result contract; not automatically changed by adopting output on individual mutations. |
@@ -221,19 +221,21 @@ Completion gate: successful output and failures preserve existing revision,
 ownership, attribution and exactly-once semantics. No storage feature is inferred
 from a new format flag.
 
-### 4. Generic graph, derived results and Memory
+### 4. Generic graph and derived results
 
 Add Link selectors, graph table/tree output, cycle/shared-node references and
 parallel Links. Use complete compound graph JSON items initially; do not invent
 a graph event stream merely because JSONL exists.
 
 Integrate generic search/count and Type inspection as their result adapters are
-defined. Add Memory views using the same pipeline, with mandatory assessment
-identity/subjects/claims/completeness supplied by their result contracts.
-Preserve selected exact revisions; do not coalesce them into current identity.
+defined. Preserve selected exact revisions; do not coalesce them into current
+identity. Memory facade commands and future Link facades are outside this rollout.
+The shared pipeline's assessment-context obligations remain available to separately
+approved future adapters; implementing those facades is not a completion gate here.
 
 Completion gate: non-Issue examples work without fabricated fields and no
-projection erases the meaning of an assessment or a graph edge.
+projection erases the meaning of a represented graph edge. Future assessment
+adapters must separately qualify their collective-context obligations.
 
 ### 5. Separate follow-ons
 
