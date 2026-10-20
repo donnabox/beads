@@ -3,6 +3,7 @@ package clioutput_test
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"os"
 	"reflect"
 	"strings"
@@ -78,6 +79,28 @@ func TestCompleteResourceKeepsPayloadMeaning(t *testing.T) {
 	equalJSON(t, framed.Data, bead)
 	if !bytes.Contains(framed.Data, []byte("9007199254740993")) {
 		t.Fatalf("large integer changed: %s", framed.Data)
+	}
+}
+
+func TestDerivedResultUsesExplicitCLIKind(t *testing.T) {
+	d := clioutput.Descriptor{
+		BDPSpec: "fixture-contract-not-a-release-pin", ResultKind: "comparison",
+		Protection: &clioutput.Protection{Required: []string{"resource", "from", "to"}},
+	}
+	r := renderer(t, d, clioutput.Options{JSON: true})
+	raw := json.RawMessage(`{"resource":"b","from":"z","to":"a","changes":[]}`)
+	out, err := r.Render(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	equalJSON(t, out, `{"schema_version":2,"bdp_spec":"fixture-contract-not-a-release-pin","result_kind":"comparison","outcome":"success","data":{"resource":"b","from":"z","to":"a","changes":[]}}`)
+	failure, err := r.RenderFailure("cli", json.RawMessage(`{"code":"not_found","message":"not found"}`))
+	if err != nil || !bytes.Contains(failure, []byte(`"result_kind":"comparison"`)) {
+		t.Fatalf("failure lost result contract: %s, %v", failure, err)
+	}
+	d.ResultKind = "invented"
+	if _, err := clioutput.New(d, clioutput.Options{}); err == nil {
+		t.Fatal("unknown result contract accepted")
 	}
 }
 
@@ -175,6 +198,46 @@ func TestCollectiveContextSurvivesRawProjection(t *testing.T) {
 	r = renderer(t, descriptor(), clioutput.Options{JSON: true, Omit: []string{"/subjects", "envelope"}})
 	if _, err = r.Render(json.RawMessage(resource)); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestSelectedEmbeddedContextSurvivesEmptyProjection(t *testing.T) {
+	for _, tc := range []struct {
+		name, prefix, source string
+		protection           *clioutput.Protection
+	}{
+		{"object", "/embedded", `{"id":"b","type":"custom","revision":"r1","embedded":{"id":"l","source":"b","target":"c","body":"text"}}`,
+			&clioutput.Protection{Required: []string{"id", "source", "target"}}},
+		{"array", "/embedded/0", `{"id":"b","type":"custom","revision":"r1","embedded":[{"id":"l","source":"b","target":"c","body":"text"}]}`,
+			&clioutput.Protection{Items: &clioutput.Protection{Required: []string{"id", "source", "target"}}}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			d := descriptor()
+			d.Expandable = append(d.Expandable, "/embedded")
+			d.Protection.Members["embedded"] = tc.protection
+			r := renderer(t, d, clioutput.Options{JSON: true, Include: []string{tc.prefix + "/id"}, Omit: []string{tc.prefix + "/id"}})
+			if out, err := r.Render(json.RawMessage(tc.source)); err == nil || len(out) != 0 {
+				t.Fatalf("mandatory omission silently removed selected Resource: %s, %v", out, err)
+			}
+			// Selecting an optional field and omitting it still retains the
+			// represented Resource's identity; it does not delete that Resource.
+			r = renderer(t, d, clioutput.Options{JSON: true, Include: []string{tc.prefix + "/body"}, Omit: []string{tc.prefix + "/body", "envelope"}})
+			out, err := r.Render(json.RawMessage(tc.source))
+			if err != nil || !bytes.Contains(out, []byte(`"id":"l"`)) || bytes.Contains(out, []byte(`"body"`)) {
+				t.Fatalf("selected context lost: %s, %v", out, err)
+			}
+			for _, opts := range []clioutput.Options{
+				{JSON: true, Include: []string{tc.prefix + "/missing"}, Omit: []string{"envelope"}},
+				{JSON: true, Include: []string{tc.prefix + "/id"}, Omit: []string{"/embedded", "envelope"}},
+			} {
+				r = renderer(t, d, opts)
+				out, err = r.Render(json.RawMessage(tc.source))
+				if err != nil {
+					t.Fatal(err)
+				}
+				equalJSON(t, out, `{"id":"b","type":"custom","revision":"r1"}`)
+			}
+		})
 	}
 }
 
@@ -302,7 +365,9 @@ func TestLinkGoldenProjectionAndNativeProvenanceNames(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		equalJSON(t, out, string(want))
+		if !bytes.Equal(out, want) {
+			t.Fatalf("golden bytes differ: got %s\nwant %s", out, want)
+		}
 	}
 	r := renderer(t, d, clioutput.Options{JSON: true, Omit: []string{"envelope"}})
 	out, err := r.Render(input)
@@ -327,5 +392,27 @@ func TestOptionalEmbeddedAbsenceNullAndEmptyStayDistinct(t *testing.T) {
 			t.Fatal(err)
 		}
 		equalJSON(t, out, source)
+	}
+}
+
+func TestProjectionErrorsAreTypedAndDetailKeepsLiteralText(t *testing.T) {
+	r := renderer(t, descriptor(), clioutput.Options{Formats: []string{"default"}, Include: []string{"/properties/body"}})
+	out, err := r.Render(json.RawMessage(`{"id":"b","type":"custom","revision":"r1","properties":{"body":"A & B < C > D","other":"hidden"}}`))
+	if err != nil || !bytes.Contains(out, []byte("A & B < C > D")) || bytes.Contains(out, []byte("hidden")) {
+		t.Fatalf("detail projection: %s, %v", out, err)
+	}
+	d := descriptor()
+	r = renderer(t, d, clioutput.Options{JSON: true, Omit: []string{"/ownedLinks/0/id"}})
+	_, err = r.Render(json.RawMessage(`{"id":"b","type":"custom","revision":"r1","ownedLinks":[{"id":"l","type":"relation","revision":"l1","source":"b","target":"c"}]}`))
+	if !errors.Is(err, clioutput.ErrInvalidProjection) {
+		t.Fatalf("unclassified omission: %v", err)
+	}
+	for _, problem := range []string{`{}`, `{"code":"x"}`, `{"code":"x","message":null}`, `[]`} {
+		if out, err := r.RenderFailure("cli", json.RawMessage(problem)); err == nil || len(out) != 0 {
+			t.Fatalf("invalid CLI problem accepted: %s, %v", out, err)
+		}
+	}
+	if _, err := r.RenderFailure("other", json.RawMessage(`{}`)); err == nil {
+		t.Fatal("invalid origin accepted")
 	}
 }
