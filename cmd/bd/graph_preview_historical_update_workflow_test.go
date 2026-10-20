@@ -3,6 +3,7 @@
 package main
 
 import (
+	"encoding/json"
 	"reflect"
 	"testing"
 
@@ -88,6 +89,33 @@ func TestGraphPreviewHistoricalRecoveryWorkflow(t *testing.T) {
 				t.Fatal("recovery did not install result")
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "gone", "show", "recover", "--version", deleted.Terminal.Revision, "--json")
+		})
+	}
+}
+
+func TestGraphPreviewHistoricalOrderedPatchBase(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := graphListWorkspace(t, bd, engine, "https://example.invalid/historical-patch/")
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+			}
+			original := graphMixedResult[graphstore.Record](t, call("remember", "Original", "--id", "beads/base", "--metadata", `{"source":true}`))
+			current := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", "base", "--properties", `{"body":"current"}`, "--replace-metadata", `{"current":true}`))
+			operations, err := json.Marshal([]map[string]any{{"op": "replace", "path": "/title", "value": "Intermediate"}, {"op": "replace", "path": "/title", "value": "Patched"}})
+			if err != nil {
+				t.Fatal(err)
+			}
+			patched := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", "base", "--from-revision", original.Revision, "--if-revision", current.Memory.Revision, "--patch", string(operations)))
+			if !patched.Changed || patched.Memory.Properties.Body != original.Properties.Body || patched.Memory.Properties.Title != "Patched" || string(patched.Memory.Metadata) != string(original.Metadata) {
+				t.Fatalf("ordered patch ignored selected base: %+v", patched)
+			}
+			replaced := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", "base", "--from-revision", original.Revision, "--replace-properties", `{"title":"Replacement","body":"full"}`))
+			if !replaced.Changed || replaced.Memory.Properties.Title != "Replacement" || replaced.Memory.Properties.Body != "full" || string(replaced.Memory.Metadata) != string(original.Metadata) {
+				t.Fatalf("replacement ignored source metadata/base ordering: %+v", replaced)
+			}
 		})
 	}
 }

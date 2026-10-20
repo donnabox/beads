@@ -16,8 +16,8 @@ import (
 // per acquired row. This measures read acquisition, not a schema limit or an
 // exact Go heap/SQL-engine memory bound. Append-only preview
 // operations also reuse it as a transaction postcondition to prevent unreadable
-// growth when no inverse operation is admitted. Historical revisions
-// which are not current are neither acquired nor charged.
+// growth when no inverse operation is admitted. Ordinary current reads do not acquire or charge unselected historical
+// revisions. Historical Update additionally charges its selected retained input.
 const PreviewCurrentReadByteLimit = 16 << 20
 
 type currentReadSizeQuery struct {

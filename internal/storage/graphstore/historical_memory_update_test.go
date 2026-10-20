@@ -567,6 +567,115 @@ func TestHistoricalMemoryRecoveryUnsupportedBaselineBoundaries(t *testing.T) {
 	}
 }
 
+func TestHistoricalMemoryAcquisitionBudget(t *testing.T) {
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			ctx, _, s := memoryDeleteStore(t, engine)
+			original, err := s.Create(ctx, CreateRequest{Path: "beads/budget", Title: "Budget", Body: strings.Repeat("a", 6<<20)})
+			if err != nil {
+				t.Fatal(err)
+			}
+			current, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/budget", Body: historicalBody(strings.Repeat("b", 6<<20)), Unconditional: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+			before := workflowState(t, ctx, s)
+			if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/budget", FromRevision: original.Revision, ExpectedRevision: current.Memory.Revision}); !errors.Is(err, ErrLimitExceeded) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("individually bounded current/source exceeded combined budget or wrote: %v", err)
+			}
+			// A small result must not excuse acquiring an oversized historical input.
+			if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/budget", FromRevision: original.Revision, Body: historicalBody("small"), Unconditional: true}); !errors.Is(err, ErrLimitExceeded) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("postwrite-only limit accepted oversized acquisition: %v", err)
+			}
+			// Free current payload bytes, then keep two individually legal retained
+			// inputs whose combined protected-baseline/source acquisition is too big.
+			if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/budget", Body: historicalBody(strings.Repeat("c", 9<<20)), Unconditional: true}); err != nil {
+				t.Fatal(err)
+			}
+			large, err := s.Show(ctx, "beads/budget")
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/budget", Body: historicalBody(strings.Repeat("d", 8<<20)), Unconditional: true}); err != nil {
+				t.Fatal(err)
+			}
+			deleted, err := s.DeleteMemory(ctx, MemoryDeleteRequest{Path: "beads/budget", Unconditional: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+			before = workflowState(t, ctx, s)
+			if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/budget", FromRevision: large.Revision, ExpectedRevision: deleted.Terminal.Revision}); !errors.Is(err, ErrLimitExceeded) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("baseline and source exceeded combined recovery budget or wrote: %v", err)
+			}
+			if history, err := s.History(ctx, "beads/budget"); err != nil || history.CurrentState == nil || history.CurrentState.Revision != deleted.Terminal.Revision {
+				t.Fatalf("descriptor hydrated irrelevant large baseline: %v", err)
+			}
+		})
+	}
+}
+
+func TestHistoricalMemoryTerminalDescriptorBudget(t *testing.T) {
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			ctx, _, s := memoryDeleteStore(t, engine)
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/descriptor", Title: "Descriptor"}); err != nil {
+				t.Fatal(err)
+			}
+			deleted, err := s.DeleteMemory(ctx, MemoryDeleteRequest{Path: "beads/descriptor", Actor: strings.Repeat("a", 6<<20), Unconditional: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if deleted.Terminal == nil {
+				t.Fatal("missing D fixture")
+			}
+			before := workflowState(t, ctx, s)
+			if history, err := s.History(ctx, "beads/descriptor"); !errors.Is(err, ErrLimitExceeded) || !reflect.ValueOf(history).IsZero() || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("metadata plus D descriptor exceeded cumulative budget or wrote: %v", err)
+			}
+		})
+	}
+}
+
+func TestHistoricalMemoryTerminalDescriptorPrivacy(t *testing.T) {
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			ctx, _, s := memoryDeleteStore(t, engine)
+			last, err := s.Create(ctx, CreateRequest{Path: "beads/private-baseline", Title: "Private baseline", Body: "not part of terminal descriptor", Metadata: json.RawMessage(`{"private":"baseline"}`)})
+			if err != nil {
+				t.Fatal(err)
+			}
+			deleted, err := s.DeleteMemory(ctx, MemoryDeleteRequest{Path: "beads/private-baseline", Unconditional: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.db.ExecContext(ctx, `UPDATE graph_preview_versions SET snapshot='{}' WHERE path=? AND version=?`, "beads/private-baseline", last.Revision); err != nil {
+				t.Fatal(err)
+			}
+			history, err := s.History(ctx, "beads/private-baseline")
+			if err != nil || history.CurrentState == nil || history.CurrentState.Revision != deleted.Terminal.Revision {
+				t.Fatalf("D descriptor depended on decoding baseline: %v", err)
+			}
+			raw, err := json.Marshal(history.CurrentState)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var fields map[string]any
+			if err := json.Unmarshal(raw, &fields); err != nil {
+				t.Fatal(err)
+			}
+			for _, key := range []string{"type", "properties", "metadata", "owned", "source", "target"} {
+				if _, present := fields[key]; present {
+					t.Fatalf("terminal descriptor disclosed %s", key)
+				}
+			}
+			before := workflowState(t, ctx, s)
+			if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/private-baseline", FromRevision: last.Revision, ExpectedRevision: deleted.Terminal.Revision}); !errors.Is(err, ErrInvalidStore) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("recovery bypassed its independent protected baseline: %v", err)
+			}
+		})
+	}
+}
+
 func TestHistoricalMemoryUpdateCumulativeAcquisitionBudget(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
