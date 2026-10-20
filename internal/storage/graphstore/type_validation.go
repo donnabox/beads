@@ -328,7 +328,7 @@ func (s *Store) informationalOwnedPathsInTx(ctx context.Context, tx *sql.Tx, sou
 		owned, err := c.types.Owns(typecatalog.Reference{URI: sourceType}, typecatalog.Reference{URI: typ})
 		if err != nil {
 			_ = rows.Close()
-			return nil, err
+			return nil, fmt.Errorf("%w: invalid persisted informational ownership Type: %v", ErrInvalidStore, err)
 		}
 		if owned {
 			paths = append(paths, path)
