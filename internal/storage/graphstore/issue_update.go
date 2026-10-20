@@ -34,6 +34,7 @@ import (
 type UpdateIssueRequest struct {
 	Path, Actor, ExpectedRevision                             string
 	FromRevision                                              string
+	PropertiesPatch                                           []byte
 	NativeID                                                  string
 	Unconditional, ForceNotesOverwrite, ForceAssigneeTransfer bool
 	PropertiesProvided, ClearEstimatedMinutes                 bool
@@ -145,6 +146,10 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		patch.DueAt = publicops.Field[*time.Time]{Set: true, Value: value}
 		count++
 	}
+	scalarCount := count
+	if len(request.PropertiesPatch) > 0 && (request.FromRevision == "" || scalarCount > 0) {
+		return IssueMutationResult{}, fmt.Errorf("%w: native property operations require a historical source and cannot combine with scalar setters", storage.ErrValidation)
+	}
 	if err := validateCommonMetadataPatch(request.Metadata); err != nil {
 		return IssueMutationResult{}, err
 	}
@@ -200,7 +205,7 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 			if err := checkHistoricalIssueReadBytes(ctx, tx, path, request.FromRevision); err != nil {
 				return err
 			}
-			patch, err = s.historicalIssuePatchInTx(ctx, tx, path, request.FromRevision, before, patch)
+			patch, err = s.historicalIssuePatchInTx(ctx, tx, path, request.FromRevision, before, patch, request.PropertiesPatch)
 			if err != nil {
 				return err
 			}

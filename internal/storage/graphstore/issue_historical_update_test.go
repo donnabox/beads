@@ -232,6 +232,10 @@ func TestHistoricalIssueKeepsNativeWriteFences(t *testing.T) {
 			if !errors.Is(err, storage.ErrNotesOverwrite) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
 				t.Fatalf("historical mode bypassed native notes fence: %v", err)
 			}
+			_, err = s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/notes", FromRevision: original.Revision, ExpectedRevision: current.Issue.Revision, Actor: "historical", PropertiesPatch: []byte(`[{"op":"replace","path":"/design","value":"explicit"}]`)})
+			if !errors.Is(err, storage.ErrNotesOverwrite) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("ordered historical mode bypassed native notes fence: %v", err)
+			}
 			forced, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/notes", FromRevision: original.Revision, Unconditional: true, Actor: "historical", ForceNotesOverwrite: true, AppendNotes: issueEditString("appended")})
 			if err != nil || forced.Issue.Properties.Notes != "historical notes\nappended" {
 				t.Fatalf("explicit append did not follow selected notes base: %v %+v", err, forced)
@@ -252,6 +256,10 @@ func TestHistoricalIssueKeepsNativeWriteFences(t *testing.T) {
 			if !errors.Is(err, storage.ErrAlreadyClaimed) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
 				t.Fatalf("historical mode bypassed active assignment fence: %v", err)
 			}
+			_, err = s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/assigned", FromRevision: assigned.Revision, ExpectedRevision: current.Issue.Revision, Actor: "outsider", PropertiesPatch: []byte(`[{"op":"replace","path":"/design","value":"explicit"}]`)})
+			if !errors.Is(err, storage.ErrAlreadyClaimed) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("ordered historical mode bypassed active assignment fence: %v", err)
+			}
 		})
 	}
 }
@@ -261,19 +269,36 @@ func TestHistoricalIssueCumulativeAcquisitionBudget(t *testing.T) {
 		t.Run(engine, func(t *testing.T) {
 			ctx, _, s := memoryDeleteStore(t, engine)
 			request := plainIssue("Large retained source")
-			request.Issue.Description = strings.Repeat("s", 9<<20)
+			request.Issue.Description = strings.Repeat("s", 7<<20)
 			source, err := s.CreateIssue(ctx, "beads/large", request)
 			if err != nil {
 				t.Fatal(err)
 			}
-			current, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/large", Description: issueEditString(strings.Repeat("c", 8<<20)), Actor: "current", Unconditional: true})
+			current, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/large", Description: issueEditString(strings.Repeat("c", 5<<20)), Actor: "current", Unconditional: true})
 			if err != nil {
 				t.Fatal(err)
+			}
+			if err := s.withTx(ctx, false, func(tx *sql.Tx) error { return checkCurrentReadBytes(ctx, tx) }); err != nil {
+				t.Fatalf("current state alone must fit acquisition budget: %v", err)
 			}
 			before := workflowState(t, ctx, s)
 			_, err = s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/large", FromRevision: source.Revision, ExpectedRevision: current.Issue.Revision, Actor: "historical"})
 			if !errors.Is(err, ErrLimitExceeded) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
 				t.Fatalf("native current+source budget not atomic: %v", err)
+			}
+			// Removed payloads are unavailable inputs, not bytes this operation
+			// may hydrate. Preserve that row's refusal even when its size would
+			// exceed the combined budget if it were live.
+			if err := s.withTx(ctx, true, func(tx *sql.Tx) error {
+				_, err := tx.ExecContext(ctx, `UPDATE issue_versions SET removed_at=CURRENT_TIMESTAMP,removed_reason=?,removed_restriction=? WHERE issue_id=? AND revision=(SELECT issue_revision FROM graph_preview_issue_versions WHERE path=? AND version=?)`, "large source removed", "gone_retention", source.Properties.ID, "beads/large", source.Revision)
+				return err
+			}); err != nil {
+				t.Fatal(err)
+			}
+			before = workflowState(t, ctx, s)
+			_, err = s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/large", FromRevision: source.Revision, ExpectedRevision: current.Issue.Revision, Actor: "historical"})
+			if !errors.Is(err, ErrVersionUnknown) || !strings.Contains(err.Error(), "gone_retention: large source removed") || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("removed large source lost availability refusal or wrote: %v", err)
 			}
 		})
 	}
@@ -406,5 +431,51 @@ func TestHistoricalIssueLostCommitResponse(t *testing.T) {
 	_, err = direct.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/unknown", FromRevision: source.Revision, ExpectedRevision: current.Issue.Revision, Actor: "historical"})
 	if !errors.Is(err, ErrConflict) || !reflect.DeepEqual(before, workflowState(t, ctx, direct)) {
 		t.Fatalf("guarded replay rewrote: %v", err)
+	}
+}
+
+func TestHistoricalIssueOrderedPropertyBase(t *testing.T) {
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			ctx, _, s := memoryDeleteStore(t, engine)
+			request := plainIssue("  Preserved title  ")
+			request.Issue.Description = "historical body"
+			request.Issue.Metadata = json.RawMessage(`{"historical":true}`)
+			source, err := s.CreateIssue(ctx, "beads/patch", request)
+			if err != nil {
+				t.Fatal(err)
+			}
+			current, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/patch", Description: issueEditString("current body"), Actor: "current", Unconditional: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+			result, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/patch", FromRevision: source.Revision, ExpectedRevision: current.Issue.Revision, Actor: "patcher", PropertiesPatch: []byte(`[{"op":"replace","path":"/design","value":"intermediate"},{"op":"replace","path":"/design","value":"explicit"}]`)})
+			if err != nil || !result.Changed || result.Issue.Properties.Description != "historical body" || result.Issue.Properties.Design != "explicit" || result.Issue.Properties.Title != source.Properties.Title || string(result.Issue.Metadata) != string(source.Metadata) {
+				t.Fatalf("ordered native patch ignored selected base/protected title: %+v %v", result, err)
+			}
+			before := workflowState(t, ctx, s)
+			noop, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/patch", FromRevision: result.Issue.Revision, Actor: "noop", Unconditional: true, PropertiesPatch: []byte(`[{"op":"replace","path":"/design","value":"explicit"}]`)})
+			if err != nil || noop.Changed || !reflect.DeepEqual(noop.Issue, result.Issue) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("equal ordered patch rewrote envelope: %v", err)
+			}
+			for _, raw := range []string{
+				`[]`,
+				`[{"op":"remove","path":"/title"}]`,
+				`[{"op":"replace","path":"/priority","value":null}]`,
+				`[{"op":"replace","path":"/priority","value":1.5}]`,
+				`[{"op":"add","path":"/status","value":"closed"}]`,
+				`[{"op":"replace","path":"/description","value":null}]`,
+				`[{"op":"replace","path":"/title","value":""}]`,
+			} {
+				_, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/patch", FromRevision: source.Revision, Actor: "invalid", Unconditional: true, PropertiesPatch: []byte(raw)})
+				if !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+					t.Fatalf("invalid native ordered patch wrote: %s %v", raw, err)
+				}
+			}
+			replaced, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/patch", FromRevision: source.Revision, Actor: "replace", Unconditional: true, PropertiesPatch: []byte(`[{"op":"replace","path":"","value":{"title":"Replacement","priority":0}}]`)})
+			if err != nil || !replaced.Changed || replaced.Issue.Properties.Title != "Replacement" || replaced.Issue.Properties.Priority != 0 || replaced.Issue.Properties.Description != "" || replaced.Issue.Properties.EstimatedMinutes != nil || string(replaced.Issue.Metadata) != string(source.Metadata) {
+				t.Fatalf("native replacement lost clear/source metadata semantics: %+v %v", replaced, err)
+			}
+		})
 	}
 }

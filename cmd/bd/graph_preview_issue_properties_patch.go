@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
-	"time"
 
 	"github.com/spf13/cobra"
 	graph "github.com/steveyegge/beads/graphops"
@@ -119,17 +118,5 @@ func graphPreviewPatchIssuePropertiesOnce(ctx context.Context, store *graphstore
 }
 
 func graphPreviewIssuePatchProjection(issue *types.Issue) map[string]any {
-	projection := map[string]any{
-		"title": issue.Title, "description": issue.Description, "design": issue.Design,
-		"acceptance_criteria": issue.AcceptanceCriteria, "notes": issue.Notes,
-		"spec_id": issue.SpecID, "assignee": issue.Assignee,
-		"priority": issue.Priority, "estimated_minutes": issue.EstimatedMinutes,
-		"external_ref": issue.ExternalRef,
-	}
-	if issue.DueAt == nil {
-		projection["due_at"] = nil
-	} else {
-		projection["due_at"] = issue.DueAt.Format(time.RFC3339Nano)
-	}
-	return projection
+	return graphstore.IssueEditableProperties(issue)
 }

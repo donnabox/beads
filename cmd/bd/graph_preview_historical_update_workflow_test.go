@@ -145,7 +145,6 @@ func TestGraphPreviewHistoricalNativeIssueWorkflow(t *testing.T) {
 			}{
 				{"revision_conflict", []string{"update", "subject", "--from-revision", original.Revision, "--if-revision", current.Issue.Revision}},
 				{"revision_unknown", []string{"update", "subject", "--from-revision", "unknown"}},
-				{"capability_unavailable", []string{"update", "subject", "--from-revision", original.Revision, "--patch", `[{"op":"replace","path":"/title","value":"Patch"}]`}},
 			} {
 				graphPolicyCLI(t, bd, work, home, nil, tc.code, append(tc.args, "--json")...)
 			}
@@ -161,6 +160,36 @@ func TestGraphPreviewHistoricalNativeIssueWorkflow(t *testing.T) {
 			want.Properties = &properties
 			if !reflect.DeepEqual(exact, want) {
 				t.Fatal("native historical context not retained")
+			}
+		})
+	}
+}
+
+func TestGraphPreviewHistoricalNativeOrderedPatch(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := graphListWorkspace(t, bd, engine, "https://example.invalid/native-ordered/")
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+			}
+			original := graphMixedResult[graphstore.IssueRecord](t, call("create", "Original", "--id", "beads/subject", "--description", "historical body", "--metadata", `{"source":true}`))
+			current := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "subject", "--properties", `{"description":"current body"}`, "--replace-metadata", `{"current":true}`))
+			patched := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "subject", "--from-revision", original.Revision, "--if-revision", current.Issue.Revision, "--patch", `[{"op":"replace","path":"/design","value":"intermediate"},{"op":"replace","path":"/design","value":"explicit"}]`))
+			if !patched.Changed || patched.Issue.Properties.Design != "explicit" || patched.Issue.Properties.Description != "historical body" || string(patched.Issue.Metadata) != string(original.Metadata) {
+				t.Fatalf("native ordered CLI ignored source: %+v", patched)
+			}
+			replaced := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "subject", "--from-revision", original.Revision, "--replace-properties", `{"title":"Replacement","priority":0}`))
+			if !replaced.Changed || replaced.Issue.Properties.Title != "Replacement" || replaced.Issue.Properties.Priority != 0 || replaced.Issue.Properties.Description != "" || string(replaced.Issue.Metadata) != string(original.Metadata) {
+				t.Fatalf("native replacement wrong: %+v", replaced)
+			}
+			for _, raw := range []string{`[{"op":"remove","path":"/title"}]`, `[{"op":"add","path":"/labels","value":["old"]}]`, `[{"op":"replace","path":"/priority","value":null}]`} {
+				graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "update", "subject", "--from-revision", original.Revision, "--patch", raw, "--json")
+			}
+			got := graphMixedResult[graphstore.IssueRecord](t, call("show", "subject", "--format", "graph-json"))
+			if !reflect.DeepEqual(got, replaced.Issue) {
+				t.Fatal("native ordered refusal changed state")
 			}
 		})
 	}

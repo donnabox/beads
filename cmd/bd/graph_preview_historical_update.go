@@ -61,10 +61,7 @@ func runGraphPreviewHistoricalUpdate(cmd *cobra.Command, path string) error {
 			return nil, "", readErr
 		}
 		if _, native := current.(graphstore.IssueRecord); native {
-			if patch != nil {
-				return nil, "", graphFailure("capability_unavailable", "historical native Issue ordered property changes are not yet supported", 5)
-			}
-			nativeRequest := graphstore.UpdateIssueRequest{Path: path, FromRevision: source, Actor: request.Actor, ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata}
+			nativeRequest := graphstore.UpdateIssueRequest{Path: path, FromRevision: source, Actor: request.Actor, ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata, PropertiesPatch: patch}
 			nativeRequest.ForceNotesOverwrite, _ = cmd.Flags().GetBool("force")
 			if request.PropertiesProvided {
 				var values map[string]any
