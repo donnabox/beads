@@ -117,7 +117,7 @@ func runGraphPreviewUpdateMemory(cmd *cobra.Command, path string) error {
 			if !result.Changed {
 				verb = "Unchanged"
 			}
-			return result, fmt.Sprintf("%s %s", verb, result.Issue.ID), nil
+			return result, graphPreviewMutationSummary(fmt.Sprintf("%s %s", verb, result.Issue.ID), result), nil
 		}
 		if cmd.Flags().Changed("force") {
 			return nil, "", graphFailure("invalid_properties", "--force applies only to an Issue notes edit", 2)

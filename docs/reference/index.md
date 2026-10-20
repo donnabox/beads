@@ -30,5 +30,8 @@ rather than teach concepts (that's [How Beads Works](/core-concepts/index)).
   and binary verification.
 - [FAQ](/reference/faq) — beads vs other trackers, and the questions
   everyone asks in week one.
+- [Graph CLI guide](/reference/graph-cli) — experimental graph workspace commands.
+- [Graph CLI specification draft](/reference/graph-cli-specification-draft) — current preview contracts and candidate work.
+- [Legacy graph import candidate](/reference/graph-legacy-import) — supported ordinary export data, mappings and atomic refusal in fresh workspaces.
 - [CLI Reference](/cli-reference/index) — the generated page-per-command
   reference, nested below as a collapsible group.

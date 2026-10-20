@@ -53,14 +53,14 @@ func runGraphPreviewRememberUpsert(cmd *cobra.Command, args []string) error {
 			if createErr == nil {
 				return created, fmt.Sprintf("Created %s\n", path), nil
 			}
-			if !errors.Is(createErr, graphstore.ErrAlreadyExists) {
+			if !graphPreviewRememberDefiniteError(createErr, graphstore.ErrAlreadyExists) {
 				return nil, "", createErr
 			}
 			result, patchErr := store.PatchMemory(ctx, graphstore.MemoryPatchRequest{
 				Path: path, Title: title, Body: body, PropertiesProvided: cmd.Flags().Changed("properties"), Actor: actor,
 				ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata,
 			})
-			if errors.Is(patchErr, graphstore.ErrNotFound) || errors.Is(patchErr, graphstore.ErrGone) || errors.Is(patchErr, graphstore.ErrCapabilityUnavailable) {
+			if graphPreviewRememberDefiniteError(patchErr, graphstore.ErrNotFound) || graphPreviewRememberDefiniteError(patchErr, graphstore.ErrGone) || graphPreviewRememberDefiniteError(patchErr, graphstore.ErrCapabilityUnavailable) {
 				return nil, "", createErr // Deleted or non-Memory identity remains reserved.
 			}
 			return graphPreviewRememberPatchResult(result, patchErr)
@@ -69,11 +69,18 @@ func runGraphPreviewRememberUpsert(cmd *cobra.Command, args []string) error {
 			Path: path, Title: title, Body: body, PropertiesProvided: cmd.Flags().Changed("properties"), Actor: actor,
 			ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata,
 		})
-		if errors.Is(err, graphstore.ErrNotFound) && title != nil && strings.TrimSpace(*title) == "" {
+		if graphPreviewRememberDefiniteError(err, graphstore.ErrNotFound) && title != nil && strings.TrimSpace(*title) == "" {
 			return nil, "", graphFailure("invalid_properties", "an explicit creation --title must be nonempty", 2)
 		}
 		return graphPreviewRememberPatchResult(result, err)
 	})
+}
+
+// A failed rollback or lost commit acknowledgment can wrap a more specific
+// storage error. Do not turn that ambiguous write into a definite fallback or
+// validation error: the caller must inspect state before deciding to retry.
+func graphPreviewRememberDefiniteError(err, kind error) bool {
+	return errors.Is(err, kind) && !errors.Is(err, graphstore.ErrOutcomeUnknown)
 }
 
 func graphPreviewRememberPatchResult(result graphstore.MemoryMutationResult, err error) (any, string, error) {

@@ -99,8 +99,8 @@ func init() {
 	linkCmd.Flags().String("id", "", "New informational Link ID or links/PATH (bare ID is shorthand for links/ID)")
 	linkCmd.Flags().String("properties", "", "Informational Link properties as JSON, @file, or @- (graph preview only)")
 	linkCmd.Flags().String("metadata", "", "Initial informational Link metadata as a JSON object or @file (graph preview only)")
-	linkCmd.Flags().String("source-revision", "", "Source Reference revision (pinned forms currently refuse until graphstore persistence exists; distinct from --if-source-revision)")
-	linkCmd.Flags().String("target-revision", "", "Target Reference revision (pinned forms currently refuse until graphstore persistence exists)")
+	linkCmd.Flags().String("source-revision", "", "Source endpoint revision: unpinned is supported; exact tokens and current refuse in this preview (distinct from --if-source-revision)")
+	linkCmd.Flags().String("target-revision", "", "Target endpoint revision: unpinned is supported; exact tokens and current refuse in this preview")
 	updateCmd.Flags().String("patch", "", "Apply ordered Issue, Memory or informational Link property operations from JSON, @file, or @- (graph preview only)")
 	updateCmd.Flags().String("properties", "", "Shallowly merge named Issue, Memory or informational Link properties from JSON, @file, or @- (graph preview only)")
 	updateCmd.Flags().String("replace-properties", "", "Replace all writable Issue, Memory or informational Link properties with a JSON object, @file, or @- (graph preview only)")
@@ -258,7 +258,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 			// command's corrupt-metadata refusal and its diagnostic context.
 			// A damaged graph workspace must still fail before legacy opening.
 			if !markerPresent && requested != "link" {
-				if cmd == graphCmd && graphGenericFlagsChanged(cmd) {
+				if (cmd == graphCmd && graphGenericFlagsChanged(cmd)) || (cmd == importCmd && cmd.Flags().Changed("source-prefix")) {
 					return true, graphFailure("graph_not_initialized", err.Error(), 5)
 				}
 				return false, nil
@@ -291,6 +291,9 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		return true, graphFailure("not_authority", "graph_mode assertion does not match persisted workspace format", 5)
 	}
 	if mode != "link" {
+		if cmd == importCmd && cmd.Flags().Changed("source-prefix") {
+			return true, graphFailure("capability_unavailable", "--source-prefix requires a workspace initialized with graph_mode link", 5)
+		}
 		if cmd == doneTodoCmd && cmd.Flags().Changed("if-revision") {
 			return true, graphFailure("capability_unavailable", "todo done --if-revision requires an experimental graph workspace", 5)
 		}
@@ -365,13 +368,13 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 	case supersedeCmd:
 		return true, graphFailure("capability_unavailable", "graph supersede requires one atomic supersedes edge and native close reason; this graph CLI does not provide that journey yet", 5)
 	}
-	if !graphPreviewLinkNamespaceCommand(cmd) && cmd != setupCmd && cmd != claudeHookCmd && cmd != memoriesCmd && cmd != recallCmd && cmd != graphCompareCmd && cmd != listCmd && cmd != childrenCmd && cmd != epicStatusCmd && cmd != closeEligibleEpicsCmd && cmd != blockedCmd && cmd != graphCmd && cmd != graphCheckCmd && cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != stateCmd && cmd != stateListCmd && cmd != depCmd && cmd != depAddCmd && cmd != depRemoveCmd && cmd != depListCmd && cmd != depTreeCmd && cmd != depCyclesCmd && cmd != linkCmd && cmd != closeCmd && cmd != reopenCmd && cmd != unclaimCmd && cmd != heartbeatCmd && cmd != reclaimCmd && cmd != mergeSlotCreateCmd && cmd != mergeSlotCheckCmd && cmd != mergeSlotAcquireCmd && cmd != mergeSlotReleaseCmd && cmd != commentsCmd && cmd != deferCmd && cmd != undeferCmd && cmd != readyCmd && cmd != updateCmd && cmd != assignCmd && cmd != priorityCmd && cmd != noteCmd && cmd != todoCmd && cmd != addTodoCmd && cmd != listTodosCmd && cmd != doneTodoCmd && cmd != serveCmd && cmd != deleteCmd && cmd != forgetCmd && cmd != typesCmd && cmd != versionsCmd && cmd != historyCmd && cmd != searchCmd && cmd != countCmd && cmd != queryCmd && cmd != quickCmd && cmd != statusesCmd && cmd != commentCmd && cmd != commentsAddCmd && cmd != editCmd {
+	if !graphPreviewLinkNamespaceCommand(cmd) && cmd != importCmd && cmd != setupCmd && cmd != claudeHookCmd && cmd != memoriesCmd && cmd != recallCmd && cmd != graphCompareCmd && cmd != listCmd && cmd != childrenCmd && cmd != epicStatusCmd && cmd != closeEligibleEpicsCmd && cmd != blockedCmd && cmd != graphCmd && cmd != graphCheckCmd && cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != stateCmd && cmd != stateListCmd && cmd != depCmd && cmd != depAddCmd && cmd != depRemoveCmd && cmd != depListCmd && cmd != depTreeCmd && cmd != depCyclesCmd && cmd != linkCmd && cmd != closeCmd && cmd != reopenCmd && cmd != unclaimCmd && cmd != heartbeatCmd && cmd != reclaimCmd && cmd != mergeSlotCreateCmd && cmd != mergeSlotCheckCmd && cmd != mergeSlotAcquireCmd && cmd != mergeSlotReleaseCmd && cmd != commentsCmd && cmd != deferCmd && cmd != undeferCmd && cmd != readyCmd && cmd != updateCmd && cmd != assignCmd && cmd != priorityCmd && cmd != noteCmd && cmd != todoCmd && cmd != addTodoCmd && cmd != listTodosCmd && cmd != doneTodoCmd && cmd != serveCmd && cmd != deleteCmd && cmd != forgetCmd && cmd != typesCmd && cmd != versionsCmd && cmd != historyCmd && cmd != searchCmd && cmd != countCmd && cmd != queryCmd && cmd != quickCmd && cmd != statusesCmd && cmd != commentCmd && cmd != commentsAddCmd && cmd != editCmd {
 		// COUPLING: admitting versionsCmd and historyCmd here is only safe
 		// because each has an early `if graphPreviewActive` dispatch to
 		// runGraphPreviewVersions. Admission suppresses legacy store opening,
 		// so admitting a command WITHOUT its dispatch makes it panic on a nil
 		// store rather than refuse. See the note in history.go.
-		return true, graphFailure("capability_unavailable", "this graph preview supports remember, memories, recall, versions (and history as its alias here), compare, create, q, show, update, edit, assign, priority, note, comment, comments add, todo, delete, forget, dep add/remove/list/tree/cycles and dep --blocks, link and link create/list/show/update/delete/versions/compare/count, close, reopen, unclaim, heartbeat, reclaim, merge-slot create/check/acquire/release, state read, defer, undefer, ready, list/--format records-json and Issue-only list --json, children, search, count, query, blocked, graph ISSUE, graph check and graph --view generic, types, status and status --graph, statuses, project-local setup claude, claude-hook stop and shared-server serve; this command has not opened the legacy store", 5)
+		return true, graphFailure("capability_unavailable", "this graph preview supports import of legacy data into fresh workspaces, remember, memories, recall, versions (and history as its alias here), compare, create, q, show, update, edit, assign, priority, note, comment, comments add, todo, delete, forget, dep add/remove/list/tree/cycles and dep --blocks, link and link create/list/show/update/delete/versions/compare/count, close, reopen, unclaim, heartbeat, reclaim, merge-slot create/check/acquire/release, state read, defer, undefer, ready, list/--format records-json and Issue-only list --json, children, search, count, query, blocked, graph ISSUE, graph check and graph --view generic, types, status and status --graph, statuses, project-local setup claude, claude-hook stop and shared-server serve; this command has not opened the legacy store", 5)
 	}
 	graphPreviewActive, graphPreviewConfig, graphPreviewDir = true, cfg, dir
 	graphPreviewTypeGeneration = 9
@@ -566,17 +569,33 @@ func withGraphStore(fn func(context.Context, *graphstore.Store) (any, string, er
 
 // Output starts only after the operation and ordinary store cleanup succeed.
 func withGraphStoreOutput(fn func(context.Context, *graphstore.Store) (any, string, error), output func(any, string) error) error {
-	ctx, cancel := context.WithTimeout(getRootContext(), 30*time.Second)
+	return withGraphStoreBudget(30*time.Second, fn, output)
+}
+
+func withGraphStoreBudget(budget time.Duration, fn func(context.Context, *graphstore.Store) (any, string, error), output func(any, string) error) error {
+	return withGraphStoreErrorMapper(budget, fn, output, graphStorageError)
+}
+
+// The mapper receives the raw open or joined operation/cleanup error before
+// any diagnostic is emitted. Ordinary graph routes keep graphStorageError.
+func withGraphStoreErrorMapper(budget time.Duration, fn func(context.Context, *graphstore.Store) (any, string, error), output func(any, string) error, mapError func(error) error) error {
+	return withGraphStoreStageErrorMappers(budget, fn, output, mapError, mapError)
+}
+
+// Open failures and failures after a successful open can need different
+// fallback categories. Recognized storage errors keep their shared mapping.
+func withGraphStoreStageErrorMappers(budget time.Duration, fn func(context.Context, *graphstore.Store) (any, string, error), output func(any, string) error, mapOpenError, mapOperationError func(error) error) error {
+	ctx, cancel := context.WithTimeout(getRootContext(), budget)
 	defer cancel()
 	s, err := graphstore.OpenExisting(ctx, graphOptions(graphPreviewConfig))
 	if err != nil {
-		return graphStorageError(err)
+		return mapOpenError(err)
 	}
 	defer func() { _ = s.Close() }() // Panic fallback; ordinary cleanup is checked below.
 	result, human, opErr := fn(ctx, s)
 	closeErr := s.Close()
 	if opErr != nil {
-		return graphStorageError(errors.Join(opErr, closeErr))
+		return mapOperationError(errors.Join(opErr, closeErr))
 	}
 	if closeErr != nil {
 		return graphFailure("route_unavailable", "operation completed but store cleanup failed: "+closeErr.Error(), 5)
@@ -775,6 +794,7 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 					"memoryDiscoveryDefaultMatches": graphMemoryDiscoveryDefaultLimit, "memoryDiscoveryOutputBytes": graphMemoryDiscoveryOutputLimit,
 					"memoryDiscoveryQueryBytes": graphMemoryDiscoveryQueryLimit, "memoryDiscoveryExcerptCodePoints": graphMemoryDiscoveryExcerptLimit},
 				"capabilities": map[string]bool{
+					"legacyImport": true, "graphImport": false, "graphExport": false,
 					"memoryCreate": true, "memoryRead": true, "memoryBodyRecall": true, "memoryJSONRecall": false,
 					"memoryDiscovery": true, "memoryDiscoveryPagination": false, "memoryBodyFileInput": true, "memoryBodyStdinInput": true,
 					"memoryPropertiesUpdate": true, "memorySelectedUpdate": true, "memorySelectedUpdateCurrentByDefault": true,
@@ -814,6 +834,15 @@ func graphPrintTo(out io.Writer, result any, human string, quiet, structured boo
 }
 
 func graphStorageError(err error) error {
+	return graphStorageErrorWithFallback(err, "graph_not_initialized")
+}
+
+func graphStorageErrorWithFallback(err error, fallback string) error {
+	// A failed rollback may join uncertainty with a definite storage refusal.
+	// No other classification may hide the inspect-before-retry boundary.
+	if errors.Is(err, graphstore.ErrOutcomeUnknown) {
+		return graphFailure("outcome_unknown", err.Error()+"; do not automatically replay; inspect the canonical ID before deciding the next action", 6)
+	}
 	// A graph route may validate a selected Type only after reading it inside
 	// withGraphStore. graphFailure has already reported this typed CLI refusal.
 	var reported *exitError
@@ -839,8 +868,6 @@ func graphStorageError(err error) error {
 		return graphFailure("gone", err.Error(), 3)
 	case errors.Is(err, graphstore.ErrCapabilityUnavailable), errors.Is(err, graphstore.ErrLimitExceeded):
 		return graphFailure("capability_unavailable", err.Error(), 5)
-	case errors.Is(err, graphstore.ErrOutcomeUnknown):
-		return graphFailure("outcome_unknown", err.Error()+"; do not automatically replay; inspect the canonical ID before deciding the next action", 6)
 	case errors.Is(err, graphstore.ErrInvalidStore):
 		return graphFailure("invalid_store", err.Error(), 5)
 	case errors.Is(err, graph.ErrValidation):
@@ -858,6 +885,6 @@ func graphStorageError(err error) error {
 	case errors.Is(err, graphstore.ErrNotFound):
 		return graphFailure("not_found", err.Error(), 3)
 	default:
-		return graphFailure("graph_not_initialized", err.Error(), 5)
+		return graphFailure(fallback, err.Error(), 5)
 	}
 }

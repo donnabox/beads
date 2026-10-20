@@ -256,9 +256,9 @@ func graphPreviewInsertDependency(sourcePath, targetPath, typeURL string, depTyp
 			verb = "Unchanged"
 		}
 		if depType == types.DepBlocks {
-			return result, fmt.Sprintf("%s %s: %s depends on %s\n", verb, result.Link.ID, sourceLabel, targetLabel), nil
+			return result, graphPreviewMutationSummary(fmt.Sprintf("%s %s: %s depends on %s", verb, result.Link.ID, sourceLabel, targetLabel), result), nil
 		}
-		return result, fmt.Sprintf("%s %s: %s → %s\n", verb, result.Link.ID, sourceLabel, targetLabel), nil
+		return result, graphPreviewMutationSummary(fmt.Sprintf("%s %s: %s → %s", verb, result.Link.ID, sourceLabel, targetLabel), result), nil
 	})
 }
 

@@ -225,10 +225,10 @@ func (s *Store) showMemoryInTx(ctx context.Context, tx *sql.Tx, path string) (Re
 // the same rows.
 func insertPreviewVersionInTx(ctx context.Context, tx *sql.Tx, path, version string, snapshot []byte, actor string) error {
 	// MAX+1 is safe here because of a FENCE, not because of luck, and naming the
-	// mechanism matters more than naming the effect. Every one of the six
-	// callers has already called touchCoordination in this same transaction
-	// (records.go:68, dependencies.go:89, dependency_unlink.go:56,
-	// informational.go:120 and :220, link_lifecycle.go:167, memory_update.go:126),
+	// mechanism matters more than naming the effect. All callers have already
+	// called touchCoordination in this same transaction (Memory create/update,
+	// Dependency add/unlink, informational Link create/update, Link lifecycle,
+	// and legacy import),
 	// which UPDATEs graph_preview_scope.writer_token WHERE singleton=1. That is
 	// a STORE-WIDE cell, not a per-path one, so two concurrent version writers
 	// in one store always contend on it and the loser fails at COMMIT with

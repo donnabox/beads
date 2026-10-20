@@ -126,8 +126,14 @@ classification (for example task or bug); the CLI selects preview-issue for it. 
 accepts body/description/message and an optional title; unsupported Issue-only
 fields refuse. Fresh workspaces create types/preview-issue Issues.`},
 		{showCmd, `Use bd show ID (equivalent to beads/ID) for a current Memory or
-Issue; use bd show links/ID for a Link. --version TOKEN selects one exact
-retained record; this is not an ordered history listing. A current Issue's
+Issue; use bd show links/ID for a Link. ID@TOKEN or '[URI]@TOKEN' selects
+one exact retained record; --version TOKEN remains an alternative (not both).
+@current and @unpinned read current. Bare absolute URIs are literal, including
+raw @ in IDs; use the full canonical URI to escape local @ shorthand.
+Suffixes are unavailable on update/delete/unlink targets; use --if-revision
+for write comparison. --version treats current and unpinned as exact tokens.
+Endpoint pins remain unavailable. This is not an ordered history listing.
+A current Issue's
 --json uses the ordinary detail array with Scope-relative Bead IDs and its
 graph revision token. Memory, Link, and exact --version reads use the
 experimental graph envelope; --format graph-json explicitly requests that
@@ -202,7 +208,10 @@ Use bd types to see Link Types installed in this workspace. --type
 accepts a built-in Dependency kind, types/NAME or a full local Type URL. An optional --id
 selects a bare Link ID or links/PATH; --properties supplies informational Link properties.
 Memory-owned Links accept the current source by default, or use
---if-source-revision TOKEN to reject a stale source. --metadata JSON supplies
+--if-source-revision TOKEN to reject a stale source. Endpoint @unpinned suffixes
+or --source-revision unpinned/--target-revision unpinned keep endpoints floating.
+Exact endpoint revisions and current refuse before mutation; these selectors
+are separate from --if-source-revision. --metadata JSON supplies
 an initial open metadata object for informational Links; native Dependencies
 do not accept it. The single Type types/preview-dependency
 requires Issue endpoints. Add --if-source-revision TOKEN to reject a stale source.`},

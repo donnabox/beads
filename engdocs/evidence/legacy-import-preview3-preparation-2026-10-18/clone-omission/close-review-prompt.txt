@@ -1,0 +1,21 @@
+Confirm this tiny test-only repair to the Low cache-oracle finding from the preceding review. No other code changed. Prior final review accepted inventory, typed-shape refusal and behavioral refusal fixtures; unexported internals/custom marshalers remain out of scope. The source API documents ComputeContentHash excludes ID/timestamps; both preparations use identical id/title, defaults, actor and metadata. Pure canonical check will verify actual equality. No source-state/production behavior change. Do not write files, execute, delegate or use another model. Output only actionable finding or explicit no actionable finding on this tiny delta, with static limits. No full runtime qualification claim.
+
+Final cache-control source:
+	// Source-local caches may be omitted or recomputed, but must not survive
+	// as authoritative input. Do not pin the timing of derived computation.
+	input := parseLegacyFixture(t, `{"id":"old-a","title":"Derived source state"}`)
+	input.Issues[0].ContentHash = "source-cache"
+	input.Issues[0].RowVersion = 23
+	prepared, err := prepareLegacyImport(input, "importer")
+	if err != nil {
+		t.Fatal(err)
+	}
+	clean, err := prepareLegacyImport(parseLegacyFixture(t, `{"id":"old-a","title":"Derived source state"}`), "importer")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if prepared.Issues[0].ContentHash != clean.Issues[0].ContentHash || prepared.Issues[0].RowVersion == 23 || input.Issues[0].ContentHash != "source-cache" || input.Issues[0].RowVersion != 23 {
+		t.Fatalf("derived state disposition or caller isolation changed: %+v %+v", prepared.Issues[0], input.Issues[0])
+	}
+}
+

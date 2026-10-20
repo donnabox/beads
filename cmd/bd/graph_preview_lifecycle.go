@@ -80,10 +80,13 @@ var linkShowCmd = &cobra.Command{
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
+		// Keep canonical URLs literal across the shared show's second parse,
+		// including identities whose local path contains a raw @.
+		selector := graphPreviewConfig.GraphScopeURL + path
 		if ref.Explicit {
-			path += "@" + ref.Revision
+			selector = "[" + selector + "]@" + ref.Revision
 		}
-		return runGraphPreviewShow(cmd, []string{path})
+		return runGraphPreviewShow(cmd, []string{selector})
 	},
 }
 
@@ -91,11 +94,15 @@ var linkUpdateCmd = &cobra.Command{
 	Use: "update LINK", Short: "Update an informational Link",
 	Args: cobra.ExactArgs(1), SilenceUsage: true, SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		path, err := graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, args[0])
+		selector, err := graphPreviewWritableIdentity(args[0])
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		return runGraphPreviewUpdate(cmd, []string{path})
+		path, err := graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, selector)
+		if err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
+		return runGraphPreviewUpdate(cmd, []string{graphPreviewConfig.GraphScopeURL + path})
 	},
 }
 
@@ -134,8 +141,8 @@ func init() {
 	for _, flag := range []string{"source", "target"} {
 		linkCreateCmd.Flags().String(flag, "", "Local Bead ID or beads/PATH")
 	}
-	linkCreateCmd.Flags().String("source-revision", "", "Source Reference revision (pinned forms currently refuse until graphstore persistence exists; distinct from --if-source-revision)")
-	linkCreateCmd.Flags().String("target-revision", "", "Target Reference revision (pinned forms currently refuse until graphstore persistence exists)")
+	linkCreateCmd.Flags().String("source-revision", "", "Source endpoint revision: unpinned is supported; exact tokens and current refuse in this preview (distinct from --if-source-revision)")
+	linkCreateCmd.Flags().String("target-revision", "", "Target endpoint revision: unpinned is supported; exact tokens and current refuse in this preview")
 	linkCreateCmd.Flags().String("id", "", "Optional local Link ID or links/PATH")
 	linkCreateCmd.Flags().String("properties", "", "Initial informational Link properties as JSON, @file, or @-")
 	linkCreateCmd.Flags().String("metadata", "", "Initial informational Link metadata as JSON or @file")

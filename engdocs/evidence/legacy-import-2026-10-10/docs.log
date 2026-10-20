@@ -1,0 +1,121 @@
+Building bd for docs checks...
+Note: docs are pinned via docs/cli-docs.pin; validating against the pinned bd.
+Checking documentation against CLI flags...
+Using: bd version 1.2.2 (dev)
+
+=== Check 1: Removed commands ===
+PASS: No stale 'bd sync is removed' references
+
+=== Check 2: bd init flags ===
+PASS: No stale 'bd init --branch' references
+
+=== Check 3: Legacy storage references ===
+PASS: No stale SQLite references
+
+=== Check 4: CLI command docs coverage and freshness ===
+PASS: docs/CLI_REFERENCE.md covers all live top-level CLI commands
+PASS: docs/cli-reference covers all live top-level CLI commands
+PASS: generated CLI docs are fresh
+PASS: CLI docs freshness gate (see drift check output above)
+
+=== Check 5: Plugin CLI reference pointer policy ===
+PASS: plugin CLI resource is a pointer to live/canonical references
+
+=== Summary ===
+PASSED: All documentation references are consistent with CLI
+Checking reference doc freshness markers...
+Max age: 90 days
+Today: 2026-10-10
+
+=== docs/reference/configuration.md ===
+PASS: listed in engdocs/DOC_INVENTORY.md
+PASS: Last reviewed marker is current: 2026-09-10 (30 days old)
+PASS: Freshness source marker present
+PASS: Freshness source path exists: cmd/bd/main.go
+PASS: Freshness source path exists: cmd/bd/config.go
+PASS: Freshness source path exists: internal/configfile/
+
+=== docs/getting-started/ide-setup.md ===
+PASS: listed in engdocs/DOC_INVENTORY.md
+PASS: Last reviewed marker is current: 2026-10-06 (4 days old)
+PASS: Freshness source marker present
+PASS: Freshness source path exists: cmd/bd/setup*.go
+PASS: Freshness source path exists: internal/recipes/
+
+=== docs/integrations/azure-devops.md ===
+PASS: listed in engdocs/DOC_INVENTORY.md
+PASS: Last reviewed marker is current: 2026-08-07 (64 days old)
+PASS: Freshness source marker present
+PASS: Freshness source path exists: cmd/bd/ado*.go
+PASS: Freshness source path exists: internal/ado/
+
+=== docs/reference/json-schema.md ===
+PASS: listed in engdocs/DOC_INVENTORY.md
+PASS: Last reviewed marker is current: 2026-08-07 (64 days old)
+PASS: Freshness source marker present
+PASS: Freshness source path exists: cmd/bd/output.go
+PASS: Freshness source path exists: cmd/bd/errors.go
+PASS: Freshness source path exists: cmd/bd/protocol/json_contract_test.go
+
+=== docs/recovery/init-safety.md ===
+PASS: listed in engdocs/DOC_INVENTORY.md
+PASS: Last reviewed marker is current: 2026-10-01 (9 days old)
+PASS: Freshness source marker present
+PASS: Freshness source path exists: cmd/bd/init.go
+PASS: Freshness source path exists: cmd/bd/init_safety.go
+PASS: Freshness source path exists: cmd/bd/init_safety_test.go
+PASS: Freshness source path exists: cmd/bd/init_safety_help.go
+PASS: Freshness source path exists: cmd/bd/dolt.go
+
+=== engdocs/ERROR_HANDLING.md ===
+PASS: listed in engdocs/DOC_INVENTORY.md
+PASS: Last reviewed marker is current: 2026-10-06 (4 days old)
+PASS: Freshness source marker present
+PASS: Freshness source path exists: cmd/bd/*.go
+PASS: Freshness source path exists: cmd/bd/errors.go
+
+=== engdocs/SERVE_RUNBOOK.md ===
+PASS: listed in engdocs/DOC_INVENTORY.md
+PASS: Last reviewed marker is current: 2026-08-10 (61 days old)
+PASS: Freshness source marker present
+PASS: Freshness source path exists: internal/httpapi/server.go
+PASS: Freshness source path exists: internal/httpapi/events_watch.go
+PASS: Freshness source path exists: cmd/bd/serve.go
+PASS: Freshness source path exists: internal/httpapi/auth.go
+
+=== engdocs/LINTING.md ===
+PASS: listed in engdocs/DOC_INVENTORY.md
+PASS: Last reviewed marker is current: 2026-10-03 (7 days old)
+PASS: Freshness source marker present
+PASS: Freshness source path exists: .golangci.yml
+PASS: Freshness source path exists: scripts/ci/pr-lint.sh
+PASS: Freshness source path exists: scripts/pr-lint/
+PASS: Freshness source path exists: Makefile
+PASS: Freshness source path exists: .github/workflows/pr.yml
+PASS: Freshness source path exists: .github/workflows/main.yml
+
+=== engdocs/CI_CLEANUP_PLAN.md ===
+PASS: listed in engdocs/DOC_INVENTORY.md
+PASS: Last reviewed marker is current: 2026-09-03 (37 days old)
+PASS: Freshness source marker present
+PASS: Freshness source path exists: engdocs/CI_TEST_SURFACE_AUDIT.md
+PASS: Freshness source path exists: .github/workflows/*.yml
+PASS: Freshness source path exists: .buildflags
+PASS: Freshness source path exists: .golangci.yml
+PASS: Freshness source path exists: scripts/ci/pr-lint.sh
+PASS: Freshness source path exists: scripts/pr-lint/
+PASS: Freshness source path exists: Makefile
+
+=== engdocs/design/otel/otel-data-model.md ===
+PASS: listed in engdocs/DOC_INVENTORY.md
+PASS: Last reviewed marker is current: 2026-08-07 (64 days old)
+PASS: Freshness source marker present
+PASS: Freshness source path exists: internal/telemetry/
+PASS: Freshness source path exists: internal/storage/dolt/store.go
+PASS: Freshness source path exists: internal/compact/haiku.go
+PASS: Freshness source path exists: cmd/bd/find_duplicates.go
+PASS: Freshness source path exists: internal/hooks/
+
+=== Summary ===
+PASSED: Reference doc freshness markers are current and checkable
+ok  	github.com/steveyegge/beads/test/docsync	0.631s

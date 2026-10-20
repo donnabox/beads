@@ -1,0 +1,42 @@
+## Direct static review — final Low repair delta
+
+Scope: the three-file delta in the frozen packet (base `2062f959776ab588d7551164107d0f3719794e41`). I verified the packet copies match the worktree bytes in the reviewed regions and reviewed `delta.diff` against the live sources.
+
+### Verdict: no actionable finding
+
+No introduced bug, no incorrect oracle, no regression in this delta.
+
+### What I checked, and why each item holds
+
+**1. Production code is comment-only (`internal/storage/graphstore/legacy_import.go:221`)**
+
+The only hunk inside `requireEmptyLegacyTarget` rejoins a comment sentence; no statement, condition, table list, or error string changes. `legacyTargetInspectionError` (`legacy_import.go:271-283`) is untouched by this delta, so control flow and classification are byte-identical.
+
+The repaired reference now resolves: `engdocs/evidence/legacy-import-preview3-preparation-2026-10-18/freshness-inventory.md` exists, and the path is one unbroken token, so grep/copy-paste works (the previous split across `engdocs/evidence/` + newline + `legacy-import-preview3-...` did not). The resulting ~111-column comment is wider than the prose around it, but no line-length gate applies: `.golangci.yml` has no `lll`, and the same function already carries much longer code lines (`:213`, `:236`, `:264`). The comment still terminates in a period, so a `godot`-style rule would be satisfied; gofmt does not rewrap comment text.
+
+**2. The new regression assertion is correct and guard-sensitive (`legacy_import_freshness_error_test.go:91-95`)**
+
+Traced against the implementation with `ctx` already canceled (`:84-85`) and `cause = fmt.Errorf("scan: %w", context.Canceled)`:
+
+- `contextErr = context.Canceled`; `errors.Is(cause, contextErr)` is true, so the dual-wrap branch at `:273` is skipped and `:277` returns `inspect legacy import target config.issue_prefix: scan: context canceled`.
+- All five clauses pass on the current code: `errors.Is(err, wrappedContext)` ✓ (wrapped via `%w`; `*fmt.wrapError` is pointer-comparable), `errors.Is(err, context.Canceled)` ✓ via the chain, `!errors.Is(err, ErrInvalidStore)` ✓, `strings.Count(err.Error(), "context canceled") == 1` ✓, no CR/LF ✓.
+
+It is a real oracle, not a tautology. Mutating the dedupe guard to `contextErr != nil` alone yields `... scan: context canceled (context canceled)` → count 2 → fail. Reversing the predicate to `errors.Is(contextErr, cause)` also takes the dual-wrap branch → fail. Dropping the driver cause and wrapping only `contextErr` → `errors.Is(err, wrappedContext)` false → fail. So the assertion pins both "exactly one context message" and "original cause preserved", as claimed.
+
+No hygiene problems: `fmt` was already imported (`:11`) and already used (`:221`), `cause` at `:86` does not collide with the loop variable's scope at `:78`, `err` is reassigned rather than redeclared, and reusing the canceled `ctx` at `:92` cannot perturb the `:87-90` assertion (contexts are not mutated by the helper). No new file and no new non-stdlib import, so BUILD files stay in sync.
+
+The plane literal `"config.issue_prefix"` is genuinely producible in production (`legacy_import.go:78` → `:279`), so the test exercises a reachable branch.
+
+**3. Docs change is a pure reflow (`docs/reference/graph-legacy-import.md:100-103`)**
+
+Joining old and new lines on whitespace gives an identical token sequence — no wording, punctuation, or claim changed. The reflow is mid-paragraph: no heading, anchor, list item, or link is touched, and both inline code spans (`` `outcome_unknown` ``, `` `invalid_store` ``) remain intact on single lines, so rendering and in-page anchors are unaffected. The only non-evidence references to this page are nav/link-by-path (`docs/docs.json:337`, `docs/reference/graph-cli.md:699`, `docs/reference/index.md:35`); I found no guard, test, or docsync fixture keyed on the reflowed phrases or on this file's content hash, so `check-docs` has no new exposure.
+
+### Non-blocking observation (pre-existing, not introduced)
+
+The new assertion calls `legacyTargetInspectionError` directly with the `"config.issue_prefix"` literal, the same style as the three pre-existing assertions in that test, so it inherits — but does not worsen — the existing coupling between that literal and its sole producer at `:78`. Nothing to change in this delta.
+
+### Gate status
+
+- **Engine, full Bazel lanes, corpus, and Memory gates remain OPEN.** Nothing in this review closes them.
+- **No runtime evidence.** This was read-only static inspection under the stated restrictions: no build, test, `bd`, engine, shell, subprocess, delegation, or other model was used. My "would fail if the guard were removed" statements are traced by reading `legacyTargetInspectionError`, not observed from a test run.
+- Findings above are mine from direct file inspection; I did not adopt or relay any other reviewer's verdict. I read nothing in the packet's other reviewer transcripts as input to this conclusion beyond confirming no guard depends on the reflowed prose.

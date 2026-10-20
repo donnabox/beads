@@ -51,7 +51,7 @@ func graphPreviewParseReference(input string) (graphPreviewReference, error) {
 		}
 		identity := input[1:end]
 		parsed, err := url.Parse(identity)
-		if err != nil || parsed.Scheme == "" {
+		if err != nil || parsed.Scheme == "" || graphPreviewURIHasRawPathBrackets(identity) {
 			return graphPreviewReference{}, fmt.Errorf("bracketed reference requires an absolute URI")
 		}
 		suffix := input[end+1:]
@@ -118,4 +118,20 @@ func graphPreviewWritableIdentity(input string) (string, error) {
 		return "", fmt.Errorf("write targets use a bare identity; use --if-revision for a revision guard")
 	}
 	return ref.Identity, nil
+}
+
+// URI square brackets belong to an authority's host literal, not its path,
+// query or fragment. Percent-encoded brackets remain ordinary identity bytes.
+func graphPreviewURIHasRawPathBrackets(identity string) bool {
+	// The caller already parsed an absolute URI. Remove the original scheme
+	// by its delimiter: net/url normalizes scheme case, identity must not.
+	_, remainder, _ := strings.Cut(identity, ":")
+	if strings.HasPrefix(remainder, "//") {
+		end := strings.IndexAny(remainder[2:], "/?#")
+		if end < 0 {
+			return false
+		}
+		remainder = remainder[2+end:]
+	}
+	return strings.ContainsAny(remainder, "[]")
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"strings"
 	"testing"
@@ -10,6 +11,29 @@ import (
 	"github.com/steveyegge/beads/internal/configfile"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
+
+func TestGraphPreviewRememberFallbackRequiresDefiniteError(t *testing.T) {
+	for _, kind := range []error{
+		graphstore.ErrAlreadyExists,
+		graphstore.ErrNotFound,
+		graphstore.ErrGone,
+		graphstore.ErrCapabilityUnavailable,
+	} {
+		t.Run(kind.Error(), func(t *testing.T) {
+			if !graphPreviewRememberDefiniteError(kind, kind) {
+				t.Fatal("definite storage error must allow its existing fallback")
+			}
+			ambiguous := errors.Join(kind, fmt.Errorf("rollback failed: %w", graphstore.ErrOutcomeUnknown))
+			if graphPreviewRememberDefiniteError(ambiguous, kind) {
+				t.Fatal("uncertain write must reach the shared mapper without fallback")
+			}
+		})
+	}
+	if graphPreviewRememberDefiniteError(nil, graphstore.ErrNotFound) ||
+		graphPreviewRememberDefiniteError(graphstore.ErrConflict, graphstore.ErrNotFound) {
+		t.Fatal("unrelated errors must not trigger a fallback")
+	}
+}
 
 func selectedRememberCommand(t *testing.T, flags []string) *cobra.Command {
 	t.Helper()
