@@ -163,6 +163,9 @@ func init() {
 	linkCreateCmd.Flags().String("if-source-revision", "", "Require the owning Bead revision")
 	for _, command := range []*cobra.Command{linkListCmd, linkCountCmd} {
 		registerGraphLinkTypeFlag(command)
+		if command == linkListCmd {
+			command.Flags().Lookup("type").Usage += "; with --output-format, requires a canonical absolute HTTP(S) Type URI without alias or Dependency-kind resolution"
+		}
 		command.Flags().String("source", "", "Select Links with this local source Bead")
 		command.Flags().String("target", "", "Select Links with this local target Bead")
 		command.Flags().String("incident-to", "", "Select Links incident to this local Bead")
@@ -320,6 +323,9 @@ func graphPreviewLinkCollectionRequest(cmd *cobra.Command) (graphstore.LinkColle
 }
 
 func runGraphPreviewLinkCollection(cmd *cobra.Command, _ []string) error {
+	if cmd.Name() == "list" && canonicalOutputSelected(cmd) {
+		return runCanonicalCollection(cmd, true)
+	}
 	request, err := graphPreviewLinkCollectionRequest(cmd)
 	if err != nil {
 		return err
