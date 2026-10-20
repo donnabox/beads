@@ -742,3 +742,50 @@ explicit flag with `--output-format` refuses, including `--json=false`. These
 existing command paths require `--output-format` when using `--include` or
 `--omit`. This opt-in currently requires a graph workspace and exactly one
 Resource per `show` invocation.
+
+### Canonical collections
+
+Use `bd list` for current Beads and `bd link list` for current Links. Canonical
+collections retain the public BDP records, including inline owned Links, without
+retrieving endpoint Resources:
+
+```sh
+bd list --output-format json --unpaged
+bd list --output-format table --unpaged --include /properties/title
+bd link list --output-format json --unpaged --source beads/plan
+bd link list --output-format jsonl --incident-to beads/plan --direction in
+bd link list --output-format json --unpaged --omit envelope
+```
+
+`--type` selects an exact Type URI; `--conforms-to` also admits Types conforming
+to that Type. Link selection accepts `--source`, `--target`, and `--incident-to`.
+An incident selection can use `--direction in`, `out`, or `both`. These filters
+combine with AND. Canonical collection selection does not accept Issue workflow
+filters or the textual query language.
+
+`default` and `table` display generic identity columns; `detail` displays each
+selected record. The same JSON Pointer masks select optional fields for every
+format. Framed JSON puts the native `{items, next}` collection in `data`, with
+completion information alongside it. `--omit envelope` returns that native
+collection directly.
+
+JSONL defaults to the complete selection. Its first record is a header, each
+Resource has an item record, and its last record reports completion or failure.
+With `--omit envelope`, JSONL contains only Resource records: no header, terminal,
+or error record. Check the exit status even when some records were written.
+
+The current local provider supports a complete selection from one snapshot,
+with limits of 1,000 live Resources and 16 MiB of current-state inventory.
+Table, detail and JSON default to a page boundary of 50; use `--unpaged` for a
+larger complete selection. `--page-size` controls the requested page boundary;
+`--limit` caps the total number of delivered items, with `0` meaning unlimited.
+If the selection exceeds either requested boundary, this initial adapter refuses
+with `capability_unavailable` and emits no items. Narrow the selection or use
+`--unpaged --limit 0`. It does not return a truncated collection as exhausted.
+`--continue` also refuses because this local provider cannot retain a cursor
+across CLI invocations. Persistent paging is not yet available on these paths.
+
+These collection controls require `--output-format`, except the existing root
+`list --limit` flag, whose legacy behavior is unchanged. Combining canonical
+output with explicit `--json` or `--format` refuses. The Issue/dependency commands
+and Memory facades keep their existing output contracts.
