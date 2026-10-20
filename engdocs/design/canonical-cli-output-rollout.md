@@ -241,7 +241,6 @@ adapters must separately qualify their collective-context obligations.
 
 ### 5. Separate follow-ons
 
-- `--json-schema` discovery is Memory V1 work, not Preview 3.
 - Source-side BDP projection is a protocol amendment, not a flag-only optimization.
 - `--allow-partial` needs its shared query/result/exit contract.
 - Export adapts the shared values without replacing its own package/integrity
