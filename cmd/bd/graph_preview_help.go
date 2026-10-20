@@ -92,6 +92,8 @@ To require an existing Memory, keep using --update instead of --id:
   bd remember 'Revised policy' --id policy
   bd remember 'Revised policy' --update policy
   bd remember --update policy --title 'New title'
+--update retains literal Memory-ID semantics, including raw @; it does not
+parse revision suffixes. The selected bd update targets refuse revision suffixes.
 Omitted fields remain unchanged on update. Use --body-file PATH or --stdin
 instead of positional body text. An existing-ID update accepts the current
 revision by default; add --if-revision TOKEN to reject a stale update. Read
@@ -126,7 +128,7 @@ classification (for example task or bug); the CLI selects preview-issue for it. 
 accepts body/description/message and an optional title; unsupported Issue-only
 fields refuse. Fresh workspaces create types/preview-issue Issues.`},
 		{showCmd, `Use bd show ID (equivalent to beads/ID) for a current Memory or
-Issue; use bd show links/ID for a Link. ID@TOKEN or '[URI]@TOKEN' selects
+Issue; use bd show links/ID for a Link. ID@TOKEN or '[URL]@TOKEN' selects
 one exact retained record; --version TOKEN remains an alternative (not both).
 @current and @unpinned read current. Unwrapped URL forms containing :// are
 literal, including raw @; use the full canonical Scope URL to escape local
@@ -185,7 +187,8 @@ suppresses a post-add warning; the domain writer still validates cycles.
 bd dep blocker --blocks issue is the same operation with reversed arguments.
 Memory endpoints, remote routing and bulk dependency flags are unavailable
 in this preview. Native dep operands retain literal Issue-ID semantics,
-including @; use bd link for the selected revision-aware endpoint syntax.`},
+including @; bd link parses the selected endpoint revision syntax, but exact
+pins and @current still refuse pending implementation.`},
 		{depRemoveCmd, `Use bd dep remove issue blocker (or bd dep rm) to
 remove one local blocking Dependency by its Issue pair. An absent pair is a
 successful no-op and reports status not_found with --json. A real removal
@@ -202,8 +205,9 @@ by default and --force applies the checked mutation.
 
 Without --type, bd link SOURCE TARGET creates the ordinary
 blocking Dependency between two live Issues. In graph workspaces this form
-also parses the selected revision syntax; bd dep add/remove keep literal Issue
-IDs, so the input syntaxes are not interchangeable. To create any native Dependency
+also parses the selected revision syntax; exact pins and @current still refuse
+pending implementation. bd dep add/remove keep literal Issue IDs, so the input
+syntaxes are not interchangeable. To create any native Dependency
 kind through the canonical namespace, use
   bd link create --type blocks --source ISSUE --target ISSUE
 Only built-in Dependency kinds are accepted. The resulting Link has a dep_type property.

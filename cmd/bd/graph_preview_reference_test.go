@@ -46,7 +46,7 @@ func TestGraphPreviewReferenceRefusals(t *testing.T) {
 	for _, input := range []string{
 		"", "@r7", "plan@", "[https://example.test/x]", "[https://[2001:db8::1]/x@r7",
 		"[HTTPS://[2001:db8::1]/x[y]]@r7", "[HtTpS://[2001:db8::1]/x?y=[z]]@r7",
-		"[https://example.test/x]oops@r7", "[https://example.test/x[y]]@r7", "[https://example.test/x?y=[z]]@r7", "[not-a-uri]@r7", "https://[broken/x@r7",
+		"[https://example.test/x]oops@r7", "[https://example.test/x[y]]@r7", "[https://example.test/x?y=[z]]@r7", "[not-a-uri]@r7", "https://[broken/x@r7", "beads/a://b",
 	} {
 		if _, err := graphPreviewParseReference(input); err == nil {
 			t.Errorf("accepted %q", input)
@@ -58,11 +58,11 @@ func TestGraphPreviewReferenceRefusals(t *testing.T) {
 		}
 	}
 	for _, input := range []string{"@donna", "draft@"} {
-		if _, err := graphPreviewParseReference(input); err == nil || !strings.Contains(err.Error(), "full canonical Scope URI") {
+		if _, err := graphPreviewParseReference(input); err == nil || !strings.Contains(err.Error(), "full canonical Scope URL") {
 			t.Errorf("missing literal-@ escape guidance for %q: %v", input, err)
 		}
 	}
-	if _, err := graphPreviewWritableIdentity("beads/@donna"); err == nil || !strings.Contains(err.Error(), "full canonical Scope URI") {
+	if _, err := graphPreviewWritableIdentity("beads/@donna"); err == nil || !strings.Contains(err.Error(), "full canonical Scope URL") {
 		t.Fatalf("missing writable literal-@ escape guidance: %v", err)
 	}
 	for _, revision := range []string{string([]byte{255}), strings.Repeat("x", graphstore.PreviewVersionTokenLimit+1)} {
@@ -71,7 +71,7 @@ func TestGraphPreviewReferenceRefusals(t *testing.T) {
 		}
 	}
 	if got, err := graphPreviewWritableIdentity("https://example.test/beads/a@b"); err != nil || got != "https://example.test/beads/a@b" {
-		t.Fatalf("canonical URI escape = %q, %v", got, err)
+		t.Fatalf("canonical URL escape = %q, %v", got, err)
 	}
 	if _, err := graphPreviewReferenceWithFlag("plan@r7", "r8", true); err == nil {
 		t.Fatal("suffix and flag both accepted")

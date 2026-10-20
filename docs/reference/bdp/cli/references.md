@@ -28,7 +28,7 @@ integrated before it becomes a release capability.
 | `'[URL]@TOKEN'` | Canonical HTTP(S) Scope URL plus exact revision. Brackets wrap the entire URL; nested IPv6 host brackets are allowed. |
 
 An existing local ID containing raw `@` must be addressed by its complete
-canonical Scope URI in these positions. For example,
+canonical Scope URL in these positions. For example,
 `https://example.org/team/beads/plan@draft` selects that literal identity;
 `plan@draft` selects revision `draft` of `plan`. Do not resolve this ambiguity
 by looking up both possibilities. The existing CLI URL boundary is lexical:
@@ -42,6 +42,9 @@ A revision is nonempty UTF-8 of at most 4,096 bytes; its bytes convey no time
 or ordering. `current` and `unpinned` are reserved suffix words. On exact reads,
 use `--version current` or `--version unpinned` to select a literal token equal
 to either word. There is no additional suffix escape in this candidate.
+Unwrapped inputs containing `://` take the locator parsing branch before
+suffix splitting; use `--version TOKEN` when a suffix spelling would be
+ambiguous. This parsing rule does not change which tokens the store accepts.
 Malformed brackets, empty selectors/tokens, invalid UTF-8, and a suffix
 combined with its alternative flag must refuse with `invalid_selector`
 (exit 2). URI brackets outside the host-literal syntax must be percent-encoded.
@@ -58,7 +61,7 @@ protect them from shell expansion.
 | `bd show RESOURCE`, `bd link show LINK` | Bare identity reads current. An exact suffix reads that retained state, even after a later update or deletion. `@current` and `@unpinned` read current. `--version TOKEN` remains an exact-token alternative. Refuse a suffix together with `--version`, even when their values match. |
 | `bd link SOURCE TARGET`, `bd link create SOURCE TARGET` | Resolve each endpoint selector separately. Bare and `@unpinned` endpoints remain floating. `--source-revision TOKEN` and `--target-revision TOKEN` are alternatives to suffixes, with the same reserved words. A suffix and its flag on the same endpoint conflict. |
 | Endpoint exact pins or `@current` | Refuse with `capability_unavailable` (exit 5), before mutation. Do not silently drop the pin, resolve it in a separate client read, or imply that path-only storage preserves it. |
-| `bd update RESOURCE`, `bd link update LINK`, `bd delete BEAD`, `bd forget BEAD`, `bd link delete LINK` | Require bare identities or literal canonical URIs. Refuse every revision suffix, including `@current` and `@unpinned`, with `invalid_selector` (exit 2). A suffix never supplies a write guard. |
+| `bd update RESOURCE`, `bd link update LINK`, `bd delete BEAD`, `bd forget BEAD`, `bd link delete LINK` | Require bare identities or literal canonical URLs. Refuse every revision suffix, including `@current` and `@unpinned`, with `invalid_selector` (exit 2). A suffix never supplies a write guard. |
 
 `--if-revision` remains a comparison against the current resource revision.
 `--if-source-revision` independently compares the current owning source;
@@ -91,16 +94,19 @@ existing-Memory edits through `bd remember`, and Link creation disclose the
 writer-returned current revision separately from any replaced predecessor.
 Owned-Link creation and covered informational Link writes additionally disclose
 the writer-returned current source revision for a subsequent guarded write.
-Other creation and Issue lifecycle summaries retain their existing behavior;
-use `bd show` when a summary does not supply the current revision. Current human references use `'[URI]@TOKEN'` syntax; a removed Link has
+Issue scalar edits, other creation and Issue lifecycle summaries retain their
+existing behavior; use `bd show` when a summary does not supply the current
+revision. Current human references use `'[URL]@TOKEN'` syntax; a removed Link has
 no new current Link revision to advertise.
 
 This stage does not deliver persistent endpoint pins, same-ID re-pin, Type
 revision selection, external Link admission, or a new History contract. `bd
 recall` retains its existing `--version` interface. Other unselected command
-positions keep their existing selector rules. In particular, ordinary Issue
-mode, native `bd dep add`/`bd dep remove` operands, and legacy `--deps`/`--parent`
-values retain literal Issue-ID semantics; this stage does not parse revision
+positions keep their existing selector rules. In particular,
+`bd remember --update` selectors retain literal Memory-ID semantics, including
+raw `@`; they do not parse revision suffixes. Ordinary Issue mode, native
+`bd dep add`/`bd dep remove` operands, and legacy `--deps`/`--parent` values
+retain literal Issue-ID semantics; this stage does not parse revision
 suffixes there. The graph `bd link` form and native `bd dep add` perform the
 same underlying dependency operation for bare Issue IDs, but their selected
 input syntaxes differ. `bd unlink` is not registered in this candidate; remove

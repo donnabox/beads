@@ -293,6 +293,19 @@ func TestGraphPreviewColonReferencePrecedenceWorkflow(t *testing.T) {
 					}
 				})
 			}
+			t.Run("colon floating endpoint", func(t *testing.T) {
+				const sibling = scope + "beads/plan:v1@unpinned"
+				call("remember", "Literal unpinned sibling", "--id", "beads/plan:v1@unpinned")
+				beforeSibling := call("show", sibling)
+				beforeUnknownSibling := call("show", scope+"beads/plan:v1@unknown-token")
+				created := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "plan:v1@unpinned", "target", "--type", "types/preview-related", "--id", "links/colon-floating"))
+				if created.Link.Source != scope+"beads/plan:v1" || created.Link.Target != scope+"beads/target" || created.Link.ID != scope+"links/colon-floating" {
+					t.Fatalf("floating colon endpoint selected the wrong identity: %+v", created.Link)
+				}
+				if call("show", sibling) != beforeSibling || call("show", scope+"beads/plan:v1@unknown-token") != beforeUnknownSibling {
+					t.Fatal("floating colon endpoint changed a literal-@ sibling")
+				}
+			})
 			linked := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "plan:v1", "target", "--type", "types/preview-related", "--id", "links/context:v1"))
 			call("link", "create", "plan:v1", "target", "--type", "types/preview-related", "--id", "links/context:v1@unknown-token")
 			const link = scope + "links/context:v1"

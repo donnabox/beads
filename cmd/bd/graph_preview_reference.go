@@ -36,7 +36,7 @@ func graphPreviewParseReference(input string) (graphPreviewReference, error) {
 			case ']':
 				depth--
 				if depth < 0 {
-					return graphPreviewReference{}, fmt.Errorf("unbalanced URI reference brackets")
+					return graphPreviewReference{}, fmt.Errorf("unbalanced URL reference brackets")
 				}
 				if depth == 0 {
 					end = i
@@ -48,7 +48,7 @@ func graphPreviewParseReference(input string) (graphPreviewReference, error) {
 			}
 		}
 		if end < 0 {
-			return graphPreviewReference{}, fmt.Errorf("unbalanced URI reference brackets")
+			return graphPreviewReference{}, fmt.Errorf("unbalanced URL reference brackets")
 		}
 		identity := input[1:end]
 		parsed, err := url.Parse(identity)
@@ -59,7 +59,7 @@ func graphPreviewParseReference(input string) (graphPreviewReference, error) {
 		}
 		suffix := input[end+1:]
 		if !strings.HasPrefix(suffix, "@") || len(suffix) == 1 {
-			return graphPreviewReference{}, fmt.Errorf("bracketed URI requires @revision")
+			return graphPreviewReference{}, fmt.Errorf("bracketed URL requires @revision")
 		}
 		if err := graphPreviewReferenceRevision(suffix[1:]); err != nil {
 			return graphPreviewReference{}, err
@@ -69,13 +69,13 @@ func graphPreviewParseReference(input string) (graphPreviewReference, error) {
 	if strings.Contains(input, "://") {
 		parsed, err := url.Parse(input)
 		if err != nil || parsed.Scheme == "" {
-			return graphPreviewReference{}, fmt.Errorf("invalid absolute URI reference")
+			return graphPreviewReference{}, fmt.Errorf("invalid absolute URL reference")
 		}
 		return graphPreviewReference{Identity: input}, nil
 	}
 	if i := strings.IndexByte(input, '@'); i >= 0 {
 		if i == 0 || i == len(input)-1 {
-			return graphPreviewReference{}, fmt.Errorf("local reference requires ID@revision; address an ID containing @ by its full canonical Scope URI")
+			return graphPreviewReference{}, fmt.Errorf("local reference requires ID@revision; address an ID containing @ by its full canonical Scope URL")
 		}
 		revision := input[i+1:]
 		if err := graphPreviewReferenceRevision(revision); err != nil {
@@ -118,7 +118,7 @@ func graphPreviewWritableIdentity(input string) (string, error) {
 		return "", err
 	}
 	if ref.Explicit {
-		return "", fmt.Errorf("write targets use a bare identity; use --if-revision for a revision guard; address an ID containing @ by its full canonical Scope URI")
+		return "", fmt.Errorf("write targets use a bare identity; use --if-revision for a revision guard; address an ID containing @ by its full canonical Scope URL")
 	}
 	return ref.Identity, nil
 }

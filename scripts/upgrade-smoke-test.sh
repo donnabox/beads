@@ -712,7 +712,7 @@ else
                 printf '  Warning: archive failed: %s\n' "$WISP_ARCHIVE" >&2 || true
             fi
         fi
-        if $WISP_FIXTURE_ARCHIVED; then
+        if $WISP_FIXTURE_ARCHIVED && ! $WISP_ARCHIVE_IS_TEMPORARY; then
             rm -rf "$WS" || true
             if [ -n "$WISP_OBSERVATION_DIR" ]; then rm -rf "$WISP_OBSERVATION_DIR" || true; fi
         else
