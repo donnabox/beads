@@ -30,23 +30,26 @@ jobs:
           echo '2f92b904ecf35b607e44dc5c39229173af69c54f1183e8d709f1773540cdcf3b  '"$RUNNER_TEMP/previous/beads_1.3.0_linux_amd64.tar.gz" | sha256sum -c -
           tar -xzf "$RUNNER_TEMP/previous/beads_1.3.0_linux_amd64.tar.gz" -C "$RUNNER_TEMP/previous" bd
           chmod +x "$RUNNER_TEMP/candidate/bd-linux-gms-pure" "$RUNNER_TEMP/previous/bd"
+          mkdir -p "$RUNNER_TEMP/dolt" "$RUNNER_TEMP/runfiles/_main/tools/bazel/hermetic_bin"
+          curl -fsSL https://github.com/dolthub/dolt/releases/download/v2.2.0/dolt-linux-amd64.tar.gz -o "$RUNNER_TEMP/dolt/cli.tar.gz"
+          echo '1f7ad8c2622995789420a3fb0f2d16b4aa7430000a825dd91d5938f36480cbf6  '"$RUNNER_TEMP/dolt/cli.tar.gz" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/dolt/cli.tar.gz" -C "$RUNNER_TEMP/dolt" dolt-linux-amd64/bin/dolt
+          ln -s "$RUNNER_TEMP/dolt/dolt-linux-amd64/bin/dolt" "$RUNNER_TEMP/runfiles/_main/tools/bazel/hermetic_bin/dolt"
+          "$RUNNER_TEMP/dolt/dolt-linux-amd64/bin/dolt" version
       - name: Instrument only the failed wisp-upgrade scenario
         run: |
           set -euo pipefail
           export PROBE_ROOT="$RUNNER_TEMP/pr114-v130-evidence"
           export PREV_BIN="$RUNNER_TEMP/previous/bd"
           export CANDIDATE_BIN="$RUNNER_TEMP/candidate/bd-linux-gms-pure"
-          export BEADS_TEST_ENV_KEEP=1 BEADS_TEST_ENV_RUN_DOLT=1
-          source scripts/ci/lib/test-env.sh
-          beads_test_env_enter
-          git config --global user.name beads-test
-          git config --global user.email test@beads.local
+          export RUNFILES_DIR="$RUNNER_TEMP/runfiles" TEST_WORKSPACE=_main TEST_TMPDIR="$RUNNER_TEMP"
           cat > "$RUNNER_TEMP/probe.py" <<'PYPROBE'
-          import pathlib,subprocess,json,os,hashlib
+          import pathlib,subprocess,json,os,hashlib,shutil
           phase=pathlib.Path(os.environ['PROBE_ROOT']);phase.mkdir(parents=True)
-          ws=phase/'bd-upgrade-I7xZMD';ws.mkdir()
+          ws=pathlib.Path(os.environ['TMPDIR'])/'bd-upgrade-I7xZMD';ws.mkdir()
           prev=pathlib.Path(os.environ['PREV_BIN']);cand=pathlib.Path(os.environ['CANDIDATE_BIN'])
           rows=[]
+          (phase/'environment.json').write_text(json.dumps({k:os.environ.get(k) for k in ['HOME','XDG_CONFIG_HOME','DOLT_ROOT_PATH','TMPDIR','BEADS_CEILING_DIRECTORIES','GIT_CEILING_DIRECTORIES','TERM','COLUMNS','LANG','BEADS_TEST_DOLT_BINARY']},indent=2)+'\n')
           def run(name,args,required=True):
            p=subprocess.run([str(x) for x in args],cwd=ws,text=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=120)
            (phase/(name+'.stdout')).write_text(p.stdout);(phase/(name+'.stderr')).write_text(p.stderr)
@@ -65,11 +68,12 @@ jobs:
           run('14b-show-json-before',[cand,'show',wisp,'--json'],False)
           update=run('15-update',[cand,'update',wisp,'--notes','smoke wisp mutation'],False);show=run('16-show',[cand,'show',wisp],False);machine=run('17-show-json',[cand,'show',wisp,'--json'],False)
           result={'wisp':wisp,'blocker':blocker,'update_exit':update.returncode,'human_exit':show.returncode,'human_notes_present':'smoke wisp mutation' in show.stdout,'json_exit':machine.returncode,'json_notes_present':'smoke wisp mutation' in machine.stdout};(phase/'result.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result),flush=True)
+          shutil.copytree(ws,phase/'workspace-snapshot')
           assert result['update_exit']==0 and result['human_exit']==0 and result['human_notes_present'],result
 
           PYPROBE
           cp "$RUNNER_TEMP/candidate/build-manifest.txt" "$RUNNER_TEMP/candidate/SHA256SUMS" "$RUNNER_TEMP/"
-          python3 "$RUNNER_TEMP/probe.py"
+          bash tools/bazel/test_env.sh python3 "$RUNNER_TEMP/probe.py"
       - name: Preserve actual diagnostic evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
