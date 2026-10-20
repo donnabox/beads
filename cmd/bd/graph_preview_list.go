@@ -25,6 +25,9 @@ const graphIssueListOutputLimit = 16 << 20
 var errGraphListSelector = errors.New("invalid Issue list selector")
 
 func runGraphPreviewList(cmd *cobra.Command) error {
+	if canonicalOutputSelected(cmd) {
+		return runCanonicalCollection(cmd, false)
+	}
 	// gatherListInput lowers the Changed state of the Issue filters once it has read
 	// them, so what the caller typed is read here, before anything gathers.
 	typed := graphIssueListTypedOptions(cmd)
