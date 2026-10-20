@@ -65,7 +65,7 @@ func TestForkMacOSLaneIsUnprivilegedAndOutsideTheGate(t *testing.T) {
 	if err := yaml.Unmarshal(data, &wf); err != nil {
 		t.Fatalf("parse %s: %v", rel, err)
 	}
-	wantOn := map[string]any{"pull_request": map[string]any{"branches": []any{"integration"}}, "workflow_dispatch": nil}
+	wantOn := map[string]any{"pull_request": map[string]any{"branches": []any{"integration", "codex/preview3-integration"}}, "workflow_dispatch": nil}
 	if !reflect.DeepEqual(wf.On, wantOn) {
 		t.Errorf("%s triggers = %v, want %v (never pull_request_target or workflow_run: it runs pull-request code)", rel, wf.On, wantOn)
 	}

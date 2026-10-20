@@ -99,8 +99,12 @@ existing behavior; use `bd show` when a summary does not supply the current
 revision. Current human references use `'[URL]@TOKEN'` syntax; a removed Link has
 no new current Link revision to advertise.
 
-This stage does not deliver persistent endpoint pins, same-ID re-pin, Type
-revision selection, external Link admission, or a new History contract. `bd
+This CLI stage still refuses persistent endpoint pins and same-ID re-pin.
+The storage/read companion preserves endpoint pins, but it does not enable
+these CLI writes. It requires a fresh graph workspace with schema version 8;
+older graph workspaces refuse admission rather than upgrading automatically.
+Type revision selection, external Link admission, and a new History contract
+remain outside this stage. `bd
 recall` retains its existing `--version` interface. Other unselected command
 positions keep their existing selector rules. In particular,
 `bd remember --update` selectors retain literal Memory-ID semantics, including

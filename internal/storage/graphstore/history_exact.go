@@ -258,6 +258,9 @@ func (s *Store) validateVersionLink(ctx context.Context, tx *sql.Tx, link LinkRe
 	if err != nil {
 		return err
 	}
+	if link.SourceRevision != "" || link.TargetRevision != "" {
+		return fmt.Errorf("%w: native Dependencies cannot carry endpoint pins", ErrInvalidStore)
+	}
 	depType, hasKind := link.Properties["dep_type"].(string)
 	if !isNativeDependencyLinkType(s.ScopeURL(), issueType, link.Type) ||
 		!hasKind || len(link.Properties) != 1 || !types.DependencyType(depType).IsValid() ||

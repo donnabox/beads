@@ -108,7 +108,7 @@ func TestIssueDeleteRetainsHistoryAndRefusesIncidentLinks(t *testing.T) {
 				t.Fatalf("identity reused: %v", err)
 			}
 			snapshot, err := s.CurrentSnapshot(ctx)
-			if err != nil || len(snapshot.Records) != 1 {
+			if err != nil || len(snapshot.Records) != 2 || !reflect.DeepEqual(snapshot.Records[0], contextMemory) || !reflect.DeepEqual(snapshot.Records[1], other) {
 				t.Fatalf("current inventory: %+v %v", snapshot, err)
 			}
 			if _, err := s.DeleteIssue(ctx, IssueDeleteRequest{Path: "beads/work", Unconditional: true}); !errors.Is(err, ErrGone) {

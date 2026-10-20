@@ -117,6 +117,19 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 		if _, _, err := s.beadEndpointInTx(ctx, tx, request.TargetPath); err != nil {
 			return err
 		}
+		var pinBytes uint64
+		sourcePin, err := s.endpointPinInTx(ctx, tx, request.SourcePath, request.SourcePin, &pinBytes)
+		if err != nil {
+			return err
+		}
+		targetPin, err := s.endpointPinInTx(ctx, tx, request.TargetPath, request.TargetPin, &pinBytes)
+		if err != nil {
+			return err
+		}
+		if owned && sourcePin != "" {
+			return fmt.Errorf("%w: pinned owned source observation point is not selected", ErrCapabilityUnavailable)
+		}
+
 		if memory, ok := source.(Record); owned && ok && len(memory.Owned) >= PreviewOwnedLinkLimit {
 			return fmt.Errorf("%w: preview source-owned Link limit %d exceeded", storage.ErrValidation, PreviewOwnedLinkLimit)
 		}
@@ -153,7 +166,7 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 		if err != nil {
 			return err
 		}
-		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_links (path,source_path,target_path,properties,metadata,attribution) VALUES (?,?,?,?,?,?)`, path, request.SourcePath, request.TargetPath, properties, metadata, attribution); err != nil {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_links (path,source_path,target_path,source_revision,target_revision,properties,metadata,attribution) VALUES (?,?,?,?,?,?,?,?)`, path, request.SourcePath, request.TargetPath, sourcePin, targetPin, properties, metadata, attribution); err != nil {
 			return err
 		}
 		if err := s.afterStage("link-payload"); err != nil {
@@ -180,8 +193,8 @@ func (s *Store) UpdateLink(ctx context.Context, request LinkUpdateRequest) (Link
 	if !utf8.ValidString(request.Actor) {
 		return LinkMutationResult{}, fmt.Errorf("%w: actor must be UTF-8", storage.ErrValidation)
 	}
-	if request.MetadataOnly {
-		if !hasCommonMetadataPatch(request.Metadata) {
+	if request.MetadataOnly || (request.Properties == nil && (request.SourcePin != nil || request.TargetPin != nil)) {
+		if !hasCommonMetadataPatch(request.Metadata) && request.SourcePin == nil && request.TargetPin == nil {
 			return LinkMutationResult{}, fmt.Errorf("%w: Link update requires metadata or properties", storage.ErrValidation)
 		}
 		if err := validateCommonMetadataPatch(request.Metadata); err != nil {
@@ -239,6 +252,26 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 		if err := checkRevisionGuard(request.ExpectedSourceRevision, request.UnconditionalSource, revision, owned, "source"); err != nil {
 			return err
 		}
+
+		var pinBytes uint64
+		sourcePin, targetPin := link.SourceRevision, link.TargetRevision
+		if request.SourcePin != nil {
+			sourcePin, err = s.endpointPinInTx(ctx, tx, sourcePath, *request.SourcePin, &pinBytes)
+			if err != nil {
+				return err
+			}
+		}
+		if request.TargetPin != nil {
+			targetPath := strings.TrimPrefix(link.Target, s.ScopeURL())
+			targetPin, err = s.endpointPinInTx(ctx, tx, targetPath, *request.TargetPin, &pinBytes)
+			if err != nil {
+				return err
+			}
+		}
+		if owned && sourcePin != "" {
+			return fmt.Errorf("%w: pinned owned source observation point is not selected", ErrCapabilityUnavailable)
+		}
+		pinsChanged := sourcePin != link.SourceRevision || targetPin != link.TargetRevision
 		if patch != nil {
 			if note, ok := link.Properties["note"].(string); ok && len(note) > graphpatch.MaxDocumentBytes {
 				return fmt.Errorf("%w: Link properties exceed the patch working-document limit", ErrLimitExceeded)
@@ -290,7 +323,7 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 		if err != nil {
 			return err
 		}
-		if bytes.Equal(before, nextProperties) && !metadataChanged {
+		if bytes.Equal(before, nextProperties) && !metadataChanged && !pinsChanged {
 			result = LinkMutationResult{Link: link, Source: source}
 			return nil
 		}
@@ -311,7 +344,7 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 		if err != nil {
 			return err
 		}
-		if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_links SET properties=?, metadata=?, attribution=? WHERE path=?`, nextProperties, metadata, attribution, request.Path); err != nil {
+		if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_links SET properties=?, metadata=?, attribution=?, source_revision=?, target_revision=? WHERE path=?`, nextProperties, metadata, attribution, sourcePin, targetPin, request.Path); err != nil {
 			return err
 		}
 		if err := s.afterStage("link-payload"); err != nil {
@@ -322,7 +355,7 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 			if owned {
 				result.ReplacedSource = replacedMemory(source, request.UnconditionalSource)
 			}
-			if patch != nil || request.MergeProperties || hasCommonMetadataPatch(request.Metadata) {
+			if patch != nil || request.MergeProperties || hasCommonMetadataPatch(request.Metadata) || pinsChanged {
 				// The new patch route must not commit a graph that current reads
 				// cannot acquire. Replacement retains its existing policy.
 				return checkCurrentReadBytes(ctx, tx)
@@ -443,12 +476,12 @@ func (s *Store) currentInformationalLinkInTx(ctx context.Context, tx *sql.Tx, pa
 	if err := s.informationalTypeInTx(ctx, tx, typ); err != nil {
 		return LinkRecord{}, err
 	}
-	var source, target string
+	var source, target, sourcePin, targetPin string
 	var properties, metadata, attribution []byte
-	if err := tx.QueryRowContext(ctx, `SELECT source_path,target_path,properties,metadata,attribution FROM graph_preview_links WHERE path=?`, path).Scan(&source, &target, &properties, &metadata, &attribution); err != nil {
+	if err := tx.QueryRowContext(ctx, `SELECT source_path,target_path,source_revision,target_revision,properties,metadata,attribution FROM graph_preview_links WHERE path=?`, path).Scan(&source, &target, &sourcePin, &targetPin, &properties, &metadata, &attribution); err != nil {
 		return LinkRecord{}, fmt.Errorf("%w: missing informational backing: %v", ErrInvalidStore, err)
 	}
-	for _, endpoint := range []string{source, target} {
+	for index, endpoint := range []string{source, target} {
 		var kind, typ, state, backing string
 		if err := tx.QueryRowContext(ctx, `SELECT resource_kind,type_url,allocation_state,backing FROM graph_preview_catalog WHERE path=?`, endpoint).Scan(&kind, &typ, &state, &backing); err != nil {
 			return LinkRecord{}, fmt.Errorf("%w: missing endpoint: %v", ErrInvalidStore, err)
@@ -456,8 +489,19 @@ func (s *Store) currentInformationalLinkInTx(ctx context.Context, tx *sql.Tx, pa
 		if validatePath(endpoint) != nil || kind != "bead" || state != "live" || !((backing == "generic" && s.isMemoryType(typ)) || (backing == "issue" && typ == issueType)) {
 			return LinkRecord{}, fmt.Errorf("%w: invalid informational endpoint", ErrInvalidStore)
 		}
+		pin := []string{sourcePin, targetPin}[index]
+		if pin != "" {
+			if err := validateVersionToken(pin); err != nil {
+				return LinkRecord{}, fmt.Errorf("%w: invalid persisted endpoint pin", ErrInvalidStore)
+			}
+			// A Link read returns its stored Reference, not the endpoint's
+			// content. Exact availability is checked by admission/resolution;
+			// retained endpoint payload is acquired only by explicit lookup or
+			// complete-state Type validation, with its own cumulative budget.
+		}
+
 	}
-	r := LinkRecord{ID: graph.CanonicalURL(s.options.Binding.ScopeURL, path), Type: typ, Revision: revision, Version: revision, Source: graph.CanonicalURL(s.options.Binding.ScopeURL, source), Target: graph.CanonicalURL(s.options.Binding.ScopeURL, target)}
+	r := LinkRecord{ID: graph.CanonicalURL(s.options.Binding.ScopeURL, path), Type: typ, Revision: revision, Version: revision, Source: graph.CanonicalURL(s.options.Binding.ScopeURL, source), Target: graph.CanonicalURL(s.options.Binding.ScopeURL, target), SourceRevision: sourcePin, TargetRevision: targetPin}
 	canonicalMetadata, err := commonMetadata(metadata)
 	if err != nil || !bytes.Equal(canonicalMetadata, metadata) {
 		return LinkRecord{}, fmt.Errorf("%w: invalid informational metadata", ErrInvalidStore)
