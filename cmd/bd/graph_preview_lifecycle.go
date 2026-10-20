@@ -314,6 +314,9 @@ func graphPreviewLinkCollectionRequest(cmd *cobra.Command) (graphstore.LinkColle
 }
 
 func runGraphPreviewLinkCollection(cmd *cobra.Command, _ []string) error {
+	if cmd.Name() == "list" && canonicalOutputSelected(cmd) {
+		return runCanonicalCollection(cmd, true)
+	}
 	request, err := graphPreviewLinkCollectionRequest(cmd)
 	if err != nil {
 		return err
