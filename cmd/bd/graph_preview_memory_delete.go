@@ -64,7 +64,11 @@ func graphPreviewMemoryDeleteInput(cmd *cobra.Command, args []string, forget boo
 	if len(args) != 1 {
 		return graphstore.MemoryDeleteRequest{}, graphFailure("invalid_selector", "deletion requires exactly one Bead ID or beads/PATH", 2)
 	}
-	path, err := graphPreviewBeadSelector(args[0])
+	selector, err := graphPreviewWritableIdentity(args[0])
+	if err != nil {
+		return graphstore.MemoryDeleteRequest{}, graphFailure("invalid_selector", err.Error(), 2)
+	}
+	path, err := graphPreviewBeadSelector(selector)
 	if err != nil {
 		return graphstore.MemoryDeleteRequest{}, err
 	}

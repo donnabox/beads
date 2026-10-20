@@ -31,6 +31,47 @@ func (r *Reader) Resource(ctx context.Context, path string) (any, error) {
 	if err != nil {
 		return nil, err
 	}
+	return r.projectResource(ctx, record)
+}
+
+// ResourceVersion projects one exact retained snapshot through the same BDP
+// representation as Resource. It never fills missing state from a current read
+// or advertises HTTP History support. Installed preview Type definitions are
+// immutable; owned Links come from the retained snapshot.
+func (r *Reader) ResourceVersion(ctx context.Context, path, revision string) (any, error) {
+	record, err := r.store.ReadVersion(ctx, path, revision)
+	if err != nil {
+		return nil, err
+	}
+	projected, err := r.projectResource(ctx, record)
+	if err != nil {
+		return nil, err
+	}
+	// A retained record predating metadata must remain distinguishable from
+	// an explicit empty metadata object on a current record.
+	var metadata json.RawMessage
+	switch v := record.(type) {
+	case graphstore.Record:
+		metadata = v.Metadata
+	case graphstore.IssueRecord:
+		metadata = v.Metadata
+	case graphstore.LinkRecord:
+		metadata = v.Metadata
+	}
+	if len(metadata) == 0 {
+		switch v := projected.(type) {
+		case bdpwire.BeadRecord:
+			v.Metadata = nil
+			projected = v
+		case bdpwire.LinkRecord:
+			v.Metadata = nil
+			projected = v
+		}
+	}
+	return projected, nil
+}
+
+func (r *Reader) projectResource(ctx context.Context, record any) (any, error) {
 	switch v := record.(type) {
 	case graphstore.Record:
 		return r.bead(ctx, v.ID, v.Type, v.Revision, v.Properties, v.Metadata, v.Owned, v.Attribution)

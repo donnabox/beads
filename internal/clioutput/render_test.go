@@ -416,3 +416,17 @@ func TestProjectionErrorsAreTypedAndDetailKeepsLiteralText(t *testing.T) {
 		t.Fatal("invalid origin accepted")
 	}
 }
+
+func TestDetailDecodesProtocolEscapesWithoutRoundingNumbers(t *testing.T) {
+	r, err := clioutput.New(descriptor(), clioutput.Options{Formats: []string{"detail"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	out, err := r.Render([]byte(`{"id":"b","type":"t","revision":"r","properties":{"text":"a \u0026 \u003cb\u003e","n":9007199254740993}}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(out), "a & <b>") || !strings.Contains(string(out), "9007199254740993") {
+		t.Fatalf("detail changed values: %s", out)
+	}
+}
