@@ -270,9 +270,11 @@ selected constraints and are not an ownership fallback.
 Export validates distinct exact endpoint addresses using the existing retained
 reader inside the same rollback-only transaction. Shared retained-availability
 checks refuse removed native Issue editions before decoding. The aggregate
-export preflight charges pinned historical validation payloads together with
-current records and comments; repeated references are conservatively charged
-per Link even though validation memoizes distinct addresses. No new transaction
+export preflight charges each distinct historical endpoint address together
+with current records and comments. A source/target UNION selects only referenced
+addresses before joining retained payloads; repeated References decode and are
+charged once. Validation retains only the selected Type for ownership checks,
+not historical payloads. No new transaction
 or current-head fallback is used. Owned-source pins remain deferred and refuse.
 
 `Snapshot.Records` still contains live current records only. Exact historical

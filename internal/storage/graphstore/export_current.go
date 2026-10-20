@@ -17,8 +17,9 @@ import (
 
 // ExportCurrentState is an internal acquisition result, not an interchange
 // envelope. Comments are keyed by canonical relative Issue path; their native
-// IssueID and comment identity are preserved. DeletedAllocations discloses how
-// many allocation tombstones are outside the live Snapshot, not their history.
+// IssueID and comment identity are preserved. Historical endpoint payloads are validation-only and are absent from this
+// result, so it is not closed over its exact endpoint References.
+// DeletedAllocations counts tombstones outside the live Snapshot.
 type ExportCurrentState struct {
 	Snapshot            Snapshot
 	CommentsByIssuePath map[string][]types.Comment
@@ -34,11 +35,11 @@ const exportCommentLimit = PreviewCurrentReadByteLimit / exportReadRowOverhead
 
 // ExportCurrentSnapshot acquires the controlled graph's live records, installed
 // Types, current durable Issue comments, exact persisted issue_prefix and count
-// of deleted allocations in one rollback-only transaction. Historical versions,
-// event journals, counters and unrelated configuration are not acquired. This
-// is neither a database archive nor public authority/history evidence. Exact
-// endpoint References are validated, but their historical payloads are not
-// included: live identity membership is not portable retained-version closure.
+// of deleted allocations in one rollback-only transaction. Exact endpoints
+// are dereferenced for availability in that transaction; their historical
+// payloads are validation-only and never enter Snapshot or the comment feed.
+// Other history, event journals, counters and unrelated configuration are not
+// acquired. This is neither a database archive nor portable retained closure.
 //
 // Present wisp data or legacy KV Memories are refused: they are alternative
 // live data planes not represented by this graph inventory. Orphan durable
@@ -90,6 +91,9 @@ func (s *Store) exportCurrentSnapshotInTx(ctx context.Context, tx *sql.Tx) (Expo
 	if err := s.validateExportEndpointPinsInTx(ctx, tx, snapshot); err != nil {
 		return ExportCurrentState{}, err
 	}
+	if err := s.afterStage("export-endpoints"); err != nil {
+		return ExportCurrentState{}, err
+	}
 	issuePaths, err := exportSnapshotClosure(s.ScopeURL(), snapshot)
 	if err != nil {
 		return ExportCurrentState{}, err
@@ -124,7 +128,7 @@ func (s *Store) exportCurrentSnapshotInTx(ctx context.Context, tx *sql.Tx) (Expo
 // export and record bytes share one budget; two separate 16 MiB checks would
 // not bound their aggregate. Refused orphan comments are charged too.
 func exportReadSizeQueries() []currentReadSizeQuery {
-	parts := append(currentReadSizeQueries(), pinnedEndpointSizeQueries()...)
+	parts := append(currentReadSizeQueries(), exportPinnedEndpointSizeQueries()...)
 	for i := range parts {
 		if strings.HasPrefix(parts[i].from, "comments ") {
 			parts[i] = currentReadSizeQuery{"comments", "id,issue_id,author,text,created_at", 1}
@@ -137,6 +141,18 @@ func exportReadSizeQueries() []currentReadSizeQuery {
 		"graph_preview_issue_versions m JOIN graph_preview_catalog c ON c.path=m.path AND c.revision=m.version JOIN issue_versions v ON v.issue_id=m.issue_id AND v.revision=m.issue_revision WHERE c.allocation_state='deleted' AND c.backing='issue'",
 		"m.issue_id,m.owned,v.durable_state,v.change_actor,v.attribution_status,v.change_at", 1,
 	})
+}
+
+// UNION deduplicates a selected address across both endpoint roles before
+// joining its one retained payload. Only addresses present in live Link rows
+// are selected; no all-history payload is acquired or materialized.
+func exportPinnedEndpointSizeQueries() []currentReadSizeQuery {
+	const selected = `(SELECT source_path AS path,source_revision AS revision FROM graph_preview_links WHERE source_revision<>''
+ UNION SELECT target_path,target_revision FROM graph_preview_links WHERE target_revision<>'') p`
+	return []currentReadSizeQuery{
+		{selected + " JOIN graph_preview_versions v ON v.path=p.path AND v.version=p.revision", "v.snapshot,v.actor", 1},
+		{selected + " JOIN graph_preview_issue_versions m ON m.path=p.path AND m.version=p.revision JOIN issue_versions v ON v.issue_id=m.issue_id AND v.revision=m.issue_revision", "m.issue_id,m.owned,v.durable_state,v.change_actor,v.attribution_status,v.change_at", 1},
+	}
 }
 
 func checkExportReadBounds(ctx context.Context, tx *sql.Tx) (uint64, error) {
@@ -262,17 +278,17 @@ func validateExportComment(comment types.Comment) error {
 
 // Validate selected exact addresses under the acquisition transaction. The shared
 // current reader preserves References without resolving their historical payloads.
-// The export preflight charges each pinned acquisition before decoding; memoizing
-// here can only reduce that conservative per-Link budget.
+// The export preflight charges each distinct pinned acquisition before decoding.
+// Retain only its selected Type for later source ownership checks.
 func (s *Store) validateExportEndpointPinsInTx(ctx context.Context, tx *sql.Tx, snapshot Snapshot) error {
-	seen := make(map[EndpointReference]any)
+	seen := make(map[EndpointReference]string)
 	for _, record := range snapshot.Records {
 		link, ok := record.(LinkRecord)
 		if !ok {
 			continue
 		}
 		for _, ref := range []EndpointReference{link.SourceReference(), link.TargetReference()} {
-			if ref.Revision == "" || seen[ref] != nil {
+			if ref.Revision == "" || seen[ref] != "" {
 				continue
 			}
 			path := strings.TrimPrefix(ref.URI, s.ScopeURL())
@@ -300,14 +316,14 @@ func (s *Store) validateExportEndpointPinsInTx(ctx context.Context, tx *sql.Tx, 
 			if id != ref.URI || revision != ref.Revision {
 				return fmt.Errorf("%w: exact export endpoint differs from selected address", ErrInvalidStore)
 			}
-			seen[ref] = value
+			seen[ref] = recordType(value)
 		}
 		if source := seen[link.SourceReference()]; link.SourceRevision != "" {
-			owned, err := s.ownsLink(source, link.Type)
+			ownedTypes, err := s.SelectedOwnedLinkTypes(source)
 			if err != nil {
 				return err
 			}
-			if owned {
+			if slices.Contains(ownedTypes, link.Type) {
 				return fmt.Errorf("%w: pinned owned source observation point is not selected", ErrCapabilityUnavailable)
 			}
 		}

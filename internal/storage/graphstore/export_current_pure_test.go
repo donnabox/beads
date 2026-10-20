@@ -213,3 +213,31 @@ func TestExportSnapshotClosurePreservesEndpointPins(t *testing.T) {
 		t.Fatalf("owned source pin admitted: %v", err)
 	}
 }
+
+// The retained Issue reader's acquisition contract includes its mapped native
+// identity, complete owned state, payload and attribution (including timestamp).
+func TestExportHistoricalIssueProjectionCoversReaderFields(t *testing.T) {
+	required := []string{"m.issue_id", "m.owned", "v.durable_state", "v.change_actor", "v.attribution_status", "v.change_at"}
+	found := false
+	for _, projection := range exportPinnedEndpointSizeQueries() {
+		if !strings.Contains(projection.from, "JOIN issue_versions") {
+			continue
+		}
+		found = true
+		columns := strings.Split(projection.columns, ",")
+		for _, field := range required {
+			present := false
+			for _, column := range columns {
+				if strings.TrimSpace(column) == field {
+					present = true
+				}
+			}
+			if !present {
+				t.Fatalf("retained Issue acquisition field %s is uncharged", field)
+			}
+		}
+	}
+	if !found {
+		t.Fatal("retained Issue validation projection missing")
+	}
+}

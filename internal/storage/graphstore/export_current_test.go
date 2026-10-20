@@ -188,7 +188,7 @@ func TestExportCurrentSnapshotFailures(t *testing.T) {
 			}
 			before := exportSourceState(t, ctx, s)
 			// These are callback faults, not injected driver cleanup failures.
-			for _, stage := range []string{"export-preflight", "export-inventory", "export-comments"} {
+			for _, stage := range []string{"export-preflight", "export-endpoints", "export-inventory", "export-comments"} {
 				t.Run(stage, func(t *testing.T) {
 					fault := errors.New("injected export callback failure")
 					s.afterWrite = func(at string) error {
@@ -207,7 +207,7 @@ func TestExportCurrentSnapshotFailures(t *testing.T) {
 			canceled, cancel := context.WithCancel(ctx)
 			fault := errors.New("hydration error text without a cancellation chain")
 			s.afterWrite = func(stage string) error {
-				if stage == "export-inventory" {
+				if stage == "export-endpoints" {
 					cancel()
 					return fault
 				}
@@ -216,7 +216,7 @@ func TestExportCurrentSnapshotFailures(t *testing.T) {
 			got, err := s.ExportCurrentSnapshot(canceled)
 			s.afterWrite = nil
 			cancel()
-			if !errors.Is(err, context.Canceled) || !errors.Is(err, fault) || !reflect.DeepEqual(got, ExportCurrentState{}) {
+			if !errors.Is(err, context.Canceled) || !errors.Is(err, fault) || !reflect.DeepEqual(got, ExportCurrentState{}) || !reflect.DeepEqual(before, exportSourceState(t, ctx, s)) {
 				t.Fatalf("lost cancellation cause: %+v %v", got, err)
 			}
 			cases := []struct {
@@ -755,7 +755,7 @@ func TestExportEndpointPinsCurrentAndRetained(t *testing.T) {
 			// The byte preflight must refuse before decoding that historical JSON.
 			reachedPreflight := false
 			s.afterWrite = func(stage string) error {
-				if stage == "export-preflight" {
+				if stage == "export-endpoints" {
 					reachedPreflight = true
 				}
 				return nil
@@ -774,7 +774,8 @@ func TestExportEndpointPinsCurrentAndRetained(t *testing.T) {
 			if budgetErr != nil || reachedPreflight {
 				t.Fatalf("historical preflight budget: reached=%t %v", reachedPreflight, budgetErr)
 			}
-			// Keep valid current heads, but remove a selected older exact endpoint.
+			// Corruption/unavailability robustness: keep valid current heads but remove
+			// a selected older exact endpoint; this is not a normal writer action.
 			// A reader that substitutes the current target would incorrectly succeed.
 			if err := s.withTx(ctx, true, func(tx *sql.Tx) error {
 				_, err := tx.ExecContext(ctx, "DELETE FROM graph_preview_versions WHERE path=? AND version=?", "beads/target", target.Revision)
@@ -790,6 +791,8 @@ func TestExportEndpointPinsCurrentAndRetained(t *testing.T) {
 	}
 }
 
+// Manual removal-state corruption robustness; no normal product writer currently
+// sets removed_at on these retained Issue editions.
 func TestExportEndpointRemovedIssueVersionRefuses(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
@@ -820,6 +823,99 @@ func TestExportEndpointRemovedIssueVersionRefuses(t *testing.T) {
 			got, err := s.ExportCurrentSnapshot(ctx)
 			if !errors.Is(err, ErrVersionUnknown) || !reflect.DeepEqual(got, ExportCurrentState{}) {
 				t.Fatalf("removed retained Issue version admitted/leaked state: %+v %v", got, err)
+			}
+		})
+	}
+}
+
+func TestExportEndpointDistinctValidationBudget(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, _, s := memoryDeleteStore(t, backend)
+			source, err := s.Create(ctx, CreateRequest{Path: "beads/source", Title: "Source", Body: "Original"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			small := "Current"
+			if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/source", Body: &small, ExpectedRevision: source.Revision}); err != nil {
+				t.Fatal(err)
+			}
+			old, err := s.Create(ctx, CreateRequest{Path: "beads/target", Title: "Target", Body: strings.Repeat("x", 3<<20)})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/target", Body: &small, ExpectedRevision: old.Revision}); err != nil {
+				t.Fatal(err)
+			}
+			filler := plainIssue("Current bytes")
+			filler.Issue.Description = strings.Repeat("f", 1<<20)
+			if _, err := s.CreateIssue(ctx, "beads/filler", filler); err != nil {
+				t.Fatal(err)
+			}
+			for i := 0; i < 5; i++ {
+				request := LinkCreateRequest{Path: fmt.Sprintf("links/pin%d", i), SourcePath: "beads/source", TargetPath: "beads/target", TargetPin: EndpointPin{Revision: old.Revision}}
+				if i == 0 {
+					request.SourcePin = EndpointPin{Revision: source.Revision}
+				}
+				if _, err := s.AddInformationalLink(ctx, request); err != nil {
+					t.Fatalf("writer-admitted repeated pin %d: %v", i, err)
+				}
+			}
+			before := exportSourceState(t, ctx, s)
+			got, err := s.ExportCurrentSnapshot(ctx)
+			if err != nil || len(got.Snapshot.Records) != 8 {
+				t.Fatalf("distinct decode falsely charged five times: %d %v", len(got.Snapshot.Records), err)
+			}
+			fault := errors.New("after exact endpoint validation")
+			s.afterWrite = func(stage string) error {
+				if stage == "export-endpoints" {
+					return fault
+				}
+				return nil
+			}
+			got, err = s.ExportCurrentSnapshot(ctx)
+			s.afterWrite = nil
+			if !errors.Is(err, fault) || !reflect.DeepEqual(got, ExportCurrentState{}) {
+				t.Fatalf("endpoint-stage fault: %+v %v", got, err)
+			}
+			canceled, cancel := context.WithCancel(ctx)
+			s.afterWrite = func(stage string) error {
+				if stage == "export-endpoints" {
+					cancel()
+				}
+				return nil
+			}
+			got, err = s.ExportCurrentSnapshot(canceled)
+			s.afterWrite = nil
+			cancel()
+			if !errors.Is(err, context.Canceled) || !reflect.DeepEqual(got, ExportCurrentState{}) {
+				t.Fatalf("endpoint-stage cancellation: %+v %v", got, err)
+			}
+			reached := false
+			s.afterWrite = func(stage string) error {
+				if stage == "export-endpoints" {
+					reached = true
+				}
+				return nil
+			}
+			bounded := s.withTx(ctx, false, func(tx *sql.Tx) error {
+				for _, address := range []struct{ path, revision string }{{"beads/source", source.Revision}, {"beads/target", old.Revision}} {
+					if _, err := tx.ExecContext(ctx, "UPDATE graph_preview_versions SET snapshot=REPEAT('x',?) WHERE path=? AND version=?", 9<<20, address.path, address.revision); err != nil {
+						return err
+					}
+				}
+				got, err := s.exportCurrentSnapshotInTx(ctx, tx)
+				if !errors.Is(err, ErrLimitExceeded) || !reflect.DeepEqual(got, ExportCurrentState{}) {
+					return fmt.Errorf("distinct aggregate not bounded before decode: %+v %v", got, err)
+				}
+				return nil
+			})
+			s.afterWrite = nil
+			if bounded != nil || reached {
+				t.Fatalf("over-budget exact validation ran: %t %v", reached, bounded)
+			}
+			if !reflect.DeepEqual(before, exportSourceState(t, ctx, s)) {
+				t.Fatal("validation/fault/bounds changed source")
 			}
 		})
 	}
