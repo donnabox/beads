@@ -23,8 +23,8 @@ func TestGraphCanonicalRetainedOutputCLI(t *testing.T) {
 		return graphVersionsOK(t, bd, work, home, args...)
 	}
 	call("init", "--graph-mode", "link", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
-	call("create", "Source", "--id", "beads/source", "--json")
-	call("create", "Target", "--id", "beads/target", "--json")
+	call("remember", "Source", "--id", "beads/source", "--json")
+	call("create", "Target", "--id", "beads/target", "--type", "types/constraint", "--json")
 	call("link", "create", "beads/source", "beads/target", "--id", "links/edge", "--type", graphstore.RelatedTypeURL(scope), "--json")
 	call("link", "update", "links/edge", "--properties", `{"note":"second"}`, "--json")
 
