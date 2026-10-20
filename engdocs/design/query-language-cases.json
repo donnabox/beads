@@ -16,7 +16,8 @@
     "ordered_editions": "ordered list",
     "fixture_overlays": "dotted property paths replace only the stated synthetic fixture value for that request",
     "rule_status": "marks semantic acceptance versus provisional expectation; all textual grammar remains candidate",
-    "owner": "external-contract cases are compatibility/context requirements, not authorization to implement a future facade"
+    "owner": "external-contract cases are compatibility/context requirements, not authorization to implement a future facade",
+    "suspended_cases": "Case IDs listed in suspended_case_ids are historical candidate examples, excluded from current acceptance while being rewritten to the selected predicate basis."
   },
   "fixture": {
     "read_context": "synthetic fully authorized coherent selected-edition graph; incoming/outgoing adjacency is edition-specific; A@a2 is a non-head retained edition sharing unchanged ab@l1 with A@a1",
@@ -693,7 +694,7 @@
     },
     {
       "id": "missing-reads-null",
-      "rule_status": "accepted-direction",
+      "rule_status": "candidate-detail",
       "request": {
         "operation": "evaluate",
         "candidate": "F@f1",
@@ -701,11 +702,12 @@
       },
       "expected": {
         "value": null
-      }
+      },
+      "note": "Historical candidate spelling/expectation, suspended by the October 20 conditional JSONPath ruling. Not an active acceptance requirement. "
     },
     {
       "id": "present-null-reads-null",
-      "rule_status": "accepted-direction",
+      "rule_status": "candidate-detail",
       "request": {
         "operation": "evaluate",
         "candidate": "H@h1",
@@ -713,11 +715,12 @@
       },
       "expected": {
         "value": null
-      }
+      },
+      "note": "Historical candidate spelling/expectation, suspended by the October 20 conditional JSONPath ruling. Not an active acceptance requirement. "
     },
     {
       "id": "missing-is-not-present",
-      "rule_status": "accepted-direction",
+      "rule_status": "candidate-detail",
       "request": {
         "operation": "evaluate",
         "candidate": "F@f1",
@@ -725,11 +728,12 @@
       },
       "expected": {
         "value": false
-      }
+      },
+      "note": "Historical candidate spelling/expectation, suspended by the October 20 conditional JSONPath ruling. Not an active acceptance requirement. "
     },
     {
       "id": "null-is-present",
-      "rule_status": "accepted-direction",
+      "rule_status": "candidate-detail",
       "request": {
         "operation": "evaluate",
         "candidate": "H@h1",
@@ -737,11 +741,12 @@
       },
       "expected": {
         "value": true
-      }
+      },
+      "note": "Historical candidate spelling/expectation, suspended by the October 20 conditional JSONPath ruling. Not an active acceptance requirement. "
     },
     {
       "id": "null-equality-includes-absent",
-      "rule_status": "accepted-direction",
+      "rule_status": "candidate-detail",
       "request": {
         "operation": "select",
         "population": "beads",
@@ -758,7 +763,8 @@
           "G@g1",
           "H@h1"
         ]
-      }
+      },
+      "note": "Historical candidate spelling/expectation, suspended by the October 20 conditional JSONPath ruling. Not an active acceptance requirement. "
     },
     {
       "id": "null-not-string",
@@ -782,7 +788,7 @@
     },
     {
       "id": "coalesce-missing",
-      "rule_status": "accepted-direction",
+      "rule_status": "candidate-detail",
       "request": {
         "operation": "evaluate",
         "candidate": "F@f1",
@@ -790,11 +796,12 @@
       },
       "expected": {
         "value": "unrecorded"
-      }
+      },
+      "note": "Historical candidate spelling/expectation, suspended by the October 20 conditional JSONPath ruling. Not an active acceptance requirement. "
     },
     {
       "id": "coalesce-null",
-      "rule_status": "accepted-direction",
+      "rule_status": "candidate-detail",
       "request": {
         "operation": "evaluate",
         "candidate": "H@h1",
@@ -802,11 +809,12 @@
       },
       "expected": {
         "value": "unrecorded"
-      }
+      },
+      "note": "Historical candidate spelling/expectation, suspended by the October 20 conditional JSONPath ruling. Not an active acceptance requirement. "
     },
     {
       "id": "coalesce-retains-false",
-      "rule_status": "accepted-direction",
+      "rule_status": "candidate-detail",
       "request": {
         "operation": "evaluate",
         "candidate": "F@f1",
@@ -814,11 +822,12 @@
       },
       "expected": {
         "value": false
-      }
+      },
+      "note": "Historical candidate spelling/expectation, suspended by the October 20 conditional JSONPath ruling. Not an active acceptance requirement. "
     },
     {
       "id": "coalesce-retains-zero",
-      "rule_status": "accepted-direction",
+      "rule_status": "candidate-detail",
       "request": {
         "operation": "evaluate",
         "candidate": "F@f1",
@@ -826,11 +835,12 @@
       },
       "expected": {
         "value": 0
-      }
+      },
+      "note": "Historical candidate spelling/expectation, suspended by the October 20 conditional JSONPath ruling. Not an active acceptance requirement. "
     },
     {
       "id": "coalesce-retains-empty",
-      "rule_status": "accepted-direction",
+      "rule_status": "candidate-detail",
       "request": {
         "operation": "evaluate",
         "candidate": "F@f1",
@@ -838,7 +848,8 @@
       },
       "expected": {
         "value": ""
-      }
+      },
+      "note": "Historical candidate spelling/expectation, suspended by the October 20 conditional JSONPath ruling. Not an active acceptance requirement. "
     },
     {
       "id": "coalesce-short-circuit",
@@ -846,15 +857,16 @@
       "request": {
         "operation": "evaluate",
         "candidate": "A@a1",
-        "expression": "status ?? number(\"bad\")"
+        "expression": "status ?? metadata.owner.name"
       },
       "expected": {
         "value": "ratified"
-      }
+      },
+      "note": "Historical candidate spelling/expectation, suspended by the October 20 conditional JSONPath ruling. Not an active acceptance requirement. "
     },
     {
       "id": "coalesce-right-associative",
-      "rule_status": "accepted-direction",
+      "rule_status": "candidate-detail",
       "request": {
         "operation": "evaluate",
         "candidate": "F@f1",
@@ -862,7 +874,8 @@
       },
       "expected": {
         "value": "fallback"
-      }
+      },
+      "note": "Historical candidate spelling/expectation, suspended by the October 20 conditional JSONPath ruling. Not an active acceptance requirement. "
     },
     {
       "id": "safe-nested-missing",
@@ -874,7 +887,8 @@
       },
       "expected": {
         "value": "none"
-      }
+      },
+      "note": "Historical candidate spelling/expectation, suspended by the October 20 conditional JSONPath ruling. Not an active acceptance requirement. "
     },
     {
       "id": "required-nested-missing",
@@ -887,7 +901,8 @@
       "expected": {
         "error_class": "required-access",
         "successful_result": false
-      }
+      },
+      "note": "Historical candidate spelling/expectation, suspended by the October 20 conditional JSONPath ruling. Not an active acceptance requirement. "
     },
     {
       "id": "numeric-equality",
@@ -1078,8 +1093,10 @@
         "expression": "number(\" 3 \") = 3"
       },
       "expected": {
-        "value": true
-      }
+        "error_class": "unsupported-expression",
+        "successful_result": false
+      },
+      "note": "Conversion functions are deferred by the October 20 markup ruling; this is an authored rejection case, not an executed parser test."
     },
     {
       "id": "explicit-bool",
@@ -1090,8 +1107,10 @@
         "expression": "bool(\"false\")"
       },
       "expected": {
-        "value": false
-      }
+        "error_class": "unsupported-expression",
+        "successful_result": false
+      },
+      "note": "Conversion functions are deferred by the October 20 markup ruling; this is an authored rejection case, not an executed parser test."
     },
     {
       "id": "invalid-number",
@@ -1102,9 +1121,10 @@
         "expression": "number(\"3x\")"
       },
       "expected": {
-        "error_class": "conversion",
+        "error_class": "unsupported-expression",
         "successful_result": false
-      }
+      },
+      "note": "Conversion functions are deferred by the October 20 markup ruling; this is an authored rejection case, not an executed parser test."
     },
     {
       "id": "no-truthiness",
@@ -1125,7 +1145,7 @@
       "request": {
         "operation": "evaluate",
         "candidate": "A@a1",
-        "expression": "false and number(\"bad\") = 3"
+        "expression": "false and metadata.owner.name = \"nobody\""
       },
       "expected": {
         "value": false
@@ -1142,7 +1162,7 @@
       "expected": {
         "value": false
       },
-      "note": "Lumen precedence: enabled ?? (false or true). Optional root read admits null; its actual false value is retained."
+      "note": "Historical candidate spelling/expectation, suspended by the October 20 conditional JSONPath ruling. Not an active acceptance requirement. Candidate precedence: enabled ?? (false or true). Optional root read admits null; its actual false value is retained."
     },
     {
       "id": "correlated-same-witness",
@@ -1922,10 +1942,10 @@
         "operation": "exists",
         "seed": "A@a1",
         "link_type_family": "Requires",
-        "neighbor_predicate": "number($p.code) > 0",
+        "neighbor_predicate": "$p.code > 0",
         "fixture_overlay": {
           "B@b1": {
-            "properties.code": "1"
+            "properties.code": 1
           },
           "C@c1": {
             "properties.code": "bad"
@@ -1937,10 +1957,10 @@
         ]
       },
       "expected": {
-        "error_class": "conversion",
+        "error_class": "argument-type",
         "successful_result": false
       },
-      "note": "Proposed deterministic strict match-error policy; NOT an accepted product ruling. Link ab2 duplicates a valid witness and is also in the complete input regardless of enumeration prefix."
+      "note": "Proposed deterministic strict match-error policy; NOT an accepted product ruling. One neighbor has numeric code 1 and another has string code \"bad\". No conversion operation is used. Link ab2 is another valid witness in the complete input."
     },
     {
       "id": "unordered-exists-error-first",
@@ -1949,10 +1969,10 @@
         "operation": "exists",
         "seed": "A@a1",
         "link_type_family": "Requires",
-        "neighbor_predicate": "number($p.code) > 0",
+        "neighbor_predicate": "$p.code > 0",
         "fixture_overlay": {
           "B@b1": {
-            "properties.code": "1"
+            "properties.code": 1
           },
           "C@c1": {
             "properties.code": "bad"
@@ -1964,10 +1984,10 @@
         ]
       },
       "expected": {
-        "error_class": "conversion",
+        "error_class": "argument-type",
         "successful_result": false
       },
-      "note": "Proposed deterministic strict match-error policy; NOT an accepted product ruling. Link ab2 duplicates a valid witness and is also in the complete input regardless of enumeration prefix."
+      "note": "Proposed deterministic strict match-error policy; NOT an accepted product ruling. One neighbor has numeric code 1 and another has string code \"bad\". No conversion operation is used. Link ab2 is another valid witness in the complete input."
     },
     {
       "id": "unordered-not-exists-witness-first",
@@ -1976,10 +1996,10 @@
         "operation": "not-exists",
         "seed": "A@a1",
         "link_type_family": "Requires",
-        "neighbor_predicate": "number($p.code) > 0",
+        "neighbor_predicate": "$p.code > 0",
         "fixture_overlay": {
           "B@b1": {
-            "properties.code": "1"
+            "properties.code": 1
           },
           "C@c1": {
             "properties.code": "bad"
@@ -1991,10 +2011,10 @@
         ]
       },
       "expected": {
-        "error_class": "conversion",
+        "error_class": "argument-type",
         "successful_result": false
       },
-      "note": "Proposed deterministic strict match-error policy; NOT an accepted product ruling. Link ab2 duplicates a valid witness and is also in the complete input regardless of enumeration prefix."
+      "note": "Proposed deterministic strict match-error policy; NOT an accepted product ruling. One neighbor has numeric code 1 and another has string code \"bad\". No conversion operation is used. Link ab2 is another valid witness in the complete input."
     },
     {
       "id": "unordered-not-exists-error-first",
@@ -2003,10 +2023,10 @@
         "operation": "not-exists",
         "seed": "A@a1",
         "link_type_family": "Requires",
-        "neighbor_predicate": "number($p.code) > 0",
+        "neighbor_predicate": "$p.code > 0",
         "fixture_overlay": {
           "B@b1": {
-            "properties.code": "1"
+            "properties.code": 1
           },
           "C@c1": {
             "properties.code": "bad"
@@ -2018,10 +2038,10 @@
         ]
       },
       "expected": {
-        "error_class": "conversion",
+        "error_class": "argument-type",
         "successful_result": false
       },
-      "note": "Proposed deterministic strict match-error policy; NOT an accepted product ruling. Link ab2 duplicates a valid witness and is also in the complete input regardless of enumeration prefix."
+      "note": "Proposed deterministic strict match-error policy; NOT an accepted product ruling. One neighbor has numeric code 1 and another has string code \"bad\". No conversion operation is used. Link ab2 is another valid witness in the complete input."
     },
     {
       "id": "ordered-resource-ties",
@@ -2191,7 +2211,7 @@
       "request": {
         "operation": "evaluate",
         "candidate": "A@a1",
-        "expression": "\"αβ\" contains \"β\""
+        "expression": "\"\u03b1\u03b2\" contains \"\u03b2\""
       },
       "expected": {
         "value": true
@@ -2203,7 +2223,7 @@
       "request": {
         "operation": "evaluate",
         "candidate": "A@a1",
-        "expression": "\"Straße\" contains insensitive \"STRASSE\""
+        "expression": "\"Stra\u00dfe\" contains insensitive \"STRASSE\""
       },
       "expected": {
         "value": true
@@ -2215,7 +2235,7 @@
       "request": {
         "operation": "evaluate",
         "candidate": "A@a1",
-        "expression": "\"é\" contains insensitive \"é\""
+        "expression": "\"\u00e9\" contains insensitive \"e\u0301\""
       },
       "expected": {
         "value": false
@@ -2240,13 +2260,13 @@
       "request": {
         "operation": "evaluate",
         "candidate": "A@a1",
-        "expression": "number(\"3x\") ?? 0"
+        "expression": "3 ?? 0"
       },
       "expected": {
         "error_class": "non-null-coalescing",
         "successful_result": false
       },
-      "note": "Lumen default static nullability rule; strict parsing returns a non-null number on success. This is not conversion recovery."
+      "note": "Historical candidate spelling/expectation, suspended by the October 20 conditional JSONPath ruling. Not an active acceptance requirement. Candidate checker rejects a known non-null left operand; this case does not require a conversion operation."
     },
     {
       "id": "incoming-exact-pin-not-head",
@@ -2376,7 +2396,7 @@
       "request": {
         "operation": "evaluate",
         "candidate": "A@a1",
-        "expression": "\"K\" contains insensitive \"k\""
+        "expression": "\"\u212a\" contains insensitive \"k\""
       },
       "expected": {
         "value": true
@@ -2400,7 +2420,7 @@
       "request": {
         "operation": "evaluate",
         "candidate": "A@a1",
-        "expression": "length(\"αβ\")"
+        "expression": "length(\"\u03b1\u03b2\")"
       },
       "expected": {
         "value": 2
@@ -2645,12 +2665,32 @@
     }
   ],
   "known_deferred_coverage": [
-    "string(value) domain/signature",
+    "predicate foundation and explicit BDP JSONPath semantic reconciliation",
+    "all value conversion functions (deferred)",
+    "BDP binary64 round-trip number admission alignment",
     "complete lexer/pipeline productions",
     "graph post-filter witness policy",
     "path and row total ordering beyond Resource order",
     "Unicode version pin",
     "provider production capability mapping and budget values",
     "partial-answer status and compatibility cutover"
+  ],
+  "suspended_case_ids": [
+    "missing-reads-null",
+    "present-null-reads-null",
+    "missing-is-not-present",
+    "null-is-present",
+    "null-equality-includes-absent",
+    "coalesce-missing",
+    "coalesce-null",
+    "coalesce-retains-false",
+    "coalesce-retains-zero",
+    "coalesce-retains-empty",
+    "coalesce-short-circuit",
+    "coalesce-right-associative",
+    "safe-nested-missing",
+    "required-nested-missing",
+    "coalescing-precedence",
+    "non-null-coalescing-rejected"
   ]
 }

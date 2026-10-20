@@ -122,7 +122,7 @@ Bind `ratified`. A missing, null or differently typed value differs from that
 string under the proposed dynamic equality policy. Case and trailing-space
 behavior must remain exact; relying on the database's default collation is
 insufficient. Do not implement no-coercion equality using an untyped SQL compare,
-or strict `number(text)` using permissive CAST.
+or introduce a conversion through permissive CAST. Value conversions are deferred.
 
 Literal substring and full Unicode insensitive matching require additional
 care. The inspected SQL-engine `LOCATE` implementation lowercases both arguments;

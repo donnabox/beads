@@ -286,8 +286,8 @@ JSON extraction/REAL do not offer identical domains or wire-lexeme preservation.
 Do not parse into binary64 or let SQLite affinity coerce `"3"` into numeric 3
 to claim the proposed precision rule passed. A selected portable domain or typed
 decimal implementation and range diagnostics need their own acceptance cases.
-Strict `number("3x")` must fail, whereas SQLite CAST could yield 3; direct CAST
-therefore does not implement the proposed conversion.
+Value conversions are deferred. Do not introduce SQL CAST as a substitute for
+strict JSON-kind comparison or a hidden normalization step.
 
 ## Review and implementation limits
 
@@ -295,7 +295,8 @@ SQL execution, query plans, provider capability negotiation, coherence acquisiti
 continuations and resource budgets have **not** been qualified here. No function
 registration, schema migration, SQL backend or runtime dependency is installed.
 Before implementation, freeze a subset and execute its corpus through the actual
-parser/evaluator and each admitted provider under Janet's qualification plan.
+parser/evaluator and each admitted provider under the implementation author's
+qualification plan, coordinated with integration.
 
 Primary syntax references: [PostgreSQL recursive queries](https://www.postgresql.org/docs/current/queries-with.html),
 [PostgreSQL JSON functions](https://www.postgresql.org/docs/current/functions-json.html),

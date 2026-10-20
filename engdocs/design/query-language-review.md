@@ -39,7 +39,7 @@ expectations until the actual implementation executes them.
 | Finding | Severity | Disposition |
 | --- | --- | --- |
 | N1: Link-edition identity was conflated with source-edition adjacency membership. | High | Corrected: separate link_edition and adjacency relations; add two source editions sharing one unchanged Link. |
-| N2: A witness and a conversion error inside unordered EXISTS could produce order-dependent outcomes. | Medium | Added an explicit candidate strict match-error policy and paired witness-first/error-first cases for EXISTS and NOT EXISTS. Product acceptance remains open; no optimization may silently choose semantics. |
+| N2: A witness and a dynamic evaluation error inside unordered EXISTS could produce order-dependent outcomes. | Medium | Added an explicit candidate strict match-error policy and paired witness-first/error-first cases for EXISTS and NOT EXISTS. The October 20 pass uses incompatible ordering instead of conversion. Product acceptance remains open; no optimization may silently choose semantics. |
 | N3: Ordering/continuation could not be falsified by the corpus. | Medium | Corrected as above; independently corroborated by Claude finding15. |
 
 ## Claude findings and dispositions
@@ -54,7 +54,7 @@ expectations until the actual implementation executes them.
 | C6 | Corrected | Added non-disclosure/authorized-Reference rules and cases for denied versus absent editions, visible-only matching and unavailable required target bodies. No new disclosure permission is granted. |
 | C7 | Corrected design obligation; execution pending | Added a plan-work-set LEFT JOIN validation sketch plus explicit adjacency-coverage and budget-failure obligations before publishing answers. SQL joins are not a completeness proof. |
 | C8 | Corrected | Logical type aliases now specify PostgreSQL JSONB/BIGINT versus SQLite JSON text/INTEGER. Physical presence uses jsonb_exists. |
-| C9 | Corrected explicit adaptation | Optional dynamic reads have nullable JSON typing; Lumen rejects coalescing unconstrained any. Non-null-left checks and strict-conversion failures are distinct. Other dynamic admissibility remains a gate. |
+| C9 | Corrected explicit adaptation | Optional dynamic reads have nullable JSON typing. Known non-null coalescing and dynamic admissibility remain candidate checker rules. Conversion functions were subsequently deferred in the October 20 markup pass. |
 | C10 | Corrected | Contains joins the relational/membership tier; insensitive is a modifier token. |
 | C11 | Corrected as candidate policy | Null/absent ordering and contains error behavior is explicit; primitive guard and missing/present comparison cases demonstrate short-circuit guards. |
 | C12 | Corrected | Path SELECTs are labeled internal surrogate state, with a mapping relation/join preserving ordinal Link identity+revision before public output. |
@@ -79,7 +79,7 @@ The review did not ratify proposed grammar or move the release boundary. Keep
 these choices visible for operator and language review:
 
 1. Complete syntax/checker rules: dynamic JSON nullability/access and comparison
-   admission; strict conversion signatures; unordered-match error policy versus
+   admission; unordered-match error policy versus
    ordered quantifier short-circuiting. `??` remains null-only, not error recovery.
 2. Numeric domain and Unicode version. The proposed no-rounding decimal model
    and full default Unicode folding require explicit acceptance or a narrower
@@ -159,3 +159,60 @@ separate PR; no such action is attempted here.
 Editable artifacts: [language](../../docs/reference/bdp/cli/query-language.md),
 [cases](query-language-cases.json), [case notation schema](query-language-cases.schema.json),
 [wrapper map](query-language-wrapper-map.json), and [lowering](query-language-lowering.md).
+
+## October 20 operator markup pass
+
+The editable review copy's seven `///` comments were processed. The specification
+now defines value/access rules directly, lists Dolt first, describes the ordinary
+current-Scope read without inventing a historical CLI flag, and defers all
+conversion functions. Existing error-order cases use incompatible dynamic values
+instead of conversion. Three conversion examples are rejection cases; the corpus
+still has 129 authored, unexecuted scenarios. Historical review rows describe the
+original snapshot; they are not new validation of this pass.
+
+Predicate-foundation review remains open. Current BDP main at
+`3ab9cdf5d45a2ea49a84ab191eac77c9aeaa19d0` uses bounded RFC 9535 JSONPath strings
+for reads and set mutation. Missing/null, failed ordering/access, negative indices
+and numeric admission need explicit reconciliation before calling the candidate
+a compatible extension. The current CLI parser has comparison/AND/OR/NOT nodes;
+it is a different, Issue-oriented implementation with field-specific behavior.
+No parser, runtime, SQL engine, publication issue or implementation contract was
+changed by this markup pass.
+
+## Conditional JSONPath missing-field ruling
+
+Donna accepted JSONPath missing-field behavior if JSONPath is used. The current
+spec's access section records that ruling; the previous absent/null coalescing
+and required/safe-access proposals are suspended. The case corpus explicitly
+lists 16 suspended historical candidate cases; their expectations must not be
+reported as current acceptance. Graph function-shaped special forms versus sugar
+remain a proposal, not an accepted spelling or an implemented macro system.
+
+## Accepted BDP/Beads surface split
+
+Donna accepted two surfaces over one semantic model on October 20: portable BDP
+JSONPath plus graph extensions, and human-friendly `bd` syntax with exact
+translation. BDP specification placement is coordinated with Trish; Core selector
+semantics, profile activation and runtime/spec inputs do not move by publishing
+a draft. The current exercises establish true RFC extension boundaries and CLI
+sugaring, including paired semantic examples and explicit unresolved choices.
+The conditional missing-field ruling now applies to the selected foundation.
+
+## Two-surface exercise deliverables
+
+The new Beads facade is
+`docs/reference/bdp/cli/profiles/query/query.md`; the previous combined candidate
+is retained as authoring history and points to it. The proposed portable source
+is [BDP Query at 3e470bb](https://github.com/gastownhall/bdp/blob/3e470bb35c20e075aac55afb8821f48b82c595d6/specs/profiles/query/query.md).
+Its isolated library experiment is executed mechanism evidence, separate from
+the 129 authored historical/current scenarios here (16 explicitly suspended).
+There is no CLI normalizer or complete paired-wire equivalence result yet.
+
+Independent cross-review corrected the graph function's result domain, a repeated
+edition fixture, the experiment's failure-policy caveat, simple-path repeat unit
+and the Type-Reference projection caveat. The facade's direct Resource/alias
+examples and the portable draft's edition-wrapper examples are explicitly
+semantic pairings while input/capture schemas remain unresolved. Full graph
+composition over JSONPath is an author recommendation for Donna, not an adopted
+protocol amendment. Existing Core selectors, pins and output framing remain
+unchanged.
