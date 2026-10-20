@@ -216,3 +216,17 @@ semantic pairings while input/capture schemas remain unresolved. Full graph
 composition over JSONPath is an author recommendation for Donna, not an adopted
 protocol amendment. Existing Core selectors, pins and output framing remain
 unchanged.
+
+## Common output contract update — October 20
+
+Cleo's PR122 at `3fd5e4356ed9f9096ac22e7356809f317c885287` is the current
+reference for CLI envelope/result-shape versioning, independent BDP contract
+identification, origin-tagged problem wrapping, unknown-exhaustion completion
+and legacy/canonical output flags. The current facade cites that exact source.
+Historical unresolved result-version/output-cutover notes above are superseded
+by that owning contract; predicate-language compatibility remains separate.
+No duplicate error/result schema is specified here. Output adapters can use
+current bounded selection and refuse unsupported continuation without waiting
+for the proposed query carrier or textual grammar. PR123 qualification and its
+collection/show/retained-read adapters remain with Cleo; this is a documentation
+reference correction, not runtime or installation evidence.
