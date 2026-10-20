@@ -80,6 +80,29 @@ def group_alive(pid):
         return True
 
 
+def group_snapshot(pid):
+    """Diagnose only the owned group without recording argv or environment."""
+    try:
+        result = subprocess.run(
+            ["ps", "-axo", "pid=,ppid=,pgid=,stat=,comm="],
+            capture_output=True, text=True, timeout=2, check=True)
+    except (OSError, subprocess.TimeoutExpired, subprocess.CalledProcessError) as error:
+        return {"error": type(error).__name__}
+    members = []
+    for line in result.stdout.splitlines():
+        fields = line.split(None, 4)
+        if len(fields) != 5:
+            continue
+        try:
+            child, parent, group = map(int, fields[:3])
+        except ValueError:
+            continue
+        if group == pid:
+            members.append(dict(pid=child, ppid=parent, pgid=group,
+                                state=fields[3], executable=Path(fields[4]).name))
+    return {"members": sorted(members, key=lambda item: item["pid"])}
+
+
 def signal_group(pid, value):
     try:
         os.killpg(pid, value)
@@ -133,7 +156,12 @@ class Runner:
                     raise pending
                 process.wait(timeout=timeout)
                 require(process.returncode == 0, f"{label} exited {process.returncode}")
-                require(not group_alive(process.pid), f"{label} left descendants after exit")
+                left_descendants = group_alive(process.pid)
+                if left_descendants:
+                    receipt["remainingProcesses"] = group_snapshot(process.pid)
+                # Preserve the original verdict even if diagnostic sampling
+                # happens to observe a process that exits meanwhile.
+                require(not left_descendants, f"{label} left descendants after exit")
             except BaseException as error:
                 failure = error
                 receipt["failure"] = str(error) or type(error).__name__

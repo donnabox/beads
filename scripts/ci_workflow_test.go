@@ -6041,6 +6041,28 @@ class DispatchControls(unittest.TestCase):
             root = Path(directory); runner = m.Runner(root, root); runner.deadline = 0
             with self.assertRaises(RuntimeError): runner.run("expired", [sys.executable, "-c", "raise SystemExit(0)"], 1)
             self.assertEqual(runner.receipts, [])
+    def test_process_snapshot_filters_group_and_omits_arguments(self):
+        output = "101 1 100 Z /usr/bin/python3\n102 1 100 S /bin/sleep\n103 1 999 S /private/foreign\n"
+        with mock.patch.object(m.subprocess, "run", return_value=mock.Mock(stdout=output)) as run:
+            snapshot = m.group_snapshot(100)
+        self.assertEqual(snapshot, {"members": [
+            dict(pid=101, ppid=1, pgid=100, state="Z", executable="python3"),
+            dict(pid=102, ppid=1, pgid=100, state="S", executable="sleep")]})
+        self.assertEqual(run.call_args.args[0], ["ps", "-axo", "pid=,ppid=,pgid=,stat=,comm="])
+        self.assertEqual(run.call_args.kwargs["timeout"], 2)
+    def test_descendant_diagnostics_do_not_turn_failure_into_success(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); runner = m.Runner(root, root)
+            snapshot = {"members": [dict(pid=101, ppid=1, pgid=100, state="Z", executable="python3")]}
+            # The group disappears while diagnostics run. Its original failed
+            # cleanup verdict must still be reported, with the sampled identity.
+            with mock.patch.object(m, "group_alive", side_effect=[True, False, False]), mock.patch.object(m, "group_snapshot", return_value=snapshot):
+                with self.assertRaisesRegex(RuntimeError, "left descendants after exit"):
+                    runner.run("orphan", [sys.executable, "-c", "pass"], 5)
+            receipt = json.loads((root / "processes.json").read_text())[0]
+            self.assertEqual(receipt["remainingProcesses"], snapshot)
+            self.assertTrue(receipt["groupGone"])
+            self.assertEqual(receipt["exitCode"], 0)
     def test_interrupt_during_spawn_retains_ownership(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory); runner = m.Runner(root, root)
