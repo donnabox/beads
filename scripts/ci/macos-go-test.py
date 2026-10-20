@@ -254,7 +254,9 @@ def verify_events(path, packages, expected_roots=None):
                 packages=sorted(packages))
 
 
-def execute(root, output, go="go", package_parallel=None, test_parallel=None, json_output=None):
+def execute(root, output, go="go", package_parallel=None, test_parallel=None, json_output=None, scope="all", source_sha=None):
+    require(scope in ("all", "graphstore", "remaining"), "unknown execution scope")
+    require(source_sha is None or re.fullmatch(r"[0-9a-f]{40}", source_sha), "invalid source revision")
     flags = list(FLAGS)
     for flag, value in (("-p", package_parallel), ("-parallel", test_parallel)):
         if value is not None:
@@ -267,7 +269,7 @@ def execute(root, output, go="go", package_parallel=None, test_parallel=None, js
         require(not json_output.is_relative_to(output.resolve()), "combined Go JSON must be outside individual evidence")
         json_output.write_bytes(b"")
     runner = Runner(root, output, json_output)
-    summary = dict(passed=False, failure=None, groups=[], commandGroups=[])
+    summary = dict(passed=False, failure=None, groups=[], commandGroups=[], scope=scope, source=source_sha)
     try:
         packages_file = runner.run("package-discovery", [go, "list", "-race", "-tags", "gms_pure_go", "./..."], DISCOVERY_SECONDS)
         packages = packages_file.read_text().splitlines()
@@ -277,16 +279,23 @@ def execute(root, output, go="go", package_parallel=None, test_parallel=None, js
         require(other, "missing remaining package coverage")
         partitions = []
         for label, package, summary_key in (("graphstore", GRAPHSTORE, "groups"), ("cmd-bd", COMMAND, "commandGroups")):
+            if (scope == "graphstore" and package != GRAPHSTORE) or (scope == "remaining" and package == GRAPHSTORE):
+                continue
             names_file = runner.run(label + "-discovery", [go, "test", *flags, "-list", ".", package], DISCOVERY_SECONDS)
             names = discovered_names(names_file)
             groups = partition(names)
             plan = dict(package=package, discovered=sorted(names),
                         excluded=sorted(set(names) - set(sum(groups, []))), groups=groups)
             partitions.append((label, package, summary_key, plan))
-        # Keep the original graphstore fields for existing evidence consumers.
+        graph_plan = next((plan for _, package, _, plan in partitions if package == GRAPHSTORE), None)
+        command_plan = next((plan for _, package, _, plan in partitions if package == COMMAND), None)
+        scoped_packages = [GRAPHSTORE] if scope == "graphstore" else sorted(set(packages) - {GRAPHSTORE}) if scope == "remaining" else sorted(packages)
+        # Preserve the default full-dispatch evidence shape. Explicit CI scopes
+        # advertise their exact package ownership and source for the union gate.
         write_json(output / "plan.json", dict(packages=sorted(packages), otherPackages=other,
-                   **{key: partitions[0][3][key] for key in ("discovered", "excluded", "groups")},
-                   command=partitions[1][3], flags=flags, jsonFlags=json_flags))
+                   **{key: graph_plan[key] if graph_plan else [] for key in ("discovered", "excluded", "groups")},
+                   command=command_plan, flags=flags, jsonFlags=json_flags,
+                   scope=scope, source=source_sha, scopedPackages=scoped_packages))
         # Separate Go processes reset only each package alarm, not any test body.
         # The same total deadline and strict owned-process cleanup still apply.
         for prefix, package, summary_key, plan in partitions:
@@ -301,8 +310,9 @@ def execute(root, output, go="go", package_parallel=None, test_parallel=None, js
                 census = verify_events(events, [package], group)
                 write_json(output / (label + "-census.json"), census)
                 summary[summary_key].append(dict(label=label, **census))
-        events = runner.run("other-packages", [go, "test", *json_flags, "-json", *other], OTHER_SECONDS)
-        summary["other"] = verify_events(events, other)
+        if scope != "graphstore":
+            events = runner.run("other-packages", [go, "test", *json_flags, "-json", *other], OTHER_SECONDS)
+            summary["other"] = verify_events(events, other)
         summary["passed"] = True
     except BaseException as error:
         summary["failure"] = str(error) or type(error).__name__
@@ -312,18 +322,87 @@ def execute(root, output, go="go", package_parallel=None, test_parallel=None, js
         print(json.dumps(summary, sort_keys=True), flush=True)
 
 
+def verify_scopes(root, source_sha):
+    """Recheck both disjoint real-output scopes before the existing Mac gate passes."""
+    require(re.fullmatch(r"[0-9a-f]{40}", source_sha or ""), "missing aggregate source revision")
+    summaries = sorted(root.glob("*/summary.json"))
+    require(len(summaries) == 2, "both and only both scope artifacts are required")
+    scopes, coverage, packages = set(), Counter(), None
+    for path in summaries:
+        directory = path.parent
+        summary = json.loads(path.read_text())
+        plan = json.loads((directory / "plan.json").read_text())
+        scope = plan.get("scope")
+        require(scope in ("graphstore", "remaining") and scope not in scopes, "duplicate or unexpected scope")
+        scopes.add(scope)
+        require(summary.get("passed") is True and summary.get("failure") is None and summary.get("scope") == scope,
+                "scope did not complete successfully")
+        require(plan.get("source") == summary.get("source") == source_sha, "scope source revision differs")
+        require(plan.get("flags") == FLAGS and plan.get("jsonFlags") == JSON_FLAGS, "scope changed test policy")
+        discovered = plan.get("packages")
+        require(isinstance(discovered, list) and discovered == sorted(set(discovered)) and
+                {GRAPHSTORE, COMMAND} <= set(discovered), "invalid complete package discovery")
+        require(sorted((directory / "package-discovery.stdout").read_text().splitlines()) == discovered,
+                "package plan differs from compiled package discovery")
+        if packages is None:
+            packages = discovered
+        require(discovered == packages, "scopes disagree on complete package discovery")
+        expected = [GRAPHSTORE] if scope == "graphstore" else sorted(set(packages) - {GRAPHSTORE})
+        require(plan.get("scopedPackages") == expected, "scope package selection differs")
+        coverage.update(expected)
+        prefix, package, key = ("graphstore", GRAPHSTORE, "groups") if scope == "graphstore" else ("cmd-bd", COMMAND, "commandGroups")
+        selected = plan if scope == "graphstore" else plan.get("command")
+        require(isinstance(selected, dict), "missing partition discovery")
+        require(sorted(discovered_names(directory / (prefix + "-discovery.stdout"))) == selected.get("discovered"),
+                "partition plan differs from compiled test discovery")
+        groups = partition(selected["discovered"])
+        require(selected.get("groups") == groups and len(summary.get(key, [])) == GROUPS,
+                "scope did not retain the complete partition")
+        expected_labels = ["package-discovery", prefix + "-discovery"]
+        for index, group in enumerate(groups, 1):
+            label = f"{prefix}-{index}"
+            if not group:
+                require(summary[key][index - 1] == dict(label=label, roots=[], empty=True), "invalid empty group")
+                continue
+            expected_labels.append(label)
+            census = verify_events(directory / (label + ".stdout"), [package], group)
+            require(json.loads((directory / (label + "-census.json")).read_text()) == census and
+                    summary[key][index - 1] == dict(label=label, **census), "group proof differs from actual output")
+        if scope == "remaining":
+            expected_labels.append("other-packages")
+            other = sorted(set(packages) - {GRAPHSTORE, COMMAND})
+            require(plan.get("otherPackages") == other and other, "remaining package set differs")
+            require(summary.get("other") == verify_events(directory / "other-packages.stdout", other),
+                    "remaining package proof differs from actual output")
+        receipts = json.loads((directory / "processes.json").read_text())
+        require([receipt.get("label") for receipt in receipts] == expected_labels, "missing or unexpected process receipt")
+        require(receipts and all(receipt.get("exitCode") == 0 and receipt.get("failure") is None and
+                                receipt.get("groupGone") is True and not receipt.get("cleanupError")
+                                for receipt in receipts), "scope process/cleanup proof failed")
+    require(scopes == {"graphstore", "remaining"} and coverage == Counter({package: 1 for package in packages}),
+            "scope union omits or duplicates package coverage")
+    return dict(passed=True, source=source_sha, scopes=sorted(scopes), packages=packages)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=Path("artifacts/macos-go-test"))
     parser.add_argument("--package-parallel", type=int)
     parser.add_argument("--test-parallel", type=int)
     parser.add_argument("--json-output", type=Path, help="concatenate raw execution JSON for PR-core/Bazel equivalence")
+    parser.add_argument("--scope", choices=("all", "graphstore", "remaining"), default="all")
+    parser.add_argument("--source-sha", help="actual checkout revision for CI scope composition")
+    parser.add_argument("--verify-scopes", type=Path, help="verify the two downloaded CI scope artifacts without rerunning tests")
     args = parser.parse_args()
     signal.signal(signal.SIGTERM, interrupted)
     signal.signal(signal.SIGINT, interrupted)
     try:
-        execute(Path(__file__).resolve().parents[2], args.output.resolve(),
-                package_parallel=args.package_parallel, test_parallel=args.test_parallel, json_output=args.json_output)
+        if args.verify_scopes is not None:
+            print(json.dumps(verify_scopes(args.verify_scopes.resolve(), args.source_sha), sort_keys=True))
+        else:
+            execute(Path(__file__).resolve().parents[2], args.output.resolve(),
+                    package_parallel=args.package_parallel, test_parallel=args.test_parallel, json_output=args.json_output,
+                    scope=args.scope, source_sha=args.source_sha)
     except Exception as error:
         print(f"macOS test dispatch failed: {error}", file=sys.stderr)
         return 1

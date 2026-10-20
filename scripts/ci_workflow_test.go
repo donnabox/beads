@@ -5951,6 +5951,44 @@ class DispatchControls(unittest.TestCase):
                 census = json.loads((output / ("cmd-bd-%d-census.json" % index)).read_text())
                 self.assertEqual(census["roots"], group)
 
+    def test_disjoint_scope_union_and_refusals(self):
+        import shutil
+        source = "a" * 40
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); fake = root / "go"; fake.write_text(FAKE); fake.chmod(0o700)
+            outputs = root / "scopes"; outputs.mkdir()
+            with mock.patch.dict(os.environ, {"DISPATCH_CASE": "good"}):
+                for scope in ("graphstore", "remaining"):
+                    m.execute(root, outputs / scope, str(fake), scope=scope, source_sha=source)
+            proof = m.verify_scopes(outputs, source)
+            self.assertTrue(proof["passed"])
+            self.assertEqual(proof["scopes"], ["graphstore", "remaining"])
+            calls = [json.loads(line) for line in (root / "calls.jsonl").read_text().splitlines()]
+            executions = [call for call in calls if call[0] == "test" and "-list" not in call]
+            self.assertEqual(len(executions), 9)
+            self.assertEqual(sum(call[-1] == m.GRAPHSTORE for call in executions), 4)
+            self.assertEqual(sum(call[-1] == m.COMMAND for call in executions), 4)
+            for case in ("missing", "duplicate", "source", "flags", "packages", "raw", "failed", "cleanup", "receipt", "discovery"):
+                with self.subTest(case=case):
+                    changed = root / case; shutil.copytree(outputs, changed)
+                    scope = changed / "remaining"
+                    if case == "missing": shutil.rmtree(scope)
+                    elif case == "duplicate": shutil.copytree(scope, changed / "duplicate")
+                    elif case == "raw": (scope / "other-packages.stdout").write_text("")
+                    elif case == "discovery": (scope / "cmd-bd-discovery.stdout").write_text("TestIncomplete\n")
+                    else:
+                        name = "processes.json" if case in ("cleanup", "receipt") else "summary.json" if case == "failed" else "plan.json"
+                        path = scope / name; value = json.loads(path.read_text())
+                        if case == "source": value["source"] = "b" * 40
+                        elif case == "flags": value["flags"] = []
+                        elif case == "packages": value["scopedPackages"] = [m.COMMAND]
+                        elif case == "failed": value["passed"] = False
+                        elif case == "cleanup": value[0]["groupGone"] = False
+                        elif case == "receipt": value.pop()
+                        path.write_text(json.dumps(value))
+                    with self.assertRaises((RuntimeError, ValueError, FileNotFoundError)):
+                        m.verify_scopes(changed, source)
+
     def test_pr_core_options_and_raw_json_compatibility(self):
         for case in ("good", "json-fail", "other-failure"):
             with self.subTest(case=case), tempfile.TemporaryDirectory() as directory:
