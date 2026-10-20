@@ -1,9 +1,0 @@
-{
-  "exitCode": 0,
-  "stderr": "Prebuilding bd for subprocess tests...\nPrebuilt bd: /var/folders/cc/hh74y1f16qj9gfbv8x4x2n6m0000gn/T//beads-test-env-U5PibG/prebuilt-bd/bd\nRunning: go test -p 4 -parallel 4 -timeout 90s -run ^(TestLegacyImportPrefixAdmission|TestLegacyImportLabelSetAndInternalState|TestLegacyImportCommentBudgetAndOriginalUTF8|TestLegacyImportMemoryPaths|TestLegacyImportCommentVerification|TestLegacyImportFreshnessQueryErrors|TestLegacyImportInterruptedInspection|TestLegacyImportUTF8ShapeCoverage|TestLegacyImportFreshnessPlaneAdmission|TestLegacyImportUnsupportedRecordState|TestTransactionPolicyFinalization|TestTransactionPolicyContextBeforeOpen|TestTransactionPolicyAdmissionBeforeBegin|TestGraphPreviewImportDeadlineDisposition|TestLegacyImportSourcePrefixIsGraphOnly|TestLegacyImportSourcePrefixAdmissionBeforeLegacyOpen|TestGraphPreviewLegacyImportSummaryPrefix)$ -count 1 -json ./internal/storage/graphstore ./cmd/bd\nSkipping: \n\n",
-  "environment": {
-    "BEADS_TEST_SHARED_SERVER": "0",
-    "BEADS_TEST_ENV_RUN_DOLT": "0",
-    "BEADS_TEST_PREBUILT_TEST_BINARY": ""
-  }
-}

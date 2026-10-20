@@ -1,3 +1,0 @@
-Running: go test -p 4 -parallel 4 -timeout 90s -run ^(TestLegacyImportPrefixAdmission|TestLegacyImportLabelSetAndInternalState|TestLegacyImportCommentBudgetAndOriginalUTF8|TestLegacyImportMemoryPaths|TestLegacyImportCommentVerification|TestLegacyImportFreshnessQueryErrors)$ -count 1 -json ./internal/storage/graphstore
-Skipping: 
-

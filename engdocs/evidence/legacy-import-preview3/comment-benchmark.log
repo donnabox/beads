@@ -1,9 +1,0 @@
-goos: darwin
-goarch: arm64
-pkg: github.com/steveyegge/beads/internal/storage/graphstore
-cpu: Apple M5 Max
-BenchmarkLegacyImportCommentVerification/10-18 	   74953	      3978 ns/op	    5093 B/op	      73 allocs/op
-BenchmarkLegacyImportCommentVerification/100-18         	   41444	      7319 ns/op	    8136 B/op	      73 allocs/op
-BenchmarkLegacyImportCommentVerification/1000-18        	    8928	     36916 ns/op	   59298 B/op	      75 allocs/op
-PASS
-ok  	github.com/steveyegge/beads/internal/storage/graphstore	1.798s

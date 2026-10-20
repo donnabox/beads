@@ -1,5 +1,0 @@
-No confirmed finding in the prepared completeness-workflow.patch revision repair.
-
-The actual CLI projection removes storage `version` and preserves `revision`. graphMixedResult translates attribution vocabulary only; it does not populate Version from Revision. Using got.Revision therefore supplies the real token. The Issue check rejects an empty token before the retained read; the Memory check also rejects an empty token, and actual show rejects an explicitly empty --version rather than falling back to current state. Nonempty --version dispatches to ReadVersion. The corrected comparisons exercise retained reads without relying on the omitted alias.
-
-This is read-only artifact verification. The patch was not applied, and no tests, builds or DB operations were run. Genuine fixture activation, runtime qualification and active-source two-seat review remain pending.
