@@ -1,12 +1,15 @@
 ---
 title: "Generic query language — review draft"
-description: "A proposed common selection and relationship language for Beads and Links, with explicit values, bounds and result semantics."
+description: "A proposed common predicate and graph query language for Beads and Links, with explicit values, bounds and result semantics."
 ---
 
 ## Status and purpose
 
-Select Beads and Links with one query model, whether the request comes from
-`bd query`, list/search flags or a typed library caller. A wrapper constructs a
+> **Current design exercise:** the [CLI surface and portable mapping](/reference/bdp/cli/profiles/query/query) follows the accepted two-surface architecture. The combined candidate below is authoring history, including superseded value/access proposals; it is not a second current grammar.
+
+This language expresses predicates over Beads and Links, together with the
+relationship operations needed to query their graph. `bd query`, list/search
+flags and typed library callers use one query model. A wrapper constructs a
 request; it does not invoke another CLI command or invent another evaluator.
 
 This October 19, 2026 **design review draft** records accepted semantic direction
@@ -27,7 +30,7 @@ issue7718 preserves an earlier `aeb39e76456c452742cdb0b9423a30887288dff9`
 review snapshot. Neither link claims installed behavior.
 
 The model is informed by property-graph patterns but does not claim Cypher,
-GQL, GraphQL or SPARQL compatibility. PostgreSQL and SQLite are lowering targets,
+GQL, GraphQL or SPARQL compatibility. Dolt, PostgreSQL and SQLite are lowering targets,
 not newly implemented providers. Regular expressions, arbitrary user functions,
 federation, mutation syntax and a general constraint solver are outside this draft.
 
@@ -38,16 +41,33 @@ federation, mutation syntax and a general constraint solver are outside this dra
 | Population | Beads by default; explicit Beads, Links or their union | Flag registration on each admitted wrapper |
 | Types | Exact affiliation versus transitive refinement-family membership | Type-literal grammar and resolution diagnostics |
 | Values | Bare properties, reserved Resource fields, explicit metadata; no implicit coercion | Operator admissibility, numerical precision and function signatures |
-| Absence | Optional reads coalesce absent/null; physical presence stays testable; null-only `??` | Exact safe/required access productions |
+| Absence | If JSONPath is selected, preserve its distinction between missing and present null | Any convenience access/defaulting syntax requires an explicit mapping |
 | Bindings | `$this` plus named `$` bindings; lexical scope; no accidental shadowing | Pattern and pipeline spelling |
 | Relationships | Correlated existence, expansion and bounded walks | Advanced walk/graph composition and budgets |
 | Results | Candidate filters do not multiply rows; preserve Link identities; distinct reachable editions; explicit paths | Row/aggregate/graph construction syntax |
 | Execution | Stable ordering, aggregates before paging, explicit errors and truthful completeness | Capability admission and partial-answer contract |
 
-The default reference for value expressions is Lumen. Beads may report expression
-errors; Lumen's exception-free functional-expression rule is not inherited.
-Beads-specific differences, especially JSON numerical precision, require explicit
-review rather than silent import of host-language behavior.
+This specification defines its value, presence and error rules directly. Query
+expressions can report explicit evaluation errors; no host language supplies
+additional syntax, conversions or exception behavior.
+
+**Accepted architecture — October 20.** BDP owns the portable query contract,
+using an explicitly bounded RFC 9535 JSONPath predicate foundation and reviewed
+graph extensions. Beads owns a human-readable CLI surface that translates into
+that same contract. Both frontends use the same semantic model; CLI sugar does
+not introduce different missing-value, comparison, graph or failure meanings.
+The existing BDP bounded Selector remains the deployed-contract input until a
+reviewed successor is deliberately adopted.
+
+The current work has two exercises: establish the graph requirements that fit
+JSONPath's actual extensibility rules and document any required BDP query
+composition outside them; then specify the CLI sugar and its precise lowering.
+BDP prose belongs under that repository's `specs/` tree, with exact placement
+coordinated with its owner. This Beads draft owns CLI spelling and the mapping,
+not an independent portable graph contract. Exact graph extension names, request
+shapes and complete grammar remain proposals, not installed syntax. The earlier
+function-shaped rebinding macro is an illustrative dialect, not standard RFC
+function semantics.
 
 ## Population and read context
 
@@ -66,12 +86,19 @@ Issue classification, readiness or closed-state exclusion. Wrappers disclose the
 additional defaults in the normalized request. The union adds no stored kind
 property and does not imply a universal root Type.
 
-The caller supplies an authorized read context and supported Resource/revision
-population. Current collection candidates are the provider's selected heads.
-Exact-edition reads and graph endpoints retain their declared revisions. Two
-editions of one identity remain distinct when the requested operation encounters
-both. Deduplication uses Resource identity **and selected revision**, never body
-equality or automatic selection of the newest revision.
+An ordinary query starts with the current Beads or Links in the configured
+Scope, visible under the caller's existing credentials. For example,
+`bd query 'type is Constraint'` filters the current visible Beads; it needs no
+extra read-context expression. The provider records the read state needed to
+execute that request and continue its pages coherently.
+
+The predicate does not choose credentials, a database snapshot or a historical
+revision. This draft has not selected a new CLI flag for those choices. A typed
+caller can supply an explicitly supported exact-edition input, and a graph walk
+can encounter a pinned endpoint. These operations retain the selected revision.
+Two editions of one identity remain distinct if both are encountered;
+deduplication uses Resource identity **and selected revision**, never body equality
+or automatic substitution of the newest revision.
 
 Existing endpoint pins are honored. A floating endpoint resolves under the read
 context; an exact endpoint is not silently retargeted to a head. Exact traversal
@@ -142,63 +169,45 @@ different tests; their mapping must follow the adopted BDP Reference contract.
 Using Link-only reserved fields on a Bead is a type error; guard a mixed-population
 request explicitly or split the selection.
 
-## Null, presence and access
+## Missing fields, null and access
 
-Optional root property/metadata lookup yields null for an absent member or a
-present-null member. Resource serialization still preserves the original object.
+**October 20 ruling:** use JSONPath's missing-field behavior for the selected
+JSONPath predicate foundation. This supersedes the earlier candidate rule that ordinary optional
+reads automatically combine absence and present null. A missing path selects no
+node; a present JSON null is a selected node whose value is null. The internal
+JSONPath result `Nothing` is not a stored JSON value or a new literal.
 
-```text
-status = null
-status != "ratified"
-(status ?? "unrecorded") = "unrecorded"
-"status" in properties
-```
-
-The first predicate matches either absence or present null. The second includes
-them because null is not the string `"ratified"`. The last tests physical key
-presence and distinguishes those stored forms. Grouping by the read value combines
-absent/null; grouping by presence and value can separate them. There is no public
-`undefined`, missing-value sentinel or missing-field three-valued Boolean model.
-
-`??` evaluates its right operand only when the left is null. False, zero and empty
-strings are retained. It is right-associative and does not catch an error or unwrap
-a `Result`. Boolean operators require actual Booleans and short-circuit;
-no truthiness conversion is performed. Following Lumen, the checker requires a
-coalescing left operand whose type admits null. Optional root reads are nullable
-JSON values, not an unrestricted host-language `any` escape hatch. A known
-non-null left operand is rejected before execution; short-circuiting does not
-hide syntax/type errors in an unexecuted branch.
-Typing optional dynamic reads as nullable JSON is a Beads-specific adaptation;
-it enables this idiom without a declared property schema. Lumen itself rejects
-`??` on unconstrained `any`. Admissibility on other dynamic expressions remains
-part of the candidate checker contract.
-
-**Candidate access detail:** immediate lookup under `properties`/`metadata`, or
-its bare-property shorthand, is optional. Subsequent dot/bracket accesses follow
-Lumen's required/safe distinction: an absent required key, invalid index or null
-receiver fails; `?.` and `?.[index]` provide explicit safe access. Safe access does
-not make a non-object receiver into a record. A statically known impossible
-access fails before execution. Quoted bracket keys are literal; dots mean nested
-objects. Array positions are zero-based and never count backward.
+Canonical JSONPath filter examples are:
 
 ```text
-metadata.team.name = "platform"
-metadata["team.name"] = "ui"
-metadata.team?.name ?? "unassigned"
-tags?.[0] = "security"
+$[?@.properties.review]
+$[?@.properties.review == null]
+$[?!@.properties.review]
+$[?!@.properties.review || @.properties.review == null]
 ```
 
-The first two are different paths. No path implicitly flattens arrays. Candidate
-details for safe access on heterogeneous dynamic values must be pinned with the
-checker; output-mask missing-path no-ops are a separate representation rule.
+The first tests presence, including a present false or null. The second matches
+present null only. The third tests absence. The fourth explicitly selects either
+absence or present null. No stored Resource fields are added or removed.
 
-## Comparisons, text and explicit conversion
+A missing member, a member step on a non-object, or an out-of-range index selects
+nothing under JSONPath. The previous required/safe dot-access distinction and
+`??` spelling are not part of that standard. Any retained convenience forms must
+have an explicit translation; their earlier candidate rules are suspended while
+the predicate foundation is settled. This ruling does not settle grouping output
+for absent keys or adopt all other JSONPath features.
+
+The rest of the textual grammar remains a candidate pending this reconciliation.
+In particular, the existing field shorthand and graph binding examples are not
+claims that the complete candidate already parses as standard JSONPath.
+
+## Comparisons, text and arrays
 
 Equality compares whole values; it never changes into substring matching for
 title/body/notes. Values are type-sensitive: strings/numbers/Booleans do not
 implicitly convert; numeric 3 and 3.0 are equal. Arrays are ordered and objects
-ignore key order. The special absence rule applies to optional field reads, not
-arbitrary raw JSON objects: `{}` and `{"x":null}` retain different field sets.
+ignore key order. Missing-path behavior follows the selected predicate basis. For stored JSON
+objects, `{}` and `{"x":null}` retain different field sets.
 
 **Candidate checker policy:** reject statically disjoint literal comparisons;
 when an expression can contain different JSON kinds, ordinary equality of
@@ -206,7 +215,7 @@ different present kinds is false. Null is admitted in optional equality.
 Ordering requires comparable non-null numbers or strings; incompatible actual
 values and invalid function arguments fail explicitly. The exact static/dynamic
 admissibility matrix remains a review gate, not an excuse to coerce or silently
-skip malformed values. Use a type guard or explicit conversion where needed.
+skip malformed values. Use an explicit type guard to skip incompatible values.
 Under this candidate policy, null/absent operands of ordering or `contains`
 fail rather than becoming false. A wrapper can request
 `priority is number and priority > 2`, or
@@ -216,10 +225,12 @@ not host locale. The wrapper must choose these guards explicitly.
 
 **Candidate precision policy:** finite JSON decimal values compare without silent
 rounding. A backend unable to preserve a requested comparison reports a capability
-or numeric-range limitation. Adopting exact decimal arithmetic instead of Lumen's
-binary64, or choosing a smaller portable domain, needs product review. The accepted
-no-coercion and 3=3.0 rules do not settle this precision choice. Do not use a binary64
-parse to make distinct large wire integers accidentally equal.
+or numeric-range limitation. The current BDP draft specifies exact-decimal
+equality with binary64 round-trip admission. Aligning this language's literal
+and stored-value domain with that contract is an open reconciliation item;
+this candidate does not expand the BDP number domain. The accepted no-coercion
+and 3=3.0 rules alone do not settle admission. Never round an inadmissible large
+integer into an admitted neighbor before checking it.
 
 ```text
 title contains "100%_safe*"
@@ -227,7 +238,6 @@ title contains insensitive "export"
 "security" in (tags ?? [])
 any($x in checks where $x.passed = true)
 all($x in (checks ?? []) where $x.passed = true)
-number("3") = 3
 ```
 
 `contains` means literal substring, case-sensitive by default; `%`, `_`, `*`
@@ -247,18 +257,11 @@ an empty array explicitly with `?? []`. A non-array argument fails; no implicit
 unwrapping or expansion occurs. `length` counts array elements or string code
 points, following the selected value rules.
 
-**Candidate conversions:** reuse `number(text)`, `bool(text)` and `string(value)`
-names rather than invent a generic cast. Parse the entire JSON scalar of the
-requested kind, allowing only JSON whitespace around it; never accept a numeric
-prefix, truthiness or locale-specific number. Unlike Lumen's nullable parsers,
-strict failure here is an evaluation error: `number("3x")` fails if evaluated.
-A strict parser returns a non-null value on success, so
-`number("3x") ?? 0` is rejected by the non-null-left checker rule rather than
-catching that failure. A nullable property read can still coalesce to a strict
-parser without evaluating the parser when the property is non-null.
-`bool("false")` produces false. The signatures, supported `string` conversion
-domain and any separately named tolerant parser remain review details. Error
-recovery syntax is not added by this draft.
+**Conversions are deferred.** This draft admits no `number(...)`, `bool(...)`,
+`string(...)`, cast or tolerant-parser operation. Incompatible values do not
+implicitly convert. Predicates can guard the expected type; normalizing stored
+values is outside predicate evaluation. Any later conversion facility needs its
+own signatures, failure rules and provider qualification.
 
 ## Bindings and correlated relationships
 
@@ -310,7 +313,7 @@ provider lowering and acceptance cases.
 
 ## Candidate composition and grammar
 
-The following is a **candidate small language**, not full Cypher. Wrappers can
+The following is a **candidate query grammar**, not full Cypher. Wrappers can
 construct the corresponding operations before the textual parser is implemented.
 This pipeline illustration is partial: walk, group, unnest, aggregate, graph and
 path stages are discussed below and do not yet have complete productions here.
@@ -352,7 +355,7 @@ pattern    := "(" outer-binding ")" "-[" new-binding "]->(" new-binding ")"
             | "(" outer-binding ")" "<-[" new-binding "]-(" new-binding ")"
 ```
 
-Follow Lumen's precedence for the admitted operators: access/call, unary `not`,
+Candidate precedence for the admitted operators is: access/call, unary `not`,
 relational/membership/Type tests (including `contains`), equality, `and`, `or`, then `??` from tightest
 to loosest. Type-operand alternatives are contextual to the reserved Resource
 Type field, rather than competing ordinary property/string parses. A parser
@@ -471,7 +474,7 @@ each other's rules from printed query text.
 
 Validation rejects unknown syntax, illegal bindings, ambiguous Type operands,
 unsupported operators and known-invalid argument types. Evaluation can fail on
-bad dynamic values, missing required access or invalid explicit conversion.
+bad dynamic values or missing required access.
 Binding/syntax/checker failures, unsupported consistency/history/precision,
 exhausted work budgets, unavailable continuation contexts and protected-result
 context violations are distinct failure categories. The corpus names illustrative
@@ -511,21 +514,72 @@ This rollout excludes `bd dep`, Issue/Dependency-specific operations,
 that does not authorize command implementation. Existing generic Link readers
 and writes remain in the common rollout, with their independent contracts.
 
-[Current BDP bounded JSONPath selection](https://github.com/gastownhall/bdp/blob/b12665d64c2aaf6172bd1cdab409cef31ef28f44/specs/profiles/core/core.md)
-does not define this graph language,
-client-derived union, aggregation or result schema. Portable extensions require
-shared-contract review; a local evaluator cannot advertise an HTTP capability
-by accepting a CLI expression. Publication does not choose a runtime/spec pin.
+[BDP's bounded JSONPath Selector](https://github.com/gastownhall/bdp/blob/3ab9cdf5d45a2ea49a84ab191eac77c9aeaa19d0/specs/profiles/core/core.md#selection)
+is a string expression over each candidate Resource, not a JSON expression tree.
+It admits singular paths, literals, existence, comparisons and Boolean operators;
+it excludes functions, graph traversal, projection and aggregation. The same
+Selector is used by collection reads and Transactional `updateWhere`/`deleteWhere`.
+
+A common predicate basis is selected; complete extension and lowering contracts
+remain design work.
+The earlier candidate combined missing and null and proposed required-access
+faults and nonnegative-only indices. The access section above supersedes those
+proposals for the selected JSONPath foundation. Invalid dynamic ordering still needs review:
+standard JSONPath yields false for incomparable ordering. Type-family tests, literal substring
+matching and named graph bindings also need an explicit mapping or extension.
+Do not change BDP or call these forms compatible without resolving those choices.
+The current BDP number-admission rule is a further shared-contract input.
+
+BDP does not define this graph language, a client-derived population union,
+aggregation or a new result schema. Portable extensions require shared-contract
+review; a local evaluator cannot advertise an HTTP capability by accepting a CLI
+expression. Publication does not choose a runtime/spec pin.
+
+## Graph extension design under discussion
+
+The proposed direction is a small set of built-in graph operations sharing the
+JSONPath predicate core. Plain functions can test already available values.
+Graph special forms may use function-shaped syntax, capture predicate syntax,
+introduce a documented Link/neighbor binding and lower to the shared graph plan.
+They are not ordinary eager function calls or an implicit adoption of a general
+macro system. Exact names and syntax are not selected.
+
+Illustrative function-shaped special form, not adopted syntax:
+
+```text
+$[?outgoing_any(@,
+  @.link.properties.status == "active" &&
+  @.neighbor.properties.status == "ratified"
+)]
+```
+
+The first argument is evaluated in the outer candidate context. The second is
+captured as predicate syntax and evaluated for each actual outgoing binding;
+inside it, `@` denotes a temporary `{link, neighbor}` record. The two tests must
+hold for the same binding. A compiler lowers this to correlated graph existence
+in the shared plan; it must not first evaluate the predicate on the outer Bead.
+This rebinding makes the form a Beads special form, not an ordinary RFC 9535
+function extension. Any additional surface sugar must lower to the same plan.
+Names, nesting/outer-reference rules and graph read errors remain review items.
+
+A per-candidate graph existence form preserves its outer Resource and tests one
+correlated Link/neighbor pair. Expansion and bounded walks can instead produce
+new Resources or bindings; graphs and paths have separate result contracts.
+These result-producing operations need an explicit query-composition contract,
+because an ordinary JSONPath filter continues to return its selected candidates.
+Keep coherent read context, revision selection, completeness and bounds visible
+in the graph plan. Alternative arrow/pipeline sugar is a later usability choice.
 
 ## Review gates and acceptance artifacts
 
 Before parser/runtime implementation, settle these candidate details:
 
-1. Complete lexer/pipeline grammar and Lumen-compatible precedence, including
+1. Predicate foundation, complete lexer/pipeline grammar and precedence, including
    Type operands versus primitive tests and reserved-word escaping.
 2. Static/dynamic comparison admissibility, required/safe dynamic access and
    deterministic error behavior within unordered matches and ordered quantifiers.
-3. Numeric precision/domain, strict parser signatures and Unicode version.
+3. Numeric admission/domain alignment with BDP and the Unicode version.
+   Conversion functions remain deferred.
 4. Post-filter graph witness semantics, per-result total orders and numerical
    budgets; repeated-walk mode remains deferred.
 5. Provider capability/consistency mapping and the separate partial-answer contract.
@@ -543,7 +597,8 @@ The first runtime handoff must name the exact language subset, input/result
 schemas, provider capabilities, positive/negative cases and compatibility policy;
 a grammar document alone is not implementation readiness.
 
-Review artifacts at the fixed design checkpoint:
+Historical review artifacts at the published design checkpoint (these precede
+the October 20 markup pass and are not the current local acceptance corpus):
 [semantic cases](https://github.com/donnabox/beads/blob/71dfe6082a37b81ee2b2c5c4d5dac6a6f17e928f/engdocs/design/query-language-cases.json),
 [case notation schema](https://github.com/donnabox/beads/blob/71dfe6082a37b81ee2b2c5c4d5dac6a6f17e928f/engdocs/design/query-language-cases.schema.json),
 [wrapper map](https://github.com/donnabox/beads/blob/71dfe6082a37b81ee2b2c5c4d5dac6a6f17e928f/engdocs/design/query-language-wrapper-map.json),
