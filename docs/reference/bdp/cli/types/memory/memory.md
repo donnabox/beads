@@ -39,10 +39,10 @@ records exact qualification and landing evidence.
 ## Requires
 
 This CLI facade requires the
-[Memory Bead and Link Type specification at BDP `bbd97f4`](https://github.com/gastownhall/bdp/blob/bbd97f4b57ddbcea8ee5ca38adc2ec7d0a784f00/specs/types/memory/memory.md).
+[Memory Bead and Link Type specification at BDP `afec9117`](https://github.com/gastownhall/bdp/blob/afec9117914bd1c1fe0027c2067e4d89677e40a3/specs/types/memory/memory.md).
 The exact source revision is
-`bbd97f4b57ddbcea8ee5ca38adc2ec7d0a784f00`; its SHA256 is
-`25905e496f36ab7f95046c5c98ed681aeb9aa0bb1c832d63beb6038120bd0ac5`.
+`afec9117914bd1c1fe0027c2067e4d89677e40a3`; its SHA256 is
+`1f97f8a80f725b2a44a0c715b4ccf09918f02af2abb9885797c3395255dc9e34`.
 That specification defines the Type meanings, properties, endpoint restrictions
 and ownership rules. This page defines the Beads command mapping.
 
@@ -136,9 +136,9 @@ The first subject group recorded while an identity is an Evaluation remains
 bound to that identity for its lifetime. Retyping it away from Evaluation and
 back does not reset the group; a different group requires a new Evaluation.
 An ordinary Memory extension named `subjects` before its first Evaluation
-revision does not establish this binding. This accepted clarification is
-recorded in the [lifetime-group decision and implementation receipt](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6282549426);
-it supplements the exact typedef input above until editorial reconciliation.
+revision does not establish this binding. The exact typedef input above
+includes this accepted lifetime rule. The [decision and implementation receipt](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6282549426)
+records the ruling and its separately qualified product evidence.
 
 The Evaluation owns its Conformance-family claims. Each claim concerns the
 Evaluation's whole subject group collectively. Adding a claim revises its
