@@ -149,7 +149,14 @@ func graphCandidateDir(cmd *cobra.Command) (string, error) {
 // stderr. Only Claude hook admission sets it, to reword its refusals.
 var graphFailureOutput io.Writer
 
+// A canonical command may supply its error contract during workspace admission.
+// The scoped caller restores this hook before command execution.
+var graphFailureReporter func(code, message string, status int) error
+
 func graphFailure(code, message string, exit int) error {
+	if graphFailureReporter != nil {
+		return graphFailureReporter(code, message, exit)
+	}
 	out := io.Writer(os.Stderr)
 	if graphFailureOutput != nil {
 		out = graphFailureOutput
@@ -670,6 +677,9 @@ func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
 }
 
 func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
+	if canonicalOutputSelected(cmd) {
+		return runCanonicalShow(cmd, args, false)
+	}
 	if err := graphPreviewFlags(cmd, "version", "format", "include-dependents", "include-comments", "brief-deps"); err != nil {
 		return err
 	}

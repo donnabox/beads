@@ -10,8 +10,8 @@
 Graph workspaces are not migrated between graph schema versions. If a
 workspace's `graph_schema_version` in `.beads/metadata.json` is not this
 build's `7`, `bd` refuses it with `graph_not_initialized` and does not open
-its database. Preserve its data and create a fresh workspace. The optional
-example Link Types need not be installed; see
+its database. Preserve its data and create a fresh workspace. The selected Memory Type catalog must match the build; an older catalog is
+refused even when the storage schema version matches. See
 [Discover installed Types](#discover-installed-types).
 
 Build `bd` from the [integration branch](https://github.com/versioned-beads/beads/tree/integration),
@@ -46,6 +46,11 @@ created from that candidate, not a claim that these commands have landed in the
 fork integration branch or a released binary. The draft specification keeps
 the older pinned integration ledger separate from this candidate inventory.
 
+The selected Memory Type examples and catalog below describe the Preview 3
+candidate in [PR130](https://github.com/donnabox/beads/pull/130). Check the
+[release ledger](https://github.com/gastownhall/beads/issues/7656) for its actual
+integration and qualification status before choosing a build.
+
 In a graph workspace, a Bead is an Issue or a Memory. Its canonical identity
 is under `beads/`. In CLI arguments, `policy` means `beads/policy`; a Link
 still needs an explicit `links/ID` where a command accepts either kind of
@@ -72,13 +77,13 @@ bd remember 'Code flow policy: changes land on integration.' --id policy \
 bd remember 'Keep review branches until their changes land.' --title 'Review branch policy'
 ```
 
-`bd create` creates an Issue by default. Use `--bead-type` to select an
-installed Bead Type; the currently supported graph writers are Issue and
-Memory. `--type task` or `--type bug` is an **Issue classification**, not a
-Bead Type. Graph Memory creation through `bd create` accepts an optional
-positional title or `--title` and an inline `--body` (also spelled
-`--description` or `--message`). It derives a title from the body if none is
-given. This form does not read a body from a file or stdin.
+`bd create` creates an Issue by default. `--type task` or `--type bug`
+selects an existing Issue classification. To select a nominal Bead Type,
+pass its printed `types/NAME` selector or full local Type URL to `--type`.
+This distinguishes a Memory Decision from an Issue classification named
+`decision`. `--properties JSON` supplies the selected Type's properties.
+The [Memory Type CLI facade](/reference/bdp/cli/types/memory/memory) gives
+property, retyping and refusal details for the Preview 3 candidate.
 
 When an Issue is created without `--id`, its canonical `beads/` ID uses the
 Issue ID allocated under the workspace prefix set by `bd init --prefix`. For
@@ -88,13 +93,13 @@ remain random `beads/` paths; generated Link IDs remain under `links/`.
 
 ```sh
 bd create 'Move the release branch' --id work --type task
-bd create --bead-type preview-memory-v2 \
-  --body 'Code flow policy: keep the old policy as a versioned Memory.'
+bd create --type types/memory \
+  --properties '{"title":"Code flow policy","body":"Keep the old policy as a versioned Memory."}'
 ```
 
 Use `bd types` in the selected workspace to discover its installed
-`types/NAME` IDs. The `types/` prefix is optional when passing a Type name to
-`--bead-type` or `--link-type`; full local Type URLs also work. Do not assume a
+`types/NAME` IDs. Use the printed `types/NAME` selector or full local Type URL with `--type`;
+bare names retain their existing Issue or Dependency classification meaning. Do not assume a
 Type shown in another workspace is installed in this one.
 
 ## Find and read Beads
@@ -105,7 +110,7 @@ Type shown in another workspace is installed in this one.
 | `bd recall ID` | Print **one** Memory's body followed by a newline, as ordinary `bd recall` does. It does not enumerate Memories. |
 | `bd show ID --json` | A current Issue uses the ordinary `bd show` JSON detail array, including labels, dependency/comment counts, Scope-relative Bead IDs that round-trip to graph commands, and the graph revision token. Memory and Link still use the preview complete-record envelope. |
 | `bd show ID --format graph-json` | Read the preview complete-record envelope explicitly, including for an Issue or an exact `--version` read. This is a preview record, not a BDP Resource representation. |
-| `bd list` or `bd list --format records-json` | Without an Issue filter, list every current Memory and Issue the ordinary `bd list` would show, newest recorded change first; closed and pinned Issues need `--all`. Use `--bead-type types/NAME` to narrow by nominal Type. An Issue filter, or a matching directory label, switches to the Issue-only query described below and says so. |
+| `bd list` or `bd list --format records-json` | Without an Issue filter, list every current Memory and Issue the ordinary `bd list` would show, newest recorded change first; closed and pinned Issues need `--all`. Use `--type types/NAME` to narrow by exact declared nominal Type. An Issue filter, or a matching directory label, switches to the Issue-only query described below and says so. |
 | `bd statuses [--json]` | List built-in Issue statuses and any custom statuses resolved for this workspace, using the ordinary command's human and JSON shapes. This is Issue status discovery, not Bead Type discovery. |
 
 ```sh
@@ -116,7 +121,7 @@ bd show work --json
 bd show work --format graph-json
 bd list --all
 bd list --json --all
-bd list --format records-json --bead-type types/preview-memory-v2 --all
+bd list --format records-json --type types/memory --all
 bd statuses --json
 ```
 
@@ -140,16 +145,17 @@ The Issue filters are `--status` (or `--state`), `--type`, `--title`,
 `--title-contains`, `--priority`, `--priority-min`, `--priority-max`,
 `--assignee`, `--no-assignee`, `--label`, `--label-any`, `--exclude-label`,
 `--pinned`, `--no-pinned`, `--due-before`, `--due-after`, `--overdue`,
-`--sort` and `--reverse`. Supplying any of them switches `bd list` to the
-existing Issue query, even when an empty value such as `--assignee=` adds no
-restriction. A configured `directory.labels` entry that matches the current
+`--sort` and `--reverse`. Supplying an Issue filter switches `bd list` to the existing Issue query,
+even when an empty value such as `--assignee=` adds no restriction.
+`--type types/NAME` or a full Type URL instead selects a nominal Type;
+a bare `--type task` remains an Issue classification filter. A configured `directory.labels` entry that matches the current
 directory switches it too. That query lists Issues only, never Memories. It
 omits closed and pinned Issues unless `--all` or a filter selects them. A line
 under the header says Memories are not listed and names the option that
-selected the query. A directory label alone never refuses a `--bead-type`; it
+selected the query. A directory label alone never refuses a nominal `--type`; it
 is not applied to a Memory. Its human rows add status and priority, for example
 `"https://example.org/team/beads/work" "open" P2 "Move the release branch"`.
-An Issue filter cannot be combined with a non-Issue `--bead-type`.
+An Issue filter cannot be combined with a non-Issue nominal `--type`.
 
 `bd list --json` returns the ordinary Issue-only array, including the
 familiar Issue field names and Scope-relative IDs. Memories are omitted from
@@ -503,37 +509,37 @@ snapshots after an accepted change.
 
 ## Create, inspect, edit and remove Links
 
-Use `bd types` to find installed Link Types. An informational Type such as
-`types/preview-related-v2` can connect a Memory to a Memory or Issue. An
-explicit `--id ID` is shorthand for `--id links/ID`; omit it to allocate an ID.
-The Link's Type and endpoints do not change during a properties edit. For the
-installed preview informational Types, the optional property is a string
-`note`. A Memory owns its outgoing informational Links, so changing one also
-changes the source Memory's version. A target does not change merely because
-it is linked.
+Use `bd types` to find installed Link Types. Select a concrete nominal Type
+with `--type types/NAME` or its full local Type URL. `References` can connect
+a Memory to a Memory or Issue; its optional common properties are `title`,
+`body` and `status`. An explicit `--id ID` is shorthand for `--id links/ID`;
+omit it to allocate an ID. Type and endpoint identities remain fixed during
+a properties edit.
 
 ```sh
-bd link policy work --link-type types/preview-related-v2 \
-  --id policy-work --properties '{"note":"work follows this policy"}' \
+bd link policy work --type types/references \
+  --id policy-work --properties '{"body":"work follows this policy"}' \
   --metadata '{"origin":"manual"}'
 bd links policy
 bd show links/policy-work --json
-bd update links/policy-work --properties '{"note":"reviewed policy"}'
+bd update links/policy-work --properties '{"body":"reviewed policy"}'
 bd unlink policy-work --unconditional
 ```
 
-`bd links ID` lists current incident Links with Type
-first and in-Scope IDs relative to the Scope URL; JSON retains canonical URLs.
-`bd link SOURCE TARGET` without `--link-type` is an Issue dependency shorthand.
-A Memory-owned informational Link
-defaults to accepting the current source state; add `--if-source-revision
-TOKEN` to reject a stale source. Link updates accept the current Link by
-default; Link removal still needs `--if-revision TOKEN` or `--unconditional`.
-Removal deletes the
-current Link but retains its identity and prior snapshots. The blocking
-`types/preview-blocks-v1` Type is only for live Issues; it refuses a Memory
-endpoint. See the [Graph CLI Specification (Draft)](/reference/graph-cli-specification-draft) for the
-separate blocking Dependency unlink rules and Link Type bounds.
+`bd links ID` lists current incident Links with Type first and in-Scope IDs
+relative to the Scope URL; JSON retains canonical URLs. `bd link SOURCE TARGET`
+without `--type` is an Issue dependency shorthand. Direct References Links
+are unowned. Other selected families have source ownership: Memory owns
+Subject To and Superseded By, Constraint owns Requires, and Evaluation owns
+Conformance claims. The selected nominal subtypes inherit those rules.
+Changing an owned Link changes its owner; its target does not change merely
+because it is linked. See the [Memory Type CLI facade](/reference/bdp/cli/types/memory/memory)
+for constraints and exact Evaluation subject rules.
+
+Link updates accept the current Link by default; `--if-revision TOKEN`
+rejects a stale Link. Removal needs `--if-revision TOKEN` or `--unconditional`
+and retains the identity and prior snapshots. Native Dependency remains
+restricted to live Issues and retains its existing blocking and unlink rules.
 
 For two live Issues, `bd dep add BLOCKED BLOCKER` creates a blocking Link.
 The native `bd dep add BLOCKED --blocked-by BLOCKER` and `--depends-on BLOCKER`
@@ -674,21 +680,71 @@ BDP HTTP History, as-of selection or restoration. `bd status --graph` reports
 History profile. The [technical reference](/reference/graph-cli-specification-draft#list-a-resources-versions)
 details ordering and refusal behavior.
 
+### Canonical retained-reader output
+
+In a graph workspace, `--output-format` opts retained readers into the canonical
+output contract. Existing `--json` and `--format` behavior remains unchanged.
+Do not combine either legacy flag with `--output-format`, even when both request
+JSON; the command refuses the ambiguous contract choice.
+
+| Commands | Canonical formats |
+| --- | --- |
+| `versions`, `history`, `link versions` | `default` (table), `table`, `detail`, `json` |
+| `compare`, `link compare` | `default` (detail), `detail`, `json` |
+
+```bash
+bd versions policy --output-format json
+bd link versions links/related --output-format table
+bd versions policy --output-format json --include /change_at
+bd compare policy --from FIRST_TOKEN --to SECOND_TOKEN --output-format json
+bd link compare links/related --from FIRST_TOKEN --to SECOND_TOKEN \
+  --output-format json --omit envelope
+```
+
+Canonical JSON uses `schema_version: 2`, an exact `bdp_spec` identifier, and
+`result_kind: "version_collection"` or `"comparison"`. These result kinds
+identify CLI-defined structures; they do not claim to implement BDP HTTP History.
+`--omit envelope` emits the native result object alone.
+
+Version projections apply to each summary row. An explicit `--include` selects
+optional fields; the exact `version` token always remains. The enclosing
+`resource` and `kind` values remain present, and human output includes them as
+subject context. The native `resource` value is Scope-relative, so interpreting
+its subject and version tokens requires the originating workspace Scope.
+`--omit /version` refuses. Projection never fetches full
+Resource snapshots to fill absent summary fields.
+
+Version output returns the provider's complete bounded result or refuses. It
+does not silently truncate at a default page size, invent continuation cursors,
+or support JSONL or paging flags. Comparison output preserves the chosen operand
+order, exact tokens, differences and coverage. Repeated `--from` or `--to` values
+must agree; conflicting values refuse before reading. Its operands are references, so
+data `--include` and `--omit` masks refuse; `--omit envelope` remains supported.
+
+An ordinary JSON read failure emits a complete failure envelope and a diagnostic
+on stderr, with a nonzero exit status. Raw JSON and human failures use stderr and
+the exit status without adding a result object. Output failures after a write
+has started do not append a second document.
+
 ## Discover installed Types
 
-`bd types` reads the descriptors **installed in this workspace** and lists
-Bead Types separately from Link Types. Use a printed `types/NAME` ID or just
-`NAME` with `--bead-type` or `--link-type`; a full local Type URL also works.
-`--details` shows each complete stored descriptor, and `--json` returns the
-descriptors as structured data.
+`bd types` lists the selected workspace's public Bead and Link Types.
+Use a printed `types/NAME` selector or full local Type URL with `--type`.
+Bare Issue and Dependency classifications keep their existing meaning.
 
-`bd init` installs six Types: the Issue and Memory Bead Types and four Link
-Types (`types/preview-blocks-v1`, `types/preview-related-v2`,
-`types/example-follows` and `types/example-cites`). A schema-6 workspace
-created before the two example Link Types existed has only the other four.
-It opens and works normally, and `bd types` lists those four. No command
-installs the examples into it; selecting one there refuses with
-`capability_unavailable`.
+The Preview 3 catalog includes nine Memory Bead Types: Memory, Constraint,
+Policy, Decision, Procedure, Requirement, Scenario, Specification and
+Evaluation. Its nine Link Types are References, Superseded By, Requires,
+Defines, Subject To, Conformance, Addresses, Satisfies and Violates. Native
+Issue and Dependency remain available. Conformance is abstract: it appears
+in inventory and is a valid exact Type-filter selector, but direct creation
+is refused. Exact filters do not promise descendant expansion.
+
+Type, BeadType, LinkType, ConformsTo and Refines are intrinsic and unavailable
+as public Type selections or filters. Active `example-*` and `preview-*`
+nominal registrations are removed; existing configured native Issue
+classification names are preserved. No command installs the retired examples
+or upgrades an earlier catalog in place.
 
 ```sh
 bd types
@@ -696,11 +752,109 @@ bd types --details
 bd types --json
 ```
 
-The supported graph `bd create` Bead Types are the installed Issue and Memory
-descriptors. `bd link` uses installed Link Types. The ordinary `bd types`
-command lists Issue classifications instead; select a graph workspace to see
-the graph Type catalog.
+All three formats use the same public visibility rules. `--details` may show
+a partial description; it does not promise a complete HTTP Type descriptor.
+The Preview 3 `--json` shape has no Preview 3-to-Preview 4 compatibility
+guarantee. See the [Memory Type CLI facade](/reference/bdp/cli/types/memory/memory)
+for the exact typedef source and candidate qualification boundary. Ordinary
+workspaces retain their existing Issue classification inventory.
 
 ## Import an ordinary export
 
 The independent legacy import workstream adds bounded `bd import` for a fresh graph workspace. See the [legacy import contract](/reference/graph-legacy-import) for supported data, identity mappings and refusals. This candidate capability is pending release integration; graph-format import follows graph export.
+
+## Canonical Resource output
+
+In a graph workspace, opt into the canonical output contract with
+`--output-format`. Root `show` accepts a Bead or Link identity; `link show`
+accepts a Link identity. Both use the same BDP Resource representation:
+
+```sh
+bd show beads/plan --output-format json
+bd link show links/note --output-format json
+bd show beads/plan@REVISION --output-format json
+bd show beads/plan --output-format detail --omit /metadata
+bd show beads/plan --output-format json --include /properties/title
+bd show beads/plan --output-format json --omit envelope
+```
+
+`default` and `detail` show labeled fields; `json` emits a schema-version-2
+CLI envelope with the exact BDP contract identifier and Resource in `data`.
+Current records include their inline owned Links. Reading or displaying them
+never retrieves target Resources. Exact retained reads use the retained state,
+including its owned Links, without filling fields from current state.
+
+JSON Pointer masks are repeatable. Includes select optional fields while retaining
+identity, Type and revision; Link endpoints are mandatory too. Omission wins.
+Nested paths are supported within `properties` and `metadata`; other top-level
+sections, including `ownedLinks`, are selected or omitted as whole values.
+Omitting mandatory context refuses the request. Masks do not filter which
+Resources exist or change the selected graph.
+
+`--omit envelope` emits the selected Resource directly. A failed raw read emits
+no stdout; always check the command's exit status. Framed JSON failures contain
+`outcome: "failure"` and an error origin/problem wrapper. Diagnostics use stderr.
+
+Existing `--json` and `--format` behavior remains available. Combining either
+explicit flag with `--output-format` refuses, including `--json=false`. These
+existing command paths require `--output-format` when using `--include` or
+`--omit`. This opt-in currently requires a graph workspace and exactly one
+Resource per `show` invocation.
+
+### Canonical collections
+
+Use `bd list` for current Beads and `bd link list` for current Links. Canonical
+collections retain the public BDP records, including inline owned Links, without
+retrieving endpoint Resources:
+
+```sh
+bd list --output-format json --unpaged
+bd list --output-format table --unpaged --include /properties/title
+bd link list --output-format json --unpaged --source beads/plan
+bd link list --output-format jsonl --incident-to beads/plan --direction in
+bd link list --output-format json --unpaged --omit envelope
+```
+
+`--type` selects an exact canonical absolute HTTP(S) Type URI;
+`--conforms-to` requires the same URI grammar and also admits Types conforming
+to that Type. Use the full Type identity, for example
+`https://example.test/project/types/note`. Canonical selection does not resolve
+Issue classifications such as `bug`, bare names, `types/NAME`, or Dependency
+aliases; those remain available on legacy paths. Link selection accepts
+`--source`, `--target`, and `--incident-to`.
+An incident selection can use `--direction in`, `out`, or `both`. These filters
+combine with AND. Canonical collection selection includes every current matching
+Bead, without a default filter for Issue status. It refuses Issue workflow filters, including `--all`, and
+does not accept the textual query language. Legacy `bd list --all` retains its
+selection meaning; it is not a pagination flag.
+
+`default` and `table` display generic identity columns; `detail` displays each
+selected record. The same JSON Pointer masks select optional fields for every
+format. Framed JSON puts the native `{items, next}` collection in `data`, with
+completion information alongside it. `--omit envelope` returns that native
+collection directly.
+
+JSONL defaults to the complete selection. Its first record is a header, each
+Resource has an item record, and its last record reports completion or failure.
+With `--omit envelope`, JSONL contains only Resource records: no header, terminal,
+or error record. Check the exit status even when some records were written.
+
+The current local provider supports a complete selection from one snapshot,
+with limits of 1,000 live Resources and 16 MiB of current-state inventory.
+Table, detail and JSON default to a page boundary of 50; use `--unpaged` for a
+larger complete selection. `--page-size` requests a per-page delivery boundary;
+`--limit` requests a total delivery bound, with `0` meaning unlimited. This complete-result provider can
+satisfy a requested bound only when the whole selection fits. It does not yet
+support returning a smaller subset: if the selection exceeds the requested page
+or total bound, the adapter refuses with `capability_unavailable` and emits no
+items after reading the selection. In particular, the default JSON/table/detail
+invocation refuses for 51 or more matching records. Use `--unpaged --limit 0` or
+narrow the selection. The failure identifies the unsatisfied bound; it does not
+return a truncated collection as exhausted.
+`--continue` also refuses because this local provider cannot retain a cursor
+across CLI invocations. Persistent paging is not yet available on these paths.
+
+These collection controls require `--output-format`, except the existing root
+`list --limit` flag, whose legacy behavior is unchanged. Combining canonical
+output with explicit `--json` or `--format` refuses. The Issue/dependency commands
+and Memory facades keep their existing output contracts.
