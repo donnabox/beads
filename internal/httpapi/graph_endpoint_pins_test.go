@@ -61,6 +61,14 @@ func TestGraphReadHTTPPreservesEndpointPins(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
+			constraint, err := store.Create(ctx, graphstore.CreateRequest{Path: "beads/rule", TypeURL: scope + "types/constraint", Title: "Rule"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			owned, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: "links/obligation", TypeURL: scope + "types/subject-to", SourcePath: "beads/source", TargetPath: "beads/rule", TargetPin: graphstore.EndpointPin{Current: true}, ExpectedSourceRevision: source.Revision})
+			if err != nil {
+				t.Fatal(err)
+			}
 			graph, err := NewGraphRead(graphread.New(store), scope)
 			if err != nil {
 				t.Fatal(err)
@@ -75,25 +83,30 @@ func TestGraphReadHTTPPreservesEndpointPins(t *testing.T) {
 				t.Fatal(err)
 			}
 			server := newTestServer(t, Config{GraphRead: graph, Auth: auth, AllowedHosts: []string{"transport.example"}})
-			request, err := http.NewRequestWithContext(ctx, "GET", server.base+"/read/links/citation", nil)
-			if err != nil {
-				t.Fatal(err)
+			fetch := func(path string) []byte {
+				t.Helper()
+				request, err := http.NewRequestWithContext(ctx, "GET", server.base+path, nil)
+				if err != nil {
+					t.Fatal(err)
+				}
+				request.Host = "transport.example"
+				request.Header.Set("Authorization", "Bearer pin-test-token")
+				request.Header.Set("Accept", "application/json")
+				response, err := http.DefaultClient.Do(request)
+				if err != nil {
+					t.Fatal(err)
+				}
+				raw, err := io.ReadAll(response.Body)
+				_ = response.Body.Close()
+				if err != nil {
+					t.Fatal(err)
+				}
+				if response.StatusCode != http.StatusOK {
+					t.Fatalf("HTTP %d: %s", response.StatusCode, raw)
+				}
+				return raw
 			}
-			request.Host = "transport.example"
-			request.Header.Set("Authorization", "Bearer pin-test-token")
-			request.Header.Set("Accept", "application/json")
-			response, err := http.DefaultClient.Do(request)
-			if err != nil {
-				t.Fatal(err)
-			}
-			raw, err := io.ReadAll(response.Body)
-			_ = response.Body.Close()
-			if err != nil {
-				t.Fatal(err)
-			}
-			if response.StatusCode != http.StatusOK {
-				t.Fatalf("HTTP %d: %s", response.StatusCode, raw)
-			}
+			raw := fetch("/read/links/citation")
 			var wire bdpwire.LinkRecord
 			if err := json.Unmarshal(raw, &wire); err != nil {
 				t.Fatalf("invalid structured wire Reference: %s %v", raw, err)
@@ -101,6 +114,33 @@ func TestGraphReadHTTPPreservesEndpointPins(t *testing.T) {
 			if wire.ID != created.Link.ID || wire.Source.URI != source.ID || wire.Source.Revision != source.Revision || wire.Target.URI != target.ID || wire.Target.Revision != target.Revision {
 				t.Fatalf("HTTP lost separate pin state: %+v", wire)
 			}
+			assertOwned := func(record bdpwire.BeadRecord) {
+				t.Helper()
+				links := record.OwnedLinks[scope+"types/subject-to"]
+				if len(links) != 1 || links[0].ID != owned.Link.ID || links[0].Source.URI != source.ID || links[0].Source.Revision != "" || links[0].Target.URI != constraint.ID || links[0].Target.Revision != constraint.Revision {
+					t.Fatalf("effective ownership projection lost pinned owned target: %+v", record)
+				}
+			}
+			var owner bdpwire.BeadRecord
+			if err := json.Unmarshal(fetch("/read/beads/source"), &owner); err != nil {
+				t.Fatal(err)
+			}
+			assertOwned(owner)
+			inventory, err := graphread.New(store).Inventory(ctx)
+			if err != nil {
+				t.Fatal(err)
+			}
+			found := false
+			for _, record := range inventory.Beads {
+				if record.ID == source.ID {
+					assertOwned(record)
+					found = true
+				}
+			}
+			if !found {
+				t.Fatal("source absent from same-transaction inventory")
+			}
+
 		})
 	}
 }
