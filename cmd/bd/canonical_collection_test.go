@@ -221,12 +221,16 @@ func TestCanonicalCollectionScalarConflicts(t *testing.T) {
 	}{
 		{[]string{"--limit", "1", "--limit", "2"}, true},
 		{[]string{"--limit", "1", "--limit", "01"}, false},
+		{[]string{"--limit=010", "--limit=10"}, true},
+		{[]string{"--limit=0x10", "--limit=16"}, false},
+		{[]string{"--page-size=010", "--page-size=10"}, true},
+		{[]string{"--page-size=0x10", "--page-size=16"}, false},
 		{[]string{"--paged=true", "--paged=false"}, true},
 		{[]string{"--type", "a", "--type", "b"}, true},
 		{[]string{"--output-format", "json", "--omit", "/metadata", "--omit", "/properties"}, false},
 	} {
 		cmd, _, _ := canonicalCollectionTestCommand(t, false, tc.args...)
-		if err := canonicalCollectionScalarOccurrences(cmd, tc.args); (err != nil) != tc.bad {
+		if err := canonicalScalarOccurrences(cmd, tc.args, "type", "limit", "page-size", "paged"); (err != nil) != tc.bad {
 			t.Fatalf("args=%v err=%v bad=%t", tc.args, err, tc.bad)
 		}
 	}
@@ -284,5 +288,24 @@ func TestCanonicalCollectionFlagsRequireOptIn(t *testing.T) {
 	cmd, _, _ := canonicalCollectionTestCommand(t, false, "--limit=10")
 	if _, selected, err := canonicalOutputOptions(cmd); err != nil || selected {
 		t.Fatalf("shipping list limit changed: selected=%v err=%v", selected, err)
+	}
+}
+
+func TestCanonicalCollectionPreservesLegacyArgs(t *testing.T) {
+	legacyError := errors.New("legacy positional diagnostic")
+	for _, canonical := range []bool{false, true} {
+		cmd := &cobra.Command{Use: "list", Args: func(_ *cobra.Command, _ []string) error { return legacyError }}
+		registerCanonicalCollectionFlags(cmd)
+		args := []string{"unexpected"}
+		if canonical {
+			args = append(args, "--output-format=json")
+		}
+		if err := cmd.ParseFlags(args); err != nil {
+			t.Fatal(err)
+		}
+		err := cmd.ValidateArgs(cmd.Flags().Args())
+		if canonical && err != nil || !canonical && !errors.Is(err, legacyError) {
+			t.Fatalf("canonical=%v err=%v", canonical, err)
+		}
 	}
 }

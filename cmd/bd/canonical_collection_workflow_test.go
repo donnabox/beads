@@ -69,8 +69,8 @@ func TestCanonicalCollectionInstalledWorkflow(t *testing.T) {
 
 			for _, format := range []string{"json", "jsonl"} {
 				for _, raw := range []bool{false, true} {
-					for _, invalid := range [][]string{{"--omit=/revision"}, {"--include=/properties/~bad"}, {"--continue=token"}, {"--paged", "--page-size=1"}} {
-						args := append([]string{"list", "--output-format=" + format}, invalid...)
+					for _, invalid := range [][]string{{"list", "--omit=/revision"}, {"list", "--include=/properties/~bad"}, {"list", "--continue=token"}, {"list", "--paged", "--page-size=1"}, {"list", "unexpected"}, {"link", "list", "unexpected"}, {"list", "--limit=010", "--limit=10"}} {
+						args := append(append([]string{}, invalid...), "--output-format="+format)
 						if raw {
 							args = append(args, "--omit=envelope")
 						}

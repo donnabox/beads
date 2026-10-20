@@ -8,11 +8,9 @@ import (
 	"fmt"
 	"net/url"
 	"os"
-	"strconv"
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 	"github.com/steveyegge/beads/internal/clioutput"
 	"github.com/steveyegge/beads/internal/httpapi/bdpwire"
 	"github.com/steveyegge/beads/internal/httpapi/graphread"
@@ -41,6 +39,15 @@ func init() {
 }
 
 func registerCanonicalCollectionFlags(cmd *cobra.Command) {
+	// Legacy positional diagnostics stay on the existing surface. Canonical
+	// admission waits for a renderer so JSON/JSONL refusals share its contract.
+	legacyArgs := cmd.Args
+	cmd.Args = func(cmd *cobra.Command, args []string) error {
+		if canonicalOutputSelected(cmd) || legacyArgs == nil {
+			return nil
+		}
+		return legacyArgs(cmd, args)
+	}
 	registerCanonicalOutputFlags(cmd)
 	cmd.Flags().Lookup("output-format").Usage = "Canonical collection output: default, table, detail, json or jsonl; cannot mix legacy --json/--format"
 	cmd.Flags().String("conforms-to", "", "Select the exact Type URI or its conformance family in canonical output")
@@ -195,6 +202,9 @@ func runCanonicalCollection(cmd *cobra.Command, links bool) error {
 		format = options.Formats[0]
 	}
 	failure := canonicalCollectionFailure{renderer: renderer, jsonl: format == "jsonl"}
+	if len(cmd.Flags().Args()) != 0 {
+		return canonicalFailure(cmd, failure, "invalid_selector", "canonical collection listing does not accept positional arguments; use selection flags", 2)
+	}
 	allowed := []string{"type", "conforms-to", "paged", "unpaged", "page-size", "limit", "continue"}
 	if links {
 		allowed = append(allowed, "source", "target", "incident-to", "direction")
@@ -204,7 +214,7 @@ func runCanonicalCollection(cmd *cobra.Command, links bool) error {
 	if err := canonicalGraphFlags(cmd, failure, allowed...); err != nil {
 		return err
 	}
-	if err := canonicalCollectionScalarOccurrences(cmd, os.Args[1:]); err != nil {
+	if err := canonicalScalarOccurrences(cmd, os.Args[1:], "type", "conforms-to", "source", "target", "incident-to", "direction", "paged", "unpaged", "page-size", "limit", "continue", "all"); err != nil {
 		return canonicalFailure(cmd, failure, "invalid_selector", err.Error(), 2)
 	}
 	plan, err := canonicalCollectionRequest(cmd, links, options)
@@ -305,65 +315,4 @@ func renderCanonicalCollection(cmd *cobra.Command, plan canonicalCollectionPlan,
 func canonicalCollectionWriteError(cmd *cobra.Command, err error) error {
 	fmt.Fprintf(cmd.ErrOrStderr(), "output_error: %v\n", err) //nolint:gosec // G705: CLI stderr diagnostics are not HTML.
 	return &exitError{Code: 1}
-}
-
-// Existing scalar flags retain their shipping pflag types. Reparse occurrences
-// only for conflict detection; this does not add a selector or query grammar.
-func canonicalCollectionScalarOccurrences(cmd *cobra.Command, argv []string) error {
-	probe := pflag.NewFlagSet("canonical-collection-admission", pflag.ContinueOnError)
-	probe.SetOutput(&bytes.Buffer{})
-	values := make(map[string]*canonicalScalarValues)
-	scalar := map[string]bool{"type": true, "conforms-to": true, "source": true, "target": true, "incident-to": true, "direction": true, "paged": true, "unpaged": true, "page-size": true, "limit": true, "continue": true, "all": true}
-	add := func(flag *pflag.Flag) {
-		if probe.Lookup(flag.Name) != nil {
-			return
-		}
-		value := &canonicalScalarValues{kind: flag.Value.Type()}
-		if scalar[flag.Name] {
-			values[flag.Name] = value
-		}
-		probe.AddFlag(&pflag.Flag{Name: flag.Name, Shorthand: flag.Shorthand, NoOptDefVal: flag.NoOptDefVal, Value: value})
-	}
-	cmd.Flags().VisitAll(add)
-	cmd.InheritedFlags().VisitAll(add)
-	if err := probe.Parse(argv); err != nil {
-		return err
-	}
-	for name, value := range values {
-		if len(value.values) < 2 {
-			continue
-		}
-		first := value.normalized(value.values[0])
-		for _, next := range value.values[1:] {
-			if value.normalized(next) != first {
-				return fmt.Errorf("conflicting --%s values", name)
-			}
-		}
-	}
-	return nil
-}
-
-type canonicalScalarValues struct {
-	kind   string
-	values []string
-}
-
-func (v *canonicalScalarValues) Set(value string) error {
-	v.values = append(v.values, value)
-	return nil
-}
-func (v *canonicalScalarValues) String() string { return "" }
-func (v *canonicalScalarValues) Type() string   { return v.kind }
-func (v *canonicalScalarValues) normalized(value string) string {
-	if v.kind == "bool" {
-		if parsed, err := strconv.ParseBool(value); err == nil {
-			return strconv.FormatBool(parsed)
-		}
-	}
-	if v.kind == "int" {
-		if parsed, err := strconv.Atoi(value); err == nil {
-			return strconv.Itoa(parsed)
-		}
-	}
-	return value
 }
