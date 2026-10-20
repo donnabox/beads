@@ -3,8 +3,12 @@
 This implementation stores a local informational Link's source and target
 identity independently of each optional exact endpoint revision. The CLI
 adapter accepts endpoint selectors at Link creation and explicit source/target
-revision flags at Link update. Export closure adaptation is separate work owned
-by its consumer.
+revision flags at Link update. The internal current export reader preserves
+these References and validates selected retained availability in the same
+rollback-only transaction. Historical payloads are validation-only; current
+inventory is not portable retained-version closure. See
+[export acquisition](design/graph-export-milestone.md) and the `ExportEndpoint`
+tests in [graphstore](../internal/storage/graphstore/export_current_test.go).
 It does not adopt a new public BDP contract or enable external endpoints.
 
 ## Carrier and writer API

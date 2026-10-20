@@ -1,0 +1,13 @@
+==> gofmt check
+Checking Go formatting...
+Using gofmt go1.26.7 (/Users/dbox/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.7.darwin-arm64/bin/gofmt)
+All Go files are properly formatted
+<== gofmt check succeeded in 0s
+==> golangci-lint (native + windows/darwin non-CGO)
+==> golangci-lint (native)
+Error: parallel golangci-lint is running
+The command is terminated due to an error: parallel golangci-lint is running
+<== golangci-lint (native) failed: exit status 3
+exit status 3
+<== golangci-lint (native + windows/darwin non-CGO) failed after 6s with exit code 1
+make: *** [ci-pr-lint] Error 1

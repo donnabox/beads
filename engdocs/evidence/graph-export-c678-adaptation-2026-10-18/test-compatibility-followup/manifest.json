@@ -1,0 +1,19 @@
+{
+  "preRepairHead": "e923b31528bfb1887ed08baa751f9217b22621a3",
+  "selectedBase": "c67855b4f7c1e4fb24409eb22d142a52d19ab92f",
+  "review": "Native preliminary audit: two concrete test compatibility findings; final source council pending",
+  "sourceFiles": {
+    "internal/storage/graphstore/export_cleanup_pure_test.go": "8307403bcb3466d0ea80538aadbd23a499939bc82de69d53b76b8a2b43fcacad",
+    "internal/storage/graphstore/export_current_test.go": "bc56c87140936f53e3e20680928868808d9edc8ba4c14019f86debf3068ec125"
+  },
+  "checks": {
+    "gofmt": "pass; no formatting output after gofmt",
+    "changedSourceWhitespace": "pass",
+    "tests": "UNRUN",
+    "build": "UNRUN",
+    "generator": "UNRUN",
+    "runtime": "UNRUN"
+  },
+  "productionExportChanged": false,
+  "importCandidateChanged": false
+}
