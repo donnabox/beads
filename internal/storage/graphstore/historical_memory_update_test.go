@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"reflect"
+	"strings"
 	"testing"
 
 	publicops "github.com/steveyegge/beads/issueops"
@@ -173,6 +174,29 @@ func TestHistoricalMemoryUpdateCurrentTypeAndProtectedEvaluation(t *testing.T) {
 			_, err = s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/evaluation", FromRevision: original.Revision, TypeURL: original.Type, Unconditional: true})
 			if err == nil || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
 				t.Fatalf("historical retype accepted or wrote: %v", err)
+			}
+		})
+	}
+}
+
+func TestHistoricalMemoryUpdateCumulativeAcquisitionBudget(t *testing.T) {
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			ctx, _, s := memoryDeleteStore(t, engine)
+			first, err := s.Create(ctx, CreateRequest{Path: "beads/budget", Title: "Budget", Body: strings.Repeat("a", 6<<20)})
+			if err != nil {
+				t.Fatal(err)
+			}
+			current, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/budget", Body: historicalBody(strings.Repeat("b", 6<<20)), Unconditional: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+			before := workflowState(t, ctx, s)
+			for _, body := range []*string{nil, historicalBody("small")} {
+				_, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/budget", FromRevision: first.Revision, Body: body, ExpectedRevision: current.Memory.Revision})
+				if !errors.Is(err, ErrLimitExceeded) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+					t.Fatalf("current/source acquisition exceeded cumulative bound or wrote: %v", err)
+				}
 			}
 		})
 	}

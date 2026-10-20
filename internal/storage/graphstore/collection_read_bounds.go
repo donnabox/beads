@@ -60,7 +60,17 @@ func currentReadSizeQueries() []currentReadSizeQuery {
 }
 
 func checkCurrentReadBytes(ctx context.Context, tx *sql.Tx) error {
-	var used uint64
+	return checkCurrentReadBytesAdditional(ctx, tx, 0)
+}
+
+// Additional retained input is charged before acquisition together with all
+// current state this operation can hydrate. This is the same 16 MiB budget,
+// not a separate per-input allowance.
+func checkCurrentReadBytesAdditional(ctx context.Context, tx *sql.Tx, additional uint64) error {
+	if additional > PreviewCurrentReadByteLimit {
+		return fmt.Errorf("%w: historical input exceeds acquisition budget", ErrLimitExceeded)
+	}
+	used := additional
 	for _, part := range currentReadSizeQueries() {
 		fields := []string{"256"}
 		for _, column := range strings.Split(part.columns, ",") {
@@ -92,4 +102,12 @@ func checkCurrentReadBytes(ctx context.Context, tx *sql.Tx) error {
 		return fmt.Errorf("%w: live graph Issue also names a wisp", ErrInvalidStore)
 	}
 	return nil
+}
+
+func checkHistoricalMemoryReadBytes(ctx context.Context, tx *sql.Tx, path, revision string) error {
+	var size uint64
+	if err := tx.QueryRowContext(ctx, `SELECT CAST(LEAST(COALESCE(SUM(OCTET_LENGTH(snapshot)+OCTET_LENGTH(actor)+256),0),?) AS UNSIGNED) FROM graph_preview_versions WHERE path=? AND version=?`, PreviewCurrentReadByteLimit+1, path, revision).Scan(&size); err != nil {
+		return err
+	}
+	return checkCurrentReadBytesAdditional(ctx, tx, size)
 }

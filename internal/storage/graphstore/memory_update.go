@@ -147,6 +147,11 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
+		if request.fromRevision != "" {
+			if err := checkCurrentReadBytes(ctx, tx); err != nil {
+				return err
+			}
+		}
 		current, revision, err := s.beadEndpointInTx(ctx, tx, request.path)
 		if err != nil {
 			return err
@@ -162,6 +167,9 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 		if request.fromRevision != "" {
 			if request.typeURL != "" && request.typeURL != memory.Type {
 				return fmt.Errorf("%w: historical Update preserves the current Type", storage.ErrValidation)
+			}
+			if err := checkHistoricalMemoryReadBytes(ctx, tx, request.path, request.fromRevision); err != nil {
+				return err
 			}
 			selected, err := s.readVersionInTx(ctx, tx, request.path, request.fromRevision)
 			if err != nil {
