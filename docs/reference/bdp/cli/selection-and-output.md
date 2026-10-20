@@ -52,8 +52,8 @@ fetch more Links or endpoint Resources.
 
 ### Population and identity
 
-The query model admits `--beads`, `--links` and their union. Neither flag means
-Beads; both mean the union of Beads and Links. These flags select query candidates,
+The query model admits `--beads`, `--links` and their union. Supplying neither
+selects Beads; supplying both selects the union of Beads and Links. These flags select query candidates,
 not fields, and do not make root writes polymorphic. Registration on list wrappers
 must follow the shared query/list design rather than be inferred from this page.
 
@@ -406,6 +406,12 @@ page boundary. A write outcome may remain unknown.
 `--omit envelope` removes header, item wrappers and terminal, leaving raw payloads
 only. Midstream failure does not add an exceptional data row. The caller must
 observe stderr/status; saved raw bytes cannot prove successful completion.
+In a shell pipeline, the last consumer's success is not evidence that `bd`
+succeeded. A Bash consumer can use `set -o pipefail`, or capture `PIPESTATUS`
+immediately after the pipeline when it needs the producer's exact status.
+Other shells have their own producer-status mechanism. Framed consumers should
+validate the terminal as well as process status when available; a pipe can fail
+after a terminal is written. Raw consumers have no terminal to validate.
 
 A broken pipe, terminated process or unwritable output can prevent even a failure
 terminal from being delivered. Do not claim guaranteed completion delivery.
@@ -477,7 +483,33 @@ These are required implementation checks, not tests already executed.
 | O13 | Conflicting scalar/format flags fail before effects; equivalent values and repeatable masks compose. |
 | O14 | Tree cycles, parallel Links, shared descendants, disconnected components and distinct revisions retain graph meaning. |
 | O15 | Legacy `dep` and domain-command snapshots remain unchanged; generic command JSON compatibility is explicitly exercised. |
-| O16 | Every admitted adapter pins its BDP contract, result schema, projection roots, mandatory context and delivery unit. |
+| O16 | Every admitted adapter pins its BDP contract, result schema, projection roots, mandatory context and delivery unit, and publishes golden public corpus blobs for downstream compatibility checks, including `link show`. |
+| O17 | Raw-output pipeline examples and command acceptance observe the producer status, not merely the final consumer status; late/broken-pipe failures cannot be mistaken for complete success. |
+
+## Review follow-ups before adapter admission
+
+These are unresolved review details, not replacements for the accepted pure
+model. They do not authorize new commands or expand the current rollout.
+
+- The legacy transition must explicitly decide mixed `--json` and
+  `--output-format` invocations and default/cutover behavior on each legacy path.
+  Their equivalence above is the pure canonical contract, not proof that mixing
+  legacy and canonical modes is already safe. Preserve old consumers until that
+  mapping and their corpus checks are qualified.
+- CLI-derived payloads need an explicit schema-evolution rule, whether tied to
+  `schema_version` or a separate result-schema identifier. Decide this before
+  admitting graph/row/aggregate/comparison adapters; a result-kind name alone
+  does not version a payload shape.
+- Collection adapters must resolve the exact encoding of unknown exhaustion
+  and its relationship to `stop_reason`. The candidate completion fields above
+  do not yet supply that encoding.
+- Inventory actual exit behavior at the selected baseline before promising to
+  preserve it. Verify help against behavior and coordinate the resulting public
+  corpus with consumers; this does not authorize a numeric-code normalization.
+- Family-flag naming and simplifications to framing/array masks remain review
+  alternatives. The accepted spellings and projection rules stand unless Donna
+  changes them. Source-side limits may reduce a fetch size when the provider
+  guarantees the delivered boundary; they cannot invent resumability.
 
 ## Beads and BDP implementation responsibilities
 
