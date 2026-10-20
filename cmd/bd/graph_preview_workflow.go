@@ -76,7 +76,7 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "type", "source", "target", "id", "if-source-revision", "blocked-by", "depends-on", "no-cycle-check"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "source", "target", "source-revision", "target-revision", "id", "if-source-revision", "blocked-by", "depends-on", "no-cycle-check"); err != nil {
 		return err
 	}
 	// Keep the ordinary single-edge spellings. Native --blocked-by wins if both
@@ -256,9 +256,9 @@ func graphPreviewInsertDependency(sourcePath, targetPath, typeURL string, depTyp
 			verb = "Unchanged"
 		}
 		if depType == types.DepBlocks {
-			return result, fmt.Sprintf("%s %s: %s depends on %s\n", verb, result.Link.ID, sourceLabel, targetLabel), nil
+			return result, graphPreviewMutationSummary(fmt.Sprintf("%s %s: %s depends on %s", verb, result.Link.ID, sourceLabel, targetLabel), result), nil
 		}
-		return result, fmt.Sprintf("%s %s: %s → %s\n", verb, result.Link.ID, sourceLabel, targetLabel), nil
+		return result, graphPreviewMutationSummary(fmt.Sprintf("%s %s: %s → %s", verb, result.Link.ID, sourceLabel, targetLabel), result), nil
 	})
 }
 

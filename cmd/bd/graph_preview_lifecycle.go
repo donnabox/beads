@@ -72,11 +72,21 @@ var linkShowCmd = &cobra.Command{
 	Use: "show LINK", Short: "Show a Link by ID",
 	Args: cobra.ExactArgs(1), SilenceUsage: true, SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		path, err := graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, args[0])
+		ref, err := graphPreviewParseReference(args[0])
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		return runGraphPreviewShow(cmd, []string{path})
+		path, err := graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, ref.Identity)
+		if err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
+		// Keep canonical URLs literal across the shared show's second parse,
+		// including identities whose local path contains a raw @.
+		selector := graphPreviewConfig.GraphScopeURL + path
+		if ref.Explicit {
+			selector = "[" + selector + "]@" + ref.Revision
+		}
+		return runGraphPreviewShow(cmd, []string{selector})
 	},
 }
 
@@ -84,11 +94,15 @@ var linkUpdateCmd = &cobra.Command{
 	Use: "update LINK", Short: "Update an informational Link",
 	Args: cobra.ExactArgs(1), SilenceUsage: true, SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		path, err := graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, args[0])
+		selector, err := graphPreviewWritableIdentity(args[0])
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		return runGraphPreviewUpdate(cmd, []string{path})
+		path, err := graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, selector)
+		if err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
+		return runGraphPreviewUpdate(cmd, []string{graphPreviewConfig.GraphScopeURL + path})
 	},
 }
 
@@ -127,6 +141,8 @@ func init() {
 	for _, flag := range []string{"source", "target"} {
 		linkCreateCmd.Flags().String(flag, "", "Local Bead ID or beads/PATH")
 	}
+	linkCreateCmd.Flags().String("source-revision", "", "Source endpoint revision: unpinned is supported; exact tokens and current refuse in this preview (distinct from --if-source-revision)")
+	linkCreateCmd.Flags().String("target-revision", "", "Target endpoint revision: unpinned is supported; exact tokens and current refuse in this preview")
 	linkCreateCmd.Flags().String("id", "", "Optional local Link ID or links/PATH")
 	linkCreateCmd.Flags().String("properties", "", "Initial informational Link properties as JSON, @file, or @-")
 	linkCreateCmd.Flags().String("metadata", "", "Initial informational Link metadata as JSON or @file")
@@ -323,7 +339,11 @@ func runGraphPreviewLinkDelete(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewFlags(cmd, "force", "if-revision", "if-source-revision"); err != nil {
 		return err
 	}
-	path, err := graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, args[0])
+	selector, err := graphPreviewWritableIdentity(args[0])
+	if err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
+	path, err := graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, selector)
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
@@ -404,7 +424,11 @@ func runGraphPreviewUnlink(cmd *cobra.Command, args []string) error {
 		if graphPreviewLinkTypeChanged(cmd) {
 			return graphFailure("invalid_selector", "--type is only used for pair selection", 2)
 		}
-		path, err := graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, args[0])
+		selector, err := graphPreviewWritableIdentity(args[0])
+		if err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
+		path, err := graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, selector)
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
@@ -414,11 +438,19 @@ func runGraphPreviewUnlink(cmd *cobra.Command, args []string) error {
 		request.Path = path
 	} else {
 		var err error
-		request.SourcePath, err = graphPreviewBeadSelector(args[0])
+		source, err := graphPreviewWritableIdentity(args[0])
+		if err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
+		target, err := graphPreviewWritableIdentity(args[1])
+		if err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
+		request.SourcePath, err = graphPreviewBeadSelector(source)
 		if err != nil {
 			return err
 		}
-		request.TargetPath, err = graphPreviewBeadSelector(args[1])
+		request.TargetPath, err = graphPreviewBeadSelector(target)
 		if err != nil {
 			return err
 		}
