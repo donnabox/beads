@@ -598,6 +598,13 @@ unchanged.
 
 ## Versioning and History
 
+The [revision-aware CLI reference speclet](/reference/bdp/cli/references)
+defines this candidate's `ID@TOKEN` and `'[URI]@TOKEN'` inputs, exact `show`
+reads, and refusal of unsupported endpoint pins. Use a full canonical URI for
+an existing ID containing raw `@`. JSON and stored identities keep revision
+separate. These additions require candidate qualification before release.
+
+
 **Revision** names the current state of one Bead or Link. A complete graph
 record has one opaque `revision` field. Use it with `--if-revision` when a
 write must apply only to the state you read. A different current revision

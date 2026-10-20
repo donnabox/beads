@@ -92,6 +92,8 @@ To require an existing Memory, keep using --update instead of --id:
   bd remember 'Revised policy' --id policy
   bd remember 'Revised policy' --update policy
   bd remember --update policy --title 'New title'
+--update retains literal Memory-ID semantics, including raw @; it does not
+parse revision suffixes. The selected bd update targets refuse revision suffixes.
 Omitted fields remain unchanged on update. Use --body-file PATH or --stdin
 instead of positional body text. An existing-ID update accepts the current
 revision by default; add --if-revision TOKEN to reject a stale update. Read
@@ -126,8 +128,16 @@ classification (for example task or bug); the CLI selects preview-issue for it. 
 accepts body/description/message and an optional title; unsupported Issue-only
 fields refuse. Fresh workspaces create types/preview-issue Issues.`},
 		{showCmd, `Use bd show ID (equivalent to beads/ID) for a current Memory or
-Issue; use bd show links/ID for a Link. --version TOKEN selects one exact
-retained record; this is not an ordered history listing. A current Issue's
+Issue; use bd show links/ID for a Link. ID@TOKEN or '[URL]@TOKEN' selects
+one exact retained record; --version TOKEN remains an alternative (not both).
+@current and @unpinned read current. Unwrapped URL forms containing :// are
+literal, including raw @; use the full canonical Scope URL to escape local
+@ shorthand. Colon-only forms such as plan:v1@TOKEN use local syntax.
+Bracketed operands require canonical HTTP(S) Scope URLs, not opaque URIs.
+Suffixes are rejected on the selected update and deletion targets; use
+--if-revision for write comparison. --version treats current and unpinned as exact tokens.
+Endpoint pins remain unavailable. This is not an ordered history listing.
+A current Issue's
 --json uses the ordinary detail array with Scope-relative Bead IDs and its
 graph revision token. Memory, Link, and exact --version reads use the
 experimental graph envelope; --format graph-json explicitly requests that
@@ -176,14 +186,17 @@ the second positional argument. For a single edge, --no-cycle-check only
 suppresses a post-add warning; the domain writer still validates cycles.
 bd dep blocker --blocks issue is the same operation with reversed arguments.
 Memory endpoints, remote routing and bulk dependency flags are unavailable
-in this preview.`},
+in this preview. Native dep operands retain literal Issue-ID semantics,
+including @; bd link parses the selected endpoint revision syntax, but exact
+pins and @current still refuse pending implementation.`},
 		{depRemoveCmd, `Use bd dep remove issue blocker (or bd dep rm) to
 remove one local blocking Dependency by its Issue pair. An absent pair is a
 successful no-op and reports status not_found with --json. A real removal
 records one native dependency_removed event and one source Issue version;
 the target Issue is unchanged. Bare native Issue IDs are accepted when their
 graph path is unambiguous; use explicit beads/PATH if a different Bead claims
-that bare name. For Link-ID removal use bd link delete ID --force.`},
+that bare name. These native pair operands retain literal Issue-ID semantics,
+including @. For Link-ID removal use bd link delete ID --force.`},
 		{linkCmd, `The canonical graph Link namespace is bd link
 create/list/show/update/delete/versions/compare/count. Create requires
 --type and SOURCE TARGET (or --source and --target); list and count query complete current
@@ -191,7 +204,10 @@ Link collections within the preview's advertised bounds. Delete previews
 by default and --force applies the checked mutation.
 
 Without --type, bd link SOURCE TARGET creates the ordinary
-blocking Dependency between two live Issues. To create any native Dependency
+blocking Dependency between two live Issues. In graph workspaces this form
+also parses the selected revision syntax; exact pins and @current still refuse
+pending implementation. bd dep add/remove keep literal Issue IDs, so the input
+syntaxes are not interchangeable. To create any native Dependency
 kind through the canonical namespace, use
   bd link create --type blocks --source ISSUE --target ISSUE
 Only built-in Dependency kinds are accepted. The resulting Link has a dep_type property.
@@ -202,7 +218,10 @@ Use bd types to see Link Types installed in this workspace. --type
 accepts a built-in Dependency kind, types/NAME or a full local Type URL. An optional --id
 selects a bare Link ID or links/PATH; --properties supplies informational Link properties.
 Memory-owned Links accept the current source by default, or use
---if-source-revision TOKEN to reject a stale source. --metadata JSON supplies
+--if-source-revision TOKEN to reject a stale source. Endpoint @unpinned suffixes
+or --source-revision unpinned/--target-revision unpinned keep endpoints floating.
+Exact endpoint revisions and current refuse before mutation; these selectors
+are separate from --if-source-revision. --metadata JSON supplies
 an initial open metadata object for informational Links; native Dependencies
 do not accept it. The single Type types/preview-dependency
 requires Issue endpoints. Add --if-source-revision TOKEN to reject a stale source.`},

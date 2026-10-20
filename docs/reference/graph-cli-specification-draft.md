@@ -14,6 +14,12 @@ not promise migration or that every target operation already runs.
 
 ## Target graph CLI contract
 
+The focused [revision-aware CLI speclet](/reference/bdp/cli/references) is the
+authority for the Preview 3 candidate's reference syntax and command boundary.
+It does not make endpoint persistence or re-pin available. The historical
+implementation ledger below retains its own exact source and evidence scope.
+
+
 This is the proposed complete graph-mode CLI contract, including commands
 that are not implemented yet. The [graph CLI guide](/reference/graph-cli)
 remains the task-oriented walkthrough. The implementation ledger below is a
