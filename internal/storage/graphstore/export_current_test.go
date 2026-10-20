@@ -986,3 +986,153 @@ func TestExportEndpointDistinctValidationBudget(t *testing.T) {
 		})
 	}
 }
+
+// Deliberate oversized-context corruption robustness. Current state and each
+// selected native edition fit separately; all acquired bytes share one budget.
+func TestExportEndpointNativeContextAggregateBound(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options, s := memoryDeleteStore(t, backend)
+			t.Logf("isolated fixture workspace=%s", options.Binding.WorkspaceID)
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/source", Title: "Source"}); err != nil {
+				t.Fatal(err)
+			}
+			old, err := s.CreateIssue(ctx, "beads/native", plainIssue("Old native"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			title := "Current native"
+			current, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/native", Title: &title, Actor: "test-author", ExpectedRevision: old.Revision})
+			if err != nil {
+				t.Fatal(err)
+			}
+			// The same exact native address occurs in both endpoint roles. Its
+			// context must be charged once, not once per Link or endpoint role.
+			for _, request := range []LinkCreateRequest{
+				{Path: "links/target", SourcePath: "beads/source", TargetPath: "beads/native", TargetPin: EndpointPin{Revision: old.Revision}},
+				{Path: "links/source", SourcePath: "beads/native", TargetPath: "beads/source", SourcePin: EndpointPin{Revision: old.Revision}},
+			} {
+				if _, err := s.AddInformationalLink(ctx, request); err != nil {
+					t.Fatal(err)
+				}
+			}
+			filler := plainIssue("Current filler")
+			filler.Issue.Description = strings.Repeat("f", 4<<20)
+			if _, err := s.CreateIssue(ctx, "beads/filler", filler); err != nil {
+				t.Fatal(err)
+			}
+			before := exportSourceState(t, ctx, s)
+			for _, contextBytes := range []int{6 << 20, 9 << 20} {
+				wantLimit := contextBytes == 9<<20
+				reachedPreflight := false
+				err := s.withTx(ctx, false, func(tx *sql.Tx) error {
+					raw, err := canonicalJSON(issueRevisionContext{Inception: strings.Repeat("c", contextBytes)})
+					if err != nil {
+						return err
+					}
+					if _, err := tx.ExecContext(ctx, "UPDATE graph_preview_issue_versions SET revision_context=? WHERE path=? AND version=?", raw, "beads/native", old.Revision); err != nil {
+						return err
+					}
+					// Exercise both real individual readers before the aggregate
+					// export. Neither may be the reason for the negative result.
+					snapshot, err := s.currentSnapshotInTx(ctx, tx)
+					if err != nil || len(snapshot.Records) != 5 {
+						return fmt.Errorf("current state must fit individually: records=%d err=%v", len(snapshot.Records), err)
+					}
+					retained, err := s.readIssueVersionInTx(ctx, tx, "beads/native", old.Revision, current.Issue.Revision, old.Properties.ID)
+					if err != nil || len(retained.Attribution.Inception) != contextBytes {
+						return fmt.Errorf("selected native edition must fit individually: context=%d err=%v", len(retained.Attribution.Inception), err)
+					}
+					s.afterWrite = func(stage string) error {
+						if stage == "export-preflight" {
+							reachedPreflight = true
+						}
+						return nil
+					}
+					defer func() { s.afterWrite = nil }()
+					got, err := s.exportCurrentSnapshotInTx(ctx, tx)
+					if wantLimit {
+						if !errors.Is(err, ErrLimitExceeded) || !reflect.DeepEqual(got, ExportCurrentState{}) || reachedPreflight {
+							return fmt.Errorf("aggregate native context must refuse before export-preflight: err=%v zero=%t reached=%t", err, reflect.DeepEqual(got, ExportCurrentState{}), reachedPreflight)
+						}
+					} else if err != nil || len(got.Snapshot.Records) != 5 || !reachedPreflight {
+						return fmt.Errorf("deduplicated native context must fit: err=%v records=%d reached=%t", err, len(got.Snapshot.Records), reachedPreflight)
+					}
+					t.Logf("native context=%d: individual current/retained fit; aggregate refusal=%t", contextBytes, wantLimit)
+					return nil
+				})
+				if err != nil {
+					t.Fatal(err)
+				}
+				if !reflect.DeepEqual(before, exportSourceState(t, ctx, s)) {
+					t.Fatal("export or rollback changed source state")
+				}
+			}
+		})
+	}
+}
+
+// Export validates a real native terminal D without acquiring its baseline.
+// Legacy deletion instead reads its native head, whose context is already in
+// the shared current budget and must not be charged a second time by export.
+func TestExportNativeDeletionContextProjection(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options, s := memoryDeleteStore(t, backend)
+			t.Logf("isolated fixture workspace=%s", options.Binding.WorkspaceID)
+			issue, err := s.CreateIssue(ctx, "beads/deleted-native", plainIssue("Deleted"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			deleted, err := s.DeleteIssue(ctx, IssueDeleteRequest{Path: "beads/deleted-native", ExpectedRevision: issue.Revision, Actor: "test-author"})
+			if err != nil || deleted.Terminal == nil {
+				t.Fatalf("create real native D: %v", err)
+			}
+			filler := plainIssue("Current filler")
+			filler.Issue.Description = strings.Repeat("f", 3<<20)
+			if _, err := s.CreateIssue(ctx, "beads/filler", filler); err != nil {
+				t.Fatal(err)
+			}
+			before := exportSourceState(t, ctx, s)
+			for _, legacy := range []bool{false, true} {
+				err := s.withTx(ctx, false, func(tx *sql.Tx) error {
+					if legacy {
+						// Controlled legacy-shape fixture; the real export path reads
+						// this valid context once, alongside ~6 MiB of current body.
+						if _, err := tx.ExecContext(ctx, "UPDATE graph_preview_catalog SET revision=? WHERE path=?", issue.Revision, "beads/deleted-native"); err != nil {
+							return err
+						}
+						if _, err := tx.ExecContext(ctx, "DELETE FROM graph_preview_versions WHERE path=? AND version=?", "beads/deleted-native", deleted.Terminal.Revision); err != nil {
+							return err
+						}
+						raw, err := canonicalJSON(issueRevisionContext{Inception: strings.Repeat("c", 6<<20)})
+						if err != nil {
+							return err
+						}
+						if _, err := tx.ExecContext(ctx, "UPDATE graph_preview_issue_versions SET revision_context=? WHERE path=? AND version=?", raw, "beads/deleted-native", issue.Revision); err != nil {
+							return err
+						}
+					} else {
+						// Deliberate unselected-history corruption. Neither its bytes
+						// nor JSON are acquired while validating the real terminal D.
+						if _, err := tx.ExecContext(ctx, "UPDATE graph_preview_issue_versions SET revision_context=REPEAT('x',?) WHERE path=? AND version=?", 18<<20, "beads/deleted-native", issue.Revision); err != nil {
+							return err
+						}
+					}
+					got, err := s.exportCurrentSnapshotInTx(ctx, tx)
+					if err != nil || len(got.Snapshot.Records) != 1 {
+						return fmt.Errorf("native deletion projection legacy=%t: records=%d err=%v", legacy, len(got.Snapshot.Records), err)
+					}
+					t.Logf("native deletion legacy=%t: unacquired baseline excluded / acquired context charged once", legacy)
+					return nil
+				})
+				if err != nil {
+					t.Fatal(err)
+				}
+				if !reflect.DeepEqual(before, exportSourceState(t, ctx, s)) {
+					t.Fatal("export or rollback changed native deletion source state")
+				}
+			}
+		})
+	}
+}

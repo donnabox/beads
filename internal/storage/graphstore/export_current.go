@@ -138,6 +138,8 @@ func exportReadSizeQueries() []currentReadSizeQuery {
 	// Collection mapping validation also decodes deleted Issues' final retained
 	// heads. They are not returned as live data, but must share this acquisition
 	// budget rather than passing separate per-resource history guards.
+	// Legacy native revision_context is already charged by the shared current
+	// projection. A real native terminal D does not hydrate its baseline here.
 	return append(parts, currentReadSizeQuery{
 		"graph_preview_issue_versions m JOIN graph_preview_catalog c ON c.path=m.path AND c.revision=m.version JOIN issue_versions v ON v.issue_id=m.issue_id AND v.revision=m.issue_revision WHERE c.allocation_state='deleted' AND c.backing='issue'",
 		"m.issue_id,m.owned,v.durable_state,v.change_actor,v.attribution_status,v.change_at", 1,
@@ -152,7 +154,7 @@ func exportPinnedEndpointSizeQueries() []currentReadSizeQuery {
  UNION SELECT target_path,target_revision FROM graph_preview_links WHERE target_revision<>'') p`
 	return []currentReadSizeQuery{
 		{selected + " JOIN graph_preview_versions v ON v.path=p.path AND v.version=p.revision", "v.snapshot,v.actor", 1},
-		{selected + " JOIN graph_preview_issue_versions m ON m.path=p.path AND m.version=p.revision JOIN issue_versions v ON v.issue_id=m.issue_id AND v.revision=m.issue_revision", "m.issue_id,m.owned,v.durable_state,v.change_actor,v.attribution_status,v.change_at", 1},
+		{selected + " JOIN graph_preview_issue_versions m ON m.path=p.path AND m.version=p.revision JOIN issue_versions v ON v.issue_id=m.issue_id AND v.revision=m.issue_revision", "m.issue_id,m.owned,m.revision_context,v.durable_state,v.change_actor,v.attribution_status,v.change_at", 1},
 	}
 }
 
