@@ -99,6 +99,47 @@ func graphListSorted(paths []string) []string {
 	return sorted
 }
 
+func TestGraphPreviewListNoParentWorkflow(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			const scope = "https://example.invalid/no-parent/"
+			work, home := graphListWorkspace(t, bd, engine, scope)
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", args...)
+			}
+			call("create", "Parent", "--id", "beads/parent", "--json")
+			call("create", "Child", "--parent", "beads/parent", "--json")
+			call("create", "Dotted without an edge", "--id", "beads/parent.9", "--json")
+			call("remember", "memory body", "--id", "beads/memory", "--title", "Memory", "--json")
+
+			var rows []struct {
+				ID string `json:"id"`
+			}
+			output := call("list", "--no-parent", "--json", "--sort=id")
+			if err := json.Unmarshal([]byte(output), &rows); err != nil {
+				t.Fatalf("decode no-parent Issue list: %v: %s", err, output)
+			}
+			ids := make([]string, 0, len(rows))
+			for _, row := range rows {
+				ids = append(ids, row.ID)
+			}
+			if !slices.Equal(ids, []string{"beads/parent", "beads/parent.9"}) {
+				t.Fatalf("no-parent must select only Issues without a parent edge, including an edge-less dotted ID: %v", ids)
+			}
+			paths, more := graphListBeads(t, bd, work, home, scope, "--no-parent", "--sort=id")
+			if !slices.Equal(paths, ids) || more {
+				t.Fatalf("structured no-parent Issue list = %v, more=%t; want %v", paths, more, ids)
+			}
+			human := call("list", "--no-parent", "--flat")
+			if !strings.Contains(human, `"`+scope+`beads/parent"`) || !strings.Contains(human, `"`+scope+`beads/parent.9"`) || strings.Contains(human, "Child") || strings.Contains(human, "beads/memory") {
+				t.Fatalf("no-parent human list: %s", human)
+			}
+		})
+	}
+}
+
 // Closed and pinned Issues are hidden from the Bead list unless --all, which
 // also lifts the default row limit; an explicit --limit still wins. The CLI
 // cannot author a pinned Issue, so the test seeds one between processes.
