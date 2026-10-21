@@ -131,7 +131,51 @@ func TestGraphPreviewListReadyWorkflow(t *testing.T) {
 				t.Fatalf("legacy ready Issue IDs: %+v", legacy)
 			}
 			graphPatchProcess(t, bd, work, home, nil, "invalid_selector", 90*time.Second, "list", "--ready", "--title", "Blocked", "--json")
-			graphPatchProcess(t, bd, work, home, nil, "capability_unavailable", 90*time.Second, "list", "--ready", "--parent", "beads/blocker", "--json")
+			if got := strings.TrimSpace(call("list", "--ready", "--parent", "beads/blocker", "--json")); got != "[]" {
+				t.Fatalf("ready parent without descendants = %q, want []", got)
+			}
+		})
+	}
+}
+
+func TestGraphPreviewListReadyParentWorkflow(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			const scope = "https://example.invalid/list-ready-parent/"
+			work, home := graphListWorkspace(t, bd, engine, scope)
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", args...)
+			}
+			for _, path := range []string{"beads/root", "beads/mid", "beads/grand", "beads/other"} {
+				call("create", path, "--id", path)
+			}
+			call("dep", "add", "beads/mid", "beads/root", "--type", "parent-child")
+			call("dep", "add", "beads/grand", "beads/mid", "--type", "parent-child")
+			call("close", "beads/mid", "--force")
+			paths, more := graphListBeads(t, bd, work, home, scope, "--ready", "--parent", "beads/root", "--sort=id")
+			if !slices.Equal(paths, []string{"beads/grand"}) || more {
+				t.Fatalf("ready transitive parent paths=%v more=%t", paths, more)
+			}
+			aliasPaths, aliasMore := graphListBeads(t, bd, work, home, scope, "--ready", "--filter-parent", "beads/root", "--sort=id")
+			if !slices.Equal(aliasPaths, paths) || aliasMore != more {
+				t.Fatalf("ready parent alias paths=%v more=%t", aliasPaths, aliasMore)
+			}
+			var legacy []types.IssueWithCounts
+			if err := json.Unmarshal([]byte(call("list", "--json", "--ready", "--parent", "beads/root")), &legacy); err != nil {
+				t.Fatal(err)
+			}
+			if len(legacy) != 1 || legacy[0].ID != "beads/grand" {
+				t.Fatalf("legacy ready parent rows: %+v", legacy)
+			}
+			text := call("list", "--ready", "--parent", "beads/root")
+			if !strings.Contains(text, "beads/grand") || strings.Contains(text, "beads/mid") || strings.Contains(text, "beads/other") {
+				t.Fatalf("human ready parent row = %q", text)
+			}
+			if explicit := call("list", "--ready", "--parent", "beads/root", "--tree=true"); explicit != text {
+				t.Fatalf("explicit tree flag must preserve shipping flat ready rows: %q versus %q", explicit, text)
+			}
 		})
 	}
 }

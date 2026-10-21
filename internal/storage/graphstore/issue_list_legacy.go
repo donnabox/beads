@@ -43,9 +43,6 @@ func (s *Store) listIssuesLegacy(ctx context.Context, request publicops.ListRequ
 		return LegacyIssueListPage{}, err
 	}
 	request.IncludeComments = includeComments
-	if request.ReadyFlag && parent != nil {
-		return LegacyIssueListPage{}, fmt.Errorf("%w: graph Issue list cannot combine --ready with --parent", ErrCapabilityUnavailable)
-	}
 	if request.ReadyFlag {
 		s.wakeExpiredDefersAdvisory(ctx)
 	}
@@ -55,10 +52,10 @@ func (s *Store) listIssuesLegacy(ctx context.Context, request publicops.ListRequ
 		if err != nil {
 			return err
 		}
-		if request.IDFilter != "" && len(page.Items) == 0 {
+		if (request.IDFilter != "" || parent != nil) && len(page.Items) == 0 {
 			// The checked query already validated the entire selected set.
-			// In particular, an unmatched --id set has no native keys for the
-			// counted query to project.
+			// In particular, an unmatched --id set or graph parent has no
+			// native keys for the counted query to project.
 			result = LegacyIssueListPage{Items: []*types.IssueWithCounts{}, HasMore: page.HasMore}
 			return nil
 		}
@@ -71,6 +68,15 @@ func (s *Store) listIssuesLegacy(ctx context.Context, request publicops.ListRequ
 			return err
 		}
 		filter.SkipCounts = false
+		if parent != nil && request.ReadyFlag {
+			parentNativeID, _, err := s.resolveIssueListParentInTx(ctx, tx, *parent)
+			if err != nil {
+				return err
+			}
+			if parentNativeID != "" {
+				filter.ParentID = &parentNativeID
+			}
+		}
 		if parent != nil || filter.Limit > PreviewSnapshotLimit {
 			filter.Limit = PreviewSnapshotLimit
 		}
@@ -83,7 +89,7 @@ func (s *Store) listIssuesLegacy(ctx context.Context, request publicops.ListRequ
 		if err != nil {
 			return err
 		}
-		if parent != nil {
+		if parent != nil && !request.ReadyFlag {
 			parentNativeID, parentPath, err := s.resolveIssueListParentInTx(ctx, tx, *parent)
 			if err != nil {
 				return err
