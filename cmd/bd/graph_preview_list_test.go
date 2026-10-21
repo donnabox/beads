@@ -17,7 +17,7 @@ import (
 func graphListTestCommand(t *testing.T, args []string) *cobra.Command {
 	t.Helper()
 	cmd := newListLimitCommand(t)
-	for _, name := range []string{"format", "state", "title", "title-contains", "priority", "priority-min", "priority-max", "sort", "due-before", "due-after"} {
+	for _, name := range []string{"format", "state", "id", "title", "title-contains", "priority", "priority-min", "priority-max", "sort", "due-before", "due-after"} {
 		cmd.Flags().String(name, "", "")
 	}
 	cmd.Flags().StringP("status", "s", "", "")
@@ -76,6 +76,7 @@ func TestGraphPreviewIssueListInput(t *testing.T) {
 		{"negative-limit", []string{"--flat", "--limit=-1"}, false, 2, false, 0},
 		{"bad-priority", []string{"--flat", "--priority=bad"}, false, 2, false, 0},
 		{"sort-id", []string{"--flat", "--sort=id"}, false, 0, false, 0},
+		{"id-set", []string{"--id=one", "--id=two,three", "--sort=id"}, false, 0, false, 0},
 		{"sort-assignee", []string{"--flat", "--sort=assignee"}, false, 0, false, 0},
 		{"sort-closed", []string{"--flat", "--sort=closed", "--all"}, false, 0, false, 0},
 		{"both-pin", []string{"--flat", "--pinned", "--no-pinned"}, false, 2, false, 0},
