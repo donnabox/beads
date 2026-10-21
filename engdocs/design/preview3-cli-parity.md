@@ -80,7 +80,7 @@ these answers; neither fix is present in the pinned integration commit.
 | `gate` | Explicit refusal. | Gate create/check/list/show/resolve/waiter/discovery are unavailable. |
 | `label` | Explicit refusal. | Label add/remove/list/propagate are unavailable, despite create-time labels and list filters. |
 | `link` | Positional native dependency creation works for built-in kinds; graph-only `bd link` CRUD exists. | Positional custom kinds and shipping partial-ID lookup refuse in the pinned build; familiar JSON differs. #151/#161/#174 and #193–#194 are unmerged subsets. Canonical Link list requires full Type URIs and refuses truncated pages without continuation; see its eight detailed subrows. |
-| `list` | Issue-only `--json` and bounded all-Bead listing work for admitted filters. | Several shipping selectors/presentations refuse: parent/no-parent/ready/ID, sort id, long, tree, `--format=json` at this commit. #156/#158/#166/#169–#172 and #182 (`--id`) are unmerged subsets. |
+| `list` | Issue-only `--json` and bounded all-Bead listing work for admitted filters. | Several shipping selectors/presentations refuse: parent/no-parent/ready/ID, sort id, long, tree, `--format=json` at this commit. #156/#158/#166/#169–#172, #182 (`--id`), #189–#190 (`--ready`), and #203 (`--ready --parent`) are unmerged subsets. |
 | `merge-slot` | Create/check/acquire/release work in tested flows. | Wrong-holder release refuses with misleading `graph_not_initialized` instead of a holder-mismatch category. |
 | `note` | Positional, file and stdin Issue-note append work. | Non-Issue notes and multi-ID note writes are unavailable. |
 | `priority` | P0–P4 Issue update works. | Invalid-value exit code differs from shipping. |
@@ -176,7 +176,12 @@ these answers; neither fix is present in the pinned integration commit.
   11 server-only skips. The installed CLI ready-list workflow passed both
   engines (three test/subtest passes, no skips). #189 passed four and #190 six
   current-head hosted checks; both remain unmerged with review pending.
-  `--ready --parent` and filters the ready
+  #190 still refuses `--ready --parent`; stacked
+  [#203](https://github.com/donnabox/beads/pull/203) admits the shipping
+  transitive parent selector in the same checked transaction and keeps its
+  ready output flat. Focused storage and installed CLI tests passed embedded
+  and real shared-server Dolt for legacy JSON, records, the alias, and human
+  output; its hosted checks and review are pending. Other filters the ready
   query cannot honor still refuse.
   A disposable checkout combining candidates through #190 and selected #175
   passed five installed create/update/list/ready workflows on embedded and
