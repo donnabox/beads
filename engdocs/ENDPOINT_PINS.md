@@ -5,8 +5,10 @@ identity independently of each optional exact endpoint revision. The CLI
 adapter accepts endpoint selectors at Link creation and explicit source/target
 revision flags at Link update. The internal current export reader preserves
 these References and validates selected retained availability in the same
-rollback-only transaction. Historical payloads are validation-only; current
-inventory is not portable retained-version closure. See
+rollback-only transaction. Direct selected exact endpoint values are returned
+as a separate detached internal inventory. References inside retained owned
+Links are not traversed; current inventory is not portable retained-version
+closure. See
 [export acquisition](design/graph-export-milestone.md) and the `ExportEndpoint`
 tests in [graphstore](../internal/storage/graphstore/export_current_test.go).
 It does not adopt a new public BDP contract or enable external endpoints.

@@ -168,7 +168,7 @@ current snapshot reader or supplies transactional comments/configuration.
 | Classic `kv.memory.*` configuration and wisp live planes | Not graph Memory/Issue inventory; initial reader refuses present rows by plane name. Inclusion requires a distinct approved acquisition contract. |
 | Live leases | Acquire faithfully as current observation; final format must preserve as non-restorable observation, explicitly omit, or refuse. Never clear source claims during export. |
 | Deleted/reserved allocations and tombstones | Current-only profile discloses omission/count; absence does not certify that a source-authority path is unallocated. Never claim source never-reuse state was preserved. |
-| Prior graph/Issue versions, journal, Dolt branches/history | Explicit current-only omission; a history/archive profile requires separate bounded acquisition. |
+| Prior graph/Issue versions, journal, Dolt branches/history | Direct exact versions selected by live top-level Link endpoints are retained separately in the internal inventory. Other versions, journals and branches remain omitted; no archive or recursive preservation closure is claimed. |
 | WriterToken/local ordinals | Internal consistency inputs, not public revision, cursor, Scope epoch or durable snapshot handle. |
 
 Storage JSON contains `version` and attribution actor/status/recordedAt. CLI
@@ -225,8 +225,9 @@ from the existing 256-byte row charge. Deleted Issue final retained heads also
 share that budget because mapping validation reads them. Original UTF-8 is
 validated before a future encoder can replace bytes. Current wisp payloads,
 relations, comments, labels and legacy KV Memories refuse by plane name.
-History, journals, counters and unrelated configuration remain outside the
-result. Source-preservation tests compare logical rows; engine filesystem
+Unselected history, journals, counters and unrelated configuration remain
+outside the result. Direct selected exact endpoint values are a separate
+internal inventory, as described below. Source-preservation tests compare logical rows; engine filesystem
 bookkeeping is not claimed unchanged.
 
 Pure tests and compile checks do not qualify an engine. Authored embedded/server
@@ -273,14 +274,56 @@ checks refuse removed native Issue editions before decoding. The aggregate
 export preflight charges each distinct historical endpoint address together
 with current records and comments. A source/target UNION selects only referenced
 addresses before joining retained payloads; repeated References decode and are
-charged once. Validation retains only the selected Type for ownership checks,
-not historical payloads. No new transaction
-or current-head fallback is used. Owned-source pins remain deferred and refuse.
+charged once. The acquisition retains the selected endpoint payloads in a
+separate detached inventory and keeps their selected Type for historical
+ownership checks. No new transaction or current-head fallback is used.
+Owned-source pins remain deferred and refuse, including when several Links
+share an already acquired source address.
 
-`Snapshot.Records` still contains live current records only. Exact historical
-payloads acquired for validation are not included in that result. URI membership
-establishes current identity coverage, not portable retained-version closure.
+`Snapshot.Records` still contains live current records only.
+`ExportCurrentState.PinnedEndpoints` separately contains distinct exact Bead
+endpoint versions selected by those current top-level Links. It is nonnil and
+empty on successful pin-free acquisition; every failed acquisition or cleanup
+returns the literal zero state. URI membership establishes current identity
+coverage, not portable retained-version closure. References inside retained
+owned Links are not traversed by this slice.
 This internal reader therefore does not establish roundtrippable public export,
 a wire format, CLI support or new-format import. Detached byte publication is
 unchanged. Earlier qualification applies only to its recorded source; fresh
 adapter evidence must identify the combined source and engines separately.
+
+
+## Retained endpoint inventory boundary
+
+This internal follow-on uses the existing `ReadVersion` projection as its value
+oracle, not raw database rows. Native Issue dependencies are omitted and
+metadata is exposed in the common record position by that existing reader;
+retained owned bytes and native revision context remain those of the selected
+version. Current comments are not added to a retained Issue version.
+
+Each exact endpoint is hydrated independently, including a pin at the current
+revision. A current native Issue can carry live lease/heartbeat observations
+that changed without minting another retained revision, while its exact reader
+returns the retained observations. Thus equal `(ID, Revision)` across
+`Snapshot.Records` and `PinnedEndpoints` does not prove equal full values.
+These inventories must not be concatenated into a supposedly unique current
+snapshot or normalized to one another. This preserves two existing internal
+read views; it does not select a public live-observation export policy.
+
+Distinct selections deduplicate across both endpoint roles. Ordering uses the
+shared code-unit comparator on canonical URI and then opaque revision. Floating
+endpoints add no retained value; separate exact revisions remain separate.
+Returned nested properties, metadata, owned bytes and attribution are detached
+from current records and subsequent acquisitions.
+
+The persisted-byte preflight and native-context charge remain aggregate.
+Retaining all selected payloads increases simultaneous result retention even
+though the same payloads were already read for validation; the 16 MiB
+persisted-byte guard is not a Go heap bound. Selection is bounded by the
+existing live-Link inventory. No all-history scan is introduced.
+
+The follow-on starts from Janet's explicitly selected PR141 assembly
+`e8c3b9516c60c5191d34408e8861917522bc7e35`. Its runtime/review evidence must
+identify its own changed source and dependencies; earlier validation-only
+reader proof remains historical. Public serialization, CLI output, recursive
+closure, import and round-trip qualification remain separate work.
