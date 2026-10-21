@@ -12,6 +12,7 @@ import (
 
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/types"
+	publicops "github.com/steveyegge/beads/issueops"
 )
 
 func issueEditString(value string) *string { return &value }
@@ -107,6 +108,49 @@ func TestIssueUpdateTypeInCheckedTransaction(t *testing.T) {
 				t.Fatalf("unknown type should refuse: %v", err)
 			}
 			assertIssueEditCounts(t, ctx, s, original.Properties.ID, 2)
+		})
+	}
+}
+
+func TestIssueUpdateLabelsInCheckedTransaction(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer s.Close()
+			original, err := s.CreateIssue(ctx, "beads/work", plainIssue("Work"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			add := UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: original.Revision, Labels: publicops.LabelPatch{Add: []string{"one", "two", "one"}}}
+			added, err := s.UpdateIssue(ctx, add)
+			if err != nil || !added.Changed || !reflect.DeepEqual(added.Issue.Properties.Labels, []string{"demo", "graph", "one", "two"}) {
+				t.Fatalf("add labels: labels=%q result=%+v err=%v", added.Issue.Properties.Labels, added, err)
+			}
+			assertIssueEditVersion(t, ctx, s, "beads/work", original)
+			if _, err := s.UpdateIssue(ctx, add); !errors.Is(err, ErrConflict) {
+				t.Fatalf("stale add: %v", err)
+			}
+			add.ExpectedRevision = added.Issue.Revision
+			noop, err := s.UpdateIssue(ctx, add)
+			if err != nil || noop.Changed || noop.Issue.Revision != added.Issue.Revision {
+				t.Fatalf("repeat add: %+v %v", noop, err)
+			}
+			edit := UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: added.Issue.Revision, Labels: publicops.LabelPatch{
+				Replace: publicops.Field[[]string]{Set: true, Value: []string{"two", "three"}}, Add: []string{"four"}, Remove: []string{"two"},
+			}}
+			replaced, err := s.UpdateIssue(ctx, edit)
+			if err != nil || !replaced.Changed || !reflect.DeepEqual(replaced.Issue.Properties.Labels, []string{"four", "three"}) {
+				t.Fatalf("replace/add/remove labels: labels=%q result=%+v err=%v", replaced.Issue.Properties.Labels, replaced, err)
+			}
+			cleared, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: replaced.Issue.Revision, Labels: publicops.LabelPatch{Replace: publicops.Field[[]string]{Set: true}}})
+			if err != nil || !cleared.Changed || len(cleared.Issue.Properties.Labels) != 0 {
+				t.Fatalf("clear labels: %+v %v", cleared, err)
+			}
+			assertIssueEditCounts(t, ctx, s, original.Properties.ID, 4)
 		})
 	}
 }

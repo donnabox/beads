@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"maps"
 	"time"
 	"unicode/utf8"
 
@@ -31,6 +32,8 @@ import (
 // graph revision, including owned blocking Dependencies, not the storage ordinal.
 // Assignee nil preserves its value; empty clears it. Neither the graph guard nor
 // Unconditional bypasses the ordinary active-assignment transfer fence.
+// Labels uses the native Issue writer's ordered replace, add, then remove
+// semantics in the same checked transaction as the other Issue edits.
 type UpdateIssueRequest struct {
 	Path, Actor, ExpectedRevision                             string
 	FromRevision                                              string
@@ -50,6 +53,7 @@ type UpdateIssueRequest struct {
 	Notes, AppendNotes                                        *string
 	ExternalRef, SpecID                                       *string
 	DueAt                                                     publicops.Field[*time.Time]
+	Labels                                                    publicops.LabelPatch
 	Metadata                                                  publicops.MetadataPatch
 	ForceClosePolicy                                          bool
 }
@@ -168,6 +172,10 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 			return IssueMutationResult{}, err
 		}
 		patch.DueAt = publicops.Field[*time.Time]{Set: true, Value: value}
+		count++
+	}
+	if request.Labels.Replace.Set || len(request.Labels.Add) > 0 || len(request.Labels.Remove) > 0 {
+		patch.Labels = request.Labels
 		count++
 	}
 	scalarCount := count
@@ -323,7 +331,7 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		if _, err := commonMetadata(resolvedMetadata); err != nil {
 			return err
 		}
-		if len(updates) == 0 && !metadataChanged {
+		if len(updates) == 0 && !metadataChanged && !issueLabelsPatchChanges(before.Properties.Labels, patch.Labels) {
 			result = IssueMutationResult{Issue: before}
 			return nil
 		}
@@ -394,4 +402,35 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		return IssueMutationResult{}, err
 	}
 	return result, nil
+}
+
+// issueLabelsPatchChanges mirrors the native writer's set-level no-op check.
+// Planning must include label-only writes before touching graph coordination;
+// the native writer remains responsible for validation and persistence.
+func issueLabelsPatchChanges(existing []string, patch publicops.LabelPatch) bool {
+	if !patch.Replace.Set && len(patch.Add) == 0 && len(patch.Remove) == 0 {
+		return false
+	}
+	before := make(map[string]struct{}, len(existing))
+	for _, label := range existing {
+		before[label] = struct{}{}
+	}
+	target := make(map[string]struct{}, len(before)+len(patch.Add))
+	if !patch.Replace.Set {
+		maps.Copy(target, before)
+	}
+	for _, label := range patch.Replace.Value {
+		if label != "" {
+			target[label] = struct{}{}
+		}
+	}
+	for _, label := range patch.Add {
+		if label != "" {
+			target[label] = struct{}{}
+		}
+	}
+	for _, label := range patch.Remove {
+		delete(target, label)
+	}
+	return !maps.Equal(before, target)
 }
