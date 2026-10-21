@@ -59,9 +59,9 @@ the incident-Link listing form.
 Other misleading answers found during flag qualification: `bd dep tree ID
 --max-depth 1` reports “has no dependencies” for a root with a direct blocking
 edge, and `bd status --graph --json` advertises pair unlink as unavailable
-although `bd dep remove` works. The latter has a pending correction in
-[#178](https://github.com/donnabox/beads/pull/178); neither fix is present in
-the pinned integration commit.
+although `bd dep remove` works. Pending [#179](https://github.com/donnabox/beads/pull/179)
+and [#178](https://github.com/donnabox/beads/pull/178) respectively correct
+these answers; neither fix is present in the pinned integration commit.
 
 ## Working With Issues: command-by-command release-note draft
 
@@ -113,7 +113,7 @@ the pinned integration commit.
 
 | Command | Current link-mode status at `b6d0493ba` | What users cannot rely on yet |
 | --- | --- | --- |
-| `dep` | Single local add/remove and blocking views work. | Default list silently omits nonblocking kinds (P1); tree/graph are blocking-only; depth-1 tree falsely says there are no dependencies (P2); list/tree/cycles JSON, file bulk add, relate/unrelate and other forms refuse. #165 fixes the default human list only and is unmerged. |
+| `dep` | Single local add/remove and blocking views work. | Default list silently omits nonblocking kinds (P1); tree/graph are blocking-only; depth-1 tree falsely says there are no dependencies (P2); list/tree/cycles JSON, file bulk add, relate/unrelate and other forms refuse. #165 fixes the default human list and #179 fixes the depth-1 answer; both are unmerged. |
 | `duplicate` | Explicit refusal. | Atomic duplicate edge and close is unavailable. |
 | `duplicates` | Explicit refusal. | Exact-content grouping and optional merge are unavailable. |
 | `epic` | Status, close-eligible dry run and actual close work in tested flows. | Multiple-epic partial failures were not live-probed. |
