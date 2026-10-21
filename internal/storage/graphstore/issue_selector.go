@@ -148,6 +148,36 @@ func (s *Store) resolvePositionalIssueInTx(ctx context.Context, tx *sql.Tx, path
 	if !validPartialIssueHash(search) {
 		return "", IssueRecord{}, ErrNotFound
 	}
+	type match struct{ path, id string }
+	var normalizedExact []match
+	seenPrefix := map[string]bool{}
+	for _, candidatePrefix := range known {
+		if candidatePrefix == "" || seenPrefix[candidatePrefix] {
+			continue
+		}
+		seenPrefix[candidatePrefix] = true
+		candidateID := candidatePrefix + "-" + search
+		var candidatePath string
+		err := tx.QueryRowContext(ctx, `SELECT path FROM graph_preview_catalog WHERE backing='issue' AND allocation_state='live' AND backing_key=?`, candidateID).Scan(&candidatePath)
+		if errors.Is(err, sql.ErrNoRows) {
+			continue
+		}
+		if err != nil {
+			return "", IssueRecord{}, err
+		}
+		normalizedExact = append(normalizedExact, match{candidatePath, candidateID})
+	}
+	if len(normalizedExact) > 0 {
+		if len(normalizedExact) > 1 {
+			return "", IssueRecord{}, fmt.Errorf("%w: Issue hash %q has multiple exact prefix matches; use a full ID", storage.ErrValidation, nativeID)
+		}
+		candidate := normalizedExact[0]
+		if (selectedErr == nil && selected != candidate.path) || errors.Is(selectedErr, errNonIssueSelector) {
+			return "", IssueRecord{}, fmt.Errorf("%w: bare Issue ID %q matches both a graph path and a different native Issue; use an explicit beads/PATH", storage.ErrValidation, nativeID)
+		}
+		resolved, err := s.requireIssueInTx(ctx, tx, candidate.path)
+		return candidate.path, resolved, err
+	}
 	// SQL narrows the candidate set; Go applies the same leading-hash rule as
 	// v1.3.1. The limit is a refusal bound, never a truncated answer.
 	queryPart := search
@@ -158,7 +188,6 @@ func (s *Store) resolvePositionalIssueInTx(ctx context.Context, tx *sql.Tx, path
 	if err != nil {
 		return "", IssueRecord{}, err
 	}
-	type match struct{ path, id string }
 	var exact, partial []match
 	seen := 0
 	for rows.Next() {
