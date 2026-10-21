@@ -8,6 +8,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/types"
 )
 
@@ -72,6 +73,13 @@ func TestCreateIssueWithDependenciesMapsBothDirectionsAtomically(t *testing.T) {
 			store.afterWrite = nil
 			if !errors.Is(err, fault) || !reflect.DeepEqual(before, workflowState(t, ctx, store)) {
 				t.Fatalf("failed graph Link mapping left native create state: %v", err)
+			}
+			_, err = store.CreateIssueWithDependencies(ctx, "beads/cycle", plainIssue("Cycle"), []IssueCreateDependency{
+				{Target: IssueSelector{Path: "beads/prereq"}, Type: types.DepBlocks},
+				{Target: IssueSelector{Path: "beads/prereq"}, Type: types.DepBlocks, Reverse: true},
+			})
+			if !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(before, workflowState(t, ctx, store)) {
+				t.Fatalf("cycle refusal left native or graph create state: %v", err)
 			}
 		})
 	}

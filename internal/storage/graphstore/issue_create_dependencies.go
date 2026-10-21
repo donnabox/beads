@@ -3,6 +3,7 @@ package graphstore
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"unicode/utf8"
 
@@ -102,6 +103,9 @@ func (s *Store) mapIssueCreateDependenciesInTx(ctx context.Context, tx *sql.Tx, 
 	}
 	if len(reverseEdges) != 0 {
 		if _, _, err := issueops.ExecuteAddDependencies(ctx, tx, publicops.AddDependenciesRequest{Actor: actor, Edges: reverseEdges}); err != nil {
+			if errors.Is(err, publicops.ErrDependencyCycle) {
+				return fmt.Errorf("%w: %w", storage.ErrValidation, err)
+			}
 			return fmt.Errorf("reverse native create Dependencies: %w", err)
 		}
 	}
