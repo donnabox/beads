@@ -1,7 +1,7 @@
 # Graph-mode shipping CLI compatibility audit
 
 Status: working audit, October 21, 2026. Compare the shipping `v1.3.1` tag
-(`c1c4b642a`) with Preview 3 integration `dd6b9359b`. Recheck the baseline
+(`c1c4b642a`) with Preview 3 integration `b6d0493ba`. Recheck the baseline
 when the shipping release changes. This document records observed behavior;
 the graph CLI specification remains the contract for intentional differences.
 
@@ -53,17 +53,17 @@ Their tests qualify their stated slices, not the whole gate:
 
 | PR | Implemented slice | Current evidence |
 | --- | --- | --- |
-| [#150](https://github.com/donnabox/beads/pull/150) | `blocked --parent`; also records this working audit. | Implementation head `34c28e9d9`: 121 hosted checks passed, eight intentional skips; complete Graph C0 on real engines and macOS retry passed. This audit-only successor awaits its own checks; no review decision. |
+| [#150](https://github.com/donnabox/beads/pull/150) | `blocked --parent`; also records this working audit. | Implementation head `34c28e9d9` and audit-only heads through `a265b40ee`: each passed 121 hosted checks, eight intentional skips; complete Graph C0 on real engines and macOS race coverage passed. Review remains undecided. The PR reports checks for its latest head. |
 | [#151](https://github.com/donnabox/beads/pull/151) | Familiar Issue `show`, including multi-ID, `--current`, refs, children and watch; shipping positional Link feedback. | Six checks passed; selected installed workflows passed embedded and shared-server Dolt. |
 | [#152](https://github.com/donnabox/beads/pull/152) | Issue create/update description file and stdin sources. | Seven checks passed, two skipped; the new workflow passed both engines. |
 | [#156](https://github.com/donnabox/beads/pull/156) | `list --format=json` and `--tree=false` aliases. | Four checks passed; focused installed workflows passed both engines. |
 | [#158](https://github.com/donnabox/beads/pull/158) | Issue list sort by visible ID, assignee or closed time; detailed `--long` output. | Installed workflow passed both engines at `089b595ac`; six current-head checks passed. Stacked on #156. |
-| [#159](https://github.com/donnabox/beads/pull/159) | Shipping Issue `create --silent` ID output with `--json` precedence. | Shipping v1.3.1 behavior verified; installed create workflows passed both engines; six current-head checks passed. Stacked on #141. |
-| [#160](https://github.com/donnabox/beads/pull/160) | Read-only `ready --parent` with checked Issue selector resolution. | Installed ready/claim workflows passed both engines; six current-head checks passed. `--claim --parent` still refuses pending atomic selector resolution. Stacked on #141. |
+| [#159](https://github.com/donnabox/beads/pull/159) | Shipping Issue `create --silent` ID output with `--json` precedence. | Shipping v1.3.1 behavior verified; installed create workflows passed both engines; six current-head checks passed. Targets Preview 3 integration. |
+| [#160](https://github.com/donnabox/beads/pull/160) | Read-only `ready --parent` with checked Issue selector resolution. | Installed ready/claim workflows passed both engines; six current-head checks passed. `--claim --parent` still refuses pending atomic selector resolution. Targets Preview 3 integration. |
 | [#161](https://github.com/donnabox/beads/pull/161) | Shipping custom native Dependency kinds in positional `bd link`, including literal `depends-on`/`blocked-by`. | Installed positional Link and neighboring workflows passed both engines; six current-head checks passed. Stacked on #151. |
 | [#163](https://github.com/donnabox/beads/pull/163) | Shipping single-ID `delete --dry-run` preview. | Installed workflow passed embedded and shared-server Dolt; six current-head checks passed. Multi-ID and cascade behavior remain open. Stacked on #151. |
-| [#164](https://github.com/donnabox/beads/pull/164) | Forced assignee replacement on Issue update. | Embedded/shared-server installed workflow and explicit `--force=false` append-notes regression passed; six current-head checks passed. Stacked on #141. |
-| [#165](https://github.com/donnabox/beads/pull/165) | All native Dependency kinds in human `dep list`. | Embedded/shared-server workflows and filter-before-incident-cap regression passed; six current-head checks passed. Shipping JSON shapes remain refused. Stacked on #141. |
+| [#164](https://github.com/donnabox/beads/pull/164) | Forced assignee replacement on Issue update. | Embedded/shared-server installed workflow and explicit `--force=false` append-notes regression passed; six current-head checks passed. Targets Preview 3 integration. |
+| [#165](https://github.com/donnabox/beads/pull/165) | All native Dependency kinds in human `dep list`. | Embedded/shared-server workflows and filter-before-incident-cap regression passed; six current-head checks passed. Shipping JSON shapes remain refused. Targets Preview 3 integration. |
 | [#166](https://github.com/donnabox/beads/pull/166) | `list --no-parent` selection, including exact human-row regression. | Embedded/shared-server installed workflow passed; six current-head checks passed. Stacked on #158. |
 | [#169](https://github.com/donnabox/beads/pull/169) | Checked `list --parent` storage selection for parent-child edges and edge-less dotted graph IDs, plus the counted legacy projection. | Targeted storage tests and installed CLI workflow passed embedded and real shared-server Dolt; four current-head checks passed. Stacked on #166. |
 | [#170](https://github.com/donnabox/beads/pull/170) | `list --parent`/`--filter-parent` for flat, `--tree=false`, JSON, long, and records output; explicitly refuses the unfinished default recursive tree. | Broad graph list tests, both-engine installed workflow, generated CLI docs, Markdown links, and six current-head checks passed. Stacked on #169. |
