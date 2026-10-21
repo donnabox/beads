@@ -746,7 +746,7 @@ class Qualification:
             self.tests("./internal/httpapi/bdpwire", "^Test", (self.root / "internal/httpapi/bdpwire").glob("*_test.go"), "bdpwire")
             self.tests("./internal/httpapi/graphread", "^Test", (self.root / "internal/httpapi/graphread").glob("*_test.go"), "graphread",
                        ("TestAuthoritativeRecordsProjectToPublicWire/embedded", "TestAuthoritativeRecordsProjectToPublicWire/server"))
-            self.tests("./internal/httpapi", "^TestGraphRead", (self.root / "internal/httpapi").glob("graph_read*test.go"), "graph-http",
+            self.tests("./internal/httpapi", "^TestGraphRead", (self.root / "internal/httpapi").glob("*_test.go"), "graph-http",
                        ("TestGraphReadHTTPAuthorityAndSecurity/issue-priority-assignment",
                         "TestGraphReadHTTPAuthorityAndSecurity/issue-append-notes",))
             self.run([sys.executable, "-m", "unittest", "discover", "-s", "examples/bdp-read", "-p", "test_*.py"], "python-example-tests")
