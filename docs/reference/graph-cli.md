@@ -470,7 +470,7 @@ The remaining ordinary ready modes and blocked `--parent` remain in
 the [draft CLI specification](/reference/graph-cli-specification-draft)
 and refuse in this graph slice until their supporting graph behavior is ready.
 
-## Edit Issue notes
+## Change Issue status
 
 `bd update ID --status STATUS` changes a native Issue's lifecycle status. It
 accepts built-in statuses and configured custom statuses, and preserves the
@@ -485,6 +485,8 @@ session.
 bd update work --status in_progress --if-revision REVISION_FROM_SHOW
 bd update work --status closed --force --session review-session
 ```
+
+## Edit Issue notes
 
 An Issue's notes can carry progress across sessions. `--append-notes` adds a
 line without discarding earlier notes. `--notes` sets a nonempty value; if it
