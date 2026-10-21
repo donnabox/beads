@@ -177,6 +177,14 @@ func TestGraphPreviewListNoParentWorkflow(t *testing.T) {
 			if !strings.Contains(long, "Child") || !strings.Contains(long, "Dotted without an edge") || strings.Contains(long, "Grandchild") {
 				t.Fatalf("parent long list: %s", long)
 			}
+			tree := call("list", "--parent", "beads/parent", "--limit=1")
+			if !strings.Contains(tree, "Parent") || !strings.Contains(tree, "Child") || !strings.Contains(tree, "Grandchild") || !strings.Contains(tree, "Dotted without an edge") || strings.Contains(tree, "Memory") || strings.Index(tree, "Child") > strings.Index(tree, "Grandchild") || !strings.Contains(tree, "Total: 4 issues") {
+				t.Fatalf("unpaged parent tree lost the hierarchy: %s", tree)
+			}
+			if explicit := call("list", "--parent", "beads/parent", "--tree=true", "--limit=1"); explicit != tree {
+				t.Fatalf("explicit parent tree differs from default:\n%s\n%s", explicit, tree)
+			}
+			graphListRefusal(t, bd, work, home, []string{"BEADS_MAX_ROWS=2"}, "list", "--parent", "beads/parent")
 			call("create", "Edge-less orphan", "--id", "beads/orphan.3", "--json")
 			paths, more = graphListBeads(t, bd, work, home, scope, "--parent", "orphan")
 			if !slices.Equal(paths, []string{"beads/orphan.3"}) || more {
