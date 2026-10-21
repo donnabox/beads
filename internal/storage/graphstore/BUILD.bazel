@@ -85,8 +85,8 @@ go_library(
 go_test(
     name = "graphstore_test",
     size = "large",
-    # Full embedded shards can exceed Bazel's 15-minute "long" limit
-    # under CI contention; the required gate still runs every shard.
+    # Each native shard retains the existing package alarm; finer partitions
+    # bound cumulative embedded initialization without extending that alarm.
     timeout = "eternal",
     srcs = [
         "backend_transaction_policy_test.go",
@@ -161,12 +161,10 @@ go_test(
         "workflow_test.go",
     ],
     embed = [":graphstore"],
-    # Each root keeps its embedded database lifecycle. Native rules_go shards
-    # bound cumulative initialization cost without dropping any test. Eight
-    # shards exhausted the unchanged 19-minute process alarm under CI race
-    # contention; sixteen retain that deadline and halve the assigned roots.
-    # The required equivalence gate still checks the complete package census.
-    shard_count = 16,
+    # Eight shards exhausted the 19-minute alarm for combined Preview3.
+    # Thirty-two native partitions bound that cumulative initialization;
+    # the required equivalence/cleanup gates still cover the complete census.
+    shard_count = 32,
     deps = [
         "//graphops",
         "//internal/config",
