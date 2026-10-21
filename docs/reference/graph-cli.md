@@ -501,9 +501,15 @@ bd note work 'Checklist complete.'
 bd assign work alice
 ```
 
+`bd update work --assignee PERSON --force` uses the same live-claim transfer
+rule as `bd assign work PERSON --force`. It can combine the transfer with a
+notes replacement in one guarded update. An explicit `--force=false` leaves
+the transfer fence in place.
+
 An Issue edit accepts the current state by default. A stale `--if-revision`
-refuses even with `--force`; force only authorizes the notes overwrite. An
-identical value or a clear of already-empty notes leaves the revision alone.
+refuses even with `--force`; force authorizes only the requested notes
+overwrite or assignee transfer. An identical value or a clear of already-empty
+notes leaves the revision alone.
 Use `bd versions work` and `bd show work --version TOKEN` to inspect prior
 snapshots after an accepted change.
 
