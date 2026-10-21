@@ -235,6 +235,28 @@ func TestGraphPreviewIssueAssigneePresence(t *testing.T) {
 	if err != nil || request.Assignee != nil {
 		t.Fatalf("omission became assignment: %+v %v", request, err)
 	}
+	for _, tc := range []struct {
+		args          []string
+		forceAssignee bool
+		forceNotes    bool
+	}{
+		{[]string{"--assignee=bob", "--force"}, true, false},
+		{[]string{"--assignee=bob", "--force=false"}, false, false},
+		{[]string{"--assignee=bob", "--notes=Revised", "--force"}, true, true},
+	} {
+		request, err := graphPreviewIssueEditRequest(issueTextCommand(t, tc.args...), "beads/work")
+		if err != nil || request.ForceAssigneeTransfer != tc.forceAssignee || request.ForceNotesOverwrite != tc.forceNotes {
+			t.Fatalf("force intent %v: %+v %v", tc.args, request, err)
+		}
+	}
+	cmd := issueTextCommand(t, `--properties={"assignee":"bob"}`, "--force")
+	request, err = graphPreviewIssueEditRequest(cmd, "beads/work")
+	if err == nil {
+		err = graphPreviewIssuePropertyMerge(cmd, &request)
+	}
+	if err != nil || request.Assignee == nil || *request.Assignee != "bob" || !request.ForceAssigneeTransfer || request.ForceNotesOverwrite {
+		t.Fatalf("property assignee force intent: %+v %v", request, err)
+	}
 }
 
 func TestGraphPreviewIssueAssigneeRefusals(t *testing.T) {
@@ -248,7 +270,6 @@ func TestGraphPreviewIssueAssigneeRefusals(t *testing.T) {
 		{"empty-guard", []string{"--assignee=alice", "--if-revision="}, 2},
 		{"claim", []string{"--assignee=alice", "--claim"}, 5},
 		{"false-claim", []string{"--assignee=alice", "--claim=false"}, 5},
-		{"force-without-notes", []string{"--assignee=alice", "--force"}, 2},
 		{"assignee-precondition", []string{"--assignee=alice", "--if-assignee="}, 5},
 		{"status-precondition", []string{"--assignee=alice", "--if-status=open"}, 5},
 		{"status", []string{"--assignee=alice", "--status=in_progress"}, 5},

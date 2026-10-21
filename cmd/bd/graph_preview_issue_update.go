@@ -56,10 +56,11 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 	if cmd.Flags().Changed("clear-notes") && !clearNotesRequested(cmd) {
 		return request, graphFailure("invalid_properties", "--clear-notes=false does not request an edit", 2)
 	}
-	if cmd.Flags().Changed("force") && !cmd.Flags().Changed("notes") && !cmd.Flags().Changed("properties") {
-		return request, graphFailure("invalid_properties", "graph Issue update accepts --force only with a notes edit", 2)
+	force, _ := cmd.Flags().GetBool("force")
+	if force && !cmd.Flags().Changed("notes") && !cmd.Flags().Changed("properties") && !cmd.Flags().Changed("assignee") {
+		return request, graphFailure("invalid_properties", "graph Issue update accepts --force only with notes replacement or an assignee edit", 2)
 	}
-	request.ForceNotesOverwrite, _ = cmd.Flags().GetBool("force")
+	request.ForceNotesOverwrite = force && cmd.Flags().Changed("notes")
 	if clearNotesRequested(cmd) {
 		cleared := ""
 		request.Notes = &cleared
@@ -101,6 +102,7 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 		// Preserve the existing update's literal value. A graph revision guard
 		// does not grant permission to take another actor's active assignment.
 		request.Assignee = &value
+		request.ForceAssigneeTransfer = force
 	}
 
 	fields := []struct {
@@ -259,8 +261,13 @@ func graphPreviewApplyIssueProperties(cmd *cobra.Command, request *graphstore.Up
 			return graphFailure("invalid_properties", "Issue property "+name+" is not writable through update", 2)
 		}
 	}
-	if cmd.Flags().Changed("force") && !cmd.Flags().Changed("notes") && request.Notes == nil && request.FromRevision == "" {
-		return graphFailure("invalid_properties", "graph Issue update accepts --force only with a notes edit", 2)
+	force, _ := cmd.Flags().GetBool("force")
+	if request.FromRevision == "" {
+		request.ForceNotesOverwrite = force && request.Notes != nil
+		request.ForceAssigneeTransfer = force && request.Assignee != nil
+		if force && !request.ForceNotesOverwrite && !request.ForceAssigneeTransfer {
+			return graphFailure("invalid_properties", "graph Issue update accepts --force only with notes replacement or an assignee edit", 2)
+		}
 	}
 	return nil
 }

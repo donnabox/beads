@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/steveyegge/beads/internal/storage/graphstore"
@@ -169,6 +170,66 @@ func TestGraphPreviewIssueAssignmentWorkflow(t *testing.T) {
 			}
 			exact(closed)
 			exact(afterClose.Issue)
+		})
+	}
+}
+
+func TestGraphPreviewUpdateForceAssigneeTwoEngines(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := t.TempDir(), t.TempDir()
+			const scope = "https://example.invalid/update-force-assignee/"
+			args := []string{"init", "--graph-mode", "link", "--prefix", "transfer", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive"}
+			if engine == "server" {
+				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
+				if port == "" {
+					t.Skip("set BEADS_GRAPH_TEST_SERVER_PORT for shared-server update qualification")
+				}
+				args = append(args, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
+			}
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+			}
+			refuse := func(code string, args ...string) {
+				t.Helper()
+				graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
+			}
+			call(args...)
+			call("create", "Claimed work", "--id", "beads/work", "--notes", "Original")
+			claimed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "work", "--claim", "--actor", "holder"))
+			refuse("constraint_violation", "update", "work", "--assignee", "successor", "--actor", "successor")
+			refuse("constraint_violation", "update", "work", "--assignee", "successor", "--force=false", "--actor", "successor")
+			unforced := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "work", "--title", "Still claimed", "--force=false", "--if-revision", claimed.Issue.Revision, "--actor", "holder"))
+			if !unforced.Changed || unforced.Issue.Properties.Title != "Still claimed" || unforced.Issue.Properties.Assignee != "holder" {
+				t.Fatalf("--force=false changed update semantics: %+v", unforced)
+			}
+			refuse("revision_conflict", "update", "work", "--assignee", "successor", "--force", "--if-revision", claimed.Issue.Revision, "--actor", "successor")
+			if current := graphMixedResult[graphstore.IssueRecord](t, call("show", "work", "--format", "graph-json")); !reflect.DeepEqual(current, unforced.Issue) {
+				t.Fatal("stale forced transfer changed the Issue")
+			}
+			transferred := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "work", "--assignee", "successor", "--notes", "Revised", "--force", "--if-revision", unforced.Issue.Revision, "--actor", "successor"))
+			if !transferred.Changed || transferred.Issue.Properties.Assignee != "successor" || transferred.Issue.Properties.Notes != "Revised" || transferred.Issue.Properties.Status != unforced.Issue.Properties.Status || transferred.Issue.Revision == unforced.Issue.Revision {
+				t.Fatalf("forced transfer and notes were not one guarded edit: %+v", transferred)
+			}
+			appended := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "work", "--append-notes", "Progress", "--force=false", "--if-revision", transferred.Issue.Revision, "--actor", "successor"))
+			if !appended.Changed || appended.Issue.Properties.Assignee != "successor" || appended.Issue.Properties.Notes == "Revised" || !strings.HasSuffix(appended.Issue.Properties.Notes, "Progress") || appended.Issue.Revision == transferred.Issue.Revision {
+				t.Fatalf("false force changed append semantics: %+v", appended)
+			}
+			refuse("invalid_properties", "update", "work", "--append-notes", "Must refuse", "--force")
+			if current := graphMixedResult[graphstore.IssueRecord](t, call("show", "work", "--format", "graph-json")); !reflect.DeepEqual(current, appended.Issue) {
+				t.Fatal("refused forced append changed the Issue")
+			}
+			refuse("invalid_properties", "update", "work", "--title", "Unsupported force", "--force")
+			properties := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "work", `--properties={"assignee":"third","notes":"Third"}`, "--force", "--actor", "third"))
+			if !properties.Changed || properties.Issue.Properties.Assignee != "third" || properties.Issue.Properties.Notes != "Third" {
+				t.Fatalf("property force intent lost: %+v", properties)
+			}
+			human := graphPolicyCLI(t, bd, work, home, nil, "", "update", "work", "--assignee", "fourth", "--force", "--actor", "fourth")
+			if !strings.Contains(human, "Updated "+scope+"beads/work") {
+				t.Fatalf("human update output changed: %q", human)
+			}
 		})
 	}
 }
