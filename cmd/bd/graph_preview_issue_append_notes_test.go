@@ -94,7 +94,6 @@ func TestGraphPreviewIssueAppendNotesRefusals(t *testing.T) {
 		{"replacement-notes", []string{"--append-notes=Progress", "--notes=Replacement"}, 2},
 		{"clear-replacement-notes", []string{"--append-notes=Progress", "--notes="}, 2},
 		{"force", []string{"--append-notes=Progress", "--force"}, 2},
-		{"false-force", []string{"--append-notes=Progress", "--force=false"}, 2},
 		{"claim", []string{"--append-notes=Progress", "--claim"}, 5},
 		{"false-claim-direct-request", []string{"--append-notes=Progress", "--claim=false"}, 5},
 		{"workflow", []string{"--append-notes=Progress", "--status=closed"}, 5},
@@ -119,6 +118,12 @@ func TestGraphPreviewIssueAppendNotesRefusals(t *testing.T) {
 	request, err := graphPreviewIssueEditRequest(cmd, "beads/work")
 	if err != nil || !cmd.Flags().Changed("properties") || request.AppendNotes == nil || *request.AppendNotes != "Progress" {
 		t.Fatalf("mixed append and empty property merge: %+v %v", request, err)
+	}
+	cmd = issueTextCommand(t, "--append-notes=Progress", "--force=false")
+	appendNotesNoInput(t, cmd)
+	request, err = graphPreviewIssueEditRequest(cmd, "beads/work")
+	if err != nil || request.AppendNotes == nil || *request.AppendNotes != "Progress" || request.ForceNotesOverwrite || request.ForceAssigneeTransfer {
+		t.Fatalf("false force changed append intent: %+v %v", request, err)
 	}
 }
 
