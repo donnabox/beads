@@ -544,6 +544,12 @@ those two spellings as aliases for `blocks` and admits only built-in kinds.
 Canonical `bd link create --type` selects an installed Link Type, so it does
 not accept a custom native Dependency kind.
 
+On legacy reads, `bd link list --type KIND` and `bd link count --type KIND`
+select that exact stored native kind, including custom kinds and the literal
+`depends-on` or `blocked-by` spellings. Use `--type types/NAME` to select a
+nominal Link Type instead. Canonical collection output still uses the absolute
+Link Type URI; it does not infer a kind filter from `--type`.
+
 Link updates accept the current Link by default; `--if-revision TOKEN`
 rejects a stale Link. Removal needs `--if-revision TOKEN` or `--unconditional`
 and retains the identity and prior snapshots. Native Dependency remains
