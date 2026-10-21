@@ -84,7 +84,7 @@ func TestGraphPreviewIssueListInput(t *testing.T) {
 		{"parent-tree-false", []string{"--tree=false", "--parent=beads/work"}, false, 0, false, 0},
 		{"parent-json", []string{"--json", "--parent=beads/work"}, false, 0, false, 0},
 		{"parent-records", []string{"--format=records-json", "--parent=beads/work"}, false, 0, true, 0},
-		{"parent-default-tree-refused", []string{"--parent=beads/work"}, false, 5, false, 0},
+		{"parent-default-tree", []string{"--parent=beads/work"}, false, 0, false, 0},
 		{"parent-empty", []string{"--flat", "--parent="}, false, 2, false, 0},
 		{"both-status-aliases", []string{"--flat", "--status=open", "--state=closed"}, false, 2, false, 0},
 		{"repeat-status", []string{"--flat", "--status=open", "-sclosed"}, false, 5, false, 0},
@@ -165,6 +165,33 @@ func TestGraphPreviewIssueListOutput(t *testing.T) {
 	page.Items[0].Properties.Title = strings.Repeat("x", graphIssueListOutputLimit)
 	if output, err := renderGraphIssueList(page, "", true, false); err == nil || output != "" {
 		t.Fatal("oversized page emitted partial output")
+	}
+}
+
+func TestRenderGraphIssueTree(t *testing.T) {
+	root := &types.Issue{ID: "beads/root", Title: "Root", Status: types.StatusOpen, Priority: 1}
+	child := &types.Issue{ID: "beads/child", Title: "Child", Status: types.StatusOpen, Priority: 2}
+	grand := &types.Issue{ID: "beads/grand", Title: "Grand", Status: types.StatusInProgress, Priority: 2}
+	tree := graphstore.IssueTreeSelected{
+		Root: root, Items: []*types.Issue{grand, child},
+		Children: map[string][]string{"beads/root": {"beads/child"}, "beads/child": {"beads/grand"}},
+	}
+	output, err := renderGraphIssueTree(tree, "", "priority", false)
+	if err != nil || !strings.Contains(output, "Root") || !strings.Contains(output, "├") && !strings.Contains(output, "└") || strings.Index(output, "Child") > strings.Index(output, "Grand") || !strings.Contains(output, "Total: 3 issues") {
+		t.Fatalf("tree output: %q %v", output, err)
+	}
+	noChildren, err := renderGraphIssueTree(graphstore.IssueTreeSelected{Root: root}, "", "", false)
+	if err != nil || noChildren != "Issue 'beads/root' has no children\n" {
+		t.Fatalf("empty tree output: %q %v", noChildren, err)
+	}
+	bad := graphstore.IssueTreeSelected{Root: root, Items: []*types.Issue{child}, Children: map[string][]string{"beads/root": {"beads/missing"}}}
+	if output, err := renderGraphIssueTree(bad, "", "", false); err == nil || output != "" {
+		t.Fatalf("invalid tree emitted partial output: %q %v", output, err)
+	}
+	tree.Children["beads/grand"] = []string{"beads/child"}
+	cyclic, err := renderGraphIssueTree(tree, "", "", false)
+	if err != nil || strings.Count(cyclic, treeCycleMarker) != 1 {
+		t.Fatalf("stored parent-child cycle must terminate with one marker: %q %v", cyclic, err)
 	}
 }
 
