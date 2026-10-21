@@ -26,17 +26,6 @@ verb and its absent-pair no-op.`,
 	RunE: runGraphPreviewUnlink,
 }
 
-var graphLinksCmd = &cobra.Command{
-	Use: "links BEAD", GroupID: "issues",
-	Short: "Inspect incident Links in an experimental graph workspace",
-	Long: `List current informational Links and blocking Dependencies incident to a
-Bead ID (bare ID or beads/PATH). Direction is relative to that Bead; default is both. This bounded
-preview returns a complete result or refuses above its advertised limit. It does
-not paginate, read historical state, or resolve remote targets.`,
-	SilenceUsage: true, SilenceErrors: true,
-	RunE: runGraphPreviewLinks,
-}
-
 var linkCreateCmd = &cobra.Command{
 	Use: "create [SOURCE TARGET]", Short: "Create a Link in a graph workspace",
 	Args: cobra.MaximumNArgs(2), SilenceUsage: true, SilenceErrors: true,
@@ -194,8 +183,6 @@ func init() {
 	registerGraphLinkTypeFlag(graphUnlinkCmd)
 	graphUnlinkCmd.Flags().String("if-revision", "", "Require this observed Link revision")
 	graphUnlinkCmd.Flags().String("if-source-revision", "", "Require this observed owning-source revision")
-	graphLinksCmd.Flags().String("direction", "both", "Incident direction: in, out, or both")
-	registerGraphLinkTypeFlag(graphLinksCmd)
 }
 
 func graphPreviewBeadSelector(selector string) (string, error) {
@@ -207,49 +194,6 @@ func graphPreviewBeadSelector(selector string) (string, error) {
 		return "", graphFailure("invalid_selector", err.Error(), 2)
 	}
 	return path, nil
-}
-
-func runGraphPreviewLinks(cmd *cobra.Command, args []string) error {
-	if err := graphPreviewFlags(cmd, "direction", "type"); err != nil {
-		return err
-	}
-	if len(args) != 1 {
-		return graphFailure("invalid_selector", "links requires exactly one Bead ID or beads/PATH", 2)
-	}
-	path, err := graphPreviewBeadSelector(args[0])
-	if err != nil {
-		return err
-	}
-	direction, _ := cmd.Flags().GetString("direction")
-	if direction != "in" && direction != "out" && direction != "both" {
-		return graphFailure("invalid_selector", "direction must be in, out, or both", 2)
-	}
-	typ, err := graphPreviewLinkType(cmd)
-	if err != nil {
-		return err
-	}
-	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		if typ != "" {
-			if err := graphPreviewRequireInstalledType(ctx, store, typ, graph.KindLink, false); err != nil {
-				return nil, "", err
-			}
-		}
-		result, err := store.ListLinks(ctx, graphstore.LinksRequest{BeadPath: path, Direction: direction, TypeURL: typ})
-		if err != nil {
-			return nil, "", err
-		}
-		result = graphPreviewFilterLinkKind(cmd, result)
-		var human strings.Builder
-		for _, link := range result {
-			fmt.Fprintf(&human, "%s  %s  %s → %s\n",
-				graphPreviewDisplayLocalURL(link.Type), graphPreviewDisplayLocalURL(link.ID),
-				graphPreviewDisplayLocalURL(link.Source), graphPreviewDisplayLocalURL(link.Target))
-		}
-		if len(result) == 0 {
-			human.WriteString("No incident Links.\n")
-		}
-		return result, strings.TrimSuffix(human.String(), "\n"), nil
-	})
 }
 
 func graphPreviewFilterLinkKind(cmd *cobra.Command, links []graphstore.LinkRecord) []graphstore.LinkRecord {

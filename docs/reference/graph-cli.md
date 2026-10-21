@@ -520,13 +520,13 @@ a properties edit.
 bd link policy work --type types/references \
   --id policy-work --properties '{"body":"work follows this policy"}' \
   --metadata '{"origin":"manual"}'
-bd links policy
+bd link list --incident-to policy
 bd show links/policy-work --json
 bd update links/policy-work --properties '{"body":"reviewed policy"}'
 bd unlink policy-work --unconditional
 ```
 
-`bd links ID` lists current incident Links with Type first and in-Scope IDs
+`bd link list --incident-to ID` lists current incident Links with Type first and in-Scope IDs
 relative to the Scope URL; JSON retains canonical URLs. `bd link SOURCE TARGET`
 without `--type` is an Issue dependency shorthand. Direct References Links
 are unowned. Other selected families have source ownership: Memory owns
