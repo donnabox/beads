@@ -54,10 +54,12 @@ func TestGraphPreviewIssueStatusIntent(t *testing.T) {
 		wantStatus  types.Status
 		wantForce   bool
 		wantSession string
+		wantGuard   types.Status
 	}{
-		{[]string{"--status=in_progress"}, types.StatusInProgress, false, ""},
-		{[]string{"--status=closed", "--force", "--session=review"}, types.StatusClosed, true, "review"},
-		{[]string{"--status=closed", "--force=false"}, types.StatusClosed, false, ""},
+		{[]string{"--status=in_progress"}, types.StatusInProgress, false, "", ""},
+		{[]string{"--status=closed", "--force", "--session=review"}, types.StatusClosed, true, "review", ""},
+		{[]string{"--status=closed", "--force=false"}, types.StatusClosed, false, "", ""},
+		{[]string{"--status=open", "--if-status=in_progress"}, types.StatusOpen, false, "", types.StatusInProgress},
 	} {
 		cmd := issueTextCommand(t, tc.args...)
 		request, err := graphPreviewIssueEditRequest(cmd, "beads/work")
@@ -66,6 +68,9 @@ func TestGraphPreviewIssueStatusIntent(t *testing.T) {
 		}
 		if tc.wantSession != "" && (request.ClosedBySession == nil || *request.ClosedBySession != tc.wantSession) {
 			t.Fatalf("session attribution lost: %+v", request)
+		}
+		if tc.wantGuard != "" && (request.ExpectedStatus == nil || *request.ExpectedStatus != tc.wantGuard) {
+			t.Fatalf("status guard lost: %+v", request)
 		}
 	}
 }
@@ -291,7 +296,8 @@ func TestGraphPreviewIssueAssigneeRefusals(t *testing.T) {
 		{"claim", []string{"--assignee=alice", "--claim"}, 5},
 		{"false-claim", []string{"--assignee=alice", "--claim=false"}, 5},
 		{"assignee-precondition", []string{"--assignee=alice", "--if-assignee="}, 5},
-		{"status-precondition", []string{"--assignee=alice", "--if-status=open"}, 5},
+		{"empty-status-precondition", []string{"--assignee=alice", "--if-status="}, 2},
+		{"status-precondition-without-edit", []string{"--if-status=open"}, 2},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			_, err := graphPreviewIssueEditRequest(issueTextCommand(t, tc.args...), "beads/work")
