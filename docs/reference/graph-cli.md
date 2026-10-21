@@ -87,12 +87,16 @@ property, retyping and refusal details for the Preview 3 candidate.
 
 When an Issue is created without `--id`, its canonical `beads/` ID uses the
 Issue ID allocated under the workspace prefix set by `bd init --prefix`. For
-example, a generated `mp-53` Issue is `beads/mp-53` locally. An explicitly
-supplied `--id` remains the requested canonical path. Generated Memory IDs
+example, a generated `mp-53` Issue is `beads/mp-53` locally. A bare explicit
+`--id mp-work` names both the native Issue ID and `beads/mp-work`; it must use
+the configured prefix unless `--force` is supplied. A graph-qualified
+`--id beads/work` names the canonical path independently. `--status` sets the
+initial Issue status and defaults to `open`; the native Issue writer validates
+built-in and configured custom statuses. Generated Memory IDs
 remain random `beads/` paths; generated Link IDs remain under `links/`.
 
 ```sh
-bd create 'Move the release branch' --id work --type task
+bd create 'Move the release branch' --id mp-work --type task --status open
 bd create --type types/memory \
   --properties '{"title":"Code flow policy","body":"Keep the old policy as a versioned Memory."}'
 ```
