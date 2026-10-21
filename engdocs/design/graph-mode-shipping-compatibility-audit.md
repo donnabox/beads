@@ -68,8 +68,9 @@ Their tests qualify their stated slices, not the whole gate:
 | [#169](https://github.com/donnabox/beads/pull/169) | Checked `list --parent` storage selection for parent-child edges and edge-less dotted graph IDs, plus the counted legacy projection. | Targeted storage tests and installed CLI workflow passed embedded and real shared-server Dolt; four current-head checks passed. Stacked on #166. |
 | [#170](https://github.com/donnabox/beads/pull/170) | `list --parent`/`--filter-parent` for flat, `--tree=false`, JSON, long, and records output; explicitly refuses the unfinished default recursive tree. | Broad graph list tests, both-engine installed workflow, generated CLI docs, Markdown links, and six current-head checks passed. Stacked on #169. |
 
-The shared base [#141](https://github.com/donnabox/beads/pull/141) remains a
-draft. Its head `8baf79d43` includes the twenty-group C0 verifier correction
+The shared base [#141](https://github.com/donnabox/beads/pull/141) merged into
+`codex/preview3-integration` at `b6d0493ba` on October 21. Its head
+`8baf79d43` includes the twenty-group C0 verifier correction
 directly; redundant #162 was closed. Its next hosted C0 run reached Memory
 deletion and exposed a stale three-field assertion: the product correctly
 returned the exact final live predecessor plus a distinct terminal deletion
@@ -77,8 +78,7 @@ revision. The shared smoke/verifier fix was prepared as #167, fast-forwarded
 onto #141 and combined with stronger negative controls; GitHub automatically
 marked #167 merged. All 57 local verifier tests pass on the combined head.
 Current-head full real-engine C0 qualification and both race tiers passed:
-119 hosted checks succeeded, with ten intentional skips. Review remains
-undecided and the PR is still draft. Further first-gate gaps include atomic `create --deps`,
+119 hosted checks succeeded, with ten intentional skips. Further first-gate gaps include atomic `create --deps`,
 update label/status and multi-ID forms, multi-ID and cascading deletion,
 shipping list filters and tree/pretty output (including the default recursive
 `list --parent` view), and partial-ID behavior in the
@@ -99,6 +99,15 @@ pushing or merging any PR. Focused installed CLI workflows and the graphstore
 incident-cap regression passed on embedded and real shared-server Dolt with no
 skips; two textual merge conflicts were resolved to retain both intents.
 That local result does not qualify #141's newer head or the full first gate.
+
+The same disposable checkout was refreshed to `3fad828cf`, combining #141's
+qualified head `8baf79d43` and stacked #169/#170 with the earlier parity
+slices. Focused graph Issue list storage and installed CLI tests passed in two
+packages on embedded Dolt (13 server subtests skipped without a server).
+With a disposable real shared-server Dolt, the installed no-parent/parent and
+sort/cap workflows plus the counted legacy projection passed both engines with
+no skips. This is selected integration evidence, not a full first-gate or
+whole-repository test run; the checkout was neither pushed nor merged.
 
 The Preview graph CLI specification has an older pinned-commit implementation
 ledger and a larger target inventory. Its target rows are not evidence that
