@@ -179,6 +179,17 @@ func TestGraphPreviewDepTreeBothDistinguishesDirections(t *testing.T) {
 	if got != want {
 		t.Fatalf("both-direction tree must separate blockers from dependents\nwant:\n%s\ngot:\n%s", want, got)
 	}
+	for _, direction := range []string{"down", "up", "both"} {
+		got := strings.TrimSpace(graphPolicyCLI(t, bd, work, home, nil, "", "dep", "tree", "root", "--direction", direction, "--max-depth", "1"))
+		want := "Blocking dependency tree for beads/root (" + direction + "; graph preview)\nbeads/root  Root"
+		if got != want {
+			t.Fatalf("depth-limited %s tree must show the root without claiming no edges\nwant:\n%s\ngot:\n%s", direction, want, got)
+		}
+	}
+	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Isolated", "--id", "beads/isolated", "--json")
+	if got := strings.TrimSpace(graphPolicyCLI(t, bd, work, home, nil, "", "dep", "tree", "isolated", "--max-depth", "1")); got != "beads/isolated has no dependencies" {
+		t.Fatalf("isolated root should still have no dependency tree: %q", got)
+	}
 }
 
 func TestGraphPreviewStructureReads(t *testing.T) {
