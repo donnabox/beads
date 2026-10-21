@@ -398,6 +398,50 @@ class ProcessCleanup(unittest.TestCase):
         self.assertFalse(reaper.is_alive())
 
 
+class CaptureMemoryDeletion(unittest.TestCase):
+    def setUp(self):
+        source = Path(__file__).resolve().parents[1] / "graph-bdp-read-smoke.py"
+        spec = importlib.util.spec_from_file_location("capture_deletion", source)
+        self.smoke = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(self.smoke)
+        self.live = {"id": "https://example.invalid/beads/alpha", "revision": "live-token",
+                     "type": "https://example.invalid/types/memory", "metadata": {}, "owned": [],
+                     "properties": {"title": "First memory", "body": "Deployment context — 雪"},
+                     "attribution": {"actor": "writer", "recordedAt": "before", "inception": "create"}}
+        self.terminal = {"id": self.live["id"], "revision": "deletion-token", "version": "deletion-token",
+                         "previousVersion": "live-token", "state": "deleted",
+                         "attribution": {"actor": "deleter", "recordedAt": "after", "inception": "create"}}
+        self.result = {"memory": self.live, "preview": False, "deleted": True, "terminal": self.terminal}
+
+    def test_exact_predecessor_and_distinct_terminal_are_required_by_capture(self):
+        self.smoke.require_memory_deletion(self.result, self.live)
+        tree = ast.parse((Path(__file__).resolve().parents[1] / "graph-bdp-read-smoke.py").read_text())
+        calls = [c for c in ast.walk(tree) if isinstance(c, ast.Call) and isinstance(c.func, ast.Name)
+                 and c.func.id == "require_memory_deletion"]
+        self.assertEqual(len(calls), 1)
+        self.assertEqual([arg.id for arg in calls[0].args], ["deleted", "alpha"])
+
+    def test_predecessor_flags_and_closed_result_remain_exact(self):
+        for field, value in (("properties", {}), ("metadata", {"changed": True}), ("attribution", {}),
+                             ("owned", ["resurrected"]), ("revision", "other")):
+            with self.subTest(field=field), self.assertRaises(RuntimeError):
+                self.smoke.require_memory_deletion(dict(self.result, memory=dict(self.live, **{field: value})), self.live)
+        for changes in ({"preview": True}, {"deleted": False}, {"unknown": True}):
+            with self.subTest(changes=changes), self.assertRaises(RuntimeError):
+                self.smoke.require_memory_deletion(dict(self.result, **changes), self.live)
+
+    def test_missing_or_invalid_terminal_refused(self):
+        for terminal in (None, {}, dict(self.terminal, revision="live-token", version="live-token"),
+                         dict(self.terminal, revision=""), dict(self.terminal, revision=123),
+                         dict(self.terminal, version="other"), dict(self.terminal, previousVersion="old-token"),
+                         dict(self.terminal, id="other"), dict(self.terminal, state="live"),
+                         dict(self.terminal, properties={"body": "private payload"})):
+            with self.subTest(terminal=terminal), self.assertRaises(RuntimeError):
+                self.smoke.require_memory_deletion(dict(self.result, terminal=terminal), self.live)
+        with self.assertRaises(RuntimeError):
+            self.smoke.require_memory_deletion({k: v for k, v in self.result.items() if k != "terminal"}, self.live)
+
+
 class CaptureIsolationControls(unittest.TestCase):
     def capture_module(self):
         source = Path(__file__).resolve().parents[1] / "graph-c0-smoke.py"
