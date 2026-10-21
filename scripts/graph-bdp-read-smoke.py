@@ -339,8 +339,7 @@ def main():
         alpha = records["beads/alpha"]
         deleted = c0.envelope(capture.success("memory-delete", ["delete", "beads/alpha", "--force",
             "--if-revision", alpha["revision"], "--json"]))
-        c0.require(deleted == {"memory": alpha, "preview": False, "deleted": True},
-                   "deletion did not disclose the exact final live predecessor")
+        c0.require_memory_deletion(deleted, alpha)
         name = "python-after-delete"
         consumer = Process(capture, name, [sys.executable, str(Path(__file__)), "--observe-python",
                            str(example), str(capture.output / (name + "-network.json")), "--scope", scope, "--limit", "1"])
