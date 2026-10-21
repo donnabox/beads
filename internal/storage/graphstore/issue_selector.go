@@ -5,8 +5,11 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"sort"
+	"strings"
 
 	"github.com/steveyegge/beads/internal/storage"
+	"github.com/steveyegge/beads/internal/utils"
 )
 
 // IssueSelector keeps the explicit graph path separate from a bare native
@@ -97,6 +100,129 @@ func (s *Store) resolveLiveIssueSelectorInTx(ctx context.Context, tx *sql.Tx, se
 	}
 	issue, err := s.requireIssueInTx(ctx, tx, path)
 	return path, issue, err
+}
+
+// The familiar positional bd link accepts shipping Issue abbreviations. Keep
+// selection in the writer's transaction: a CLI lookup followed by AddDependency
+// could link a different Issue if the live catalog changed between calls.
+// Explicit beads/PATH selectors never reach this fallback.
+func (s *Store) resolvePositionalIssueInTx(ctx context.Context, tx *sql.Tx, path, nativeID string) (string, IssueRecord, error) {
+	if nativeID == "" {
+		issue, err := s.requireIssueInTx(ctx, tx, path)
+		return path, issue, err
+	}
+	switch strings.ToLower(strings.TrimSpace(nativeID)) {
+	case "", "null", "undefined", "none", "nil":
+		return "", IssueRecord{}, fmt.Errorf("%w: refusing missing-value token %q as an Issue ID", storage.ErrValidation, nativeID)
+	}
+	selected, issue, err := s.resolveLiveIssueSelectorInTx(ctx, tx, IssueSelector{Path: path, NativeID: nativeID})
+	if err == nil && issue.Properties.ID == nativeID {
+		return selected, issue, nil
+	}
+	if err != nil && !errors.Is(err, ErrNotFound) && !errors.Is(err, errNonIssueSelector) {
+		return selected, issue, err
+	}
+	selectedErr := err
+	// Shipping first probes the exact spelling and its configured-prefix form.
+	// Querying the live catalog (rather than issues alone) excludes deleted and
+	// otherwise unallocated native rows.
+	var prefix string
+	if err := tx.QueryRowContext(ctx, "SELECT value FROM config WHERE `key`='issue_prefix'").Scan(&prefix); err != nil {
+		return "", IssueRecord{}, err
+	}
+	prefix = strings.TrimSuffix(prefix, "-")
+	known := []string{prefix}
+	var allowed string
+	if err := tx.QueryRowContext(ctx, "SELECT value FROM config WHERE `key`='allowed_prefixes'").Scan(&allowed); err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return "", IssueRecord{}, err
+	}
+	for _, value := range strings.Split(allowed, ",") {
+		if value = strings.TrimSuffix(strings.TrimSpace(value), "-"); value != "" {
+			known = append(known, value)
+		}
+	}
+	search := nativeID
+	if p := utils.ExtractIssuePrefixKnown(nativeID, known); p != "" {
+		search = strings.TrimPrefix(nativeID, p+"-")
+	}
+	if !validPartialIssueHash(search) {
+		return "", IssueRecord{}, ErrNotFound
+	}
+	// SQL narrows the candidate set; Go applies the same leading-hash rule as
+	// v1.3.1. The limit is a refusal bound, never a truncated answer.
+	queryPart := search
+	if i := strings.LastIndex(search, "-"); i >= 0 && i+1 < len(search) && validPartialIssueHash(search[i+1:]) {
+		queryPart = search[i+1:]
+	}
+	rows, err := tx.QueryContext(ctx, `SELECT path,backing_key FROM graph_preview_catalog WHERE backing='issue' AND allocation_state='live' AND backing_key LIKE ? LIMIT 1001`, "%"+queryPart+"%")
+	if err != nil {
+		return "", IssueRecord{}, err
+	}
+	type match struct{ path, id string }
+	var exact, partial []match
+	seen := 0
+	for rows.Next() {
+		seen++
+		var candidate match
+		if err := rows.Scan(&candidate.path, &candidate.id); err != nil {
+			_ = rows.Close()
+			return "", IssueRecord{}, err
+		}
+		if seen > 1000 {
+			_ = rows.Close()
+			return "", IssueRecord{}, fmt.Errorf("%w: too many Issue ID candidates for %q; use a longer ID", storage.ErrValidation, nativeID)
+		}
+		hash := candidate.id
+		if p := utils.ExtractIssuePrefixKnown(candidate.id, known); p != "" {
+			hash = strings.TrimPrefix(candidate.id, p+"-")
+		}
+		if candidate.id == nativeID || hash == search {
+			exact = append(exact, candidate)
+		} else if strings.HasPrefix(hash, search) {
+			partial = append(partial, candidate)
+		}
+	}
+	if err := errors.Join(rows.Err(), rows.Close()); err != nil {
+		return "", IssueRecord{}, err
+	}
+	matches := partial
+	if len(exact) > 0 {
+		matches = exact
+	}
+	if len(matches) == 0 {
+		return selected, issue, selectedErr
+	}
+	if selectedErr == nil && selected != matches[0].path {
+		return "", IssueRecord{}, fmt.Errorf("%w: bare Issue ID %q matches both a graph path and a different native Issue; use an explicit beads/PATH", storage.ErrValidation, nativeID)
+	}
+	if errors.Is(selectedErr, errNonIssueSelector) {
+		return "", IssueRecord{}, fmt.Errorf("%w: bare Issue ID %q matches a non-Issue path and a native Issue; use an explicit beads/PATH", storage.ErrValidation, nativeID)
+	}
+	if len(matches) > 1 {
+		ids := make([]string, 0, len(matches))
+		for _, candidate := range matches {
+			ids = append(ids, candidate.id)
+		}
+		sort.Strings(ids)
+		return "", IssueRecord{}, fmt.Errorf("%w: Issue ID %q matches %v; use more characters", storage.ErrValidation, nativeID, ids)
+	}
+	if err := validatePath(matches[0].path); err != nil {
+		return "", IssueRecord{}, fmt.Errorf("%w: invalid native Issue allocation: %v", ErrInvalidStore, err)
+	}
+	issue, err = s.requireIssueInTx(ctx, tx, matches[0].path)
+	return matches[0].path, issue, err
+}
+
+func validPartialIssueHash(value string) bool {
+	if value == "" {
+		return false
+	}
+	for _, r := range value {
+		if !((r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '-' || r == '.') {
+			return false
+		}
+	}
+	return true
 }
 
 func (s *Store) ShowIssueSelected(ctx context.Context, selector IssueSelector) (IssueRecord, error) {
