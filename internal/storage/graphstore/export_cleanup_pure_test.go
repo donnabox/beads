@@ -263,6 +263,7 @@ type exportCleanupDriver struct {
 	options                                                     Options
 	descriptors                                                 map[string]graph.TypeDescriptor
 	memory                                                      Record
+	retained                                                    Record
 	link                                                        LinkRecord
 	pinnedReads                                                 atomic.Int64
 	begins, rollbacks, commits, commentCloses, connectionCloses atomic.Int64
@@ -290,7 +291,12 @@ func exportCleanupStore(t *testing.T, faults exportCleanupFaults) (*Store, *expo
 		scope := d.options.Binding.ScopeURL
 		attribution := Attribution{Status: "unknown", RecordedAt: "2026-10-20T00:00:00Z"}
 		d.memory = Record{ID: scope + "beads/memory", Type: MemoryTypeURL(scope), Revision: exportCleanupToken, Version: exportCleanupToken, Properties: Properties{Title: "Memory"}, Metadata: json.RawMessage(`{}`), Owned: []json.RawMessage{}, Attribution: attribution}
-		d.link = LinkRecord{ID: scope + "links/reference", Type: scope + "types/references", Revision: exportCleanupToken, Version: exportCleanupToken, Source: d.memory.ID, Target: d.memory.ID, TargetRevision: d.memory.Revision, Properties: map[string]any{}, Metadata: json.RawMessage(`{}`), Attribution: attribution}
+		d.retained = d.memory
+		d.retained.Revision = "11111111111111111111111111111111"
+		d.retained.Version = d.retained.Revision
+		d.retained.Properties = Properties{Title: "Retained Memory", Body: "Before the current edit"}
+		d.retained.Metadata = json.RawMessage(`{"retained":true}`)
+		d.link = LinkRecord{ID: scope + "links/reference", Type: scope + "types/references", Revision: exportCleanupToken, Version: exportCleanupToken, Source: d.memory.ID, Target: d.memory.ID, TargetRevision: d.retained.Revision, Properties: map[string]any{}, Metadata: json.RawMessage(`{}`), Attribution: attribution}
 	}
 	db := sql.OpenDB(d)
 	db.SetMaxOpenConns(1)
@@ -406,7 +412,7 @@ func (d *exportCleanupDriver) pinnedRows(q string, args []driver.NamedValue) (dr
 		return &exportCleanupRows{columns: columns, values: [][]driver.Value{values}}, true, nil
 	}
 	encode := func(value any) ([]byte, error) { return canonicalJSON(value) }
-	memory, link := d.memory, d.link
+	memory, retained, link := d.memory, d.retained, d.link
 	switch {
 	case strings.HasPrefix(q, "select path,backing,resource_kind from graph_preview_catalog"):
 		return &exportCleanupRows{columns: []string{"path", "backing", "kind"}, values: [][]driver.Value{{"beads/memory", "generic", "bead"}, {"links/reference", "informational", "link"}}}, true, nil
@@ -419,11 +425,20 @@ func (d *exportCleanupDriver) pinnedRows(q string, args []driver.NamedValue) (dr
 		}
 		return row(properties, []byte(`{}`))
 	case strings.HasPrefix(q, "select snapshot, actor from graph_preview_versions"), strings.HasPrefix(q, "select snapshot,actor from graph_preview_versions"):
-		value := any(memory)
-		if len(args) > 0 && args[0].Value == "links/reference" {
+		if len(args) != 2 {
+			return nil, true, fmt.Errorf("cleanup retained lookup arguments: %v", args)
+		}
+		var value any
+		switch {
+		case args[0].Value == "links/reference" && args[1].Value == link.Revision:
 			value = link
-		} else if strings.HasPrefix(q, "select snapshot,actor") {
+		case args[0].Value == "beads/memory" && args[1].Value == memory.Revision:
+			value = memory
+		case args[0].Value == "beads/memory" && args[1].Value == retained.Revision:
+			value = retained
 			d.pinnedReads.Add(1)
+		default:
+			return nil, true, fmt.Errorf("cleanup unexpected retained address: %v", args)
 		}
 		raw, err := encode(value)
 		if err != nil {
@@ -445,17 +460,20 @@ func (d *exportCleanupDriver) pinnedRows(q string, args []driver.NamedValue) (dr
 		if err != nil {
 			return nil, true, err
 		}
-		return row("beads/memory", "beads/memory", "", memory.Revision, []byte(`{}`), []byte(`{}`), attribution)
+		return row("beads/memory", "beads/memory", "", link.TargetRevision, []byte(`{}`), []byte(`{}`), attribution)
 	case strings.HasPrefix(q, "select resource_kind,type_url,allocation_state,backing from"):
 		return row("bead", memory.Type, "live", "generic")
 	case strings.HasPrefix(q, "select resource_kind,backing,allocation_state,"):
 		return row("bead", "generic", "live", memory.Type, nil)
 	case strings.HasPrefix(q, "select exists(select 1 from graph_preview_versions where path=? and version=?"):
-		return row(true)
+		return row(len(args) == 2 && args[0].Value == "beads/memory" && args[1].Value == retained.Revision)
 	case strings.HasPrefix(q, "select backing,resource_kind,allocation_state,revision,"):
 		return row("generic", "bead", "live", memory.Revision, memory.Type, nil)
 	case strings.HasPrefix(q, "select octet_length(snapshot)+octet_length(actor)"):
-		raw, err := encode(memory)
+		if len(args) != 2 || args[0].Value != "beads/memory" || args[1].Value != retained.Revision {
+			return nil, true, fmt.Errorf("cleanup retained size lookup arguments: %v", args)
+		}
+		raw, err := encode(retained)
 		if err != nil {
 			return nil, true, err
 		}
@@ -493,8 +511,11 @@ func TestExportPinnedEndpointCleanup(t *testing.T) {
 				t.Fatalf("did not hydrate exact retained endpoint before cleanup: reads=%d err=%v", d.pinnedReads.Load(), err)
 			}
 			if kind == "success" {
-				if err != nil || len(state.PinnedEndpoints) != 1 || !reflect.DeepEqual(state.PinnedEndpoints[0], d.memory) {
-					t.Fatalf("nonempty cleanup control: %+v %v", state, err)
+				if err != nil || len(state.PinnedEndpoints) != 1 || !reflect.DeepEqual(state.PinnedEndpoints[0], d.retained) || reflect.DeepEqual(state.PinnedEndpoints[0], d.memory) {
+					t.Fatalf("noncurrent retained cleanup control: %+v %v", state, err)
+				}
+				if len(state.Snapshot.Records) != 2 || !reflect.DeepEqual(state.Snapshot.Records[0], d.memory) {
+					t.Fatalf("retained endpoint replaced current inventory: %+v", state.Snapshot.Records)
 				}
 			} else {
 				cause := fault
