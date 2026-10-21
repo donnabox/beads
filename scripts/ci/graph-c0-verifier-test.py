@@ -582,11 +582,11 @@ finally:
 
 
 class LaneShape(unittest.TestCase):
-    def test_cmd_bd_graph_tests_run_as_three_groups(self):
+    def test_cmd_bd_graph_tests_run_as_twenty_bounded_groups(self):
         [call] = [c for c in self_calls("execute", "tests") if ast.literal_eval(c.args[0]) == "./cmd/bd"]
         self.assertEqual(ast.literal_eval(call.args[1]), "^Test(GraphModeCLI|GraphPreview)")
         self.assertEqual(ast.literal_eval(call.args[3]), "cli")
-        self.assertEqual({k.arg: ast.literal_eval(k.value) for k in call.keywords}, {"groups": 3})
+        self.assertEqual({k.arg: ast.literal_eval(k.value) for k in call.keywords}, {"groups": 20})
 
 
 class GraphHTTPDiscovery(unittest.TestCase):
