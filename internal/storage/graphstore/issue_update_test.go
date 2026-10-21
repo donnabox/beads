@@ -79,6 +79,58 @@ func TestIssuePropertyEmptyMergeAndEstimateClear(t *testing.T) {
 	}
 }
 
+func TestIssueUpdateStatusInCheckedTransaction(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer s.Close()
+			original, err := s.CreateIssue(ctx, "beads/work", plainIssue("Work"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.CreateIssue(ctx, "beads/gate", plainIssue("Gate")); err != nil {
+				t.Fatal(err)
+			}
+			blocked, err := s.AddDependency(ctx, DependencyRequest{Path: "links/block", SourcePath: "beads/work", TargetPath: "beads/gate", Actor: "author"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			closed := types.StatusClosed
+			session := "review"
+			request := UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: blocked.Source.Revision, Status: &closed, ClosedBySession: &session}
+			if _, err := s.UpdateIssue(ctx, request); !errors.Is(err, storage.ErrCloseBlocked) {
+				t.Fatalf("unforced close across blocker: %v", err)
+			}
+			unknown := types.Status("not-configured")
+			if _, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: blocked.Source.Revision, Status: &unknown}); !errors.Is(err, storage.ErrValidation) {
+				t.Fatalf("unknown status: %v", err)
+			}
+			request.ForceClosePolicy = true
+			got, err := s.UpdateIssue(ctx, request)
+			if err != nil || !got.Changed || got.Issue.Properties.Status != closed || got.Issue.Properties.ClosedAt == nil || got.Issue.Properties.ClosedBySession != session {
+				t.Fatalf("forced close: %+v %v", got, err)
+			}
+			assertIssueEditVersion(t, ctx, s, "beads/work", original)
+			if _, err := s.UpdateIssue(ctx, request); !errors.Is(err, ErrConflict) {
+				t.Fatalf("stale status: %v", err)
+			}
+			open := types.StatusOpen
+			reopened, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: got.Issue.Revision, Status: &open})
+			if err != nil || !reopened.Changed || reopened.Issue.Properties.Status != open || reopened.Issue.Properties.ClosedAt != nil {
+				t.Fatalf("reopen: %+v %v", reopened, err)
+			}
+			noop, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: reopened.Issue.Revision, Status: &open})
+			if err != nil || noop.Changed || noop.Issue.Revision != reopened.Issue.Revision {
+				t.Fatalf("same-status no-op: %+v %v", noop, err)
+			}
+		})
+	}
+}
+
 func TestIssueUpdateLifecycle(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
