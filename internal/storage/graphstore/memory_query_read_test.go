@@ -267,8 +267,11 @@ func TestMemoryCanonicalMixedIssuePath(t *testing.T) {
 }
 
 func TestMemoryScopedIgnoresUnrelatedIssuePopulation(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Minute)
+	// Setup exercises real legacy batch authoring, independently of the read.
+	// Slow CI setup must not exhaust the scoped-reader budget before it runs.
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
+	setupStarted := time.Now()
 	o := testOptions(t)
 	o.IssuePrefix = "exp"
 	if err := Init(ctx, o); err != nil {
@@ -294,17 +297,24 @@ func TestMemoryScopedIgnoresUnrelatedIssuePopulation(t *testing.T) {
 	if _, err := s.CreateIssueBatch(ctx, publicops.CreateBatchRequest{Actor: "memory-scoped-test", Items: items}); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := s.CurrentSnapshot(ctx); !errors.Is(err, ErrLimitExceeded) {
-		t.Fatalf("fixture not globally over count bound: %v", err)
+	t.Logf("native Issue population setup finished in %s", time.Since(setupStarted))
+	controlCtx, controlCancel := context.WithTimeout(context.Background(), 90*time.Second)
+	defer controlCancel()
+	if _, err := s.CurrentSnapshot(controlCtx); !errors.Is(err, ErrLimitExceeded) {
+		t.Fatalf("global snapshot refusal control failed (budget=%v): %v", controlCtx.Err(), err)
 	}
-	before, err := s.Show(ctx, "beads/rule")
+	before, err := s.Show(controlCtx, "beads/rule")
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("canonical selected-root control: %v", err)
 	}
-	got, err := s.ReadMemoryRequires(ctx, memoryQueryRequest("beads/rule"))
+	readCtx, readCancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer readCancel()
+	readStarted := time.Now()
+	got, err := s.ReadMemoryRequires(readCtx, memoryQueryRequest("beads/rule"))
 	if err != nil || len(got.Beads) != 1 || !reflect.DeepEqual(got.Beads[0], before) {
-		t.Fatal(got, err)
+		t.Fatalf("scoped read after completed population setup (budget=%v): %+v %v", readCtx.Err(), got, err)
 	}
+	t.Logf("scoped read finished in %s", time.Since(readStarted))
 }
 
 func TestMemoryScopedAccumulatesSourceLocalLinks(t *testing.T) {
@@ -352,38 +362,42 @@ func TestMemoryScopedNilContext(t *testing.T) {
 // Corrupt persisted catalog values must be refused by SQL-side acquisition
 // accounting before existing helpers hydrate their unchecked string fields.
 func TestMemoryScopedCatalogAcquisition(t *testing.T) {
+	ctx, o := issueExperimentOptions(t, "embedded")
+	s, err := OpenExisting(ctx, o)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if err := s.Close(); err != nil {
+			t.Error(err)
+		}
+	})
 	for _, field := range []string{"endpoint_type", "retained_backing_key"} {
-		t.Run(field, func(t *testing.T) {
-			ctx, o := issueExperimentOptions(t, "embedded")
-			s, err := OpenExisting(ctx, o)
+		if !t.Run(field, func(t *testing.T) {
+			ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
+			t.Cleanup(cancel)
+			rootPath := "beads/" + field
+			targetPath := rootPath + "-target"
+			root, err := s.Create(ctx, CreateRequest{Path: rootPath, TypeURL: s.ScopeURL() + "types/constraint", Title: "a"})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t.Cleanup(func() {
-				if err := s.Close(); err != nil {
-					t.Error(err)
-				}
-			})
-			root, err := s.Create(ctx, CreateRequest{Path: "beads/a", TypeURL: s.ScopeURL() + "types/constraint", Title: "a"})
-			if err != nil {
-				t.Fatal(err)
-			}
-			request := memoryQueryRequest("beads/a")
+			request := memoryQueryRequest(rootPath)
 			request.MaxBytes = 32 * 1024
 			switch field {
 			case "endpoint_type":
-				if _, err := s.Create(ctx, CreateRequest{Path: "beads/b", TypeURL: s.ScopeURL() + "types/constraint", Title: "b"}); err != nil {
+				if _, err := s.Create(ctx, CreateRequest{Path: targetPath, TypeURL: s.ScopeURL() + "types/constraint", Title: "b"}); err != nil {
 					t.Fatal(err)
 				}
-				if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/ab", TypeURL: s.ScopeURL() + "types/requires", SourcePath: "beads/a", TargetPath: "beads/b", UnconditionalSource: true}); err != nil {
+				if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/" + field, TypeURL: s.ScopeURL() + "types/requires", SourcePath: rootPath, TargetPath: targetPath, UnconditionalSource: true}); err != nil {
 					t.Fatal(err)
 				}
 			case "retained_backing_key":
 				body := "new body"
-				if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/a", Body: &body, ExpectedRevision: root.Revision}); err != nil {
+				if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: rootPath, Body: &body, ExpectedRevision: root.Revision}); err != nil {
 					t.Fatal(err)
 				}
-				request.Root, err = graph.NewInScopeRef("beads/a", root.Revision)
+				request.Root, err = graph.NewInScopeRef(rootPath, root.Revision)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -391,14 +405,35 @@ func TestMemoryScopedCatalogAcquisition(t *testing.T) {
 			if _, err := s.ReadMemoryRequires(ctx, request); err != nil {
 				t.Fatalf("valid control: %v", err)
 			}
+			var mutation sql.Result
 			switch field {
 			case "endpoint_type":
-				_, err = s.db.ExecContext(ctx, `UPDATE graph_preview_catalog SET type_url=? WHERE path='beads/b'`, strings.Repeat("x", 64*1024))
+				var originalType string
+				if err := s.db.QueryRowContext(ctx, `SELECT type_url FROM graph_preview_catalog WHERE path=?`, targetPath).Scan(&originalType); err != nil {
+					t.Fatal(err)
+				}
+				// Restore this row before the next case authors its valid fixture.
+				t.Cleanup(func() {
+					restoreCtx, stop := context.WithTimeout(context.Background(), 10*time.Second)
+					defer stop()
+					result, err := s.db.ExecContext(restoreCtx, `UPDATE graph_preview_catalog SET type_url=? WHERE path=?`, originalType, targetPath)
+					if err != nil {
+						t.Error(err)
+						return
+					}
+					if count, err := result.RowsAffected(); err != nil || count != 1 {
+						t.Errorf("restore catalog row: count=%d err=%v", count, err)
+					}
+				})
+				mutation, err = s.db.ExecContext(ctx, `UPDATE graph_preview_catalog SET type_url=? WHERE path=?`, strings.Repeat("x", 64*1024), targetPath)
 			case "retained_backing_key":
-				_, err = s.db.ExecContext(ctx, `UPDATE graph_preview_catalog SET backing_key=? WHERE path='beads/a'`, "invalid-domain-key")
+				mutation, err = s.db.ExecContext(ctx, `UPDATE graph_preview_catalog SET backing_key=? WHERE path=?`, "invalid-domain-key", rootPath)
 			}
 			if err != nil {
 				t.Fatal(err)
+			}
+			if count, err := mutation.RowsAffected(); err != nil || count != 1 {
+				t.Fatalf("corrupt catalog row: count=%d err=%v", count, err)
 			}
 			result, err := s.ReadMemoryRequires(ctx, request)
 			expected := ErrLimitExceeded
@@ -408,7 +443,9 @@ func TestMemoryScopedCatalogAcquisition(t *testing.T) {
 			if !errors.Is(err, expected) || !reflect.DeepEqual(result, MemoryRequiresRead{}) {
 				t.Fatalf("catalog acquisition escaped budget: %+v %v", result, err)
 			}
-		})
+		}) {
+			break // Preserve the first failure; do not reuse an indeterminate fixture.
+		}
 	}
 }
 
@@ -445,67 +482,74 @@ func TestMemoryScopedTypeBindings(t *testing.T) {
 }
 
 func TestMemoryScopedRefusals(t *testing.T) {
+	ctx, o := issueExperimentOptions(t, "embedded")
+	s, err := OpenExisting(ctx, o)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if err := s.Close(); err != nil {
+			t.Error(err)
+		}
+	})
+	// Each case owns separate identities. Keep the retained-evidence corruption
+	// last: no public write should run against that intentionally damaged store.
 	for _, name := range []string{"missing-root", "plain-memory-root", "deleted-root", "deleted-target", "unknown-target-pin"} {
-		t.Run(name, func(t *testing.T) {
-			ctx, o := issueExperimentOptions(t, "embedded")
-			s, err := OpenExisting(ctx, o)
+		if !t.Run(name, func(t *testing.T) {
+			ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
+			t.Cleanup(cancel)
+			rootPath := "beads/" + name + "-root"
+			targetPath := "beads/" + name + "-target"
+			linkPath := "links/" + name
+			root, err := s.Create(ctx, CreateRequest{Path: rootPath, TypeURL: s.ScopeURL() + "types/constraint", Title: "a"})
 			if err != nil {
 				t.Fatal(err)
 			}
-			t.Cleanup(func() {
-				if err := s.Close(); err != nil {
-					t.Error(err)
-				}
-			})
-			root, err := s.Create(ctx, CreateRequest{Path: "beads/a", TypeURL: s.ScopeURL() + "types/constraint", Title: "a"})
-			if err != nil {
-				t.Fatal(err)
-			}
-			req := memoryQueryRequest("beads/a")
+			req := memoryQueryRequest(rootPath)
 			expected := ErrNotFound
 			switch name {
 			case "missing-root":
 				req = memoryQueryRequest("beads/missing")
 			case "plain-memory-root":
-				if _, err := s.Create(ctx, CreateRequest{Path: "beads/plain", Title: "plain"}); err != nil {
+				if _, err := s.Create(ctx, CreateRequest{Path: rootPath + "-plain", Title: "plain"}); err != nil {
 					t.Fatal(err)
 				}
-				req = memoryQueryRequest("beads/plain")
+				req = memoryQueryRequest(rootPath + "-plain")
 				expected = ErrCapabilityUnavailable
 			case "deleted-root":
-				if _, err := s.DeleteMemory(ctx, MemoryDeleteRequest{Path: "beads/a", ExpectedRevision: root.Revision}); err != nil {
+				if _, err := s.DeleteMemory(ctx, MemoryDeleteRequest{Path: rootPath, ExpectedRevision: root.Revision}); err != nil {
 					t.Fatal(err)
 				}
 				expected = ErrGone
 			case "deleted-target", "unknown-target-pin":
-				target, err := s.Create(ctx, CreateRequest{Path: "beads/b", TypeURL: s.ScopeURL() + "types/constraint", Title: "b"})
+				target, err := s.Create(ctx, CreateRequest{Path: targetPath, TypeURL: s.ScopeURL() + "types/constraint", Title: "b"})
 				if err != nil {
 					t.Fatal(err)
 				}
-				linked, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/ab", TypeURL: s.ScopeURL() + "types/requires", SourcePath: "beads/a", TargetPath: "beads/b", TargetPin: EndpointPin{Revision: target.Revision}, UnconditionalSource: true})
+				linked, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: linkPath, TypeURL: s.ScopeURL() + "types/requires", SourcePath: rootPath, TargetPath: targetPath, TargetPin: EndpointPin{Revision: target.Revision}, UnconditionalSource: true})
 				if err != nil {
 					t.Fatal(err)
 				}
 				if name == "deleted-target" {
 					owner := linked.Source.(Record)
-					req.Root, err = graph.NewInScopeRef("beads/a", owner.Revision)
+					req.Root, err = graph.NewInScopeRef(rootPath, owner.Revision)
 					if err != nil {
 						t.Fatal(err)
 					}
-					if _, err := s.Unlink(ctx, LinkDeleteRequest{Path: "links/ab", Unconditional: true, UnconditionalSource: true}); err != nil {
+					if _, err := s.Unlink(ctx, LinkDeleteRequest{Path: linkPath, Unconditional: true, UnconditionalSource: true}); err != nil {
 						t.Fatal(err)
 					}
-					if _, err := s.DeleteMemory(ctx, MemoryDeleteRequest{Path: "beads/b", ExpectedRevision: target.Revision}); err != nil {
+					if _, err := s.DeleteMemory(ctx, MemoryDeleteRequest{Path: targetPath, ExpectedRevision: target.Revision}); err != nil {
 						t.Fatal(err)
 					}
 					expected = ErrGone
 				} else {
 					body := "new target head"
-					if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/b", Body: &body, ExpectedRevision: target.Revision}); err != nil {
+					if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: targetPath, Body: &body, ExpectedRevision: target.Revision}); err != nil {
 						t.Fatal(err)
 					}
 					// Simulate unavailable retained evidence after a valid pinned Link was admitted.
-					if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_versions WHERE path='beads/b' AND version=?`, target.Revision); err != nil {
+					if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_versions WHERE path=? AND version=?`, targetPath, target.Revision); err != nil {
 						t.Fatal(err)
 					}
 					expected = ErrVersionUnknown
@@ -515,7 +559,9 @@ func TestMemoryScopedRefusals(t *testing.T) {
 			if !errors.Is(err, expected) || !reflect.DeepEqual(result, MemoryRequiresRead{}) {
 				t.Fatalf("%s: %+v %v", name, result, err)
 			}
-		})
+		}) {
+			break // Preserve the first failure; do not reuse an indeterminate fixture.
+		}
 	}
 }
 
