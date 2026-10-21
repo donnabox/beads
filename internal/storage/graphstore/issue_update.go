@@ -40,12 +40,15 @@ type UpdateIssueRequest struct {
 	PropertiesProvided, ClearEstimatedMinutes                 bool
 	Title, Description, Design, AcceptanceCriteria            *string
 	Priority                                                  *int
+	Status                                                    *types.Status
+	ClosedBySession                                           *string
 	EstimatedMinutes                                          *int
 	Assignee                                                  *string
 	Notes, AppendNotes                                        *string
 	ExternalRef, SpecID                                       *string
 	DueAt                                                     publicops.Field[*time.Time]
 	Metadata                                                  publicops.MetadataPatch
+	ForceClosePolicy                                          bool
 }
 
 // UpdateIssue delegates admitted scalar edits to the existing Issue domain writer and
@@ -95,6 +98,20 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 	if request.Priority != nil {
 		patch.Priority = publicops.Field[int]{Set: true, Value: *request.Priority}
 		count++
+	}
+	if request.Status != nil {
+		patch.Status = publicops.Field[types.Status]{Set: true, Value: *request.Status}
+		count++
+	}
+	if request.ClosedBySession != nil {
+		if request.Status == nil || *request.Status != types.StatusClosed {
+			return IssueMutationResult{}, fmt.Errorf("%w: closed_by_session requires status=closed", storage.ErrValidation)
+		}
+		patch.ClosedBySession = publicops.Field[string]{Set: true, Value: *request.ClosedBySession}
+		count++
+	}
+	if request.ForceClosePolicy && request.Status == nil {
+		return IssueMutationResult{}, fmt.Errorf("%w: forced close policy requires a status edit", storage.ErrValidation)
 	}
 	if request.EstimatedMinutes != nil && request.ClearEstimatedMinutes {
 		return IssueMutationResult{}, fmt.Errorf("%w: Issue estimate cannot be set and cleared together", storage.ErrValidation)
@@ -160,7 +177,7 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 	if count == 0 && !request.PropertiesProvided && request.FromRevision == "" {
 		return IssueMutationResult{}, fmt.Errorf("%w: Issue update requires an admitted field", storage.ErrValidation)
 	}
-	attempt := publicops.UpdateRequest{Actor: request.Actor, Patch: patch, IssuePlaneOnly: true, ForceNotesOverwrite: request.ForceNotesOverwrite, ForceAssigneeTransfer: request.ForceAssigneeTransfer}
+	attempt := publicops.UpdateRequest{Actor: request.Actor, Patch: patch, IssuePlaneOnly: true, ForceNotesOverwrite: request.ForceNotesOverwrite, ForceAssigneeTransfer: request.ForceAssigneeTransfer, ForceClosePolicy: request.ForceClosePolicy}
 	// Historical composition supplies native setters (including Notes) before
 	// validating setter-dependent force intent. The composed request still goes
 	// through the same validator and native authorization fences in the transaction.
@@ -173,6 +190,15 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
+		}
+		if request.Status != nil {
+			custom, err := issueops.GetCustomStatusesTx(ctx, tx)
+			if err != nil {
+				return err
+			}
+			if !request.Status.IsValidWithCustom(custom) {
+				return fmt.Errorf("%w: invalid status %q", storage.ErrValidation, *request.Status)
+			}
 		}
 		path := request.Path
 		if request.NativeID != "" {
