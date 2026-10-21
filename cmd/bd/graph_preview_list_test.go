@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"slices"
 	"strings"
 	"testing"
@@ -192,6 +193,28 @@ func TestRenderGraphIssueTree(t *testing.T) {
 	cyclic, err := renderGraphIssueTree(tree, "", "", false)
 	if err != nil || strings.Count(cyclic, treeCycleMarker) != 1 {
 		t.Fatalf("stored parent-child cycle must terminate with one marker: %q %v", cyclic, err)
+	}
+}
+
+func TestRenderGraphIssueTreeBoundsRepeatedDiamondPaths(t *testing.T) {
+	root := &types.Issue{ID: "beads/root", Title: "Root", Status: types.StatusOpen}
+	tree := graphstore.IssueTreeSelected{Root: root, Children: make(map[string][]string)}
+	parents := []string{root.ID}
+	// Two children at each level, each with both previous-level parents,
+	// yield exponentially many display paths from only a small Issue set.
+	for level := 0; level < 22; level++ {
+		children := []string{fmt.Sprintf("beads/a%d", level), fmt.Sprintf("beads/b%d", level)}
+		for _, id := range children {
+			tree.Items = append(tree.Items, &types.Issue{ID: id, Title: id, Status: types.StatusOpen})
+		}
+		for _, parent := range parents {
+			tree.Children[parent] = append([]string(nil), children...)
+		}
+		parents = children
+	}
+	output, err := renderGraphIssueTree(tree, "", "", false)
+	if !errors.Is(err, graphstore.ErrLimitExceeded) || output != "" {
+		t.Fatalf("repeated diamond paths must stop at the buffered output bound: bytes=%d err=%v", len(output), err)
 	}
 }
 

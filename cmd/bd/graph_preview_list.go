@@ -490,9 +490,15 @@ func renderGraphIssueTree(tree graphstore.IssueTreeSelected, notice, sortBy stri
 			fmt.Fprintf(&output, "%s%s%s", prefix, connector, formatPrettyIssueGated(child, nil))
 			if onPath[child.ID] {
 				output.WriteString(" " + treeCycleMarker + "\n")
+				if output.Len() > graphIssueListOutputLimit {
+					return fmt.Errorf("%w: Issue tree output exceeds %d bytes; narrow the query", graphstore.ErrLimitExceeded, graphIssueListOutputLimit)
+				}
 				continue
 			}
 			output.WriteByte('\n')
+			if output.Len() > graphIssueListOutputLimit {
+				return fmt.Errorf("%w: Issue tree output exceeds %d bytes; narrow the query", graphstore.ErrLimitExceeded, graphIssueListOutputLimit)
+			}
 			onPath[child.ID] = true
 			if err := walk(child.ID, prefix+extension, onPath); err != nil {
 				return err
