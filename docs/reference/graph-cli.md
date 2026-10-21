@@ -545,6 +545,15 @@ bd update work --status open --if-status in_progress
 bd update work --assignee review --if-assignee ''
 ```
 
+`bd update ID --type CLASS` changes the native Issue classification using the
+shipping type aliases and configured custom types. It keeps the Bead's graph
+Type as Issue. Unknown classifications refuse, and an unchanged classification
+does not create a new revision. The edit can use `--if-revision`.
+
+```sh
+bd update work --type feature --if-revision REVISION_FROM_SHOW
+```
+
 ## Edit Issue notes
 
 An Issue's notes can carry progress across sessions. `--append-notes` adds a
