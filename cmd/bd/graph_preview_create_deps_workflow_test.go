@@ -29,7 +29,7 @@ func TestGraphPreviewCreateLocalDependenciesWorkflow(t *testing.T) {
 			consumer := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "Consumer", "--id", "dep-consumer", "--json"))
 			created := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "New", "--id", "dep-new", "--deps", "blocked-by:dep-prereq,blocks:dep-consumer", "--json"))
 			consumer = graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "show", "dep-consumer", "--format", "graph-json", "--json"))
-			if len(created.Owned) != 1 || len(consumer.Owned) != 1 || created.Attribution.Inception != "create" {
+			if created.Properties.IssueType != types.TypeTask || len(created.Owned) != 1 || len(consumer.Owned) != 1 || created.Attribution.Inception != "create" {
 				t.Fatalf("create did not publish source-owned canonical Links: new=%+v consumer=%+v", created, consumer)
 			}
 			for _, check := range []struct {
