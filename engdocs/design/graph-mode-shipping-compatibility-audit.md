@@ -63,7 +63,11 @@ Their tests qualify their stated slices, not the whole gate:
 
 The shared base [#141](https://github.com/donnabox/beads/pull/141) remains a
 draft. Its current head includes the C0 test-sharding repair from #157; broad
-CI is still running. Further first-gate gaps include atomic `create --deps`,
+CI found one verifier failure: the test still expected three CLI groups after
+the runner changed to twenty. [#162](https://github.com/donnabox/beads/pull/162)
+updates that test, with all 53 local verifier tests passing. The real-engine
+C0 qualifier has not passed on the current base head. Further first-gate gaps
+include atomic `create --deps`,
 update label/status and multi-ID forms, multi-ID and cascading deletion,
 shipping list filters and tree/pretty output, and partial-ID behavior in the
 positional Link form. Those remain inventory items until an implementation and
