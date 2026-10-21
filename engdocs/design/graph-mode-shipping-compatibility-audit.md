@@ -56,7 +56,10 @@ Their tests qualify their stated slices, not the whole gate:
 | [#151](https://github.com/donnabox/beads/pull/151) | Familiar Issue `show`, including multi-ID, `--current`, refs, children and watch; shipping positional Link feedback. | Six checks passed; selected installed workflows passed embedded and shared-server Dolt. |
 | [#152](https://github.com/donnabox/beads/pull/152) | Issue create/update description file and stdin sources. | Seven checks passed, two skipped; the new workflow passed both engines. |
 | [#156](https://github.com/donnabox/beads/pull/156) | `list --format=json` and `--tree=false` aliases. | Four checks passed; focused installed workflows passed both engines. |
-| [#158](https://github.com/donnabox/beads/pull/158) | Issue list sort by visible ID, assignee or closed time; detailed `--long` output. | Installed workflow passed both engines at `089b595ac`; current-head CI pending. Stacked on #156. |
+| [#158](https://github.com/donnabox/beads/pull/158) | Issue list sort by visible ID, assignee or closed time; detailed `--long` output. | Installed workflow passed both engines at `089b595ac`; six current-head checks passed. Stacked on #156. |
+| [#159](https://github.com/donnabox/beads/pull/159) | Shipping Issue `create --silent` ID output with `--json` precedence. | Shipping v1.3.1 behavior verified; installed create workflows passed both engines; CI running. Stacked on #141. |
+| [#160](https://github.com/donnabox/beads/pull/160) | Read-only `ready --parent` with checked Issue selector resolution. | Installed ready/claim workflows passed both engines; CI running. `--claim --parent` still refuses pending atomic selector resolution. Stacked on #141. |
+| [#161](https://github.com/donnabox/beads/pull/161) | Shipping custom native Dependency kinds in positional `bd link`, including literal `depends-on`/`blocked-by`. | Installed positional Link and neighboring workflows passed both engines; CI running. Stacked on #151. |
 
 The shared base [#141](https://github.com/donnabox/beads/pull/141) remains a
 draft. Its current head includes the C0 test-sharding repair from #157; broad
@@ -67,6 +70,12 @@ positional Link form. Those remain inventory items until an implementation and
 both-engine evidence close them. The next gate is `dep`, `ready`, and logical
 aliases; the remaining command inventory follows that. Generic query design
 waits for Melinda, and pagination implementation is deferred for Preview 3.
+
+The three parallel audit shards identified `bd dep list` as the largest
+remaining second-gate gap: graph mode lists only blocking Dependencies and
+refuses JSON, while shipping lists other native kinds and has different
+single-anchor and batch JSON shapes. Read-only `ready --parent` is covered by
+#160; parent-scoped atomic claim still needs a same-transaction selector.
 
 The Preview graph CLI specification has an older pinned-commit implementation
 ledger and a larger target inventory. Its target rows are not evidence that
