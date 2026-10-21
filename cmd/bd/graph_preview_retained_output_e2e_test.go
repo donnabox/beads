@@ -270,7 +270,13 @@ func graphCanonicalRetainedOutputCLI(t *testing.T, engine string) {
 			Terminals    []map[string]any                `json:"terminal_versions"`
 			Versions     []map[string]any                `json:"versions"`
 		}
-		if err := json.Unmarshal(canonical.Data, &history); err != nil || !reflect.DeepEqual(history.CurrentState, wantCurrent) || len(history.Terminals) != 1 || history.Terminals[0]["version"] != deleted.Terminal.Revision || len(history.Versions) != wantVersions {
+		// The comparison oracle uses private graphstore attribution vocabulary;
+		// normalize only that carried envelope as other workflow oracles do.
+		projected, err := graphMixedStoredAttribution(canonical.Data)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := json.Unmarshal(projected, &history); err != nil || !reflect.DeepEqual(history.CurrentState, wantCurrent) || len(history.Terminals) != 1 || history.Terminals[0]["version"] != deleted.Terminal.Revision || len(history.Versions) != wantVersions {
 			t.Fatalf("canonical JSON lost native history context: %v %s", err, canonical.Data)
 		}
 		for _, route := range []string{"versions", "history"} {
