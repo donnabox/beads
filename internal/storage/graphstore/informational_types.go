@@ -9,15 +9,31 @@ import (
 	"strings"
 
 	graph "github.com/steveyegge/beads/graphops"
-	"github.com/steveyegge/beads/internal/types"
+	"github.com/steveyegge/beads/internal/memorycatalog"
 )
 
-// These are real installed informational Types, not aliases for RelatedTypeURL.
+// Historical identity helpers remain for callers testing refusal. These Types
+// are never installed or admitted by the selected catalog.
 func ExampleFollowsTypeURL(scope string) string { return scope + "types/example-follows" }
 func ExampleCitesTypeURL(scope string) string   { return scope + "types/example-cites" }
 
 func IsInformationalTypeURL(scope, id string) bool {
-	return id == RelatedTypeURL(scope) || id == ExampleFollowsTypeURL(scope) || id == ExampleCitesTypeURL(scope)
+	for _, symbol := range selectedMemoryLinkNames {
+		if id == scope+"types/"+symbol {
+			return true
+		}
+	}
+	return false
+}
+
+var selectedMemoryBeadNames = []string{
+	"memory", "evaluation", "constraint", "policy", "decision", "procedure",
+	"requirement", "scenario", "specification",
+}
+
+var selectedMemoryLinkNames = []string{
+	"references", "superseded-by", "requires", "defines", "subject-to",
+	"conformance", "addresses", "satisfies", "violates",
 }
 
 type previewTypeDefinition struct {
@@ -25,23 +41,47 @@ type previewTypeDefinition struct {
 	build func(string) (graph.TypeDescriptor, error)
 }
 
-// Fresh preview workspaces install exactly one Type for each supported shape.
-// Earlier preview workspaces are intentionally not upgraded in place.
+// Fresh workspaces install the selected Memory catalog and the two unchanged
+// native-domain Types. Earlier installations are refused, never upgraded here.
 func previewTypeDefinitions() []previewTypeDefinition {
-	definitions := []previewTypeDefinition{
-		{"memory", memoryDescriptor}, {"issue", issueDescriptor},
-		{"dependency", dependencyDescriptor}, {"related", relatedDescriptor},
-		{"example-follows", exampleFollowsDescriptor}, {"example-cites", exampleCitesDescriptor},
-	}
-	for _, relation := range relationshipDependencyTypes {
-		if relation.native == types.DepBlocks {
-			continue // dependencyDescriptor is the sole installed blocks Type.
-		}
-		definitions = append(definitions, previewTypeDefinition{relation.installName, func(scope string) (graph.TypeDescriptor, error) {
-			return relationshipDependencyDescriptor(scope, relation.native)
+	definitions := make([]previewTypeDefinition, 0, 20)
+	for _, name := range append(append([]string(nil), selectedMemoryBeadNames...), selectedMemoryLinkNames...) {
+		definitions = append(definitions, previewTypeDefinition{name, func(scope string) (graph.TypeDescriptor, error) {
+			return selectedMemoryDescriptor(scope, name)
 		}})
 	}
-	return definitions
+	return append(definitions, previewTypeDefinition{"issue", issueDescriptor}, previewTypeDefinition{"dependency", dependencyDescriptor})
+}
+
+// selectedMemoryDescriptor is a deliberately partial inventory projection. The
+// legacy descriptor cannot represent correlated endpoint alternatives or
+// positive family ownership without invented finite maxima. Admission uses the
+// selectedTypeCatalog sidecar, never these omitted/relaxed details.
+func selectedMemoryDescriptor(scope, name string) (graph.TypeDescriptor, error) {
+	projection, err := newSelectedMemoryProjection(scope)
+	if err != nil {
+		return graph.TypeDescriptor{}, err
+	}
+	declaration, ok := projection.Definition(memorycatalog.Symbol(name))
+	if !ok {
+		return graph.TypeDescriptor{}, fmt.Errorf("%w: unknown selected Memory Type", ErrNotFound)
+	}
+	spec := graph.TypeDescriptorSpec{
+		ID: declaration.Binding.Type.URI, Name: name, Describes: declaration.Kind,
+		Description: fmt.Sprintf("Selected Memory Type; partial inventory descriptor. Property, correlated endpoint, graph and ownership constraints are enforced by the selected catalog. Source %s@%s:%s SHA256 %s.", projection.Source().Repository, projection.Source().Commit, projection.Source().Path, projection.Source().SHA256),
+	}
+	if declaration.Abstract {
+		spec.Description += " Abstract: cannot be used as a declared Type."
+	}
+	for _, parent := range declaration.Parents {
+		spec.ConformsTo = append(spec.ConformsTo, parent.URI)
+	}
+	if declaration.Kind == graph.KindLink {
+		// No independent source/target approximation of correlated pairs.
+		endpoint := graph.EndpointConstraint{}
+		spec.Source, spec.Target = &endpoint, &endpoint
+	}
+	return graph.NewTypeDescriptor(spec)
 }
 
 // FreshTypeNames lists, in installation order, the Types a fresh init installs.
@@ -147,7 +187,7 @@ func informationalTypeSQL(ids []string) (string, []any) {
 func (s *Store) selectedLinkTypeInTx(ctx context.Context, tx *sql.Tx, id string) error {
 	if _, err := s.readTypeInTx(ctx, tx, id); err != nil {
 		if errors.Is(err, ErrNotFound) {
-			return fmt.Errorf("%w: example Link Types require a freshly initialized graph workspace", ErrCapabilityUnavailable)
+			return fmt.Errorf("%w: Link Type is not in the installed selected catalog", ErrCapabilityUnavailable)
 		}
 		return err
 	}

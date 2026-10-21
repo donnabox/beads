@@ -112,8 +112,19 @@ func TestDependencyPairRemoveUsesNativeWriterAndNoop(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			f := setupDependencyUnlink(t, backend, 2)
+			beforeUnsupported := workflowState(t, f.ctx, f.store)
+			if got, err := f.store.AddInformationalLink(f.ctx, LinkCreateRequest{
+				Path: "links/unsupported", SourcePath: "beads/source", TargetPath: "beads/first", Actor: "author",
+			}); err == nil || !reflect.ValueOf(got).IsZero() || !reflect.DeepEqual(beforeUnsupported, workflowState(t, f.ctx, f.store)) {
+				t.Fatalf("unsupported Issue-to-Issue References changed state: %+v %v", got, err)
+			}
+			// References no longer permits Issue-to-Issue. Keep the exact native
+			// Dependency pair and use a separate Memory for the unowned control.
+			if _, err := f.store.Create(f.ctx, CreateRequest{Path: "beads/context", Title: "Context"}); err != nil {
+				t.Fatal(err)
+			}
 			info, err := f.store.AddInformationalLink(f.ctx, LinkCreateRequest{
-				Path: "links/info", SourcePath: "beads/source", TargetPath: "beads/first", Actor: "author",
+				Path: "links/info", SourcePath: "beads/source", TargetPath: "beads/context", Actor: "author",
 			})
 			if err != nil {
 				t.Fatal(err)
@@ -136,7 +147,7 @@ func TestDependencyPairRemoveUsesNativeWriterAndNoop(t *testing.T) {
 				t.Fatalf("removed Link remains live: %+v %v", current, err)
 			}
 			if current, err := f.store.ShowLink(f.ctx, "links/info"); err != nil || !reflect.DeepEqual(current, info.Link) {
-				t.Fatalf("pair removal touched same-endpoint informational Link: %+v %v", current, err)
+				t.Fatalf("pair removal touched unowned informational control: %+v %v", current, err)
 			}
 			if current, err := f.store.ShowIssue(f.ctx, "beads/first"); err != nil || !reflect.DeepEqual(current, f.targets[0]) {
 				t.Fatalf("target changed: %+v %v", current, err)
@@ -187,7 +198,7 @@ func TestDependencyUnlinkLifecycle(t *testing.T) {
 		t.Run(backend, func(t *testing.T) {
 			f := setupDependencyUnlink(t, backend, 2)
 			s, ctx := f.store, f.ctx
-			memory, err := s.Create(ctx, CreateRequest{Path: "beads/context", Body: "Context"})
+			memory, err := s.Create(ctx, CreateRequest{Title: "Context", Path: "beads/context", Body: "Context"})
 			if err != nil {
 				t.Fatal(err)
 			}

@@ -374,7 +374,7 @@ func TestPRCoreRequiresExcludeReadPermissionCoverage(t *testing.T) {
 		t.Error("PR Core must require actual exclude read-permission coverage")
 	}
 	upload := job.step(t, "Upload PR core grouped test evidence")
-	if upload.If != "always()" || upload.TimeoutMinutes != 5 || upload.With["name"] != "pr-core-go-test-${{ github.sha }}" || upload.With["path"] != "artifacts/pr-core-go-test" || upload.With["retention-days"] != "7" || upload.With["if-no-files-found"] != "warn" || actionFamily(upload.Uses) != "actions/upload-artifact" {
+	if upload.If != "always()" || upload.TimeoutMinutes != 5 || upload.With["name"] != "pr-core-go-test-${{ github.sha }}-${{ matrix.scope }}" || upload.With["path"] != "artifacts/pr-core-go-test" || upload.With["retention-days"] != "7" || upload.With["if-no-files-found"] != "warn" || actionFamily(upload.Uses) != "actions/upload-artifact" {
 		t.Error("PR Core grouped evidence must survive failure with a bounded commit-specific upload")
 	}
 	gate := workflow.job(t, "ci-gate")
@@ -385,6 +385,35 @@ func TestPRCoreRequiresExcludeReadPermissionCoverage(t *testing.T) {
 	if !contains(gate.Needs, "pr-core-wrapper") || evaluate.Env["PR_CORE_WRAPPER"] != "${{ needs.pr-core-wrapper.result }}" || !contains(strings.Fields(evaluate.Env["CI_GATE_REQUIRED"]), "PR_CORE_WRAPPER") {
 		t.Error("CI gate must require the PR Core result")
 	}
+	assertStepEnvValue(t, job, "Run PR core wrapper", "BEADS_PR_CORE_SCOPE", "${{ matrix.scope }}")
+	var raw struct {
+		Jobs map[string]struct {
+			Strategy struct {
+				FailFast bool           `yaml:"fail-fast"`
+				Matrix   map[string]any `yaml:"matrix"`
+			} `yaml:"strategy"`
+		} `yaml:"jobs"`
+	}
+	if err := yaml.Unmarshal([]byte(readPolicyFile(t, sourceRepoRoot(t), ".github/workflows/pr.yml")), &raw); err != nil {
+		t.Fatal(err)
+	}
+	strategy := raw.Jobs["pr-core-wrapper"].Strategy
+	if strategy.FailFast || !reflect.DeepEqual(strategy.Matrix, map[string]any{"scope": []any{"graphstore", "remaining"}}) {
+		t.Error("PR Core must run both disjoint scopes without fail-fast cancellation")
+	}
+	for _, scope := range []string{"graphstore", "remaining"} {
+		download := gate.step(t, "Download PR core "+scope+" evidence")
+		if download.If != "needs.pr-core-wrapper.result == 'success'" || download.TimeoutMinutes != 3 || download.Uses != "actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c" || download.With["name"] != "pr-core-go-test-${{ github.sha }}-"+scope || download.With["path"] != "artifacts/pr-core-scope-results/"+scope || download.With["pattern"] != "" {
+			t.Error("required CI gate must retrieve only the exact named source scope artifacts")
+		}
+	}
+	verify := gate.step(t, "Verify complete PR core coverage and cleanup")
+	if verify.If != "needs.pr-core-wrapper.result == 'success'" || verify.TimeoutMinutes != 2 || verify.ContinueOnError != nil {
+		t.Error("required CI gate must propagate bounded complete-union proof failures")
+	}
+	assertStepRunsExactly(t, gate, "Verify complete PR core coverage and cleanup", `python3 scripts/ci/macos-go-test.py --verify-scopes artifacts/pr-core-scope-results --source-sha "$(git rev-parse HEAD)" --package-parallel 4 --test-parallel 4`)
+	assertStepsBefore(t, gate, []string{"Download PR core graphstore evidence", "Download PR core remaining evidence", "Verify complete PR core coverage and cleanup"}, []string{"Evaluate CI gate"})
+
 }
 
 func TestPRComplexityReportIsAdvisoryAndBestEffort(t *testing.T) {
@@ -5864,11 +5893,13 @@ import json, os, sys
 from pathlib import Path
 mode = os.environ.get("DISPATCH_CASE", "good")
 graph = "github.com/steveyegge/beads/internal/storage/graphstore"
+command = "github.com/steveyegge/beads/cmd/bd"
 other = "github.com/steveyegge/beads/scripts"
 args = sys.argv[1:]
 with Path("calls.jsonl").open("a") as log: log.write(json.dumps(args) + "\n")
 if args[0] == "list":
     print(other)
+    if mode != "missing-command": print(command)
     if mode != "missing-package": print(graph)
     if mode == "duplicate-package": print(graph)
     sys.exit(0)
@@ -5883,13 +5914,13 @@ if "-list" in args:
     print("ok  " + graph + " 0.01s")
     sys.exit(0)
 pkg = args[-1]
-if (mode == "test-failure" and pkg == graph) or (mode == "other-failure" and pkg == other): sys.exit(9)
+if (mode == "test-failure" and pkg == graph) or (mode == "other-failure" and pkg == other) or (mode == "command-failure" and pkg == command): sys.exit(9)
 def event(action, name=None):
     print(json.dumps(dict(Action=action, Package=pkg, **({"Test":name} if name else {}))))
 event("start")
 if mode == "json-fail": event("fail")
 if mode == "build-fail": event("build-fail")
-if pkg == graph:
+if pkg in (graph, command):
     names = args[args.index("-run")+1][2:-2].split("|")
     if mode == "missing-root": names = names[1:]
     if mode == "extra-root": names += ["TestUnexpected"]
@@ -5928,7 +5959,12 @@ class DispatchControls(unittest.TestCase):
             calls = [json.loads(line) for line in (root / "calls.jsonl").read_text().splitlines()]
             self.assertEqual(calls[0], ["list", "-race", "-tags", "gms_pure_go", "./..."])
             executions = [call for call in calls if call[0] == "test" and "-list" not in call]
-            self.assertEqual(len(executions), 5)
+            self.assertEqual(len(executions), 9)
+            self.assertEqual(plan["command"]["excluded"], ["TestEmbeddedOld"])
+            self.assertEqual(sorted(sum(plan["command"]["groups"], [])), expected)
+            self.assertEqual(len(sum(plan["command"]["groups"], [])), len(expected))
+            self.assertEqual(len(summary["commandGroups"]), 4)
+            self.assertTrue(any(g["skipped"] for g in summary["commandGroups"]))
             for call in executions:
                 for flag in ["-race", "-short", "-timeout=30m", "-json"]: self.assertIn(flag, call)
                 self.assertNotIn("-v", call)
@@ -5936,9 +5972,62 @@ class DispatchControls(unittest.TestCase):
                 self.assertEqual(call[call.index("-skip")+1], "^TestEmbedded")
             self.assertEqual(executions[-1][-1], "github.com/steveyegge/beads/scripts")
             self.assertNotIn(m.GRAPHSTORE, executions[-1])
+            self.assertNotIn(m.COMMAND, executions[-1])
             for index, group in enumerate(plan["groups"], 1):
                 census = json.loads((output / ("graphstore-%d-census.json" % index)).read_text())
                 self.assertEqual(census["roots"], group)
+            for index, group in enumerate(plan["command"]["groups"], 1):
+                census = json.loads((output / ("cmd-bd-%d-census.json" % index)).read_text())
+                self.assertEqual(census["roots"], group)
+
+    def test_macos_scope_policy_stays_distinct_from_pr_core(self):
+        source = "a" * 40
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); fake = root / "go"; fake.write_text(FAKE); fake.chmod(0o700)
+            output = root / "scopes"; output.mkdir()
+            with mock.patch.dict(os.environ, {"DISPATCH_CASE": "good"}):
+                for scope in ("graphstore", "remaining"):
+                    m.execute(root, output / scope, str(fake), scope=scope, source_sha=source)
+            self.assertTrue(m.verify_scopes(output, source)["passed"])
+            with self.assertRaises(RuntimeError): m.verify_scopes(output, source, 4, 4)
+
+    def test_disjoint_scope_union_and_refusals(self):
+        import shutil
+        source = "a" * 40
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); fake = root / "go"; fake.write_text(FAKE); fake.chmod(0o700)
+            outputs = root / "scopes"; outputs.mkdir()
+            with mock.patch.dict(os.environ, {"DISPATCH_CASE": "good"}):
+                for scope in ("graphstore", "remaining"):
+                    m.execute(root, outputs / scope / "run.fixture" / "evidence", str(fake), scope=scope, source_sha=source, package_parallel=4, test_parallel=4)
+            proof = m.verify_scopes(outputs, source, 4, 4)
+            self.assertTrue(proof["passed"])
+            self.assertEqual(proof["scopes"], ["graphstore", "remaining"])
+            calls = [json.loads(line) for line in (root / "calls.jsonl").read_text().splitlines()]
+            executions = [call for call in calls if call[0] == "test" and "-list" not in call]
+            self.assertEqual(len(executions), 9)
+            self.assertEqual(sum(call[-1] == m.GRAPHSTORE for call in executions), 4)
+            self.assertEqual(sum(call[-1] == m.COMMAND for call in executions), 4)
+            for case in ("missing", "duplicate", "source", "flags", "packages", "raw", "failed", "cleanup", "receipt", "discovery"):
+                with self.subTest(case=case):
+                    changed = root / case; shutil.copytree(outputs, changed)
+                    scope = changed / "remaining" / "run.fixture" / "evidence"
+                    if case == "missing": shutil.rmtree(scope)
+                    elif case == "duplicate": shutil.copytree(scope, changed / "duplicate")
+                    elif case == "raw": (scope / "other-packages.stdout").write_text("")
+                    elif case == "discovery": (scope / "cmd-bd-discovery.stdout").write_text("TestIncomplete\n")
+                    else:
+                        name = "processes.json" if case in ("cleanup", "receipt") else "summary.json" if case == "failed" else "plan.json"
+                        path = scope / name; value = json.loads(path.read_text())
+                        if case == "source": value["source"] = "b" * 40
+                        elif case == "flags": value["flags"] = []
+                        elif case == "packages": value["scopedPackages"] = [m.COMMAND]
+                        elif case == "failed": value["passed"] = False
+                        elif case == "cleanup": value[0]["groupGone"] = False
+                        elif case == "receipt": value.pop()
+                        path.write_text(json.dumps(value))
+                    with self.assertRaises((RuntimeError, ValueError, FileNotFoundError)):
+                        m.verify_scopes(changed, source, 4, 4)
 
     def test_pr_core_options_and_raw_json_compatibility(self):
         for case in ("good", "json-fail", "other-failure"):
@@ -5970,10 +6059,11 @@ class DispatchControls(unittest.TestCase):
                 eq_path = Path(m.__file__).resolve().parents[2] / "tools/bazel/equivalence.py"
                 eq_spec = importlib.util.spec_from_file_location("equivalence", eq_path)
                 eq = importlib.util.module_from_spec(eq_spec); eq_spec.loader.exec_module(eq)
-                statuses = eq.go_test_statuses(combined, {m.GRAPHSTORE: "internal/storage/graphstore", "github.com/steveyegge/beads/scripts": "scripts"})
+                statuses = eq.go_test_statuses(combined, {m.GRAPHSTORE: "internal/storage/graphstore", m.COMMAND: "cmd/bd", "github.com/steveyegge/beads/scripts": "scripts"})
                 self.assertEqual(set(statuses["internal/storage/graphstore"]), {"TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "ExampleValue", "FuzzSeeds"})
                 self.assertEqual(statuses["internal/storage/graphstore"]["TestServer"], "skipped")
                 self.assertEqual(statuses["internal/storage/graphstore"]["TestNew"], "passed")
+                self.assertEqual(statuses["cmd/bd"], statuses["internal/storage/graphstore"])
                 self.assertTrue(all(r["groupGone"] for r in receipts))
 
     def test_pr_core_shell_forwards_environment_and_failure(self):
@@ -5981,7 +6071,7 @@ class DispatchControls(unittest.TestCase):
         # This proves shell quoting, defaults, opt-in JSON and failure propagation.
         import shutil
         repo = Path(m.__file__).resolve().parents[2]
-        for json_enabled, exit_code in ((False, 0), (True, 0), (True, 7)):
+        for json_enabled, exit_code, scope in ((False, 0, None), (True, 0, None), (True, 7, None), (False, 0, "remaining")):
             with self.subTest(json=json_enabled, exit=exit_code), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory)
                 for rel in (".buildflags", "scripts/ci/pr-core.sh", "scripts/ci/lib/timing.sh", "scripts/ci/lib/test-env.sh"):
@@ -5990,9 +6080,11 @@ class DispatchControls(unittest.TestCase):
                 python = binary / "python3"
                 python.write_text("#!" + sys.executable + "\nimport json,os,sys\nfrom pathlib import Path\nPath('invocation.json').write_text(json.dumps({'args':sys.argv[1:], 'tags':os.environ.get('GOFLAGS'), 'cgo':os.environ.get('CGO_ENABLED')}))\nsys.exit(int(os.environ['FAKE_EXIT']))\n")
                 python.chmod(0o700)
+                git = binary / "git"; git.write_text("#!/bin/sh\nprintf '%s\\n' " + "a" * 40 + "\n"); git.chmod(0o700)
                 env = dict(os.environ, PATH=str(binary) + os.pathsep + os.environ["PATH"], BEADS_TEST_ENV_DISABLE="1", FAKE_EXIT=str(exit_code))
-                for key in ("GO_TEST_PKG_PARALLEL", "GO_TEST_PARALLEL", "BEADS_PR_CORE_GO_TEST_JSON", "BEADS_CI_TEST_ENV_SH_LOADED", "BEADS_CI_TIMING_SH_LOADED", "GITHUB_STEP_SUMMARY"):
+                for key in ("GO_TEST_PKG_PARALLEL", "GO_TEST_PARALLEL", "BEADS_PR_CORE_GO_TEST_JSON", "BEADS_PR_CORE_SCOPE", "BEADS_CI_TEST_ENV_SH_LOADED", "BEADS_CI_TIMING_SH_LOADED", "GITHUB_STEP_SUMMARY"):
                     env.pop(key, None)
+                if scope: env["BEADS_PR_CORE_SCOPE"] = scope
                 if json_enabled:
                     env.update(GO_TEST_PKG_PARALLEL="3", GO_TEST_PARALLEL="2", BEADS_PR_CORE_GO_TEST_JSON=str(root / "combined events.json"))
                 process = m.subprocess.run(["bash", str(root / "scripts/ci/pr-core.sh")], cwd=root, env=env, capture_output=True, timeout=10)
@@ -6004,6 +6096,10 @@ class DispatchControls(unittest.TestCase):
                 self.assertIn("gms_pure_go", invocation["tags"])
                 evidence = Path(args[args.index("--output") + 1])
                 self.assertTrue(evidence.parent.is_dir()); self.assertFalse(evidence.exists())
+                if scope:
+                    self.assertEqual(args[args.index("--scope") + 1], scope)
+                    self.assertEqual(args[args.index("--source-sha") + 1], "a" * 40)
+                else: self.assertNotIn("--scope", args)
                 if json_enabled: self.assertEqual(args[args.index("--json-output") + 1], str(root / "combined events.json"))
                 else: self.assertNotIn("--json-output", args)
 
@@ -6024,7 +6120,7 @@ class DispatchControls(unittest.TestCase):
 
     def test_complete_partition_and_existing_skip(self): self.exercise("good")
     def test_negative_receipts(self):
-        for case in ["missing-package", "duplicate-package", "discovery-failure", "empty", "excluded-only",
+        for case in ["missing-package", "missing-command", "command-failure", "duplicate-package", "discovery-failure", "empty", "excluded-only",
                      "duplicate-name", "test-failure", "other-failure", "missing-root", "extra-root",
                      "unfinished-child", "duplicate-terminal", "bad-json", "json-fail", "build-fail", "missing-package-terminal", "other-missing-terminal"]:
             with self.subTest(case=case): self.exercise(case)
@@ -6041,6 +6137,28 @@ class DispatchControls(unittest.TestCase):
             root = Path(directory); runner = m.Runner(root, root); runner.deadline = 0
             with self.assertRaises(RuntimeError): runner.run("expired", [sys.executable, "-c", "raise SystemExit(0)"], 1)
             self.assertEqual(runner.receipts, [])
+    def test_process_snapshot_filters_group_and_omits_arguments(self):
+        output = "101 1 100 Z /usr/bin/python3\n102 1 100 S /bin/sleep\n103 1 999 S /private/foreign\n"
+        with mock.patch.object(m.subprocess, "run", return_value=mock.Mock(stdout=output)) as run:
+            snapshot = m.group_snapshot(100)
+        self.assertEqual(snapshot, {"members": [
+            dict(pid=101, ppid=1, pgid=100, state="Z", executable="python3"),
+            dict(pid=102, ppid=1, pgid=100, state="S", executable="sleep")]})
+        self.assertEqual(run.call_args.args[0], ["ps", "-axo", "pid=,ppid=,pgid=,stat=,comm="])
+        self.assertEqual(run.call_args.kwargs["timeout"], 2)
+    def test_descendant_diagnostics_do_not_turn_failure_into_success(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); runner = m.Runner(root, root)
+            snapshot = {"members": [dict(pid=101, ppid=1, pgid=100, state="Z", executable="python3")]}
+            # The group disappears while diagnostics run. Its original failed
+            # cleanup verdict must still be reported, with the sampled identity.
+            with mock.patch.object(m, "group_alive", side_effect=[True, False, False]), mock.patch.object(m, "group_snapshot", return_value=snapshot):
+                with self.assertRaisesRegex(RuntimeError, "left descendants after exit"):
+                    runner.run("orphan", [sys.executable, "-c", "pass"], 5)
+            receipt = json.loads((root / "processes.json").read_text())[0]
+            self.assertEqual(receipt["remainingProcesses"], snapshot)
+            self.assertTrue(receipt["groupGone"])
+            self.assertEqual(receipt["exitCode"], 0)
     def test_interrupt_during_spawn_retains_ownership(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory); runner = m.Runner(root, root)

@@ -5,7 +5,7 @@ on:
     # release/** is here because release-prep and release-fix PRs are based on
     # the release branch, not on main. Without it they run almost no CI and the
     # first full signal is the tag build, where a failure burns the tag.
-    branches: [ main, 'release/**', 'hotfix/**', integration ]
+    branches: [ main, 'release/**', 'hotfix/**', integration, 'codex/preview3-integration' ]
   # Merge queue (engdocs/CI_REQUIRED_CHECK_TOPOLOGY.md, "Merge Queue"):
   # the ruleset's required gate must also report on each queue entry's
   # merge-group commit, or a queued PR waits until the queue times it out.
@@ -1197,7 +1197,11 @@ jobs:
   # equivalence step) runs it, and scripts-go-checks runs what Bazel does not
   # (./scripts/... and the allowlisted tests under go test, go test's vet).
   pr-core-wrapper:
-    name: PR Core (wrapper timing)
+    name: PR Core race (${{ matrix.scope }})
+    strategy:
+      fail-fast: false
+      matrix:
+        scope: [graphstore, remaining]
     runs-on: ubuntu-latest
     needs: [build-artifacts, bazel-coverage]
     if: needs.bazel-coverage.outputs.pr_lanes != 'true'
@@ -1256,6 +1260,7 @@ jobs:
       - name: Run PR core wrapper
         env:
           BEADS_TEST_REQUIRE_EXCLUDE_PERMISSION: '1'
+          BEADS_PR_CORE_SCOPE: ${{ matrix.scope }}
           BEADS_TEST_BD_BINARY: ${{ github.workspace }}/ci-build-artifacts/bd-linux-gms-pure
           GOCACHE: ${{ runner.temp }}/go-cache/race
           # The replay harness's tests need the dolt CLI, the Go toolchain and
@@ -1270,7 +1275,7 @@ jobs:
         timeout-minutes: 5
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: pr-core-go-test-${{ github.sha }}
+          name: pr-core-go-test-${{ github.sha }}-${{ matrix.scope }}
           path: artifacts/pr-core-go-test
           retention-days: 7
           if-no-files-found: warn
@@ -2587,6 +2592,27 @@ jobs:
     if: ${{ always() }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+
+      # The existing required CI Gate remains the complete PR Core signal:
+      # matrix success alone cannot hide an omitted package or lost receipt.
+      - name: Download PR core graphstore evidence
+        if: needs.pr-core-wrapper.result == 'success'
+        timeout-minutes: 3
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: pr-core-go-test-${{ github.sha }}-graphstore
+          path: artifacts/pr-core-scope-results/graphstore
+      - name: Download PR core remaining evidence
+        if: needs.pr-core-wrapper.result == 'success'
+        timeout-minutes: 3
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: pr-core-go-test-${{ github.sha }}-remaining
+          path: artifacts/pr-core-scope-results/remaining
+      - name: Verify complete PR core coverage and cleanup
+        if: needs.pr-core-wrapper.result == 'success'
+        timeout-minutes: 2
+        run: python3 scripts/ci/macos-go-test.py --verify-scopes artifacts/pr-core-scope-results --source-sha "$(git rev-parse HEAD)" --package-parallel 4 --test-parallel 4
 
       - name: Evaluate CI gate
         env:

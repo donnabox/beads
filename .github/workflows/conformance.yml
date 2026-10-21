@@ -5,7 +5,7 @@ name: Conformance
 
 on:
   pull_request:
-    branches: [ main, 'release/**', 'hotfix/**', integration ]
+    branches: [ main, 'release/**', 'hotfix/**', integration, 'codex/preview3-integration' ]
     # "Upgrade-relevant code" allowlist (spec-f7.md §2.4): any non-test Go
     # change, build input, or this workflow's own inputs. Kept byte-for-byte
     # identical (modulo each workflow's own file/script entries) across

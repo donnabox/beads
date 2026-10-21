@@ -89,7 +89,7 @@ func (s *Store) listChildrenInTx(ctx context.Context, tx *sql.Tx, parentPath str
 // installed descriptor bytes and fingerprints. Its validated set must also be
 // the complete fresh generation before a relationship journey is available.
 func (s *Store) requireRelationshipGenerationInTx(ctx context.Context, tx *sql.Tx) error {
-	if s.options.TypeGeneration == 9 {
+	if s.options.TypeGeneration == TypeGeneration {
 		return nil
 	}
 	if s.options.TypeGeneration != 0 {

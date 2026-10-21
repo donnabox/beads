@@ -95,6 +95,8 @@ func TestLinkPropertiesPatchLifecycle(t *testing.T) {
 				{linkNotePatch(t, "  雪\r\n"), map[string]any{"note": "  雪\r\n"}, false, true},
 				{[]byte(`[{"op":"replace","path":"","value":{"note":"","scratch":[0]}},{"op":"add","path":"/scratch/-","value":1},{"op":"remove","path":"/scratch"}]`), map[string]any{"note": ""}, true, false},
 				{[]byte(`[{"op":"remove","path":"/note"}]`), map[string]any{}, false, false},
+				{[]byte(`[{"op":"replace","path":"","value":{"note":null,"title":"extension","count":42}}]`), map[string]any{"note": nil, "title": "extension", "count": float64(42)}, false, false},
+				{[]byte(`[{"op":"replace","path":"","value":{}}]`), map[string]any{}, false, false},
 			} {
 				request := LinkPropertiesPatchRequest{Path: "links/out", Patch: tc.patch, Actor: "patch-author", Unconditional: tc.linkUnconditional, UnconditionalSource: tc.sourceUnconditional}
 				if !tc.linkUnconditional {
@@ -198,10 +200,9 @@ func TestLinkPropertiesPatchLifecycle(t *testing.T) {
 			if !errors.Is(err, ErrConflict) || !reflect.ValueOf(bad).IsZero() || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
 				t.Fatalf("optional Issue guard: %+v %v", bad, err)
 			}
-			// Equal endpoints remain distinct identities; a Memory self-Link
-			// participates once in the owned set and mints one source revision.
-			for _, tc := range []struct{ path, target string }{{"links/parallel", "beads/target"}, {"links/self", "beads/plan"}} {
-				created, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: tc.path, SourcePath: "beads/plan", TargetPath: tc.target, ExpectedSourceRevision: source.Revision})
+			// Parallel Links with equal endpoints retain independent identities and histories.
+			for _, tc := range []struct{ path, target string }{{"links/parallel", "beads/target"}, {"links/parallel-two", "beads/target"}} {
+				created, err := s.AddInformationalLink(ctx, LinkCreateRequest{TypeURL: s.ScopeURL() + "types/subject-to", Path: tc.path, SourcePath: "beads/plan", TargetPath: tc.target, ExpectedSourceRevision: source.Revision})
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -256,7 +257,7 @@ func TestLinkPropertiesPatchRefusalAndRollback(t *testing.T) {
 				}
 			}
 			for _, tc := range []struct{ name, patch string }{
-				{"empty-operations", `[]`}, {"missing-note", `[{"op":"replace","path":"/note","value":"x"}]`}, {"null-note", `[{"op":"add","path":"/note","value":null}]`}, {"extra-member", `[{"op":"add","path":"/title","value":"x"}]`}, {"array-final", `[{"op":"replace","path":"","value":[]}]`}, {"late-error", `[{"op":"add","path":"/note","value":"early"},{"op":"remove","path":"/missing"}]`},
+				{"empty-operations", `[]`}, {"missing-note", `[{"op":"replace","path":"/note","value":"x"}]`}, {"array-final", `[{"op":"replace","path":"","value":[]}]`}, {"late-error", `[{"op":"add","path":"/note","value":"early"},{"op":"remove","path":"/missing"}]`},
 			} {
 				t.Run(tc.name, func(t *testing.T) {
 					r := request
@@ -345,9 +346,10 @@ func TestLinkPropertiesPatchReadBudget(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, _, s, original, target, link := disclosureFixture(t, backend)
+			ctx = currentReadBudgetContext(t, ctx)
 			// The unchanged filler fits the established current-read budget. Multiple
 			// copies of a changed Link (including its owner) would exceed that budget.
-			if _, err := s.Create(ctx, CreateRequest{Path: "beads/filler", Body: strings.Repeat("f", PreviewCurrentReadByteLimit/2-(512<<10))}); err != nil {
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/filler", Title: "Fixture", Body: strings.Repeat("f", PreviewCurrentReadByteLimit/2-(512<<10))}); err != nil {
 				t.Fatal(err)
 			}
 			if _, err := s.Read(ctx, "links/out"); err != nil {
@@ -657,6 +659,7 @@ func TestLinkPropertiesPatchDeletedBudget(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, _, s, original, target, link := disclosureFixture(t, backend)
+			ctx = currentReadBudgetContext(t, ctx)
 			deleted := propertiesPatchDeletedFiller(t, ctx, s)
 			if _, err := s.Read(ctx, "links/out"); err != nil {
 				t.Fatalf("deleted filler fixture unreadable: %v", err)

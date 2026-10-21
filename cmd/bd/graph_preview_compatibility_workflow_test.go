@@ -97,18 +97,21 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 				t.Fatal("guarded title edit lost omitted body")
 			}
 
-			related := scope + "types/preview-related"
-			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", memory.ID, other.ID, "--type", related))
+			// Subject To exercises owned-source guards; References below exercises unowned Links.
+			constraint := graphMixedResult[graphstore.Record](t, call("create", "First constraint", "--type", "types/constraint", "--id", "constraint-one"))
+			secondConstraint := graphMixedResult[graphstore.Record](t, call("create", "Second constraint", "--type", "types/constraint", "--id", "constraint-two"))
+			related := scope + "types/subject-to"
+			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", memory.ID, constraint.ID, "--type", related))
 			if link.ReplacedSource == nil {
 				t.Fatal("default Link creation lost source predecessor")
 			}
 			before := call("show", memory.ID)
-			refuse("revision_conflict", "link", memory.ID, issue.ID, "--type", related, "--if-source-revision", titled.Memory.Revision)
-			refuse("invalid_selector", "link", memory.ID, issue.ID, "--type", related, "--if-source-revision=")
+			refuse("revision_conflict", "link", memory.ID, secondConstraint.ID, "--type", related, "--if-source-revision", titled.Memory.Revision)
+			refuse("invalid_selector", "link", memory.ID, secondConstraint.ID, "--type", related, "--if-source-revision=")
 			if call("show", memory.ID) != before {
 				t.Fatal("stale/conflicting source guards changed Memory")
 			}
-			mixed := graphMixedResult[graphstore.LinkMutationResult](t, call("link", memory.ID, issue.ID, "--type", related))
+			mixed := graphMixedResult[graphstore.LinkMutationResult](t, call("link", memory.ID, secondConstraint.ID, "--type", related))
 			changed := graphMixedResult[graphstore.LinkMutationResult](t, call("update", link.Link.ID, "--properties", `{"note":"current source"}`))
 			if !changed.Changed || changed.ReplacedSource == nil {
 				t.Fatal("default source guard did not support Link replacement")
@@ -129,17 +132,17 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			call("link", "delete", "--force", mixed.Link.ID, "--if-revision", mixed.Link.Revision)
 			call("link", "delete", "--force", link.Link.ID, "--if-revision", patched.Link.Revision)
 			issueBefore := call("show", issue.ID)
-			unowned := graphMixedResult[graphstore.LinkMutationResult](t, call("link", issue.ID, memory.ID, "--type", related))
+			unowned := graphMixedResult[graphstore.LinkMutationResult](t, call("link", issue.ID, memory.ID, "--type", "types/references"))
 			if unowned.ReplacedSource != nil || call("show", issue.ID) != issueBefore {
 				t.Fatal("default informational Link changed or disclosed its Issue source")
 			}
 			human := graphPolicyCLI(t, bd, work, home, nil, "", "link", "list", "--incident-to", issue.ID)
-			if !strings.Contains(human, "types/preview-related  "+strings.TrimPrefix(unowned.Link.ID, scope)+"  "+strings.TrimPrefix(issue.ID, scope)+" → "+strings.TrimPrefix(memory.ID, scope)) {
+			if !strings.Contains(human, "types/references  "+strings.TrimPrefix(unowned.Link.ID, scope)+"  "+strings.TrimPrefix(issue.ID, scope)+" → "+strings.TrimPrefix(memory.ID, scope)) {
 				t.Fatalf("links omitted type-first local display: %q", human)
 			}
 			call("link", "delete", "--force", unowned.Link.ID, "--if-revision", unowned.Link.Revision)
 			canonicalID := scope + "links/canonical"
-			canonical := graphMixedResult[graphstore.LinkMutationResult](t, call("link", issue.ID, other.ID, "--type", related, "--id", canonicalID))
+			canonical := graphMixedResult[graphstore.LinkMutationResult](t, call("link", issue.ID, other.ID, "--type", "types/references", "--id", canonicalID))
 			if canonical.Link.ID != canonicalID {
 				t.Fatal("informational Link did not accept an in-scope canonical ID")
 			}
@@ -184,7 +187,7 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			if rememberMerge.Memory.Properties.Body != "Second body" || rememberMerge.Memory.Properties.Title != "Retitled" {
 				t.Fatal("remember property merge lost the omitted body")
 			}
-			propertyLink := graphMixedResult[graphstore.LinkMutationResult](t, call("link", propertyMemory.ID, issue.ID, "--type", related, "--properties", `{"note":"keep"}`))
+			propertyLink := graphMixedResult[graphstore.LinkMutationResult](t, call("link", propertyMemory.ID, constraint.ID, "--type", related, "--properties", `{"note":"keep"}`))
 			linkEmptyMerge := graphMixedResult[graphstore.LinkMutationResult](t, call("update", propertyLink.Link.ID, "--properties", `{}`, "--if-revision", propertyLink.Link.Revision))
 			if linkEmptyMerge.Changed || linkEmptyMerge.Link.Revision != propertyLink.Link.Revision || linkEmptyMerge.Link.Properties["note"] != "keep" {
 				t.Fatal("empty Link property merge cleared a field or created a version")

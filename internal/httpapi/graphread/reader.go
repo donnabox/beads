@@ -106,13 +106,20 @@ func (r *Reader) bead(ctx context.Context, id, typ, revision string, properties 
 	if err != nil {
 		return bdpwire.BeadRecord{}, err
 	}
-	return bead(descriptor, id, typ, revision, properties, metadata, owned, attribution)
+	ownedTypes, err := r.store.SelectedOwnedLinkTypes(typ)
+	if err != nil {
+		return bdpwire.BeadRecord{}, err
+	}
+	return bead(descriptor, id, typ, revision, properties, metadata, owned, attribution, ownedTypes)
 }
 
-func bead(descriptor graph.TypeDescriptor, id, typ, revision string, properties any, metadata json.RawMessage, owned []json.RawMessage, attribution graphstore.Attribution) (bdpwire.BeadRecord, error) {
+func bead(descriptor graph.TypeDescriptor, id, typ, revision string, properties any, metadata json.RawMessage, owned []json.RawMessage, attribution graphstore.Attribution, ownedTypes []string) (bdpwire.BeadRecord, error) {
 	result := bdpwire.BeadRecord{ID: id, Type: typ, Revision: revision}
 	if descriptor.ID() != typ || descriptor.Describes() != graph.KindBead {
 		return result, fmt.Errorf("%w: Bead descriptor does not match its Type", graphstore.ErrInvalidStore)
+	}
+	if ownedTypes == nil {
+		return result, fmt.Errorf("%w: missing effective ownership contract", graphstore.ErrInvalidStore)
 	}
 	var err error
 	result.Properties, err = projectProperties(properties)
@@ -127,21 +134,23 @@ func bead(descriptor graph.TypeDescriptor, id, typ, revision string, properties 
 	if err != nil {
 		return result, err
 	}
-	result.OwnedLinks, err = ownedLinks(id, descriptor, owned)
+	result.OwnedLinks, err = ownedLinks(id, ownedTypes, owned)
 	return result, err
 }
 
-func ownedLinks(source string, descriptor graph.TypeDescriptor, records []json.RawMessage) (bdpwire.OwnedLinks, error) {
+// The validated store supplies effective selected ownership separately from
+// its deliberately partial inventory descriptors. Semantic family constraints
+// remain the writer's responsibility; this projection preserves exact groups.
+func ownedLinks(source string, types []string, records []json.RawMessage) (bdpwire.OwnedLinks, error) {
 	var result bdpwire.OwnedLinks
-	if len(descriptor.OwnsOutgoing()) > 0 {
+	if len(types) > 0 {
 		result = bdpwire.OwnedLinks{}
 	}
-	for _, declaration := range descriptor.OwnsOutgoing() {
-		if !declaration.Wildcard() {
-			result[declaration.TypeURL()] = bdpwire.LinkRecords{}
-		} else if len(records) > declaration.Max() {
-			return nil, fmt.Errorf("%w: wildcard owned set exceeds descriptor", graphstore.ErrInvalidStore)
-		}
+	for _, typ := range types {
+		result[typ] = bdpwire.LinkRecords{}
+	}
+	if len(records) > graphstore.PreviewOwnedLinkLimit {
+		return nil, fmt.Errorf("%w: owned projection exceeds store read budget", graphstore.ErrInvalidStore)
 	}
 	seen := map[string]bool{}
 	for _, raw := range records {
@@ -149,7 +158,7 @@ func ownedLinks(source string, descriptor graph.TypeDescriptor, records []json.R
 		if err := json.Unmarshal(raw, &stored); err != nil {
 			return nil, fmt.Errorf("%w: malformed owned Link: %v", graphstore.ErrInvalidStore, err)
 		}
-		declaration, owns := descriptor.Owns(stored.Type)
+		_, owns := result[stored.Type]
 		if !owns || stored.Source != source || seen[stored.ID] {
 			return nil, fmt.Errorf("%w: inconsistent owned Link membership", graphstore.ErrInvalidStore)
 		}
@@ -159,9 +168,6 @@ func ownedLinks(source string, descriptor graph.TypeDescriptor, records []json.R
 			return nil, err
 		}
 		result[stored.Type] = append(result[stored.Type], projected)
-		if len(result[stored.Type]) > declaration.Max() {
-			return nil, fmt.Errorf("%w: owned group exceeds descriptor", graphstore.ErrInvalidStore)
-		}
 	}
 	for _, group := range result {
 		sort.Slice(group, func(i, j int) bool { return graph.CompareCodeUnits(group[i].ID, group[j].ID) < 0 })

@@ -86,10 +86,8 @@ func projectGraphGeneric(snapshot graphstore.Snapshot, scope string, in graphGen
 		for _, descriptor := range snapshot.Types {
 			installed[descriptor.ID()] = true
 		}
-		for _, id := range []string{graphstore.IssueTypeURL(scope), graphstore.MemoryTypeURL(scope),
-			graphstore.DependencyTypeURL(scope), graphstore.RelatedTypeURL(scope),
-			graphstore.ExampleFollowsTypeURL(scope), graphstore.ExampleCitesTypeURL(scope)} {
-			if !installed[id] {
+		for _, name := range graphstore.FreshTypeNames() {
+			if !installed[scope+"types/"+name] {
 				return invalid("incomplete Type installation")
 			}
 		}
@@ -105,8 +103,14 @@ func projectGraphGeneric(snapshot graphstore.Snapshot, scope string, in graphGen
 		var node graphGenericNode
 		switch record := value.(type) {
 		case graphstore.Record:
-			if record.Type != graphstore.MemoryTypeURL(scope) {
-				return invalid("unsupported Memory Type")
+			if len(snapshot.Types) == 0 {
+				if record.Type != graphstore.MemoryTypeURL(scope) {
+					return invalid("a refined Memory Type requires its installed descriptor inventory")
+				}
+			} else {
+				if err := graphPreviewValidateSelectedType(scope, snapshot.Types, record.Type, graph.KindBead); err != nil || !graphPreviewTypeRefines(snapshot.Types, record.Type, graphstore.MemoryTypeURL(scope)) {
+					return invalid("unsupported Memory Type")
+				}
 			}
 			node = graphGenericNode{record.ID, record.Type, record.Properties.Title, record.Version, record.Attribution}
 		case graphstore.IssueRecord:
@@ -115,7 +119,11 @@ func projectGraphGeneric(snapshot graphstore.Snapshot, scope string, in graphGen
 			}
 			node = graphGenericNode{record.ID, record.Type, record.Properties.Title, record.Version, record.Attribution}
 		case graphstore.LinkRecord:
-			if !graphstore.IsInformationalTypeURL(scope, record.Type) && !dependencyTypes[record.Type] {
+			if len(snapshot.Types) != 0 {
+				if err := graphPreviewValidateSelectedType(scope, snapshot.Types, record.Type, graph.KindLink); err != nil {
+					return invalid("unsupported Link Type")
+				}
+			} else if !graphstore.IsInformationalTypeURL(scope, record.Type) && !dependencyTypes[record.Type] {
 				return invalid("unsupported Link Type")
 			}
 			if _, kind, ok := graph.SplitCanonicalURL(scope, record.ID); !ok || kind != graph.KindLink || record.Version == "" {

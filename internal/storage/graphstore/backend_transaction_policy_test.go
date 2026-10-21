@@ -121,6 +121,57 @@ func TestTransactionPolicyContextBeforeOpen(t *testing.T) {
 	}
 }
 
+func TestSelectedTypeTransactionValidation(t *testing.T) {
+	validationFault := errors.New("selected graph validation unavailable")
+	const relevantQuery = "SELECT EXISTS(SELECT 1 FROM graph_preview_catalog WHERE resource_kind='bead' AND allocation_state='live' AND backing='generic') OR EXISTS(SELECT 1 FROM graph_preview_links)"
+	for _, mode := range []string{"native", "selected", "selected-refusal", "import-dry-run"} {
+		t.Run(mode, func(t *testing.T) {
+			s, mock := transactionPolicyMock(t)
+			mock.ExpectBegin()
+			// Strict ordering proves that final validation follows the callback.
+			mock.ExpectExec("staged operation").WillReturnResult(sqlmock.NewResult(0, 1))
+			if mode != "native" {
+				if mode == "selected-refusal" {
+					mock.ExpectQuery(relevantQuery).WillReturnError(validationFault)
+				} else {
+					mock.ExpectQuery(relevantQuery).WillReturnRows(sqlmock.NewRows([]string{"relevant"}).AddRow(false))
+				}
+			}
+			if mode == "selected-refusal" || mode == "import-dry-run" {
+				mock.ExpectRollback()
+			} else {
+				mock.ExpectCommit()
+			}
+			callback := func(tx *sql.Tx) error {
+				_, err := tx.ExecContext(context.Background(), "staged operation")
+				return err
+			}
+			var err error
+			switch mode {
+			case "native":
+				err = s.withTx(context.Background(), true, callback)
+			case "selected", "selected-refusal":
+				err = s.withTypeValidationTx(context.Background(), callback)
+			case "import-dry-run":
+				err = s.withTxPolicy(context.Background(), txPolicy{mayWrite: true, commit: false, validateTypes: true}, callback)
+			}
+			if mode == "selected-refusal" {
+				if !errors.Is(err, validationFault) || errors.Is(err, ErrOutcomeUnknown) {
+					t.Fatalf("validation refusal: %v", err)
+				}
+			} else if err != nil {
+				t.Fatal(err)
+			}
+			if s.db.Stats().InUse != 0 {
+				t.Fatal("transaction leaked a connection")
+			}
+			if err := mock.ExpectationsWereMet(); err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+}
+
 func TestTransactionPolicyAdmissionBeforeBegin(t *testing.T) {
 	setFault := errors.New("session setting unavailable")
 	for _, tc := range []struct {

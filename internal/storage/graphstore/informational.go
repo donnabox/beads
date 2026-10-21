@@ -22,12 +22,6 @@ func informationalProperties(properties map[string]any) ([]byte, error) {
 	if properties == nil {
 		properties = map[string]any{}
 	}
-	for key, value := range properties {
-		note, ok := value.(string)
-		if key != "note" || !ok || !utf8.ValidString(note) {
-			return nil, fmt.Errorf("%w: informational Link properties admit only optional UTF-8 string note", storage.ErrValidation)
-		}
-	}
 	return canonicalJSON(properties)
 }
 
@@ -42,25 +36,25 @@ func checkRevisionGuard(expected string, unconditional bool, current string, req
 }
 
 // beadEndpointInTx validates complete current/retained endpoint state. Memory
-// ownership is a descriptor rule; informational Issue Links stay unowned.
-func (s *Store) beadEndpointInTx(ctx context.Context, tx *sql.Tx, path string) (any, string, bool, error) {
+// ownership is checked separately from the selected source and Link Types.
+func (s *Store) beadEndpointInTx(ctx context.Context, tx *sql.Tx, path string) (any, string, error) {
 	var backing string
 	err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=?`, path).Scan(&backing)
 	if errors.Is(err, sql.ErrNoRows) {
-		return nil, "", false, ErrNotFound
+		return nil, "", ErrNotFound
 	}
 	if err != nil {
-		return nil, "", false, err
+		return nil, "", err
 	}
 	switch backing {
 	case "generic":
 		r, err := s.showMemoryInTx(ctx, tx, path)
-		return r, r.Revision, true, err
+		return r, r.Revision, err
 	case "issue":
 		r, err := s.showIssueInTx(ctx, tx, path)
-		return r, r.Revision, false, err
+		return r, r.Revision, err
 	default:
-		return nil, "", false, fmt.Errorf("%w: informational endpoints must be live local Issue or Memory Beads", storage.ErrValidation)
+		return nil, "", fmt.Errorf("%w: informational endpoints must be live local Issue or Memory Beads", storage.ErrValidation)
 	}
 }
 
@@ -90,29 +84,40 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 	if err != nil {
 		return LinkMutationResult{}, err
 	}
+	catalog, err := s.selectedTypes()
+	if err != nil {
+		return LinkMutationResult{}, err
+	}
+	if err := catalog.validateProperties(request.TypeURL, properties, graph.KindLink); err != nil {
+		return LinkMutationResult{}, err
+	}
 	metadata, err := commonMetadata(request.Metadata)
 	if err != nil {
 		return LinkMutationResult{}, err
 	}
 	var result LinkMutationResult
-	err = s.withTx(ctx, true, func(tx *sql.Tx) error {
+	err = s.withTypeValidationTx(ctx, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
 		if err := s.selectedLinkTypeInTx(ctx, tx, request.TypeURL); err != nil {
 			return err
 		}
-		source, revision, owned, err := s.beadEndpointInTx(ctx, tx, request.SourcePath)
+		source, revision, err := s.beadEndpointInTx(ctx, tx, request.SourcePath)
+		if err != nil {
+			return err
+		}
+		owned, err := s.ownsLink(source, request.TypeURL)
 		if err != nil {
 			return err
 		}
 		if err := checkRevisionGuard(request.ExpectedSourceRevision, request.UnconditionalSource, revision, owned, "source"); err != nil {
 			return err
 		}
-		if _, _, _, err := s.beadEndpointInTx(ctx, tx, request.TargetPath); err != nil {
+		if _, _, err := s.beadEndpointInTx(ctx, tx, request.TargetPath); err != nil {
 			return err
 		}
-		if memory, ok := source.(Record); ok && len(memory.Owned) >= PreviewOwnedLinkLimit {
+		if memory, ok := source.(Record); owned && ok && len(memory.Owned) >= PreviewOwnedLinkLimit {
 			return fmt.Errorf("%w: preview source-owned Link limit %d exceeded", storage.ErrValidation, PreviewOwnedLinkLimit)
 		}
 		path := request.Path
@@ -155,7 +160,7 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 			return err
 		}
 		result, err = s.finishInformationalWriteInTx(ctx, tx, path, request.SourcePath, request.Actor, source)
-		if err == nil {
+		if err == nil && owned {
 			result.ReplacedSource = replacedMemory(source, request.UnconditionalSource)
 		}
 		return err
@@ -208,7 +213,7 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 		return LinkMutationResult{}, err
 	}
 	var result LinkMutationResult
-	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
+	err := s.withTypeValidationTx(ctx, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
@@ -223,7 +228,11 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 			return err
 		}
 		sourcePath := strings.TrimPrefix(link.Source, s.options.Binding.ScopeURL)
-		source, revision, owned, err := s.beadEndpointInTx(ctx, tx, sourcePath)
+		source, revision, err := s.beadEndpointInTx(ctx, tx, sourcePath)
+		if err != nil {
+			return err
+		}
+		owned, err := s.ownsLink(source, link.Type)
 		if err != nil {
 			return err
 		}
@@ -266,6 +275,13 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 				return err
 			}
 		}
+		catalog, err := s.selectedTypes()
+		if err != nil {
+			return err
+		}
+		if err := catalog.validateProperties(link.Type, nextProperties, graph.KindLink); err != nil {
+			return err
+		}
 		metadata, metadataChanged, err := issueops.ApplyMetadataPatch(link.Metadata, request.Metadata)
 		if err != nil {
 			return err
@@ -303,7 +319,9 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 		}
 		result, err = s.finishInformationalWriteInTx(ctx, tx, request.Path, sourcePath, request.Actor, source)
 		if err == nil {
-			result.ReplacedSource = replacedMemory(source, request.UnconditionalSource)
+			if owned {
+				result.ReplacedSource = replacedMemory(source, request.UnconditionalSource)
+			}
 			if patch != nil || request.MergeProperties || hasCommonMetadataPatch(request.Metadata) {
 				// The new patch route must not commit a graph that current reads
 				// cannot acquire. Replacement retains its existing policy.
@@ -341,7 +359,13 @@ func (s *Store) finishInformationalWriteInTx(ctx context.Context, tx *sql.Tx, pa
 	if err := s.afterStage("link-retained"); err != nil {
 		return LinkMutationResult{}, err
 	}
-	source, err = s.recordOwnedMemoryInTx(ctx, tx, sourcePath, actor, source)
+	owned, err := s.ownsLink(source, link.Type)
+	if err != nil {
+		return LinkMutationResult{}, err
+	}
+	if owned {
+		source, err = s.recordOwnedMemoryInTx(ctx, tx, sourcePath, actor, source)
+	}
 	if err != nil {
 		return LinkMutationResult{}, err
 	}
@@ -350,6 +374,17 @@ func (s *Store) finishInformationalWriteInTx(ctx context.Context, tx *sql.Tx, pa
 
 func (s *Store) recordOwnedMemoryInTx(ctx context.Context, tx *sql.Tx, sourcePath, actor string, source any) (any, error) {
 	var err error
+	if issue, ok := source.(IssueRecord); ok {
+		unscope := issueops.ScopeVersionedHistoryTransaction(tx, true)
+		defer unscope()
+		if err := issueops.RecordVersionInTx(ctx, tx, issue.Properties.ID, actor); err != nil {
+			return nil, err
+		}
+		if err := s.recordIssueMappingInTx(ctx, tx, sourcePath, issue.Properties.ID); err != nil {
+			return nil, err
+		}
+		return s.showIssueInTx(ctx, tx, sourcePath)
+	}
 	if memory, ok := source.(Record); ok {
 		memory.Owned, err = s.memoryOwnedLinksInTx(ctx, tx, sourcePath)
 		if err != nil {
@@ -411,7 +446,7 @@ func (s *Store) currentInformationalLinkInTx(ctx context.Context, tx *sql.Tx, pa
 		if err := tx.QueryRowContext(ctx, `SELECT resource_kind,type_url,allocation_state,backing FROM graph_preview_catalog WHERE path=?`, endpoint).Scan(&kind, &typ, &state, &backing); err != nil {
 			return LinkRecord{}, fmt.Errorf("%w: missing endpoint: %v", ErrInvalidStore, err)
 		}
-		if validatePath(endpoint) != nil || kind != "bead" || state != "live" || !((backing == "generic" && typ == MemoryTypeURL(s.options.Binding.ScopeURL)) || (backing == "issue" && typ == issueType)) {
+		if validatePath(endpoint) != nil || kind != "bead" || state != "live" || !((backing == "generic" && s.isMemoryType(typ)) || (backing == "issue" && typ == issueType)) {
 			return LinkRecord{}, fmt.Errorf("%w: invalid informational endpoint", ErrInvalidStore)
 		}
 	}
@@ -428,6 +463,13 @@ func (s *Store) currentInformationalLinkInTx(ctx context.Context, tx *sql.Tx, pa
 	if err != nil || !bytes.Equal(p, properties) {
 		return LinkRecord{}, fmt.Errorf("%w: invalid informational properties", ErrInvalidStore)
 	}
+	catalog, err := s.selectedTypes()
+	if err != nil {
+		return LinkRecord{}, err
+	}
+	if err := catalog.validateProperties(r.Type, p, graph.KindLink); err != nil {
+		return LinkRecord{}, fmt.Errorf("%w: Link payload violates selected Type: %v", ErrInvalidStore, err)
+	}
 	a, err := canonicalJSON(r.Attribution)
 	if err != nil || !bytes.Equal(a, attribution) {
 		return LinkRecord{}, fmt.Errorf("%w: invalid informational attribution", ErrInvalidStore)
@@ -440,20 +482,8 @@ func (s *Store) currentInformationalLinkInTx(ctx context.Context, tx *sql.Tx, pa
 }
 
 func (s *Store) memoryOwnedLinksInTx(ctx context.Context, tx *sql.Tx, sourcePath string) ([]json.RawMessage, error) {
-	rows, err := tx.QueryContext(ctx, `SELECT l.path FROM graph_preview_links l WHERE l.source_path=?`, sourcePath)
+	paths, err := s.informationalOwnedPathsInTx(ctx, tx, sourcePath)
 	if err != nil {
-		return nil, err
-	}
-	paths := []string{}
-	for rows.Next() {
-		var path string
-		if err := rows.Scan(&path); err != nil {
-			_ = rows.Close()
-			return nil, err
-		}
-		paths = append(paths, path)
-	}
-	if err := errors.Join(rows.Err(), rows.Close()); err != nil {
 		return nil, err
 	}
 	if len(paths) > PreviewOwnedLinkLimit {

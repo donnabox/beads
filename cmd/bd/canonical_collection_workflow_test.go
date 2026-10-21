@@ -28,7 +28,7 @@ func TestCanonicalCollectionInstalledWorkflow(t *testing.T) {
 			call := func(args ...string) string { return graphPolicyCLI(t, bd, work, home, nil, "", args...) }
 			call("remember", "First body", "--id", "beads/first", "--json")
 			call("remember", "Second body", "--id", "beads/second", "--json")
-			call("link", "create", "first", "second", "--type", graphstore.RelatedTypeURL(scope), "--id", "links/related", "--json")
+			call("link", "create", "first", "second", "--type", scope+"types/superseded-by", "--id", "links/related", "--json")
 			var beads struct {
 				SchemaVersion int             `json:"schema_version"`
 				BDPSpec       string          `json:"bdp_spec"`
@@ -45,7 +45,8 @@ func TestCanonicalCollectionInstalledWorkflow(t *testing.T) {
 			if beads.SchemaVersion != 2 || beads.BDPSpec != bdpwire.Pin || len(page.Items) != 2 || page.Next != nil {
 				t.Fatalf("wrong native collection: %s", raw)
 			}
-			if page.Items[0].ID != scope+"beads/first" || len(page.Items[0].OwnedLinks) == 0 {
+			owned := page.Items[0].OwnedLinks[scope+"types/superseded-by"]
+			if page.Items[0].ID != scope+"beads/first" || len(owned) != 1 || owned[0].ID != scope+"links/related" {
 				t.Fatalf("public current projection lost owned state: %s", raw)
 			}
 			links := call("link", "list", "--output-format", "json", "--unpaged", "--source", "first", "--target", "second", "--omit", "envelope")

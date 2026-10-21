@@ -270,11 +270,15 @@ def main():
                 "--assignee", "author", "--estimate=0", "--external-ref", " tracker #1 ",
                 "--spec-id", " spec ", "--notes", " Initial\r\n雪 ", "--due=2000-01-01T00:00:00Z"]
             records[path] = c0.envelope(capture.success("issue-create", ["create", "Deployment task", "--id", path, *fields, "--json"]))
-        related = scope + "types/preview-related"
-        capture.success("memory-issue-link", ["link", "beads/plan", "beads/work", "--type", related,
+        # Selected SubjectTo ownership needs a Constraint target. Keep the native
+        # Issue pair intact and create its independent target through the CLI.
+        records["beads/constraint"] = c0.envelope(capture.success("constraint-create", [
+            "create", "Context constraint", "--type", "types/constraint", "--id", "beads/constraint", "--json"]))
+        owned_type = scope + "types/subject-to"
+        capture.success("memory-constraint-link", ["link", "beads/plan", "beads/constraint", "--type", owned_type,
             "--id", "links/context", "--properties", '{"note":"before page"}', "--metadata", '{"origin":"manual"}',
             "--if-source-revision", records["beads/plan"]["revision"], "--json"])
-        capture.success("issue-memory-link", ["link", "beads/work", "beads/plan", "--type", "types/example-cites",
+        capture.success("issue-memory-link", ["link", "beads/work", "beads/plan", "--type", "types/references",
             "--id", "links/back", "--properties", '{"note":"Issue context"}', "--json"])
         dependency = c0.envelope(capture.success("blocking-dependency", ["dep", "add", "beads/work", "beads/prereq", "--json"]))
         for path in [*records, "links/context", "links/back", dependency["link"]["id"]]:
@@ -310,14 +314,14 @@ def main():
             consumer.wait(60)
         inventory = json.loads((capture.output / "python-inventory/stdout.log").read_text())
         current = json.loads((capture.output / "python-current/stdout.log").read_text())
-        c0.require(isinstance(inventory, list) and len(inventory) == 4
+        c0.require(isinstance(inventory, list) and len(inventory) == 5
                    and {item["id"] for item in inventory} == {scope + path for path in records},
                    "Python consumer did not enumerate every Memory and Issue")
         c0.require(current == next(item for item in inventory if item["id"] == scope + "beads/plan")
                    and current["properties"]["title"] == "Plan — 雪", "Python current read differs from inventory")
         c0.require(all(isinstance(item.get("metadata"), dict) for item in inventory)
                    and current["metadata"] == {"team": "docs"}
-                   and current["ownedLinks"][related][0]["metadata"] == {"origin": "manual"},
+                   and current["ownedLinks"][owned_type][0]["metadata"] == {"origin": "manual"},
                    "Python HTTP consumer did not receive current common metadata")
         observations = json.loads((capture.output / "python-inventory-network.json").read_text())
         verify_python_pages(observations, scope, {scope + path for path in records})
@@ -347,7 +351,7 @@ def main():
         observations = json.loads((capture.output / (name + "-network.json")).read_text())
         verify_python_pages(observations, scope, remaining)
         observed_records = [item for observation in observations[1:] for item in observation["document"]["items"]]
-        c0.require(isinstance(after_delete, list) and len(after_delete) == 3
+        c0.require(isinstance(after_delete, list) and len(after_delete) == 4
                    and {item["id"] for item in after_delete} == remaining and after_delete == observed_records,
                    "Python post-delete inventory differs from actual complete BDP pages")
         authoring = json.loads((capture.output / "client-artifacts.json").read_text())["issueAuthoring"]["after"]
@@ -355,7 +359,7 @@ def main():
                    "unchanged Python consumer lost final Issue authoring fields")
         c0.require(serve.child.poll() is None, "server exited during post-delete Python enumeration")
         summary["memory_delete"] = {"passed": True, "id": alpha["id"], "final_live_revision": alpha["revision"]}
-        summary["python_after_delete"] = {"passed": True, "beads": 3, "limit": 1, "authenticated": True,
+        summary["python_after_delete"] = {"passed": True, "beads": 4, "limit": 1, "authenticated": True,
                                            "mechanism": "unchanged standard-library example over BDP HTTP"}
         summary["python_after_delete_pages"] = len(observations) - 1
         summary["passed"] = True

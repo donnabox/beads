@@ -43,11 +43,17 @@ func (s *Store) DeleteMemory(ctx context.Context, request MemoryDeleteRequest) (
 		}
 	}
 	var result MemoryDeleteResult
-	err := s.withTx(ctx, !request.Preview, func(tx *sql.Tx) error {
+	transact := s.withTypeValidationTx
+	if request.Preview {
+		transact = func(ctx context.Context, fn func(*sql.Tx) error) error {
+			return s.withTx(ctx, false, fn)
+		}
+	}
+	err := transact(ctx, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		current, revision, _, err := s.beadEndpointInTx(ctx, tx, request.Path)
+		current, revision, err := s.beadEndpointInTx(ctx, tx, request.Path)
 		if err != nil {
 			return err
 		}
@@ -133,7 +139,7 @@ func (s *Store) DeleteMemory(ctx context.Context, request MemoryDeleteRequest) (
 // content-level checks that follow live here. See versionsInTx for where that line
 // is drawn and what it means for a caller.
 func (s *Store) validDeletedMemoryAllocationInTx(ctx context.Context, tx *sql.Tx, path, kind, typ, head, state, backing string, key sql.NullString) error {
-	if validatePath(path) != nil || kind != "bead" || typ != MemoryTypeURL(s.ScopeURL()) ||
+	if validatePath(path) != nil || kind != "bead" || !s.isMemoryType(typ) ||
 		!authorityID.MatchString(head) || state != "deleted" || backing != "generic" || key.Valid {
 		return fmt.Errorf("%w: invalid deleted Memory allocation", ErrInvalidStore)
 	}

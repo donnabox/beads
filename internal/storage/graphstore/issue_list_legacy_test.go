@@ -13,7 +13,7 @@ func TestGraphIssueLegacyListProjection(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, _, store := issueListFixture(t, backend)
-			if _, err := store.Create(ctx, CreateRequest{Path: "beads/context", Body: "not an Issue"}); err != nil {
+			if _, err := store.Create(ctx, CreateRequest{Title: "Context", Path: "beads/context", Body: "not an Issue"}); err != nil {
 				t.Fatal(err)
 			}
 			for _, path := range []string{"beads/work", "beads/prereq", "beads/parent", "beads/parent.lookalike"} {

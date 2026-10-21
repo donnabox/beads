@@ -112,9 +112,9 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 				t.Fatal("Issue deletion preview did not preserve live Issue")
 			}
 			refuse("capability_unavailable", "forget", "beads/work")
-			related := scope + "types/preview-related"
+			related := scope + "types/superseded-by"
 			call("link", "beads/plan", "beads/other", "--id", "links/outgoing", "--type", related, "--if-source-revision", plan.Revision)
-			call("link", "beads/work", "beads/plan", "--id", "links/incoming", "--type", related)
+			call("link", "beads/work", "beads/plan", "--id", "links/incoming", "--type", "types/references")
 			for _, path := range []string{"links/outgoing", "links/incoming"} {
 				before := call("show", "beads/plan")
 				linkBefore := call("show", path)

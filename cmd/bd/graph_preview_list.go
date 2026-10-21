@@ -14,6 +14,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/utils"
@@ -45,9 +46,6 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 		selectedType, err = graphPreviewTypeURL(graphPreviewConfig.GraphScopeURL, selector)
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
-		}
-		if selectedType != graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) && selectedType != graphstore.MemoryTypeURL(graphPreviewConfig.GraphScopeURL) {
-			return graphFailure("capability_unavailable", "bd list accepts only installed Bead Types", 5)
 		}
 		in.IssueType = ""
 		typed = slices.DeleteFunc(typed, func(option string) bool { return option == "type" })
@@ -88,6 +86,11 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 	}
 	if !plan.issueQuery {
 		return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
+			if selectedType != "" {
+				if err := graphPreviewRequireInstalledType(ctx, s, selectedType, graph.KindBead, false); err != nil {
+					return nil, "", err
+				}
+			}
 			page, err := s.ListBeads(ctx, graphstore.BeadListRequest{TypeURL: selectedType, All: in.AllFlag, Limit: *in.Limit, MaxRows: in.MaxRows})
 			if err != nil {
 				return nil, "", err
@@ -311,7 +314,7 @@ func renderGraphBeadList(page graphstore.BeadListPage, scope string, all bool, n
 		for _, value := range page.Items {
 			switch record := value.(type) {
 			case graphstore.Record:
-				fmt.Fprintf(&human, "  %s  Memory  %s\n", graphMemoryDisplayText(strings.TrimPrefix(record.ID, scope)), graphMemoryDisplayText(record.Properties.Title))
+				fmt.Fprintf(&human, "  %s  %s  %s\n", graphMemoryDisplayText(strings.TrimPrefix(record.ID, scope)), graphMemoryDisplayText(strings.TrimPrefix(record.Type, scope)), graphMemoryDisplayText(record.Properties.Title))
 			case graphstore.IssueRecord:
 				fmt.Fprintf(&human, "  %s  Issue   %s  P%d  %s\n", graphMemoryDisplayText(strings.TrimPrefix(record.ID, scope)), graphMemoryDisplayText(string(record.Properties.Status)), record.Properties.Priority, graphMemoryDisplayText(record.Properties.Title))
 			}

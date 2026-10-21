@@ -111,25 +111,20 @@ func graphPreviewNominalTypeFlagChanged(cmd *cobra.Command) bool {
 }
 
 func graphPreviewNominalSelector(selector string) bool {
-	if strings.HasPrefix(selector, "types/") || strings.Contains(selector, "://") {
-		return true
-	}
-	switch selector {
-	case "preview-issue", "preview-memory", "preview-dependency", "preview-related", "preview-related-memory", "example-cites", "example-follows":
-		return true
-	default:
-		return false
-	}
+	// Native Issue/Dependency classifications keep their bare names. Nominal
+	// Types use types/NAME or a full URI, including the reserved-name refusal.
+	return strings.HasPrefix(selector, "types/") || strings.Contains(selector, "://") ||
+		graphPreviewReservedTypeSelector(selector)
 }
 
 func graphPreviewTypeURL(scope, selector string) (string, error) {
+	if graphPreviewReservedTypeSelector(selector) {
+		return "", fmt.Errorf("intrinsic Type is not a public selector")
+	}
 	if selector != "" && !strings.Contains(selector, "/") {
 		selector = scope + "types/" + selector
 	} else if strings.HasPrefix(selector, "types/") {
 		selector = scope + selector
-	}
-	if selector == scope+"types/preview-related-memory" {
-		selector = graphstore.RelatedTypeURL(scope)
 	}
 	prefix := scope + "types/"
 	if !strings.HasPrefix(selector, prefix) {
@@ -162,8 +157,8 @@ func graphPreviewLinkType(cmd *cobra.Command) (string, error) {
 	if err != nil {
 		return "", graphFailure("invalid_selector", err.Error(), 2)
 	}
-	if typ != graphstore.DependencyTypeURL(scope) && !graphstore.IsInformationalTypeURL(scope, typ) {
-		return "", graphFailure("capability_unavailable", "Link Type is not installed in this preview", 5)
+	if !graphPreviewSelectedTypeCandidate(scope, typ) {
+		return "", graphFailure("capability_unavailable", "Link Type is not installed in this workspace", 5)
 	}
 	return typ, nil
 }
@@ -197,9 +192,6 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 	}
 	if err := graphPreviewFlags(cmd, "type", "source", "target", "source-revision", "target-revision", "id", "properties", "metadata", "if-source-revision"); err != nil {
 		return err
-	}
-	if !graphstore.IsInformationalTypeURL(graphPreviewConfig.GraphScopeURL, typ) {
-		return graphFailure("capability_unavailable", "Link Type is not supported by this preview", 5)
 	}
 	if len(args) != 2 {
 		return graphFailure("invalid_selector", "graph Link creation requires two Bead IDs or beads/PATH selectors", 2)
@@ -239,6 +231,9 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+		if err := graphPreviewRequireInstalledType(ctx, store, typ, graph.KindLink, false); err != nil {
+			return nil, "", err
+		}
 		result, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{
 			Path: path, TypeURL: typ, SourcePath: paths[0], TargetPath: paths[1], Properties: properties, Metadata: metadata,
 			Actor: getActorWithGit(), ExpectedSourceRevision: revision, UnconditionalSource: unconditional,

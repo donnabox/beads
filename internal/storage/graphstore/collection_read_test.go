@@ -28,10 +28,10 @@ func TestCurrentSnapshotLifecycle(t *testing.T) {
 				}
 			})
 			empty, err := s.CurrentSnapshot(ctx)
-			if err != nil || len(empty.Records) != 0 || len(empty.Types) != 6 || !authorityID.MatchString(empty.WriterToken) {
+			if err != nil || len(empty.Records) != 0 || len(empty.Types) != len(FreshTypeNames()) || !authorityID.MatchString(empty.WriterToken) {
 				t.Fatalf("empty inventory: %+v %v", empty, err)
 			}
-			memory, err := s.Create(ctx, CreateRequest{Path: "beads/plan", Body: "Plan"})
+			memory, err := s.Create(ctx, CreateRequest{Title: "Plan", Path: "beads/plan", Body: "Plan"})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -44,7 +44,8 @@ func TestCurrentSnapshotLifecycle(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			related, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", SourcePath: "beads/plan", TargetPath: "beads/work", ExpectedSourceRevision: memory.Revision})
+			createSelectedConstraintFixture(t, ctx, s, "beads/z-rule")
+			related, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", TypeURL: s.ScopeURL() + "types/subject-to", SourcePath: "beads/plan", TargetPath: "beads/z-rule", ExpectedSourceRevision: memory.Revision})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -55,7 +56,7 @@ func TestCurrentSnapshotLifecycle(t *testing.T) {
 			if current.WriterToken == empty.WriterToken {
 				t.Fatal("write did not change token")
 			}
-			paths := []string{"beads/plan", "beads/prereq", "beads/work", "links/block", "links/context"}
+			paths := []string{"beads/plan", "beads/prereq", "beads/work", "beads/z-rule", "links/block", "links/context"}
 			if len(current.Records) != len(paths) {
 				t.Fatalf("inventory length: %d", len(current.Records))
 			}
@@ -93,7 +94,7 @@ func TestCurrentSnapshotLifecycle(t *testing.T) {
 				t.Fatal(err)
 			}
 			after, err := s.CurrentSnapshot(ctx)
-			if err != nil || len(after.Records) != 4 || after.WriterToken == current.WriterToken {
+			if err != nil || len(after.Records) != 5 || after.WriterToken == current.WriterToken {
 				t.Fatalf("post-unlink inventory: %+v %v", after, err)
 			}
 			if !reflect.DeepEqual(after.Records[0], removed.Source) {
@@ -116,7 +117,7 @@ func TestCurrentSnapshotRefusesCorruption(t *testing.T) {
 					t.Error(err)
 				}
 			}()
-			if _, err := s.Create(ctx, CreateRequest{Path: "beads/plan", Body: "Plan"}); err != nil {
+			if _, err := s.Create(ctx, CreateRequest{Title: "Plan", Path: "beads/plan", Body: "Plan"}); err != nil {
 				t.Fatal(err)
 			}
 			if _, err := s.CreateIssue(ctx, "beads/work", plainIssue("Work")); err != nil {
@@ -250,7 +251,7 @@ func TestCurrentSnapshotTransactionConsistency(t *testing.T) {
 				if err := checkBinding(ctx, tx, o); err != nil {
 					return err
 				}
-				if _, err := writer.Create(ctx, CreateRequest{Path: "beads/arriving", Body: "After reader began"}); err != nil {
+				if _, err := writer.Create(ctx, CreateRequest{Title: "Arriving", Path: "beads/arriving", Body: "After reader began"}); err != nil {
 					return err
 				}
 				during, err := reader.currentSnapshotInTx(ctx, tx)

@@ -247,7 +247,7 @@ func graphPreviewInsertDependency(sourcePath, targetPath, typeURL string, depTyp
 				if typeURL != "" && typeURL != graphPreviewBlockingTypeURL(graphPreviewConfig.GraphScopeURL) {
 					kind = "native Dependency"
 				}
-				return nil, "", fmt.Errorf("%s Link Type requires two live Issues; use an informational Type such as types/preview-related for Memory endpoints: %w", kind, err)
+				return nil, "", fmt.Errorf("%s Link Type requires two live Issues; use an informational Type such as types/references for Memory endpoints: %w", kind, err)
 			}
 			return nil, "", err
 		}

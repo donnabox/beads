@@ -16,6 +16,19 @@ import (
 
 var lowerHex32 = regexp.MustCompile(`^[0-9a-f]{32}$`)
 
+func TestReferenceURISyntaxWithoutEndpointClassification(t *testing.T) {
+	for _, uri := range []string{"urn:example:authority", "https://example.test/rules", "https://example.test/links/evidence"} {
+		if err := graphops.ValidateReferenceURI(uri); err != nil {
+			t.Fatalf("valid Reference %q: %v", uri, err)
+		}
+	}
+	for _, uri := range []string{"", "relative", "urn:example:☃", "https://example.test/a|b", "https://example.test/a b"} {
+		if err := graphops.ValidateReferenceURI(uri); !errors.Is(err, graphops.ErrValidation) {
+			t.Fatalf("invalid Reference %q: %v", uri, err)
+		}
+	}
+}
+
 func TestRevision(t *testing.T) {
 	a, b := graphops.MintRevision(), graphops.MintRevision()
 	if !lowerHex32.MatchString(a.String()) || !lowerHex32.MatchString(b.String()) {

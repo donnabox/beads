@@ -193,7 +193,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 					}
 				}
 			}
-			memory := graphMixedResult[graphstore.Record](t, call("remember", "Original body", "--id", "beads/plan", "--title", "Original title"))
+			memory := graphMixedResult[graphstore.Record](t, call("create", "Original title", "--type", "types/constraint", "--id", "beads/plan", "--body", "Original body"))
 			survivor := graphMixedResult[graphstore.Record](t, call("remember", "Untouched", "--id", "beads/context", "--title", "Context"))
 			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--id", "beads/work"))
 			target := graphMixedResult[graphstore.IssueRecord](t, call("create", "Target", "--id", "beads/target"))
@@ -212,16 +212,19 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			retain(memory.ID, memory.Revision, memory)
 			add := func(id, dest string, properties string) graphstore.LinkRecord {
 				t.Helper()
-				result := graphMixedResult[graphstore.LinkMutationResult](t, call("link", memory.ID, dest, "--id", id, "--type", scope+"types/preview-related", "--properties", properties, "--if-source-revision", memory.Revision))
+				result := graphMixedResult[graphstore.LinkMutationResult](t, call("link", memory.ID, dest, "--id", id, "--type", scope+"types/subject-to", "--properties", properties, "--if-source-revision", memory.Revision))
 				memory = showMemory()
 				retain(memory.ID, memory.Revision, memory)
 				retain(result.Link.ID, result.Link.Revision, result.Link)
 				return result.Link
 			}
-			link := add("links/owned", issue.ID, `{}`)
-			twin := add("links/twin", issue.ID, `{"note":"untouched twin"}`)
-			self := add("links/self", memory.ID, `{"note":"self"}`)
-			unowned := graphMixedResult[graphstore.LinkMutationResult](t, call("link", issue.ID, target.ID, "--id", "links/unowned", "--type", scope+"types/preview-related")).Link
+			constraint := graphMixedResult[graphstore.Record](t, call("create", "Rule", "--type", "types/constraint", "--id", "beads/rule"))
+			link := add("links/owned", constraint.ID, `{}`)
+			twin := add("links/twin", constraint.ID, `{"note":"untouched twin"}`)
+			graphPatchProcess(t, bd, work, home, nil, "invalid_properties", 90*time.Second, "link", memory.ID, memory.ID, "--id", "links/self", "--type", "types/subject-to", "--if-source-revision", memory.Revision, "--json")
+			graphPatchEqual(t, showMemory(), memory)
+			peer := add("links/peer", constraint.ID, `{"note":"untouched peer"}`)
+			unowned := graphMixedResult[graphstore.LinkMutationResult](t, call("link", issue.ID, constraint.ID, "--id", "links/unowned", "--type", scope+"types/references")).Link
 			retain(unowned.ID, unowned.Revision, unowned)
 			unchanged := func() {
 				t.Helper()
@@ -229,7 +232,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 					t.Fatal("patch changed unrelated native Issue")
 				}
 				graphPatchEqual(t, graphMixedResult[graphstore.Record](t, call("show", survivor.ID)), survivor)
-				for _, v := range []graphstore.LinkRecord{twin, self} {
+				for _, v := range []graphstore.LinkRecord{twin, peer} {
 					graphPatchEqual(t, graphMixedResult[graphstore.LinkRecord](t, call("show", v.ID)), v)
 				}
 			}
@@ -343,6 +346,9 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			retain(unowned.ID, unowned.Revision, unowned)
 			unchanged()
 
+			// Selected Link schemas permit arbitrary extension values, including null.
+			applyLink(patch("replace", "/note", nil), nil, map[string]any{"note": nil}, false, false, true)
+			applyLink(patch("replace", "/note", "root"), nil, map[string]any{"note": "root"}, false, false, true)
 			beforeRefusal := graphMemoryReadSnapshot(t, work)
 			for _, bad := range []string{`[{"op":"replace","path":"/title","value":"must rollback"},{"op":"remove","path":"/body"}]`, `[{"op":"replace","path":"/body","value":"must rollback"},{"op":"replace","path":"/missing","value":1}]`, `[{"op":"copy","from":"/title","path":"/body"}]`, `[{"op":"remove","path":"/bad~2"}]`, `[{"op":"replace","op":"add","path":"/body","value":"x"}]`, `[{"op":"add","path":"/temporary","value":9007199254740993}]`, `[{"op":"replace","path":"/body","value":"\ud800"}]`, `[]`} {
 				refuse("invalid_properties", "update", memory.ID, "--patch", bad)
@@ -353,7 +359,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			}
 			for _, bad := range []string{
 				`[{"op":"replace","path":"/note","value":"must rollback"},{"op":"remove","path":"/missing"}]`,
-				`[{"op":"replace","path":"/note","value":"must rollback"},{"op":"replace","path":"/note","value":null}]`,
+				`[{"op":"replace","path":"/note","value":"must rollback"},{"op":"replace","path":"","value":[]}]`,
 			} {
 				refuse("invalid_properties", "update", link.ID, "--patch", bad)
 			}
@@ -559,7 +565,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 				applyMemory(patch("replace", "/title", want.Title), nil, want, true, true)
 			}
 			unchanged()
-			for _, owned := range []graphstore.LinkRecord{link, twin, self} {
+			for _, owned := range []graphstore.LinkRecord{link, twin, peer} {
 				call("link", "delete", "--force", owned.ID, "--if-revision", owned.Revision, "--if-source-revision", memory.Revision)
 				memory = showMemory()
 				retain(memory.ID, memory.Revision, memory)

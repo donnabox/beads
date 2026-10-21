@@ -9,11 +9,30 @@ import (
 	"testing"
 	"unicode/utf8"
 
+	"github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
 const discoveryScope = "http://localhost:9999/example/"
+
+func TestGraphMemoryDiscoveryIncludesSelectedSubtypes(t *testing.T) {
+	base := inventoryDescriptor(t, graphstore.MemoryTypeURL(discoveryScope), "Memory", graphops.KindBead)
+	parent := inventoryDescriptor(t, discoveryScope+"types/future-parent", "Future parent", graphops.KindBead, base.ID())
+	child := inventoryDescriptor(t, discoveryScope+"types/future-child", "Future child", graphops.KindBead, parent.ID())
+	memory := discoveryMemory("base", "Base", "needle")
+	specialized := discoveryMemory("child", "Specialized", "needle")
+	specialized.Type = child.ID()
+	unrelated := discoveryMemory("unrelated", "Unrelated", "needle")
+	unrelated.Type = discoveryScope + "types/unrelated"
+	result, err := graphMemoryDiscovery(discoveryScope, graphstore.Snapshot{
+		Types:   []graphops.TypeDescriptor{base, parent, child},
+		Records: []any{unrelated, specialized, memory},
+	}, "needle", false, false)
+	if err != nil || len(result.Items) != 2 || result.Items[0].ID != memory.ID || result.Items[1].ID != specialized.ID || result.Items[1].Type != child.ID() || result.Items[1].Version != specialized.Version {
+		t.Fatalf("selected subtype discovery lost identity, Type or exact version: %+v %v", result, err)
+	}
+}
 
 func discoveryMemory(path, title, body string) graphstore.Record {
 	return graphstore.Record{ID: discoveryScope + "beads/" + path, Type: graphstore.MemoryTypeURL(discoveryScope), Version: "saved-" + path, Properties: graphstore.Properties{Title: title, Body: body}, Attribution: graphstore.Attribution{Status: "unknown", RecordedAt: "2026-09-27T00:00:00Z"}, Owned: []json.RawMessage{json.RawMessage(`{"properties":{"secret":"do-not-project-owned"}}`)}}

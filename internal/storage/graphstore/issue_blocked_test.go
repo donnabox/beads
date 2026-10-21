@@ -248,7 +248,8 @@ func TestIssueBlockedReadBudget(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, _, s := issueListFixture(t, backend)
-			if _, err := s.Create(ctx, CreateRequest{Path: "beads/large-context", Body: strings.Repeat("m", 9<<20)}); err != nil {
+			ctx = currentReadBudgetContext(t, ctx)
+			if _, err := s.Create(ctx, CreateRequest{Title: "Large context", Path: "beads/large-context", Body: strings.Repeat("m", 9<<20)}); err != nil {
 				t.Fatal(err)
 			}
 			before := reopenState(t, ctx, s)

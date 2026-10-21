@@ -182,7 +182,7 @@ func TestGraphPreviewMemoryDeleteConcurrentProcesses(t *testing.T) {
 				{"remember", "--update", path, "--title", "Winning edit", "--if-revision", original.Revision, "--json"},
 			}
 			if other == "incoming-link" {
-				commands[1] = []string{"link", "beads/work", path, "--id", "links/incoming", "--type", scope + "types/preview-related", "--json"}
+				commands[1] = []string{"link", "beads/work", path, "--id", "links/incoming", "--type", scope + "types/references", "--json"}
 			}
 			results := graphDeleteRacePair(t, bd, work, home, commands)
 			deleteWon, otherWon := results[0].code == "", results[1].code == ""

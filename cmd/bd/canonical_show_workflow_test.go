@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"flag"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"reflect"
 	"strings"
@@ -47,11 +46,11 @@ func TestCanonicalShowWorkflow(t *testing.T) {
 			if err := json.Unmarshal(legacy("remember", "Big body & <literal>", "--id", "beads/plan", "--title", "Plan"), &initial); err != nil {
 				t.Fatal(err)
 			}
-			legacy("create", "Target", "--id", "beads/work")
+			legacy("create", "Target", "--id", "beads/work", "--type", "types/constraint")
 			var receipt struct {
 				Link graphstore.LinkRecord `json:"link"`
 			}
-			if err := json.Unmarshal(legacy("link", "beads/plan", "beads/work", "--type", "types/preview-related", "--id", "links/note", "--properties", `{"note":"unchanged"}`), &receipt); err != nil {
+			if err := json.Unmarshal(legacy("link", "beads/plan", "beads/work", "--type", "types/subject-to", "--id", "links/note", "--properties", `{"note":"unchanged"}`), &receipt); err != nil {
 				t.Fatal(err)
 			}
 			linkPath := strings.TrimPrefix(receipt.Link.ID, scope)
@@ -141,8 +140,14 @@ func TestCanonicalShowWorkflow(t *testing.T) {
 			// Historical owner output must retain its old owned state, never today's.
 			old := decode(call("show", "beads/plan@"+initial.Revision, "--output-format=json"))
 			var oldBead bdpwire.BeadRecord
-			if err := json.Unmarshal(old, &oldBead); err != nil || oldBead.Revision != initial.Revision || len(oldBead.OwnedLinks) != 0 {
+			if err := json.Unmarshal(old, &oldBead); err != nil || oldBead.Revision != initial.Revision || len(oldBead.OwnedLinks) != len(resource.OwnedLinks) {
 				t.Fatalf("historical state changed: %s %v", old, err)
+			}
+			for typ := range resource.OwnedLinks {
+				group, present := oldBead.OwnedLinks[typ]
+				if !present || len(group) != 0 {
+					t.Fatalf("retained owner must preserve selected empty groups without current Links: %s", old)
+				}
 			}
 			equalJSON(old, decode(call("show", "beads/plan", "--version", initial.Revision, "--output-format=json")))
 			detail := call("show", "beads/plan", "--output-format=detail", "--omit=/ownedLinks")
@@ -171,12 +176,11 @@ func TestCanonicalShowWorkflow(t *testing.T) {
 					if raw {
 						args = append(args, "--omit=envelope")
 					}
-					cmd := exec.CommandContext(ctx, bd, args...)
+					cmd := graphMemoryReadCommand(ctx, bd, work, home, args...)
 					cmd.Dir = work
 					if failure.outside {
 						cmd.Dir = t.TempDir()
 					}
-					cmd.Env = []string{"PATH=" + os.Getenv("PATH"), "HOME=" + home, "BD_DISABLE_METRICS=1", "BD_DISABLE_EVENT_FLUSH=1", "BD_NON_INTERACTIVE=1", "BEADS_DOLT_AUTO_START=0", "DOLT_METRICS_DISABLED=1"}
 					var stdout, stderr bytes.Buffer
 					cmd.Stdout = &stdout
 					cmd.Stderr = &stderr

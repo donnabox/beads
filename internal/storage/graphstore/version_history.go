@@ -230,7 +230,7 @@ func (s *Store) versionsInTx(ctx context.Context, tx *sql.Tx, path string, bound
 		}
 		rows, err := issueVersionsInTx(ctx, tx, path, key.String, head, bounds)
 		return KindIssue, rows, err
-	case backing == "generic" && kind == "bead" && typ.String == MemoryTypeURL(s.ScopeURL()):
+	case backing == "generic" && kind == "bead" && s.isMemoryType(typ.String):
 		// A deleted Memory mints no successor version, so its head stays a real
 		// retained Resource: there is no deletion marker on this backing and no
 		// row to flag (deletedMemoryInTx reads that same head).

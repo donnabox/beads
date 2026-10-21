@@ -129,7 +129,7 @@ func TestGraphIssueListLifecycle(t *testing.T) {
 			if err != nil || empty.Items == nil || len(empty.Items) != 0 || empty.HasMore {
 				t.Fatalf("empty: %+v %v", empty, err)
 			}
-			memory, err := s.Create(ctx, CreateRequest{Path: "beads/plan", Body: "Issue context"})
+			memory, err := s.Create(ctx, CreateRequest{Title: "Plan", Path: "beads/plan", Body: "Issue context"})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -369,7 +369,7 @@ func TestGraphIssueListRefusals(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, _, s := issueListFixture(t, backend)
-			if _, err := s.Create(ctx, CreateRequest{Path: "beads/memory", Body: "not listed"}); err != nil {
+			if _, err := s.Create(ctx, CreateRequest{Title: "Memory", Path: "beads/memory", Body: "not listed"}); err != nil {
 				t.Fatal(err)
 			}
 			for _, path := range []string{"beads/a", "beads/b"} {
@@ -501,7 +501,7 @@ func TestGraphIssueListBounds(t *testing.T) {
 			}
 			// Unlike the synthetic count probe, this oversized unrelated Memory is
 			// authored through the actual writer and exercises the persisted byte cap.
-			if _, err := s.Create(ctx, CreateRequest{Path: "beads/large", Body: strings.Repeat("x", PreviewCurrentReadByteLimit/2)}); err != nil {
+			if _, err := s.Create(ctx, CreateRequest{Title: "Large", Path: "beads/large", Body: strings.Repeat("x", PreviewCurrentReadByteLimit/2)}); err != nil {
 				t.Fatal(err)
 			}
 			got, err := s.ListIssues(ctx, publicops.ListRequest{Limit: issueListInt(1)})
@@ -643,7 +643,7 @@ func TestGraphIssueQueriesDeletedMemory(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, _, s, source, target, _ := reopenFixture(t, backend)
-			memory, err := s.Create(ctx, CreateRequest{Path: "beads/removed", Body: "retained context"})
+			memory, err := s.Create(ctx, CreateRequest{Title: "Removed", Path: "beads/removed", Body: "retained context"})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -705,7 +705,8 @@ func TestGraphIssueQueriesDeletedMemoryReadBudget(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, _, s := issueListFixture(t, backend)
-			memory, err := s.Create(ctx, CreateRequest{Path: "beads/deleted", Body: strings.Repeat("d", 3<<20)})
+			ctx = currentReadBudgetContext(t, ctx)
+			memory, err := s.Create(ctx, CreateRequest{Title: "Deleted", Path: "beads/deleted", Body: strings.Repeat("d", 3<<20)})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -720,7 +721,7 @@ func TestGraphIssueQueriesDeletedMemoryReadBudget(t *testing.T) {
 			}
 			// Two live copies fit alone; the separately retained deleted head causes
 			// the existing 16 MiB acquisition budget to refuse even these empty views.
-			if _, err := s.Create(ctx, CreateRequest{Path: "beads/filler", Body: strings.Repeat("f", 7<<20)}); err != nil {
+			if _, err := s.Create(ctx, CreateRequest{Title: "Filler", Path: "beads/filler", Body: strings.Repeat("f", 7<<20)}); err != nil {
 				t.Fatal(err)
 			}
 			before := reopenState(t, ctx, s)

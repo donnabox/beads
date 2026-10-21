@@ -12,6 +12,7 @@ import (
 	"unicode/utf8"
 
 	graph "github.com/steveyegge/beads/graphops"
+	"github.com/steveyegge/beads/internal/typecatalog"
 	"github.com/steveyegge/beads/internal/types"
 	publicops "github.com/steveyegge/beads/issueops"
 )
@@ -114,7 +115,7 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 		return s.readIssueVersionInTx(ctx, tx, path, version, head, key.String)
 	}
 	dependencyType := isNativeDependencyLinkType(s.ScopeURL(), issueType, typ.String)
-	if !((backing == "generic" && kind == "bead" && typ.String == MemoryTypeURL(s.ScopeURL())) ||
+	if !((backing == "generic" && kind == "bead" && s.isMemoryType(typ.String)) ||
 		(backing == "informational" && kind == "link" && IsInformationalTypeURL(s.ScopeURL(), typ.String)) ||
 		(backing == "dependency" && kind == "link" && dependencyType)) {
 		return nil, fmt.Errorf("%w: unsupported retained allocation", ErrInvalidStore)
@@ -150,13 +151,17 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 		}
 		return link, nil
 	}
-	return s.decodeMemoryVersion(ctx, tx, path, typ.String, version, raw, actor)
+	expectedType := ""
+	if version == head {
+		expectedType = typ.String
+	}
+	return s.decodeMemoryVersion(ctx, tx, path, expectedType, version, raw, actor)
 }
 
 func (s *Store) decodeMemoryVersion(ctx context.Context, tx *sql.Tx, path, typ, version string, raw []byte, actor string) (Record, error) {
 	var memory Record
 	if json.Unmarshal(raw, &memory) != nil || !sameVersionJSON(raw, memory) || memory.ID != s.ScopeURL()+path ||
-		memory.Type != typ || memory.Revision != version || memory.Version != version ||
+		!s.isMemoryType(memory.Type) || (typ != "" && memory.Type != typ) || memory.Revision != version || memory.Version != version ||
 		!utf8.ValidString(memory.Properties.Title) || !utf8.ValidString(memory.Properties.Body) ||
 		!validVersionAttribution(memory.Attribution, actor) {
 		return Record{}, fmt.Errorf("%w: invalid retained Memory", ErrInvalidStore)
@@ -165,7 +170,18 @@ func (s *Store) decodeMemoryVersion(ctx context.Context, tx *sql.Tx, path, typ, 
 	if err != nil || !bytes.Equal(metadata, memory.Metadata) {
 		return Record{}, fmt.Errorf("%w: invalid retained Memory metadata", ErrInvalidStore)
 	}
-	if err := s.validateVersionOwned(ctx, tx, memory.ID, MemoryTypeURL(s.ScopeURL()), memory.Owned); err != nil {
+	catalog, err := s.selectedTypes()
+	if err != nil {
+		return Record{}, err
+	}
+	properties, err := canonicalJSON(memory.Properties)
+	if err != nil {
+		return Record{}, err
+	}
+	if err := catalog.validateProperties(memory.Type, properties, graph.KindBead); err != nil {
+		return Record{}, fmt.Errorf("%w: retained original Type payload: %v", ErrInvalidStore, err)
+	}
+	if err := s.validateVersionOwned(ctx, tx, memory.ID, memory.Type, memory.Owned); err != nil {
 		return Record{}, err
 	}
 	return memory, nil
@@ -243,11 +259,15 @@ func (s *Store) validateVersionOwned(ctx context.Context, tx *sql.Tx, source, ow
 	if owned == nil || len(owned) > PreviewOwnedLinkLimit {
 		return fmt.Errorf("%w: invalid retained owned set", ErrInvalidStore)
 	}
-	// A retained Issue owns only installed native Dependency Link Types.
-	// Memory owns only informational Links.
-	memoryOwner := ownerType == MemoryTypeURL(s.ScopeURL())
+	// Retained membership uses the owner's original declared Type, including
+	// positive family ownership. Native payload validation stays native.
+	memoryOwner := s.isMemoryType(ownerType)
 	if !memoryOwner && ownerType != IssueTypeURL(s.ScopeURL()) {
 		return fmt.Errorf("%w: unsupported retained owner Type", ErrInvalidStore)
+	}
+	catalog, err := s.selectedTypes()
+	if err != nil {
+		return err
 	}
 	previous := ""
 	for _, raw := range owned {
@@ -255,9 +275,8 @@ func (s *Store) validateVersionOwned(ctx context.Context, tx *sql.Tx, source, ow
 		if json.Unmarshal(raw, &link) != nil {
 			return fmt.Errorf("%w: invalid retained owned membership", ErrInvalidStore)
 		}
-		nativeOwned := isNativeDependencyLinkType(s.ScopeURL(), ownerType, link.Type)
-		if link.Source != source ||
-			(memoryOwner && !IsInformationalTypeURL(s.ScopeURL(), link.Type)) || (!memoryOwner && !nativeOwned) ||
+		owned, err := catalog.types.Owns(typecatalog.Reference{URI: ownerType}, typecatalog.Reference{URI: link.Type})
+		if err != nil || !owned || link.Source != source ||
 			(previous != "" && graph.CompareCodeUnits(previous, link.ID) >= 0) {
 			return fmt.Errorf("%w: invalid retained owned membership", ErrInvalidStore)
 		}

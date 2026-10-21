@@ -122,7 +122,7 @@ func (s *Store) ListLinks(ctx context.Context, request LinksRequest) ([]LinkReco
 				return err
 			}
 		}
-		if _, _, _, err := s.beadEndpointInTx(ctx, tx, request.BeadPath); err != nil {
+		if _, _, err := s.beadEndpointInTx(ctx, tx, request.BeadPath); err != nil {
 			return err
 		}
 		var err error
@@ -224,7 +224,7 @@ func (s *Store) Unlink(ctx context.Context, request LinkDeleteRequest) (LinkDele
 		}
 	}
 	var result LinkDeleteResult
-	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
+	err := s.withTypeValidationTx(ctx, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
@@ -261,7 +261,11 @@ func (s *Store) Unlink(ctx context.Context, request LinkDeleteRequest) (LinkDele
 			return err
 		}
 		sourcePath := strings.TrimPrefix(link.Source, s.options.Binding.ScopeURL)
-		source, revision, owned, err := s.beadEndpointInTx(ctx, tx, sourcePath)
+		source, revision, err := s.beadEndpointInTx(ctx, tx, sourcePath)
+		if err != nil {
+			return err
+		}
+		owned, err := s.ownsLink(source, link.Type)
 		if err != nil {
 			return err
 		}
@@ -299,7 +303,11 @@ func (s *Store) Unlink(ctx context.Context, request LinkDeleteRequest) (LinkDele
 			return err
 		}
 		replacedSource := replacedMemory(source, request.UnconditionalSource)
-		source, err = s.recordOwnedMemoryInTx(ctx, tx, sourcePath, request.Actor, source)
+		if owned {
+			source, err = s.recordOwnedMemoryInTx(ctx, tx, sourcePath, request.Actor, source)
+		} else {
+			replacedSource = nil
+		}
 		if err != nil {
 			return err
 		}
@@ -317,7 +325,7 @@ func (s *Store) selectUnlinkPathInTx(ctx context.Context, tx *sql.Tx, request Li
 		return request.Path, nil
 	}
 	for _, path := range []string{request.SourcePath, request.TargetPath} {
-		if _, _, _, err := s.beadEndpointInTx(ctx, tx, path); err != nil {
+		if _, _, err := s.beadEndpointInTx(ctx, tx, path); err != nil {
 			return "", err
 		}
 	}
@@ -461,8 +469,16 @@ func (s *Store) validateRetainedInformational(link LinkRecord, snapshot []byte, 
 			return fmt.Errorf("%w: invalid retained Link endpoint", ErrInvalidStore)
 		}
 	}
-	if _, err := informationalProperties(link.Properties); err != nil {
+	properties, err := informationalProperties(link.Properties)
+	if err != nil {
 		return fmt.Errorf("%w: invalid retained Link properties", ErrInvalidStore)
+	}
+	catalog, err := s.selectedTypes()
+	if err != nil {
+		return err
+	}
+	if err := catalog.validateProperties(link.Type, properties, graph.KindLink); err != nil {
+		return fmt.Errorf("%w: invalid retained Link Type payload: %v", ErrInvalidStore, err)
 	}
 	at, err := time.Parse(time.RFC3339Nano, link.Attribution.RecordedAt)
 	if err != nil || at.UTC().Format(time.RFC3339Nano) != link.Attribution.RecordedAt || actor != link.Attribution.Actor || !utf8.ValidString(actor) || (actor == "" && link.Attribution.Status != "unknown") || (actor != "" && link.Attribution.Status != "claimed") {

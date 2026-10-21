@@ -403,6 +403,17 @@ func (r Ref) SameURI(o Ref) bool {
 // Equal is whole-value equality, pin included.
 func (r Ref) Equal(o Ref) bool { return r == o }
 
+// ValidateReferenceURI applies the shared absolute-URI syntax law without
+// treating the reference as an endpoint or asserting visibility, category,
+// canonical local identity, retained revision or authority. Endpoint callers
+// still use ParseRef for Scope-sensitive classification and admission.
+func ValidateReferenceURI(uri string) error {
+	if !isAbsoluteURI(uri) {
+		return fmt.Errorf("%w: Reference requires an absolute URI", ErrValidation)
+	}
+	return nil
+}
+
 // Bead is one identified, typed node of the graph: an immutable canonical path
 // and Type, the revision naming its current state, its authored properties,
 // and its carried attribution when one was recorded. Its owned Links are
