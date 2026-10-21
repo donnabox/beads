@@ -316,10 +316,24 @@ OR and NOT parent forms follow native query refusals. mol_type and ephemeral
 predicates are unavailable in graph preview.`},
 		{blockedCmd, `Show current dependency-blocked Issues with canonical
 blocker IDs. Filters and positive BEADS_MAX_ROWS are unavailable.`},
-		{graphCmd, `Use bd graph ISSUE for the current blocking Dependency view,
-or bd graph check for a flat consistency report. --view generic traverses
-the current graph with --direction, --depth, --max-nodes and --max-links.
-Legacy visualization modes are unavailable.`},
+		{graphCmd, `Use bd graph BEAD or bd graph --all in a link workspace.
+The default Link selector is Dependency, including its refinements, exactly
+as --link-type Dependency. Repeat --link-type NAME for an OR union, or use
+--all-link-types. Excluded Link Types cannot bridge the traversal.
+One --direction in|out|both (default both) and --depth (default 1000) apply
+to a named-root selection. --all refuses explicit --depth/--direction. Depth counts Link hops to select Beads; every matching
+Link between selected Beads is displayed, including parallels and cycles.
+A frontier explicitly reports depth truncation. Node/Link bounds refuse on
+exhaustion. Acquisition remains a complete bounded current inventory (at most
+1000 Resources / 16 MiB; serialized output at most 16 MiB), not scalable or arbitrary historical traversal.
+Authored endpoint revision pins remain visible; adjacent Beads are current
+records and are not silently substituted for those pinned revisions.
+--all with the Dependency selector retains open Issues, including isolated
+ones. Other selectors show matching components/endpoints, excluding unrelated
+isolates. A named root stays visible without matching Links. --open remains unavailable in link mode; dependency mode retains its existing view. --json carries complete canonical Beads/Links
+and separate traversal metadata; --dot, --html, --compact and --box also work.
+--view generic is optional/deprecated. bd graph check retains its existing
+blocking-dependency consistency report.`},
 		{statusCmd, `Use bd status for ordinary Issue statistics in this workspace.
 Use bd status --graph to inspect graph capabilities and limits.`},
 		{typesCmd, `Use bd types to list the Bead and Link Types actually installed

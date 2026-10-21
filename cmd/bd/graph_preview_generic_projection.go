@@ -13,6 +13,9 @@ const graphGenericOutputLimit = 1 << 20
 
 type graphGenericInput struct {
 	Root                      string
+	All                       bool
+	LinkTypes                 []string // selected installed Type URLs, OR union including refinements
+	AllLinkTypes              bool
 	Direction                 string
 	Depth, MaxNodes, MaxLinks int
 }
@@ -24,27 +27,33 @@ type graphGenericNode struct {
 	Title       string                 `json:"title"`
 	Version     string                 `json:"version"`
 	Attribution graphstore.Attribution `json:"attribution"`
+	Status      string                 `json:"status,omitempty"`
 }
 type graphGenericLink struct {
-	ID          string                 `json:"id"`
-	Type        string                 `json:"type"`
-	Source      string                 `json:"source"`
-	Target      string                 `json:"target"`
-	Version     string                 `json:"version"`
-	Attribution graphstore.Attribution `json:"attribution"`
+	ID             string                 `json:"id"`
+	Type           string                 `json:"type"`
+	Source         string                 `json:"source"`
+	Target         string                 `json:"target"`
+	Version        string                 `json:"version"`
+	Attribution    graphstore.Attribution `json:"attribution"`
+	SourceRevision string                 `json:"sourceRevision,omitempty"`
+	TargetRevision string                 `json:"targetRevision,omitempty"`
 }
 type graphGenericResult struct {
-	Projection string             `json:"projection"`
-	Scope      string             `json:"scope"`
-	Root       string             `json:"root"`
-	Direction  string             `json:"direction"`
-	Depth      int                `json:"depth"`
-	MaxNodes   int                `json:"maxNodes"`
-	MaxLinks   int                `json:"maxLinks"`
-	Nodes      []graphGenericNode `json:"nodes"`
-	Links      []graphGenericLink `json:"links"`
-	Frontier   []string           `json:"frontier"`
-	Complete   bool               `json:"complete"`
+	Projection   string             `json:"projection"`
+	Scope        string             `json:"scope"`
+	Root         string             `json:"root"`
+	Direction    string             `json:"direction"`
+	Depth        int                `json:"depth"`
+	MaxNodes     int                `json:"maxNodes"`
+	MaxLinks     int                `json:"maxLinks"`
+	Nodes        []graphGenericNode `json:"nodes"`
+	Links        []graphGenericLink `json:"links"`
+	Frontier     []string           `json:"frontier"`
+	Complete     bool               `json:"complete"`
+	All          bool               `json:"all,omitempty"`
+	LinkTypes    []string           `json:"linkTypes"`
+	AllLinkTypes bool               `json:"allLinkTypes,omitempty"`
 }
 
 func validateGraphGenericBounds(in graphGenericInput) error {
@@ -97,6 +106,22 @@ func projectGraphGeneric(snapshot graphstore.Snapshot, scope string, in graphGen
 			}
 		}
 	}
+	for _, selected := range in.LinkTypes {
+		if err := graphPreviewValidateSelectedType(scope, snapshot.Types, selected, graph.KindLink); err != nil {
+			return zero, err
+		}
+	}
+	matches := func(actual string) bool {
+		if in.AllLinkTypes || len(in.LinkTypes) == 0 { // legacy private projection callers select all explicitly
+			return true
+		}
+		for _, selected := range in.LinkTypes {
+			if graphPreviewTypeRefines(snapshot.Types, actual, selected) {
+				return true
+			}
+		}
+		return false
+	}
 	nodes := map[string]graphGenericNode{}
 	links := map[string]graphGenericLink{}
 	for _, value := range snapshot.Records {
@@ -112,12 +137,12 @@ func projectGraphGeneric(snapshot graphstore.Snapshot, scope string, in graphGen
 					return invalid("unsupported Memory Type")
 				}
 			}
-			node = graphGenericNode{record.ID, record.Type, record.Properties.Title, record.Version, record.Attribution}
+			node = graphGenericNode{ID: record.ID, Type: record.Type, Title: record.Properties.Title, Version: record.Version, Attribution: record.Attribution}
 		case graphstore.IssueRecord:
 			if record.Properties == nil || record.Type != issueType {
 				return invalid("unsupported or incomplete Issue")
 			}
-			node = graphGenericNode{record.ID, record.Type, record.Properties.Title, record.Version, record.Attribution}
+			node = graphGenericNode{ID: record.ID, Type: record.Type, Title: record.Properties.Title, Version: record.Version, Attribution: record.Attribution, Status: string(record.Properties.Status)}
 		case graphstore.LinkRecord:
 			if len(snapshot.Types) != 0 {
 				if err := graphPreviewValidateSelectedType(scope, snapshot.Types, record.Type, graph.KindLink); err != nil {
@@ -132,7 +157,7 @@ func projectGraphGeneric(snapshot graphstore.Snapshot, scope string, in graphGen
 			if _, duplicate := links[record.ID]; duplicate {
 				return invalid("duplicate Link identity")
 			}
-			links[record.ID] = graphGenericLink{record.ID, record.Type, record.Source, record.Target, record.Version, record.Attribution}
+			links[record.ID] = graphGenericLink{ID: record.ID, Type: record.Type, Source: record.Source, Target: record.Target, Version: record.Version, Attribution: record.Attribution, SourceRevision: record.SourceRevision, TargetRevision: record.TargetRevision}
 			continue
 		default:
 			return invalid("unsupported snapshot record kind")
@@ -153,6 +178,9 @@ func projectGraphGeneric(snapshot graphstore.Snapshot, scope string, in graphGen
 		if _, ok := nodes[link.Target]; !ok {
 			return invalid("unsupported or missing Link target")
 		}
+		if !matches(link.Type) {
+			continue
+		}
 		if in.Direction != "in" {
 			adjacency[link.Source] = append(adjacency[link.Source], link)
 		}
@@ -163,12 +191,38 @@ func projectGraphGeneric(snapshot graphstore.Snapshot, scope string, in graphGen
 	for id := range adjacency {
 		sort.Slice(adjacency[id], func(i, j int) bool { return graph.CompareCodeUnits(adjacency[id][i].ID, adjacency[id][j].ID) < 0 })
 	}
-	if _, ok := nodes[in.Root]; !ok {
-		return zero, graphstore.ErrNotFound
+	if !in.All {
+		if _, ok := nodes[in.Root]; !ok {
+			return zero, graphstore.ErrNotFound
+		}
 	}
-	distance := map[string]int{in.Root: 0}
-	queue := []string{in.Root}
-	emitted := map[string]graphGenericLink{}
+	distance := map[string]int{}
+	queue := []string{}
+	if in.All {
+		for _, link := range links {
+			if matches(link.Type) {
+				distance[link.Source] = 0
+				distance[link.Target] = 0
+			}
+		}
+		if !in.AllLinkTypes && len(in.LinkTypes) == 1 && in.LinkTypes[0] == graphstore.DependencyTypeURL(scope) {
+			for _, raw := range snapshot.Records {
+				if issue, ok := raw.(graphstore.IssueRecord); ok {
+					distance[issue.ID] = 0
+				}
+			}
+		}
+		for id := range distance {
+			queue = append(queue, id)
+		}
+		sort.Strings(queue)
+	} else {
+		distance[in.Root] = 0
+		queue = append(queue, in.Root)
+	}
+	if len(distance) > in.MaxNodes {
+		return zero, fmt.Errorf("%w: traversal exceeds %d Beads", graphstore.ErrLimitExceeded, in.MaxNodes)
+	}
 	for cursor := 0; cursor < len(queue); cursor++ {
 		id := queue[cursor]
 		if distance[id] >= in.Depth {
@@ -179,12 +233,6 @@ func projectGraphGeneric(snapshot graphstore.Snapshot, scope string, in graphGen
 			if in.Direction == "in" || (in.Direction == "both" && id != link.Source) {
 				next = link.Source
 			}
-			if _, seen := emitted[link.ID]; !seen {
-				if len(emitted) >= in.MaxLinks {
-					return zero, fmt.Errorf("%w: traversal exceeds %d Links", graphstore.ErrLimitExceeded, in.MaxLinks)
-				}
-				emitted[link.ID] = link
-			}
 			if _, seen := distance[next]; !seen {
 				if len(distance) >= in.MaxNodes {
 					return zero, fmt.Errorf("%w: traversal exceeds %d Beads", graphstore.ErrLimitExceeded, in.MaxNodes)
@@ -194,12 +242,24 @@ func projectGraphGeneric(snapshot graphstore.Snapshot, scope string, in graphGen
 			}
 		}
 	}
-	result := graphGenericResult{Projection: "summary", Scope: scope, Root: in.Root, Direction: in.Direction, Depth: in.Depth, MaxNodes: in.MaxNodes, MaxLinks: in.MaxLinks, Nodes: []graphGenericNode{}, Links: []graphGenericLink{}, Frontier: []string{}}
+	// Depth chooses nodes. Emit the induced graph on those nodes, rather than
+	// only the discovery edges: boundary cross-links, cycles and parallels count.
+	emitted := map[string]graphGenericLink{}
+	for _, link := range links {
+		_, source := distance[link.Source]
+		_, target := distance[link.Target]
+		if matches(link.Type) && source && target {
+			if len(emitted) >= in.MaxLinks {
+				return zero, fmt.Errorf("%w: traversal exceeds %d Links", graphstore.ErrLimitExceeded, in.MaxLinks)
+			}
+			emitted[link.ID] = link
+		}
+	}
+	result := graphGenericResult{Projection: "summary", All: in.All, LinkTypes: append([]string{}, in.LinkTypes...), AllLinkTypes: in.AllLinkTypes, Scope: scope, Root: in.Root, Direction: in.Direction, Depth: in.Depth, MaxNodes: in.MaxNodes, MaxLinks: in.MaxLinks, Nodes: []graphGenericNode{}, Links: []graphGenericLink{}, Frontier: []string{}}
 	for id := range distance {
 		result.Nodes = append(result.Nodes, nodes[id])
-		// Frontier is about missing eligible Link identities, not just missing
-		// neighbors. A boundary diamond/self edge can remain even if all of its
-		// endpoints were reached. Inspection alone does not consume output caps.
+		// Frontier identifies reached nodes with eligible directional neighbors
+		// beyond the depth boundary. Induced cross-links do not imply truncation.
 		for _, link := range adjacency[id] {
 			if _, seen := emitted[link.ID]; !seen {
 				result.Frontier = append(result.Frontier, id)

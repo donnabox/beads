@@ -25,6 +25,8 @@ func genericPreviewCommand(t *testing.T, args ...string) *cobra.Command {
 		switch flag.Value.Type() {
 		case "string":
 			values.String(flag.Name, flag.DefValue, flag.Usage)
+		case "stringArray":
+			values.StringArray(flag.Name, nil, flag.Usage)
 		case "bool":
 			value, err := strconv.ParseBool(flag.DefValue)
 			if err != nil {
@@ -77,8 +79,8 @@ func TestGraphPreviewGenericInput(t *testing.T) {
 		{name: "zero-depth", flags: []string{"--view=generic", "--depth=0", "--max-nodes=1", "--max-links=1"}, args: []string{"beads/a"}},
 		{name: "hard-max", flags: []string{"--view=generic", "--depth=1000", "--max-nodes=1000", "--max-links=1000"}, args: []string{"beads/a"}},
 		{name: "zero-env", flags: []string{"--view=generic"}, args: []string{"beads/a"}, env: "0"},
-		{name: "missing-view", args: []string{"beads/a"}, code: 5},
-		{name: "wrong-view", flags: []string{"--view=issue"}, args: []string{"beads/a"}, code: 5},
+		{name: "missing-view", args: []string{"beads/a"}},
+		{name: "wrong-view", flags: []string{"--view=issue"}, args: []string{"beads/a"}, code: 2},
 		{name: "missing-root", flags: []string{"--view=generic"}, code: 2},
 		{name: "link-root", flags: []string{"--view=generic"}, args: []string{"links/a"}, code: 2},
 		{name: "type-root", flags: []string{"--view=generic"}, args: []string{genericTestScope + "types/preview-memory"}, code: 2},
@@ -110,14 +112,14 @@ func TestGraphPreviewGenericInput(t *testing.T) {
 			if err != nil || in.Root != genericTestScope+"beads/a" {
 				t.Fatalf("root admission: %+v %v", in, err)
 			}
-			if tc.name == "defaults" && (in.Direction != "both" || in.Depth != 1 || in.MaxNodes != 100 || in.MaxLinks != 200) {
+			if tc.name == "defaults" && (in.Direction != "both" || in.Depth != 1000 || in.MaxNodes != 1000 || in.MaxLinks != 1000) {
 				t.Fatalf("wrong defaults: %+v", in)
 			}
 		})
 	}
 }
 
-func TestGraphPreviewGenericLegacyFlagConflicts(t *testing.T) {
+func TestGraphPreviewGenericExistingFormatFlags(t *testing.T) {
 	savedJSON, savedStructured := jsonOutput, graphPreviewStructuredErrors
 	jsonOutput, graphPreviewStructuredErrors = false, false
 	t.Cleanup(func() { jsonOutput, graphPreviewStructuredErrors = savedJSON, savedStructured })
@@ -130,9 +132,8 @@ func TestGraphPreviewGenericLegacyFlagConflicts(t *testing.T) {
 			}
 			cmd := genericPreviewCommand(t, "--view=generic", "--"+name+"="+value)
 			_, err := graphPreviewGenericInput(cmd, []string{"beads/a"}, genericTestScope)
-			var exit *exitError
-			if !errors.As(err, &exit) || exit.Code != 5 {
-				t.Fatalf("changed legacy option silently accepted: %v", err)
+			if err != nil {
+				t.Fatalf("existing format option refused: %v", err)
 			}
 		})
 	}
@@ -160,7 +161,7 @@ func TestGraphPreviewGenericLegacyAdmission(t *testing.T) {
 		jsonOutput, graphPreviewStructuredErrors = oldJSON, oldStructured
 	})
 	jsonOutput, graphPreviewStructuredErrors = false, false
-	for _, flag := range []string{"--view=generic", "--view=", "--direction=both", "--depth=0", "--max-nodes=100", "--max-links=200"} {
+	for _, flag := range []string{"--view=generic", "--view=", "--direction=both", "--depth=0", "--max-nodes=100", "--max-links=1000"} {
 		t.Run(flag, func(t *testing.T) {
 			graphCmd = oldCmd
 			cmd := genericPreviewCommand(t, flag)
@@ -205,10 +206,10 @@ func TestGraphPreviewGenericDispatchBeforeStore(t *testing.T) {
 	t.Cleanup(func() {
 		graphPreviewActive, graphPreviewConfig, jsonOutput, graphPreviewStructuredErrors = oldActive, oldConfig, oldJSON, oldStructured
 	})
-	cmd := genericPreviewCommand(t, "--view=generic", "--all=false")
+	cmd := genericPreviewCommand(t, "--view=generic", "--depth=-1")
 	err := cmd.RunE(cmd, []string{"beads/a"})
 	var exit *exitError
-	if !errors.As(err, &exit) || exit.Code != 5 {
+	if !errors.As(err, &exit) || exit.Code != 2 {
 		t.Fatalf("graph command bypassed early preview admission: %v", err)
 	}
 }

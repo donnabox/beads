@@ -92,14 +92,14 @@ func TestGraphPreviewGenericLinkIdentityFrontier(t *testing.T) {
 		nodes, links, frontier []string
 	}{
 		{"parallel-self", "out", 1, []genericTestEdge{{"ab1", "a", "b"}, {"ab2", "a", "b"}, {"aa", "a", "a"}}, []string{"a", "b"}, []string{"aa", "ab1", "ab2"}, []string{}},
-		{"root-self-zero", "both", 0, []genericTestEdge{{"aa", "a", "a"}}, []string{"a"}, []string{}, []string{"a"}},
-		{"boundary-self", "out", 1, []genericTestEdge{{"ab", "a", "b"}, {"bb", "b", "b"}}, []string{"a", "b"}, []string{"ab"}, []string{"b"}},
+		{"root-self-zero", "both", 0, []genericTestEdge{{"aa", "a", "a"}}, []string{"a"}, []string{"aa"}, []string{}},
+		{"boundary-self", "out", 1, []genericTestEdge{{"ab", "a", "b"}, {"bb", "b", "b"}}, []string{"a", "b"}, []string{"ab", "bb"}, []string{}},
 		{"boundary-self-expanded", "out", 2, []genericTestEdge{{"ab", "a", "b"}, {"bb", "b", "b"}}, []string{"a", "b"}, []string{"ab", "bb"}, []string{}},
-		{"cycle-boundary", "out", 1, []genericTestEdge{{"ab", "a", "b"}, {"ba", "b", "a"}}, []string{"a", "b"}, []string{"ab"}, []string{"b"}},
+		{"cycle-boundary", "out", 1, []genericTestEdge{{"ab", "a", "b"}, {"ba", "b", "a"}}, []string{"a", "b"}, []string{"ab", "ba"}, []string{}},
 		{"cycle-closed", "out", 2, []genericTestEdge{{"ab", "a", "b"}, {"ba", "b", "a"}}, []string{"a", "b"}, []string{"ab", "ba"}, []string{}},
 		{"cycle-both", "both", 1, []genericTestEdge{{"ab", "a", "b"}, {"ba", "b", "a"}}, []string{"a", "b"}, []string{"ab", "ba"}, []string{}},
-		{"diamond-out", "out", 1, []genericTestEdge{{"ab", "a", "b"}, {"ac", "a", "c"}, {"bc", "b", "c"}}, []string{"a", "b", "c"}, []string{"ab", "ac"}, []string{"b"}},
-		{"diamond-both", "both", 1, []genericTestEdge{{"ab", "a", "b"}, {"ac", "a", "c"}, {"bc", "b", "c"}}, []string{"a", "b", "c"}, []string{"ab", "ac"}, []string{"b", "c"}},
+		{"diamond-out", "out", 1, []genericTestEdge{{"ab", "a", "b"}, {"ac", "a", "c"}, {"bc", "b", "c"}}, []string{"a", "b", "c"}, []string{"ab", "ac", "bc"}, []string{}},
+		{"diamond-both", "both", 1, []genericTestEdge{{"ab", "a", "b"}, {"ac", "a", "c"}, {"bc", "b", "c"}}, []string{"a", "b", "c"}, []string{"ab", "ac", "bc"}, []string{}},
 		{"diamond-complete", "out", 2, []genericTestEdge{{"ab", "a", "b"}, {"ac", "a", "c"}, {"bc", "b", "c"}}, []string{"a", "b", "c"}, []string{"ab", "ac", "bc"}, []string{}},
 	} {
 		t.Run(tc.name, func(t *testing.T) {

@@ -260,7 +260,7 @@ func TestGraphPreviewStructureReads(t *testing.T) {
 	if got := graphPolicyCLI(t, bd, work, home, nil, "", "dep", "list", "work"); !strings.Contains(got, "beads/work depends on beads/parent") {
 		t.Fatalf("missing human dependency summary: %q", got)
 	}
-	if view := graphPolicyCLI(t, bd, work, home, nil, "", "graph", "work"); !strings.Contains(view, "beads/work depends on beads/parent") || !strings.Contains(view, "2 Issues, 1 Dependencies") {
+	if view := graphPolicyCLI(t, bd, work, home, nil, "", "graph", "work"); !strings.Contains(view, "beads/work --") || !strings.Contains(view, "2 Beads, 1 Links") {
 		t.Fatalf("blocking graph lost its component: %q", view)
 	}
 	var check graphDependencyCheck
@@ -286,13 +286,11 @@ func TestGraphPreviewStructureReads(t *testing.T) {
 	if cycles := graphPolicyCLI(t, bd, work, home, nil, "", "dep", "cycles"); !strings.Contains(cycles, "No blocking dependency cycles") {
 		t.Fatalf("acyclic blocking graph reported cycles: %q", cycles)
 	}
-	generic := graphMixedResult[graphGenericResult](t, graphPolicyCLI(t, bd, work, home, nil, "", "graph", "work", "--view", "generic", "--json"))
-	if generic.Root != scope+"beads/work" || generic.Projection != "summary" {
+	generic := graphSelectedTestSummary(t, graphPolicyCLI(t, bd, work, home, nil, "", "graph", "work", "--json"))
+	if generic.Root != scope+"beads/work" || len(generic.Links) != 1 {
 		t.Fatalf("generic traversal changed: %+v", generic)
 	}
-	graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "graph", "work", "--dot", "--json")
 	for _, args := range [][]string{
-		{"graph", "work", "--json"},
 		{"dep", "list", "work", "--json"},
 		{"dep", "list", "work", "parent", "--json"},
 		{"dep", "tree", "work", "--json"},
@@ -306,7 +304,7 @@ func TestGraphPreviewStructureReads(t *testing.T) {
 	graphPolicyCLI(t, bd, work, home, []string{"BEADS_MAX_ROWS=1"}, "capability_unavailable", "dep", "tree", "work", "--json")
 	graphPolicyCLI(t, bd, work, home, []string{"BEADS_MAX_ROWS=bad"}, "invalid_properties", "graph", "work", "--json")
 	graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "dep", "tree", "work", "--max-rows=-1", "--json")
-	if got := graphPolicyCLI(t, bd, work, home, []string{"BEADS_MAX_ROWS=1"}, "", "graph", "work", "--max-rows=0"); !strings.Contains(got, "2 Issues, 1 Dependencies") {
+	if got := graphPolicyCLI(t, bd, work, home, []string{"BEADS_MAX_ROWS=1"}, "", "graph", "work", "--max-rows=0"); !strings.Contains(got, "2 Beads, 1 Links") {
 		t.Fatalf("explicit zero did not override graph row cap: %q", got)
 	}
 	if got := graphPolicyCLI(t, bd, work, home, []string{"BEADS_MAX_ROWS=1"}, "", "dep", "tree", "work", "--max-rows=0"); !strings.Contains(got, "beads/parent") {

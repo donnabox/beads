@@ -50,11 +50,8 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			}
 			traverse := func(root, direction, depth string) graphGenericResult {
 				t.Helper()
-				output := call("graph", root, "--view", "generic", "--direction", direction, "--depth", depth)
-				if strings.Contains(output, "private-memory-body") {
-					t.Fatal("summary traversal exposed Memory body")
-				}
-				return graphMixedResult[graphGenericResult](t, output)
+				output := call("graph", root, "--all-link-types", "--direction", direction, "--depth", depth)
+				return graphSelectedTestSummary(t, output)
 			}
 			call(args...)
 			call("remember", "private-memory-body", "--id", "beads/plan", "--title", "Plan")
@@ -257,7 +254,7 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 				before[path] = call("show", path)
 			}
 			before[dep.Link.ID] = call("show", dep.Link.ID)
-			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "graph", "beads/plan", "--view", "generic", "--depth", "10", "--max-nodes", "2", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "graph", "beads/plan", "--all-link-types", "--depth", "10", "--max-nodes", "2", "--json")
 			var legacyIssues []struct {
 				ID string `json:"id"`
 			}
@@ -280,7 +277,7 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 				t.Fatal("graph status did not advertise legacy Issue list JSON")
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--format", "records-json", "--watch")
-			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "graph", "https://foreign.invalid/beads/plan", "--view", "generic", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "graph", "https://foreign.invalid/beads/plan", "--all-link-types", "--json")
 			normalList, normalBlocked := list("--all"), blocked()
 			if got := list("--all", "--readonly"); !reflect.DeepEqual(got, normalList) {
 				t.Fatalf("readonly list differs: %+v", got)
@@ -288,7 +285,7 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			if got := graphMixedResult[[]graphstore.BlockedIssue](t, call("blocked", "--readonly")); !reflect.DeepEqual(got, normalBlocked) {
 				t.Fatalf("readonly blocked differs: %+v", got)
 			}
-			if got := graphMixedResult[graphGenericResult](t, call("graph", "beads/plan", "--view", "generic", "--direction", "out", "--depth", "10", "--readonly")); !reflect.DeepEqual(got, whole) {
+			if got := graphSelectedTestSummary(t, call("graph", "beads/plan", "--all-link-types", "--direction", "out", "--depth", "10", "--readonly")); !reflect.DeepEqual(got, whole) {
 				t.Fatalf("readonly graph differs: %+v", got)
 			}
 			writeFile(t, filepath.Join(work, "mayor", "town.json"), []byte("{}\n"))
@@ -344,7 +341,7 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			if len(after.Nodes) != 2 || len(after.Links) != 1 || after.Links[0].ID != scope+"links/gate" || !after.Complete {
 				t.Fatalf("post-delete traversal: %+v", after)
 			}
-			graphPolicyCLI(t, bd, work, home, nil, "not_found", "graph", "beads/plan", "--view", "generic", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "not_found", "graph", "beads/plan", "--all-link-types", "--json")
 		})
 	}
 }
