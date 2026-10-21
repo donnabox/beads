@@ -78,6 +78,13 @@ func graphVersionRowsJSON(rows []graphstore.VersionRow) []map[string]any {
 // and printing the first when the second is true is a wrong answer rather than
 // an empty one.
 func runGraphPreviewVersions(cmd *cobra.Command, args []string) error {
+	options, canonical, err := canonicalOutputOptions(cmd)
+	if err != nil {
+		return canonicalFailure(cmd, nil, "invalid_selector", err.Error(), 2)
+	}
+	if canonical {
+		return runCanonicalGraphVersions(cmd, args, options)
+	}
 	if err := graphPreviewFlags(cmd); err != nil {
 		return err
 	}
@@ -110,20 +117,9 @@ func runGraphPreviewVersions(cmd *cobra.Command, args []string) error {
 		// identity and historical state survive. It is not a Resource version:
 		// exact reads refuse its token. List only citable states and keep the
 		// removal notice outside the version rows.
-		citable := make([]graphstore.VersionRow, 0, len(rows))
-		removed := false
-		for _, row := range rows {
-			if row.Removed {
-				if kind != graphstore.KindLink || removed {
-					return nil, "", fmt.Errorf("%w: invalid deletion marker in version history", graphstore.ErrInvalidStore)
-				}
-				removed = true
-				continue
-			}
-			citable = append(citable, row)
-		}
-		if len(citable) == 0 {
-			return nil, "", fmt.Errorf("%w: allocated Resource has no citable versions", graphstore.ErrInvalidStore)
+		citable, removed, err := graphCitableVersionRows(kind, rows)
+		if err != nil {
+			return nil, "", err
 		}
 		result := map[string]any{
 			"resource": path,
@@ -132,6 +128,27 @@ func runGraphPreviewVersions(cmd *cobra.Command, args []string) error {
 		}
 		return result, renderGraphVersions(args[0], kind, citable, removed), nil
 	})
+}
+
+// Both output contracts expose only citable retained states. Preserve provider
+// order, and never let a private Link deletion marker become an exact address.
+func graphCitableVersionRows(kind graphstore.ResourceKind, rows []graphstore.VersionRow) ([]graphstore.VersionRow, bool, error) {
+	citable := make([]graphstore.VersionRow, 0, len(rows))
+	removed := false
+	for _, row := range rows {
+		if row.Removed {
+			if kind != graphstore.KindLink || removed {
+				return nil, false, fmt.Errorf("%w: invalid deletion marker in version history", graphstore.ErrInvalidStore)
+			}
+			removed = true
+			continue
+		}
+		citable = append(citable, row)
+	}
+	if len(citable) == 0 {
+		return nil, false, fmt.Errorf("%w: allocated Resource has no citable versions", graphstore.ErrInvalidStore)
+	}
+	return citable, removed, nil
 }
 
 // renderGraphVersions prints the token on its own line under each row.
