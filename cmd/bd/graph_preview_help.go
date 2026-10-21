@@ -280,14 +280,15 @@ status and priority. Use --type types/NAME to narrow by Bead Type.
 BEADS_MAX_ROWS refuses a page of more Beads than that.
 Issue-specific filters (--status, --type, --title, --title-contains,
 --priority, --priority-min, --priority-max, --assignee, --no-assignee,
---label, --label-any, --exclude-label, --pinned, --no-pinned, --due-before,
+--label, --label-any, --exclude-label, --pinned, --no-pinned, --no-parent, --due-before,
 --due-after, --overdue, --sort, --reverse, --long) or a matching configured
 directory label switch to the existing Issue query: Issues only, closed and
 pinned Issues omitted unless --all or a filter selects them, quoted rows
 with status and priority, and a line under the header saying Memories are
 not listed. An Issue filter cannot be combined with a non-Issue --type;
 a configured directory label alone does not refuse one, it is simply not
-applied to Memories. --sort accepts priority, created, updated, closed,
+applied to Memories. --no-parent selects Issues without a parent-child edge,
+including edge-less dotted IDs. --sort accepts priority, created, updated, closed,
 title, status, type, id and assignee; id orders canonical local Bead IDs
 before the result limit. Tree output is unavailable; --tree=false selects
 the same flat output as --flat. --long uses the ordinary detailed Issue
