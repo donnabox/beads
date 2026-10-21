@@ -213,6 +213,14 @@ func TestGraphPreviewUpdateForceAssigneeTwoEngines(t *testing.T) {
 			if !transferred.Changed || transferred.Issue.Properties.Assignee != "successor" || transferred.Issue.Properties.Notes != "Revised" || transferred.Issue.Properties.Status != unforced.Issue.Properties.Status || transferred.Issue.Revision == unforced.Issue.Revision {
 				t.Fatalf("forced transfer and notes were not one guarded edit: %+v", transferred)
 			}
+			appended := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "work", "--append-notes", "Progress", "--force=false", "--if-revision", transferred.Issue.Revision, "--actor", "successor"))
+			if !appended.Changed || appended.Issue.Properties.Assignee != "successor" || appended.Issue.Properties.Notes == "Revised" || !strings.HasSuffix(appended.Issue.Properties.Notes, "Progress") || appended.Issue.Revision == transferred.Issue.Revision {
+				t.Fatalf("false force changed append semantics: %+v", appended)
+			}
+			refuse("invalid_properties", "update", "work", "--append-notes", "Must refuse", "--force")
+			if current := graphMixedResult[graphstore.IssueRecord](t, call("show", "work", "--format", "graph-json")); !reflect.DeepEqual(current, appended.Issue) {
+				t.Fatal("refused forced append changed the Issue")
+			}
 			refuse("invalid_properties", "update", "work", "--title", "Unsupported force", "--force")
 			properties := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "work", `--properties={"assignee":"third","notes":"Third"}`, "--force", "--actor", "third"))
 			if !properties.Changed || properties.Issue.Properties.Assignee != "third" || properties.Issue.Properties.Notes != "Third" {
