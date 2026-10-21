@@ -58,9 +58,6 @@ func (s *Store) listIssues(ctx context.Context, request publicops.ListRequest, p
 	if err != nil {
 		return IssueListPage{}, err
 	}
-	if request.ReadyFlag && parent != nil {
-		return IssueListPage{}, fmt.Errorf("%w: graph Issue list cannot combine --ready with --parent", ErrCapabilityUnavailable)
-	}
 	if request.ReadyFlag {
 		s.wakeExpiredDefersAdvisory(ctx)
 	}
@@ -168,9 +165,6 @@ func (s *Store) listIssuesInTx(ctx context.Context, tx *sql.Tx, request publicop
 }
 
 func (s *Store) listIssuesWithParentInTx(ctx context.Context, tx *sql.Tx, request *publicops.ListRequest, parent *IssueSelector) (IssueListPage, error) {
-	if request.ReadyFlag && parent != nil {
-		return IssueListPage{}, fmt.Errorf("%w: graph Issue list cannot combine --ready with --parent", ErrCapabilityUnavailable)
-	}
 	if err := checkCurrentReadBytes(ctx, tx); err != nil {
 		return IssueListPage{}, err
 	}
@@ -240,6 +234,13 @@ func (s *Store) listIssuesWithParentInTx(ctx context.Context, tx *sql.Tx, reques
 	// Counts are not in this result's projection. Labels and complete Issue
 	// properties remain present; callers cannot request partial graph records.
 	filter.SkipCounts = true
+	if parent != nil && request.ReadyFlag && parentNativeID != "" {
+		// Shipping --ready --parent selects transitive parent-child descendants.
+		// The ready query computes that set before applying blocker/status filters,
+		// so a closed intermediary does not hide a ready grandchild. Keep the
+		// graph selector resolution and the native query in this transaction.
+		filter.ParentID = &parentNativeID
+	}
 	// Every admitted workspace has <=1000 live Resources. Bounding an enormous
 	// requested SQL limit here cannot discard an admitted row, and prevents the
 	// shared probe-row increment from overflowing an arbitrary caller's int.
@@ -283,7 +284,7 @@ func (s *Store) listIssuesWithParentInTx(ctx context.Context, tx *sql.Tx, reques
 			return IssueListPage{}, err
 		}
 		records[row.ID] = record
-		if parent == nil || issueListParentMatches(row, path, parentNativeID, parentPath) {
+		if parent == nil || (request.ReadyFlag && parentNativeID != "") || (!request.ReadyFlag && issueListParentMatches(row, path, parentNativeID, parentPath)) {
 			selectedRows = append(selectedRows, row)
 		}
 	}

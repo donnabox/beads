@@ -168,8 +168,10 @@ does not establish a parent.
 `--ready` switches to the blocker-aware Issue query and defaults to open
 Issues, as ordinary `bd list --ready` does. An explicit status intersects
 that ready set. Filters the ready query cannot honor are refused instead of
-silently dropped; `--ready --parent` is unavailable in graph mode.
-`--parent ID` selects direct parent-child edges and edge-less dotted children
+silently dropped. With `--parent ID`, ready mode selects blocker-free Issue
+descendants recursively, including grandchildren reached through a filtered-out
+intermediary, and prints the ordinary flat ready list.
+Without `--ready`, `--parent ID` selects direct parent-child edges and edge-less dotted children
 under the selected graph Issue ID. It accepts a bare Issue ID or an explicit
 `beads/PATH`; `--filter-parent` is the ordinary compatibility alias. Use
 `--flat`, `--json`, or `--format records-json` with it to list direct children.

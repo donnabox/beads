@@ -117,7 +117,7 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 			return nil, output, err
 		}, func(_ any, output string) error { _, err := fmt.Fprint(cmd.OutOrStdout(), output); return err })
 	}
-	if parent != nil && in.prettyFormat && !structured && !legacyJSON && !in.longFormat && !quietFlag {
+	if parent != nil && !in.ReadyFlag && in.prettyFormat && !structured && !legacyJSON && !in.longFormat && !quietFlag {
 		return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 			tree, err := s.ListIssueTreeSelected(ctx, in.ListRequest, *parent)
 			if errors.Is(err, storage.ErrValidation) {
@@ -248,7 +248,7 @@ func graphIssueListInput(cmd *cobra.Command, argv []string) (listInput, bool, er
 	if (cmd.Flags().Changed("parent") || cmd.Flags().Changed("filter-parent")) && in.ParentID == "" {
 		return fail("invalid_selector", "--parent requires an Issue ID", 2)
 	}
-	if in.ParentID != "" && quietFlag && !structured && !in.jsonOutput && !jsonFlag && !legacyFormatJSON && !flat && !(cmd.Flags().Changed("tree") && !tree) {
+	if in.ParentID != "" && !in.ReadyFlag && quietFlag && !structured && !in.jsonOutput && !jsonFlag && !legacyFormatJSON && !flat && !(cmd.Flags().Changed("tree") && !tree) {
 		return fail("capability_unavailable", "graph list --parent --quiet currently requires --flat or JSON", 5)
 	}
 	// pflag returns a non-nil empty slice for an omitted StringSlice flag.

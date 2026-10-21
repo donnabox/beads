@@ -86,3 +86,45 @@ func TestGraphIssueTreeSelectedExcludesDottedLinkedElsewhere(t *testing.T) {
 		})
 	}
 }
+
+func TestGraphIssueReadyParentSelectsTransitiveDescendants(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, _, store := issueListFixture(t, backend)
+			for _, path := range []string{"beads/root", "beads/mid", "beads/grand", "beads/other"} {
+				if _, err := store.CreateIssue(ctx, path, plainIssue(path)); err != nil {
+					t.Fatal(err)
+				}
+			}
+			parentType, ok := RelationshipDependencyTypeURL(store.ScopeURL(), types.DepParentChild)
+			if !ok {
+				t.Fatal("parent-child Type unavailable")
+			}
+			for _, edge := range []struct{ path, child, parent string }{
+				{"links/root-mid", "beads/mid", "beads/root"},
+				{"links/mid-grand", "beads/grand", "beads/mid"},
+			} {
+				if _, err := store.AddDependency(ctx, DependencyRequest{Path: edge.path, Type: types.DepParentChild, TypeURL: parentType, SourcePath: edge.child, TargetPath: edge.parent, Actor: "author"}); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if _, err := store.CloseIssueWithOptions(ctx, IssueCloseRequest{Path: "beads/mid", Reason: "done", Actor: "closer", Force: true}); err != nil {
+				t.Fatal(err)
+			}
+			request := publicops.ListRequest{ReadyFlag: true, SortBy: "id", Limit: issueListInt(1)}
+			selector := IssueSelector{Path: "beads/root"}
+			page, err := store.ListIssuesSelected(ctx, request, selector)
+			if err != nil || len(page.Items) != 1 || page.Items[0].ID != store.ScopeURL()+"beads/grand" || page.HasMore {
+				t.Fatalf("ready descendants through closed intermediary: %+v %v", page, err)
+			}
+			legacy, err := store.ListIssuesLegacySelected(ctx, request, selector)
+			if err != nil || len(legacy.Items) != 1 || legacy.Items[0].ID != "beads/grand" || legacy.HasMore {
+				t.Fatalf("legacy ready descendants: %+v %v", legacy, err)
+			}
+			missing, err := store.ListIssuesLegacySelected(ctx, request, IssueSelector{Path: "beads/missing"})
+			if err != nil || len(missing.Items) != 0 {
+				t.Fatalf("missing graph parent should select no ready Issues: %+v %v", missing, err)
+			}
+		})
+	}
+}

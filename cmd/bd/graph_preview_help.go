@@ -295,7 +295,8 @@ a configured directory label alone does not refuse one, it is simply not
 applied to Memories. --no-parent selects Issues without a parent-child edge,
 including edge-less dotted IDs.
 --ready uses the blocker-aware Issue query, defaults to open Issues, and
-refuses filters that query cannot honor; graph --ready --parent is unavailable.
+refuses filters that query cannot honor. With --parent it selects transitive
+Issue descendants and prints a flat ready list, as ordinary bd list does.
 --sort accepts priority, created, updated, closed,
 title, status, type, id and assignee; id orders canonical local Bead IDs
 before the result limit. --tree=false selects
