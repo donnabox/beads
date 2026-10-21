@@ -76,6 +76,25 @@ class MemoryCreationProjection(unittest.TestCase):
                 module.require_memory_creation(dict(record, **change), scope)
 
 
+class MemoryDeletionProjection(unittest.TestCase):
+    def test_terminal_must_follow_exact_final_live_snapshot(self):
+        final_live = {"id": "https://example.invalid/beads/alpha", "revision": "live-token",
+                      "attribution": {"inception": "create"}}
+        terminal = {"id": final_live["id"], "previousVersion": "live-token",
+                    "revision": "deletion-token", "version": "deletion-token",
+                    "state": "deleted", "attribution": {"inception": "create"}}
+        result = {"memory": final_live, "terminal": terminal, "preview": False, "deleted": True}
+        module.require_memory_deletion(result, final_live)
+        for change in ({"previousVersion": "wrong-token"}, {"revision": "live-token"},
+                       {"version": "wrong-token"}, {"state": "live"},
+                       {"id": "https://example.invalid/beads/other"},
+                       {"attribution": {"inception": "revert"}}):
+            with self.subTest(change=change), self.assertRaisesRegex(RuntimeError, "deletion terminal"):
+                module.require_memory_deletion(dict(result, terminal=dict(terminal, **change)), final_live)
+        with self.assertRaisesRegex(RuntimeError, "exact final live predecessor"):
+            module.require_memory_deletion(dict(result, memory=dict(final_live, revision="stale")), final_live)
+
+
 def lane_function(name):
     return next(n for n in ast.walk(ast.parse(SOURCE)) if isinstance(n, ast.FunctionDef) and n.name == name)
 

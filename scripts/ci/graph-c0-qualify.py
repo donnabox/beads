@@ -52,6 +52,25 @@ def require_memory_creation(record, scope):
             and "version" not in record, "incomplete/non-Memory creation")
 
 
+def require_memory_deletion(result, final_live):
+    """Keep the last live snapshot distinct from the new deletion revision."""
+    require(isinstance(result, dict) and set(result) == {"memory", "terminal", "preview", "deleted"}
+            and result["memory"] == final_live and result["preview"] is False
+            and result["deleted"] is True,
+            "deletion did not disclose the exact final live predecessor")
+    terminal = result["terminal"]
+    require(isinstance(terminal, dict)
+            and terminal.get("id") == final_live["id"]
+            and terminal.get("previousVersion") == final_live["revision"]
+            and isinstance(terminal.get("revision"), str) and bool(terminal["revision"])
+            and terminal["revision"] != final_live["revision"]
+            and terminal.get("version") == terminal["revision"]
+            and terminal.get("state") == "deleted"
+            and isinstance(terminal.get("attribution"), dict)
+            and terminal["attribution"].get("inception") == final_live["attribution"]["inception"],
+            "deletion terminal did not follow the exact final live predecessor")
+
+
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -323,9 +342,9 @@ def verify_memory_deletion_capture(root, summary):
     scope = summary["scope"]
     require(alpha["id"] == scope + "beads/alpha", "wrong deletion fixture identity")
     deletion = data("18-memory-delete/stdout.log")
-    require(deletion.get("preview") is True and deletion.get("schemaVersion") == 1
-            and deletion.get("result") == {"memory": alpha, "preview": False, "deleted": True},
-            "deletion did not retain/disclose exact final live state")
+    require(deletion.get("preview") is True and deletion.get("schemaVersion") == 1,
+            "deletion envelope changed")
+    require_memory_deletion(deletion.get("result"), alpha)
     argv = data("18-memory-delete/receipt.json")["argv"]
     require(argv == [data("02-memory-create/receipt.json")["argv"][0], "delete", "beads/alpha", "--force",
                      "--if-revision", alpha["revision"], "--json"], "deletion did not use original observed guard")
