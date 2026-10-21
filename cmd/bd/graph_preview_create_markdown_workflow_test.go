@@ -78,6 +78,10 @@ func TestGraphPreviewCreateMarkdownBatchWorkflow(t *testing.T) {
 				t.Fatal(err)
 			}
 			call("capability_unavailable", "create", "--file", plan)
+			if err := os.WriteFile(plan, []byte("## Typed external must not land\n\n### Dependencies\nblocked-by: external:other#1\n"), 0600); err != nil {
+				t.Fatal(err)
+			}
+			call("capability_unavailable", "create", "--file", plan)
 			if err := os.WriteFile(plan, []byte("No level-two Issue headings here.\n"), 0600); err != nil {
 				t.Fatal(err)
 			}

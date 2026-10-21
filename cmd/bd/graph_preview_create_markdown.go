@@ -39,8 +39,8 @@ func runGraphPreviewCreateMarkdown(cmd *cobra.Command, args []string) error {
 	// graph diagnostic contract and the shared builder cannot partially print.
 	for _, template := range templates {
 		for _, raw := range template.Dependencies {
-			dependency := strings.TrimSpace(raw)
-			if strings.HasPrefix(dependency, "external:") || strings.Contains(dependency, ":external:") {
+			kind, target, typed := strings.Cut(strings.TrimSpace(raw), ":")
+			if typed && (strings.TrimSpace(kind) == "external" || strings.HasPrefix(strings.TrimSpace(target), "external:")) {
 				return graphFailure("capability_unavailable", "markdown Dependencies on external targets are unavailable in graph mode", 5)
 			}
 		}
