@@ -5,6 +5,12 @@ Status: working audit, October 21, 2026. Compare the shipping `v1.3.1` tag
 when the shipping release changes. This document records observed behavior;
 the graph CLI specification remains the contract for intentional differences.
 
+The [complete 43-command inventory](preview3-cli-parity.md) compares every
+command in Donna's three prioritized families against the same pinned builds.
+Its three detailed reports distinguish executed forms, explicit refusals,
+silent wrong answers, changed contracts, candidate PRs, and untested edges.
+This working audit tracks implementation and qualification progress.
+
 Donna selected basic Bead/Link CRUD and the `ready` invariant as the first
 Preview 3 compatibility slice on October 21. [The command/form table](preview3-cli-compatibility-selection.md)
 marks #151, #152, #156 and the #175 readiness regression as selected unmerged

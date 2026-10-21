@@ -11,6 +11,12 @@ belong to this slice and still require end-to-end qualification. Selection
 does not mean a PR is merged or that every shipping flag is supported. The
 other linked parity PRs remain candidates for a later pass.
 
+Donna subsequently asked for shipping v1.3.1 feature parity across CRUD+
+and a [complete 43-command assessment](preview3-cli-parity.md). The focused
+selection below is a tested starting slice, not a declaration that CRUD+
+parity is complete. The full assessment records command-by-command gaps and
+release-note wording before additional work is staged.
+
 A disposable selected-only merge of those four PRs passed 18 focused
 installed CLI workflows on embedded and real shared-server Dolt, with no
 skips in the server-enabled run. [The audit](graph-mode-shipping-compatibility-audit.md)
