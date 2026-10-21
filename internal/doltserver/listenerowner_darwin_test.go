@@ -100,9 +100,6 @@ func TestListenerOwnership_RealTools(t *testing.T) {
 	if _, err := exec.LookPath("lsof"); err != nil {
 		t.Skip("lsof not on PATH")
 	}
-	if _, err := exec.LookPath("nc"); err != nil {
-		t.Skip("nc not on PATH")
-	}
 	port := foreignGreeter(t)
 	if owned, known := listenerOwnership(os.Getpid(), port); !owned || !known {
 		t.Errorf("listenerOwnership(self, own listener) = (%v, %v), want (true, true)", owned, known)
@@ -113,20 +110,36 @@ func TestListenerOwnership_RealTools(t *testing.T) {
 
 	// A child that holds its own listener: nc -l on a fresh port, under a
 	// shell that does not exec it, so the listener is a grandchild.
+	if _, err := exec.LookPath("nc"); err != nil {
+		t.Skip("nc not on PATH")
+	}
 	ncPort := freeLoopbackPort(t)
 	cmd := exec.Command("sh", "-c", `
+listener=
+trap 'listener=${listener:-$!}; if [ -n "$listener" ]; then kill "$listener" 2>/dev/null || :; wait "$listener" 2>/dev/null || :; fi; exit 0' TERM INT
 nc -l 127.0.0.1 "$1" &
 listener=$!
-trap 'kill "$listener" 2>/dev/null || :; wait "$listener" 2>/dev/null || :; exit 0' TERM INT
 wait "$listener"
 `, "listener-owner-test", strconv.Itoa(ncPort))
-	// A private group bounds fallback cleanup to this fixture. The shell trap
-	// normally terminates and reaps nc before the shell itself exits.
-	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+	// Keep the test process group so an interrupted test also reaches the
+	// shell trap, which terminates and reaps nc before the shell exits.
 	if err := cmd.Start(); err != nil {
 		t.Skipf("cannot start nc under sh: %v", err)
 	}
+	listened := false
 	t.Cleanup(func() {
+		// Capture this shell's descendants before signalling it, then verify
+		// they exit without signalling a shared group or potentially reused pid.
+		var children []int
+		parents, err := psParentPIDs()
+		if err != nil {
+			t.Errorf("snapshot listener fixture children: %v", err)
+		}
+		for pid := range parents {
+			if pid != cmd.Process.Pid && descendsFrom(pid, cmd.Process.Pid, parents) {
+				children = append(children, pid)
+			}
+		}
 		done := make(chan error, 1)
 		go func() { done <- cmd.Wait() }()
 		if err := cmd.Process.Signal(syscall.SIGTERM); err != nil && !errors.Is(err, os.ErrProcessDone) {
@@ -135,10 +148,17 @@ wait "$listener"
 		select {
 		case err := <-done:
 			if err != nil {
-				t.Errorf("listener fixture shell exit: %v", err)
+				if listened {
+					t.Errorf("listener fixture shell exit after readiness: %v", err)
+				} else {
+					// nc may have exited before listening; preserve the startup skip.
+					t.Logf("listener fixture shell exit: %v", err)
+				}
 			}
 		case <-time.After(5 * time.Second):
-			_ = syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
+			// Never signal raw descendant pids after a delay: a reaped pid can
+			// be reused. The outer strict guard handles any remaining group.
+			_ = cmd.Process.Kill()
 			select {
 			case <-done:
 			case <-time.After(5 * time.Second):
@@ -146,20 +166,23 @@ wait "$listener"
 			}
 			t.Error("listener fixture did not stop gracefully")
 		}
+		// Bound verification of all captured descendants together.
 		deadline := time.Now().Add(5 * time.Second)
-		for !errors.Is(syscall.Kill(-cmd.Process.Pid, 0), syscall.ESRCH) {
-			if time.Now().After(deadline) {
-				_ = syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
-				t.Error("listener fixture left its owned process group alive")
-				break
+		for _, pid := range children {
+			for processExists(pid) {
+				if time.Now().After(deadline) {
+					t.Errorf("listener fixture left owned child %d alive", pid)
+					break
+				}
+				time.Sleep(20 * time.Millisecond)
 			}
-			time.Sleep(20 * time.Millisecond)
 		}
 	})
 	deadline := time.Now().Add(5 * time.Second)
 	for {
 		pids, err := listeningPIDs(ncPort)
 		if err == nil && len(pids) > 0 {
+			listened = true
 			break
 		}
 		if time.Now().After(deadline) {
