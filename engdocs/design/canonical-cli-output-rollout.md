@@ -1,8 +1,86 @@
 # Canonical CLI output implementation plan
 
-Status: design ready for review, October 19, 2026. The isolated common-output
-foundation is underway; command adapters and qualification remain pending. The source contract is
+Status: first read-adapter wave merged into `codex/preview3-integration` on
+October 20, 2026. The target contract is
 [selection-and-output.md](../../docs/reference/bdp/cli/selection-and-output.md).
+This checklist separates delivered functionality from remaining work; it is not
+a declaration that the complete output contract or Preview 3 release is finished.
+
+## Delivery ledger
+
+The five implementation PRs are merged at integration commit
+`a40452caefe2f1d57d2b6a980445b880ad24c98c`.
+
+| PR | Delivered | Remaining boundary |
+| --- | --- | --- |
+| [#123](https://github.com/donnabox/beads/pull/123) | Shared Resource projection, schema-2 envelopes, detail/JSON/raw output, structured failures and protected context. | Source-side projection remains BDP work; this renderer does no fetching. |
+| [#126](https://github.com/donnabox/beads/pull/126) | Collection descriptors, tables, finite JSONL and delivery-boundary accounting. | An engine capable of consuming pages does not supply provider cursors. |
+| [#127](https://github.com/donnabox/beads/pull/127) | Current and retained `show`/`link show`, BDP-shaped payloads, masks, errors and public corpus. | No JSONL show adapter or hidden traversal; nested masks are limited to properties/metadata. |
+| [#128](https://github.com/donnabox/beads/pull/128) | `versions`/`history`/`link versions` and root/Link comparisons. Subject context, exact operands and coverage survive framing removal. | Version JSONL and retained paging refuse; comparison data masks refuse. |
+| [#129](https://github.com/donnabox/beads/pull/129) | `list`/`link list`, structured exact-Type/family/endpoint selection, tables and framed/raw JSONL. | Local provider returns complete bounded selections; it cannot resume or safely truncate them. |
+
+### Qualification already recorded
+
+The PR bodies retain final source identities and actual Linux run receipts:
+[#123](https://github.com/donnabox/beads/actions/runs/39448828081),
+[#127](https://github.com/donnabox/beads/actions/runs/39452980710) (attempt 2),
+[#128](https://github.com/donnabox/beads/actions/runs/39456238030), and
+[#129](https://github.com/donnabox/beads/actions/runs/39465085335).
+Their selected lanes passed: 217 test targets, 175 integration targets with nogo,
+10 Dolt-server targets, two command-server targets, pure-Go/js/wasm and all eight
+configured release cross-compilation targets. Optional skipped tiers are not
+credited. #126 has its own focused Bazel race/nogo evidence and byte-identical
+engine files in the fully qualified #128 stack; no standalone full #126 workflow
+is claimed.
+
+Native and Claude review dispositions are recorded; Gemini supplied no substantive
+review and is not counted. #127's first run had an unchanged Notion test failure;
+its failed integration lane passed on retry without source edits. The original
+failure and bounded diagnosis remain in the PR. #129's help-expectation failure
+was repaired and its final source passed a fresh run.
+
+Combined qualification with selected Types, historical recovery, endpoint pins
+and export belongs to [#141](https://github.com/donnabox/beads/pull/141). Individual
+PR receipts do not qualify that combined tree. The merge retains the shared
+current/retained projector while adding selected owned-Link families and pinned
+References; its tests must exercise those combinations.
+
+## Remaining-work checklist
+
+Order reflects the next useful slices, not a blanket dependency on one owner.
+All implementation owners retain their own validation and publication authority.
+
+- [x] Common projection/framing engine and current/retained identity reads.
+- [x] Complete bounded list/Link-list output and retained-state inspection.
+- [ ] **1. Provider pagination:** establish portable continuation and read-context
+  guarantees with Melinda and Trish; implement resumable delivery for list/Link
+  list. Cover short pages, total caps, format/projection changes under continuation,
+  late failure and no skipped or duplicate records. Until then retain explicit
+  refusal when a requested page/limit is smaller than the complete selection.
+- [ ] **2. Retained JSONL and paging:** define a delivery unit that preserves the
+  subject and kind even with `--omit envelope`; then admit versions/history JSONL
+  and real retained continuation. A version row alone is insufficient. Comparisons
+  remain compound results; they need no row stream merely to match collections.
+- [ ] **3. Generic mutation output:** adapt Bead and Link create/update/delete with
+  actual applied/no-op/unknown outcomes, revision/source effects and stale-guard
+  failures. Rendering failure must not imply rollback or safe retry. No dependency
+  on the query parser; coordinate actual overlap with historical update work.
+- [ ] **4. Exact generic count and query/search:** share the normalized selection
+  model; exact count may precede textual predicates when a qualified provider
+  supports it. Melinda owns the language and lowering. Never report a page count
+  as a total or wrap Issue-shaped results as generic Resources.
+- [ ] **5. Generic graph and admitted Type results:** add declared result adapters,
+  Link inclusion/exclusion, topology-preserving table/tree output and protected
+  exact revisions. No new facade or Issue workflow migration is implied.
+- [ ] **6. Release acceptance:** close the per-command compatibility matrix and
+  applicable O01–O17 coverage, publish corpus examples, and qualify the actual
+  combined release tree. Document every remaining capability refusal. A changed
+  BDP pin requires payload/schema/conformance adoption together.
+
+Completion means every admitted command has an explicit supported-format,
+projection, selection and failure contract backed by command-level evidence.
+Excluded domain workflows remain unchanged. Deferred protocol extensions and
+facades are not prerequisites for declaring the bounded read wave delivered.
 
 ## Scope
 
@@ -43,7 +121,7 @@ payload.
 
 Source cross-check: Melinda's command inventory and registrations at
 `116a4ea6a459ef823ea714c1f418ad4c39dd81af`; the older output-design checkout remains
-documentation-only. Neither source is automatically Janet's implementation base.
+documentation-only. Use the selected integration baseline for new implementation work.
 Melinda reviewed the command dependencies on October 19. Her key distinction is
 the shared structured selection model versus its textual predicate frontend:
 list and simple exact count can adopt the former before the latter exists.
@@ -140,15 +218,18 @@ knowledge into the Resource projector, or pipe one CLI command through another.
 Do not require a universal BDP wire payload for CLI-derived results BDP does not
 define. Their descriptor identifies their contract explicitly.
 
-## Sequence
+## Acceptance criteria by work area
+
+The delivery ledger and remaining-work checklist above determine current status.
+The criteria below remain obligations for each applicable adapter.
 
 ### 0. Reconcile contracts and isolate compatibility
 
-Before code is assigned:
+For each newly admitted adapter:
 
 - Pin the adopted BDP commit/spec identifier and corresponding payload schemas.
-- Confirm the candidate details in the output spec: exact error/completion fields,
-  result-kind registry and indexed inclusion rules.
+- Use the accepted error/completion fields, result-kind registry and indexed
+  inclusion rules; declare the adapter's supported subset explicitly.
 - Adopt Melinda's separation between semantic query projection and representation
   masks, including mandatory assessment context and strict continuation.
 - Map existing flags/output for each overlapping root path, with examples from
@@ -248,17 +329,26 @@ adapters must separately qualify their collective-context obligations.
 - Disk spooling is optional later optimization, not the first output milestone.
 - Numeric exit-code normalization is a later compatibility decision.
 
-## Compatibility recommendation
+## Compatibility contract
 
 The clean engine has one contract. Compatibility belongs at the command boundary.
 For existing `show/list/query` scripts, a schema bump alone is not enough to
 authorize replacing bare arrays or legacy detail objects.
 
-Recommend using explicit `--output-format` as the canonical-output opt-in during
-the transition, preserving historical `--json` behavior on legacy paths until a
-declared cutover. This is a rollout proposal, not a change to the pure model where
-`--json` aliases canonical JSON. A graph/generic execution context may select the
-canonical contract only when its boundaries are explicit and documented.
+The delivered adapters use explicit `--output-format` as the canonical-output
+opt-in in graph mode. Historical `--json` and `--format` retain their existing
+behavior without that opt-in. Mixing either with `--output-format` refuses,
+including explicit `--json=false`. Projection flags require canonical opt-in.
+This transition does not change the pure model where `--json` aliases canonical
+JSON; there is no scheduled legacy cutover or removal in this wave.
+
+Canonical `list --all` refuses because it is an Issue-status flag. Existing
+legacy `--all` behavior remains unchanged. Canonical list selection has no
+implicit Issue-status filter. Paged human/JSON defaults to 50; JSONL defaults to
+unpaged. The provider bounds a complete selection to 1,000 Resources and 16 MiB.
+A selection exceeding the requested page/limit refuses, with no subset presented
+as exhausted and no fabricated continuation. `--unpaged` removes the presentation
+page boundary, not the provider's acquisition bounds.
 
 Before release, decide the exact cutover and retirement mechanism with Donna.
 Do not add a new permanent top-level namespace solely for migration, silently
@@ -298,21 +388,9 @@ agent-only ordering holds. A real collision requires both owners' and Janet's
 agreement and an entry in the policy's visible hold register; explicit
 Donna-requested exceptions and repository protections remain in force.
 
-This remains a documentation-only PR. After Donna approved implementation,
-Janet assigned Cleo a bounded new `internal/clioutput/` package on integration
-baseline `5b8cdefe055b8f08cf9eb385e946396c1b5799d7`. Foundation source and pure
-tests cover descriptor-driven masks and single-Resource JSON/detail/raw/error
-rendering, with no store/transport reads. The implementation is published in
-[PR123](https://github.com/donnabox/beads/pull/123), including its focused validation
-results and outstanding full-suite qualification. The baseline is not
-qualification of the new output contract. Cleo prepares the package's generated
-BUILD references and runs its validation in an isolated checkout. Existing command
-files and shared integration work remain coordinated with Janet.
-
-The `show`/`link show` command-wiring handoff still follows PR114 and the active
-Type/symmetric Link CLI handshakes. The foundation does not make new flags
-available or establish provider/command conformance. Exact schema/cutover review
-questions and public adapter corpus checks remain gates before wiring.
+This document and the specification are documentation-only changes. Delivered
+implementation and review evidence are recorded above; shared-file coordination
+does not impose a new approval or qualification gate on follow-on authors.
 
 Trish's [bounded BDP review](https://github.com/donnabox/agent-coordination/blob/7fbe9e41413198b3af9ed04ddae6a82adb0e7be1/context/trish/output-contract-review-20261019.md)
 confirms that client-side projection and framing need no new protocol envelope.
@@ -325,26 +403,17 @@ separate from the first identity-read adapter.
 
 ## Publication
 
-Publish the common contract as a documentation-only review checkpoint, separate
-from implementation. Keep the old baseline ledger linked to it rather than
-maintaining two copies. Melinda's language specification can follow at
-`docs/reference/bdp/cli/query-language.md` and reference this output contract.
-The language spec does not need to block the common output documentation.
+The common contract is published through
+[PR122](https://github.com/donnabox/beads/pull/122), with its proposal mirror and
+work tracker at [#7718](https://github.com/gastownhall/beads/issues/7718).
+The older graph draft links to the common contract; the CLI navigation entry
+is included in this documentation PR alongside the existing Memory/reference
+pages. No separate navigation assembly or Janet approval is required.
 
-Before publishing, run repository PR preflight and review overlapping contributor
-work; use an appropriate existing proposal/discussion where available. In the
-established proposal workflow, the full proposal body and documentation PR should
-cross-link, with draft/accepted/implemented status explicit. The documentation review branch is `codex/cli-selection-output-spec`, based on
-Preview 3 integration commit `5b8cdefe055b8f08cf9eb385e946396c1b5799d7`.
-This is a documentation checkpoint, not an implementation qualification claim.
-The shared CLI index/navigation additive diff is prepared separately for assembly
-with PR121's Memory child and the other CLI documentation. This branch does not
-edit those files; that scope choice does not create a publication or merge hold.
-
-Melinda's separate selection/output/query delivery note supplied compatible
-sequencing and acceptance recommendations. This document is the consolidated
-rollout plan; that note remains informative. Trish reviews BDP payload/continuation
-claims, Iris reviews interchange boundaries and Janet selects the exact qualified
-product baseline and implementation owner. Do not start runtime work from this
-older documentation checkout or require two new production database backends
-as a prerequisite for the existing provider's output contract.
+Melinda's [query-language proposal](https://github.com/donnabox/beads/pull/125)
+contains the portable language, CLI conveniences and acceptance corpus. Its
+adapters reuse this contract. Trish owns BDP payload/continuation reconciliation,
+Iris owns interchange, and Janet owns the combined integration qualification.
+Cleo owns the output specification and remaining-work checklist. Track actual
+implementation gaps here without relabeling approved design as undecided or
+claiming pending adapters are delivered.
