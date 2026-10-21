@@ -90,9 +90,7 @@ func TestGraphIssueListRequestAdmission(t *testing.T) {
 			}
 		})
 	}
-	for _, request := range []publicops.ListRequest{
-		{SortBy: "id"}, {SortBy: "assignee"}, {SortBy: "closed"}, {SortBy: "bad"},
-	} {
+	for _, request := range []publicops.ListRequest{{SortBy: "bad"}} {
 		got, err := store.ListIssues(context.Background(), request)
 		if !errors.Is(err, ErrCapabilityUnavailable) || !reflect.ValueOf(got).IsZero() {
 			t.Fatalf("sort: %+v %v", got, err)
@@ -135,14 +133,15 @@ func TestGraphIssueListLifecycle(t *testing.T) {
 			}
 			wanted := map[string]IssueRecord{}
 			for _, entry := range []struct {
-				path, title string
-				priority    int
-				labels      []string
+				path, title, assignee string
+				priority              int
+				labels                []string
 			}{
-				{"beads/work", "Alpha work", 1, []string{"shared", "work"}}, {"beads/prereq", "Beta prerequisite", 2, []string{"shared", "prerequisite"}}, {"beads/other", "Gamma other", 3, []string{"other"}},
+				{"beads/work", "Alpha work", "Zed", 1, []string{"shared", "work"}}, {"beads/prereq", "Beta prerequisite", "", 2, []string{"shared", "prerequisite"}}, {"beads/other", "Gamma other", "Mira", 3, []string{"other"}},
 			} {
 				request := plainIssue(entry.title)
 				request.Issue.Priority = entry.priority
+				request.Issue.Assignee = entry.assignee
 				request.Issue.Labels = entry.labels
 				got, err := s.CreateIssue(ctx, entry.path, request)
 				if err != nil {
@@ -199,6 +198,8 @@ func TestGraphIssueListLifecycle(t *testing.T) {
 				{"priority", publicops.ListRequest{Priority: issueListInt(2)}, []string{"beads/prereq"}, false},
 				{"range", publicops.ListRequest{PriorityMin: issueListInt(2), PriorityMax: issueListInt(3)}, []string{"beads/prereq", "beads/other"}, false},
 				{"reverse", publicops.ListRequest{SortBy: "title", Reverse: true}, []string{"beads/other", "beads/prereq", "beads/work"}, false},
+				{"sort-id", publicops.ListRequest{SortBy: "id", Limit: issueListInt(2)}, []string{"beads/other", "beads/prereq"}, true},
+				{"sort-assignee", publicops.ListRequest{SortBy: "assignee", Limit: issueListInt(2)}, []string{"beads/prereq", "beads/other"}, true},
 				{"empty", publicops.ListRequest{TitleContains: "absent"}, []string{}, false},
 			} {
 				t.Run(tc.name, func(t *testing.T) {
@@ -231,6 +232,10 @@ func TestGraphIssueListLifecycle(t *testing.T) {
 			if err != nil || len(all.Items) != 3 || !reflect.DeepEqual(all.Items[1], closed.Issue) {
 				t.Fatalf("all closed: %+v %v", all, err)
 			}
+			byClosed, err := s.ListIssues(ctx, publicops.ListRequest{AllFlag: true, SortBy: "closed", Limit: issueListInt(1)})
+			if err != nil || len(byClosed.Items) != 1 || byClosed.Items[0].ID != closed.Issue.ID || !byClosed.HasMore {
+				t.Fatalf("closed sort must precede open rows before paging: %+v %v", byClosed, err)
+			}
 			reopened, err := s.ReopenIssue(ctx, "beads/prereq", "again", "reopener")
 			if err != nil {
 				t.Fatal(err)
@@ -255,6 +260,41 @@ func TestGraphIssueListLifecycle(t *testing.T) {
 			got, err := second.ListIssues(ctx, publicops.ListRequest{Status: "open", TitleContains: "prereq"})
 			if err != nil || !reflect.DeepEqual(got, page) {
 				t.Fatalf("reopened store: %+v %v", got, err)
+			}
+		})
+	}
+}
+
+func TestGraphIssueListCanonicalIDSort(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, _, s := issueListFixture(t, backend)
+			for _, path := range []string{"beads/item-10", "beads/item-2", "beads/item-1"} {
+				if _, err := s.CreateIssue(ctx, path, plainIssue(path)); err != nil {
+					t.Fatal(err)
+				}
+			}
+			for _, tc := range []struct {
+				reverse bool
+				want    []string
+			}{
+				{false, []string{"beads/item-1", "beads/item-2"}},
+				{true, []string{"beads/item-10", "beads/item-2"}},
+			} {
+				request := publicops.ListRequest{SortBy: "id", Reverse: tc.reverse, Limit: issueListInt(2)}
+				page, err := s.ListIssues(ctx, request)
+				if err != nil || len(page.Items) != len(tc.want) || !page.HasMore {
+					t.Fatalf("canonical id page: %+v %v", page, err)
+				}
+				legacy, err := s.ListIssuesLegacy(ctx, request)
+				if err != nil || len(legacy.Items) != len(tc.want) || !legacy.HasMore {
+					t.Fatalf("legacy id page: %+v %v", legacy, err)
+				}
+				for i, path := range tc.want {
+					if page.Items[i].ID != s.ScopeURL()+path || legacy.Items[i].ID != path {
+						t.Fatalf("id sort reverse=%t row %d: canonical=%s legacy=%s, want %s", tc.reverse, i, page.Items[i].ID, legacy.Items[i].ID, path)
+					}
+				}
 			}
 		})
 	}

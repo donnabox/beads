@@ -147,8 +147,8 @@ func graphIssueListInput(cmd *cobra.Command, argv []string) (listInput, bool, er
 		}
 	}
 	sort, _ := cmd.Flags().GetString("sort")
-	if !map[string]bool{"": true, "priority": true, "created": true, "updated": true, "title": true, "status": true, "type": true}[sort] {
-		return fail("capability_unavailable", "graph list supports sort priority, created, updated, title, status or type", 5)
+	if !map[string]bool{"": true, "priority": true, "created": true, "updated": true, "closed": true, "title": true, "status": true, "type": true, "id": true, "assignee": true}[sort] {
+		return fail("capability_unavailable", "graph list supports sort priority, created, updated, closed, title, status, type, id or assignee", 5)
 	}
 	for _, name := range []string{"priority", "priority-min", "priority-max"} {
 		if cmd.Flags().Changed(name) {

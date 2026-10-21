@@ -4,6 +4,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"slices"
@@ -137,6 +138,27 @@ func TestGraphPreviewListHiddenIssuesWorkflow(t *testing.T) {
 			graphPolicyCLI(t, bd, work, home, nil, "", "list", "--format=json", "--include-comments", "--all")
 			if treeFalse, flat := human("--tree=false", "--all"), human("--flat", "--all"); treeFalse != flat {
 				t.Fatalf("--tree=false must retain the shipping flat-output alias:\ntree=false: %s\nflat: %s", treeFalse, flat)
+			}
+			listIDs := func(args ...string) []string {
+				t.Helper()
+				output := graphPolicyCLI(t, bd, work, home, nil, "", append([]string{"list", "--json"}, args...)...)
+				var rows []struct {
+					ID string `json:"id"`
+				}
+				if err := json.Unmarshal([]byte(output), &rows); err != nil {
+					t.Fatalf("decode sorted Issue list: %v: %s", err, output)
+				}
+				ids := make([]string, 0, len(rows))
+				for _, row := range rows {
+					ids = append(ids, row.ID)
+				}
+				return ids
+			}
+			if got := listIDs("--all", "--sort=id", "--limit=2"); !slices.Equal(got, []string{"beads/done", "beads/open"}) {
+				t.Fatalf("id sort must precede page trim: %v", got)
+			}
+			if got := listIDs("--all", "--sort=closed", "--limit=1"); !slices.Equal(got, []string{"beads/done"}) {
+				t.Fatalf("closed sort must precede page trim: %v", got)
 			}
 
 			expect := func(what string, got []string, more bool, want []string, wantMore bool) {
