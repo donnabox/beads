@@ -46,6 +46,10 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 			if !preview.Preview || preview.Deleted || !reflect.DeepEqual(preview.Memory, original) {
 				t.Fatal("default read-only preview differs from live Memory")
 			}
+			dryRun := graphMixedResult[graphstore.MemoryDeleteResult](t, call("delete", original.ID, "--force", "--dry-run", "--readonly"))
+			if !dryRun.Preview || dryRun.Deleted || !reflect.DeepEqual(dryRun.Memory, original) {
+				t.Fatal("explicit dry run mutated Memory despite --force")
+			}
 			if got := graphMixedResult[graphstore.Record](t, call("show", "beads/empty")); !reflect.DeepEqual(got, original) {
 				t.Fatal("preview changed current state")
 			}
@@ -70,9 +74,11 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 			} {
 				refuse("permission_denied", args...)
 			}
-			for _, flag := range []string{"--cascade", "--cascade=false", "--from-file=/unread/deletions", "--dry-run"} {
+			for _, flag := range []string{"--cascade", "--cascade=false", "--from-file=/unread/deletions"} {
 				refuse("capability_unavailable", "delete", "beads/empty", flag)
 			}
+			refuse("capability_unavailable", "delete", "beads/empty", "--cascade", "--dry-run")
+			refuse("invalid_selector", "delete", "beads/empty", "beads/other", "--dry-run")
 			refuse("not_found", "delete", "beads/missing")
 			// The graph adapter must honor bound read-only policy and migration
 			// freezes while leaving its default preview available as a read.
@@ -110,6 +116,10 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 			issuePreview := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", "beads/work"))
 			if !issuePreview.Preview || issuePreview.Deleted || issuePreview.Issue.ID != scope+"beads/work" {
 				t.Fatal("Issue deletion preview did not preserve live Issue")
+			}
+			issueDryRun := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", "beads/work", "--force", "--dry-run", "--readonly"))
+			if !issueDryRun.Preview || issueDryRun.Deleted || !reflect.DeepEqual(issueDryRun.Issue, issuePreview.Issue) {
+				t.Fatal("explicit dry run mutated Issue despite --force")
 			}
 			refuse("capability_unavailable", "forget", "beads/work")
 			related := scope + "types/superseded-by"
