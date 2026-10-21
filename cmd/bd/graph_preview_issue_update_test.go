@@ -15,10 +15,12 @@ func issueTextCommand(t *testing.T, args ...string) *cobra.Command {
 	t.Helper()
 	cmd := &cobra.Command{}
 	cmd.Flags().IntP("estimate", "e", 0, "")
-	for _, name := range append(append([]string{}, graphPreviewIssueEditFlags...), "properties", "design-file", "session", "if-assignee", "if-status", "if-revision", "if-source-revision") {
+	for _, name := range append(append([]string{}, graphPreviewIssueEditFlags...), "properties", "design-file", "session", "if-assignee", "if-status", "if-revision", "if-source-revision", "type") {
 		if cmd.Flags().Lookup(name) == nil {
 			if name == "clear-notes" || name == "stdin" {
 				cmd.Flags().Bool(name, false, "")
+			} else if name == "add-label" || name == "remove-label" || name == "set-labels" {
+				cmd.Flags().StringSlice(name, nil, "")
 			} else {
 				cmd.Flags().String(name, "", "")
 			}
