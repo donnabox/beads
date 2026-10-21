@@ -288,6 +288,20 @@ func TestGraphPreviewUpdateForceAssigneeTwoEngines(t *testing.T) {
 			if !strings.Contains(human, "Updated "+scope+"beads/work") {
 				t.Fatalf("human update output changed: %q", human)
 			}
+			current := graphMixedResult[graphstore.IssueRecord](t, call("show", "work", "--format", "graph-json"))
+			refuse("constraint_violation", "update", "work", "--assignee", "fourth", "--if-assignee", "third", "--if-revision", current.Revision)
+			if after := graphMixedResult[graphstore.IssueRecord](t, call("show", "work", "--format", "graph-json")); !reflect.DeepEqual(after, current) {
+				t.Fatal("stale assignee guard changed the Issue")
+			}
+			guarded := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "work", "--assignee", "fifth", "--if-assignee", "fourth", "--force", "--if-revision", current.Revision))
+			if !guarded.Changed || guarded.Issue.Properties.Assignee != "fifth" {
+				t.Fatalf("matching assignee guard did not authorize transfer: %+v", guarded)
+			}
+			call("create", "Unassigned", "--id", "beads/unassigned")
+			unassigned := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/unassigned", "--assignee", "sixth", "--if-assignee="))
+			if !unassigned.Changed || unassigned.Issue.Properties.Assignee != "sixth" {
+				t.Fatalf("empty assignee guard did not match unassigned Issue: %+v", unassigned)
+			}
 		})
 	}
 }

@@ -295,7 +295,8 @@ func TestGraphPreviewIssueAssigneeRefusals(t *testing.T) {
 		{"empty-guard", []string{"--assignee=alice", "--if-revision="}, 2},
 		{"claim", []string{"--assignee=alice", "--claim"}, 5},
 		{"false-claim", []string{"--assignee=alice", "--claim=false"}, 5},
-		{"assignee-precondition", []string{"--assignee=alice", "--if-assignee="}, 5},
+		{"invalid-assignee-precondition", []string{"--assignee=alice", "--if-assignee=\xff"}, 2},
+		{"assignee-precondition-without-edit", []string{"--if-assignee="}, 2},
 		{"empty-status-precondition", []string{"--assignee=alice", "--if-status="}, 2},
 		{"status-precondition-without-edit", []string{"--if-status=open"}, 2},
 	} {
