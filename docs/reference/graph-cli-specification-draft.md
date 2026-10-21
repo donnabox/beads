@@ -185,10 +185,17 @@ the lease heartbeat is deliberately history-free.
 | `state ISSUE DIMENSION`, `state list ISSUE` | Read Issue state labels without mutation; JSON returns the local `issue_id` with `dimension` and nullable `value`, or `states` for the list. `set-state` remains unavailable. |
 | bare `status` | Ordinary Issue summary; `status --graph` remains the separate graph capability/limit report. Other ordinary status filters remain unavailable. |
 | `merge-slot create\|check\|acquire\|release` | One Issue-only slot. `acquire --holder NAME [--wait]` and `release --holder NAME` accept an explicit holder; otherwise the current actor is used. Check and create take no command-specific flags. JSON uses the ordinary flat slot report; the broader `gate` workflow remains unavailable. |
-| `dep list ISSUE...` | Human blocking-Dependency view; `--direction down\|up` and `--type blocks` only. `--json` refuses because native single and batch Dependency JSON shapes are not reproduced. |
+| `dep list ISSUE...` | Human native-Dependency view for all kinds; `--direction down\|up` and exact `--type KIND` filtering. `--json` refuses because native single-Issue and batch Dependency record shapes are not reproduced. |
 | `dep tree ISSUE` | Human blocking tree; `--direction down\|up\|both`, `--reverse`, `--max-depth`, deprecated no-op `--show-all-paths`. A positive `--max-rows` or `BEADS_MAX_ROWS` refuses rather than truncating the snapshot; `--json` refuses. |
 | `dep cycles` | Human blocking-cycle report, with `--limit` controlling displayed cycles (0 means all). `--json` refuses. |
 | `graph ISSUE`, `graph check` | Human blocking graph and cycle-integrity views. `graph ISSUE` refuses a positive row cap and `--json`; explicit `graph ISSUE --view generic` retains generic-Link traversal and its graph JSON. `graph check --json` returns the flat `clean`, `cycles`, `summary.cycle_count` shape with local Issue IDs; a detected cycle makes the check exit nonzero. |
+
+`dep list --json` still needs a checked native projection: one down selector
+and every up selector return related Issue rows, while batch down returns raw
+Dependency rows. The current Link record omits native dependency IDs,
+`created_at`, `created_by`, and `thread_id`; its Issue projection omits native
+metadata. Converting those records in the CLI would silently change the
+shipping JSON contract.
 
 Parent/child, duplicate, supersede and epic relationship mappings, `gate`,
 `set-state`, and Issue label mutation remain unavailable in this candidate.
