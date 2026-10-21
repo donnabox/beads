@@ -107,6 +107,15 @@ bd create 'Review deployment plan' --body-file plan.md
 bd update work --stdin < revised-plan.md
 ```
 
+For scripts that need the created Issue ID, use `--silent`. It prints the
+locally resolvable `beads/` ID on one line, including when `--quiet` is set.
+`--json` takes precedence if both output flags are supplied.
+
+```sh
+bd create 'Move the release branch' --id work --silent
+# beads/work
+```
+
 Use `bd types` in the selected workspace to discover its installed
 `types/NAME` IDs. Use the printed `types/NAME` selector or full local Type URL with `--type`;
 bare names retain their existing Issue or Dependency classification meaning. Do not assume a
