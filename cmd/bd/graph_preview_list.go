@@ -99,6 +99,19 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 			return nil, output, err
 		}, func(_ any, output string) error { _, err := fmt.Fprint(cmd.OutOrStdout(), output); return err })
 	}
+	if in.longFormat && !structured && !quietFlag {
+		return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
+			page, err := s.ListIssuesLegacy(ctx, in.ListRequest)
+			if errors.Is(err, storage.ErrValidation) {
+				return nil, "", fmt.Errorf("%w: %w", errGraphListSelector, err)
+			}
+			if err != nil {
+				return nil, "", err
+			}
+			output, err := renderGraphIssueLongList(page, plan.notice)
+			return nil, output, err
+		}, func(_ any, output string) error { _, err := fmt.Fprint(cmd.OutOrStdout(), output); return err })
+	}
 	return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 		page, err := s.ListIssues(ctx, in.ListRequest)
 		if errors.Is(err, storage.ErrValidation) {
@@ -116,7 +129,7 @@ func graphIssueListInput(cmd *cobra.Command, argv []string) (listInput, bool, er
 	fail := func(code, message string, exit int) (listInput, bool, error) {
 		return listInput{}, false, graphFailure(code, message, exit)
 	}
-	if err := graphPreviewFlags(cmd, "flat", "tree", "format", "status", "state", "type", "all", "limit", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue", "include-comments"); err != nil {
+	if err := graphPreviewFlags(cmd, "flat", "tree", "format", "status", "state", "type", "all", "limit", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue", "include-comments", "long"); err != nil {
 		return listInput{}, false, err
 	}
 	format, _ := cmd.Flags().GetString("format")
@@ -240,7 +253,7 @@ func (v *graphIssueListFlagCount) Type() string     { return v.kind }
 // An unfiltered graph list, or one narrowed only by nominal Bead Type, reads
 // the complete checked current inventory and projects its Beads. The options
 // below select the Issue query instead, and the notice names them in this order.
-var graphIssueListOptions = []string{"status", "state", "type", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue"}
+var graphIssueListOptions = []string{"status", "state", "type", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue", "long"}
 
 // graphIssueListTypedOptions names the Issue options the caller supplied, in
 // canonical order. A supplied flag counts even when its value, such as an empty
@@ -361,4 +374,25 @@ func renderGraphIssueList(page graphstore.IssueListPage, notice string, structur
 		return "", fmt.Errorf("%w: Issue list output exceeds %d bytes; narrow the query", graphstore.ErrLimitExceeded, graphIssueListOutputLimit)
 	}
 	return output.String(), nil
+}
+
+func renderGraphIssueLongList(page graphstore.LegacyIssueListPage, notice string) (string, error) {
+	var human strings.Builder
+	fmt.Fprintf(&human, "\nFound %d issues:\n\n", len(page.Items))
+	if notice != "" {
+		human.WriteString(notice + "\n\n")
+	}
+	for _, row := range page.Items {
+		if row == nil || row.Issue == nil {
+			return "", fmt.Errorf("%w: Issue list returned an empty row", graphstore.ErrInvalidStore)
+		}
+		formatIssueLong(&human, row.Issue, row.Labels, false)
+	}
+	if page.HasMore {
+		human.WriteString("More matching Issues exist; increase --limit or use --all within preview bounds.\n")
+	}
+	if human.Len() > graphIssueListOutputLimit {
+		return "", fmt.Errorf("%w: Issue list output exceeds %d bytes; narrow the query", graphstore.ErrLimitExceeded, graphIssueListOutputLimit)
+	}
+	return human.String(), nil
 }

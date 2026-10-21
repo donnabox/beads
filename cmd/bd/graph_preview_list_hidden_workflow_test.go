@@ -157,8 +157,16 @@ func TestGraphPreviewListHiddenIssuesWorkflow(t *testing.T) {
 			if got := listIDs("--all", "--sort=id", "--limit=2"); !slices.Equal(got, []string{"beads/done", "beads/open"}) {
 				t.Fatalf("id sort must precede page trim: %v", got)
 			}
+			if got := listIDs("--long", "--all", "--sort=id", "--limit=2"); !slices.Equal(got, []string{"beads/done", "beads/open"}) {
+				t.Fatalf("--json must keep its Issue array when --long is present: %v", got)
+			}
 			if got := listIDs("--all", "--sort=closed", "--limit=1"); !slices.Equal(got, []string{"beads/done"}) {
 				t.Fatalf("closed sort must precede page trim: %v", got)
+			}
+			long := human("--long", "--all", "--sort=id", "--limit=2")
+			if !strings.Contains(long, "Found 2 issues:") || !strings.Contains(long, "beads/done") || !strings.Contains(long, "beads/open") ||
+				!strings.Contains(long, "More matching Issues exist") || strings.Contains(long, "beads/plan") || strings.Contains(long, "beads/pin") {
+				t.Fatalf("--long must render the checked Issue page without Memories or off-page Issues: %s", long)
 			}
 
 			expect := func(what string, got []string, more bool, want []string, wantMore bool) {
