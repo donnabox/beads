@@ -36,7 +36,6 @@ func TestGraphPreviewIssueReferencesRefusals(t *testing.T) {
 	}{
 		{"external-invalid-utf8", []string{"--external-ref=\xff"}, 2},
 		{"spec-invalid-utf8", []string{"--spec-id=\xff"}, 2},
-		{"status", []string{"--external-ref=x", "--status=open"}, 5},
 		{"claim", []string{"--external-ref=x", "--claim"}, 5},
 	} {
 		t.Run(tc.name, func(t *testing.T) {

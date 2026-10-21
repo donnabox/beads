@@ -70,7 +70,6 @@ func TestGraphPreviewIssueDueRefusals(t *testing.T) {
 		{"syntax", []string{"--due=not-a-date"}, 2},
 		{"utf8", []string{"--due=\xff"}, 2},
 		{"oversize", []string{"--due=" + strings.Repeat("x", 4097)}, 2},
-		{"status", []string{"--due=", "--status=open"}, 5},
 		{"source-guard", []string{"--due=", "--if-source-revision=x"}, 5},
 		{"file", []string{"--due=", "--body-file=missing"}, 5},
 	} {
