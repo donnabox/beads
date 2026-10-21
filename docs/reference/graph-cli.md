@@ -144,7 +144,7 @@ An older retained record can omit `metadata` without rewriting its history.
 The Issue filters are `--status` (or `--state`), `--type`, `--id`, `--title`,
 `--title-contains`, `--priority`, `--priority-min`, `--priority-max`,
 `--assignee`, `--no-assignee`, `--label`, `--label-any`, `--exclude-label`,
-`--pinned`, `--no-pinned`, `--parent`, `--no-parent`, `--due-before`, `--due-after`, `--overdue`,
+`--pinned`, `--no-pinned`, `--parent`, `--no-parent`, `--ready`, `--due-before`, `--due-after`, `--overdue`,
 `--sort`, `--reverse`, and `--long`. Supplying an Issue filter or `--long` switches `bd list` to the existing Issue query,
 even when an empty value such as `--assignee=` adds no restriction.
 `--type types/NAME` or a full Type URL instead selects a nominal Type;
@@ -165,6 +165,10 @@ IDs contribute no rows; an ambiguous bare ID requires an explicit path.
 `--no-parent` keeps Issues without a parent-child dependency edge. Like the
 ordinary flat list, an edge-less dotted ID can still appear; the ID alone
 does not establish a parent.
+`--ready` switches to the blocker-aware Issue query and defaults to open
+Issues, as ordinary `bd list --ready` does. An explicit status intersects
+that ready set. Filters the ready query cannot honor are refused instead of
+silently dropped; `--ready --parent` is unavailable in graph mode.
 `--parent ID` selects direct parent-child edges and edge-less dotted children
 under the selected graph Issue ID. It accepts a bare Issue ID or an explicit
 `beads/PATH`; `--filter-parent` is the ordinary compatibility alias. Use
