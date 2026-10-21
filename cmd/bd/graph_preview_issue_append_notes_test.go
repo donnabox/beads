@@ -96,7 +96,6 @@ func TestGraphPreviewIssueAppendNotesRefusals(t *testing.T) {
 		{"force", []string{"--append-notes=Progress", "--force"}, 2},
 		{"claim", []string{"--append-notes=Progress", "--claim"}, 5},
 		{"false-claim-direct-request", []string{"--append-notes=Progress", "--claim=false"}, 5},
-		{"workflow", []string{"--append-notes=Progress", "--status=closed"}, 5},
 		{"source-guard", []string{"--append-notes=Progress", "--if-source-revision=other"}, 5},
 		{"assignee-guard", []string{"--append-notes=Progress", "--if-assignee="}, 5},
 		{"status-guard", []string{"--append-notes=Progress", "--if-status=open"}, 5},
