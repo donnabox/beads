@@ -13,11 +13,12 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
+	"github.com/steveyegge/beads/internal/utils"
 	"github.com/steveyegge/beads/internal/validation"
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
-var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "design", "acceptance", "priority", "assignee", "notes", "clear-notes", "append-notes", "estimate", "external-ref", "spec-id", "due", "status"}
+var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "design", "acceptance", "priority", "assignee", "notes", "clear-notes", "append-notes", "estimate", "external-ref", "spec-id", "due", "status", "add-label", "remove-label", "set-labels"}
 
 func graphPreviewIssueEditFlagsChanged(cmd *cobra.Command) bool {
 	for _, name := range graphPreviewIssueEditFlags {
@@ -33,7 +34,7 @@ func graphPreviewIssueEditFlagsChanged(cmd *cobra.Command) bool {
 // broader workflow flags remain explicit refusals; legacy routing is unchanged.
 func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.UpdateIssueRequest, error) {
 	request := graphstore.UpdateIssueRequest{Path: path}
-	allowed := append([]string{"if-revision", "if-status", "if-assignee", "force", "session", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "properties"}, graphPreviewIssueEditFlags...)
+	allowed := append([]string{"if-revision", "if-status", "if-assignee", "force", "session", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "properties", "type"}, graphPreviewIssueEditFlags...)
 	if err := graphPreviewFlags(cmd, allowed...); err != nil {
 		return request, err
 	}
@@ -45,6 +46,28 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 		return request, err
 	}
 	request.Metadata = metadata
+	if cmd.Flags().Changed("type") {
+		selector, _ := cmd.Flags().GetString("type")
+		if graphPreviewNominalSelector(selector) {
+			return request, graphFailure("capability_unavailable", "native Issue Type changes require their domain writer", 5)
+		}
+		classification := types.IssueType(utils.NormalizeIssueType(selector))
+		request.IssueType = &classification
+	}
+	if cmd.Flags().Changed("set-labels") {
+		values, _ := cmd.Flags().GetStringSlice("set-labels")
+		request.Labels.Replace = publicops.Field[[]string]{Set: true, Value: utils.NormalizeLabels(values)}
+		warnLabelsContainingWhitespace(request.Labels.Replace.Value)
+	}
+	if cmd.Flags().Changed("add-label") {
+		values, _ := cmd.Flags().GetStringSlice("add-label")
+		request.Labels.Add = utils.NormalizeLabels(values)
+		warnLabelsContainingWhitespace(request.Labels.Add)
+	}
+	if cmd.Flags().Changed("remove-label") {
+		values, _ := cmd.Flags().GetStringSlice("remove-label")
+		request.Labels.Remove = utils.NormalizeLabels(values)
+	}
 	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
 	if err != nil {
 		return request, err
