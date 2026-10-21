@@ -101,8 +101,7 @@ func TestGraphPreviewIssueAppendNotesRefusals(t *testing.T) {
 		{"source-guard", []string{"--append-notes=Progress", "--if-source-revision=other"}, 5},
 		{"assignee-guard", []string{"--append-notes=Progress", "--if-assignee="}, 5},
 		{"status-guard", []string{"--append-notes=Progress", "--if-status=open"}, 5},
-		{"file", []string{"--append-notes=Progress", "--body-file=missing"}, 5},
-		{"stdin-false", []string{"--append-notes=Progress", "--stdin=false"}, 5},
+		{"file", []string{"--append-notes=Progress", "--body-file=missing"}, 1},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			cmd := issueTextCommand(t, tc.args...)
@@ -119,6 +118,10 @@ func TestGraphPreviewIssueAppendNotesRefusals(t *testing.T) {
 	request, err := graphPreviewIssueEditRequest(cmd, "beads/work")
 	if err != nil || !cmd.Flags().Changed("properties") || request.AppendNotes == nil || *request.AppendNotes != "Progress" {
 		t.Fatalf("mixed append and empty property merge: %+v %v", request, err)
+	}
+	request, err = graphPreviewIssueEditRequest(issueTextCommand(t, "--append-notes=Progress", "--stdin=false"), "beads/work")
+	if err != nil || request.AppendNotes == nil || *request.AppendNotes != "Progress" || request.Description != nil {
+		t.Fatalf("false stdin flag changed append edit: %+v %v", request, err)
 	}
 }
 
