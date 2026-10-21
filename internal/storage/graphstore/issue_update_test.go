@@ -134,6 +134,18 @@ func TestIssueUpdateStatusInCheckedTransaction(t *testing.T) {
 			if err != nil || noop.Changed || noop.Issue.Revision != reopened.Issue.Revision {
 				t.Fatalf("same-status no-op: %+v %v", noop, err)
 			}
+			expectedHolder := "holder"
+			if _, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: reopened.Issue.Revision, ExpectedAssignee: &expectedHolder, Status: &open}); !errors.Is(err, storage.ErrAssigneeMismatch) {
+				t.Fatalf("stale assignee guard on a no-op: %v", err)
+			}
+			unassigned := ""
+			assigned, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: reopened.Issue.Revision, ExpectedAssignee: &unassigned, Assignee: &expectedHolder})
+			if err != nil || !assigned.Changed || assigned.Issue.Properties.Assignee != expectedHolder {
+				t.Fatalf("expected-unassigned guard: %+v %v", assigned, err)
+			}
+			if _, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: assigned.Issue.Revision, ExpectedAssignee: &unassigned, Assignee: &expectedHolder}); !errors.Is(err, storage.ErrAssigneeMismatch) {
+				t.Fatalf("stale unassigned guard on a no-op: %v", err)
+			}
 		})
 	}
 }
