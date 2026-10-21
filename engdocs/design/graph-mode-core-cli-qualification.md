@@ -29,7 +29,7 @@ lanes. A skipped server subtest is not a pass for that engine.
 | `create` | Existing installed tests cover Issue and Memory creation, parent-child creation, Markdown batch and nominal Types. | Shipping Issue `--body-file`/stdin and `--deps` are refused; the latter needs atomic Issue-and-Link behavior. Check other shipping input/validation flags. |
 | `update` | Existing tests cover Issue, Memory and Link guarded edits, properties/metadata, ordered patches and historical base edits. | Shipping Issue file/stdin text, label/status and multi-ID forms are refused. Separate input, native policy and batch semantics. |
 | `delete` | Existing tests cover single Issue/Memory and Link deletion, incident-Link refusal, preview/apply and retained versions. | Shipping multi-ID and `--cascade --dry-run` refuse. Choose graph deletion policy before changing destructive behavior. |
-| `show` / `link show` | Canonical show and legacy current-Issue `--json` have installed tests. This branch restores familiar human Issue details, `--short`, `--long`, comment-tail rendering, multi-ID Issue selection, actor in-progress/last-touched `--current`, and current-Issue `--refs`/`--children`; selected cases pass on embedded and shared-server Dolt. | Check hooked-positive selection and watch separately; keep canonical JSON and retained-state rules separate. |
+| `show` / `link show` | Canonical show and legacy current-Issue `--json` have installed tests. This branch restores familiar human Issue details, `--short`, `--long`, comment-tail rendering, multi-ID Issue selection, actor in-progress/last-touched `--current`, and current-Issue `--refs`/`--children`/`--watch`; selected cases pass on embedded and shared-server Dolt. | Check hooked-positive selection; keep canonical JSON and retained-state rules separate. |
 | `list` / `link list` | Existing tests cover bounded Bead/Issue/Link selections and legacy Issue JSON. | Common shipping Issue filters and tree/pretty presentation still refuse. Pagination implementation is deferred; preserve current product limit behavior. |
 | `versions` / `link versions` | Existing tests cover Issue, Memory, live Link and removed-Link histories, local ordering and JSON member sets. | Recheck after PR #141 integration and with both real engines; do not infer HTTP History from CLI History. |
 | `link FROM SOURCE` | Existing installed tests exercise informational Links, source guards and endpoint pins. This branch checks default `blocks`, first-operand orientation, duplicate/no-op, explicit `tracks`, same-pair type conflict, and shipping JSON/human feedback on embedded and shared-server Dolt. | Check remaining shipping flags and partial-ID error behavior. The starting candidate's help incorrectly said exact pins refuse; this branch corrects it. |
@@ -109,3 +109,13 @@ an empty reference set, a parent-child edge, human rendering, and refusal of
 Memory or graph-envelope selectors. The expanded workflow passed on embedded
 and shared-server Dolt. Exact retained versions and non-Issue resources remain
 outside these Issue-only convenience views.
+
+`bd show --watch` now follows one current Issue through the shipping polling
+loop. Each render and poll uses a short graph read, so a second CLI process can
+update the Issue while the watch is active. Graph watch compares the graph
+revision token because the server backend may round Issue timestamps enough
+to miss a quick edit; the ordinary Issue watch still uses its existing
+timestamp/status snapshot. The installed process test checks the initial human
+render, a title update on the next poll, and clean Ctrl+C termination on
+embedded and shared-server Dolt. Exact retained versions, missing IDs, and
+Memory selectors refuse before starting a long-running watch.

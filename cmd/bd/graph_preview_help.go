@@ -134,6 +134,8 @@ details. Memory, Link, exact-version and graph-json reads remain single-ID.
 --refs shows incoming Issue references, grouped by relationship; --children
 shows only parent-child references. Both accept current Issue IDs and retain
 the familiar human view or Issue-ID-keyed JSON object.
+--watch follows one current Issue, redrawing its human detail view when that
+Issue changes; stop it with Ctrl+C.
 --current selects the actor's first in-progress Issue, then hooked Issue, then
 the last-touched Issue; it cannot combine with an explicit ID.
 ID@TOKEN or '[URL]@TOKEN' selects
