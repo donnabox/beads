@@ -54,6 +54,7 @@ func TestGraphPreviewIssueListInput(t *testing.T) {
 		limit      int
 	}{
 		{"flat", []string{"--flat", "--limit=2"}, false, 0, false, 2},
+		{"tree-false", []string{"--tree=false", "--limit=2"}, false, 0, false, 2},
 		{"records", []string{"--format=records-json", "--all"}, false, 0, true, 0},
 		{"records-with-flat", []string{"--format=records-json", "--flat", "--limit=2"}, false, 0, true, 2},
 		{"records-ambient", []string{"--format=records-json", "--limit=3"}, true, 0, true, 3},
@@ -68,7 +69,8 @@ func TestGraphPreviewIssueListInput(t *testing.T) {
 		{"ambient-flat", []string{"--flat"}, true, 0, false, 0},
 		{"false-flat", []string{"--flat=false"}, false, 5, false, 0},
 		{"false-ready", []string{"--flat", "--ready=false"}, false, 5, false, 0},
-		{"false-tree", []string{"--flat", "--tree=false"}, false, 5, false, 0},
+		{"flat-and-tree-false", []string{"--flat", "--tree=false"}, false, 0, false, 0},
+		{"tree-true", []string{"--tree=true"}, false, 5, false, 0},
 		{"negative-limit", []string{"--flat", "--limit=-1"}, false, 2, false, 0},
 		{"bad-priority", []string{"--flat", "--priority=bad"}, false, 2, false, 0},
 		{"sort-id", []string{"--flat", "--sort=id"}, false, 5, false, 0},

@@ -135,6 +135,9 @@ func TestGraphPreviewListHiddenIssuesWorkflow(t *testing.T) {
 				t.Fatalf("--format=JSON must retain the shipping --json alias:\nformat: %s\njson: %s", formatted, ordinary)
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "", "list", "--format=json", "--include-comments", "--all")
+			if treeFalse, flat := human("--tree=false", "--all"), human("--flat", "--all"); treeFalse != flat {
+				t.Fatalf("--tree=false must retain the shipping flat-output alias:\ntree=false: %s\nflat: %s", treeFalse, flat)
+			}
 
 			expect := func(what string, got []string, more bool, want []string, wantMore bool) {
 				t.Helper()
