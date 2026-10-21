@@ -48,6 +48,19 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			if !strings.HasPrefix(issue.Properties.ID, "compat-") || issue.ID != scope+"beads/"+issue.Properties.ID {
 				t.Fatalf("generated Issue path did not use the configured native prefix: %+v", issue)
 			}
+			parent := graphMixedResult[graphstore.IssueRecord](t, call("create", "Explicit parent", "--id", "compat-parent", "--type", "epic"))
+			if parent.ID != scope+"beads/compat-parent" || parent.Properties.ID != "compat-parent" {
+				t.Fatalf("bare explicit Issue ID diverged from its native identity: %+v", parent)
+			}
+			child := graphMixedResult[graphstore.IssueRecord](t, call("create", "Child", "--parent", "compat-parent"))
+			if child.ID != scope+"beads/compat-parent.1" || child.Properties.ID != "compat-parent.1" {
+				t.Fatalf("child did not retain the shipping parent ID: %+v", child)
+			}
+			_, _, exit := graphGenerationRun(t, bd, work, home, "create", "Wrong prefix", "--id", "other-parent", "--json")
+			if exit == 0 {
+				t.Fatal("bare explicit Issue ID bypassed the native prefix rule")
+			}
+			refuse("not_found", "show", "other-parent")
 			if memory.Properties.Title != "Code flow policy" || memory.Properties.Body != body {
 				t.Fatal("default title changed body or failed to summarize")
 			}
