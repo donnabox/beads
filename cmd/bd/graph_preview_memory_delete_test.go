@@ -43,6 +43,9 @@ func TestGraphPreviewMemoryDeleteAdmission(t *testing.T) {
 	}{
 		{"preview", "beads/plan", nil, false, true, 0},
 		{"explicit-preview", "beads/plan", []string{"--force=false"}, false, true, 0},
+		{"dry-run", "beads/plan", []string{"--dry-run"}, false, true, 0},
+		{"forced-dry-run", "beads/plan", []string{"--force", "--dry-run"}, false, true, 0},
+		{"false-dry-run", "beads/plan", []string{"--force", "--dry-run=false"}, false, false, 0},
 		{"guarded-preview", "beads/plan", []string{"--if-revision=observed"}, false, true, 0},
 		{"guarded-apply", "https://example.invalid/delete/beads/plan", []string{"--force", "--if-revision=observed"}, false, false, 0},
 		{"forget", "beads/plan", []string{"--if-revision=observed"}, true, false, 0},
@@ -57,7 +60,7 @@ func TestGraphPreviewMemoryDeleteAdmission(t *testing.T) {
 		{"cascade", "beads/plan", []string{"--cascade"}, false, false, 5},
 		{"false-cascade", "beads/plan", []string{"--cascade=false"}, false, false, 5},
 		{"file", "beads/plan", []string{"--from-file=/unread/deletions"}, false, false, 5},
-		{"dry-run", "beads/plan", []string{"--dry-run"}, false, false, 5},
+		{"forget-dry-run", "beads/plan", []string{"--dry-run"}, true, false, 5},
 		{"erase", "beads/plan", []string{"--erase"}, false, false, 5},
 		{"forget-force", "beads/plan", []string{"--force"}, true, false, 5},
 	} {
