@@ -888,7 +888,7 @@ func graphStorageErrorWithFallback(err error, fallback string) error {
 		return graphFailure("invalid_properties", err.Error(), 2)
 	case errors.Is(err, publicops.ErrNotesOverwrite):
 		return graphFailure("notes_overwrite_refused", err.Error()+"; use --force to replace existing notes or --append-notes to preserve them", 4)
-	case errors.Is(err, storage.ErrCloseBlocked), errors.Is(err, storage.ErrCloseOpenChildren), errors.Is(err, storage.ErrAlreadyClaimed), errors.Is(err, storage.ErrNotClaimable), errors.Is(err, storage.ErrNotOwner), errors.Is(err, storage.ErrAssigneeMismatch), errors.Is(err, publicops.ErrNotClaimed), errors.Is(err, publicops.ErrNotReleasable):
+	case errors.Is(err, storage.ErrCloseBlocked), errors.Is(err, storage.ErrCloseOpenChildren), errors.Is(err, storage.ErrAlreadyClaimed), errors.Is(err, storage.ErrNotClaimable), errors.Is(err, storage.ErrNotOwner), errors.Is(err, storage.ErrAssigneeMismatch), errors.Is(err, storage.ErrStatusMismatch), errors.Is(err, publicops.ErrNotClaimed), errors.Is(err, publicops.ErrNotReleasable):
 		return graphFailure("constraint_violation", err.Error(), 4)
 	case errors.Is(err, graphstore.ErrAlreadyExists):
 		return graphFailure("identity_reserved", err.Error(), 4)

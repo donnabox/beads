@@ -219,6 +219,15 @@ func TestGraphPreviewUpdateStatusTwoEngines(t *testing.T) {
 			if noop.Changed || noop.Issue.Revision != reopened.Issue.Revision {
 				t.Fatalf("same-status update minted a revision: %+v", noop)
 			}
+			refuse("constraint_violation", "update", "beads/work", "--status=open", "--if-status=closed", "--if-revision", reopened.Issue.Revision)
+			refuse("invalid_properties", "update", "beads/work", "--status=open", "--if-status=unconfigured")
+			if current := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/work", "--format", "graph-json")); !reflect.DeepEqual(current, reopened.Issue) {
+				t.Fatal("refused status guards changed the Issue")
+			}
+			guarded := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--status=in_progress", "--if-status=open", "--if-revision", reopened.Issue.Revision))
+			if !guarded.Changed || guarded.Issue.Properties.Status != "in_progress" {
+				t.Fatalf("matching status guard did not admit edit: %+v", guarded)
+			}
 		})
 	}
 }
