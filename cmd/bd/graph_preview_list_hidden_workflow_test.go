@@ -99,6 +99,61 @@ func graphListSorted(paths []string) []string {
 	return sorted
 }
 
+func TestGraphPreviewListIDWorkflow(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			const scope = "https://example.invalid/list-ids/"
+			work, home := graphListWorkspace(t, bd, engine, scope)
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", args...)
+			}
+			first := graphMixedResult[graphstore.IssueRecord](t, call("create", "First", "--id", "beads/first", "--json"))
+			second := graphMixedResult[graphstore.IssueRecord](t, call("create", "Second", "--id", "beads/second", "--json"))
+			call("remember", "context", "--id", "beads/memory", "--json")
+			paths, more := graphListBeads(t, bd, work, home, scope, "--id", first.Properties.ID)
+			if !slices.Equal(paths, []string{"beads/first"}) || more {
+				t.Fatalf("native --id selected %v, more=%t", paths, more)
+			}
+			paths, more = graphListBeads(t, bd, work, home, scope, "--id", "beads/first,beads/second", "--sort=id", "--limit=1")
+			if !slices.Equal(paths, []string{"beads/first"}) || !more {
+				t.Fatalf("ID set must filter before paging: %v, more=%t", paths, more)
+			}
+			paths, more = graphListBeads(t, bd, work, home, scope, "--id", second.Properties.ID, "--id", scope+"beads/first", "--sort=id")
+			if !slices.Equal(paths, []string{"beads/first", "beads/second"}) || more {
+				t.Fatalf("repeated native/canonical IDs selected %v, more=%t", paths, more)
+			}
+			for _, missing := range []string{"beads/missing", "beads/memory"} {
+				paths, more = graphListBeads(t, bd, work, home, scope, "--id", missing)
+				if len(paths) != 0 || more {
+					t.Fatalf("non-Issue or missing ID %q selected %v, more=%t", missing, paths, more)
+				}
+			}
+			var rows []struct {
+				ID string `json:"id"`
+			}
+			output := call("list", "--id", "beads/second", "--json")
+			if err := json.Unmarshal([]byte(output), &rows); err != nil || len(rows) != 1 || rows[0].ID != "beads/second" {
+				t.Fatalf("legacy JSON ID selection: %s (%v)", output, err)
+			}
+			rows = nil
+			output = call("list", "--id", "beads/missing", "--json")
+			if err := json.Unmarshal([]byte(output), &rows); err != nil || rows == nil || len(rows) != 0 {
+				t.Fatalf("missing legacy JSON ID selection: %s (%v)", output, err)
+			}
+			human := call("list", "--id", "beads/first", "--flat")
+			if !strings.Contains(human, "First") || strings.Contains(human, "Second") {
+				t.Fatalf("human ID selection: %s", human)
+			}
+			long := call("list", "--id", "beads/first", "--long")
+			if !strings.Contains(long, "First") || strings.Contains(long, "Second") {
+				t.Fatalf("long ID selection: %s", long)
+			}
+		})
+	}
+}
+
 func TestGraphPreviewListNoParentWorkflow(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	for _, engine := range []string{"embedded", "server"} {

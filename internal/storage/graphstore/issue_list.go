@@ -72,7 +72,7 @@ func (s *Store) listIssues(ctx context.Context, request publicops.ListRequest, p
 
 func prepareIssueListRequest(in publicops.ListRequest) (publicops.ListRequest, error) {
 	allowed := publicops.ListRequest{
-		Status: in.Status, IssueType: in.IssueType, TitleSearch: in.TitleSearch, TitleContains: in.TitleContains,
+		Status: in.Status, IssueType: in.IssueType, IDFilter: in.IDFilter, TitleSearch: in.TitleSearch, TitleContains: in.TitleContains,
 		Assignee: in.Assignee, NoAssignee: in.NoAssignee,
 		DueBefore: in.DueBefore, DueAfter: in.DueAfter, OverdueFlag: in.OverdueFlag,
 		Labels: in.Labels, LabelsAny: in.LabelsAny, ExcludeLabels: in.ExcludeLabels,
@@ -100,7 +100,7 @@ func prepareIssueListRequest(in publicops.ListRequest) (publicops.ListRequest, e
 		}
 	}
 	requestBytes := 0
-	for _, value := range []string{in.Status, in.IssueType, in.TitleSearch, in.TitleContains, in.MaxRowsSource, in.Assignee} {
+	for _, value := range []string{in.Status, in.IssueType, in.IDFilter, in.TitleSearch, in.TitleContains, in.MaxRowsSource, in.Assignee} {
 		if len(value) > PreviewIssueListRequestByteLimit-requestBytes {
 			return publicops.ListRequest{}, fmt.Errorf("%w: Issue list request text exceeds %d bytes", storage.ErrValidation, PreviewIssueListRequestByteLimit)
 		}
@@ -180,6 +180,22 @@ func (s *Store) listIssuesWithParentInTx(ctx context.Context, tx *sql.Tx, reques
 	if err := s.checkIssueListCatalogInTx(ctx, tx); err != nil {
 		return IssueListPage{}, err
 	}
+	// Resolve visible graph paths and shipping native IDs against the same
+	// checked snapshot that runs the Issue query. A bare name that collides
+	// with another Bead's path remains ambiguous, as it is for show.
+	noMatchingIDs := false
+	if request.IDFilter != "" && len(utils.NormalizeLabels(strings.Split(request.IDFilter, ","))) > 0 {
+		ids, err := s.resolveIssueListIDsInTx(ctx, tx, request.IDFilter)
+		if err != nil {
+			return IssueListPage{}, err
+		}
+		noMatchingIDs = len(ids) == 0
+		if !noMatchingIDs {
+			request.IDFilter = strings.Join(ids, ",")
+		}
+	} else {
+		request.IDFilter = ""
+	}
 	var parentNativeID, parentPath string
 	if parent != nil {
 		var err error
@@ -201,6 +217,9 @@ func (s *Store) listIssuesWithParentInTx(ctx context.Context, tx *sql.Tx, reques
 	}
 	if !filter.SkipWisps || (filter.Ephemeral != nil && *filter.Ephemeral) {
 		return IssueListPage{}, fmt.Errorf("%w: graph Issue list requires durable scope", ErrCapabilityUnavailable)
+	}
+	if noMatchingIDs {
+		return IssueListPage{Items: []IssueRecord{}}, nil
 	}
 	// Counts are not in this result's projection. Labels and complete Issue
 	// properties remain present; callers cannot request partial graph records.
@@ -281,6 +300,44 @@ func (s *Store) listIssuesWithParentInTx(ctx context.Context, tx *sql.Tx, reques
 		}
 	}
 	return result, nil
+}
+
+// resolveIssueListIDsInTx lowers the shipping --id set to native Issue keys.
+// Explicit graph paths remain exact; bare IDs use the same collision rule as
+// show. Missing and non-Issue selections contribute no matching Issue.
+func (s *Store) resolveIssueListIDsInTx(ctx context.Context, tx *sql.Tx, raw string) ([]string, error) {
+	selected := utils.NormalizeLabels(strings.Split(raw, ","))
+	ids := make([]string, 0, len(selected))
+	seen := make(map[string]bool, len(selected))
+	for _, value := range selected {
+		selector := IssueSelector{}
+		switch {
+		case strings.HasPrefix(value, s.ScopeURL()):
+			selector.Path = strings.TrimPrefix(value, s.ScopeURL())
+		case strings.HasPrefix(value, "beads/"):
+			selector.Path = value
+		default:
+			selector.Path, selector.NativeID = "beads/"+value, value
+		}
+		if err := validateIssueSelector(selector); err != nil {
+			return nil, fmt.Errorf("%w: invalid Issue ID %q: %v", storage.ErrValidation, value, err)
+		}
+		_, issue, err := s.resolveLiveIssueSelectorInTx(ctx, tx, selector)
+		switch {
+		case errors.Is(err, ErrNotFound), errors.Is(err, errNonIssueSelector):
+			continue
+		case err != nil:
+			return nil, err
+		}
+		if issue.Properties == nil || issue.Properties.ID == "" {
+			return nil, fmt.Errorf("%w: incomplete selected Issue mapping", ErrInvalidStore)
+		}
+		if !seen[issue.Properties.ID] {
+			seen[issue.Properties.ID] = true
+			ids = append(ids, issue.Properties.ID)
+		}
+	}
+	return ids, nil
 }
 
 func (s *Store) resolveIssueListParentInTx(ctx context.Context, tx *sql.Tx, parent IssueSelector) (string, string, error) {
