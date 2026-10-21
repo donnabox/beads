@@ -36,7 +36,7 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if beadType != graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) {
 		return runGraphPreviewCreateMemory(cmd, args)
 	}
-	if err := graphPreviewFlags(cmd, "id", "parent", "no-inherit-labels", "title", "description", "body", "message", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due", "metadata", "properties"); err != nil {
+	if err := graphPreviewFlags(cmd, "id", "parent", "no-inherit-labels", "title", "description", "body", "message", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due", "metadata", "properties", "silent"); err != nil {
 		return err
 	}
 	parentSelector, _ := cmd.Flags().GetString("parent")
@@ -166,7 +166,8 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewApplyIssueCreateProperties(cmd, request.Issue, properties); err != nil {
 		return err
 	}
-	err = withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+	silent, _ := cmd.Flags().GetBool("silent")
+	err = withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		var record graphstore.IssueRecord
 		if parentPath != "" {
 			parent, err := store.ShowIssue(ctx, parentPath)
@@ -191,6 +192,12 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 		}
 		path = graphPreviewDisplayLocalURL(record.ID)
 		return record, fmt.Sprintf("Created %s\n", path), nil
+	}, func(result any, human string) error {
+		if silent && !jsonOutput {
+			// Shipping create prints the ID even when --quiet is also set.
+			return graphPrint(result, path, false)
+		}
+		return graphPrint(result, human, quietFlag)
 	})
 	if err == nil {
 		SetLastTouchedID(path)
