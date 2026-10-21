@@ -468,7 +468,8 @@ records, or an empty array when no matching ready Issue exists. An empty claim
 does not create a claim lease or revision. As with ordinary `ready`, the lazy
 defer-wake before selection may separately version an expired deferred Issue.
 `ready --parent` lists ready descendants of a parent Issue. It accepts a bare
-native Issue ID, an explicit `beads/PATH`, or a canonical Issue URL. Combining
+native Issue ID, an explicit `beads/PATH`, or a canonical Issue URL; an empty
+parent selector is an error. Combining
 `--parent` with `--claim` currently refuses until parent resolution can occur
 inside the atomic claim. The remaining ordinary ready modes remain in
 the [draft CLI specification](/reference/graph-cli-specification-draft)

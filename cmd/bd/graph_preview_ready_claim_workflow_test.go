@@ -168,6 +168,11 @@ func TestGraphPreviewReadyParentListsDescendants(t *testing.T) {
 			if parent.Properties.ID == "selected-parent" {
 				t.Fatal("fixture needs a native parent ID distinct from the graph path")
 			}
+			if got := graphMixedResult[[]graphstore.IssueRecord](t, call("", "ready")); len(got) == 0 {
+				t.Fatal("fixture needs ready work to detect an accidentally broadened parent filter")
+			}
+			call("invalid_selector", "ready", "--parent=")
+			call("invalid_selector", "ready", "--parent", "   ")
 			for _, selector := range []string{"beads/selected-parent", scope + "beads/selected-parent", parent.Properties.ID} {
 				got := graphMixedResult[[]graphstore.IssueRecord](t, call("", "ready", "--parent", selector))
 				found := map[string]bool{}

@@ -561,6 +561,12 @@ func runGraphPreviewReady(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+	if in.claim && cmd.Flags().Changed("parent") {
+		return graphFailure("capability_unavailable", "ready --claim --parent is not available in graph workspaces yet", 5)
+	}
+	if cmd.Flags().Changed("parent") && strings.TrimSpace(in.ParentID) == "" {
+		return graphFailure("invalid_selector", "ready --parent requires a nonempty Issue ID", 2)
+	}
 	// The legacy resolver warns and ignores malformed environment values.
 	// This deliberately bounded preview refuses unsupported policy instead.
 	if raw := os.Getenv(maxRowsEnvVar); raw != "" {
@@ -573,9 +579,6 @@ func runGraphPreviewReady(cmd *cobra.Command, args []string) error {
 		}
 	}
 	if in.claim {
-		if cmd.Flags().Changed("parent") {
-			return graphFailure("capability_unavailable", "ready --claim --parent is not available in graph workspaces yet", 5)
-		}
 		if err := graphPreviewWritePolicy(); err != nil {
 			return err
 		}
