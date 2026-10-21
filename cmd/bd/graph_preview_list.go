@@ -121,16 +121,17 @@ func graphIssueListInput(cmd *cobra.Command, argv []string) (listInput, bool, er
 	}
 	format, _ := cmd.Flags().GetString("format")
 	structured := format == "records-json"
+	legacyFormatJSON := strings.EqualFold(format, "json")
 	jsonFlag, _ := cmd.Flags().GetBool("json")
 	if cmd.Flags().Changed("json") && !jsonFlag && !jsonOutput {
 		return fail("capability_unavailable", "graph list does not support explicit --json=false", 5)
 	}
-	if cmd.Flags().Changed("include-comments") && (structured || !(jsonOutput || jsonFlag)) {
+	if cmd.Flags().Changed("include-comments") && (structured || !(jsonOutput || jsonFlag || legacyFormatJSON)) {
 		return fail("capability_unavailable", "--include-comments requires legacy Issue --json", 5)
 	}
 	flat, _ := cmd.Flags().GetBool("flat")
-	if (cmd.Flags().Changed("format") && !structured) || (cmd.Flags().Changed("flat") && !flat) {
-		return fail("capability_unavailable", "graph list supports flat output, Issue-only --json, or --format records-json; tree and --format json are unavailable", 5)
+	if (cmd.Flags().Changed("format") && !structured && !legacyFormatJSON) || (cmd.Flags().Changed("flat") && !flat) {
+		return fail("capability_unavailable", "graph list supports flat output, Issue-only --json/--format json, or --format records-json; tree output is unavailable", 5)
 	}
 	if err := graphIssueListRepeatedFilters(cmd, argv); err != nil {
 		return fail("capability_unavailable", err.Error(), 5)
