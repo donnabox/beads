@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/spf13/cobra"
 	graph "github.com/steveyegge/beads/graphops"
@@ -148,6 +149,15 @@ func graphPreviewLinkType(cmd *cobra.Command) (string, error) {
 	selector, _ := cmd.Flags().GetString("type")
 	scope := graphPreviewConfig.GraphScopeURL
 	if !graphPreviewNominalSelector(selector) {
+		// The shipping two-operand bd link accepts any valid native kind and
+		// stores its spelling unchanged. Other graph Link commands require an
+		// installed Type or one of their admitted built-in Dependency kinds.
+		if cmd.Name() == "link" {
+			if !types.DependencyType(selector).IsValid() || !utf8.ValidString(selector) {
+				return "", graphFailure("invalid_selector", fmt.Sprintf("invalid dependency type %q: must be non-empty UTF-8 and at most %d bytes", selector, types.MaxDependencyTypeLen), 2)
+			}
+			return graphstore.DependencyTypeURL(scope), nil
+		}
 		if kind := canonicalDependencyType(types.DependencyType(selector)); kind.IsWellKnown() {
 			return graphstore.DependencyTypeURL(scope), nil
 		}
