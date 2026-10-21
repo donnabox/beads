@@ -101,10 +101,14 @@ shipping dependency spellings. Bare `ID`, `blocked-by:ID`, and
 the target depend on the new Issue. The Issue and each canonical Link are
 created in one transaction. `--parent` can be combined with local `--deps`;
 the dotted child Issue, its parent Link, and the requested dependency Links
-commit together. Targets must be live local Issues. Graph mode explicitly
-refuses `external:` targets and dependency-bearing markdown batch creation. Use a full
-native Issue ID or explicit `beads/PATH` for a target; shipping partial-ID
-abbreviations are not yet resolved by this graph create route.
+commit together. A Markdown `--file` batch can also name existing local
+Issues under a `### Dependencies` heading; every heading, native dependency,
+canonical Link, and retained version commits together. Targets must be live
+local Issues. Graph mode explicitly refuses `external:` targets. Use a full
+native Issue ID or explicit `beads/PATH` for a target; partial-ID
+abbreviations and dependencies on another new heading in the same file are
+not admitted. Markdown dependency spellings follow the Markdown parser, so
+use a bare ID for an ordinary blocking dependency.
 
 ```sh
 bd create 'Move the release branch' --id mp-work --type task --status open
