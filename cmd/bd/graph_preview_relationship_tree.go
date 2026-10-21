@@ -6,20 +6,22 @@ import (
 	"strconv"
 	"strings"
 
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
 // A relationship tree presents the selected graph; it does not select another
 // graph. Nodes and Links remain authoritative, including induced cross-links.
 type graphRelationshipTree struct {
-	result    graphGenericResult
-	nodes     map[string]graphGenericNode
-	adjacent  map[string][]graphGenericLink
-	expanded  map[string]bool
-	emitted   map[string]bool
-	active    map[string]int
-	w         *graphExportWriter
-	remaining int
+	result           graphGenericResult
+	nodes            map[string]graphGenericNode
+	adjacent         map[string][]graphGenericLink
+	expanded         map[string]bool
+	emitted          map[string]bool
+	active           map[string]int
+	w                *graphExportWriter
+	limit, remaining int
+	err              error
 }
 
 type graphTreeLine struct {
@@ -30,8 +32,8 @@ type graphTreeLine struct {
 	children  []graphTreeLine
 }
 
-func renderGraphRelationshipTree(w *graphExportWriter, r graphGenericResult) error {
-	t := graphRelationshipTree{result: r, nodes: map[string]graphGenericNode{}, adjacent: map[string][]graphGenericLink{}, expanded: map[string]bool{}, emitted: map[string]bool{}, active: map[string]int{}, w: w, remaining: graphstore.PreviewCurrentReadByteLimit}
+func renderGraphRelationshipTree(w *graphExportWriter, r graphGenericResult, limit int) error {
+	t := graphRelationshipTree{result: r, nodes: map[string]graphGenericNode{}, adjacent: map[string][]graphGenericLink{}, expanded: map[string]bool{}, emitted: map[string]bool{}, active: map[string]int{}, w: w, limit: limit, remaining: limit}
 	invalid := func() error {
 		return fmt.Errorf("%w: incomplete or duplicate selected graph", graphstore.ErrInvalidStore)
 	}
@@ -76,8 +78,8 @@ func renderGraphRelationshipTree(w *graphExportWriter, r graphGenericResult) err
 			if t.nodes[x].Type != t.nodes[y].Type {
 				return t.nodes[x].Type < t.nodes[y].Type
 			}
-			if t.nodes[x].Title != t.nodes[y].Title {
-				return t.nodes[x].Title < t.nodes[y].Title
+			if c := graph.CompareCodeUnits(t.nodes[x].Title, t.nodes[y].Title); c != 0 {
+				return c < 0
 			}
 			if x != y {
 				return x < y
@@ -99,7 +101,7 @@ func renderGraphRelationshipTree(w *graphExportWriter, r graphGenericResult) err
 	roots = append(roots, ids...)
 	first := true
 	for _, id := range roots {
-		if w.err != nil {
+		if t.stopped() {
 			break
 		}
 		if t.expanded[id] {
@@ -110,33 +112,38 @@ func renderGraphRelationshipTree(w *graphExportWriter, r graphGenericResult) err
 		}
 		first = false
 		t.println(t.nodeLabel(id))
-		if w.err == nil {
+		if !t.stopped() {
 			t.writeLines(t.expand(id, nil), "")
 		}
 	}
-	t.println("")
+	if !first {
+		t.println("")
+	}
 	t.println(fmt.Sprintf("%d Beads, %d Links", len(t.nodes), len(links)))
 	t.println(fmt.Sprintf("Complete: %t; direction: %s; depth: %d; frontier: %d", r.Complete, r.Direction, r.Depth, len(r.Frontier)))
-	frontier := append([]string(nil), r.Frontier...)
-	sort.Strings(frontier)
-	for _, id := range frontier {
-		if w.err != nil {
+	for _, id := range r.Frontier {
+		if t.stopped() {
 			break
 		}
 		t.println(fmt.Sprintf("More relationships beyond depth %d: %s", r.Depth, t.label(id)))
 	}
+	if t.err != nil {
+		return t.err
+	}
 	return w.wrapError("graph")
 }
+
+func (t *graphRelationshipTree) stopped() bool { return t.err != nil || t.w.err != nil }
 
 // Keep the existing graph writer and its first-error behavior. Enforce the
 // result's byte bound before appending each line to the command's private
 // buffer; the caller publishes only a complete successful rendering.
 func (t *graphRelationshipTree) println(line string) {
-	if t.w.err != nil {
+	if t.stopped() {
 		return
 	}
 	if len(line)+1 > t.remaining {
-		t.w.err = fmt.Errorf("%w: graph output exceeds %d bytes", graphstore.ErrLimitExceeded, graphstore.PreviewCurrentReadByteLimit)
+		t.err = fmt.Errorf("%w: graph output exceeds %d bytes", graphstore.ErrLimitExceeded, t.limit)
 		return
 	}
 	t.remaining -= len(line) + 1
@@ -189,7 +196,7 @@ func (t *graphRelationshipTree) expand(id string, directions []int) []graphTreeL
 				line.reference = " (cycle)"
 			}
 		} else {
-			line.children = t.expand(next, append(directions, direction))
+			line.children = t.expand(next, append(directions[:len(directions):len(directions)], direction))
 		}
 		lines = append(lines, line)
 	}
@@ -199,7 +206,7 @@ func (t *graphRelationshipTree) expand(id string, directions []int) []graphTreeL
 
 func (t *graphRelationshipTree) writeLines(lines []graphTreeLine, prefix string) {
 	for i, line := range lines {
-		if t.w.err != nil {
+		if t.stopped() {
 			return
 		}
 		branch, continuation := "├── ", "│   "
@@ -211,7 +218,7 @@ func (t *graphRelationshipTree) writeLines(lines []graphTreeLine, prefix string)
 			arrow = "←"
 		}
 		l := line.link
-		node := t.label(line.next)
+		node := t.label(line.next) + " [" + t.label(t.nodes[line.next].Type) + "]"
 		if line.reference == "" {
 			node = t.nodeLabel(line.next)
 		}

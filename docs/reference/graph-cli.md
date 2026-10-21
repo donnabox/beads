@@ -248,9 +248,15 @@ bd graph --all --link-type References --html > graph.html
 `--all` uses matching endpoint components for non-Dependency selectors,
 excluding unrelated isolates. Dependency `--all` retains open native Issues,
 including isolates. Explicit depth/direction with `--all` refuses. A named root
-remains without matching Links. `--json` uses complete canonical Beads/Links
-and separate traversal metadata; normal text, compact, box, DOT and HTML forms
-are supported. `--open` remains unavailable in link mode. Node/Link bounds
+remains without matching Links. Default text and `--compact` both render a
+relationship tree with actual Bead/Link Types, authored arrows and individual
+Link IDs. Shared targets expand once; references retain every parallel and
+cross-Link. A `cycle` marker witnesses a directed cycle in the displayed path;
+other repeats say `shown above`. `--box` retains its flat Bead/Link view; DOT
+and HTML remain available. Human trees elide `beads/`, `links/` and `types/`
+display prefixes; `--json` retains complete canonical Beads/Links and separate
+traversal metadata. The command's Issue-oriented compact help describes the
+native dependency view. `--open` remains unavailable in link mode. Node/Link bounds
 (default 1000 each), the complete-inventory acquisition limit (1000 Resources /
 16 MiB), and serialized output limit (16 MiB) refuse rather than return a
 successful partial graph. Depth truncation reports `complete: false` and a

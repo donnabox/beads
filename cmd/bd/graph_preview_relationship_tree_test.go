@@ -31,10 +31,7 @@ func graphTreeTestText(t *testing.T, r graphGenericResult) string {
 	t.Helper()
 	var output bytes.Buffer
 	w := &graphExportWriter{out: &output}
-	if err := renderGraphRelationshipTree(w, r); err != nil {
-		t.Fatal(err)
-	}
-	if err := w.wrapError("test"); err != nil {
+	if err := renderGraphRelationshipTree(w, r, graphstore.PreviewCurrentReadByteLimit); err != nil {
 		t.Fatal(err)
 	}
 	for _, link := range r.Links {
@@ -60,6 +57,7 @@ func TestGraphRelationshipTreeReferencesAndCycles(t *testing.T) {
 		{"diamond", "a", "out", []genericTestEdge{{"ab", "a", "b"}, {"ac", "a", "c"}, {"bd", "b", "d"}, {"cd", "c", "d"}}, 0, 1},
 		{"diamond-both", "a", "both", []genericTestEdge{{"ab", "a", "b"}, {"ac", "a", "c"}, {"bd", "b", "d"}, {"cd", "c", "d"}}, 0, 1},
 		{"self-cycle", "a", "both", []genericTestEdge{{"aa", "a", "a"}}, 1, 0},
+		{"incoming-self-cycle", "a", "in", []genericTestEdge{{"aa", "a", "a"}}, 1, 0},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			// Authoritative selection comes from the real projection, so the
@@ -76,8 +74,12 @@ func TestGraphRelationshipTreeReferencesAndCycles(t *testing.T) {
 			if len(strings.Split(text, "\n")) > len(r.Links)+len(r.Nodes)+5 {
 				t.Fatalf("repeated expansion:\n%s", text)
 			}
-			if tc.direction == "in" && strings.Contains(text, " → ") {
-				t.Fatalf("incoming indentation reversed authored arrows:\n%s", text)
+			if tc.direction == "in" {
+				for _, edge := range tc.edges {
+					if edge.source != edge.target && !strings.Contains(text, "("+edge.id+") ← ") {
+						t.Fatalf("incoming indentation reversed authored arrow for %s:\n%s", edge.id, text)
+					}
+				}
 			}
 		})
 	}
@@ -85,7 +87,7 @@ func TestGraphRelationshipTreeReferencesAndCycles(t *testing.T) {
 
 func TestGraphRelationshipTreeLayoutAndDirections(t *testing.T) {
 	r := graphTreeTestResult("a", "out", []string{"a", "b", "c", "d"}, genericTestEdge{"ab", "a", "b"}, genericTestEdge{"ac", "a", "c"}, genericTestEdge{"bd", "b", "d"}, genericTestEdge{"cd", "c", "d"})
-	want := "a [memory] \"A\"\n├── references (ab) → b [memory] \"B\"\n│   └── references (bd) → d [memory] \"D\"\n└── references (ac) → c [memory] \"C\"\n    └── references (cd) → d (shown above)\n\n4 Beads, 4 Links\nComplete: true; direction: out; depth: 1000; frontier: 0\n"
+	want := "a [memory] \"A\"\n├── references (ab) → b [memory] \"B\"\n│   └── references (bd) → d [memory] \"D\"\n└── references (ac) → c [memory] \"C\"\n    └── references (cd) → d [memory] (shown above)\n\n4 Beads, 4 Links\nComplete: true; direction: out; depth: 1000; frontier: 0\n"
 	if got := graphTreeTestText(t, r); got != want {
 		t.Fatalf("relationship layout:\n%s\nwant:\n%s", got, want)
 	}
@@ -167,7 +169,7 @@ func TestGraphRelationshipTreeRejectsInvalidSelectedGraph(t *testing.T) {
 			r := graphTreeTestResult("a", "out", []string{"a", "b"}, genericTestEdge{"ab", "a", "b"})
 			tc.edit(&r)
 			var output bytes.Buffer
-			err := renderGraphRelationshipTree(&graphExportWriter{out: &output}, r)
+			err := renderGraphRelationshipTree(&graphExportWriter{out: &output}, r, graphstore.PreviewCurrentReadByteLimit)
 			if !errors.Is(err, graphstore.ErrInvalidStore) || output.Len() != 0 {
 				t.Fatalf("invalid selection fabricated or leaked output: %v %s", err, output.String())
 			}
@@ -207,8 +209,14 @@ func TestGraphRelationshipTreeLargeTitlesAndOutputBudget(t *testing.T) {
 		r.Links = append(r.Links, graphGenericLink{ID: genericTestScope + fmt.Sprintf("links/parallel-%03d", i), Type: genericTestScope + "types/references", Source: r.Nodes[0].ID, Target: r.Nodes[1].ID})
 	}
 	text := graphTreeTestText(t, r)
-	if strings.Count(text, title) != 1 || len(text) > 2<<20 || strings.Count(text, "(shown above)") != 299 {
-		t.Fatal("parallel references amplified the full target title")
+	if count := strings.Count(text, title); count != 1 {
+		t.Fatalf("target title appeared %d times; want 1", count)
+	}
+	if len(text) > 2<<20 {
+		t.Fatalf("parallel title output is %d bytes; want at most 2 MiB", len(text))
+	}
+	if count := strings.Count(text, "(shown above)"); count != 299 {
+		t.Fatalf("shared references: got %d; want 299", count)
 	}
 	// A directly supplied summary can expand beyond the text byte bound when
 	// controls are escaped. Enforce the output bound independently of input
@@ -219,7 +227,7 @@ func TestGraphRelationshipTreeLargeTitlesAndOutputBudget(t *testing.T) {
 		r.Nodes[i].Title = strings.Repeat("\x1b", 3<<20)
 	}
 	var private bytes.Buffer
-	err := renderGraphRelationshipTree(&graphExportWriter{out: &private}, r)
+	err := renderGraphRelationshipTree(&graphExportWriter{out: &private}, r, graphstore.PreviewCurrentReadByteLimit)
 	if !errors.Is(err, graphstore.ErrLimitExceeded) || private.Len() > graphstore.PreviewCurrentReadByteLimit {
 		t.Fatalf("unbounded private output: %d bytes, %v", private.Len(), err)
 	}
@@ -229,5 +237,27 @@ func TestGraphRelationshipTreeLargeTitlesAndOutputBudget(t *testing.T) {
 	output, err := renderGraphSelected(genericPreviewCommand(t), r, graphstore.Snapshot{})
 	if !errors.Is(err, graphstore.ErrLimitExceeded) || output != "" {
 		t.Fatalf("oversized graph leaked partial output: %d bytes, %v", len(output), err)
+	}
+}
+
+func TestGraphRelationshipTreeCallerBudgetAndUnicodeOrder(t *testing.T) {
+	r := graphTreeTestResult("a", "out", []string{"a", "b", "c"}, genericTestEdge{"ab", "a", "b"}, genericTestEdge{"ac", "a", "c"})
+	r.Nodes[1].Title, r.Nodes[2].Title = "\ue000", "\U00010000"
+	text := graphTreeTestText(t, r)
+	if strings.Index(text, "(ac)") > strings.Index(text, "(ab)") {
+		t.Fatalf("titles must follow the graph's UTF-16 code-unit order:\n%s", text)
+	}
+	var output bytes.Buffer
+	w := &graphExportWriter{out: &output}
+	err := renderGraphRelationshipTree(w, r, 32)
+	if !errors.Is(err, graphstore.ErrLimitExceeded) || output.Len() > 32 || w.err != nil || strings.Contains(err.Error(), "writing") {
+		t.Fatalf("caller budget must refuse independently of IO errors: %d bytes, writer %v, error %v", output.Len(), w.err, err)
+	}
+	output.Reset()
+	broken := errors.New("output failure")
+	w = &graphExportWriter{out: &output, err: broken}
+	err = renderGraphRelationshipTree(w, r, graphstore.PreviewCurrentReadByteLimit)
+	if !errors.Is(err, broken) || output.Len() != 0 {
+		t.Fatalf("first writer failure lost: %v, %d bytes", err, output.Len())
 	}
 }

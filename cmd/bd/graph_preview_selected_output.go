@@ -115,8 +115,8 @@ func renderGraphSelected(cmd *cobra.Command, result graphGenericResult, snapshot
 			}
 		default:
 			if box {
-				renderGraphSelectedText(w, result, true, false)
-			} else if err := renderGraphRelationshipTree(w, result); err != nil {
+				renderGraphSelectedBox(w, result)
+			} else if err := renderGraphRelationshipTree(w, result, graphstore.PreviewCurrentReadByteLimit); err != nil {
 				return "", err
 			}
 		}
@@ -129,19 +129,12 @@ func renderGraphSelected(cmd *cobra.Command, result graphGenericResult, snapshot
 	}
 	return output.String(), nil
 }
-func renderGraphSelectedText(w *graphExportWriter, r graphGenericResult, box, compact bool) {
+func renderGraphSelectedBox(w *graphExportWriter, r graphGenericResult) {
 	local := func(value string) string { return strings.TrimPrefix(value, r.Scope) }
 	w.printf("Graph (%d Beads, %d Links; direction %s; depth %d)\n", len(r.Nodes), len(r.Links), r.Direction, r.Depth)
 	// A hop-selected set is not an execution schedule. Never label a Memory ready.
 	for _, n := range r.Nodes {
-		switch {
-		case box:
-			w.printf("┌ %s [%s] %s\n│ %q\n└\n", local(n.ID), local(n.Type), n.Status, n.Title)
-		case compact:
-			w.printf("• %s [%s] %s %q\n", local(n.ID), local(n.Type), n.Status, n.Title)
-		default:
-			w.printf("%s [%s] %s %q\n", local(n.ID), local(n.Type), n.Status, n.Title)
-		}
+		w.printf("┌ %s [%s] %s\n│ %q\n└\n", local(n.ID), local(n.Type), n.Status, n.Title)
 	}
 	for _, l := range r.Links {
 		w.printf("%s --%s (%s)--> %s", local(l.Source), local(l.Type), local(l.ID), local(l.Target))
