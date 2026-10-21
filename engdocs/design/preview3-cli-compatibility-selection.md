@@ -11,6 +11,12 @@ belong to this slice and still require end-to-end qualification. Selection
 does not mean a PR is merged or that every shipping flag is supported. The
 other linked parity PRs remain candidates for a later pass.
 
+A disposable selected-only merge of those four PRs passed 18 focused
+installed CLI workflows on embedded and real shared-server Dolt, with no
+skips in the server-enabled run. [The audit](graph-mode-shipping-compatibility-audit.md)
+records the exact heads and test scope. Hosted CI and review decisions remain
+separate gates for each unmerged PR.
+
 This table records that decision; it is not a replacement for the [graph CLI
 guide](../../docs/reference/graph-cli.md) or the [detailed compatibility
 audit](graph-mode-shipping-compatibility-audit.md). It compares the shipping

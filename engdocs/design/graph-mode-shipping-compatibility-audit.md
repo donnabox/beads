@@ -129,6 +129,20 @@ skips. The server and temporary database were removed afterward. This selected
 combined run still does not qualify the full first gate; no integration PR was
 pushed or merged.
 
+For Donna's selected first slice, a separate disposable checkout at
+`bc7a9d9ba6` cleanly merged the qualified integration base `b6d0493ba` with
+the unmerged heads of #151 (`e07944fab`), #152 (`f0e2c6cbf`), #156
+(`e155c3ac5`) and the test-only #175 (`c7363ec73`). Eighteen focused
+installed CLI workflows passed with `go test -tags gms_pure_go ./cmd/bd`
+on embedded Dolt. The same selection then passed with a disposable real
+shared-server Dolt: all 18 top-level workflows passed, with no failures or
+skips. The selection includes canonical show/collection, Issue and Memory
+authoring/deletion, Issue show/watch/list, Link create/update/show/list/delete
+and retained versions, and `ready`/atomic claim with informational Memory
+Links. The server and its temporary data were removed afterward. This is
+selected-slice integration evidence, not a whole-repository or full first-gate
+qualification; no selected PR was merged by this local test.
+
 The Preview graph CLI specification has an older pinned-commit implementation
 ledger and a larger target inventory. Its target rows are not evidence that
 the current binary already supports an option. Continue this audit against
