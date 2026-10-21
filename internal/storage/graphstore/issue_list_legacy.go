@@ -54,7 +54,30 @@ func (s *Store) ListIssuesLegacy(ctx context.Context, request publicops.ListRequ
 		if err != nil {
 			return err
 		}
-		rows, more := workapi.FinishPageAt(rows, request.SortBy, request.Reverse, request.Offset, workapi.PageLimit(request), false)
+		var more bool
+		if request.SortBy == "id" {
+			// The checked graph page is ordered by visible Bead IDs. The native
+			// counted query still names backing IDs, so select its rows in that
+			// checked order instead of sorting those opaque keys a second time.
+			more = len(rows) > len(page.Items)
+			byID := make(map[string]*types.IssueWithCounts, len(rows))
+			for _, row := range rows {
+				if row == nil || row.Issue == nil || byID[row.ID] != nil {
+					return fmt.Errorf("%w: invalid counted Issue list row", ErrInvalidStore)
+				}
+				byID[row.ID] = row
+			}
+			ordered := make([]*types.IssueWithCounts, 0, len(page.Items))
+			for _, item := range page.Items {
+				if item.Properties == nil || byID[item.Properties.ID] == nil {
+					return fmt.Errorf("%w: counted Issue list disagrees with checked graph page", ErrInvalidStore)
+				}
+				ordered = append(ordered, byID[item.Properties.ID])
+			}
+			rows = ordered
+		} else {
+			rows, more = workapi.FinishPageAt(rows, request.SortBy, request.Reverse, request.Offset, workapi.PageLimit(request), false)
+		}
 		if rows == nil {
 			rows = []*types.IssueWithCounts{}
 		}

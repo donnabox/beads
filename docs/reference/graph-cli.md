@@ -155,7 +155,7 @@ The Issue filters are `--status` (or `--state`), `--type`, `--title`,
 `--title-contains`, `--priority`, `--priority-min`, `--priority-max`,
 `--assignee`, `--no-assignee`, `--label`, `--label-any`, `--exclude-label`,
 `--pinned`, `--no-pinned`, `--due-before`, `--due-after`, `--overdue`,
-`--sort` and `--reverse`. Supplying an Issue filter switches `bd list` to the existing Issue query,
+`--sort`, `--reverse`, and `--long`. Supplying an Issue filter or `--long` switches `bd list` to the existing Issue query,
 even when an empty value such as `--assignee=` adds no restriction.
 `--type types/NAME` or a full Type URL instead selects a nominal Type;
 a bare `--type task` remains an Issue classification filter. A configured `directory.labels` entry that matches the current
@@ -166,6 +166,8 @@ selected the query. A directory label alone never refuses a nominal `--type`; it
 is not applied to a Memory. Its human rows add status and priority, for example
 `"https://example.org/team/beads/work" "open" P2 "Move the release branch"`.
 An Issue filter cannot be combined with a non-Issue nominal `--type`.
+`--long` renders the ordinary detailed Issue presentation, including descriptions
+and labels, for the selected Issue page.
 
 `bd list --json` returns the ordinary Issue-only array, including the
 familiar Issue field names and Scope-relative IDs. Memories are omitted from
