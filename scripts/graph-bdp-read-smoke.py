@@ -182,23 +182,6 @@ def verify_python_pages(observations, scope, expected_ids):
                "Python pagination did not exhaust complete inventory")
 
 
-def require_memory_deletion(deleted, final_live):
-    # The local delete result preserves the complete final live snapshot and
-    # separately discloses the fresh terminal D; D is not a payload snapshot.
-    terminal = deleted.get("terminal") if isinstance(deleted, dict) else None
-    c0.require(deleted == {"memory": final_live, "terminal": terminal, "preview": False, "deleted": True},
-               "deletion did not disclose the exact final live predecessor")
-    c0.require(isinstance(terminal, dict)
-               and set(terminal) == {"id", "revision", "version", "previousVersion", "state", "attribution"}
-               and terminal["id"] == final_live["id"] and terminal["state"] == "deleted"
-               and isinstance(terminal["revision"], str) and terminal["revision"]
-               and terminal["revision"] != final_live["revision"]
-               and terminal["version"] == terminal["revision"]
-               and terminal["previousVersion"] == final_live["revision"]
-               and isinstance(terminal["attribution"], dict),
-               "deletion did not disclose a distinct terminal revision of the final live predecessor")
-
-
 def build_parser():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--bd", type=Path, required=True)
@@ -356,7 +339,7 @@ def main():
         alpha = records["beads/alpha"]
         deleted = c0.envelope(capture.success("memory-delete", ["delete", "beads/alpha", "--force",
             "--if-revision", alpha["revision"], "--json"]))
-        require_memory_deletion(deleted, alpha)
+        c0.require_memory_deletion(deleted, alpha)
         name = "python-after-delete"
         consumer = Process(capture, name, [sys.executable, str(Path(__file__)), "--observe-python",
                            str(example), str(capture.output / (name + "-network.json")), "--scope", scope, "--limit", "1"])
