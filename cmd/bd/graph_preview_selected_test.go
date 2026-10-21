@@ -140,7 +140,11 @@ func TestGraphPreviewSelectedCanonicalAndFormats(t *testing.T) {
 			t.Fatal(err)
 		}
 		for _, id := range []string{"links/ab", "links/ab2", "links/ba"} {
-			if !strings.Contains(text, id) {
+			want := id
+			if format == "" || format == "--compact" {
+				want = "(" + strings.TrimPrefix(id, "links/") + ")"
+			}
+			if !strings.Contains(text, want) {
 				t.Fatalf("%s lost actual link %s: %s", format, id, text)
 			}
 		}

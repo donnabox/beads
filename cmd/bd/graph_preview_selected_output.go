@@ -106,7 +106,6 @@ func renderGraphSelected(cmd *cobra.Command, result graphGenericResult, snapshot
 		dot, _ := cmd.Flags().GetBool("dot")
 		web, _ := cmd.Flags().GetBool("html")
 		box, _ := cmd.Flags().GetBool("box")
-		compact, _ := cmd.Flags().GetBool("compact")
 		switch {
 		case dot:
 			renderGraphSelectedDOT(w, result)
@@ -115,7 +114,11 @@ func renderGraphSelected(cmd *cobra.Command, result graphGenericResult, snapshot
 				return "", err
 			}
 		default:
-			renderGraphSelectedText(w, result, box, compact)
+			if box {
+				renderGraphSelectedText(w, result, true, false)
+			} else if err := renderGraphRelationshipTree(w, result); err != nil {
+				return "", err
+			}
 		}
 		if err := w.wrapError("graph"); err != nil {
 			return "", err
