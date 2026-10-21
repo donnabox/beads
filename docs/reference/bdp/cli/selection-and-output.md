@@ -449,7 +449,9 @@ token. Those members remain on raw items after `--omit envelope`; a row without
 them cannot identify which subject the version belongs to. This JSONL route
 reads the same complete, bounded version list as ordinary JSON. It has no
 retained-history continuation yet and refuses an oversized list before writing
-any success records.
+any success records. A native History result with additional collection context
+(such as `currentState` or `terminal_versions`) also refuses JSONL until that
+context has a lossless item representation; ordinary JSON retains those members.
 
 A handled midstream error retains emitted items and writes a failure terminal,
 diagnostics on stderr, and nonzero exit. A missing terminal means incomplete or

@@ -88,6 +88,20 @@ func graphVersionStreamItem(resource, kind string, row map[string]any) (json.Raw
 	return json.Marshal(item)
 }
 
+// Every native collection member outside versions is context for interpreting
+// its rows. Until the stream has a declared way to carry that member in each
+// raw item, refuse the stream rather than silently losing it.
+func graphVersionJSONLContextSupported(result map[string]any) error {
+	for member := range result {
+		switch member {
+		case "resource", "kind", "versions":
+		default:
+			return fmt.Errorf("version JSONL cannot preserve native collection context %q", member)
+		}
+	}
+	return nil
+}
+
 type graphVersionJSONLFailure struct{ stream *clioutput.JSONLWriter }
 
 func (f graphVersionJSONLFailure) RenderFailure(origin string, problem json.RawMessage) ([]byte, error) {
@@ -169,6 +183,9 @@ func runCanonicalGraphVersions(cmd *cobra.Command, args []string, options cliout
 	}, func(result any) error {
 		if jsonl {
 			data := result.(map[string]any)
+			if err := graphVersionJSONLContextSupported(data); err != nil {
+				return canonicalFailure(cmd, failure, "capability_unavailable", err.Error(), 5)
+			}
 			rows := data["versions"].([]map[string]any)
 			for _, row := range rows {
 				item, err := graphVersionStreamItem(path, data["kind"].(string), row)
