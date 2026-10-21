@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -570,7 +571,7 @@ func runGraphPreviewDeferral(cmd *cobra.Command, args []string, deferred bool) e
 }
 
 func runGraphPreviewReady(cmd *cobra.Command, args []string) error {
-	if err := graphPreviewFlags(cmd, "limit", "priority", "assignee", "unassigned", "sort", "label", "label-any", "exclude-label", "label-pattern", "label-regex", "type", "exclude-type", "metadata-field", "has-metadata-key", "include-deferred", "claim"); err != nil {
+	if err := graphPreviewFlags(cmd, "limit", "priority", "assignee", "unassigned", "sort", "label", "label-any", "exclude-label", "label-pattern", "label-regex", "type", "exclude-type", "metadata-field", "has-metadata-key", "include-deferred", "claim", "parent"); err != nil {
 		return err
 	}
 	if len(args) != 0 {
@@ -582,6 +583,12 @@ func runGraphPreviewReady(cmd *cobra.Command, args []string) error {
 	in, err := gatherReadyInput(cmd, nil)
 	if err != nil {
 		return err
+	}
+	if in.claim && cmd.Flags().Changed("parent") {
+		return graphFailure("capability_unavailable", "ready --claim --parent is not available in graph workspaces yet", 5)
+	}
+	if cmd.Flags().Changed("parent") && strings.TrimSpace(in.ParentID) == "" {
+		return graphFailure("invalid_selector", "ready --parent requires a nonempty Issue ID", 2)
 	}
 	// The legacy resolver warns and ignores malformed environment values.
 	// This deliberately bounded preview refuses unsupported policy instead.
@@ -611,7 +618,22 @@ func runGraphPreviewReady(cmd *cobra.Command, args []string) error {
 		})
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		issues, err := store.ReadyIssuesFiltered(ctx, in.filter)
+		filter := in.filter
+		if in.ParentID != "" {
+			selector, err := graphPreviewIssueSelector(in.ParentID)
+			if err != nil {
+				return nil, "", graphFailure("invalid_selector", err.Error(), 2)
+			}
+			parent, err := store.ShowIssueSelected(ctx, selector)
+			parentID := selector.Path // A missing parent has no descendants, as in ordinary ready.
+			if err == nil {
+				parentID = parent.Properties.ID
+			} else if !errors.Is(err, graphstore.ErrNotFound) && !errors.Is(err, graphstore.ErrGone) {
+				return nil, "", err
+			}
+			filter.ParentID = &parentID
+		}
+		issues, err := store.ReadyIssuesFiltered(ctx, filter)
 		if err != nil {
 			return nil, "", err
 		}
