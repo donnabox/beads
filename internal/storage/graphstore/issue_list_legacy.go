@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/workapi"
 	publicops "github.com/steveyegge/beads/issueops"
@@ -44,6 +43,12 @@ func (s *Store) listIssuesLegacy(ctx context.Context, request publicops.ListRequ
 		return LegacyIssueListPage{}, err
 	}
 	request.IncludeComments = includeComments
+	if request.ReadyFlag && parent != nil {
+		return LegacyIssueListPage{}, fmt.Errorf("%w: graph Issue list cannot combine --ready with --parent", ErrCapabilityUnavailable)
+	}
+	if request.ReadyFlag {
+		s.wakeExpiredDefersAdvisory(ctx)
+	}
 	var result LegacyIssueListPage
 	err = s.withTx(ctx, false, func(tx *sql.Tx) error {
 		page, err := s.listIssuesWithParentInTx(ctx, tx, &request, parent)
@@ -74,7 +79,7 @@ func (s *Store) listIssuesLegacy(ctx context.Context, request publicops.ListRequ
 		} else {
 			filter.MaxRows = 0
 		}
-		rows, err := issueops.SearchIssuesWithCountsInTx(ctx, tx, "", filter)
+		rows, err := queryIssueListRowsInTx(ctx, tx, filter, request.ReadyFlag)
 		if err != nil {
 			return err
 		}
