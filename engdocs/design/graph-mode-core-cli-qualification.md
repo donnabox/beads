@@ -29,7 +29,7 @@ lanes. A skipped server subtest is not a pass for that engine.
 | `create` | Existing installed tests cover Issue and Memory creation, parent-child creation, Markdown batch and nominal Types. | Shipping Issue `--body-file`/stdin and `--deps` are refused; the latter needs atomic Issue-and-Link behavior. Check other shipping input/validation flags. |
 | `update` | Existing tests cover Issue, Memory and Link guarded edits, properties/metadata, ordered patches and historical base edits. | Shipping Issue file/stdin text, label/status and multi-ID forms are refused. Separate input, native policy and batch semantics. |
 | `delete` | Existing tests cover single Issue/Memory and Link deletion, incident-Link refusal, preview/apply and retained versions. | Shipping multi-ID and `--cascade --dry-run` refuse. Choose graph deletion policy before changing destructive behavior. |
-| `show` / `link show` | Canonical show and legacy current-Issue `--json` have installed tests. This branch restores familiar human Issue details, `--short`, `--long`, and comment-tail rendering; selected cases pass on embedded and shared-server Dolt. | Check shipping multi-ID, current, refs, children and watch forms separately; keep canonical JSON and retained-state rules separate. |
+| `show` / `link show` | Canonical show and legacy current-Issue `--json` have installed tests. This branch restores familiar human Issue details, `--short`, `--long`, comment-tail rendering, and single `--id` selection; selected cases pass on embedded and shared-server Dolt. | Check shipping multi-ID, current, refs, children and watch forms separately; keep canonical JSON and retained-state rules separate. |
 | `list` / `link list` | Existing tests cover bounded Bead/Issue/Link selections and legacy Issue JSON. | Common shipping Issue filters and tree/pretty presentation still refuse. Pagination implementation is deferred; preserve current product limit behavior. |
 | `versions` / `link versions` | Existing tests cover Issue, Memory, live Link and removed-Link histories, local ordering and JSON member sets. | Recheck after PR #141 integration and with both real engines; do not infer HTTP History from CLI History. |
 | `link FROM SOURCE` | Existing installed tests exercise informational Links, source guards and endpoint pins. This branch checks default `blocks`, first-operand orientation, duplicate/no-op, explicit `tracks`, same-pair type conflict, and shipping JSON/human feedback on embedded and shared-server Dolt. | Check remaining shipping flags and partial-ID error behavior. The starting candidate's help incorrectly said exact pins refuse; this branch corrects it. |
@@ -80,3 +80,10 @@ compatibility-defaults workflow passed again on both engines. Installed
 typed-relationship, endpoint-reference, and selected-Type workflows also
 passed on embedded and shared-server Dolt. These targeted tests compile the
 latest Link output edit; the broader 285-test run predates it.
+
+The single-operand `bd show --id=beads/work` selector now follows the same
+current-Issue path as the positional form. The installed
+`TestGraphPreviewShowLegacyIssueJSON` workflow, including this selector and an
+explicit refusal of multiple IDs, passed on embedded and shared-server Dolt.
+The generated CLI docs freshness check and `git diff --check` passed. Shipping
+multi-ID aggregation is still a gap, not covered by this result.

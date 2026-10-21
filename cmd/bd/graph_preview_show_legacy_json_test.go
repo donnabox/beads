@@ -58,6 +58,11 @@ func TestGraphPreviewShowLegacyIssueJSON(t *testing.T) {
 			}
 
 			shown := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/work", "--json")
+			byID := graphPolicyCLI(t, bd, work, home, nil, "", "show", "--id=beads/work", "--json")
+			if byID != shown {
+				t.Fatalf("--id must select the same Issue as the positional operand:\n%s\n%s", byID, shown)
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "show", "beads/work", "--id=beads/needs", "--json")
 			var details []types.IssueDetails
 			if err := json.Unmarshal([]byte(shown), &details); err != nil || len(details) != 1 {
 				t.Fatalf("graph Issue show must use ordinary flat detail array: %v\n%s", err, shown)

@@ -682,9 +682,11 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 	if canonicalOutputSelected(cmd) {
 		return runCanonicalShow(cmd, args, false)
 	}
-	if err := graphPreviewFlags(cmd, "version", "format", "include-dependents", "include-comments", "brief-deps", "short", "long", "local-time", "comments-tail"); err != nil {
+	if err := graphPreviewFlags(cmd, "id", "version", "format", "include-dependents", "include-comments", "brief-deps", "short", "long", "local-time", "comments-tail"); err != nil {
 		return err
 	}
+	idFlags, _ := cmd.Flags().GetStringArray("id")
+	args = append(args, idFlags...)
 	shortMode, _ := cmd.Flags().GetBool("short")
 	longMode, _ := cmd.Flags().GetBool("long")
 	localTime, _ := cmd.Flags().GetBool("local-time")
@@ -703,7 +705,7 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 		return graphFailure("capability_unavailable", "Issue display flags require the familiar Issue output format", 5)
 	}
 	if len(args) != 1 {
-		return graphFailure("invalid_selector", "graph show requires one Bead ID (or beads/PATH) or explicit links/PATH", 2)
+		return graphFailure("invalid_selector", "graph show requires one Bead ID (or beads/PATH) or explicit links/PATH; use a positional ID or --id", 2)
 	}
 	ref, err := graphPreviewParseReference(args[0])
 	if err != nil {
