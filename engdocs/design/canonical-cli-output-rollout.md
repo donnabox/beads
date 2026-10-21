@@ -16,7 +16,7 @@ The five implementation PRs are merged at integration commit
 | [#123](https://github.com/donnabox/beads/pull/123) | Shared Resource projection, schema-2 envelopes, detail/JSON/raw output, structured failures and protected context. | Source-side projection remains BDP work; this renderer does no fetching. |
 | [#126](https://github.com/donnabox/beads/pull/126) | Collection descriptors, tables, finite JSONL and delivery-boundary accounting. | An engine capable of consuming pages does not supply provider cursors. |
 | [#127](https://github.com/donnabox/beads/pull/127) | Current and retained `show`/`link show`, BDP-shaped payloads, masks, errors and public corpus. | No JSONL show adapter or hidden traversal; nested masks are limited to properties/metadata. |
-| [#128](https://github.com/donnabox/beads/pull/128) | `versions`/`history`/`link versions` and root/Link comparisons. Subject context, exact operands and coverage survive framing removal. | Version JSONL and retained paging refuse; comparison data masks refuse. |
+| [#128](https://github.com/donnabox/beads/pull/128) | `versions`/`history`/`link versions` and root/Link comparisons. Subject context, exact operands and coverage survive framing removal. | Retained paging refuses; comparison data masks refuse. Version JSONL is delivered by the follow-on retained-stream PR. |
 | [#129](https://github.com/donnabox/beads/pull/129) | `list`/`link list`, structured exact-Type/family/endpoint selection, tables and framed/raw JSONL. | Local provider returns complete bounded selections; it cannot resume or safely truncate them. |
 
 ### Qualification already recorded
@@ -57,9 +57,9 @@ All implementation owners retain their own validation and publication authority.
   list. Cover short pages, total caps, format/projection changes under continuation,
   late failure and no skipped or duplicate records. Until then retain explicit
   refusal when a requested page/limit is smaller than the complete selection.
-- [ ] **2. Retained JSONL and paging:** define a delivery unit that preserves the
-  subject and kind even with `--omit envelope`; then admit versions/history JSONL
-  and real retained continuation. A version row alone is insufficient. Comparisons
+- [ ] **2. Retained JSONL and paging:** JSONL now preserves subject and kind in
+  every delivered version item, even with `--omit envelope`. Real retained
+  continuation remains; the complete bounded reader has no provider cursor. Comparisons
   remain compound results; they need no row stream merely to match collections.
 - [ ] **3. Generic mutation output:** adapt Bead and Link create/update/delete with
   actual applied/no-op/unknown outcomes, revision/source effects and stale-guard

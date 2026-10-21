@@ -39,6 +39,67 @@ func TestGraphRetainedVersionProjectionUsesActualSummary(t *testing.T) {
 	}
 }
 
+func TestGraphRetainedJSONLItemsKeepSubjectWithoutEnvelope(t *testing.T) {
+	for _, raw := range []bool{false, true} {
+		options := clioutput.Options{Formats: []string{"jsonl"}, Include: []string{"/local_revision"}}
+		if raw {
+			options.Omit = []string{"envelope"}
+		}
+		renderer, err := newGraphVersionOutput("fixture-contract", options)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var out bytes.Buffer
+		stream, err := renderer.NewJSONL(&out)
+		if err != nil {
+			t.Fatal(err)
+		}
+		item, err := graphVersionStreamItem("beads/source", "issue", map[string]any{"version": "opaque:one", "local_revision": int64(9007199254740993)})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := stream.Item(item); err != nil {
+			t.Fatal(err)
+		}
+		if err := stream.Finish(true, "exhausted", nil); err != nil {
+			t.Fatal(err)
+		}
+		lines := bytes.Split(bytes.TrimSpace(out.Bytes()), []byte{'\n'})
+		wantLines := 3
+		if raw {
+			wantLines = 1
+		}
+		if len(lines) != wantLines {
+			t.Fatalf("raw=%v got %d JSONL records: %s", raw, len(lines), out.String())
+		}
+		line := lines[0]
+		if !raw {
+			line = lines[1]
+		}
+		var got struct {
+			Data       json.RawMessage `json:"data"`
+			Resource   string          `json:"resource"`
+			Kind       string          `json:"kind"`
+			Version    string          `json:"version"`
+			Local      json.Number     `json:"local_revision"`
+			RecordType string          `json:"record_type"`
+		}
+		if !raw {
+			var wrapper struct {
+				RecordType string          `json:"record_type"`
+				Data       json.RawMessage `json:"data"`
+			}
+			if err := json.Unmarshal(line, &wrapper); err != nil || wrapper.RecordType != "item" {
+				t.Fatalf("framed item: %v %s", err, line)
+			}
+			line = wrapper.Data
+		}
+		if err := json.Unmarshal(line, &got); err != nil || got.Resource != "beads/source" || got.Kind != "issue" || got.Version != "opaque:one" || got.Local.String() != "9007199254740993" {
+			t.Fatalf("raw=%v lost version context/precision: %v %+v", raw, err, got)
+		}
+	}
+}
+
 func TestGraphRetainedComparisonPreservesActualProviderValues(t *testing.T) {
 	// This exercises the real provider carrier and CLI carried-attribution
 	// projection. It does not invent a BDP History comparison DTO or fetch

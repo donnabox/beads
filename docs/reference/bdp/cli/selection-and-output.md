@@ -38,7 +38,7 @@ graph mode. Without that opt-in, existing output behavior remains unchanged.
 | --- | --- | --- |
 | `show`, `link show` | `default`, `detail`, `json` | Current or retained Resource; complete BDP payload, protected identity/endpoints, optional field masks and raw JSON. No traversal or JSONL adapter. |
 | `list`, `link list` | `default`, `table`, `detail`, `json`, `jsonl` | Complete bounded current selection, exact-Type/family selectors, and Link endpoint filters. No resumable provider continuation yet. |
-| `versions`, `history`, `link versions` | `default`, `table`, `detail`, `json` | Complete bounded version summaries with subject context. JSONL and retained-history paging are not admitted. |
+| `versions`, `history`, `link versions` | `default`, `table`, `detail`, `json`, `jsonl` | Complete bounded version summaries with subject context. Each JSONL item repeats its resource and kind, including in raw output. Retained-history paging is not admitted. |
 | `compare`, `link compare` | `default`, `detail`, `json` | Complete comparison with exact operands and coverage. Only envelope removal is supported; data masks refuse. |
 
 For these adapters, nested Resource masks are admitted under `/properties` and
@@ -442,6 +442,14 @@ For Resource/version collections, emit one declared collection item per record.
 For a single Resource, emit one Resource item. Compound graphs and comparisons
 remain complete compound items unless an explicit streaming contract is designed;
 do not lose relationships or operand context by silently flattening them.
+
+For `versions`, `history` and `link versions`, each JSONL item is a CLI version
+summary with its `resource` and `kind` repeated alongside the exact `version`
+token. Those members remain on raw items after `--omit envelope`; a row without
+them cannot identify which subject the version belongs to. This JSONL route
+reads the same complete, bounded version list as ordinary JSON. It has no
+retained-history continuation yet and refuses an oversized list before writing
+any success records.
 
 A handled midstream error retains emitted items and writes a failure terminal,
 diagnostics on stderr, and nonzero exit. A missing terminal means incomplete or
