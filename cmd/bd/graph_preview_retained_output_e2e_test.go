@@ -5,6 +5,7 @@ package main
 import (
 	"encoding/json"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/steveyegge/beads/internal/storage/graphstore"
@@ -102,6 +103,54 @@ func graphCanonicalRetainedOutputCLI(t *testing.T, engine string) {
 	if err := json.Unmarshal(canonical.Data, &versions); err != nil || len(versions.Versions) != 2 {
 		t.Fatalf("version fixture: %v %s", err, canonical.Data)
 	}
+	for _, route := range [][]string{{"link", "versions", "links/edge"}, {"versions", "links/edge"}, {"history", "links/edge"}} {
+		for _, raw := range []bool{false, true} {
+			args := append(append([]string(nil), route...), "--output-format", "jsonl", "--include", "/local_revision")
+			if raw {
+				args = append(args, "--omit", "envelope")
+			}
+			lines := strings.Split(strings.TrimSpace(call(args...)), "\n")
+			want := 4 // header, two versions, terminal
+			if raw {
+				want = 2
+			}
+			if len(lines) != want {
+				t.Fatalf("%v: got %d JSONL records: %v", args, len(lines), lines)
+			}
+			for i := range versions.Versions {
+				line := lines[i]
+				if !raw {
+					line = lines[i+1]
+					var wrapper struct {
+						RecordType string          `json:"record_type"`
+						Data       json.RawMessage `json:"data"`
+					}
+					if err := json.Unmarshal([]byte(line), &wrapper); err != nil || wrapper.RecordType != "item" {
+						t.Fatalf("%v: invalid item wrapper: %v %s", args, err, line)
+					}
+					line = string(wrapper.Data)
+				}
+				var item struct{ Resource, Kind, Version string }
+				if err := json.Unmarshal([]byte(line), &item); err != nil || item.Resource != "links/edge" || item.Kind != "link" || item.Version != versions.Versions[i].Version {
+					t.Fatalf("%v: item lost subject, kind or revision: %v %s", args, err, line)
+				}
+			}
+		}
+	}
+	for _, flags := range [][]string{{}, {"--omit", "envelope"}} {
+		args := append([]string{"history", "missing", "--output-format", "jsonl"}, flags...)
+		out, stderr, code := graphVersionsProcess(t, bd, work, home, args...)
+		if code == 0 || stderr == "" {
+			t.Fatalf("%v: missing subject accepted: %q %q", args, out, stderr)
+		}
+		lines := strings.Split(strings.TrimSpace(out), "\n")
+		if len(flags) == 0 && (len(lines) != 2 || !strings.Contains(lines[1], `"record_type":"terminal"`) || !strings.Contains(lines[1], `"outcome":"failure"`)) {
+			t.Fatalf("%v: missing failed terminal: %q", args, out)
+		}
+		if len(flags) != 0 && out != "" {
+			t.Fatalf("%v: raw stream emitted error data: %q", args, out)
+		}
+	}
 	from, to := versions.Versions[0].Version, versions.Versions[1].Version
 	compared := decode("link", "compare", "links/edge", "--from", from, "--to", to, "--output-format", "json")
 	if canonical.ResultKind != "comparison" {
@@ -180,18 +229,11 @@ func graphCanonicalRetainedOutputCLI(t *testing.T, engine string) {
 	}
 	for _, args := range [][]string{
 		{"versions", "missing", "--output-format", "json", "--omit", "/version"},
-		{"versions", "missing", "--output-format", "jsonl"},
 		{"compare", "missing", "--from", from, "--to", to, "--output-format", "json", "--include", "/properties"},
 	} {
 		stdout, stderr, code := graphVersionsProcess(t, bd, work, home, args...)
 		if code != 2 || stderr == "" {
 			t.Fatalf("unsupported projection/format was not refused before read: %v code=%d out=%q err=%q", args, code, stdout, stderr)
-		}
-		if args[len(args)-1] == "jsonl" {
-			if stdout != "" {
-				t.Fatalf("unsupported JSONL emitted a record: %q", stdout)
-			}
-			continue
 		}
 		var failed struct {
 			Outcome string `json:"outcome"`

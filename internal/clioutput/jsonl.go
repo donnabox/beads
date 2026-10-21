@@ -20,15 +20,15 @@ type JSONLWriter struct {
 
 // NewJSONL validates before writing the one header (unless raw). The writer accepts
 // projected delivery units through Item and exactly one success or failure terminal.
-// No outcome is claimed by the header. This initial stream contract admits only
-// resource collections: a version/row adapter must specify how native enclosing
-// subject/read context travels before those result kinds become streamable.
+// No outcome is claimed by the header. Version collections are admitted only
+// when their adapter promises self-contained items with the subject context.
 func (r *CollectionRenderer) NewJSONL(output io.Writer) (*JSONLWriter, error) {
 	if r.format != "jsonl" {
 		return nil, fmt.Errorf("JSONL writer requires JSONL format")
 	}
-	if r.kind != "resource_collection" || len(r.contextMembers) != 0 {
-		return nil, fmt.Errorf("JSONL requires an admitted resource collection stream contract")
+	if !(r.kind == "resource_collection" && len(r.contextMembers) == 0 ||
+		r.kind == "version_collection" && r.standaloneJSONLItems && len(r.contextMembers) != 0) {
+		return nil, fmt.Errorf("JSONL requires an admitted collection stream contract with self-contained items")
 	}
 	if output == nil {
 		return nil, fmt.Errorf("JSONL requires an output writer")
