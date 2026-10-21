@@ -93,7 +93,7 @@ func (s *Store) prepareIssueCreateDependenciesInTx(ctx context.Context, tx *sql.
 	return resolved, native, nil
 }
 
-func (s *Store) mapIssueCreateDependenciesInTx(ctx context.Context, tx *sql.Tx, issuePath, issueID, actor string, dependencies []resolvedIssueCreateDependency) error {
+func (s *Store) mapIssueCreateDependenciesInTx(ctx context.Context, tx *sql.Tx, issuePath, issueID, actor string, dependencies []resolvedIssueCreateDependency, mapNewIssue bool) error {
 	reverseSources := make(map[string]string)
 	var reverseEdges []publicops.DependencyEdge
 	for _, dependency := range dependencies {
@@ -103,7 +103,8 @@ func (s *Store) mapIssueCreateDependenciesInTx(ctx context.Context, tx *sql.Tx, 
 	}
 	if len(reverseEdges) != 0 {
 		if _, _, err := issueops.ExecuteAddDependencies(ctx, tx, publicops.AddDependenciesRequest{Actor: actor, Edges: reverseEdges}); err != nil {
-			if errors.Is(err, publicops.ErrDependencyCycle) {
+			var hierarchy *publicops.DependencyHierarchyConflictError
+			if errors.Is(err, publicops.ErrDependencyCycle) || errors.As(err, &hierarchy) {
 				return fmt.Errorf("%w: %w", storage.ErrValidation, err)
 			}
 			return fmt.Errorf("reverse native create Dependencies: %w", err)
@@ -159,8 +160,10 @@ func (s *Store) mapIssueCreateDependenciesInTx(ctx context.Context, tx *sql.Tx, 
 			return err
 		}
 	}
-	if err := s.recordIssueMappingContextInTx(ctx, tx, issuePath, issueID, issueRevisionContext{Inception: "create"}); err != nil {
-		return fmt.Errorf("new Issue mapping: %w", err)
+	if mapNewIssue {
+		if err := s.recordIssueMappingContextInTx(ctx, tx, issuePath, issueID, issueRevisionContext{Inception: "create"}); err != nil {
+			return fmt.Errorf("new Issue mapping: %w", err)
+		}
 	}
 	for sourcePath, sourceID := range reverseSources {
 		if err := s.recordIssueMappingInTx(ctx, tx, sourcePath, sourceID); err != nil {
