@@ -61,6 +61,10 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 				t.Fatal("bare explicit Issue ID bypassed the native prefix rule")
 			}
 			refuse("not_found", "show", "other-parent")
+			forced := graphMixedResult[graphstore.IssueRecord](t, call("create", "Forced prefix", "--id", "other-parent", "--force"))
+			if forced.ID != scope+"beads/other-parent" || forced.Properties.ID != "other-parent" {
+				t.Fatalf("forced bare Issue ID diverged from shipping identity: %+v", forced)
+			}
 			if memory.Properties.Title != "Code flow policy" || memory.Properties.Body != body {
 				t.Fatal("default title changed body or failed to summarize")
 			}
