@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -16,7 +17,7 @@ import (
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
-var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "design", "acceptance", "priority", "assignee", "notes", "clear-notes", "append-notes", "estimate", "external-ref", "spec-id", "due"}
+var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "design", "acceptance", "priority", "assignee", "notes", "clear-notes", "append-notes", "estimate", "external-ref", "spec-id", "due", "status"}
 
 func graphPreviewIssueEditFlagsChanged(cmd *cobra.Command) bool {
 	for _, name := range graphPreviewIssueEditFlags {
@@ -32,7 +33,7 @@ func graphPreviewIssueEditFlagsChanged(cmd *cobra.Command) bool {
 // broader workflow flags remain explicit refusals; legacy routing is unchanged.
 func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.UpdateIssueRequest, error) {
 	request := graphstore.UpdateIssueRequest{Path: path}
-	allowed := append([]string{"if-revision", "force", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "properties"}, graphPreviewIssueEditFlags...)
+	allowed := append([]string{"if-revision", "force", "session", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "properties"}, graphPreviewIssueEditFlags...)
 	if err := graphPreviewFlags(cmd, allowed...); err != nil {
 		return request, err
 	}
@@ -57,10 +58,32 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 		return request, graphFailure("invalid_properties", "--clear-notes=false does not request an edit", 2)
 	}
 	force, _ := cmd.Flags().GetBool("force")
-	if force && !cmd.Flags().Changed("notes") && !cmd.Flags().Changed("properties") && !cmd.Flags().Changed("assignee") {
-		return request, graphFailure("invalid_properties", "graph Issue update accepts --force only with notes replacement or an assignee edit", 2)
+	if force && !cmd.Flags().Changed("notes") && !cmd.Flags().Changed("properties") && !cmd.Flags().Changed("assignee") && !cmd.Flags().Changed("status") {
+		return request, graphFailure("invalid_properties", "graph Issue update accepts --force only with notes replacement, assignee, or status", 2)
 	}
 	request.ForceNotesOverwrite = force && cmd.Flags().Changed("notes")
+	if cmd.Flags().Changed("status") {
+		status, _ := cmd.Flags().GetString("status")
+		if status == "" || !utf8.ValidString(status) {
+			return request, graphFailure("invalid_properties", "Issue status must be a nonempty UTF-8 name", 2)
+		}
+		value := types.Status(status)
+		request.Status = &value
+		request.ForceClosePolicy = force
+		if status == string(types.StatusClosed) {
+			session, _ := cmd.Flags().GetString("session")
+			if session == "" {
+				session = os.Getenv("CLAUDE_SESSION_ID")
+			}
+			if session != "" {
+				request.ClosedBySession = &session
+			}
+		} else if cmd.Flags().Changed("session") {
+			return request, graphFailure("invalid_properties", "--session requires --status=closed", 2)
+		}
+	} else if cmd.Flags().Changed("session") {
+		return request, graphFailure("invalid_properties", "--session requires --status=closed", 2)
+	}
 	if clearNotesRequested(cmd) {
 		cleared := ""
 		request.Notes = &cleared
@@ -265,8 +288,8 @@ func graphPreviewApplyIssueProperties(cmd *cobra.Command, request *graphstore.Up
 	if request.FromRevision == "" {
 		request.ForceNotesOverwrite = force && request.Notes != nil
 		request.ForceAssigneeTransfer = force && request.Assignee != nil
-		if force && !request.ForceNotesOverwrite && !request.ForceAssigneeTransfer {
-			return graphFailure("invalid_properties", "graph Issue update accepts --force only with notes replacement or an assignee edit", 2)
+		if force && !request.ForceNotesOverwrite && !request.ForceAssigneeTransfer && !request.ForceClosePolicy {
+			return graphFailure("invalid_properties", "graph Issue update accepts --force only with notes replacement, assignee, or status", 2)
 		}
 	}
 	return nil
