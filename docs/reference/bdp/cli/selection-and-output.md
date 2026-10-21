@@ -5,9 +5,11 @@ description: "The canonical contract for generic Bead and Link selectors, field 
 
 ## Status and scope
 
-This is the October 19, 2026 design specification for the generic Beads CLI.
-It consolidates Donna's accepted output decisions and Melinda's query/list
-reconciliation. Examples show intended syntax, not currently qualified commands.
+This is the accepted design contract for generic Beads CLI output, updated
+October 20, 2026. It consolidates Donna's output decisions and Melinda's query/list
+reconciliation. The first read adapters are integrated into Preview 3; the table
+below distinguishes their available behavior from the remaining design. Examples
+elsewhere on this page describe the target contract, not universal flag availability.
 The scope is the common selector/output interface, not the complete query language.
 
 The contract applies only to generic command paths that explicitly adopt it.
@@ -22,10 +24,42 @@ consistency. Iris's interchange design defines transferable export packages.
 This document does not add a BDP capability, assign a Type identity, or imply that
 an arbitrary selected graph is a complete export.
 
-The common behavior is settled. Sections explicitly labeled **candidate detail**
-are editorial resolutions for schema/adapter review, not additional decisions
-already approved by Donna. In particular, final BDP contract identifiers and
-command payload adapters must be pinned before implementation claims conformance.
+Schema version 2, the error wrapper, completion fields, and the framing rules
+below are settled. Each command must still declare its actual BDP pin, payload
+shape, protected context and supported formats before claiming conformance.
+
+### Available Preview 3 read adapters
+
+These are available in `codex/preview3-integration`, not a declaration that the
+shipping release has changed. Select them explicitly with `--output-format` in
+graph mode. Without that opt-in, existing output behavior remains unchanged.
+
+| Generic command | Available formats | Current boundary |
+| --- | --- | --- |
+| `show`, `link show` | `default`, `detail`, `json` | Current or retained Resource; complete BDP payload, protected identity/endpoints, optional field masks and raw JSON. No traversal or JSONL adapter. |
+| `list`, `link list` | `default`, `table`, `detail`, `json`, `jsonl` | Complete bounded current selection, exact-Type/family selectors, and Link endpoint filters. No resumable provider continuation yet. |
+| `versions`, `history`, `link versions` | `default`, `table`, `detail`, `json` | Complete bounded version summaries with subject context. JSONL and retained-history paging are not admitted. |
+| `compare`, `link compare` | `default`, `detail`, `json` | Complete comparison with exact operands and coverage. Only envelope removal is supported; data masks refuse. |
+
+For these adapters, nested Resource masks are admitted under `/properties` and
+`/metadata`; other optional root members, including `/ownedLinks`, can be selected
+or omitted as whole values. Protected identity and Link endpoints remain intact.
+Selectors do not resolve Type aliases: exact and family filters require canonical
+absolute HTTP(S) Type URIs. Canonical `list --all` refuses rather than importing
+Issue-status semantics; its selection has no default Issue-status filter.
+
+Collection human/JSON output defaults to a requested page of 50, while JSONL
+defaults to unpaged delivery. The current local provider returns a complete
+selection within its acquisition bounds (1,000 Resources and 16 MiB). If that
+selection exceeds a requested page or total limit, the command refuses instead
+of emitting a subset with a false `next: null`. Use `--unpaged` for a larger
+complete selection within the provider bounds; `--continue` is unsupported.
+JSONL removes the default page boundary, not the provider's acquisition bounds.
+
+Generic mutation output, query/search, exact count, graph rendering and additional
+Type inspection remain follow-on adapters. The
+[delivery checklist](https://github.com/donnabox/beads/blob/codex/preview3-integration/engdocs/design/canonical-cli-output-rollout.md)
+records implementation PRs, evidence and completion criteria.
 
 ## Processing model
 
@@ -161,7 +195,7 @@ the selected original elements once, retaining survivor order and array shape.
 It does not preserve original cardinality or final index numbers. Never reevaluate
 a later pointer against an already compacted array.
 
-**Candidate detail — indexed inclusion:** use the same original-index rule for
+**Indexed inclusion:** use the same original-index rule for
 includes. Keep selected elements in source order and compact once; retain ancestor
 objects and arrays, including singleton arrays. Do not pad holes with invented
 nulls. Pointer metadata refers to the original payload. Includes and omissions
@@ -216,7 +250,7 @@ When explicitly projecting, include a `projection` object in the envelope/header
 Its masks describe the requested original-value paths, not shifted array indexes.
 Omit it when no explicit representation projection was requested.
 
-**Candidate schema detail:**
+**Projection metadata shape:**
 
 ```json
 {
@@ -340,7 +374,7 @@ Resource payloads and BDP operation structures retain their wire meanings.
 CLI framing sits outside them. Preserve a collection's native continuation and
 item structure rather than flattening it into an unrelated array in ordinary JSON.
 
-**Candidate result-kind registry:** `resource`, `resource_collection`,
+**Result-kind registry:** `resource`, `resource_collection`,
 `version_collection`, `history`, `comparison`, `graph`, `rows`, `aggregate`,
 `mutation`. Each admitted command binds one kind and exact payload schema in its
 descriptor. This is not a claim that all these result kinds are already implemented.
@@ -389,7 +423,7 @@ JSONL uses UTF-8 JSON values separated by newlines. Framed output has exactly on
 header, zero or more items and one terminal. Empty selections still have both
 control records. Use `record_type` to distinguish them from Resource kind.
 
-**Candidate serialization of the accepted framing:**
+**JSONL framing:**
 
 ```json
 {"record_type":"header","schema_version":2,"bdp_spec":"<immutable contract>","result_kind":"resource_collection"}
@@ -476,7 +510,9 @@ advisory chatter to machine stdout.
 
 ## Conformance cases
 
-These are required implementation checks, not tests already executed.
+These are conformance obligations across the complete rollout. The delivery
+checklist records qualified adapter coverage; this list does not claim that every
+case is implemented on every command.
 
 | ID | Obligation |
 | --- | --- |
@@ -566,9 +602,10 @@ evidence together.
 
 The [Preview 3 design](/reference/graph-cli-specification-draft) remains the
 implementation-baseline ledger. This page is the common output contract.
-The local query/list reconciliation and its acceptance cases are in
-`engdocs/design/memory-query-scope.md` in Melinda's design worktree; publication of
-that draft must provide the final durable query-spec link before this design ships.
+The portable query language, CLI conveniences and acceptance cases are published
+for review in [the query language proposal](https://github.com/donnabox/beads/pull/125).
+Its command adapters reuse this output contract; publication of this common
+contract does not depend on landing the query implementation.
 
 Implementation prerequisites are the selected BDP contract, result-specific
 adapters, applicable Type display declarations and explicit legacy-mode mapping.
