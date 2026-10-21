@@ -74,7 +74,7 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 			}
 			refuse("identity_reserved", "create", "No overwrite", "--type", "types/memory", "--id", "beads/policy")
 			refuse("capability_unavailable", "create", "Bad", "--type", "types/memory", "--priority", "2")
-			refuse("capability_unavailable", "link", memory.ID, other.ID, "--type", "unregistered-dependency")
+			refuse("invalid_properties", "link", memory.ID, other.ID, "--type", "unregistered-dependency")
 			refuse("invalid_selector", "link", memory.ID, other.ID, "--type", "https://foreign.invalid/types/example-follows")
 			refuse("capability_unavailable", "link", memory.ID, other.ID, "--type", "types/missing")
 			refuse("capability_unavailable", "create", "--type", "memory-preview", "--properties", `{"title":"One","body":"One is the loneliest number."}`)
@@ -138,7 +138,7 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 			}
 			// Removed catalog aliases refuse; current References remain selectable.
 			refuse("capability_unavailable", "link", memory.ID, other.ID, "--type", "types/preview-related")
-			refuse("capability_unavailable", "link", other.ID, memory.ID, "--type", "preview-related-memory")
+			refuse("invalid_properties", "link", other.ID, memory.ID, "--type", "preview-related-memory")
 			call("link", memory.ID, issue.ID, "--type", "types/references")
 			sameIDBead := graphMixedResult[graphstore.Record](t, call("create", "Same local ID", "--type", "types/memory", "--id", "edge"))
 			shortLink := graphMixedResult[graphstore.LinkMutationResult](t, call("link", memory.ID, other.ID, "--type", "types/references", "--id", "edge"))
