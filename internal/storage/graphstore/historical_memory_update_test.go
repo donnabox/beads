@@ -570,47 +570,52 @@ func TestHistoricalMemoryRecoveryUnsupportedBaselineBoundaries(t *testing.T) {
 func TestHistoricalMemoryAcquisitionBudget(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
-			ctx, _, s := memoryDeleteStore(t, engine)
-			ctx = currentReadBudgetContext(t, ctx)
-			original, err := s.Create(ctx, CreateRequest{Path: "beads/budget", Title: "Budget", Body: strings.Repeat("a", 6<<20)})
-			if err != nil {
-				t.Fatal(err)
-			}
-			current, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/budget", Body: historicalBody(strings.Repeat("b", 6<<20)), Unconditional: true})
-			if err != nil {
-				t.Fatal(err)
-			}
-			before := workflowState(t, ctx, s)
-			if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/budget", FromRevision: original.Revision, ExpectedRevision: current.Memory.Revision}); !errors.Is(err, ErrLimitExceeded) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
-				t.Fatalf("individually bounded current/source exceeded combined budget or wrote: %v", err)
-			}
-			// A small result must not excuse acquiring an oversized historical input.
-			if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/budget", FromRevision: original.Revision, Body: historicalBody("small"), Unconditional: true}); !errors.Is(err, ErrLimitExceeded) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
-				t.Fatalf("postwrite-only limit accepted oversized acquisition: %v", err)
-			}
-			// Free current payload bytes, then keep two individually legal retained
-			// inputs whose combined protected-baseline/source acquisition is too big.
-			if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/budget", Body: historicalBody(strings.Repeat("c", 9<<20)), Unconditional: true}); err != nil {
-				t.Fatal(err)
-			}
-			large, err := s.Show(ctx, "beads/budget")
-			if err != nil {
-				t.Fatal(err)
-			}
-			if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/budget", Body: historicalBody(strings.Repeat("d", 8<<20)), Unconditional: true}); err != nil {
-				t.Fatal(err)
-			}
-			deleted, err := s.DeleteMemory(ctx, MemoryDeleteRequest{Path: "beads/budget", Unconditional: true})
-			if err != nil {
-				t.Fatal(err)
-			}
-			before = workflowState(t, ctx, s)
-			if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/budget", FromRevision: large.Revision, ExpectedRevision: deleted.Terminal.Revision}); !errors.Is(err, ErrLimitExceeded) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
-				t.Fatalf("baseline and source exceeded combined recovery budget or wrote: %v", err)
-			}
-			if history, err := s.History(ctx, "beads/budget"); err != nil || history.CurrentState == nil || history.CurrentState.Revision != deleted.Terminal.Revision {
-				t.Fatalf("descriptor hydrated irrelevant large baseline: %v", err)
-			}
+			// Keep independent acquisition scenarios in separate fixtures: their
+			// setup and full-store rollback checks must not share one deadline.
+			t.Run("current-source", func(t *testing.T) {
+				ctx, _, s := memoryDeleteStore(t, engine)
+				ctx = currentReadBudgetContext(t, ctx)
+				original, err := s.Create(ctx, CreateRequest{Path: "beads/budget", Title: "Budget", Body: strings.Repeat("a", 6<<20)})
+				if err != nil {
+					t.Fatal(err)
+				}
+				current, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/budget", Body: historicalBody(strings.Repeat("b", 6<<20)), Unconditional: true})
+				if err != nil {
+					t.Fatal(err)
+				}
+				before := workflowState(t, ctx, s)
+				if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/budget", FromRevision: original.Revision, ExpectedRevision: current.Memory.Revision}); !errors.Is(err, ErrLimitExceeded) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+					t.Fatalf("individually bounded current/source exceeded combined budget or wrote: %v", err)
+				}
+				// A small result must not excuse acquiring an oversized historical input.
+				if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/budget", FromRevision: original.Revision, Body: historicalBody("small"), Unconditional: true}); !errors.Is(err, ErrLimitExceeded) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+					t.Fatalf("postwrite-only limit accepted oversized acquisition: %v", err)
+				}
+			})
+			t.Run("recovery-baseline-source", func(t *testing.T) {
+				// Two individually legal retained inputs exceed the combined
+				// protected-baseline/source acquisition budget.
+				ctx, _, s := memoryDeleteStore(t, engine)
+				ctx = currentReadBudgetContext(t, ctx)
+				large, err := s.Create(ctx, CreateRequest{Path: "beads/budget", Title: "Budget", Body: strings.Repeat("c", 9<<20)})
+				if err != nil {
+					t.Fatal(err)
+				}
+				if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/budget", Body: historicalBody(strings.Repeat("d", 8<<20)), Unconditional: true}); err != nil {
+					t.Fatal(err)
+				}
+				deleted, err := s.DeleteMemory(ctx, MemoryDeleteRequest{Path: "beads/budget", Unconditional: true})
+				if err != nil {
+					t.Fatal(err)
+				}
+				before := workflowState(t, ctx, s)
+				if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/budget", FromRevision: large.Revision, ExpectedRevision: deleted.Terminal.Revision}); !errors.Is(err, ErrLimitExceeded) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+					t.Fatalf("baseline and source exceeded combined recovery budget or wrote: %v", err)
+				}
+				if history, err := s.History(ctx, "beads/budget"); err != nil || history.CurrentState == nil || history.CurrentState.Revision != deleted.Terminal.Revision {
+					t.Fatalf("descriptor hydrated irrelevant large baseline: %v", err)
+				}
+			})
 		})
 	}
 }
