@@ -4,10 +4,12 @@ package main
 
 import (
 	"encoding/json"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
 
+	"github.com/steveyegge/beads/internal/configfile"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
@@ -19,6 +21,7 @@ func TestGraphPreviewSelectedTypesWorkflow(t *testing.T) {
 		t.Run(engine, func(t *testing.T) {
 			const scope = "https://example.invalid/selected-types/"
 			work, home := graphListWorkspace(t, bd, engine, scope)
+			graphAssessmentSwitch(t, work, true)
 			call := func(args ...string) string {
 				t.Helper()
 				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
@@ -117,6 +120,74 @@ func TestGraphPreviewSelectedTypesWorkflow(t *testing.T) {
 			call("epic", "status")
 			currentEpic := graphMixedResult[graphstore.IssueRecord](t, call("show", epic.ID, "--format", "graph-json"))
 			call("link", "create", epic.ID, decision.ID, "--type", "blocks", "--if-source-revision", currentEpic.Revision)
+		})
+	}
+}
+
+// The real CLI reads the existing workspace config seam on every invocation.
+func graphAssessmentSwitch(t *testing.T, work string, enabled bool) {
+	t.Helper()
+	dir := filepath.Join(work, ".beads")
+	cfg, err := configfile.LoadForDiscovery(dir)
+	if err != nil || cfg == nil {
+		t.Fatalf("load assessment fixture config: %v", err)
+	}
+	cfg.GraphAssessmentsEnabled = enabled
+	if err := cfg.Save(dir); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestGraphPreviewAssessmentAvailabilityWorkflow(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			const scope = "https://example.invalid/assessment-gate/"
+			work, home := graphListWorkspace(t, bd, engine, scope)
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+			}
+			refuse := func(args ...string) {
+				t.Helper()
+				graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", append(args, "--json")...)
+			}
+			inventory := graphMixedResult[graphTypeInventory](t, call("types"))
+			if len(inventory.BeadTypes) != 9 || len(inventory.LinkTypes) != 6 {
+				t.Fatal("default assessment inventory is not15")
+			}
+			for _, args := range [][]string{{"create", "E", "--type", "types/evaluation", "--id", "denied"}, {"create", "E", "--type", scope + "types/evaluation", "--id", "denied"}} {
+				refuse(args...)
+			}
+			subject := graphMixedResult[graphstore.Record](t, call("create", "Subject", "--id", "subject", "--type", "types/memory"))
+			constraint := graphMixedResult[graphstore.Record](t, call("create", "Rule", "--id", "rule", "--type", "types/constraint"))
+			props, err := json.Marshal(map[string]any{"title": "Evaluation", "subjects": []map[string]string{{"uri": subject.ID, "revision": subject.Revision}}})
+			if err != nil {
+				t.Fatal(err)
+			}
+			graphAssessmentSwitch(t, work, true)
+			all := graphMixedResult[graphTypeInventory](t, call("types", "--details"))
+			if len(all.BeadTypes)+len(all.LinkTypes) != 20 {
+				t.Fatal("enabled CLI inventory lost definitions")
+			}
+			eval := graphMixedResult[graphstore.Record](t, call("create", "--type", "types/evaluation", "--id", "eval", "--properties", string(props)))
+			claim := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", eval.ID, constraint.ID, "--type", "types/satisfies", "--id", "claim", "--if-source-revision", eval.Revision))
+			graphAssessmentSwitch(t, work, false)
+			before, history, link := call("show", eval.ID), call("versions", eval.ID), call("link", "show", claim.Link.ID)
+			refuse("update", eval.ID, "--properties", `{"body":"refused"}`)
+			refuse("update", eval.ID, "--from-revision", eval.Revision)
+			refuse("link", "update", claim.Link.ID, "--properties", `{"evidence":"refused"}`)
+			refuse("update", subject.ID, "--type", "types/evaluation", "--properties", string(props))
+			if call("show", eval.ID) != before || call("versions", eval.ID) != history || call("link", "show", claim.Link.ID) != link {
+				t.Fatal("CLI refusal changed current/history/owned claim")
+			}
+			removed := graphMixedResult[graphstore.LinkDeleteResult](t, call("link", "delete", claim.Link.ID, "--force"))
+			if !removed.Changed || removed.Link.State != "deleted" {
+				t.Fatal("disabled assessment cleanup did not remove the claim")
+			}
+			call("update", eval.ID, "--type", "types/memory")
+			refuse("update", eval.ID, "--type", "types/evaluation")
+			call("delete", eval.ID, "--force")
 		})
 	}
 }

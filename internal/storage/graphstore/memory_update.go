@@ -188,6 +188,20 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 		if err := checkRevisionGuard(request.expectedRevision, request.unconditional, revision, true, "Memory"); err != nil {
 			return err
 		}
+		admittedType := memory.Type
+		if request.typeURL != "" {
+			admittedType = request.typeURL
+		}
+		if err := s.requireAssessmentAuthoring(admittedType); err != nil {
+			return err
+		}
+		// Live historical restore and deleted recovery are both authoring.
+		// Neither can masquerade as the permitted ordinary retype-out.
+		if request.fromRevision != "" {
+			if err := s.requireAssessmentAuthoring(memory.Type); err != nil {
+				return err
+			}
+		}
 		base := memory
 		if request.fromRevision != "" {
 			if request.typeURL != "" && request.typeURL != memory.Type {

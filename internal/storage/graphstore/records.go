@@ -47,6 +47,9 @@ func (s *Store) Create(ctx context.Context, req CreateRequest) (Record, error) {
 	if req.TypeURL != "" {
 		r.Type = req.TypeURL
 	}
+	if err := s.requireAssessmentAuthoring(r.Type); err != nil {
+		return Record{}, err
+	}
 	if len(req.PropertiesJSON) != 0 {
 		if req.Title != "" || req.Body != "" {
 			return Record{}, fmt.Errorf("%w: use either complete properties or title/body fields", graph.ErrValidation)
@@ -90,6 +93,9 @@ func (s *Store) Create(ctx context.Context, req CreateRequest) (Record, error) {
 }
 
 func (s *Store) createInTx(ctx context.Context, tx *sql.Tx, req CreateRequest, r Record, properties, snapshot []byte) error {
+	if err := s.requireAssessmentAuthoring(r.Type); err != nil {
+		return err
+	}
 	if err := s.touchCoordination(ctx, tx); err != nil {
 		return err
 	}

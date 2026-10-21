@@ -36,7 +36,7 @@ func runGraphPreviewTypes(cmd *cobra.Command, args []string) error {
 				return nil, "", err
 			}
 		}
-		return graphPreviewTypesInventory(store.ScopeURL(), descriptors, customTypes, details)
+		return graphPreviewTypesInventory(store.ScopeURL(), descriptors, customTypes, details, store.AssessmentsEnabled())
 	})
 }
 

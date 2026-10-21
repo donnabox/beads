@@ -3,6 +3,7 @@ load("@rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "graphstore",
     srcs = [
+        "assessment_availability.go",
         "backend.go",
         "bead_list.go",
         "collection_read.go",
@@ -97,6 +98,7 @@ go_test(
     # bound cumulative embedded initialization without extending that alarm.
     timeout = "eternal",
     srcs = [
+        "assessment_availability_test.go",
         "backend_transaction_policy_test.go",
         "bead_list_store_test.go",
         "bead_list_test.go",

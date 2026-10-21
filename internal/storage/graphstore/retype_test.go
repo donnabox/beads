@@ -17,7 +17,7 @@ import (
 func TestSelectedMemoryTypeRetypePreservesPropertiesAndHistory(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
-			ctx, options := issueExperimentOptions(t, backend)
+			ctx, options := assessmentExperimentOptions(t, backend)
 			s, err := OpenExisting(ctx, options)
 			if err != nil {
 				t.Fatal(err)
@@ -62,7 +62,7 @@ func TestSelectedMemoryTypeRetypePreservesPropertiesAndHistory(t *testing.T) {
 func TestSelectedMemoryRetypeRefusesInvalidIncidentLinksAtomically(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
-			ctx, options := issueExperimentOptions(t, backend)
+			ctx, options := assessmentExperimentOptions(t, backend)
 			s, err := OpenExisting(ctx, options)
 			if err != nil {
 				t.Fatal(err)
@@ -106,7 +106,7 @@ func TestSelectedMemoryRetypeRefusesInvalidIncidentLinksAtomically(t *testing.T)
 func TestRetypeValidatesCombinedPropertyEdits(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
-			ctx, options := issueExperimentOptions(t, backend)
+			ctx, options := assessmentExperimentOptions(t, backend)
 			s, err := OpenExisting(ctx, options)
 			if err != nil {
 				t.Fatal(err)
@@ -150,7 +150,7 @@ func TestRetypeValidatesCombinedPropertyEdits(t *testing.T) {
 func TestEvaluationExactSubjectsAndClaimOwnership(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
-			ctx, options := issueExperimentOptions(t, backend)
+			ctx, options := assessmentExperimentOptions(t, backend)
 			s, err := OpenExisting(ctx, options)
 			if err != nil {
 				t.Fatal(err)
@@ -221,7 +221,7 @@ func TestEvaluationExactSubjectsAndClaimOwnership(t *testing.T) {
 func TestNativeIssueSubjectToOwnershipKeepsNativePayload(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
-			ctx, options := issueExperimentOptions(t, backend)
+			ctx, options := assessmentExperimentOptions(t, backend)
 			s, err := OpenExisting(ctx, options)
 			if err != nil {
 				t.Fatal(err)
@@ -258,7 +258,7 @@ func TestNativeIssueSubjectToOwnershipKeepsNativePayload(t *testing.T) {
 func TestSelectedLinkFamilyLimitsAtCommit(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
-			ctx, options := issueExperimentOptions(t, backend)
+			ctx, options := assessmentExperimentOptions(t, backend)
 			s, err := OpenExisting(ctx, options)
 			if err != nil {
 				t.Fatal(err)
@@ -315,7 +315,7 @@ func TestSelectedLinkFamilyLimitsAtCommit(t *testing.T) {
 func TestTypeValidationDoesNotAcquireNativeIssuePayloads(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
-			ctx, options := issueExperimentOptions(t, backend)
+			ctx, options := assessmentExperimentOptions(t, backend)
 			s, err := OpenExisting(ctx, options)
 			if err != nil {
 				t.Fatal(err)
@@ -380,7 +380,7 @@ func TestTypeValidationDoesNotAcquireNativeIssuePayloads(t *testing.T) {
 func TestNativePayloadUpdateDoesNotScanUnrelatedMemoryPopulation(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
-			ctx, options := issueExperimentOptions(t, backend)
+			ctx, options := assessmentExperimentOptions(t, backend)
 			s, err := OpenExisting(ctx, options)
 			if err != nil {
 				t.Fatal(err)
@@ -426,7 +426,7 @@ func TestNativePayloadUpdateDoesNotScanUnrelatedMemoryPopulation(t *testing.T) {
 func TestEvaluationRefusesRemovedNativeSubjectRevision(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
-			ctx, options := issueExperimentOptions(t, backend)
+			ctx, options := assessmentExperimentOptions(t, backend)
 			s, err := OpenExisting(ctx, options)
 			if err != nil {
 				t.Fatal(err)
@@ -464,7 +464,7 @@ func TestEvaluationRefusesRemovedNativeSubjectRevision(t *testing.T) {
 func TestEvaluationSubjectsStayBoundAndDistinct(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
-			ctx, options := issueExperimentOptions(t, backend)
+			ctx, options := assessmentExperimentOptions(t, backend)
 			s, err := OpenExisting(ctx, options)
 			if err != nil {
 				t.Fatal(err)
@@ -570,7 +570,7 @@ func TestEvaluationSubjectsStayBoundAndDistinct(t *testing.T) {
 func TestEvaluationGroupSurvivesRetyping(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
-			ctx, options := issueExperimentOptions(t, backend)
+			ctx, options := assessmentExperimentOptions(t, backend)
 			s, err := OpenExisting(ctx, options)
 			if err != nil {
 				t.Fatal(err)
