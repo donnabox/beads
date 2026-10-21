@@ -196,26 +196,26 @@ func TestGraphPreviewUpdateStatusTwoEngines(t *testing.T) {
 				graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
 			}
 			call(args...)
-			call("create", "Work", "--id", "work")
-			call("create", "Prerequisite", "--id", "gate")
-			call("dep", "add", "work", "gate")
-			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "work", "--format", "graph-json"))
-			refuse("constraint_violation", "update", "work", "--status=closed", "--if-revision", before.Revision)
-			refuse("invalid_properties", "update", "work", "--status=bogus")
-			refuse("invalid_properties", "update", "work", "--status=open", "--session=review")
-			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "work", "--format", "graph-json")); !reflect.DeepEqual(got, before) {
+			call("create", "Work", "--id", "beads/work")
+			call("create", "Prerequisite", "--id", "beads/gate")
+			call("dep", "add", "beads/work", "beads/gate")
+			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/work", "--format", "graph-json"))
+			refuse("constraint_violation", "update", "beads/work", "--status=closed", "--if-revision", before.Revision)
+			refuse("invalid_properties", "update", "beads/work", "--status=bogus")
+			refuse("invalid_properties", "update", "beads/work", "--status=open", "--session=review")
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/work", "--format", "graph-json")); !reflect.DeepEqual(got, before) {
 				t.Fatal("refused status edits changed the Issue")
 			}
-			closed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "work", "--status=closed", "--session=review", "--force", "--if-revision", before.Revision))
+			closed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--status=closed", "--session=review", "--force", "--if-revision", before.Revision))
 			if !closed.Changed || closed.Issue.Properties.Status != "closed" || closed.Issue.Properties.ClosedAt == nil || closed.Issue.Properties.ClosedBySession != "review" {
 				t.Fatalf("forced status did not close with attribution: %+v", closed)
 			}
-			refuse("revision_conflict", "update", "work", "--status=open", "--if-revision", before.Revision)
-			reopened := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "work", "--status=open", "--if-revision", closed.Issue.Revision))
+			refuse("revision_conflict", "update", "beads/work", "--status=open", "--if-revision", before.Revision)
+			reopened := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--status=open", "--if-revision", closed.Issue.Revision))
 			if !reopened.Changed || reopened.Issue.Properties.Status != "open" || reopened.Issue.Properties.ClosedAt != nil {
 				t.Fatalf("status update did not reopen: %+v", reopened)
 			}
-			noop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "work", "--status=open", "--if-revision", reopened.Issue.Revision))
+			noop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--status=open", "--if-revision", reopened.Issue.Revision))
 			if noop.Changed || noop.Issue.Revision != reopened.Issue.Revision {
 				t.Fatalf("same-status update minted a revision: %+v", noop)
 			}
