@@ -79,6 +79,38 @@ func TestIssuePropertyEmptyMergeAndEstimateClear(t *testing.T) {
 	}
 }
 
+func TestIssueUpdateTypeInCheckedTransaction(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer s.Close()
+			original, err := s.CreateIssue(ctx, "beads/work", plainIssue("Work"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			bug := types.TypeBug
+			changed, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: original.Revision, IssueType: &bug})
+			if err != nil || !changed.Changed || changed.Issue.Properties.IssueType != bug || changed.Issue.Type != original.Type {
+				t.Fatalf("type edit: %+v %v", changed, err)
+			}
+			assertIssueEditVersion(t, ctx, s, "beads/work", original)
+			repeated, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: changed.Issue.Revision, IssueType: &bug})
+			if err != nil || repeated.Changed || repeated.Issue.Revision != changed.Issue.Revision {
+				t.Fatalf("type no-op: %+v %v", repeated, err)
+			}
+			invalid := types.IssueType("not-configured")
+			if _, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: changed.Issue.Revision, IssueType: &invalid}); !errors.Is(err, storage.ErrValidation) {
+				t.Fatalf("unknown type should refuse: %v", err)
+			}
+			assertIssueEditCounts(t, ctx, s, original.Properties.ID, 2)
+		})
+	}
+}
+
 func TestIssueUpdateStatusInCheckedTransaction(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
