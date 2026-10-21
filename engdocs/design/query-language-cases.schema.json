@@ -1,0 +1,410 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://query.example.invalid/schema/query-design-cases-0",
+  "title": "Authored query design case notation (not public request/result schemas)",
+  "type": "object",
+  "required": [
+    "format",
+    "status",
+    "comparison_conventions",
+    "fixture",
+    "cases"
+  ],
+  "properties": {
+    "format": {
+      "const": "query-design-cases/0"
+    },
+    "status": {
+      "const": "authored-not-executed"
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/case"
+      }
+    },
+    "suspended_case_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "request": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "operation"
+          ],
+          "properties": {
+            "claim_family": {},
+            "evaluation": {},
+            "operation": {
+              "const": "assessment-report"
+            },
+            "representation_omit": {}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation"
+          ],
+          "properties": {
+            "delivery_page_size": {},
+            "operation": {
+              "const": "count"
+            },
+            "population": {},
+            "predicate": {},
+            "read_fault": {},
+            "type_family": {}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation"
+          ],
+          "properties": {
+            "input_editions": {},
+            "operation": {
+              "const": "distinct"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation"
+          ],
+          "properties": {
+            "authorization": {},
+            "candidate": {},
+            "expression": {},
+            "operation": {
+              "const": "evaluate"
+            },
+            "read_capabilities": {},
+            "read_context": {}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation"
+          ],
+          "properties": {
+            "authorization": {},
+            "fixture_overlay": {},
+            "link_type_family": {},
+            "neighbor_predicate": {},
+            "operation": {
+              "const": "exists"
+            },
+            "provider_enumeration_order": {},
+            "seed": {}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation"
+          ],
+          "properties": {
+            "direction": {},
+            "link_editions": {},
+            "link_type_family": {},
+            "operation": {
+              "const": "expand"
+            },
+            "return": {},
+            "seed": {},
+            "seeds": {}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation"
+          ],
+          "properties": {
+            "count_unit": {},
+            "count_units": {},
+            "direction": {},
+            "link_type_family": {},
+            "operation": {
+              "const": "expand-count"
+            },
+            "read_context": {},
+            "seed": {},
+            "seeds": {}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation"
+          ],
+          "properties": {
+            "field": {},
+            "input_editions": {},
+            "operation": {
+              "const": "group-count"
+            },
+            "physical_key_presence": {},
+            "population": {}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation"
+          ],
+          "properties": {
+            "authorization": {},
+            "exact_editions": {},
+            "operation": {
+              "const": "lookup"
+            },
+            "read_context": {}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation"
+          ],
+          "properties": {
+            "authorization": {},
+            "fixture_overlay": {},
+            "link_editions": {},
+            "link_type_family": {},
+            "neighbor_predicate": {},
+            "operation": {
+              "const": "not-exists"
+            },
+            "provider_enumeration_order": {},
+            "read_context": {},
+            "seed": {}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation"
+          ],
+          "properties": {
+            "input_editions": {},
+            "operation": {
+              "const": "order"
+            },
+            "order": {}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation"
+          ],
+          "properties": {
+            "operation": {
+              "const": "paged-select"
+            },
+            "page_size": {},
+            "population": {},
+            "predicate": {},
+            "stable_read_context": {}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation"
+          ],
+          "properties": {
+            "cursor_from": {},
+            "operation": {
+              "const": "resume"
+            },
+            "predicate": {},
+            "read_context_available": {},
+            "representation_include": {},
+            "same_semantic_request": {}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation"
+          ],
+          "properties": {
+            "catalog_override": {},
+            "exact_editions": {},
+            "operation": {
+              "const": "select"
+            },
+            "population": {},
+            "predicate": {},
+            "read_capabilities": {},
+            "read_fault": {},
+            "representation_include": {},
+            "seeds": {}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation"
+          ],
+          "properties": {
+            "field": {},
+            "input_editions": {},
+            "operation": {
+              "const": "unnest-distinct"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "operation"
+          ],
+          "properties": {
+            "direction": {},
+            "endpoint_filter": {},
+            "endpoint_type_family": {},
+            "every_hop_neighbor_type_family": {},
+            "examined_link_budget": {},
+            "link_type_family": {},
+            "max_hops": {},
+            "min_hops": {},
+            "operation": {
+              "const": "walk"
+            },
+            "read_context": {},
+            "return": {},
+            "seed": {},
+            "unavailable_editions": {}
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "expected": {
+      "type": "object",
+      "minProperties": 1,
+      "properties": {
+        "error_class": {
+          "enum": [
+            "ambiguous-type",
+            "argument-type",
+            "binding-shadow",
+            "continuation-request-mismatch",
+            "continuation-unavailable",
+            "incomplete-read",
+            "non-null-coalescing",
+            "numeric-precision",
+            "required-access",
+            "required-result-context",
+            "resource-unavailable",
+            "unavailable-history",
+            "unsupported-consistency",
+            "unsupported-expression",
+            "work-budget"
+          ]
+        },
+        "successful_result": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "case": {
+      "type": "object",
+      "required": [
+        "id",
+        "rule_status",
+        "request",
+        "expected"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "rule_status": {
+          "enum": [
+            "accepted-direction",
+            "candidate-detail"
+          ]
+        },
+        "request": {
+          "$ref": "#/$defs/request"
+        },
+        "expected": {
+          "$ref": "#/$defs/expected"
+        },
+        "note": {
+          "type": "string"
+        },
+        "owner": {
+          "const": "common-output-contract"
+        },
+        "addressable_result_root": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "notation_notes": {
+    "operations": "Enumerated request forms are test scenarios; keys may be descriptive parameters, not executable AST operators. Semantics come from the draft and individual notes.",
+    "expected_keys": [
+      "assertion_about_hidden",
+      "beads",
+      "binding_rows",
+      "claims",
+      "distinct_link_editions",
+      "editions",
+      "error_class",
+      "evaluation",
+      "groups",
+      "implicit_reads",
+      "independent_subject_claims",
+      "link_sequences",
+      "links",
+      "ordered_concatenation",
+      "ordered_editions",
+      "pages",
+      "rows",
+      "scope",
+      "selected_editions",
+      "selection_changed",
+      "subject_group",
+      "successful_result",
+      "value",
+      "values"
+    ],
+    "diagnostics": "Descriptive failure classes, not allocated error strings, exit numbers or BDP statuses."
+  }
+}
