@@ -64,6 +64,15 @@ func TestGraphIssueLegacyListProjection(t *testing.T) {
 			if got := children[0]; got.ID != "beads/work" || got.Parent == nil || *got.Parent != "beads/parent" || got.DependencyCount != 1 || got.CommentCount != 1 || got.CommentsOmitted == nil || !*got.CommentsOmitted {
 				t.Fatalf("children legacy row lost ordinary shape or native parent: %+v", got)
 			}
+			selector := IssueSelector{Path: "beads/parent"}
+			selected, err := store.ListIssuesSelected(ctx, publicops.ListRequest{SortBy: "id", Limit: issueListInt(0)}, selector)
+			if err != nil || selected.HasMore || len(selected.Items) != 2 || selected.Items[0].ID != store.ScopeURL()+"beads/parent.lookalike" || selected.Items[1].ID != store.ScopeURL()+"beads/work" {
+				t.Fatalf("selected graph parent page must include edge and graph dotted child: %+v %v", selected, err)
+			}
+			selectedLegacy, err := store.ListIssuesLegacySelected(ctx, publicops.ListRequest{SortBy: "id", Limit: issueListInt(0)}, selector)
+			if err != nil || selectedLegacy.HasMore || len(selectedLegacy.Items) != 2 || selectedLegacy.Items[0].ID != "beads/parent.lookalike" || selectedLegacy.Items[1].ID != "beads/work" || selectedLegacy.Items[1].Parent == nil || *selectedLegacy.Items[1].Parent != "beads/parent" {
+				t.Fatalf("selected counted parent page disagrees with checked graph result: %+v %v", selectedLegacy, err)
+			}
 			empty, err := store.ListChildrenLegacy(ctx, "beads/prereq")
 			if err != nil || empty == nil || len(empty) != 0 {
 				t.Fatalf("empty native children: %+v %v", empty, err)

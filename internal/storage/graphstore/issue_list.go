@@ -41,6 +41,19 @@ type IssueListPage struct {
 // transaction as authority checks and complete canonical record validation.
 // No legacy store, advisory wakeup, mutation or cross-request cursor is opened.
 func (s *Store) ListIssues(ctx context.Context, request publicops.ListRequest) (IssueListPage, error) {
+	return s.listIssues(ctx, request, nil)
+}
+
+// ListIssuesSelected resolves a graph parent in the same checked snapshot as
+// the native Issue query. The request must not also name a native parent.
+func (s *Store) ListIssuesSelected(ctx context.Context, request publicops.ListRequest, parent IssueSelector) (IssueListPage, error) {
+	if err := validateIssueSelector(parent); err != nil {
+		return IssueListPage{}, err
+	}
+	return s.listIssues(ctx, request, &parent)
+}
+
+func (s *Store) listIssues(ctx context.Context, request publicops.ListRequest, parent *IssueSelector) (IssueListPage, error) {
 	request, err := prepareIssueListRequest(request)
 	if err != nil {
 		return IssueListPage{}, err
@@ -48,7 +61,7 @@ func (s *Store) ListIssues(ctx context.Context, request publicops.ListRequest) (
 	var result IssueListPage
 	err = s.withTx(ctx, false, func(tx *sql.Tx) error {
 		var err error
-		result, err = s.listIssuesInTx(ctx, tx, request)
+		result, err = s.listIssuesWithParentInTx(ctx, tx, &request, parent)
 		return err
 	})
 	if err != nil {
@@ -138,6 +151,10 @@ func prepareIssueListRequest(in publicops.ListRequest) (publicops.ListRequest, e
 }
 
 func (s *Store) listIssuesInTx(ctx context.Context, tx *sql.Tx, request publicops.ListRequest) (IssueListPage, error) {
+	return s.listIssuesWithParentInTx(ctx, tx, &request, nil)
+}
+
+func (s *Store) listIssuesWithParentInTx(ctx context.Context, tx *sql.Tx, request *publicops.ListRequest, parent *IssueSelector) (IssueListPage, error) {
 	if err := checkCurrentReadBytes(ctx, tx); err != nil {
 		return IssueListPage{}, err
 	}
@@ -163,6 +180,14 @@ func (s *Store) listIssuesInTx(ctx context.Context, tx *sql.Tx, request publicop
 	if err := s.checkIssueListCatalogInTx(ctx, tx); err != nil {
 		return IssueListPage{}, err
 	}
+	var parentNativeID, parentPath string
+	if parent != nil {
+		var err error
+		parentNativeID, parentPath, err = s.resolveIssueListParentInTx(ctx, tx, *parent)
+		if err != nil {
+			return IssueListPage{}, err
+		}
+	}
 	cfg, err := issueListConfigInTx(ctx, tx)
 	if err != nil {
 		return IssueListPage{}, err
@@ -170,7 +195,7 @@ func (s *Store) listIssuesInTx(ctx context.Context, tx *sql.Tx, request publicop
 	if request.IssueType != "" && cfg.IsInfra(request.IssueType) {
 		return IssueListPage{}, fmt.Errorf("%w: graph Issue list does not admit infrastructure or wisp scope", ErrCapabilityUnavailable)
 	}
-	filter, err := workapi.BuildListFilter(request, cfg)
+	filter, err := workapi.BuildListFilter(*request, cfg)
 	if err != nil {
 		return IssueListPage{}, fmt.Errorf("%w: %v", storage.ErrValidation, err)
 	}
@@ -183,10 +208,17 @@ func (s *Store) listIssuesInTx(ctx context.Context, tx *sql.Tx, request publicop
 	// Every admitted workspace has <=1000 live Resources. Bounding an enormous
 	// requested SQL limit here cannot discard an admitted row, and prevents the
 	// shared probe-row increment from overflowing an arbitrary caller's int.
-	if filter.Limit > PreviewSnapshotLimit {
+	if parent != nil || filter.Limit > PreviewSnapshotLimit {
 		filter.Limit = PreviewSnapshotLimit
 	}
-	filter = workapi.WithFetchOneExtra(workapi.WithRowsBeforeThePage(filter, request.Offset))
+	if parent == nil {
+		filter = workapi.WithFetchOneExtra(workapi.WithRowsBeforeThePage(filter, request.Offset))
+	} else {
+		// The parent membership check uses graph-visible IDs after the
+		// bounded native scan. Apply the caller's row cap to the selected page,
+		// not the larger candidate set.
+		filter.MaxRows = 0
+	}
 	rows, err := issueops.SearchIssuesWithCountsInTx(ctx, tx, "", filter)
 	if err != nil {
 		var capError *issueops.ErrTooManyRows
@@ -196,6 +228,7 @@ func (s *Store) listIssuesInTx(ctx context.Context, tx *sql.Tx, request publicop
 		return IssueListPage{}, err
 	}
 	records := make(map[string]IssueRecord, len(rows))
+	selectedRows := make([]*types.IssueWithCounts, 0, len(rows))
 	for _, row := range rows {
 		if row == nil || row.Issue == nil {
 			return IssueListPage{}, fmt.Errorf("%w: nil Issue query row", ErrInvalidStore)
@@ -215,7 +248,11 @@ func (s *Store) listIssuesInTx(ctx context.Context, tx *sql.Tx, request publicop
 			return IssueListPage{}, err
 		}
 		records[row.ID] = record
+		if parent == nil || issueListParentMatches(row, path, parentNativeID, parentPath) {
+			selectedRows = append(selectedRows, row)
+		}
 	}
+	rows = selectedRows
 	// Validate the over-fetched probe before trimming it: HasMore must never
 	// conceal a malformed queried record. Preserve the shared query/page order.
 	sortBy, reverse := request.SortBy, request.Reverse
@@ -233,12 +270,46 @@ func (s *Store) listIssuesInTx(ctx context.Context, tx *sql.Tx, request publicop
 		})
 		sortBy, reverse = "", false
 	}
-	rows, more := workapi.FinishPageAt(rows, sortBy, reverse, request.Offset, workapi.PageLimit(request), false)
+	rows, more := workapi.FinishPageAt(rows, sortBy, reverse, request.Offset, workapi.PageLimit(*request), false)
 	result := IssueListPage{Items: make([]IssueRecord, 0, len(rows)), HasMore: more}
 	for _, row := range rows {
 		result.Items = append(result.Items, records[row.ID])
 	}
+	if parent != nil {
+		if err := issueops.EnforceMaxRowsCap(len(result.Items), request.MaxRows, request.MaxRowsSource); err != nil {
+			return IssueListPage{}, fmt.Errorf("%w: %w", ErrLimitExceeded, err)
+		}
+	}
 	return result, nil
+}
+
+func (s *Store) resolveIssueListParentInTx(ctx context.Context, tx *sql.Tx, parent IssueSelector) (string, string, error) {
+	path, issue, err := s.resolveLiveIssueSelectorInTx(ctx, tx, parent)
+	switch {
+	case err == nil:
+		if issue.Properties == nil || issue.Properties.ID == "" {
+			return "", "", fmt.Errorf("%w: incomplete parent Issue mapping", ErrInvalidStore)
+		}
+		return issue.Properties.ID, path, nil
+	case errors.Is(err, ErrNotFound):
+		// The ordinary filter also matches edge-less dotted descendants of a
+		// bare ID, even when that parent has no current Issue allocation.
+		if parent.NativeID != "" {
+			return parent.NativeID, parent.Path, nil
+		}
+		return "", parent.Path, nil
+	case errors.Is(err, errNonIssueSelector):
+		return "", parent.Path, nil
+	default:
+		return "", "", err
+	}
+}
+
+func issueListParentMatches(row *types.IssueWithCounts, path, parentNativeID, parentPath string) bool {
+	if row.Parent != nil {
+		return parentNativeID != "" && *row.Parent == parentNativeID
+	}
+	return strings.HasPrefix(path, parentPath+".")
 }
 
 type issueListConfigSource struct{ config workapi.ListConfig }
