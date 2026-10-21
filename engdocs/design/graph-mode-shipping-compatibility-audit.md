@@ -67,6 +67,10 @@ Their tests qualify their stated slices, not the whole gate:
 | [#166](https://github.com/donnabox/beads/pull/166) | `list --no-parent` selection, including exact human-row regression. | Embedded/shared-server installed workflow passed; six current-head checks passed. Stacked on #158. |
 | [#169](https://github.com/donnabox/beads/pull/169) | Checked `list --parent` storage selection for parent-child edges and edge-less dotted graph IDs, plus the counted legacy projection. | Targeted storage tests and installed CLI workflow passed embedded and real shared-server Dolt; four current-head checks passed. Stacked on #166. |
 | [#170](https://github.com/donnabox/beads/pull/170) | `list --parent`/`--filter-parent` for flat, `--tree=false`, JSON, long, and records output; explicitly refuses the unfinished default recursive tree. | Broad graph list tests, both-engine installed workflow, generated CLI docs, Markdown links, and six current-head checks passed. Stacked on #169. |
+| [#171](https://github.com/donnabox/beads/pull/171) | Checked, same-transaction graph Issue hierarchy for recursive `list --parent`, with whole-subtree cap and shipping dotted-orphan rules. | Focused storage and installed CLI workflows passed embedded and real shared-server Dolt with no skips; four current-head checks passed, review pending. Stacked on #170. Credits Peter Chanthamynavong's shipping-tree prior art in [#7081](https://github.com/gastownhall/beads/pull/7081). |
+| [#172](https://github.com/donnabox/beads/pull/172) | Default and explicit `--tree=true` human rendering of the complete graph Issue parent tree. | The prior head passed 60 focused test/subtest results on embedded and real shared-server Dolt with no skips; broad embedded list tests passed 181 results with 16 server-only skips. A later renderer fix bounds repeated diamond paths before they can expand the buffer; its focused non-CGO test and four hosted checks passed on current head `a4251effe`. Review pending. Stacked on #171. |
+| [#174](https://github.com/donnabox/beads/pull/174) | Exact native Dependency kind filtering in legacy `bd link list/count`, including custom and literal `depends-on`/`blocked-by` kinds; corrects a stale `bd links` guide example. | Focused installed workflow passed embedded and real shared-server Dolt with no skips; doc sync, generated CLI docs, diff checks, and six current-head hosted checks passed. Review pending on `a6c276bd5`. Stacked on #161. |
+| [#175](https://github.com/donnabox/beads/pull/175) | Installed regression that `ready` and atomic `ready --claim` ignore informational `types/references` Links in both directions between an Issue and Memory Bead. | New workflow passed embedded and real shared-server Dolt without skipped subtests at `c7363ec73`; hosted Bazel CI is pending. Directly targets Preview 3 integration. |
 
 The shared base [#141](https://github.com/donnabox/beads/pull/141) merged into
 `codex/preview3-integration` at `b6d0493ba` on October 21. Its head
@@ -80,10 +84,12 @@ marked #167 merged. All 57 local verifier tests pass on the combined head.
 Current-head full real-engine C0 qualification and both race tiers passed:
 119 hosted checks succeeded, with ten intentional skips. Further first-gate gaps include atomic `create --deps`,
 update label/status and multi-ID forms, multi-ID and cascading deletion,
-shipping list filters and tree/pretty output (including the default recursive
-`list --parent` view), and partial-ID behavior in the
-positional Link form. Those remain inventory items until an implementation and
-both-engine evidence close them. The next gate is `dep`, `ready`, and logical
+shipping list filters and other tree/pretty output, and partial-ID behavior in
+the positional Link form. Those remain inventory items until an implementation
+and both-engine evidence close them. The default recursive `list --parent`
+view is implemented in unmerged #171/#172 with current-head hosted checks
+passing. The next
+gate is `dep`, `ready`, and logical
 aliases; the remaining command inventory follows that. Generic query design
 waits for Melinda, and pagination implementation is deferred for Preview 3.
 
@@ -109,6 +115,14 @@ sort/cap workflows plus the counted legacy projection passed both engines with
 no skips. This is selected integration evidence, not a full first-gate or
 whole-repository test run; the checkout was neither pushed nor merged.
 
+The checkout advanced locally to `bb4917613` by cherry-picking #171/#172 on
+top of those parity slices. Their commits applied without conflicts. Focused
+installed parent-tree, sort/cap and graph-store hierarchy tests passed with a
+disposable real shared-server Dolt: 17 test/subtest results, no failures or
+skips. The server and temporary database were removed afterward. This selected
+combined run still does not qualify the full first gate; no integration PR was
+pushed or merged.
+
 The Preview graph CLI specification has an older pinned-commit implementation
 ledger and a larger target inventory. Its target rows are not evidence that
 the current binary already supports an option. Continue this audit against
@@ -129,17 +143,20 @@ distinguished from disposable-workspace execution below.
 | P1 | `show ID` human output | Baseline graph smoke began with a raw JSON object; shipping renders an Issue detail document. Current-Issue `show --json` retains its legacy array shape. | #151 restores familiar human details, multi-ID, current, refs, children and watch, with both-engine installed tests. Other Issue show forms remain to audit. |
 | P1 | `ready --parent ID` | Shipping admits parent-scoped readiness; baseline graph smoke refused `--parent` as `capability_unavailable`. | #160 restores read-only parent selection with both-engine tests. Atomic `--claim --parent` remains a separate gap. |
 | P1 | `dep list` | Shipping lists all dependency kinds and has distinct single-anchor and batch `--json` shapes. Baseline graph `dep list` was blocks-only and refused JSON. | #165 restores all native kinds in human output. The facade's single-anchor and batch JSON shapes remain refused; do not invent them. |
+| P1 | Positional `bd link BLOCKED BLOCKER` partial IDs | Shipping resolves exact IDs, configured-prefix spellings, then a unique leading hash abbreviation. Graph mode currently maps each bare operand to a literal `beads/` path; #161 preserves native kinds but does not resolve partial IDs. | Resolve both selectors inside the Link write transaction before mutation, preserving explicit graph paths, exact-match precedence, ambiguity refusal, and source revision guards. A prior CLI read followed by a path write would introduce a race. |
 | P1/P2 | `create --deps` and `create --file` relationships | Shipping can create dependencies with the Issue; graph refuses the combined form. Separate `create` and `dep add` are available but do not preserve one-operation failure behavior. | Design an atomic Issue-plus-Link creation route and test rollback; keep this separate from quick flag-admission repairs. |
 | P2 | `q --parent`, `create --body-file`; `update` text/label/status flags | Baseline graph smoke refused shipping forms including `q --parent`, `create --body-file`, `update --description=-`, `--add-label`, `--if-status`, and `--status`. | #152 restores description file/stdin on create/update; #164 covers forced assignee replacement. `q --parent`, label/status forms and other text fields remain. |
-| P2 | `list`, `children`, `graph` presentation | Baseline graph refused shipping `list --parent/--no-parent/--ready/--pretty/--tree`, `children --pretty`, and several filters. `graph ISSUE` has a simpler blocking view and refuses shipping render switches; the latter is documented as an intentional graph change. | #156 restores format/tree aliases, #158 sort/long, #166 no-parent, and #169/#170 flat/JSON parent selection. The default recursive parent tree, other list filters and tree/pretty output remain. Shipping's default tree walks descendants and renders their hierarchy; #169 returns flat parent-filtered rows, so the tree needs a checked hierarchy result before CLI rendering. Upstream contributor [#7081](https://github.com/gastownhall/beads/pull/7081) improves that shipping walk and carries cycle and row-cap tests to preserve when implementing the graph route. |
+| P2 | `list`, `children`, `graph` presentation | Baseline graph refused shipping `list --parent/--no-parent/--ready/--pretty/--tree`, `children --pretty`, and several filters. `graph ISSUE` has a simpler blocking view and refuses shipping render switches; the latter is documented as an intentional graph change. | #156 restores format/tree aliases, #158 sort/long, #166 no-parent, #169/#170 flat/JSON parent selection, and unmerged #171/#172 the default recursive parent tree. Parent-tree `--quiet`, `--deps`, and `--watch`, other list filters, and tree/pretty output remain. The graph tree follows the subtree cap, cycle and dotted-orphan behavior established by upstream contributor [#7081](https://github.com/gastownhall/beads/pull/7081), which remains open for the shipping route. |
 | P2 | `dep add --file`, `dep tree`, `dep cycles` | Graph refuses shipping bulk import and options such as tree status/Mermaid output and cycle inclusion of tracks. Source and installed smoke confirm representative refusals. | Preserve one ordinary facade at a time; test nonblocking relationships where supported. |
 | P2 | `delete --cascade --dry-run` | Shipping previews a cascade; graph explicitly refuses it. A disposable shipping workspace reported two Issues and one dependency for a representative cascade. | #163 restores single-ID `--dry-run`; cascading and multi-ID preview still need a policy and shape before implementation. |
 
 `bd link SOURCE TARGET` and `bd dep rm` retain shipping shorthand. Neither the
 shipping tag nor the tested Preview 3 binary registers a top-level `bd links`
 command; the graph code contains an unregistered candidate, which is not CLI
-surface. `todo` add/list/done, state read, merge-slot verbs and legacy import
-are admitted. Shipping `set-state` and `export` are refused in graph mode.
+surface. #174 corrects a stale `bd links` guide example to the registered
+`bd link list --incident-to` form. `todo` add/list/done, state read,
+merge-slot verbs and legacy import are admitted. Shipping `set-state` and
+`export` are refused in graph mode.
 These are inventory findings, not release qualification for those routes.
 
 ## Next comparison batches
@@ -151,7 +168,7 @@ These are inventory findings, not release qualification for those routes.
 2. Single-Issue writes: `create`, `q`, `update`, `close`, `reopen`, `defer`,
    `undefer`, `delete`, `assign`, `priority`, `note`, with omitted and explicit
    flags, guard behavior and failure atomicity.
-3. Existing Dependency and workflow facades: `dep`, `links`, `ready`,
+3. Existing Dependency and workflow facades: `dep`, `ready`,
    `blocked`, `todo`, `state`, `merge-slot`, and import/export where admitted.
    Keep Link canonical behavior and ordinary Issue JSON compatibility distinct.
 
