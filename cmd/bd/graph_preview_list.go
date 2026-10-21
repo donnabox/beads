@@ -17,6 +17,7 @@ import (
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/utils"
 	"github.com/steveyegge/beads/internal/validation"
 )
@@ -116,6 +117,19 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 			return nil, output, err
 		}, func(_ any, output string) error { _, err := fmt.Fprint(cmd.OutOrStdout(), output); return err })
 	}
+	if parent != nil && in.prettyFormat && !structured && !legacyJSON && !in.longFormat && !quietFlag {
+		return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
+			tree, err := s.ListIssueTreeSelected(ctx, in.ListRequest, *parent)
+			if errors.Is(err, storage.ErrValidation) {
+				return nil, "", fmt.Errorf("%w: %w", errGraphListSelector, err)
+			}
+			if err != nil {
+				return nil, "", err
+			}
+			output, err := renderGraphIssueTree(tree, plan.notice, in.SortBy, in.Reverse)
+			return nil, output, err
+		}, func(_ any, output string) error { _, err := fmt.Fprint(cmd.OutOrStdout(), output); return err })
+	}
 	if in.longFormat && !structured && !quietFlag {
 		return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 			var page graphstore.LegacyIssueListPage
@@ -173,7 +187,10 @@ func graphIssueListInput(cmd *cobra.Command, argv []string) (listInput, bool, er
 	}
 	flat, _ := cmd.Flags().GetBool("flat")
 	tree, _ := cmd.Flags().GetBool("tree")
-	if (cmd.Flags().Changed("format") && !structured && !legacyFormatJSON) || (cmd.Flags().Changed("flat") && !flat) || (cmd.Flags().Changed("tree") && tree) {
+	parentValue, _ := cmd.Flags().GetString("parent")
+	filterParentValue, _ := cmd.Flags().GetString("filter-parent")
+	parentTree := parentValue != "" || filterParentValue != ""
+	if (cmd.Flags().Changed("format") && !structured && !legacyFormatJSON) || (cmd.Flags().Changed("flat") && !flat) || (cmd.Flags().Changed("tree") && tree && !parentTree) {
 		return fail("capability_unavailable", "graph list supports flat output, Issue-only --json/--format json, or --format records-json; tree output is unavailable", 5)
 	}
 	if err := graphIssueListRepeatedFilters(cmd, argv); err != nil {
@@ -231,8 +248,8 @@ func graphIssueListInput(cmd *cobra.Command, argv []string) (listInput, bool, er
 	if (cmd.Flags().Changed("parent") || cmd.Flags().Changed("filter-parent")) && in.ParentID == "" {
 		return fail("invalid_selector", "--parent requires an Issue ID", 2)
 	}
-	if in.ParentID != "" && !structured && !in.jsonOutput && !jsonFlag && !legacyFormatJSON && !flat && !(cmd.Flags().Changed("tree") && !tree) {
-		return fail("capability_unavailable", "graph list --parent currently requires --flat or JSON; the shipping default tree walk is not yet available", 5)
+	if in.ParentID != "" && quietFlag && !structured && !in.jsonOutput && !jsonFlag && !legacyFormatJSON && !flat && !(cmd.Flags().Changed("tree") && !tree) {
+		return fail("capability_unavailable", "graph list --parent --quiet currently requires --flat or JSON", 5)
 	}
 	// pflag returns a non-nil empty slice for an omitted StringSlice flag.
 	// Admission already refused explicit --exclude-type, including an empty one.
@@ -430,4 +447,79 @@ func renderGraphIssueLongList(page graphstore.LegacyIssueListPage, notice string
 		return "", fmt.Errorf("%w: Issue list output exceeds %d bytes; narrow the query", graphstore.ErrLimitExceeded, graphIssueListOutputLimit)
 	}
 	return human.String(), nil
+}
+
+func renderGraphIssueTree(tree graphstore.IssueTreeSelected, notice, sortBy string, reverse bool) (string, error) {
+	if tree.Root == nil {
+		return "", fmt.Errorf("%w: Issue tree has no root", graphstore.ErrInvalidStore)
+	}
+	var output strings.Builder
+	if notice != "" {
+		output.WriteString(notice + "\n")
+	}
+	if len(tree.Items) == 0 {
+		fmt.Fprintf(&output, "Issue '%s' has no children\n", tree.Root.ID)
+		return output.String(), nil
+	}
+	byID := map[string]*types.Issue{tree.Root.ID: tree.Root}
+	for _, item := range tree.Items {
+		if item == nil || item.ID == "" || byID[item.ID] != nil {
+			return "", fmt.Errorf("%w: invalid Issue tree row", graphstore.ErrInvalidStore)
+		}
+		byID[item.ID] = item
+	}
+	compare := compareIssuesForTree(sortBy, reverse)
+	var walk func(string, string, map[string]bool) error
+	walk = func(parentID, prefix string, onPath map[string]bool) error {
+		childIDs := tree.Children[parentID]
+		children := make([]*types.Issue, 0, len(childIDs))
+		for _, childID := range childIDs {
+			child := byID[childID]
+			if child == nil {
+				return fmt.Errorf("%w: Issue tree references an absent child", graphstore.ErrInvalidStore)
+			}
+			children = append(children, child)
+		}
+		slices.SortFunc(children, compare)
+		for i, child := range children {
+			last := i == len(children)-1
+			connector, extension := "├── ", "│   "
+			if last {
+				connector, extension = "└── ", "    "
+			}
+			fmt.Fprintf(&output, "%s%s%s", prefix, connector, formatPrettyIssueGated(child, nil))
+			if onPath[child.ID] {
+				output.WriteString(" " + treeCycleMarker + "\n")
+				continue
+			}
+			output.WriteByte('\n')
+			onPath[child.ID] = true
+			if err := walk(child.ID, prefix+extension, onPath); err != nil {
+				return err
+			}
+			delete(onPath, child.ID)
+		}
+		return nil
+	}
+	fmt.Fprintln(&output, formatPrettyIssueGated(tree.Root, nil))
+	if err := walk(tree.Root.ID, "", map[string]bool{tree.Root.ID: true}); err != nil {
+		return "", err
+	}
+	open, inProgress := 0, 0
+	for _, item := range append([]*types.Issue{tree.Root}, tree.Items...) {
+		switch item.Status {
+		case types.StatusOpen:
+			open++
+		case types.StatusInProgress:
+			inProgress++
+		}
+	}
+	output.WriteString("\n" + strings.Repeat("-", 80) + "\n")
+	output.WriteString(listFooterLine(len(tree.Items)+1, open, inProgress, false, false, "") + "\n\n")
+	output.WriteString("Status: ○ open  ◐ in_progress  ● blocked  ✓ closed  ❄ deferred\n")
+	output.WriteString("Priority: P0–P4 (label only; not a status icon)\n")
+	if output.Len() > graphIssueListOutputLimit {
+		return "", fmt.Errorf("%w: Issue tree output exceeds %d bytes; narrow the query", graphstore.ErrLimitExceeded, graphIssueListOutputLimit)
+	}
+	return output.String(), nil
 }
