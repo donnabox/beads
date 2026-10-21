@@ -682,7 +682,7 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 	if canonicalOutputSelected(cmd) {
 		return runCanonicalShow(cmd, args, false)
 	}
-	if err := graphPreviewFlags(cmd, "id", "current", "version", "format", "include-dependents", "include-comments", "brief-deps", "short", "long", "local-time", "comments-tail"); err != nil {
+	if err := graphPreviewFlags(cmd, "id", "current", "refs", "children", "version", "format", "include-dependents", "include-comments", "brief-deps", "short", "long", "local-time", "comments-tail"); err != nil {
 		return err
 	}
 	idFlags, _ := cmd.Flags().GetStringArray("id")
@@ -717,6 +717,11 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 	}
 	if format != "" && (cmd.Flags().Changed("short") || cmd.Flags().Changed("long") || cmd.Flags().Changed("local-time") || cmd.Flags().Changed("comments-tail")) {
 		return graphFailure("capability_unavailable", "Issue display flags require the familiar Issue output format", 5)
+	}
+	showRefs, _ := cmd.Flags().GetBool("refs")
+	showChildren, _ := cmd.Flags().GetBool("children")
+	if showRefs || showChildren {
+		return runGraphPreviewShowRelated(cmd, args, showRefs, shortMode, format)
 	}
 	if len(args) > 1 {
 		return runGraphPreviewShowMany(cmd, args, shortMode, longMode, localTime, commentsTail, format)

@@ -131,6 +131,9 @@ fields refuse. Fresh workspaces create types/issue Issues.`},
 Issue; use bd show links/ID for a Link. Multiple positional/--id operands
 show current Issues in the supplied order, with ordinary Issue JSON or human
 details. Memory, Link, exact-version and graph-json reads remain single-ID.
+--refs shows incoming Issue references, grouped by relationship; --children
+shows only parent-child references. Both accept current Issue IDs and retain
+the familiar human view or Issue-ID-keyed JSON object.
 --current selects the actor's first in-progress Issue, then hooked Issue, then
 the last-touched Issue; it cannot combine with an explicit ID.
 ID@TOKEN or '[URL]@TOKEN' selects

@@ -39,6 +39,39 @@ func TestGraphPreviewShowLegacyIssueJSON(t *testing.T) {
 				}
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", "beads/work", "beads/needs", "--json")
+			refsJSON := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/needs", "--refs", "--json")
+			var refs map[string]json.RawMessage
+			if err := json.Unmarshal([]byte(refsJSON), &refs); err != nil {
+				t.Fatalf("--refs lost the shipping reverse-reference JSON shape: %v\n%s", err, refsJSON)
+			}
+			var referencedBy []*types.IssueWithDependencyMetadata
+			if err := json.Unmarshal(refs["beads/needs"], &referencedBy); err != nil || len(referencedBy) != 1 || referencedBy[0].ID != "beads/work" {
+				t.Fatalf("--refs lost its Issue rows: %v\n%s", err, refsJSON)
+			}
+			refsHuman := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/needs", "--refs")
+			if !strings.Contains(refsHuman, "References to beads/needs") || !strings.Contains(refsHuman, "Visible issue") {
+				t.Fatalf("--refs lost the shipping human view: %s", refsHuman)
+			}
+			noRefs := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/work", "--refs", "--json")
+			if !strings.Contains(noRefs, `"beads/work": []`) {
+				t.Fatalf("--refs omitted an Issue with no incoming references: %s", noRefs)
+			}
+			parent := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "Parent", "--id", "beads/parent", "--type", "epic", "--json"))
+			child := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "Child", "--parent", "beads/parent", "--json"))
+			childrenJSON := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/parent", "--children", "--json")
+			var children map[string]json.RawMessage
+			if err := json.Unmarshal([]byte(childrenJSON), &children); err != nil {
+				t.Fatalf("--children lost the shipping child JSON shape: %v\n%s", err, childrenJSON)
+			}
+			var childRows []*types.IssueWithDependencyMetadata
+			if err := json.Unmarshal(children["beads/parent"], &childRows); err != nil || len(childRows) != 1 || childRows[0].ID != "beads/"+child.Properties.ID || childRows[0].DependencyType != types.DepParentChild {
+				t.Fatalf("--children lost its Issue rows: %v\nparent=%+v child=%+v\n%s", err, parent, child, childrenJSON)
+			}
+			childrenHuman := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/parent", "--children", "--short")
+			if !strings.Contains(childrenHuman, "Children of beads/parent") || !strings.Contains(childrenHuman, "Child") {
+				t.Fatalf("--children lost the shipping human view: %s", childrenHuman)
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "show", "beads/parent", "--children", "--format", "graph-json", "--json")
 			current := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/work", "--format", "graph-json", "--json"))
 			human := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/work")
 			for _, want := range []string{"Visible issue", "DESCRIPTION", "Body", "LABELS:", "one, two", "DEPENDS ON", "Prerequisite"} {
@@ -145,6 +178,7 @@ func TestGraphPreviewShowLegacyIssueJSON(t *testing.T) {
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "", "remember", "Memory body", "--id", "beads/memory", "--title", "Memo", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "show", "beads/work", "beads/memory", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "show", "beads/memory", "--refs", "--json")
 			var memory struct{ Result graphstore.Record }
 			memoryJSON := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/memory", "--json")
 			if err := json.Unmarshal([]byte(memoryJSON), &memory); err != nil || memory.Result.ID != "https://example.invalid/show/beads/memory" {
