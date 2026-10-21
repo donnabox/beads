@@ -34,9 +34,9 @@ func TestGraphPreviewReadyClaimWorkflow(t *testing.T) {
 				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 			}
 			call(initArgs...)
-			call("create", "Release task", "--id", "release", "--priority", "1", "--labels", "release", "--metadata", `{"team":"delivery"}`)
-			call("create", "Docs task", "--id", "docs", "--priority", "2", "--labels", "docs")
-			call("create", "Blocked task", "--id", "blocked", "--priority", "0", "--labels", "release")
+			call("create", "Release task", "--id", "beads/release", "--priority", "1", "--labels", "release", "--metadata", `{"team":"delivery"}`)
+			call("create", "Docs task", "--id", "beads/docs", "--priority", "2", "--labels", "docs")
+			call("create", "Blocked task", "--id", "beads/blocked", "--priority", "0", "--labels", "release")
 			call("dep", "add", "blocked", "docs")
 			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "release"))
 			if got := graphMixedResult[[]graphstore.IssueRecord](t, call("ready", "--label", "release")); len(got) != 1 || got[0].ID != before.ID {
@@ -99,7 +99,7 @@ func TestGraphPreviewReadyClaimWorkflow(t *testing.T) {
 			if _, _, again, _ := graphVersionsListed(t, call("versions", "release")); !reflect.DeepEqual(again, versions) {
 				t.Fatal("empty claims added retained versions")
 			}
-			call("create", "Sleeping task", "--id", "sleeping", "--labels", "sleeping")
+			call("create", "Sleeping task", "--id", "beads/sleeping", "--labels", "sleeping")
 			sleeping := graphMixedResult[graphstore.IssueMutationResult](t, call("defer", "sleeping", "--until", "2000-01-01"))
 			if sleeping.Issue.Properties.Status != types.StatusDeferred {
 				t.Fatalf("setup did not defer sleeping Issue: %+v", sleeping)
@@ -115,7 +115,7 @@ func TestGraphPreviewReadyClaimWorkflow(t *testing.T) {
 				t.Fatalf("empty claim did not retain one defer-wake version: %+v", wakeVersions)
 			}
 			if engine == "server" {
-				call("create", "Race task", "--id", "race", "--labels", "race")
+				call("create", "Race task", "--id", "beads/race", "--labels", "race")
 				outcomes := graphMutationRacePair(t, bd, work, home, [2][]string{
 					{"ready", "--claim", "--label", "race", "--actor", "first", "--json"},
 					{"ready", "--claim", "--label", "race", "--actor", "second", "--json"},
