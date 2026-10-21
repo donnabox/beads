@@ -186,9 +186,6 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
-	if len(specs) != 0 && parentPath != "" {
-		return graphFailure("capability_unavailable", "graph Issue create currently cannot combine --parent and --deps atomically", 5)
-	}
 	createDependencies := make([]graphstore.IssueCreateDependency, 0, len(specs))
 	for _, spec := range specs {
 		if strings.HasPrefix(spec.TargetID, "external:") {
@@ -211,7 +208,7 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 			noInherit, _ := cmd.Flags().GetBool("no-inherit-labels")
 			created, err := store.CreateChildIssue(ctx, graphstore.IssueChildCreateRequest{
 				ParentPath: parentPath, ExpectedParentRevision: parent.Revision,
-				InheritLabels: !noInherit, Create: request,
+				InheritLabels: !noInherit, Create: request, Dependencies: createDependencies,
 			})
 			if err != nil {
 				return nil, "", err

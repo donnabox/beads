@@ -52,7 +52,23 @@ func TestGraphPreviewCreateLocalDependenciesWorkflow(t *testing.T) {
 			graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "dep-external", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "not_found", "create", "Missing", "--id", "dep-missing-source", "--deps", "dep-absent", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "dep-missing-source", "--json")
-			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "create", "Child", "--parent", "dep-prereq", "--deps", "dep-consumer", "--json")
+			parent := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "Parent", "--id", "dep-parent", "--json"))
+			child := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "Child", "--parent", "dep-parent", "--deps", "blocked-by:dep-prereq,blocks:dep-consumer", "--json"))
+			consumer = graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "show", "dep-consumer", "--format", "graph-json", "--json"))
+			if child.Properties.ID != "dep-parent.1" || len(child.Owned) != 2 || len(consumer.Owned) != 2 {
+				t.Fatalf("child and dependency Links did not commit together: parent=%+v child=%+v consumer=%+v", parent, child, consumer)
+			}
+			found := map[string]bool{}
+			for _, owned := range child.Owned {
+				var link graphstore.LinkRecord
+				if err := json.Unmarshal(owned, &link); err != nil {
+					t.Fatal(err)
+				}
+				found[link.Target+"|"+link.Properties["dep_type"].(string)] = true
+			}
+			if !found[parent.ID+"|parent-child"] || !found[prereq.ID+"|blocks"] {
+				t.Fatalf("child lacks parent and prerequisite Links: %+v", child.Owned)
+			}
 		})
 	}
 }
