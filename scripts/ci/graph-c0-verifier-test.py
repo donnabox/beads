@@ -243,6 +243,75 @@ class RequiredGroupedExecution(unittest.TestCase):
         self.assertEqual(module.partition_required_tests(names, 4), module.partition_required_tests(list(reversed(names)), 4))
 
 
+class CLIGroupedExecution(unittest.TestCase):
+    def exercise(self, mode):
+        call = next(c for c in self_calls("execute", "tests") if ast.literal_eval(c.args[3]) == "cli")
+        groups = ast.literal_eval(next(k.value for k in call.keywords if k.arg == "groups"))
+        # Match the failing hosted census size. Exercise the real call-site
+        # partition, not a separate idealized selection algorithm.
+        names = [f"TestGraphPreviewFixture{index:03d}" for index in range(257)]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "graph_fixture_test.go"
+            source.write_text("\n".join("func " + name + "(t *testing.T) {}" for name in names))
+            q = runner(directory)
+            q.counts = {}
+            opened, closed, calls = [], [], []
+
+            @contextlib.contextmanager
+            def server(label):
+                opened.append(label)
+                try:
+                    yield
+                finally:
+                    closed.append(label)
+
+            def run(args, label, **kwargs):
+                if "-list" in args:
+                    return ("\n".join(names) + "\n").encode()
+                selected = args[args.index("-run") + 1][2:-2].split("|")
+                calls.append((selected, args, kwargs))
+                self.assertLessEqual(len(selected), 13, "CLI group recreates cumulative package-alarm exposure")
+                if mode == "missing": selected = selected[1:]
+                if mode == "duplicate": selected += selected[:1]
+                raw = go_events(selected)
+                (root / (label + ".stdout")).write_bytes(raw)
+                (root / (label + ".stderr")).write_bytes(b"")
+                if mode == "timeout": raise subprocess.TimeoutExpired(args, 960)
+                return raw
+
+            q.server = server
+            with mock.patch.object(q, "run", run):
+                if mode == "good":
+                    q.tests(ast.literal_eval(call.args[0]), ast.literal_eval(call.args[1]), [source], "cli", groups=groups)
+                else:
+                    with self.assertRaises((RuntimeError, subprocess.TimeoutExpired)):
+                        q.tests(ast.literal_eval(call.args[0]), ast.literal_eval(call.args[1]), [source], "cli", groups=groups)
+            self.assertEqual(opened, closed)
+            plan = json.loads((root / "cli-groups.json").read_text())
+            self.assertEqual(plan["complete"], mode == "good")
+            self.assertEqual(plan["sourceRoots"], names)
+            self.assertEqual(plan["compiledRoots"], names)
+            self.assertEqual(q.counts, {"cli": 257} if mode == "good" else {})
+            for _, args, kwargs in calls:
+                self.assertIn("-timeout=15m", args)
+                self.assertEqual(kwargs["timeout"], 960)
+            if mode == "good":
+                union = [name for selected, _, _ in calls for name in selected]
+                self.assertEqual(sorted(union), names)
+                self.assertEqual(len(union), len(set(union)))
+                self.assertTrue(all(group["passed"] for group in plan["groups"]))
+            else:
+                self.assertEqual(len(calls), 1)
+                self.assertFalse(any(group["passed"] for group in plan["groups"]))
+
+    def test_cli_callsite_bounds_every_group_and_keeps_complete_census(self): self.exercise("good")
+
+    def test_cli_missing_duplicate_or_timed_out_group_refused_and_closed(self):
+        for mode in ("missing", "duplicate", "timeout"):
+            with self.subTest(mode=mode): self.exercise(mode)
+
+
 class RequiredDiscovery(unittest.TestCase):
     # Exercise the actual source/compiled/execution boundary with temporary Go
     # source. Only subprocess output is supplied; no engine or Go build is needed.
