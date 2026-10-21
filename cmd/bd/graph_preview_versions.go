@@ -65,7 +65,7 @@ func graphVersionRowsJSON(rows []graphstore.VersionRow) []map[string]any {
 //   - there is no such thing: nothing is allocated at that path.
 //
 // The third shape, "something prevented a complete answer", is NOT reachable as
-// a normal answer here. Every plane in a SchemaVersion-7 workspace can order,
+// a normal answer here. Every plane in a SchemaVersion-8 workspace can order,
 // so a store that cannot answer is a corrupt store, and corruption is a refusal
 // rather than an outcome. There is deliberately no "exists but empty" success
 // case either: a subject's creation IS version 1, written in the same
@@ -97,7 +97,8 @@ func runGraphPreviewVersions(cmd *cobra.Command, args []string) error {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		kind, rows, err := store.Versions(ctx, path)
+		history, err := store.History(ctx, path)
+		kind, rows := history.Kind, history.Versions
 		switch {
 		case errors.Is(err, graphstore.ErrNotFound):
 			// graphStorageError already maps ErrNotFound to not_found, so this
@@ -117,7 +118,7 @@ func runGraphPreviewVersions(cmd *cobra.Command, args []string) error {
 		// identity and historical state survive. It is not a Resource version:
 		// exact reads refuse its token. List only citable states and keep the
 		// removal notice outside the version rows.
-		citable, removed, err := graphCitableVersionRows(kind, rows)
+		citable, terminalRows, removed, err := graphCitableVersionRows(kind, rows)
 		if err != nil {
 			return nil, "", err
 		}
@@ -126,29 +127,41 @@ func runGraphPreviewVersions(cmd *cobra.Command, args []string) error {
 			"kind":     string(kind),
 			"versions": graphVersionRowsJSON(citable),
 		}
-		return result, renderGraphVersions(args[0], kind, citable, removed), nil
+		if history.CurrentState != nil {
+			result["currentState"] = history.CurrentState
+		}
+		if (kind == graphstore.KindMemory || kind == graphstore.KindIssue) && len(terminalRows) != 0 {
+			result["terminal_versions"] = graphVersionRowsJSON(terminalRows)
+		}
+		summary := renderGraphVersions(args[0], kind, citable, removed)
+		if history.CurrentState != nil {
+			summary += fmt.Sprintf("\nCurrent state: deleted\n  deletion revision: %s\n", history.CurrentState.Revision)
+		}
+		return result, summary, nil
 	})
 }
 
 // Both output contracts expose only citable retained states. Preserve provider
 // order, and never let a private Link deletion marker become an exact address.
-func graphCitableVersionRows(kind graphstore.ResourceKind, rows []graphstore.VersionRow) ([]graphstore.VersionRow, bool, error) {
+func graphCitableVersionRows(kind graphstore.ResourceKind, rows []graphstore.VersionRow) ([]graphstore.VersionRow, []graphstore.VersionRow, bool, error) {
+	terminalRows := make([]graphstore.VersionRow, 0)
 	citable := make([]graphstore.VersionRow, 0, len(rows))
 	removed := false
 	for _, row := range rows {
 		if row.Removed {
-			if kind != graphstore.KindLink || removed {
-				return nil, false, fmt.Errorf("%w: invalid deletion marker in version history", graphstore.ErrInvalidStore)
+			if (kind != graphstore.KindLink && kind != graphstore.KindMemory && kind != graphstore.KindIssue) || (kind == graphstore.KindLink && removed) {
+				return nil, nil, false, fmt.Errorf("%w: invalid deletion marker in version history", graphstore.ErrInvalidStore)
 			}
 			removed = true
+			terminalRows = append(terminalRows, row)
 			continue
 		}
 		citable = append(citable, row)
 	}
 	if len(citable) == 0 {
-		return nil, false, fmt.Errorf("%w: allocated Resource has no citable versions", graphstore.ErrInvalidStore)
+		return nil, nil, false, fmt.Errorf("%w: allocated Resource has no citable versions", graphstore.ErrInvalidStore)
 	}
-	return citable, removed, nil
+	return citable, terminalRows, removed, nil
 }
 
 // renderGraphVersions prints the token on its own line under each row.
@@ -209,8 +222,12 @@ func renderGraphVersions(selector string, kind graphstore.ResourceKind, rows []g
 		fmt.Fprintf(&b, "  bd compare %s --from <token> --to <token>\n", selector)
 	}
 	if removed {
-		b.WriteString("\nThis Link has been removed. Its prior versions remain citable; deletion\n")
-		b.WriteString("did not create a Link version.\n")
+		if kind == graphstore.KindLink {
+			b.WriteString("\nThis Link has been removed. Its prior versions remain citable; deletion\n")
+			b.WriteString("did not create a Link version.\n")
+		} else {
+			b.WriteString("\nTerminal deletion versions are retained separately from live snapshots.\n")
+		}
 	}
 	return b.String()
 }

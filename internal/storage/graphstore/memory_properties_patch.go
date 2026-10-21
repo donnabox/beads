@@ -21,6 +21,7 @@ type MemoryPropertiesPatchRequest struct {
 	Patch            []byte
 	Actor            string
 	ExpectedRevision string
+	FromRevision     string
 	Unconditional    bool
 	Metadata         publicops.MetadataPatch
 }
@@ -33,7 +34,7 @@ func (s *Store) PatchMemoryProperties(ctx context.Context, request MemoryPropert
 	return s.writeMemory(ctx, memoryWriteRequest{
 		typeURL: request.TypeURL,
 		path:    request.Path, actor: request.Actor, expectedRevision: request.ExpectedRevision,
-		unconditional: request.Unconditional, propertiesPatch: patch, metadataPatch: request.Metadata,
+		unconditional: request.Unconditional, fromRevision: request.FromRevision, propertiesPatch: patch, metadataPatch: request.Metadata,
 	})
 }
 

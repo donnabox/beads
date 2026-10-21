@@ -18,8 +18,11 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 	if cmd.Flags().Changed("replace-properties") && (cmd.Flags().Changed("properties") || cmd.Flags().Changed("patch") || graphPreviewIssueEditFlagsChanged(cmd)) {
 		return graphFailure("invalid_properties", "--replace-properties cannot combine with --properties, --patch or Issue property flags", 2)
 	}
+	if len(args) == 0 && cmd.Flags().Changed("from-revision") {
+		return graphFailure("invalid_selector", "historical Update requires an explicit Bead ID", 2)
+	}
 	if len(args) == 0 {
-		if cmd.Flags().Changed("properties") || cmd.Flags().Changed("replace-properties") || cmd.Flags().Changed("patch") || cmd.Flags().Changed("type") {
+		if graphPreviewLinkPinFlagsChanged(cmd) || cmd.Flags().Changed("properties") || cmd.Flags().Changed("replace-properties") || cmd.Flags().Changed("patch") || cmd.Flags().Changed("type") {
 			return graphFailure("invalid_selector", "Memory and Link property updates require an explicit Resource ID", 2)
 		}
 		lastTouched := GetLastTouchedID()
@@ -39,6 +42,12 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
+	if graphPreviewLinkPinFlagsChanged(cmd) && !strings.HasPrefix(path, "links/") {
+		return graphFailure("invalid_selector", "endpoint revision flags require an informational Link", 2)
+	}
+	if cmd.Flags().Changed("from-revision") {
+		return runGraphPreviewHistoricalUpdate(cmd, path)
+	}
 	if cmd.Flags().Changed("patch") || cmd.Flags().Changed("replace-properties") {
 		if strings.HasPrefix(path, "links/") {
 			return runGraphPreviewLinkPropertiesPatch(cmd, path)
@@ -54,7 +63,7 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 	if cmd.Flags().Changed("claim") {
 		return runGraphPreviewClaimIssue(cmd, path)
 	}
-	if graphPreviewMetadataFlagsChanged(cmd) && !cmd.Flags().Changed("properties") && !graphPreviewIssueEditFlagsChanged(cmd) {
+	if graphPreviewMetadataFlagsChanged(cmd) && !graphPreviewLinkPinFlagsChanged(cmd) && !cmd.Flags().Changed("properties") && !graphPreviewIssueEditFlagsChanged(cmd) {
 		return runGraphPreviewUpdateMetadataOnly(cmd, path)
 	}
 	if strings.HasPrefix(path, "links/") {

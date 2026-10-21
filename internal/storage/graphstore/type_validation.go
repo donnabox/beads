@@ -118,11 +118,11 @@ func (s *Store) validateTypeStateInTx(ctx context.Context, tx *sql.Tx) error {
 		}
 	}
 	type link struct {
-		path, typ, source, target string
-		properties                json.RawMessage
+		path, typ, source, target, sourcePin, targetPin string
+		properties                                      json.RawMessage
 	}
 	var links []link
-	rows, err = tx.QueryContext(ctx, `SELECT l.path,c.type_url,l.source_path,l.target_path,l.properties
+	rows, err = tx.QueryContext(ctx, `SELECT l.path,c.type_url,l.source_path,l.target_path,l.source_revision,l.target_revision,l.properties
  FROM graph_preview_links l JOIN graph_preview_catalog c ON c.path=l.path
  WHERE c.resource_kind='link' AND c.allocation_state='live' AND c.backing='informational' ORDER BY l.path`)
 	if err != nil {
@@ -130,7 +130,7 @@ func (s *Store) validateTypeStateInTx(ctx context.Context, tx *sql.Tx) error {
 	}
 	for rows.Next() {
 		var value link
-		if err := rows.Scan(&value.path, &value.typ, &value.source, &value.target, &value.properties); err != nil {
+		if err := rows.Scan(&value.path, &value.typ, &value.source, &value.target, &value.sourcePin, &value.targetPin, &value.properties); err != nil {
 			_ = rows.Close()
 			return err
 		}
@@ -153,6 +153,32 @@ func (s *Store) validateTypeStateInTx(ctx context.Context, tx *sql.Tx) error {
 		if !sourceOK || !targetOK {
 			return fmt.Errorf("%w: Link endpoints require live local Beads", storage.ErrValidation)
 		}
+
+		// A local exact endpoint contributes the Type of its selected retained
+		// state, not a later current retyping of the same identity.
+		if link.sourcePin != "" {
+			exact, err := s.readVersionInTx(ctx, tx, link.source, link.sourcePin)
+			if err != nil {
+				return err
+			}
+			source = typecatalog.Reference{URI: recordType(exact)}
+			// A later retyping must not turn a historical owned-source
+			// Reference into an unowned claim and bypass the selected deferral.
+			owned, err := c.types.Owns(source, ref)
+			if err != nil {
+				return err
+			}
+			if owned {
+				return fmt.Errorf("%w: pinned owned source observation point is not selected", ErrCapabilityUnavailable)
+			}
+		}
+		if link.targetPin != "" {
+			exact, err := s.readVersionInTx(ctx, tx, link.target, link.targetPin)
+			if err != nil {
+				return err
+			}
+			target = typecatalog.Reference{URI: recordType(exact)}
+		}
 		if err := c.types.ValidateEndpoints(ref,
 			typecatalog.EndpointFacts{ResourceKind: "bead", Scope: "same", Type: source},
 			typecatalog.EndpointFacts{ResourceKind: "bead", Scope: "same", Type: target}); err != nil {
@@ -160,8 +186,8 @@ func (s *Store) validateTypeStateInTx(ctx context.Context, tx *sql.Tx) error {
 		}
 		population = append(population, typeconstraints.Link{
 			Identity: typeconstraints.Identity{Scope: s.ScopeURL(), Path: link.path}, Type: ref,
-			Source: typeconstraints.Endpoint{Identity: typeconstraints.Identity{Scope: s.ScopeURL(), Path: link.source}},
-			Target: typeconstraints.Endpoint{Identity: typeconstraints.Identity{Scope: s.ScopeURL(), Path: link.target}},
+			Source: typeconstraints.Endpoint{Identity: typeconstraints.Identity{Scope: s.ScopeURL(), Path: link.source}, Revision: link.sourcePin},
+			Target: typeconstraints.Endpoint{Identity: typeconstraints.Identity{Scope: s.ScopeURL(), Path: link.target}, Revision: link.targetPin},
 		})
 	}
 	// Native Dependency is not a refinement of any selected Memory Link
@@ -206,8 +232,9 @@ func checkTypeValidationBytes(ctx context.Context, tx *sql.Tx) error {
 		// Include orphan rows in the pre-acquisition bound. Mapping validation
 		// refuses them before the payload query rather than hiding them in joins.
 		{"graph_preview_links l LEFT JOIN graph_preview_catalog c ON c.path=l.path",
-			"l.path,c.type_url,l.source_path,l.target_path,l.properties", 1},
+			"l.path,c.type_url,l.source_path,l.target_path,l.source_revision,l.target_revision,l.properties", 1},
 	}
+	queries = append(queries, pinnedEndpointSizeQueries()...)
 	var used uint64
 	for _, query := range queries {
 		fields := []string{"256"}
@@ -285,7 +312,8 @@ func (s *Store) checkRetainedSubjectReference(ctx context.Context, tx *sql.Tx, p
 	var exists bool
 	switch {
 	case backing == "generic" && s.isMemoryType(typ.String) && !key.Valid:
-		if err := tx.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM graph_preview_versions WHERE path=? AND version=?)`, path, revision).Scan(&exists); err != nil {
+		if err := tx.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM graph_preview_versions WHERE path=? AND version=?
+ AND NOT(CASE WHEN JSON_VALID(CAST(snapshot AS CHAR)) THEN COALESCE(JSON_UNQUOTE(JSON_EXTRACT(CAST(snapshot AS CHAR),'$.state'))='deleted',FALSE) ELSE FALSE END))`, path, revision).Scan(&exists); err != nil {
 			return err
 		}
 	case backing == "issue" && typ.String == IssueTypeURL(s.ScopeURL()) && key.Valid:

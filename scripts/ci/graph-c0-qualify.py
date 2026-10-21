@@ -10,6 +10,7 @@ All databases and process groups belong to this run; no existing server is used.
 import argparse
 import contextlib
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -50,6 +51,15 @@ def require_memory_creation(record, scope):
             and record.get("owned") == []
             and isinstance(record.get("revision"), str) and bool(record["revision"])
             and "version" not in record, "incomplete/non-Memory creation")
+
+
+# Share the same local-result boundary with the installed capture. Loading this
+# support module has no command, server or workspace side effects.
+_capture_spec = importlib.util.spec_from_file_location(
+    "graph_c0_deletion_support", Path(__file__).resolve().parents[1] / "graph-c0-smoke.py")
+_capture_support = importlib.util.module_from_spec(_capture_spec)
+_capture_spec.loader.exec_module(_capture_support)
+require_memory_deletion = _capture_support.require_memory_deletion
 
 
 def digest(path):
@@ -323,9 +333,9 @@ def verify_memory_deletion_capture(root, summary):
     scope = summary["scope"]
     require(alpha["id"] == scope + "beads/alpha", "wrong deletion fixture identity")
     deletion = data("18-memory-delete/stdout.log")
-    require(deletion.get("preview") is True and deletion.get("schemaVersion") == 1
-            and deletion.get("result") == {"memory": alpha, "preview": False, "deleted": True},
-            "deletion did not retain/disclose exact final live state")
+    require(deletion.get("preview") is True and deletion.get("schemaVersion") == 1,
+            "deletion envelope changed")
+    require_memory_deletion(deletion.get("result"), alpha)
     argv = data("18-memory-delete/receipt.json")["argv"]
     require(argv == [data("02-memory-create/receipt.json")["argv"][0], "delete", "beads/alpha", "--force",
                      "--if-revision", alpha["revision"], "--json"], "deletion did not use original observed guard")
@@ -741,12 +751,14 @@ class Qualification:
                         "TestGraphPreviewQueryWorkflow/embedded", "TestGraphPreviewQueryWorkflow/server",
                         "TestGraphPreviewMemoryReadsWorkflow/embedded", "TestGraphPreviewMemoryReadsWorkflow/server",
                         "TestGraphPreviewPropertiesPatchWorkflow/embedded", "TestGraphPreviewPropertiesPatchWorkflow/server"),
-                       groups=3)
+                       # Keep this full CLI census in small sequential processes: the
+                       # 257-root three-group layout exhausted its 15m package alarm.
+                       groups=20)
             self.env["BDP_SPEC_AT_PIN"] = str(self.client_checkout / "docs/specs/bdp.md")
             self.tests("./internal/httpapi/bdpwire", "^Test", (self.root / "internal/httpapi/bdpwire").glob("*_test.go"), "bdpwire")
             self.tests("./internal/httpapi/graphread", "^Test", (self.root / "internal/httpapi/graphread").glob("*_test.go"), "graphread",
                        ("TestAuthoritativeRecordsProjectToPublicWire/embedded", "TestAuthoritativeRecordsProjectToPublicWire/server"))
-            self.tests("./internal/httpapi", "^TestGraphRead", (self.root / "internal/httpapi").glob("graph_read*test.go"), "graph-http",
+            self.tests("./internal/httpapi", "^TestGraphRead", (self.root / "internal/httpapi").glob("*_test.go"), "graph-http",
                        ("TestGraphReadHTTPAuthorityAndSecurity/issue-priority-assignment",
                         "TestGraphReadHTTPAuthorityAndSecurity/issue-append-notes",))
             self.run([sys.executable, "-m", "unittest", "discover", "-s", "examples/bdp-read", "-p", "test_*.py"], "python-example-tests")

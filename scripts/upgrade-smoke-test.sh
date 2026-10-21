@@ -253,6 +253,37 @@ embedded_db_exists() {
     [ -d "$WS/.beads/embeddeddolt" ] || [ -f "$WS/.beads/beads.db" ]
 }
 
+# Preserve a failing pre-consent boundary before cand_upgrade mutates the
+# workspace. Reporting is best effort and must not replace the failed assertion.
+report_consent_gate_failure() {
+    local diagnostic_dir="" temporary=false
+    printf '  Candidate pre-consent list exit: %s\n' "$GATE_RC" >&2 || true
+    printf '  Candidate pre-consent list combined stdout/stderr:\n%s\n' "$GATE_OUT" >&2 || true
+    if [ -n "${TEST_UNDECLARED_OUTPUTS_DIR:-}" ] && mkdir -p "$TEST_UNDECLARED_OUTPUTS_DIR"; then
+        diagnostic_dir=$(mktemp -d "$TEST_UNDECLARED_OUTPUTS_DIR/consent-gate-XXXXXX") || diagnostic_dir=""
+    fi
+    if [ -z "$diagnostic_dir" ]; then
+        diagnostic_dir=$(mktemp -d "${TMPDIR:-/tmp}/bd-upgrade-consent-failure-XXXXXX") || diagnostic_dir=""
+        temporary=true
+    fi
+    if [ -z "$diagnostic_dir" ]; then
+        printf '  Warning: consent gate diagnostic directory unavailable; fixture was not archived.\n' >&2 || true
+        return 0
+    fi
+    printf '%s\n' "$GATE_OUT" >"$diagnostic_dir/list.combined-output" || true
+    printf '%s\n' "$GATE_RC" >"$diagnostic_dir/list.exit-status" || true
+    if tar -czf "$diagnostic_dir/premigration-workspace.tar.gz" -C "$WS" .; then
+        printf '  Pre-consent workspace archive: %s\n' "$diagnostic_dir/premigration-workspace.tar.gz" >&2 || true
+    else
+        printf '  Warning: pre-consent workspace archive failed: %s\n' "$diagnostic_dir/premigration-workspace.tar.gz" >&2 || true
+    fi
+    if $temporary; then
+        printf '  Temporary consent gate diagnostics: %s (the test runner may reclaim them)\n' "$diagnostic_dir" >&2 || true
+    else
+        printf '  Consent gate diagnostics: %s\n' "$diagnostic_dir" >&2 || true
+    fi
+}
+
 # ---------------------------------------------------------------------------
 # Scenario 1: Embedded maintainer upgrade
 # ---------------------------------------------------------------------------
@@ -287,6 +318,7 @@ else
         pass "Candidate refuses un-migrated database with consent guidance"
     else
         fail "Candidate failed on old database without consent guidance"
+        report_consent_gate_failure || true
     fi
 fi
 

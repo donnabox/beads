@@ -1,0 +1,45 @@
+BEGIN REVIEW
+
+**Scope reviewed:** frozen tree 63c3dbac (head f870c97f) against selected base c67855b4 — `export_current.go`, three graphstore tests, `graphoutput` package+tests, two adapted BUILDs and two core BUILD registrations, milestone doc. All runtime UNRUN; findings below are from source only.
+
+## Actionable findings
+
+**1. HIGH — `internal/storage/graphstore/export_current_test.go:43`: lifecycle fixture calls `AddDependency` with no `Actor`.**
+Trigger: run `TestExportCurrentSnapshotLifecycle` (either `embedded` or `server`). `DependencyRequest{Path: "links/block", SourcePath: "beads/work", TargetPath: "beads/prereq"}` carries no `Actor`, and the selected core refuses that unconditionally (`dependencies.go:54`: `request.Actor == "" || ... → storage.ErrValidation`).
+Impact: the test dies at `t.Fatal(err)` on line 44 before any export assertion runs. That removes the branch's only end-to-end evidence for the 6-record complete acquisition, the owned/top-level Link closure on a real store, detachment, reopen preservation, deleted-allocation disclosure and the comment-oracle repair this freeze exists to validate. It is a test-side incompatibility only; `export_current.go` is unaffected.
+Fix: `DependencyRequest{Path: "links/block", SourcePath: "beads/work", TargetPath: "beads/prereq", Actor: "test-author"}` (any nonempty UTF-8 actor; `plainIssue` already uses `test-author`). No other call site needs it — `AddInformationalLink`, `Create`, `DeleteMemory` and `DeleteIssue` accept an empty actor in this core, and `AddIssueComment` calls already pass one.
+
+**2. LOW — `internal/storage/graphstore/export_cleanup_pure_test.go:50`: repaired Type oracle is self-referential.**
+Trigger: change `previewTypeDefinitions()`. `len(state.Snapshot.Types) != len(d.descriptors)` compares the snapshot against the fixture map built from the same function at line 276, so the oracle moves with any future catalog change and stays green.
+Impact: no false pass today (the core guard `installedPreviewTypes` still enforces the count), but the repair adds no independent pin — unlike `export_current_test.go:26`, which asserts the literal 6.
+Fix: assert a literal (`!= 6`) in the success branch, keeping `d.descriptors` only for the fixture's own `COUNT(*)` reply.
+
+**3. LOW — residual coverage in the refusal and cleanup suites.**
+(a) `export_current.go:194` probes `wisp_dependencies` deliberately as an FK-bypass defence, but `export_current_test.go:221-228` covers only `wisps`, `wisp_comments`, `wisp_labels` and `kv.memory.*`; the sibling inserts show no FK obstacle to adding a `wisp_dependencies` row inside the same rollback.
+(b) `export_current.go:100-102` (non-UTF-8 persisted `issue_prefix`) and the `DeletedAllocations` scan error path have no case at all.
+(c) The cleanup connector answers catalog queries with empty row sets (`export_cleanup_pure_test.go:359-364`) and its descriptor case keys on the *spaced* projection (line 339) used by `installedPreviewTypes`; `readTypeInTx`'s unspaced `SELECT descriptor,fingerprint ...` (`types_read.go:91`) would fall through to the default refusal. So every cleanup test exercises only the empty-catalog path — correct as scoped, but the suite cannot show rollback/rows cleanup with records present.
+Impact: named guards ship unexercised; (c) limits what the "complete Type catalog" repair demonstrates.
+Fix: add a `wisp_dependencies` insert case alongside the existing ones; if the fixture is ever extended to records, add the unspaced descriptor prefix to the switch.
+
+**4. LOW — `engdocs/design/graph-export-milestone.md:210-234` documents only the reader boundary.**
+Trigger: read the design record against the tree. `internal/graphoutput` (detached already-validated bytes, caller-chosen mode, atomicfile rename-not-power-loss, stdout partial-delivery) exists in this branch but has no boundary/disclosure paragraph; line 3's status still says "internal reader implementation in progress".
+Impact: the design record understates branch contents for the next reviewer/owner; no behavioural effect.
+Fix: add a short "publication boundary" subsection mirroring the `publish.go:34-49` disclosures, and update the status line.
+
+## Verified, no finding
+
+- `export_current.go`: single rollback-only `withTx`; binding → bounds → orphan-owner → plane refusals all precede `currentSnapshotInTx`; `issue_prefix`, deleted count and the comment feed are acquired in that same tx; every error path returns `ExportCurrentState{}`; `ctx.Err()` is joined independently; `used` can never exceed `byteLimit`, so `byteLimit-used` cannot underflow; `exportReadSizeQueries` replaces exactly the joined `comments ` projection (prefix with trailing space matches `collection_read_bounds.go:56`) and appends the deleted-head charge once, matching `export_current_pure_test.go:160-176`.
+- `exportSnapshotClosure`: ownership is taken from acquired descriptors (`typesByID[source.typ].Owns`), never a hardcoded Issue TypeURL; type/kind, scope prefix, canonical path, duplicate id and duplicate native-Issue-ID checks all precede use; partial maps are never returned.
+- Comment-oracle repair (`export_current_test.go:68-73`) is correct in direction: `issue_comments.go:35` overwrites `IssueID` with the graph path, export preserves the persisted native ID, and only that field is normalised.
+- `graphoutput`: named-return/defer abort interaction is sound (every return assigns the named `err` before the deferred `Abort`); short writes, nil ctx/writer, empty path and the success boundary are all pinned; no format/UTF-8 assumption is introduced.
+- BUILD: the four `graphoutput` filegroups match `tools/bazel/go_srcs.py` exactly — include/exclude sets, sorted exclude lists, `allow_empty` on three partitions and omitted on `repo_other_files`, targets emitted in sorted name order, one blank line between managed blocks. Root aggregation is inserted in correct sort position in all four partitions (`gittraceenv` < `graphoutput` < `graphpatch`); `//internal/graphoutput:graphoutput` is release-cross eligible (visibility `//:__subpackages__`, no `cgo-only`/`testonly`) and correctly ordered. No standalone `go_srcs` is owed. `graphstore` keeps its `go_srcs` (TREES root `internal/storage`) plus `repo_files`, and gains `export_current.go` and the three test srcs with no removals; existing test deps already cover `graphops`, `internal/types`, `issueops`. No guard is removed or weakened.
+
+## QUESTIONS (missing source — not blockers)
+
+1. `issueops.GetIssueCommentsInTx` ordering: the repaired oracle compares `IssueComments` output element-wise against the export feed ordered `issue_id,created_at,id`, after the fixture forces equal timestamps (`export_current_test.go:58-63`). If that helper has no `id` tiebreaker, the comparison is engine-order dependent.
+2. `issueops.ExecuteAddComment`: does it admit empty text? `export_current_test.go:52` deliberately writes `""`.
+3. `issueops.ReadConfigPrefix` SQL shape: the cleanup fixture matches it by the prefix `select value from config where \`key\`` (line 353); a reshaped query in c678 would hit the fixture's default refusal.
+4. `graphops` API surface: `TypeDescriptor.Owns`, `IsZero`, `Describes` and `ResourceKind` are used by the reader but appear in no supplied core file.
+5. `IssueDeleteRequest`/`DeleteIssue` and `workflowState` signatures are assumed unchanged at c678.
+
+END REVIEW

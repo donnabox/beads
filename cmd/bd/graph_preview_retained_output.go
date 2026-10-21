@@ -167,19 +167,27 @@ func runCanonicalGraphVersions(cmd *cobra.Command, args []string, options cliout
 	}
 	var count int
 	return canonicalReadWithGraphStore(cmd, failure, func(ctx context.Context, store *graphstore.Store) (any, error) {
-		kind, rows, err := store.Versions(ctx, path)
+		history, err := store.History(ctx, path)
+		kind, rows := history.Kind, history.Versions
 		if errors.Is(err, graphstore.ErrNotFound) {
 			return nil, graphVersionsNotFound(args[0])
 		}
 		if err != nil {
 			return nil, err
 		}
-		citable, _, err := graphCitableVersionRows(kind, rows)
+		citable, terminals, _, err := graphCitableVersionRows(kind, rows)
 		if err != nil {
 			return nil, err
 		}
 		count = len(citable)
-		return map[string]any{"resource": path, "kind": string(kind), "versions": graphVersionRowsJSON(citable)}, nil
+		result := map[string]any{"resource": path, "kind": string(kind), "versions": graphVersionRowsJSON(citable)}
+		if history.CurrentState != nil {
+			result["currentState"] = history.CurrentState
+		}
+		if (kind == graphstore.KindMemory || kind == graphstore.KindIssue) && len(terminals) != 0 {
+			result["terminal_versions"] = graphVersionRowsJSON(terminals)
+		}
+		return result, nil
 	}, func(result any) error {
 		if jsonl {
 			data := result.(map[string]any)

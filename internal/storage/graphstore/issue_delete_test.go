@@ -68,7 +68,7 @@ func TestIssueDeleteRetainsHistoryAndRefusesIncidentLinks(t *testing.T) {
 				t.Fatal(err)
 			}
 			beforeDelete := workflowState(t, ctx, s)
-			for _, stage := range []string{"coordination", "issue-delete-native", "issue-delete-allocation"} {
+			for _, stage := range []string{"coordination", "issue-delete-native", "issue-delete-allocation", "issue-delete-retained"} {
 				fault := errors.New("injected Issue delete failure")
 				s.afterWrite = func(at string) error {
 					if at == stage {
@@ -94,8 +94,8 @@ func TestIssueDeleteRetainsHistoryAndRefusesIncidentLinks(t *testing.T) {
 				t.Fatalf("current Issue: %v", err)
 			}
 			kind, retained, err := s.Versions(ctx, "beads/work")
-			if err != nil || kind != KindIssue || !reflect.DeepEqual(retained, prior) {
-				t.Fatalf("deletion invented or lost history: %s %+v %v", kind, retained, err)
+			if err != nil || kind != KindIssue || deleted.Terminal == nil || len(retained) != len(prior)+1 || !retained[0].Removed || retained[0].Version != deleted.Terminal.Revision || !reflect.DeepEqual(retained[1:], prior) {
+				t.Fatalf("deletion lost live history or distinct D: %s %+v %v", kind, retained, err)
 			}
 			old, err := s.ReadVersion(ctx, "beads/work", final.Version)
 			retainedIssue, ok := old.(IssueRecord)

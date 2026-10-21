@@ -18,11 +18,12 @@ type IssueDeleteRequest struct {
 	Unconditional, Preview        bool
 }
 
-// IssueDeleteResult reports the final live Issue; deletion adds no graph version.
+// IssueDeleteResult separates the final live Issue from graph deletion evidence.
 type IssueDeleteResult struct {
-	Issue   IssueRecord `json:"issue"`
-	Preview bool        `json:"preview"`
-	Deleted bool        `json:"deleted"`
+	Issue    IssueRecord        `json:"issue"`
+	Terminal *BeadTerminalState `json:"terminal,omitempty"`
+	Preview  bool               `json:"preview"`
+	Deleted  bool               `json:"deleted"`
 }
 
 func (s *Store) DeleteIssue(ctx context.Context, request IssueDeleteRequest) (IssueDeleteResult, error) {
@@ -76,6 +77,21 @@ func (s *Store) DeleteIssue(ctx context.Context, request IssueDeleteRequest) (Is
 		if err := s.touchCoordination(ctx, tx); err != nil {
 			return err
 		}
+		deletionRevision, err := freshToken()
+		if err != nil {
+			return err
+		}
+		ordinal, err := nextIssueHistoryOrdinalInTx(ctx, tx, request.Path, 0)
+		if err != nil {
+			return err
+		}
+		var generation sql.NullInt64
+		if err := tx.QueryRowContext(ctx, `SELECT participation_generation FROM issues WHERE id=?`, current.Properties.ID).Scan(&generation); err != nil {
+			return err
+		}
+		attribution := writeAttribution(request.Actor)
+		attribution.Inception = current.Attribution.Inception
+		terminal := BeadTerminalState{ID: current.ID, Revision: deletionRevision, Version: deletionRevision, State: "deleted", PreviousVersion: current.Revision, Attribution: attribution}
 		// The native Issue writer owns its delete journal, lease and other
 		// domain cleanup. It does not mint an issue_versions row for deletion.
 		unScope := issueops.ScopeVersionedHistoryTransaction(tx, true)
@@ -86,7 +102,7 @@ func (s *Store) DeleteIssue(ctx context.Context, request IssueDeleteRequest) (Is
 		if err := s.afterStage("issue-delete-native"); err != nil {
 			return err
 		}
-		changed, err := tx.ExecContext(ctx, `UPDATE graph_preview_catalog SET allocation_state='deleted' WHERE path=? AND allocation_state='live' AND revision=? AND backing='issue'`, request.Path, current.Revision)
+		changed, err := tx.ExecContext(ctx, `UPDATE graph_preview_catalog SET allocation_state='deleted',revision=? WHERE path=? AND allocation_state='live' AND revision=? AND backing='issue'`, deletionRevision, request.Path, current.Revision)
 		if err != nil {
 			return err
 		}
@@ -98,10 +114,21 @@ func (s *Store) DeleteIssue(ctx context.Context, request IssueDeleteRequest) (Is
 		if err := s.afterStage("issue-delete-allocation"); err != nil {
 			return err
 		}
+		snapshot, err := canonicalJSON(terminal)
+		if err != nil {
+			return err
+		}
+		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_versions(path,version,snapshot,actor,ordinal,change_at,native_participation_generation) VALUES(?,?,?,?,?,UTC_TIMESTAMP(6),?)`, request.Path, deletionRevision, snapshot, request.Actor, ordinal, generation); err != nil {
+			return err
+		}
+		if err := s.afterStage("issue-delete-retained"); err != nil {
+			return err
+		}
 		if err := s.validateDeletedIssueInTx(ctx, tx, request.Path); err != nil {
 			return err
 		}
 		result.Deleted = true
+		result.Terminal = &terminal
 		return nil
 	})
 	if err != nil {
@@ -133,19 +160,27 @@ func (s *Store) validDeletedIssueAllocationInTx(ctx context.Context, tx *sql.Tx,
 }
 
 func (s *Store) validateDeletedIssueInTx(ctx context.Context, tx *sql.Tx, path string) error {
-	var kind, typ, revision, state, backing string
+	var kind, typ, head, state, backing string
 	var key sql.NullString
-	if err := tx.QueryRowContext(ctx, `SELECT resource_kind,type_url,revision,allocation_state,backing,backing_key FROM graph_preview_catalog WHERE path=?`, path).Scan(&kind, &typ, &revision, &state, &backing, &key); err != nil {
-		return fmt.Errorf("%w: missing deleted Issue allocation: %v", ErrInvalidStore, err)
-	}
-	if err := s.validDeletedIssueAllocationInTx(ctx, tx, path, kind, typ, revision, state, backing, key); err != nil {
+	if err := tx.QueryRowContext(ctx, `SELECT resource_kind,type_url,revision,allocation_state,backing,backing_key FROM graph_preview_catalog WHERE path=?`, path).Scan(&kind, &typ, &head, &state, &backing, &key); err != nil {
 		return err
 	}
-	issue, err := s.readIssueVersionInTx(ctx, tx, path, revision, revision, key.String)
+	if err := s.validDeletedIssueAllocationInTx(ctx, tx, path, kind, typ, head, state, backing, key); err != nil {
+		return err
+	}
+	terminal, _, err := s.issueTerminalInTx(ctx, tx, path, head)
 	if err != nil {
 		return err
 	}
-	if len(issue.Owned) != 0 {
+	if terminal != nil {
+		return nil
+	}
+	// Legacy graph deletion retained only its final native live head.
+	baseline, err := s.readIssueVersionInTx(ctx, tx, path, head, head, key.String)
+	if err != nil {
+		return err
+	}
+	if len(baseline.Owned) != 0 {
 		return fmt.Errorf("%w: deleted Issue final state still owns Links", ErrInvalidStore)
 	}
 	return nil

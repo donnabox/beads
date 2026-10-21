@@ -43,7 +43,7 @@ func graphPatchProcess(t *testing.T, bd, work, home string, input io.Reader, cod
 		Message   string `json:"message"`
 		Retryable *bool  `json:"retryable"`
 	}
-	wantExit := map[string]int{"invalid_selector": 2, "invalid_properties": 2, "gone": 3, "revision_conflict": 4, "capability_unavailable": 5, "permission_denied": 5}[code]
+	wantExit := map[string]int{"invalid_selector": 2, "invalid_properties": 2, "gone": 3, "revision_unknown": 3, "revision_conflict": 4, "capability_unavailable": 5, "permission_denied": 5}[code]
 	if !errors.As(err, &exit) || wantExit == 0 || exit.ExitCode() != wantExit || out.Len() != 0 || json.Unmarshal(stderr.Bytes(), &diagnostic) != nil || diagnostic.Code != code || diagnostic.Message == "" || diagnostic.Retryable == nil || *diagnostic.Retryable {
 		t.Fatalf("patch refusal want=%s/%d err=%v stdout=%s stderr=%s", code, wantExit, err, out.String(), stderr.String())
 	}

@@ -76,6 +76,25 @@ class MemoryCreationProjection(unittest.TestCase):
                 module.require_memory_creation(dict(record, **change), scope)
 
 
+class MemoryDeletionProjection(unittest.TestCase):
+    def test_terminal_must_follow_exact_final_live_snapshot(self):
+        final_live = {"id": "https://example.invalid/beads/alpha", "revision": "live-token",
+                      "attribution": {"inception": "create"}}
+        terminal = {"id": final_live["id"], "previousVersion": "live-token",
+                    "revision": "deletion-token", "version": "deletion-token",
+                    "state": "deleted", "attribution": {"inception": "create"}}
+        result = {"memory": final_live, "terminal": terminal, "preview": False, "deleted": True}
+        module.require_memory_deletion(result, final_live)
+        for change in ({"previousVersion": "wrong-token"}, {"revision": "live-token"},
+                       {"version": "wrong-token"}, {"state": "live"},
+                       {"id": "https://example.invalid/beads/other"},
+                       {"attribution": {"inception": "revert"}}):
+            with self.subTest(change=change), self.assertRaisesRegex(RuntimeError, "deletion terminal"):
+                module.require_memory_deletion(dict(result, terminal=dict(terminal, **change)), final_live)
+        with self.assertRaisesRegex(RuntimeError, "exact final live predecessor"):
+            module.require_memory_deletion(dict(result, memory=dict(final_live, revision="stale")), final_live)
+
+
 def lane_function(name):
     return next(n for n in ast.walk(ast.parse(SOURCE)) if isinstance(n, ast.FunctionDef) and n.name == name)
 
@@ -243,6 +262,75 @@ class RequiredGroupedExecution(unittest.TestCase):
         self.assertEqual(module.partition_required_tests(names, 4), module.partition_required_tests(list(reversed(names)), 4))
 
 
+class CLIGroupedExecution(unittest.TestCase):
+    def exercise(self, mode):
+        call = next(c for c in self_calls("execute", "tests") if ast.literal_eval(c.args[3]) == "cli")
+        groups = ast.literal_eval(next(k.value for k in call.keywords if k.arg == "groups"))
+        # Match the failing hosted census size. Exercise the real call-site
+        # partition, not a separate idealized selection algorithm.
+        names = [f"TestGraphPreviewFixture{index:03d}" for index in range(257)]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "graph_fixture_test.go"
+            source.write_text("\n".join("func " + name + "(t *testing.T) {}" for name in names))
+            q = runner(directory)
+            q.counts = {}
+            opened, closed, calls = [], [], []
+
+            @contextlib.contextmanager
+            def server(label):
+                opened.append(label)
+                try:
+                    yield
+                finally:
+                    closed.append(label)
+
+            def run(args, label, **kwargs):
+                if "-list" in args:
+                    return ("\n".join(names) + "\n").encode()
+                selected = args[args.index("-run") + 1][2:-2].split("|")
+                calls.append((selected, args, kwargs))
+                self.assertLessEqual(len(selected), 13, "CLI group recreates cumulative package-alarm exposure")
+                if mode == "missing": selected = selected[1:]
+                if mode == "duplicate": selected += selected[:1]
+                raw = go_events(selected)
+                (root / (label + ".stdout")).write_bytes(raw)
+                (root / (label + ".stderr")).write_bytes(b"")
+                if mode == "timeout": raise subprocess.TimeoutExpired(args, 960)
+                return raw
+
+            q.server = server
+            with mock.patch.object(q, "run", run):
+                if mode == "good":
+                    q.tests(ast.literal_eval(call.args[0]), ast.literal_eval(call.args[1]), [source], "cli", groups=groups)
+                else:
+                    with self.assertRaises((RuntimeError, subprocess.TimeoutExpired)):
+                        q.tests(ast.literal_eval(call.args[0]), ast.literal_eval(call.args[1]), [source], "cli", groups=groups)
+            self.assertEqual(opened, closed)
+            plan = json.loads((root / "cli-groups.json").read_text())
+            self.assertEqual(plan["complete"], mode == "good")
+            self.assertEqual(plan["sourceRoots"], names)
+            self.assertEqual(plan["compiledRoots"], names)
+            self.assertEqual(q.counts, {"cli": 257} if mode == "good" else {})
+            for _, args, kwargs in calls:
+                self.assertIn("-timeout=15m", args)
+                self.assertEqual(kwargs["timeout"], 960)
+            if mode == "good":
+                union = [name for selected, _, _ in calls for name in selected]
+                self.assertEqual(sorted(union), names)
+                self.assertEqual(len(union), len(set(union)))
+                self.assertTrue(all(group["passed"] for group in plan["groups"]))
+            else:
+                self.assertEqual(len(calls), 1)
+                self.assertFalse(any(group["passed"] for group in plan["groups"]))
+
+    def test_cli_callsite_bounds_every_group_and_keeps_complete_census(self): self.exercise("good")
+
+    def test_cli_missing_duplicate_or_timed_out_group_refused_and_closed(self):
+        for mode in ("missing", "duplicate", "timeout"):
+            with self.subTest(mode=mode): self.exercise(mode)
+
+
 class RequiredDiscovery(unittest.TestCase):
     # Exercise the actual source/compiled/execution boundary with temporary Go
     # source. Only subprocess output is supplied; no engine or Go build is needed.
@@ -327,6 +415,51 @@ class ProcessCleanup(unittest.TestCase):
                 child.kill()
             reaper.join(timeout=5)
         self.assertFalse(reaper.is_alive())
+
+
+class CaptureMemoryDeletion(unittest.TestCase):
+    def setUp(self):
+        source = Path(__file__).resolve().parents[1] / "graph-bdp-read-smoke.py"
+        spec = importlib.util.spec_from_file_location("capture_deletion", source)
+        self.smoke = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(self.smoke)
+        self.live = {"id": "https://example.invalid/beads/alpha", "revision": "live-token",
+                     "type": "https://example.invalid/types/memory", "metadata": {}, "owned": [],
+                     "properties": {"title": "First memory", "body": "Deployment context — 雪"},
+                     "attribution": {"actor": "writer", "recordedAt": "before", "inception": "create"}}
+        self.terminal = {"id": self.live["id"], "revision": "deletion-token", "version": "deletion-token",
+                         "previousVersion": "live-token", "state": "deleted",
+                         "attribution": {"actor": "deleter", "recordedAt": "after", "inception": "create"}}
+        self.result = {"memory": self.live, "preview": False, "deleted": True, "terminal": self.terminal}
+
+    def test_exact_predecessor_and_distinct_terminal_are_required_by_capture(self):
+        self.smoke.c0.require_memory_deletion(self.result, self.live)
+        tree = ast.parse((Path(__file__).resolve().parents[1] / "graph-bdp-read-smoke.py").read_text())
+        calls = [c for c in ast.walk(tree) if isinstance(c, ast.Call) and isinstance(c.func, ast.Attribute)
+                 and isinstance(c.func.value, ast.Name) and c.func.value.id == "c0"
+                 and c.func.attr == "require_memory_deletion"]
+        self.assertEqual(len(calls), 1)
+        self.assertEqual([arg.id for arg in calls[0].args], ["deleted", "alpha"])
+
+    def test_predecessor_flags_and_closed_result_remain_exact(self):
+        for field, value in (("properties", {}), ("metadata", {"changed": True}), ("attribution", {}),
+                             ("owned", ["resurrected"]), ("revision", "other")):
+            with self.subTest(field=field), self.assertRaises(RuntimeError):
+                self.smoke.c0.require_memory_deletion(dict(self.result, memory=dict(self.live, **{field: value})), self.live)
+        for changes in ({"preview": True}, {"deleted": False}, {"unknown": True}):
+            with self.subTest(changes=changes), self.assertRaises(RuntimeError):
+                self.smoke.c0.require_memory_deletion(dict(self.result, **changes), self.live)
+
+    def test_missing_or_invalid_terminal_refused(self):
+        for terminal in (None, {}, dict(self.terminal, revision="live-token", version="live-token"),
+                         dict(self.terminal, revision=""), dict(self.terminal, revision=123),
+                         dict(self.terminal, version="other"), dict(self.terminal, previousVersion="old-token"),
+                         dict(self.terminal, id="other"), dict(self.terminal, state="live"),
+                         dict(self.terminal, properties={"body": "private payload"})):
+            with self.subTest(terminal=terminal), self.assertRaises(RuntimeError):
+                self.smoke.c0.require_memory_deletion(dict(self.result, terminal=terminal), self.live)
+        with self.assertRaises(RuntimeError):
+            self.smoke.c0.require_memory_deletion({k: v for k, v in self.result.items() if k != "terminal"}, self.live)
 
 
 class CaptureIsolationControls(unittest.TestCase):
@@ -513,11 +646,53 @@ finally:
 
 
 class LaneShape(unittest.TestCase):
-    def test_cmd_bd_graph_tests_run_as_three_groups(self):
+    def test_cmd_bd_graph_tests_run_as_twenty_bounded_groups(self):
         [call] = [c for c in self_calls("execute", "tests") if ast.literal_eval(c.args[0]) == "./cmd/bd"]
         self.assertEqual(ast.literal_eval(call.args[1]), "^Test(GraphModeCLI|GraphPreview)")
         self.assertEqual(ast.literal_eval(call.args[3]), "cli")
-        self.assertEqual({k.arg: ast.literal_eval(k.value) for k in call.keywords}, {"groups": 3})
+        self.assertEqual({k.arg: ast.literal_eval(k.value) for k in call.keywords}, {"groups": 20})
+
+
+class GraphHTTPDiscovery(unittest.TestCase):
+    def exercise(self, compiled=None, executed=None, excluded_source=False):
+        # Use the actual lane's source selection, so a filename-family
+        # omission fails here before it can exclude a newly added HTTP root.
+        [call] = [c for c in self_calls("execute", "tests")
+                  if ast.literal_eval(c.args[0]) == "./internal/httpapi"]
+        package, selector, label = [ast.literal_eval(call.args[i]) for i in (0, 1, 3)]
+        pattern = ast.literal_eval(call.args[2].args[0])
+        names = ["TestGraphReadHTTPFixture", "TestGraphReadHTTPPreservesEndpointPins"]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "graph_read_test.go").write_text(f"func {names[0]}(t *testing.T) {{}}\n")
+            (root / "graph_endpoint_pins_test.go").write_text(f"func {names[1]}(t *testing.T) {{}}\n")
+            (root / "unrelated_test.go").write_text("func TestUnrelated(t *testing.T) {}\n")
+            if excluded_source:
+                (root / "graph_future_test.go").write_text(
+                    "//go:build never\n\nfunc TestGraphReadBuildExcluded(t *testing.T) {}\n")
+            q = runner(directory)
+            q.counts, q.server = {}, without_server
+            listing = "\n".join(names if compiled is None else compiled).encode()
+            execution = go_events(names if executed is None else executed)
+            with mock.patch.object(q, "run", side_effect=[listing, execution]):
+                q.tests(package, selector, root.glob(pattern), label)
+            return q.counts
+
+    def test_matching_root_outside_read_filename_is_required(self):
+        self.assertEqual(self.exercise(), {"graph-http": 2})
+
+    def test_build_excluded_source_is_refused(self):
+        with self.assertRaisesRegex(RuntimeError, "source and compiled test discovery disagree"):
+            self.exercise(excluded_source=True)
+
+    def test_extra_compiled_root_is_refused(self):
+        with self.assertRaisesRegex(RuntimeError, "source and compiled test discovery disagree"):
+            self.exercise(compiled=["TestGraphReadHTTPFixture", "TestGraphReadHTTPPreservesEndpointPins",
+                                    "TestGraphReadUnexpected"])
+
+    def test_missing_execution_root_is_refused(self):
+        with self.assertRaisesRegex(RuntimeError, "test discovery/execution mismatch"):
+            self.exercise(executed=["TestGraphReadHTTPFixture"])
 
 
 class ReceiptTiming(unittest.TestCase):

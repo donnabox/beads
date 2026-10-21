@@ -55,7 +55,7 @@ func (s *Store) Create(ctx context.Context, req CreateRequest) (Record, error) {
 			return Record{}, err
 		}
 	}
-	r.Attribution = Attribution{Actor: req.Actor, Status: "unknown", RecordedAt: time.Now().UTC().Format(time.RFC3339Nano)}
+	r.Attribution = Attribution{Inception: "create", Actor: req.Actor, Status: "unknown", RecordedAt: time.Now().UTC().Format(time.RFC3339Nano)}
 	if req.Actor != "" {
 		r.Attribution.Status = "claimed"
 	}
@@ -217,10 +217,7 @@ func (s *Store) showMemoryInTx(ctx context.Context, tx *sql.Tx, path string) (Re
 		return Record{}, err
 	}
 	record.Attribution = retained.Attribution
-	at, err := time.Parse(time.RFC3339Nano, record.Attribution.RecordedAt)
-	if err != nil || at.UTC().Format(time.RFC3339Nano) != record.Attribution.RecordedAt || actor != record.Attribution.Actor ||
-		(record.Attribution.Actor == "" && record.Attribution.Status != "unknown") ||
-		(record.Attribution.Actor != "" && record.Attribution.Status != "claimed") {
+	if !validVersionAttribution(record.Attribution, actor) {
 		return Record{}, fmt.Errorf("%w: invalid retained attribution", ErrInvalidStore)
 	}
 	if err := json.Unmarshal(payload, &record.Properties); err != nil {

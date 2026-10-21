@@ -12,7 +12,8 @@ import (
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
-// LinkPropertiesPatchRequest changes only informational Link properties. The
+// LinkPropertiesPatchRequest combines informational Link property operations,
+// optional metadata edits and independent endpoint pin intents. The
 // current private Type admits an optional string note. Memory-owned Links also
 // require a source guard; an Issue source remains unchanged by this writer.
 // This preview does not expose the public BDP Update profile.
@@ -25,6 +26,7 @@ type LinkPropertiesPatchRequest struct {
 	ExpectedSourceRevision string
 	UnconditionalSource    bool
 	Metadata               publicops.MetadataPatch
+	SourcePin, TargetPin   *EndpointPin
 }
 
 func (s *Store) PatchLinkProperties(ctx context.Context, request LinkPropertiesPatchRequest) (LinkMutationResult, error) {
@@ -41,7 +43,7 @@ func (s *Store) PatchLinkProperties(ctx context.Context, request LinkPropertiesP
 	return s.writeLinkProperties(ctx, LinkUpdateRequest{
 		Path: request.Path, Actor: request.Actor, ExpectedRevision: request.ExpectedRevision,
 		Unconditional: request.Unconditional, ExpectedSourceRevision: request.ExpectedSourceRevision,
-		UnconditionalSource: request.UnconditionalSource, Metadata: request.Metadata,
+		UnconditionalSource: request.UnconditionalSource, Metadata: request.Metadata, SourcePin: request.SourcePin, TargetPin: request.TargetPin,
 	}, nil, patch)
 }
 

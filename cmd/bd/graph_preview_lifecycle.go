@@ -155,8 +155,8 @@ func init() {
 	for _, flag := range []string{"source", "target"} {
 		linkCreateCmd.Flags().String(flag, "", "Local Bead ID or beads/PATH")
 	}
-	linkCreateCmd.Flags().String("source-revision", "", "Source endpoint revision: unpinned is supported; exact tokens and current refuse in this preview (distinct from --if-source-revision)")
-	linkCreateCmd.Flags().String("target-revision", "", "Target endpoint revision: unpinned is supported; exact tokens and current refuse in this preview")
+	linkCreateCmd.Flags().String("source-revision", "", "Source endpoint revision: exact token, current or unpinned; owned source pins refuse (distinct from --if-source-revision)")
+	linkCreateCmd.Flags().String("target-revision", "", "Target endpoint revision: exact token, current or unpinned (informational Links only)")
 	linkCreateCmd.Flags().String("id", "", "Optional local Link ID or links/PATH")
 	linkCreateCmd.Flags().String("properties", "", "Initial informational Link properties as JSON, @file, or @-")
 	linkCreateCmd.Flags().String("metadata", "", "Initial informational Link metadata as JSON or @file")
@@ -174,6 +174,8 @@ func init() {
 	linkShowCmd.Flags().String("version", "", "Read an exact retained Link version")
 	linkShowCmd.Flags().String("format", "", "Use graph-json for the complete graph record")
 	for _, command := range []*cobra.Command{linkUpdateCmd} {
+		command.Flags().String("source-revision", "", "Re-pin the source to an exact token or current, or unpin with unpinned; owned source pins refuse")
+		command.Flags().String("target-revision", "", "Re-pin the target to an exact token or current, or unpin with unpinned")
 		command.Flags().String("properties", "", "Merge named Link properties from JSON, @file, or @-")
 		command.Flags().String("replace-properties", "", "Replace writable Link properties from JSON, @file, or @-")
 		command.Flags().String("patch", "", "Apply ordered Link property operations from JSON, @file, or @-")

@@ -384,8 +384,35 @@ func (s *Store) ownedLinksInTx(ctx context.Context, tx *sql.Tx, issueID string) 
 // recordIssueMappingInTx links the fresh Jim snapshot to opaque graph identity
 // and captures the full canonical owned set. It stores no second Issue payload.
 func (s *Store) recordIssueMappingInTx(ctx context.Context, tx *sql.Tx, path, issueID string) error {
+	return s.recordIssueMappingWithContextInTx(ctx, tx, path, issueID, nil)
+}
+
+func (s *Store) recordIssueMappingWithContextInTx(ctx context.Context, tx *sql.Tx, path, issueID string, historical *HistoricalUpdateContext) error {
+	previous, err := currentIssueRevisionContextInTx(ctx, tx, path)
+	if err != nil {
+		return err
+	}
+	previous.HistoricalUpdate = historical
+	return s.recordIssueMappingContextInTx(ctx, tx, path, issueID, previous)
+}
+
+func (s *Store) recordIssueMappingContextInTx(ctx context.Context, tx *sql.Tx, path, issueID string, previous issueRevisionContext) error {
+	contextJSON, err := encodeIssueRevisionContext(previous)
+	if err != nil {
+		return err
+	}
+	// Bind absent context as SQL NULL, not a typed nil byte slice that may
+	// become an empty blob. Empty bytes are malformed context, not absence.
+	var storedContext any
+	if contextJSON != nil {
+		storedContext = contextJSON
+	}
 	var ordinal int64
 	if err := tx.QueryRowContext(ctx, `SELECT current_revision FROM issues WHERE id=?`, issueID).Scan(&ordinal); err != nil {
+		return err
+	}
+	historyOrdinal, err := nextIssueHistoryOrdinalInTx(ctx, tx, path, ordinal)
+	if err != nil {
 		return err
 	}
 	revision, err := freshToken()
@@ -406,7 +433,7 @@ func (s *Store) recordIssueMappingInTx(ctx context.Context, tx *sql.Tx, path, is
 	if err := s.afterStage("source-catalog"); err != nil {
 		return err
 	}
-	if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_issue_versions (path,version,issue_id,issue_revision,owned) VALUES (?,?,?,?,?)`, path, revision, issueID, ordinal, snapshot); err != nil {
+	if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_issue_versions (path,version,issue_id,issue_revision,owned,revision_context,history_ordinal) VALUES (?,?,?,?,?,?,?)`, path, revision, issueID, ordinal, snapshot, storedContext, historyOrdinal); err != nil {
 		return err
 	}
 	return s.afterStage("source-retained")

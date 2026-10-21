@@ -149,7 +149,8 @@ func (s *Store) ImportLegacyWithPrefix(ctx context.Context, input legacyimport.B
 		}
 		for _, issue := range batch.Issues {
 			path := "beads/" + issue.ID
-			if err := s.recordIssueMappingInTx(ctx, tx, path, issue.ID); err != nil {
+			// Legacy import establishes the first mapping without inventing source context.
+			if err := s.recordIssueMappingContextInTx(ctx, tx, path, issue.ID, issueRevisionContext{}); err != nil {
 				return err
 			}
 			// Detect column coercion instead of silently changing source data.
