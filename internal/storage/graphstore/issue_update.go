@@ -42,6 +42,7 @@ type UpdateIssueRequest struct {
 	Priority                                                  *int
 	Status                                                    *types.Status
 	ExpectedStatus                                            *types.Status
+	ExpectedAssignee                                          *string
 	ClosedBySession                                           *string
 	EstimatedMinutes                                          *int
 	Assignee                                                  *string
@@ -178,7 +179,7 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 	if count == 0 && !request.PropertiesProvided && request.FromRevision == "" {
 		return IssueMutationResult{}, fmt.Errorf("%w: Issue update requires an admitted field", storage.ErrValidation)
 	}
-	attempt := publicops.UpdateRequest{Actor: request.Actor, Patch: patch, ExpectedStatus: request.ExpectedStatus, IssuePlaneOnly: true, ForceNotesOverwrite: request.ForceNotesOverwrite, ForceAssigneeTransfer: request.ForceAssigneeTransfer, ForceClosePolicy: request.ForceClosePolicy}
+	attempt := publicops.UpdateRequest{Actor: request.Actor, Patch: patch, ExpectedStatus: request.ExpectedStatus, ExpectedAssignee: request.ExpectedAssignee, IssuePlaneOnly: true, ForceNotesOverwrite: request.ForceNotesOverwrite, ForceAssigneeTransfer: request.ForceAssigneeTransfer, ForceClosePolicy: request.ForceClosePolicy}
 	// Historical composition supplies native setters (including Notes) before
 	// validating setter-dependent force intent. The composed request still goes
 	// through the same validator and native authorization fences in the transaction.
@@ -287,9 +288,13 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		}
 		beforeNative := *before.Properties
 		beforeNative.Metadata = before.Metadata
-		if request.ExpectedStatus != nil {
-			status := string(*request.ExpectedStatus)
-			if err := issueops.CheckExpectedFieldsInTx(ctx, tx, before.Properties.ID, nil, &status); err != nil {
+		if request.ExpectedStatus != nil || request.ExpectedAssignee != nil {
+			var status *string
+			if request.ExpectedStatus != nil {
+				value := string(*request.ExpectedStatus)
+				status = &value
+			}
+			if err := issueops.CheckExpectedFieldsInTx(ctx, tx, before.Properties.ID, request.ExpectedAssignee, status); err != nil {
 				return err
 			}
 		}
