@@ -73,7 +73,8 @@ comment-tail edit, completed successfully: 285 top-level tests passed, one
 top-level server-only race test skipped, and 64 subtests skipped without a
 configured shared-server port. The focused final show test passed on both
 engines afterward. This establishes local regression evidence, not full
-shipping parity or Bazel CI qualification; PR #151 CI remains pending.
+shipping parity or Bazel CI qualification; PR #151's historical and docs
+checks passed, while the stacked base PR #141's broad CI is still running.
 
 After restoring the positional `bd link` shipping JSON and human result, the
 compatibility-defaults workflow passed again on both engines. Installed
@@ -119,3 +120,11 @@ timestamp/status snapshot. The installed process test checks the initial human
 render, a title update on the next poll, and clean Ctrl+C termination on
 embedded and shared-server Dolt. Exact retained versions, missing IDs, and
 Memory selectors refuse before starting a long-running watch.
+
+The existing installed `TestGraphPreviewRemovedLinkVersionsTwoEngines` passed
+both its embedded and shared-server subtests against a local Dolt SQL server.
+It verifies that a removed Link lists only citable versions and that each
+listed token remains readable. `TestGraphPreviewVersionsCLI` also passed its
+Issue, Memory, Link, history-alias, attribution, and ordering cases on its
+embedded workspace. This is focused versions evidence; it does not establish
+full first-gate parity or broad CI success.
