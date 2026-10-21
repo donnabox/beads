@@ -173,6 +173,22 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			refuse("invalid_properties", "dep", "add", issue.ID, otherBlocker.ID, "--id", "links/different-block")
 			thirdBlocker := graphMixedResult[graphstore.IssueRecord](t, call("create", "Third prerequisite"))
 			refuse("identity_reserved", "dep", "add", issue.ID, thirdBlocker.ID, "--id", "links/chosen-block")
+			// The shipping positional form remains a Link creation route. Its
+			// first Issue is blocked by the second, and repeating the same pair
+			// must not allocate another Link or Issue version.
+			shorthandBlock := graphMixedResult[graphstore.DependencyResult](t, call("link", issue.ID, thirdBlocker.ID))
+			if !shorthandBlock.Changed || shorthandBlock.Source.ID != issue.ID || shorthandBlock.Link.Target != thirdBlocker.ID {
+				t.Fatalf("positional link reversed or omitted the blocking pair: %+v", shorthandBlock)
+			}
+			shorthandNoop := graphMixedResult[graphstore.DependencyResult](t, call("link", issue.ID, thirdBlocker.ID))
+			if shorthandNoop.Changed || shorthandNoop.Link.ID != shorthandBlock.Link.ID || shorthandNoop.Source.Revision != shorthandBlock.Source.Revision {
+				t.Fatalf("repeated positional link allocated another Dependency: %+v", shorthandNoop)
+			}
+			refuse("invalid_properties", "link", issue.ID, thirdBlocker.ID, "--type", "tracks")
+			shorthandTracks := graphMixedResult[graphstore.DependencyResult](t, call("link", otherBlocker.ID, thirdBlocker.ID, "--type", "tracks"))
+			if !shorthandTracks.Changed || shorthandTracks.Link.Source != otherBlocker.ID || shorthandTracks.Link.Target != thirdBlocker.ID || shorthandTracks.Link.Properties["dep_type"] != "tracks" {
+				t.Fatalf("positional link lost its explicit Dependency kind: %+v", shorthandTracks)
+			}
 			call("link", "delete", "--force", dependency.Link.ID, "--if-revision", dependency.Link.Revision)
 			propertyMemory := graphMixedResult[graphstore.Record](t, call("remember", "--id", "beads/property-memory", "--properties", `{"title":"Property title","body":"First body"}`))
 			merged := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", propertyMemory.ID, "--properties", `{"body":"Second body"}`, "--if-revision", propertyMemory.Revision))

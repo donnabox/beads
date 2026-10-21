@@ -4,6 +4,7 @@ package main
 
 import (
 	"encoding/json"
+	"strings"
 	"testing"
 
 	"github.com/steveyegge/beads/internal/storage/graphstore"
@@ -14,7 +15,7 @@ func TestGraphPreviewShowLegacyIssueJSON(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	work, home := t.TempDir(), t.TempDir()
 	graphPolicyCLI(t, bd, work, home, nil, "", "init", "--graph-mode", "link", "--prefix", "show", "--scope-url", "https://example.invalid/show/", "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
-	created := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "Visible issue", "--id", "beads/work", "--description", "Body", "--labels", "one,two", "--metadata", `{"review":true}`, "--json"))
+	created := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "Visible issue", "--id", "beads/work", "--description", "Body", "--labels", "one,two", "--estimate", "17", "--metadata", `{"review":true}`, "--json"))
 	prerequisite := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "Prerequisite", "--id", "beads/needs", "--json"))
 	// A native backing ID can also name a different canonical Bead. No ID in
 	// the Issue detail response may accidentally route to that Memory.
@@ -27,6 +28,23 @@ func TestGraphPreviewShowLegacyIssueJSON(t *testing.T) {
 	}
 	graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", "beads/work", "beads/needs", "--json")
 	current := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/work", "--format", "graph-json", "--json"))
+	human := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/work")
+	for _, want := range []string{"Visible issue", "DESCRIPTION", "Body", "LABELS:", "one, two", "DEPENDS ON", "Prerequisite"} {
+		if !strings.Contains(human, want) {
+			t.Fatalf("human Issue detail omitted %q: %s", want, human)
+		}
+	}
+	if strings.HasPrefix(strings.TrimSpace(human), "{") {
+		t.Fatalf("human Issue detail rendered a JSON record: %s", human)
+	}
+	short := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/work", "--short", "--json")
+	if !strings.Contains(short, "beads/work") || !strings.Contains(short, "Visible issue") || strings.Contains(short, "DESCRIPTION") || strings.HasPrefix(strings.TrimSpace(short), "{") {
+		t.Fatalf("--short did not retain shipping compact output precedence over --json: %s", short)
+	}
+	long := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/work", "--long")
+	if !strings.Contains(long, "EXTENDED DETAILS") || !strings.Contains(long, "Estimated: 17 minutes") {
+		t.Fatalf("--long omitted Issue extended fields: %s", long)
+	}
 
 	shown := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/work", "--json")
 	var details []types.IssueDetails
