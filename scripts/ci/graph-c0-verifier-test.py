@@ -520,6 +520,48 @@ class LaneShape(unittest.TestCase):
         self.assertEqual({k.arg: ast.literal_eval(k.value) for k in call.keywords}, {"groups": 3})
 
 
+class GraphHTTPDiscovery(unittest.TestCase):
+    def exercise(self, compiled=None, executed=None, excluded_source=False):
+        # Use the actual lane's source selection, so a filename-family
+        # omission fails here before it can exclude a newly added HTTP root.
+        [call] = [c for c in self_calls("execute", "tests")
+                  if ast.literal_eval(c.args[0]) == "./internal/httpapi"]
+        package, selector, label = [ast.literal_eval(call.args[i]) for i in (0, 1, 3)]
+        pattern = ast.literal_eval(call.args[2].args[0])
+        names = ["TestGraphReadHTTPFixture", "TestGraphReadHTTPPreservesEndpointPins"]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "graph_read_test.go").write_text(f"func {names[0]}(t *testing.T) {{}}\n")
+            (root / "graph_endpoint_pins_test.go").write_text(f"func {names[1]}(t *testing.T) {{}}\n")
+            (root / "unrelated_test.go").write_text("func TestUnrelated(t *testing.T) {}\n")
+            if excluded_source:
+                (root / "graph_future_test.go").write_text(
+                    "//go:build never\n\nfunc TestGraphReadBuildExcluded(t *testing.T) {}\n")
+            q = runner(directory)
+            q.counts, q.server = {}, without_server
+            listing = "\n".join(names if compiled is None else compiled).encode()
+            execution = go_events(names if executed is None else executed)
+            with mock.patch.object(q, "run", side_effect=[listing, execution]):
+                q.tests(package, selector, root.glob(pattern), label)
+            return q.counts
+
+    def test_matching_root_outside_read_filename_is_required(self):
+        self.assertEqual(self.exercise(), {"graph-http": 2})
+
+    def test_build_excluded_source_is_refused(self):
+        with self.assertRaisesRegex(RuntimeError, "source and compiled test discovery disagree"):
+            self.exercise(excluded_source=True)
+
+    def test_extra_compiled_root_is_refused(self):
+        with self.assertRaisesRegex(RuntimeError, "source and compiled test discovery disagree"):
+            self.exercise(compiled=["TestGraphReadHTTPFixture", "TestGraphReadHTTPPreservesEndpointPins",
+                                    "TestGraphReadUnexpected"])
+
+    def test_missing_execution_root_is_refused(self):
+        with self.assertRaisesRegex(RuntimeError, "test discovery/execution mismatch"):
+            self.exercise(executed=["TestGraphReadHTTPFixture"])
+
+
 class ReceiptTiming(unittest.TestCase):
     def test_every_path_records_elapsed_seconds(self):
         for name, code, timeout, failure in [
