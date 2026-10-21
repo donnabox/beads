@@ -97,6 +97,16 @@ bd create --type types/memory \
   --properties '{"title":"Code flow policy","body":"Keep the old policy as a versioned Memory."}'
 ```
 
+For an Issue description, `bd create` and `bd update` accept
+`--body-file PATH`, `--description-file PATH`, `--stdin`, or a description
+alias set to `-`. The same source rules apply in an ordinary workspace:
+an empty file or stdin replacement needs `--allow-empty-description`.
+
+```sh
+bd create 'Review deployment plan' --body-file plan.md
+bd update work --stdin < revised-plan.md
+```
+
 Use `bd types` in the selected workspace to discover its installed
 `types/NAME` IDs. Use the printed `types/NAME` selector or full local Type URL with `--type`;
 bare names retain their existing Issue or Dependency classification meaning. Do not assume a
