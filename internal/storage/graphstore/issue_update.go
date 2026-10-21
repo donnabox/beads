@@ -40,6 +40,7 @@ type UpdateIssueRequest struct {
 	PropertiesProvided, ClearEstimatedMinutes                 bool
 	Title, Description, Design, AcceptanceCriteria            *string
 	Priority                                                  *int
+	IssueType                                                 *types.IssueType
 	Status                                                    *types.Status
 	ExpectedStatus                                            *types.Status
 	ExpectedAssignee                                          *string
@@ -99,6 +100,10 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 	}
 	if request.Priority != nil {
 		patch.Priority = publicops.Field[int]{Set: true, Value: *request.Priority}
+		count++
+	}
+	if request.IssueType != nil {
+		patch.IssueType = publicops.Field[types.IssueType]{Set: true, Value: *request.IssueType}
 		count++
 	}
 	if request.Status != nil {
