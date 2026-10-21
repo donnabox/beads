@@ -35,7 +35,7 @@ func runGraphPreviewDepList(cmd *cobra.Command, selectors []string) error {
 		}
 	}
 	if jsonOutput {
-		return graphFailure("capability_unavailable", "graph dep list --json cannot preserve native single-Issue versus batch Dependency record shapes; use the human blocking view", 5)
+		return graphFailure("capability_unavailable", "graph dep list --json cannot preserve native single-Issue versus batch Dependency record shapes; use the human dependency view", 5)
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		links := make([]graphstore.LinkRecord, 0)
