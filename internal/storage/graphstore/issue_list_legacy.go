@@ -24,6 +24,19 @@ type LegacyIssueListPage struct {
 // one checked graph snapshot. The existing graph Issue list first validates
 // every selected record, including the over-fetched pagination probe.
 func (s *Store) ListIssuesLegacy(ctx context.Context, request publicops.ListRequest) (LegacyIssueListPage, error) {
+	return s.listIssuesLegacy(ctx, request, nil)
+}
+
+// ListIssuesLegacySelected keeps the parent resolution and counted legacy
+// projection in the same checked read transaction.
+func (s *Store) ListIssuesLegacySelected(ctx context.Context, request publicops.ListRequest, parent IssueSelector) (LegacyIssueListPage, error) {
+	if err := validateIssueSelector(parent); err != nil {
+		return LegacyIssueListPage{}, err
+	}
+	return s.listIssuesLegacy(ctx, request, &parent)
+}
+
+func (s *Store) listIssuesLegacy(ctx context.Context, request publicops.ListRequest, parent *IssueSelector) (LegacyIssueListPage, error) {
 	includeComments := request.IncludeComments
 	request.IncludeComments = false
 	request, err := prepareIssueListRequest(request)
@@ -33,7 +46,7 @@ func (s *Store) ListIssuesLegacy(ctx context.Context, request publicops.ListRequ
 	request.IncludeComments = includeComments
 	var result LegacyIssueListPage
 	err = s.withTx(ctx, false, func(tx *sql.Tx) error {
-		page, err := s.listIssuesInTx(ctx, tx, request)
+		page, err := s.listIssuesWithParentInTx(ctx, tx, &request, parent)
 		if err != nil {
 			return err
 		}
@@ -46,13 +59,40 @@ func (s *Store) ListIssuesLegacy(ctx context.Context, request publicops.ListRequ
 			return err
 		}
 		filter.SkipCounts = false
-		if filter.Limit > PreviewSnapshotLimit {
+		if parent != nil || filter.Limit > PreviewSnapshotLimit {
 			filter.Limit = PreviewSnapshotLimit
 		}
-		filter = workapi.WithFetchOneExtra(workapi.WithRowsBeforeThePage(filter, request.Offset))
+		if parent == nil {
+			filter = workapi.WithFetchOneExtra(workapi.WithRowsBeforeThePage(filter, request.Offset))
+		} else {
+			filter.MaxRows = 0
+		}
 		rows, err := issueops.SearchIssuesWithCountsInTx(ctx, tx, "", filter)
 		if err != nil {
 			return err
+		}
+		if parent != nil {
+			parentNativeID, parentPath, err := s.resolveIssueListParentInTx(ctx, tx, *parent)
+			if err != nil {
+				return err
+			}
+			selected := make([]*types.IssueWithCounts, 0, len(rows))
+			for _, row := range rows {
+				if row == nil || row.Issue == nil {
+					return fmt.Errorf("%w: nil counted Issue list row", ErrInvalidStore)
+				}
+				var path string
+				if err := tx.QueryRowContext(ctx, "SELECT path FROM graph_preview_catalog WHERE backing='issue' AND backing_key=? AND allocation_state='live'", row.ID).Scan(&path); err != nil {
+					return fmt.Errorf("%w: unmapped counted Issue list row: %v", ErrInvalidStore, err)
+				}
+				if err := validatePath(path); err != nil {
+					return fmt.Errorf("%w: malformed counted Issue list path: %v", ErrInvalidStore, err)
+				}
+				if issueListParentMatches(row, path, parentNativeID, parentPath) {
+					selected = append(selected, row)
+				}
+			}
+			rows = selected
 		}
 		var more bool
 		if request.SortBy == "id" {
