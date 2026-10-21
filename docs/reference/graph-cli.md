@@ -95,8 +95,19 @@ initial Issue status and defaults to `open`; the native Issue writer validates
 built-in and configured custom statuses. Generated Memory IDs
 remain random `beads/` paths; generated Link IDs remain under `links/`.
 
+For an ordinary Issue create, `--deps` accepts local Issue targets with the
+shipping dependency spellings. Bare `ID`, `blocked-by:ID`, and
+`depends-on:ID` make the new Issue depend on that target; `blocks:ID` makes
+the target depend on the new Issue. The Issue and each canonical Link are
+created in one transaction. Targets must be live local Issues. Graph mode
+explicitly refuses `external:` targets and currently cannot combine `--deps`
+with `--parent` or dependency-bearing markdown batch creation. Use a full
+native Issue ID or explicit `beads/PATH` for a target; shipping partial-ID
+abbreviations are not yet resolved by this graph create route.
+
 ```sh
 bd create 'Move the release branch' --id mp-work --type task --status open
+bd create 'Run release checks' --deps blocked-by:mp-work
 bd create --type types/memory \
   --properties '{"title":"Code flow policy","body":"Keep the old policy as a versioned Memory."}'
 ```
