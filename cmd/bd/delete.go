@@ -52,7 +52,8 @@ Force: Delete and orphan dependents
 
 GRAPH PREVIEW:
 In a graph-mode link workspace, delete previews one unreferenced Memory or Issue.
---force applies the deletion; --if-revision TOKEN optionally rejects stale state. Identity and
+--dry-run explicitly requests that read-only preview, even with --force.
+Without --dry-run, --force applies the deletion; --if-revision TOKEN optionally rejects stale state. Identity and
 prior snapshots remain retained. Live incident Links refuse; cascade, batch,
 and file selection are unavailable in this graph slice.`,
 	Args:          cobra.MinimumNArgs(0),

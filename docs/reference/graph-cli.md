@@ -400,9 +400,10 @@ bd reopen work review --reason 'Follow-up needed'
 ```
 
 `bd delete ID` previews deletion of one unreferenced Memory or Issue without
-changing storage; `--force` applies it. `bd forget ID` applies Memory deletion
-directly and does not accept Issues. Applying either command requires an
-explicit write choice, shown here with `--unconditional`. Any live incoming,
+changing storage; `--dry-run` explicitly requests the same read-only preview,
+even with `--force`. Without `--dry-run`, `--force` applies deletion.
+`bd forget ID` applies Memory deletion directly and does not accept Issues.
+An optional `--if-revision TOKEN` guard rejects a stale target. Any live incoming,
 outgoing or self-Link makes deletion refuse; `--force` does not cascade.
 Memory refusal names the first blocking Link ID and the total count. Issue
 refusal lists the incident Link IDs; unlink them explicitly before retrying
@@ -411,19 +412,21 @@ with a fresh revision.
 ```sh
 bd remember 'Temporary note' --id scratch
 bd delete scratch
-bd delete scratch --force --unconditional
+bd delete scratch --dry-run --force # Still a preview
+bd delete scratch --force
 # Or, for another unreferenced Memory:
 bd remember 'Another temporary note' --id other-scratch
-bd forget other-scratch --unconditional
-# An unreferenced Issue follows the same preview and guarded apply shape:
+bd forget other-scratch
+# An unreferenced Issue follows the same preview and apply shape:
 bd create 'Temporary task' --id temp-work
 bd delete temp-work
-bd delete temp-work --force --unconditional
+bd delete temp-work --force
 ```
 
-Deletion removes current Bead state but reserves its ID and retains prior
-snapshots. It does not create a graph deletion version or promise erasure or
-restore. Native Issue deletion records its ordinary delete journal event.
+Deletion removes current Bead state but reserves its ID and retains prior live
+snapshots. The terminal deletion revision is separate from citable Resource
+versions; deletion does not promise erasure or restore. Native Issue deletion
+records its ordinary delete journal event.
 
 Use `bd defer ID...` to set Issues aside and `bd undefer ID...` to return
 deferred Issues to open. An undated defer stays in the icebox until undeferred.
