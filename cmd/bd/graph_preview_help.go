@@ -281,16 +281,18 @@ BEADS_MAX_ROWS refuses a page of more Beads than that.
 Issue-specific filters (--status, --type, --title, --title-contains,
 --priority, --priority-min, --priority-max, --assignee, --no-assignee,
 --label, --label-any, --exclude-label, --pinned, --no-pinned, --due-before,
---due-after, --overdue, --sort, --reverse) or a matching configured
+--due-after, --overdue, --sort, --reverse, --long) or a matching configured
 directory label switch to the existing Issue query: Issues only, closed and
 pinned Issues omitted unless --all or a filter selects them, quoted rows
 with status and priority, and a line under the header saying Memories are
 not listed. An Issue filter cannot be combined with a non-Issue --type;
 a configured directory label alone does not refuse one, it is simply not
-applied to Memories. Tree output is unavailable; --tree=false selects the
-same flat output as --flat. --json and --format json
-return the ordinary Issue-only array; use --format records-json for generic
-Bead records.`},
+applied to Memories. --sort accepts priority, created, updated, closed,
+title, status, type, id and assignee; id orders canonical local Bead IDs
+before the result limit. Tree output is unavailable; --tree=false selects
+the same flat output as --flat. --long uses the ordinary detailed Issue
+presentation. --json and --format json return the ordinary
+Issue-only array; use --format records-json for generic Bead records.`},
 		{searchCmd, `Search current graph Issues by title or canonical local Bead ID.
 Results include closed Issues unless --status narrows them. --json returns the
 ordinary counted Issue row array with Scope-relative IDs. Supported filters:

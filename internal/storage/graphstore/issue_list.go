@@ -14,6 +14,7 @@ import (
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
+	"github.com/steveyegge/beads/internal/utils"
 	"github.com/steveyegge/beads/internal/workapi"
 	publicops "github.com/steveyegge/beads/issueops"
 )
@@ -70,7 +71,7 @@ func prepareIssueListRequest(in publicops.ListRequest) (publicops.ListRequest, e
 		return publicops.ListRequest{}, fmt.Errorf("%w: unsupported graph Issue list option", ErrCapabilityUnavailable)
 	}
 	switch in.SortBy {
-	case "", "priority", "created", "updated", "title", "status", "type":
+	case "", "priority", "created", "updated", "closed", "title", "status", "type", "id", "assignee":
 	default:
 		return publicops.ListRequest{}, fmt.Errorf("%w: unsupported graph Issue list sort", ErrCapabilityUnavailable)
 	}
@@ -217,7 +218,22 @@ func (s *Store) listIssuesInTx(ctx context.Context, tx *sql.Tx, request publicop
 	}
 	// Validate the over-fetched probe before trimming it: HasMore must never
 	// conceal a malformed queried record. Preserve the shared query/page order.
-	rows, more := workapi.FinishPageAt(rows, request.SortBy, request.Reverse, request.Offset, workapi.PageLimit(request), false)
+	sortBy, reverse := request.SortBy, request.Reverse
+	if sortBy == "id" {
+		// Native Issue IDs are backing keys, not the graph IDs users selected.
+		// Sort the complete checked set by canonical paths before page trimming.
+		slices.SortStableFunc(rows, func(a, b *types.IssueWithCounts) int {
+			left := strings.TrimPrefix(records[a.ID].ID, s.ScopeURL())
+			right := strings.TrimPrefix(records[b.ID].ID, s.ScopeURL())
+			order := utils.NaturalCompareIDs(left, right)
+			if reverse {
+				return -order
+			}
+			return order
+		})
+		sortBy, reverse = "", false
+	}
+	rows, more := workapi.FinishPageAt(rows, sortBy, reverse, request.Offset, workapi.PageLimit(request), false)
 	result := IssueListPage{Items: make([]IssueRecord, 0, len(rows)), HasMore: more}
 	for _, row := range rows {
 		result.Items = append(result.Items, records[row.ID])
