@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"database/sql/driver"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -254,12 +255,16 @@ const exportCleanupToken = "0123456789abcdef0123456789abcdef"
 type exportCleanupFaults struct {
 	rollback, commentClose, commentNext, connectionClose error
 	commentValues                                        [][]driver.Value
+	pinned                                               bool
 }
 
 type exportCleanupDriver struct {
 	faults                                                      exportCleanupFaults
 	options                                                     Options
 	descriptors                                                 map[string]graph.TypeDescriptor
+	memory                                                      Record
+	link                                                        LinkRecord
+	pinnedReads                                                 atomic.Int64
 	begins, rollbacks, commits, commentCloses, connectionCloses atomic.Int64
 	foreignKeyReads, foreignKeyRestores                         atomic.Int64
 }
@@ -280,6 +285,12 @@ func exportCleanupStore(t *testing.T, faults exportCleanupFaults) (*Store, *expo
 			t.Fatal(err)
 		}
 		d.descriptors[definition.name] = descriptor
+	}
+	if faults.pinned {
+		scope := d.options.Binding.ScopeURL
+		attribution := Attribution{Status: "unknown", RecordedAt: "2026-10-20T00:00:00Z"}
+		d.memory = Record{ID: scope + "beads/memory", Type: MemoryTypeURL(scope), Revision: exportCleanupToken, Version: exportCleanupToken, Properties: Properties{Title: "Memory"}, Metadata: json.RawMessage(`{}`), Owned: []json.RawMessage{}, Attribution: attribution}
+		d.link = LinkRecord{ID: scope + "links/reference", Type: scope + "types/references", Revision: exportCleanupToken, Version: exportCleanupToken, Source: d.memory.ID, Target: d.memory.ID, TargetRevision: d.memory.Revision, Properties: map[string]any{}, Metadata: json.RawMessage(`{}`), Attribution: attribution}
 	}
 	db := sql.OpenDB(d)
 	db.SetMaxOpenConns(1)
@@ -334,6 +345,11 @@ func (c *exportCleanupConn) ExecContext(_ context.Context, query string, _ []dri
 func (c *exportCleanupConn) QueryContext(_ context.Context, query string, args []driver.NamedValue) (driver.Rows, error) {
 	q := strings.Join(strings.Fields(strings.ToLower(query)), " ")
 	d := c.owner
+	if d.faults.pinned {
+		if rows, handled, err := d.pinnedRows(q, args); handled {
+			return rows, err
+		}
+	}
 	row := func(columns []string, values ...driver.Value) driver.Rows {
 		return &exportCleanupRows{columns: columns, values: [][]driver.Value{values}}
 	}
@@ -345,7 +361,7 @@ func (c *exportCleanupConn) QueryContext(_ context.Context, query string, args [
 		return row([]string{"branch"}, "main"), nil
 	case q == "select count(*) from graph_preview_types":
 		return row([]string{"count"}, int64(len(d.descriptors))), nil
-	case strings.HasPrefix(q, "select descriptor, fingerprint from graph_preview_types where name=?"):
+	case strings.HasPrefix(q, "select descriptor, fingerprint from graph_preview_types where name=?"), strings.HasPrefix(q, "select descriptor,fingerprint from graph_preview_types where name=?"):
 		if len(args) != 2 {
 			return nil, fmt.Errorf("cleanup descriptor lookup arguments: %v", args)
 		}
@@ -378,6 +394,122 @@ func (c *exportCleanupConn) QueryContext(_ context.Context, query string, args [
 		return row([]string{"count"}, int64(0)), nil
 	default:
 		return nil, fmt.Errorf("unsupported cleanup fixture query: %s", query)
+	}
+}
+
+// The optional two-record arm supplies only the queries needed to exercise
+// actual detached hydration followed by database/sql cleanup. Mapping/accounting
+// correctness remains covered by the real-engine export tests.
+func (d *exportCleanupDriver) pinnedRows(q string, args []driver.NamedValue) (driver.Rows, bool, error) {
+	row := func(values ...driver.Value) (driver.Rows, bool, error) {
+		columns := make([]string, len(values))
+		return &exportCleanupRows{columns: columns, values: [][]driver.Value{values}}, true, nil
+	}
+	encode := func(value any) ([]byte, error) { return canonicalJSON(value) }
+	memory, link := d.memory, d.link
+	switch {
+	case strings.HasPrefix(q, "select path,backing,resource_kind from graph_preview_catalog"):
+		return &exportCleanupRows{columns: []string{"path", "backing", "kind"}, values: [][]driver.Value{{"beads/memory", "generic", "bead"}, {"links/reference", "informational", "link"}}}, true, nil
+	case strings.HasPrefix(q, "select resource_kind, type_url, revision, allocation_state, backing from"):
+		return row("bead", memory.Type, memory.Revision, "live", "generic")
+	case strings.HasPrefix(q, "select properties, metadata from graph_preview_payloads"):
+		properties, err := encode(memory.Properties)
+		if err != nil {
+			return nil, true, err
+		}
+		return row(properties, []byte(`{}`))
+	case strings.HasPrefix(q, "select snapshot, actor from graph_preview_versions"), strings.HasPrefix(q, "select snapshot,actor from graph_preview_versions"):
+		value := any(memory)
+		if len(args) > 0 && args[0].Value == "links/reference" {
+			value = link
+		} else if strings.HasPrefix(q, "select snapshot,actor") {
+			d.pinnedReads.Add(1)
+		}
+		raw, err := encode(value)
+		if err != nil {
+			return nil, true, err
+		}
+		return row(raw, "")
+	case strings.HasPrefix(q, "select type_url from graph_preview_catalog where path=?"):
+		return row(memory.Type)
+	case strings.HasPrefix(q, "select l.path,c.type_url from graph_preview_links"):
+		return &exportCleanupRows{columns: []string{"path", "type"}, values: [][]driver.Value{{"links/reference", link.Type}}}, true, nil
+	case q == "select backing from graph_preview_catalog where path=?":
+		return row("informational")
+	case q == "select allocation_state from graph_preview_catalog where path=?":
+		return row("live")
+	case strings.HasPrefix(q, "select resource_kind,type_url,revision,allocation_state,backing,backing_key from"):
+		return row("link", link.Type, link.Revision, "live", "informational", nil)
+	case strings.HasPrefix(q, "select source_path,target_path,source_revision,target_revision,properties,metadata,attribution from"):
+		attribution, err := encode(link.Attribution)
+		if err != nil {
+			return nil, true, err
+		}
+		return row("beads/memory", "beads/memory", "", memory.Revision, []byte(`{}`), []byte(`{}`), attribution)
+	case strings.HasPrefix(q, "select resource_kind,type_url,allocation_state,backing from"):
+		return row("bead", memory.Type, "live", "generic")
+	case strings.HasPrefix(q, "select resource_kind,backing,allocation_state,"):
+		return row("bead", "generic", "live", memory.Type, nil)
+	case strings.HasPrefix(q, "select exists(select 1 from graph_preview_versions where path=? and version=?"):
+		return row(true)
+	case strings.HasPrefix(q, "select backing,resource_kind,allocation_state,revision,"):
+		return row("generic", "bead", "live", memory.Revision, memory.Type, nil)
+	case strings.HasPrefix(q, "select octet_length(snapshot)+octet_length(actor)"):
+		raw, err := encode(memory)
+		if err != nil {
+			return nil, true, err
+		}
+		return row(int64(len(raw)))
+	}
+	return nil, false, nil
+}
+
+func TestExportPinnedEndpointCleanup(t *testing.T) {
+	for _, kind := range []string{"success", "comments", "rollback", "bad-connection", "cancel"} {
+		t.Run(kind, func(t *testing.T) {
+			fault := errors.New("cleanup after retained endpoint hydration")
+			faults := exportCleanupFaults{pinned: true}
+			switch kind {
+			case "comments":
+				faults.commentClose = fault
+			case "rollback":
+				faults.rollback = fault
+			case "bad-connection":
+				faults.rollback = errors.Join(fault, driver.ErrBadConn)
+			}
+			s, d := exportCleanupStore(t, faults)
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			if kind == "cancel" {
+				s.afterWrite = func(stage string) error {
+					if stage == "export-comments" {
+						cancel()
+					}
+					return nil
+				}
+			}
+			state, err := s.ExportCurrentSnapshot(ctx)
+			if d.pinnedReads.Load() != 1 {
+				t.Fatalf("did not hydrate exact retained endpoint before cleanup: reads=%d err=%v", d.pinnedReads.Load(), err)
+			}
+			if kind == "success" {
+				if err != nil || len(state.PinnedEndpoints) != 1 || !reflect.DeepEqual(state.PinnedEndpoints[0], d.memory) {
+					t.Fatalf("nonempty cleanup control: %+v %v", state, err)
+				}
+			} else {
+				cause := fault
+				if kind == "cancel" {
+					cause = context.Canceled
+				}
+				if !errors.Is(err, cause) || !reflect.DeepEqual(state, ExportCurrentState{}) {
+					t.Fatalf("retained state leaked/lost cleanup cause: %+v %v", state, err)
+				}
+				if kind == "bad-connection" && (!errors.Is(err, driver.ErrBadConn) || !errors.Is(err, sql.ErrConnDone) || d.connectionCloses.Load() != 1) {
+					t.Fatalf("bad connection cleanup chain: %v", err)
+				}
+			}
+			exportCleanupTransactionCount(t, s, d)
+		})
 	}
 }
 
