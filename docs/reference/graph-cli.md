@@ -230,16 +230,21 @@ default grace period is longer than zero. Scope flags include repeatable
 `--any-replica`; use the latter only when recovering a lease from a departed
 replica. `bd set-state` and `bd gate` still refuse in graph mode.
 
-## Blocking dependency views
+## Dependency views
 
-`bd dep list ISSUE`, `bd dep tree ISSUE`, `bd dep cycles`, `bd graph ISSUE`
-and `bd graph check` read the current blocking Dependency graph. The tree
+`bd dep list ISSUE` shows all native Dependency kinds by default, including
+non-blocking kinds such as `tracks` and `related`. Use `--type KIND` to select
+one exact kind (for example, `--type blocks`), or `--direction up` to list
+dependents. The human output names the kind after `via`.
+
+`bd dep tree ISSUE`, `bd dep cycles`, `bd graph ISSUE`, and `bd graph check`
+read the current blocking Dependency graph. The tree
 supports `--direction down|up|both`; its both-direction human view labels
 dependencies and dependents separately. `bd graph check --json` returns the
 ordinary flat check object and local Issue IDs in its `cycles`. The existing
 `bd graph ISSUE --view generic` still traverses generic Links.
 
-These views read a complete bounded graph snapshot. `bd graph ISSUE` and
+These views use checked, bounded reads. `bd graph ISSUE` and
 `bd dep tree ISSUE` refuse a positive `--max-rows` cap that would make their
 blocking answer incomplete.
 `dep list/tree/cycles --json` and `graph ISSUE --json` refuse until their
@@ -282,8 +287,8 @@ bd graph check --json
 bd graph plan --view generic --direction out --depth 2 --json
 ```
 
-`dep list --direction up` lists dependents instead; `dep tree` also accepts
-`--max-depth` and deprecated `--reverse` (equivalent to `--direction up`).
+`dep tree` also accepts `--max-depth` and deprecated `--reverse` (equivalent
+to `--direction up`).
 `dep cycles --limit N` caps displayed cycles, not the count reported.
 `dep list/tree/cycles --json` and `graph ISSUE --json` refuse because the
 ordinary JSON shapes are not yet preserved. A positive `--max-rows` or
