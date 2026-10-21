@@ -32,7 +32,7 @@ design is settled.
 | `q --parent ID` | Quick capture under a parent. | Explicitly refuses; `create --parent` is the current graph path. | Missing convenience behavior; check Issue identity and title defaults before routing. |
 | `update ISSUE` text sources | Ordinary command accepts stdin/file sources for supported text edits. | Graph route currently accepts inline text only. | Missing input behavior; preserve source precedence and mixed-field atomicity. |
 | `create --file` Markdown dependencies | Ordinary Markdown import can create Issue relationships. | Graph route refuses templates requiring mapped Links. | Missing capability; requires atomic Issue/Link mapping, not a CLI-only flag change. |
-| `list --limit` and `query --limit` | A page of Issues, default 50 unless context changes it; explicit zero means unlimited. `--offset` is proxied-server-only. JSON is a bare Issue array. | Legacy graph Issue JSON keeps the array shape. Canonical collection output has a separate page contract and refuses a truncated selection until retained continuation exists. | Preserve legacy output for the admitted Issue route. Keep canonical collection paging as separate provider work. |
+| `list --limit` and `query --limit` | A page of Issues, default 50 unless context changes it; explicit zero means unlimited. `--offset` is proxied-server-only. JSON is a bare Issue array. | Legacy graph Issue JSON keeps the array shape. Canonical collection output has a separate page contract and refuses a truncated selection until retained continuation exists. | Preserve the shipping limit and output behavior for admitted Issue routes. Canonical continuation work is deferred for Preview 3; do not invent a cursor. Generic query design awaits Melinda. |
 
 The first `blocked --parent` repair passed installed-process tests for an
 embedded graph workspace, including a graph/native ID mismatch and an
@@ -48,18 +48,46 @@ ledger and a larger target inventory. Its target rows are not evidence that
 the current binary already supports an option. Continue this audit against
 the actual built commands and refresh the ledger after each qualified slice.
 
+## Parallel parity sweep (partial)
+
+The following findings compare shipping `v1.3.1` with Preview 3 integration
+`dd6b9359b` and, where noted, an installed binary built from this PR at
+`0f32273e7`. The discovery, write and relationship sweeps stopped before an
+exhaustive flag matrix or final regression suite. Code-backed observations are
+distinguished from disposable-workspace execution below.
+
+| Priority | Route | Verified discrepancy | Next bounded decision or repair |
+| --- | --- | --- | --- |
+| P1 | `defer`/`undefer ID...` | Embedded graph `defer second missing --json` changed `second`, reported the missing ID on stderr, and exited 0; shipping direct-Dolt `defer` exited 1 without changing `second`. Graph source and an existing workflow test explicitly select the ordinary **proxied** route's partial-success behavior, which also exits 0. | Decide which shipping backend contract graph mode should follow before editing. In either case, a warning plus exit 0 must be clearly documented and tested for both verbs. Do not silently treat this as an accidental implementation bug. |
+| P1 | `search --type feat` | Installed graph smoke returned zero while `--type feature` returned one. Shipping normalizes the `feat` alias. Graph `runGraphPreviewSearch` passes the raw Type; this silently hides a matching Issue. | Normalize the Issue Type using the shipping helper and test both spellings. |
+| P1 | `show ID` human output | Installed graph smoke began with a raw JSON object; shipping renders an Issue detail document. Current-Issue `show --json` retains its legacy array shape in an existing graph test. | Restore Issue detail presentation for human output while retaining the canonical and legacy JSON contracts. |
+| P1 | `ready --parent ID` | Shipping admits parent-scoped readiness; installed graph smoke refused `--parent` as `capability_unavailable`. This PR restores the same parent selector for `blocked`. | Resolve the parent in the ready read/claim transaction; test eligibility and atomic claim under the parent. |
+| P1 | `dep list` | Shipping lists all dependency kinds and has distinct single-anchor and batch `--json` shapes. Graph `dep list` is blocks-only and refuses JSON; installed smoke showed a `tracks` Link under `link list --incident-to`, while `dep list` said no blocking Dependencies. | Restore the facade's kinds and output shapes without changing canonical `bd link`; test single and batch forms. |
+| P1/P2 | `create --deps` and `create --file` relationships | Shipping can create dependencies with the Issue; graph refuses the combined form. Separate `create` and `dep add` are available but do not preserve one-operation failure behavior. | Design an atomic Issue-plus-Link creation route and test rollback; keep this separate from quick flag-admission repairs. |
+| P2 | `q --parent`, `create --body-file`; `update` text/label/status flags | Installed graph smoke refused shipping forms including `q --parent`, `create --body-file`, `update --description=-`, `--add-label`, `--if-status`, and `--status`. | Split into small input/selector and mutation-policy slices, preserving guard and source precedence. |
+| P2 | `list`, `children`, `graph` presentation | Graph explicitly refuses shipping `list --parent/--no-parent/--ready/--pretty/--tree`, `children --pretty`, and several filters. `graph ISSUE` has a simpler blocking view and refuses shipping render switches; the latter is documented as an intentional graph change. | Prioritize common Issue filters and tree usability only after confirming which output changes are intentional. |
+| P2 | `dep add --file`, `dep tree`, `dep cycles` | Graph refuses shipping bulk import and options such as tree status/Mermaid output and cycle inclusion of tracks. Source and installed smoke confirm representative refusals. | Preserve one ordinary facade at a time; test nonblocking relationships where supported. |
+| P2 | `delete --cascade --dry-run` | Shipping previews a cascade; graph explicitly refuses it. A disposable shipping workspace reported two Issues and one dependency for a representative cascade. | Decide graph deletion policy and preview shape before implementing any destructive cascade. |
+
+`bd link SOURCE TARGET` and `bd dep rm` retain shipping shorthand. Neither the
+shipping tag nor the tested Preview 3 binary registers a top-level `bd links`
+command; the graph code contains an unregistered candidate, which is not CLI
+surface. `todo` add/list/done, state read, merge-slot verbs and legacy import
+are admitted. Shipping `set-state` and `export` are refused in graph mode.
+These are inventory findings, not release qualification for those routes.
+
 ## Next comparison batches
 
-1. Read-only Issue discovery: `list`, `show`, `ready`, `blocked`, `search`,
-   `count`, `query`, `children`, `graph`, including default filters, order,
-   limits and both output modes. Do not redesign the query language in this
-   batch.
+1. Read-only Issue discovery: `list`, `show`, `search`, `count`, `children`,
+   `graph`, including default filters, order, limits and both output modes.
+   Inventory the existing `query` route where it affects parity, but defer its
+   generic language and execution changes until Melinda's design lands.
 2. Single-Issue writes: `create`, `q`, `update`, `close`, `reopen`, `defer`,
    `undefer`, `delete`, `assign`, `priority`, `note`, with omitted and explicit
    flags, guard behavior and failure atomicity.
-3. Existing Dependency and workflow facades: `dep`, `links`, `ready --claim`,
-   `todo`, `state`, `merge-slot`, and import/export where admitted. Keep Link
-   canonical behavior and ordinary Issue JSON compatibility distinct.
+3. Existing Dependency and workflow facades: `dep`, `links`, `ready`,
+   `blocked`, `todo`, `state`, `merge-slot`, and import/export where admitted.
+   Keep Link canonical behavior and ordinary Issue JSON compatibility distinct.
 
 For each batch, add an installed-command regression test only where it covers
 a real process, persistence or output boundary that existing tests miss. Record
