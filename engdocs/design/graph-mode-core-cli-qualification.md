@@ -68,4 +68,9 @@ selected server subtests for those three plus Markdown create, Issue delete,
 hidden-Issue list, and removed-Link versions also passed. The full familiar
 show test, including `--short`, `--long`, `--comments-tail`, legacy JSON and
 canonical JSON, passed on embedded and shared-server Dolt. The complete
-graph-mode test run and remote CI remain separate qualification gates.
+graph/canonical test selection, started before the final short/long and
+comment-tail edit, completed successfully: 285 top-level tests passed, one
+top-level server-only race test skipped, and 64 subtests skipped without a
+configured shared-server port. The focused final show test passed on both
+engines afterward. This establishes local regression evidence, not full
+shipping parity or Bazel CI qualification; PR #151 CI remains pending.
