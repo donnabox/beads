@@ -9,6 +9,8 @@ import (
 	"github.com/spf13/cobra"
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/internal/types"
+	"github.com/steveyegge/beads/internal/utils"
 )
 
 func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
@@ -127,14 +129,21 @@ func runGraphPreviewUpdateMemory(cmd *cobra.Command, path string) error {
 			return nil, "", err
 		}
 		if _, ok := current.(graphstore.IssueRecord); ok {
-			if typeURL != "" {
-				return nil, "", graphFailure("capability_unavailable", "native Issue Type changes require their domain writer", 5)
-			}
-			var values map[string]any
-			if err := json.Unmarshal(rawValues, &values); err != nil {
-				return nil, "", err
+			values := make(map[string]any)
+			if len(rawValues) != 0 {
+				if err := json.Unmarshal(rawValues, &values); err != nil {
+					return nil, "", err
+				}
 			}
 			request := graphstore.UpdateIssueRequest{Path: path, Actor: getActorWithGit(), ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata}
+			if typeURL != "" {
+				selector, _ := cmd.Flags().GetString("type")
+				if graphPreviewNominalSelector(selector) {
+					return nil, "", graphFailure("capability_unavailable", "native Issue Type changes require their domain writer", 5)
+				}
+				classification := types.IssueType(utils.NormalizeIssueType(selector))
+				request.IssueType = &classification
+			}
 			request.ForceNotesOverwrite, _ = cmd.Flags().GetBool("force")
 			if err := graphPreviewApplyIssueProperties(cmd, &request, values); err != nil {
 				return nil, "", err
