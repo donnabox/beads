@@ -39,9 +39,10 @@ the incident-Link listing form.
    `audit-y9x`. `bd create Child --parent audit-parent` then creates a child
    named `beads/audit-y9x.1`, not shipping's `audit-parent.1`; dependency
    output mixes the two identities. This reproduced on embedded and real
-   shared-server Dolt. The graph model deliberately permits independent
-   canonical and native IDs, so this needs an explicit compatibility decision
-   before a fix or release claim. See the [A–M evidence](preview3-cli-parity/issue-a-m.md).
+   shared-server Dolt. Donna selected shipping identity for a flat bare
+   `--id`; [#180](https://github.com/donnabox/beads/pull/180) implements and
+   tests that rule but remains unmerged. Explicit graph-qualified paths may
+   retain independent IDs. See the [A–M evidence](preview3-cli-parity/issue-a-m.md).
 2. **P1: `bd dep list` silently omits nonblocking kinds.** Graph `dep add
    --type tracks` succeeds, yet default `dep list` can say “No blocking
    Dependencies.” Shipping lists that edge. [#165](https://github.com/donnabox/beads/pull/165)
@@ -72,7 +73,7 @@ these answers; neither fix is present in the pinned integration commit.
 | `close` | Single close and no-op work. | A batch may close earlier IDs then fail on a later one; JSON differs; `--continue` and `--no-auto` refuse. |
 | `comment` | Issue comment write works. | Comments on non-Issue Beads are unavailable; graph `issue_id` uses a canonical path. |
 | `comments` | Issue feed and `comments add` work. | Non-Issue comments are unavailable; custom-author/file combinations were not fully retested. |
-| `create` | Omitted `--type` creates a task; admitted inline Issue and Memory forms work. | Explicit-ID child identity is P1; initial status, atomic `--deps`, dry run and several file/batch/routing forms refuse. #152 and #159 are unmerged subsets. |
+| `create` | Omitted `--type` creates a task; admitted inline Issue and Memory forms work. | Explicit-ID child identity is P1 at the pinned commit; #180 fixes bare-ID alignment but is unmerged. Initial status, atomic `--deps`, dry run and several file/batch/routing forms refuse. #152 and #159 are unmerged subsets. |
 | `create-form` | Explicit refusal. | Interactive Issue creation is unavailable. |
 | `delete` | One unreferenced Bead can be previewed and force-deleted with a retained tombstone. | Linked Beads refuse; multi-ID, cascade, `--from-file`, and `--dry-run` refuse at this commit. #163 is an unmerged single-ID dry-run alias. |
 | `edit` | Tested one-field editor no-op works. | Both shipping and graph require an ID despite `[id]` help; combining field flags enters shipping's editor but refuses in graph mode. Actual editor mutation was not requalified; Memory editing refuses. |
@@ -129,7 +130,7 @@ these answers; neither fix is present in the pinned integration commit.
   relevant candidates are #159 (`create --silent`), #158 (list sort/long),
   #163 (single-ID `delete --dry-run`), #164 (forced assignee update), #161
   (positional custom Dependency kinds), #174 (native-kind Link collection
-  filters), and the stacked #166/#169–#172 list parent/tree chain. Their
+  filters), #180 (bare explicit Issue ID), and the stacked #166/#169–#172 list parent/tree chain. Their
   passing individual checks do not validate the assembled branch or cover
   every shipping form.
 - **No complete repair PR yet.** Issue `create --deps`, initial status and
@@ -139,18 +140,19 @@ these answers; neither fix is present in the pinned integration commit.
   implement and qualify. Some need a graph transaction primitive, not just a
   CLI flag. Their explicit refusals are safer than a false success, but they
   are still shipping parity gaps.
-- **Decisions before implementation.** The native/canonical Issue-ID split
-  affects explicit IDs, dotted children and dependency projection. Mixed
-  `close` batch failure differs from shipping direct-Dolt behavior. Legacy
-  Issue JSON shapes and graph-record output differ on several commands.
-  Resolve those contracts with Donna rather than silently encoding a guess.
+- **Decisions before implementation.** Donna selected native ID alignment
+  for flat bare `create --id`; #180 carries it, while graph-qualified path
+  semantics remain distinct. Mixed `close` batch failure differs from
+  shipping direct-Dolt behavior. Legacy Issue JSON shapes and graph-record
+  output differ on several commands. Resolve those contracts with Donna
+  rather than silently encoding a guess.
 - **CRUD+ is not complete.** The selected combined test validates a useful
   basic path, while the create-ID defect, missing familiar flags and output
   differences above still block an unqualified “v1.3.1 parity” claim. Promote
   fixes by actual command value and dependency, then rerun the exact shipping
   forms against the assembled branch on embedded and shared-server Dolt.
-- **Fix silent wrong answers before broadening the surface.** Resolve the
-  explicit-ID child contract and integrate/qualify an all-kind `dep list` fix
+- **Fix silent wrong answers before broadening the surface.** Integrate and
+  qualify the explicit-ID child fix and an all-kind `dep list` fix
   before advertising compatibility. Correct the status capability bit so
   automation receives truthful feature discovery.
 - **Keep explicit boundaries visible.** Legacy `dep` and domain commands can
