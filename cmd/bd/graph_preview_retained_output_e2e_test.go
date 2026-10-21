@@ -255,6 +255,63 @@ func graphCanonicalRetainedOutputCLI(t *testing.T, engine string) {
 	if afterDelete := call("link", "versions", "links/edge", "--output-format", "json"); afterDelete != listed {
 		t.Fatalf("private deletion marker became a citable version: before=%s after=%s", listed, afterDelete)
 	}
+	// The merged History adapter must preserve real deletion context in JSON,
+	// and refuse JSONL before emitting items it cannot interpret independently.
+	original := graphMixedResult[graphstore.Record](t, call("remember", "Retained context", "--id", "beads/context", "--json"))
+	deleted := graphMixedResult[graphstore.MemoryDeleteResult](t, call("delete", "beads/context", "--force", "--json"))
+	if deleted.Terminal == nil {
+		t.Fatal("context fixture did not mint a terminal state")
+	}
+	assertHistoryContext := func(wantCurrent *graphstore.MemoryTerminalState, wantVersions int) {
+		t.Helper()
+		decode("versions", "beads/context", "--output-format", "json")
+		var history struct {
+			CurrentState *graphstore.MemoryTerminalState `json:"currentState"`
+			Terminals    []map[string]any                `json:"terminal_versions"`
+			Versions     []map[string]any                `json:"versions"`
+		}
+		if err := json.Unmarshal(canonical.Data, &history); err != nil || !reflect.DeepEqual(history.CurrentState, wantCurrent) || len(history.Terminals) != 1 || history.Terminals[0]["version"] != deleted.Terminal.Revision || len(history.Versions) != wantVersions {
+			t.Fatalf("canonical JSON lost native history context: %v %s", err, canonical.Data)
+		}
+		for _, route := range []string{"versions", "history"} {
+			for _, raw := range []bool{false, true} {
+				args := []string{route, "beads/context", "--output-format", "jsonl"}
+				if raw {
+					args = append(args, "--omit", "envelope")
+				}
+				stdout, stderr, code := graphVersionsProcess(t, bd, work, home, args...)
+				if code != 5 || stderr == "" {
+					t.Fatalf("native context was not refused: %v code=%d out=%q err=%q", args, code, stdout, stderr)
+				}
+				if raw {
+					if stdout != "" {
+						t.Fatalf("raw context refusal emitted bytes: %v %q", args, stdout)
+					}
+					continue
+				}
+				lines := strings.Split(strings.TrimSpace(stdout), "\n")
+				if len(lines) != 2 || !strings.Contains(lines[0], `"record_type":"header"`) {
+					t.Fatalf("context refusal emitted items or lost header: %v %q", args, stdout)
+				}
+				var terminal struct {
+					RecordType string `json:"record_type"`
+					Outcome    string `json:"outcome"`
+					Error      struct {
+						Problem struct {
+							Code string `json:"code"`
+						} `json:"problem"`
+					} `json:"error"`
+				}
+				if err := json.Unmarshal([]byte(lines[1]), &terminal); err != nil || terminal.RecordType != "terminal" || terminal.Outcome != "failure" || terminal.Error.Problem.Code != "capability_unavailable" {
+					t.Fatalf("context refusal lost failure terminal: %v %v %q", args, err, stdout)
+				}
+			}
+		}
+	}
+	assertHistoryContext(deleted.Terminal, 1)
+	call("update", "beads/context", "--from-revision", original.Revision, "--if-revision", deleted.Terminal.Revision, "--json")
+	// Recovery removes currentState but must not drop the retained terminal.
+	assertHistoryContext(nil, 2)
 	// Admission fails before the provider opens, but must still use the chosen
 	// result contract rather than a Resource-shaped failure or stderr alone.
 	uninitialized := t.TempDir()
