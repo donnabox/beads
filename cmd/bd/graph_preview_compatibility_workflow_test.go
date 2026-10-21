@@ -244,3 +244,57 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 		})
 	}
 }
+
+func TestGraphPreviewPositionalLinkPartialIDsWorkflow(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := t.TempDir(), t.TempDir()
+			const scope = "https://example.invalid/link-partial/"
+			initArgs := []string{"init", "--graph-mode", "link", "--prefix", "compat", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive"}
+			if engine == "server" {
+				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
+				if port == "" {
+					t.Skip("set BEADS_GRAPH_TEST_SERVER_PORT for ordinary shared-server CLI qualification")
+				}
+				initArgs = append(initArgs, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
+			}
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+			}
+			call(initArgs...)
+			source := graphMixedResult[graphstore.IssueRecord](t, call("create", "Source", "--id", "beads/source"))
+			target := graphMixedResult[graphstore.IssueRecord](t, call("create", "Target", "--id", "beads/target"))
+			abbreviate := func(id string) string {
+				t.Helper()
+				if !strings.HasPrefix(id, "compat-") || len(id) < len("compat-")+2 {
+					t.Fatalf("unexpected generated native Issue ID %q", id)
+				}
+				return id[len("compat-") : len(id)-1]
+			}
+			from, to := abbreviate(source.Properties.ID), abbreviate(target.Properties.ID)
+			decodeLink := func(raw string) map[string]any {
+				t.Helper()
+				var result map[string]any
+				if err := json.Unmarshal([]byte(raw), &result); err != nil {
+					t.Fatalf("decode familiar positional Link JSON: %v\n%s", err, raw)
+				}
+				return result
+			}
+			result := decodeLink(call("link", from, to))
+			if result["issue_id"] != source.Properties.ID || result["depends_on_id"] != target.Properties.ID || result["type"] != "blocks" {
+				t.Fatalf("positional partial Link resolved wrong Issues: %+v", result)
+			}
+			if repeated := decodeLink(call("link", from, to)); !reflect.DeepEqual(repeated, result) {
+				t.Fatalf("repeated positional Link changed familiar result: %+v", repeated)
+			}
+			var shown []struct {
+				Dependencies []json.RawMessage `json:"dependencies"`
+			}
+			if raw := call("show", source.ID); json.Unmarshal([]byte(raw), &shown) != nil || len(shown) != 1 || len(shown[0].Dependencies) != 1 {
+				t.Fatalf("positional Link did not preserve one native relation: %s", raw)
+			}
+		})
+	}
+}
