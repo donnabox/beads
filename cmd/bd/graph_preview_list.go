@@ -39,6 +39,17 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 	if err != nil {
 		return err
 	}
+	var parent *graphstore.IssueSelector
+	if in.ParentID != "" {
+		selected, err := graphPreviewIssueSelector(in.ParentID)
+		if err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
+		parent = &selected
+		// The graph store resolves the selected path to a native Issue ID in
+		// the same checked transaction as the list and its counted projection.
+		in.ParentID = ""
+	}
 	jsonFlag, _ := cmd.Flags().GetBool("json")
 	legacyJSON := !structured && (jsonOutput || jsonFlag)
 	selectedType := ""
@@ -63,7 +74,13 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 			return graphFailure("capability_unavailable", "legacy list JSON contains Issues only", 5)
 		}
 		return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
-			page, err := s.ListIssuesLegacy(ctx, in.ListRequest)
+			var page graphstore.LegacyIssueListPage
+			var err error
+			if parent != nil {
+				page, err = s.ListIssuesLegacySelected(ctx, in.ListRequest, *parent)
+			} else {
+				page, err = s.ListIssuesLegacy(ctx, in.ListRequest)
+			}
 			if errors.Is(err, storage.ErrValidation) {
 				return nil, "", fmt.Errorf("%w: %w", errGraphListSelector, err)
 			}
@@ -101,7 +118,13 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 	}
 	if in.longFormat && !structured && !quietFlag {
 		return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
-			page, err := s.ListIssuesLegacy(ctx, in.ListRequest)
+			var page graphstore.LegacyIssueListPage
+			var err error
+			if parent != nil {
+				page, err = s.ListIssuesLegacySelected(ctx, in.ListRequest, *parent)
+			} else {
+				page, err = s.ListIssuesLegacy(ctx, in.ListRequest)
+			}
 			if errors.Is(err, storage.ErrValidation) {
 				return nil, "", fmt.Errorf("%w: %w", errGraphListSelector, err)
 			}
@@ -113,7 +136,13 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 		}, func(_ any, output string) error { _, err := fmt.Fprint(cmd.OutOrStdout(), output); return err })
 	}
 	return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
-		page, err := s.ListIssues(ctx, in.ListRequest)
+		var page graphstore.IssueListPage
+		var err error
+		if parent != nil {
+			page, err = s.ListIssuesSelected(ctx, in.ListRequest, *parent)
+		} else {
+			page, err = s.ListIssues(ctx, in.ListRequest)
+		}
 		if errors.Is(err, storage.ErrValidation) {
 			return nil, "", fmt.Errorf("%w: %w", errGraphListSelector, err)
 		}
@@ -129,7 +158,7 @@ func graphIssueListInput(cmd *cobra.Command, argv []string) (listInput, bool, er
 	fail := func(code, message string, exit int) (listInput, bool, error) {
 		return listInput{}, false, graphFailure(code, message, exit)
 	}
-	if err := graphPreviewFlags(cmd, "flat", "tree", "format", "status", "state", "type", "all", "limit", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "no-parent", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue", "include-comments", "long"); err != nil {
+	if err := graphPreviewFlags(cmd, "flat", "tree", "format", "status", "state", "type", "all", "limit", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "parent", "filter-parent", "no-parent", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue", "include-comments", "long"); err != nil {
 		return listInput{}, false, err
 	}
 	format, _ := cmd.Flags().GetString("format")
@@ -199,6 +228,12 @@ func graphIssueListInput(cmd *cobra.Command, argv []string) (listInput, bool, er
 	if err != nil {
 		return listInput{}, false, err
 	}
+	if (cmd.Flags().Changed("parent") || cmd.Flags().Changed("filter-parent")) && in.ParentID == "" {
+		return fail("invalid_selector", "--parent requires an Issue ID", 2)
+	}
+	if in.ParentID != "" && !structured && !in.jsonOutput && !jsonFlag && !legacyFormatJSON && !flat && !(cmd.Flags().Changed("tree") && !tree) {
+		return fail("capability_unavailable", "graph list --parent currently requires --flat or JSON; the shipping default tree walk is not yet available", 5)
+	}
 	// pflag returns a non-nil empty slice for an omitted StringSlice flag.
 	// Admission already refused explicit --exclude-type, including an empty one.
 	// Canonicalize only the absent value before the strict storage API boundary.
@@ -253,7 +288,7 @@ func (v *graphIssueListFlagCount) Type() string     { return v.kind }
 // An unfiltered graph list, or one narrowed only by nominal Bead Type, reads
 // the complete checked current inventory and projects its Beads. The options
 // below select the Issue query instead, and the notice names them in this order.
-var graphIssueListOptions = []string{"status", "state", "type", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "no-parent", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue", "long"}
+var graphIssueListOptions = []string{"status", "state", "type", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "parent", "filter-parent", "no-parent", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue", "long"}
 
 // graphIssueListTypedOptions names the Issue options the caller supplied, in
 // canonical order. A supplied flag counts even when its value, such as an empty
