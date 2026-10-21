@@ -172,7 +172,7 @@ func graphIssueListInput(cmd *cobra.Command, argv []string) (listInput, bool, er
 	fail := func(code, message string, exit int) (listInput, bool, error) {
 		return listInput{}, false, graphFailure(code, message, exit)
 	}
-	if err := graphPreviewFlags(cmd, "flat", "tree", "format", "status", "state", "type", "all", "limit", "id", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "parent", "filter-parent", "no-parent", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue", "include-comments", "long"); err != nil {
+	if err := graphPreviewFlags(cmd, "flat", "tree", "format", "status", "state", "type", "all", "limit", "id", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "parent", "filter-parent", "no-parent", "ready", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue", "include-comments", "long"); err != nil {
 		return listInput{}, false, err
 	}
 	format, _ := cmd.Flags().GetString("format")
@@ -305,7 +305,7 @@ func (v *graphIssueListFlagCount) Type() string     { return v.kind }
 // An unfiltered graph list, or one narrowed only by nominal Bead Type, reads
 // the complete checked current inventory and projects its Beads. The options
 // below select the Issue query instead, and the notice names them in this order.
-var graphIssueListOptions = []string{"status", "state", "type", "id", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "parent", "filter-parent", "no-parent", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue", "long"}
+var graphIssueListOptions = []string{"status", "state", "type", "id", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "parent", "filter-parent", "no-parent", "ready", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue", "long"}
 
 // graphIssueListTypedOptions names the Issue options the caller supplied, in
 // canonical order. A supplied flag counts even when its value, such as an empty

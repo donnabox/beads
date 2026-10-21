@@ -99,6 +99,43 @@ func graphListSorted(paths []string) []string {
 	return sorted
 }
 
+func TestGraphPreviewListReadyWorkflow(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			const scope = "https://example.invalid/list-ready/"
+			work, home := graphListWorkspace(t, bd, engine, scope)
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", args...)
+			}
+			call("create", "Blocked", "--id", "beads/blocked")
+			call("create", "Blocker", "--id", "beads/blocker")
+			call("create", "Other", "--id", "beads/other")
+			call("remember", "context", "--id", "beads/memory")
+			call("dep", "add", "beads/blocked", "beads/blocker")
+
+			paths, more := graphListBeads(t, bd, work, home, scope, "--ready", "--sort=id")
+			if !slices.Equal(paths, []string{"beads/blocker", "beads/other"}) || more {
+				t.Fatalf("blocker-aware ready paths=%v more=%t", paths, more)
+			}
+			paths, more = graphListBeads(t, bd, work, home, scope, "--ready", "--sort=id", "--limit=1")
+			if !slices.Equal(paths, []string{"beads/blocker"}) || !more {
+				t.Fatalf("ready page paths=%v more=%t", paths, more)
+			}
+			var legacy []types.IssueWithCounts
+			if err := json.Unmarshal([]byte(call("list", "--json", "--ready", "--sort=id")), &legacy); err != nil {
+				t.Fatal(err)
+			}
+			if len(legacy) != 2 || legacy[0].ID != "beads/blocker" || legacy[1].ID != "beads/other" {
+				t.Fatalf("legacy ready Issue IDs: %+v", legacy)
+			}
+			graphPatchProcess(t, bd, work, home, nil, "invalid_selector", 90*time.Second, "list", "--ready", "--title", "Blocked", "--json")
+			graphPatchProcess(t, bd, work, home, nil, "capability_unavailable", 90*time.Second, "list", "--ready", "--parent", "beads/blocker", "--json")
+		})
+	}
+}
+
 func TestGraphPreviewListIDWorkflow(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	for _, engine := range []string{"embedded", "server"} {
