@@ -23,25 +23,33 @@ mutation could skip, duplicate or replace a delivered Resource.
 
 ## Required provider contract
 
+BDP requires each continuation to walk the same selected set, authorization
+projection and Resource revisions as the first page. It also requires an
+expired- or foreign-view-cursor problem when the provider cannot continue that
+logical snapshot. BDP does not mandate a database table, cursor survival after
+an authority process restarts, or public Scope-epoch/View-token fields in the
+collection payload. The provider may use private generation and view fences to
+enforce the required behavior.
+
 The authority needs an operation to create a bounded, selected, ordered,
 immutable read context and return its first page. Each continuation must
-identify the same read context, selection, semantic projection, ordering,
-authorization view and Scope epoch. The provider must return a cursor at the
+identify that same read context, selection, semantic projection and ordering.
+The provider must return a cursor at the
 *delivered* boundary, including when a caller's total cap is smaller than a
-provider page. It must reject an expired context, changed view, changed epoch,
+provider page. It must reject an expired context, revoked view, changed generation,
 foreign projection or malformed cursor, without restarting against current
 state. Representation masks and output format may change under continuation
 because they are applied to the retained complete records.
 
-For this CLI, the read context must survive process exit. A service with a
-stable lifetime could own BDP's existing in-memory pager. A directly opened
-local workspace needs durable authority-owned snapshot storage instead. The
-preview store's existing schema has no such table, and `OpenExisting` performs
-no DDL or migration. Adding durable storage requires an explicit Preview
-schema-version/upgrade decision, not a CLI-side cache with unspecified
-ownership, quota, cleanup or backup behavior.
+For this CLI's `--continue` across separate invocations, the read context
+must survive the command process exiting. A stable service could own BDP's
+existing in-memory pager; direct local access needs durable authority-owned
+snapshot storage. These are Beads deployment choices, not extra BDP wire
+requirements. The preview store has no retained-snapshot table, and
+`OpenExisting` performs no DDL or migration. Either choice needs explicit
+ownership, lifetime, capacity, cleanup and restore semantics.
 
-### Recommended Preview 3 implementation
+### Durable Preview v8 option
 
 Add a Preview schema v8 table in the same Dolt database, containing a random
 opaque context ID, the full selected and ordered BDP records, binding and
@@ -57,7 +65,8 @@ from that frozen inventory, and atomically admits the retained payload and
 its capacity reservation before emitting output. The read and admission may
 be separate transactions because the selected bytes are already captured;
 admission cannot re-read current Resource rows. If the admission commit
-outcome is unknown, the CLI must refuse to print a successful first page.
+outcome is unknown, the CLI must refuse to print a successful first page;
+any committed but undisclosed context becomes an orphan and expires normally.
 A later page reads the retained bytes, never current Resource rows.
 Under the current complete-read bound, admission is at most 1,000 items and
 16 MiB before an additional retained-state cap; page size has its own bound.
@@ -69,25 +78,39 @@ an unexpired one. Expiry uses an authority clock and rejects the cursor even if
 the persisted row remains until cleanup.
 
 The existing `graph_preview_scope.authority_id` identifies this workspace,
-but is not a restore generation. Add an explicit Scope epoch or equivalent
-restore fence. A restore must rotate it and invalidate retained contexts.
-If backup/restore includes the cursor table, restoration must not resurrect
-continuations from the previous epoch. Local authorization is currently one
-view; bind that stable view identity now and verify it on every continuation
-so a later authorization feature cannot accidentally broaden an old cursor.
+but is not a restore generation. Define an internal generation fence and rotate
+it on every supported restore entry point; invalidating retained contexts is
+required even if backup includes the cursor table. Restoring the same complete
+database image cannot detect its own restoration from database bytes alone.
+If a restore can bypass every controlled entry point, use an independent
+generation authority outside the restored image or fail closed by refusing
+those cursors. This is an implementation fence, not a new public BDP field.
+
+Local authorization is currently one view. Bind a private current-view
+identity at admission and verify it on every continuation. Authorization
+revocation must invalidate affected contexts before another page can disclose
+retained bytes. Erasure/deletion policies that require immediate removal must
+erase or invalidate contexts containing the Resource; ordinary mutation may
+leave the original snapshot continuable under the existing view. Do not expose
+retained bytes after permission or erasure state changes merely because a
+snapshot has not reached its five-minute expiry.
 Selection identity includes exact structural predicates and future query IR,
 not representation flags. It must be compared at continuation; never decode
 the cursor to reconstruct a new query.
 
-`OpenExisting` currently performs no DDL or migration. Choose one explicit
-v7-to-v8 path before code lands: (a) a tested opt-in preview upgrade that
+`OpenExisting` currently performs no DDL or migration. If the durable option
+is chosen, select one explicit v7-to-v8 path before code lands: (a) a tested
+opt-in preview upgrade that
 creates the table and epoch atomically, or (b) require a newly initialized v8
 workspace and document how disposable v7 data is exported and reimported.
 Changing `SchemaVersion` alone would strand every existing v7 workspace.
 Changing the database schema is justified here only if local cross-process
 pagination is in scope; a CLI-owned sidecar would require a separate ownership,
-security, quota, cleanup, and restore contract. This table is operational read
-state, not a new Resource or History record.
+security, quota, cleanup, and restore contract. A stable service with explicit
+lifetime and discovery is the other viable option; its process-local pager
+cannot support direct local invocations by itself. Neither option is selected
+by this note. A durable table would be operational read state, not a new
+Resource or History record.
 
 ## CLI adapter once the provider exists
 
@@ -103,7 +126,8 @@ opaque value rather than parse or synthesize it.
 Tests should cross two separate `bd` processes, mutate between pages, and
 prove that exact IDs and revisions appear once in the original order. Other
 cases: small total limit, short provider page, changed representation,
-changed selection, expiration, foreign workspace/view, restore/epoch change,
+changed selection, expiration, foreign workspace/view, restore/generation
+change, authorization revocation, erasure invalidation,
 capacity refusal before output, and a late JSONL failure. The v7-to-v8 path
 needs a real database test, including interrupted upgrade or import as
 appropriate. Embedded and server Dolt must agree on capacity admission and
