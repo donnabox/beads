@@ -50,6 +50,13 @@ func (s *Store) listIssuesLegacy(ctx context.Context, request publicops.ListRequ
 		if err != nil {
 			return err
 		}
+		if request.IDFilter != "" && len(page.Items) == 0 {
+			// The checked query already validated the entire selected set.
+			// In particular, an unmatched --id set has no native keys for the
+			// counted query to project.
+			result = LegacyIssueListPage{Items: []*types.IssueWithCounts{}, HasMore: page.HasMore}
+			return nil
+		}
 		cfg, err := issueListConfigInTx(ctx, tx)
 		if err != nil {
 			return err

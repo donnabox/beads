@@ -55,7 +55,7 @@ func assertIssueListRetained(t *testing.T, ctx context.Context, s *Store, path s
 func TestGraphIssueListRequestAdmission(t *testing.T) {
 	// Every nonzero unsupported request field must refuse before touching a DB.
 	admitted := map[string]bool{}
-	for _, name := range []string{"Status", "IssueType", "TitleSearch", "TitleContains", "Assignee", "NoAssignee", "DueBefore", "DueAfter", "OverdueFlag", "Labels", "LabelsAny", "ExcludeLabels", "Priority", "PriorityMin", "PriorityMax", "PinnedFlag", "NoPinnedFlag", "NoParent", "AllFlag", "SortBy", "Reverse", "Limit", "MaxRows", "MaxRowsSource"} {
+	for _, name := range []string{"Status", "IssueType", "IDFilter", "TitleSearch", "TitleContains", "Assignee", "NoAssignee", "DueBefore", "DueAfter", "OverdueFlag", "Labels", "LabelsAny", "ExcludeLabels", "Priority", "PriorityMin", "PriorityMax", "PinnedFlag", "NoPinnedFlag", "NoParent", "AllFlag", "SortBy", "Reverse", "Limit", "MaxRows", "MaxRowsSource"} {
 		admitted[name] = true
 	}
 	typ := reflect.TypeFor[publicops.ListRequest]()
@@ -101,6 +101,7 @@ func TestGraphIssueListRequestAdmission(t *testing.T) {
 		{Status: string([]byte{255})}, {Labels: []string{string([]byte{255})}},
 		{TitleSearch: strings.Repeat("x", PreviewIssueListRequestByteLimit+1)}, {Labels: make([]string, PreviewIssueListLabelLimit+1)},
 		{TitleSearch: strings.Repeat("x", PreviewIssueListRequestByteLimit), Labels: []string{"overflow"}},
+		{IDFilter: strings.Repeat("x", PreviewIssueListRequestByteLimit+1)},
 	} {
 		got, err := store.ListIssues(context.Background(), request)
 		if !errors.Is(err, storage.ErrValidation) || !reflect.ValueOf(got).IsZero() {
@@ -192,6 +193,12 @@ func TestGraphIssueListLifecycle(t *testing.T) {
 				{"huge-page", publicops.ListRequest{Limit: issueListInt(int(^uint(0) >> 1))}, []string{"beads/work", "beads/prereq", "beads/other"}, false},
 				{"title", publicops.ListRequest{TitleSearch: "Alpha"}, []string{"beads/work"}, false},
 				{"contains", publicops.ListRequest{TitleContains: "prereq"}, []string{"beads/prereq"}, false},
+				{"id-native", publicops.ListRequest{IDFilter: wanted["beads/work"].Properties.ID}, []string{"beads/work"}, false},
+				{"id-path", publicops.ListRequest{IDFilter: "beads/prereq"}, []string{"beads/prereq"}, false},
+				{"id-canonical", publicops.ListRequest{IDFilter: s.ScopeURL() + "beads/prereq"}, []string{"beads/prereq"}, false},
+				{"id-set-before-page", publicops.ListRequest{IDFilter: "beads/other,beads/work", Limit: issueListInt(1)}, []string{"beads/work"}, true},
+				{"id-missing", publicops.ListRequest{IDFilter: "beads/missing"}, []string{}, false},
+				{"id-non-issue", publicops.ListRequest{IDFilter: "beads/plan"}, []string{}, false},
 				{"labels", publicops.ListRequest{Labels: []string{"shared", "work"}}, []string{"beads/work"}, false},
 				{"labels-any", publicops.ListRequest{LabelsAny: []string{"work", "other"}}, []string{"beads/work", "beads/other"}, false},
 				{"exclude", publicops.ListRequest{ExcludeLabels: []string{"shared"}}, []string{"beads/other"}, false},
@@ -260,6 +267,33 @@ func TestGraphIssueListLifecycle(t *testing.T) {
 			got, err := second.ListIssues(ctx, publicops.ListRequest{Status: "open", TitleContains: "prereq"})
 			if err != nil || !reflect.DeepEqual(got, page) {
 				t.Fatalf("reopened store: %+v %v", got, err)
+			}
+		})
+	}
+}
+
+func TestGraphIssueListIDCollision(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, _, s := issueListFixture(t, backend)
+			request := plainIssue("Other Issue")
+			created, err := s.CreateIssue(ctx, "beads/other", request)
+			if err != nil {
+				t.Fatal(err)
+			}
+			alias := created.Properties.ID
+			if _, err := s.Create(ctx, CreateRequest{Title: "Memory", Path: "beads/" + alias, Body: "context"}); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.ListIssues(ctx, publicops.ListRequest{IDFilter: alias}); !errors.Is(err, storage.ErrValidation) {
+				t.Fatalf("ambiguous bare ID must refuse: %v", err)
+			}
+			page, err := s.ListIssues(ctx, publicops.ListRequest{IDFilter: "beads/other"})
+			if err != nil || len(page.Items) != 1 || page.Items[0].Properties.ID != alias {
+				t.Fatalf("explicit graph path should select Issue: %+v %v", page, err)
+			}
+			if _, err := s.ListIssues(ctx, publicops.ListRequest{IDFilter: "beads/missing", Status: "not-a-status"}); !errors.Is(err, storage.ErrValidation) {
+				t.Fatalf("missing IDs must not skip filter validation: %v", err)
 			}
 		})
 	}
