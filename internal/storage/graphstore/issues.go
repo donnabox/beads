@@ -25,8 +25,8 @@ func validateIssueCreate(request publicops.CreateRequest) error {
 	if err := issueops.ValidatePublicCreateRequest(request); err != nil {
 		return err
 	}
-	if request.ParentID != "" || request.InheritLabelsFromParent || len(request.Dependencies) > 0 || request.WaitsFor != nil || request.ForceIDPrefix || request.IDPrefix != "" {
-		return fmt.Errorf("%w: Issue preview does not support composite create options or prefix overrides", storage.ErrValidation)
+	if request.ParentID != "" || request.InheritLabelsFromParent || len(request.Dependencies) > 0 || request.WaitsFor != nil || request.IDPrefix != "" {
+		return fmt.Errorf("%w: Issue preview does not support composite create options or a custom ID prefix", storage.ErrValidation)
 	}
 	i := request.Issue
 	// CloneCreateRequest materializes empty relation slices. Their lengths
