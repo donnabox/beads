@@ -41,6 +41,7 @@ type UpdateIssueRequest struct {
 	Title, Description, Design, AcceptanceCriteria            *string
 	Priority                                                  *int
 	Status                                                    *types.Status
+	ExpectedStatus                                            *types.Status
 	ClosedBySession                                           *string
 	EstimatedMinutes                                          *int
 	Assignee                                                  *string
@@ -177,7 +178,7 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 	if count == 0 && !request.PropertiesProvided && request.FromRevision == "" {
 		return IssueMutationResult{}, fmt.Errorf("%w: Issue update requires an admitted field", storage.ErrValidation)
 	}
-	attempt := publicops.UpdateRequest{Actor: request.Actor, Patch: patch, IssuePlaneOnly: true, ForceNotesOverwrite: request.ForceNotesOverwrite, ForceAssigneeTransfer: request.ForceAssigneeTransfer, ForceClosePolicy: request.ForceClosePolicy}
+	attempt := publicops.UpdateRequest{Actor: request.Actor, Patch: patch, ExpectedStatus: request.ExpectedStatus, IssuePlaneOnly: true, ForceNotesOverwrite: request.ForceNotesOverwrite, ForceAssigneeTransfer: request.ForceAssigneeTransfer, ForceClosePolicy: request.ForceClosePolicy}
 	// Historical composition supplies native setters (including Notes) before
 	// validating setter-dependent force intent. The composed request still goes
 	// through the same validator and native authorization fences in the transaction.
@@ -191,13 +192,16 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		if request.Status != nil {
+		if request.Status != nil || request.ExpectedStatus != nil {
 			custom, err := issueops.GetCustomStatusesTx(ctx, tx)
 			if err != nil {
 				return err
 			}
-			if !request.Status.IsValidWithCustom(custom) {
+			if request.Status != nil && !request.Status.IsValidWithCustom(custom) {
 				return fmt.Errorf("%w: invalid status %q", storage.ErrValidation, *request.Status)
+			}
+			if request.ExpectedStatus != nil && !request.ExpectedStatus.IsValidWithCustom(custom) {
+				return fmt.Errorf("%w: invalid expected status %q", storage.ErrValidation, *request.ExpectedStatus)
 			}
 		}
 		path := request.Path
@@ -283,6 +287,12 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		}
 		beforeNative := *before.Properties
 		beforeNative.Metadata = before.Metadata
+		if request.ExpectedStatus != nil {
+			status := string(*request.ExpectedStatus)
+			if err := issueops.CheckExpectedFieldsInTx(ctx, tx, before.Properties.ID, nil, &status); err != nil {
+				return err
+			}
+		}
 		// Resolve against the checked snapshot only for no-op planning. The native
 		// writer receives the original append intent and owns atomic composition.
 		updates, err := issueops.ResolveMergeOps(&beforeNative, issueops.UpdateFields(patch))
