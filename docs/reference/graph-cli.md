@@ -154,7 +154,7 @@ An older retained record can omit `metadata` without rewriting its history.
 The Issue filters are `--status` (or `--state`), `--type`, `--title`,
 `--title-contains`, `--priority`, `--priority-min`, `--priority-max`,
 `--assignee`, `--no-assignee`, `--label`, `--label-any`, `--exclude-label`,
-`--pinned`, `--no-pinned`, `--due-before`, `--due-after`, `--overdue`,
+`--pinned`, `--no-pinned`, `--no-parent`, `--due-before`, `--due-after`, `--overdue`,
 `--sort`, `--reverse`, and `--long`. Supplying an Issue filter or `--long` switches `bd list` to the existing Issue query,
 even when an empty value such as `--assignee=` adds no restriction.
 `--type types/NAME` or a full Type URL instead selects a nominal Type;
@@ -168,6 +168,9 @@ is not applied to a Memory. Its human rows add status and priority, for example
 An Issue filter cannot be combined with a non-Issue nominal `--type`.
 `--long` renders the ordinary detailed Issue presentation, including descriptions
 and labels, for the selected Issue page.
+`--no-parent` keeps Issues without a parent-child dependency edge. Like the
+ordinary flat list, an edge-less dotted ID can still appear; the ID alone
+does not establish a parent.
 
 `bd list --json` returns the ordinary Issue-only array, including the
 familiar Issue field names and Scope-relative IDs. Memories are omitted from

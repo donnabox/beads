@@ -64,7 +64,7 @@ func prepareIssueListRequest(in publicops.ListRequest) (publicops.ListRequest, e
 		DueBefore: in.DueBefore, DueAfter: in.DueAfter, OverdueFlag: in.OverdueFlag,
 		Labels: in.Labels, LabelsAny: in.LabelsAny, ExcludeLabels: in.ExcludeLabels,
 		Priority: in.Priority, PriorityMin: in.PriorityMin, PriorityMax: in.PriorityMax,
-		PinnedFlag: in.PinnedFlag, NoPinnedFlag: in.NoPinnedFlag, AllFlag: in.AllFlag,
+		PinnedFlag: in.PinnedFlag, NoPinnedFlag: in.NoPinnedFlag, NoParent: in.NoParent, AllFlag: in.AllFlag,
 		SortBy: in.SortBy, Reverse: in.Reverse, Limit: in.Limit, MaxRows: in.MaxRows, MaxRowsSource: in.MaxRowsSource,
 	}
 	if !reflect.DeepEqual(in, allowed) {
