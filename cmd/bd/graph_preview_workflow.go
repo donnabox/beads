@@ -253,13 +253,7 @@ func graphPreviewInsertDependency(sourcePath, targetPath, sourceNativeID, target
 		if familiarLink {
 			fromID, fromTitle := result.Source.Properties.ID, result.Source.Properties.Title
 			SetLastTouchedID(result.Source.ID)
-			toID, toTitle := targetLabel, ""
-			resolvedTarget, _, ok := graph.SplitCanonicalURL(graphPreviewConfig.GraphScopeURL, result.Link.Target)
-			if ok {
-				if target, err := store.ShowIssue(ctx, resolvedTarget); err == nil && target.Properties != nil {
-					toID, toTitle = target.Properties.ID, target.Properties.Title
-				}
-			}
+			toID, toTitle := result.Target.Properties.ID, result.Target.Properties.Title
 			return map[string]string{
 					"status": "added", "issue_id": fromID, "depends_on_id": toID, "type": string(depType),
 				}, fmt.Sprintf("%s Linked: %s depends on %s (%s)",

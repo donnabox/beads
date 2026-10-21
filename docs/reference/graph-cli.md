@@ -600,9 +600,19 @@ Changing an owned Link changes its owner; its target does not change merely
 because it is linked. See the [Memory Type CLI facade](/reference/bdp/cli/types/memory/memory)
 for constraints and exact Evaluation subject rules.
 
-The positional `bd link` write still treats `beads/PATH` as an exact graph
-path. A full same-Scope URL also selects that path. Current `bd show` and
-`bd link show` reads instead treat local spellings as opaque public IDs.
+For the shipping two-operand form, `bd link BLOCKED BLOCKER --type KIND`
+stores a native Issue Dependency kind literally when `KIND` is nonempty UTF-8
+of at most 32 bytes. `depends-on` and `blocked-by` therefore remain custom,
+nonblocking kinds here; neither becomes `blocks`. `bd dep add --type` treats
+those two spellings as aliases for `blocks` and admits only built-in kinds.
+Canonical `bd link create --type` selects an installed Link Type, so it does
+not accept a custom native Dependency kind. In the two-operand form, a bare
+Issue ID may be abbreviated when it uniquely identifies a live Issue. A
+local spelling such as `beads/PATH` is one opaque public ID; only a full
+same-Scope URL selects an exact graph path. Ambiguous abbreviations refuse.
+Selected `bd show` and `bd link show` reads use the same local-ID rule.
+Informational `bd link SOURCE TARGET --type TYPE` endpoints remain path-based
+in this preview.
 
 Link updates and removal accept the current Link by default; `--if-revision
 TOKEN` rejects a stale Link. Removal retains the identity and prior snapshots.
