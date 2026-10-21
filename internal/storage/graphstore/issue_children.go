@@ -5,8 +5,10 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"sort"
 	"strings"
 
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/workapi"
@@ -164,45 +166,77 @@ func (s *Store) ListChildrenLegacy(ctx context.Context, parentPath string) ([]*t
 	return children, err
 }
 
-// ListIssueDependencies reads only the installed blocking Dependency Type,
-// checking the anchor as a native Issue in the same transaction as its Links.
-func (s *Store) ListIssueDependencies(ctx context.Context, issuePath, direction string) ([]LinkRecord, error) {
+// ListIssueDependencies reads native Dependency Links, checking the anchor as
+// an Issue in the same transaction. An empty kind selects every native kind.
+func (s *Store) ListIssueDependencies(ctx context.Context, issuePath, direction, kind string) ([]LinkRecord, error) {
 	if err := validatePath(issuePath); err != nil {
 		return nil, err
 	}
 	if direction != "in" && direction != "out" {
 		return nil, fmt.Errorf("%w: dependency direction must be in or out", ErrCapabilityUnavailable)
 	}
+	if kind != "" && !types.DependencyType(kind).IsValid() {
+		return nil, fmt.Errorf("%w: invalid dependency kind", ErrCapabilityUnavailable)
+	}
 	var links []LinkRecord
 	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
-		if err := checkBinding(ctx, tx, s.options); err != nil {
-			return err
-		}
-		issue, err := s.requireIssueInTx(ctx, tx, issuePath)
-		if err != nil {
-			return err
-		}
-		blockingType, ok := nativeDependencyTypeURLForIssueType(s.ScopeURL(), issue.Type, types.DepBlocks)
-		if !ok {
-			return fmt.Errorf("%w: Issue has no installed blocking Type", ErrInvalidStore)
-		}
-		incident, err := s.incidentLinksInTx(ctx, tx, LinksRequest{
-			BeadPath: issuePath, Direction: direction, TypeURL: blockingType,
-		}, "")
-		if err != nil {
-			return err
-		}
-		// One nominal Type now carries every dependency kind. Preserve the
-		// familiar dep list view's blocks-only contract.
-		for _, link := range incident {
-			if link.Properties["dep_type"] == string(types.DepBlocks) {
-				links = append(links, link)
-			}
-		}
-		return nil
+		var err error
+		links, err = s.listIssueDependenciesInTx(ctx, tx, issuePath, direction, kind, PreviewIncidentLinkLimit)
+		return err
 	})
 	if err != nil {
 		return nil, err
+	}
+	return links, nil
+}
+
+// Apply the native kind predicate before the incident cap. A busy target can
+// have more than the cap in other kinds while the requested kind is small.
+func (s *Store) listIssueDependenciesInTx(ctx context.Context, tx *sql.Tx, issuePath, direction, kind string, limit int) ([]LinkRecord, error) {
+	if err := checkBinding(ctx, tx, s.options); err != nil {
+		return nil, err
+	}
+	issue, err := s.requireIssueInTx(ctx, tx, issuePath)
+	if err != nil {
+		return nil, err
+	}
+	dependencyType, ok := nativeDependencyTypeURLForIssueType(s.ScopeURL(), issue.Type, types.DepBlocks)
+	if !ok {
+		return nil, fmt.Errorf("%w: Issue has no installed Dependency Type", ErrInvalidStore)
+	}
+	if err := s.checkLinkMappingsInTx(ctx, tx); err != nil {
+		return nil, err
+	}
+	rows, err := tx.QueryContext(ctx, `SELECT c.path FROM dependencies d
+ JOIN graph_preview_catalog c ON c.backing='dependency' AND c.backing_key=d.id
+ WHERE c.allocation_state='live' AND c.resource_kind='link' AND c.type_url=?
+ AND ((?='out' AND d.issue_id=?) OR (?='in' AND d.depends_on_issue_id=?))
+ AND (?='' OR d.type=?) LIMIT ?`, dependencyType, direction, issue.Properties.ID, direction, issue.Properties.ID, kind, kind, limit+1)
+	if err != nil {
+		return nil, err
+	}
+	paths := []string{}
+	for rows.Next() {
+		var path string
+		if err := rows.Scan(&path); err != nil {
+			return nil, errors.Join(err, rows.Close())
+		}
+		paths = append(paths, path)
+	}
+	if err := errors.Join(rows.Err(), rows.Close()); err != nil {
+		return nil, err
+	}
+	if len(paths) > limit {
+		return nil, fmt.Errorf("%w: at most %d matching incident Dependencies can be returned; preview pagination is unavailable", ErrLimitExceeded, limit)
+	}
+	sort.Slice(paths, func(i, j int) bool { return graph.CompareCodeUnits(paths[i], paths[j]) < 0 })
+	links := make([]LinkRecord, 0, len(paths))
+	for _, path := range paths {
+		link, err := s.showLinkInTx(ctx, tx, path)
+		if err != nil {
+			return nil, err
+		}
+		links = append(links, link)
 	}
 	return links, nil
 }
