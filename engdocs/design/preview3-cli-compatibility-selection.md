@@ -40,7 +40,7 @@ that current JSON conforms to that target.
 
 | Command/form | `--graph-mode dependency` status | `--graph-mode link` status |
 | --- | --- | --- |
-| `bd create` Issue, including ordinary inline fields | Supported through the shipping Issue route. | Supported for fresh graph Issues. File/stdin description input is selected [#152](https://github.com/donnabox/beads/pull/152); bare native ID/prefix handling [#180](https://github.com/donnabox/beads/pull/180), initial `--status` [#181](https://github.com/donnabox/beads/pull/181), `--silent` [#159](https://github.com/donnabox/beads/pull/159), atomic local `--deps` [#197](https://github.com/donnabox/beads/pull/197)–[#198](https://github.com/donnabox/beads/pull/198), and combined `--parent --deps` [#199](https://github.com/donnabox/beads/pull/199)–[#200](https://github.com/donnabox/beads/pull/200) are candidates. Donna selected explicit refusal of `external:` targets. Partial dependency IDs and dependency-bearing Markdown batches remain gaps. |
+| `bd create` Issue, including ordinary inline fields | Supported through the shipping Issue route. | Supported for fresh graph Issues. File/stdin description input is selected [#152](https://github.com/donnabox/beads/pull/152); bare native ID/prefix handling [#180](https://github.com/donnabox/beads/pull/180), initial `--status` [#181](https://github.com/donnabox/beads/pull/181), `--silent` [#159](https://github.com/donnabox/beads/pull/159), atomic local `--deps` [#197](https://github.com/donnabox/beads/pull/197)–[#198](https://github.com/donnabox/beads/pull/198), combined `--parent --deps` [#199](https://github.com/donnabox/beads/pull/199)–[#200](https://github.com/donnabox/beads/pull/200), and existing-target Markdown dependencies [#201](https://github.com/donnabox/beads/pull/201)–[#202](https://github.com/donnabox/beads/pull/202) are candidates. Donna selected explicit refusal of `external:` targets. Partial dependency IDs, same-batch target references and graph-JSON batch relations remain gaps. |
 | `bd create --type types/memory` | Refused; this mode has no Memory Beads. | Supported with the installed Memory Type and its admitted properties. |
 | `bd show ISSUE` / `bd show MEMORY` | Shipping Issue details supported; Memory not applicable. | Current Issue read works; familiar human/multi-ID/current/refs/children/watch behavior is selected [#151](https://github.com/donnabox/beads/pull/151). Memory read uses the graph record. |
 | `bd list` Issues / all Beads | Shipping Issue list and filters supported. | Bounded current Bead listing and Issue-only JSON/filter route supported. `--format=json`/`--tree=false` selected [#156](https://github.com/donnabox/beads/pull/156); sort/long [#158](https://github.com/donnabox/beads/pull/158); no-parent [#166](https://github.com/donnabox/beads/pull/166); parent selection/tree [#169](https://github.com/donnabox/beads/pull/169)–[#172](https://github.com/donnabox/beads/pull/172); ID filtering [#182](https://github.com/donnabox/beads/pull/182); blocker-aware ready listing [#189](https://github.com/donnabox/beads/pull/189)–[#190](https://github.com/donnabox/beads/pull/190) remain candidates. Other shipping filters can explicitly refuse. |
@@ -56,9 +56,9 @@ that current JSON conforms to that target.
 
 For graph `bd create --deps`, Donna selected atomic dependencies on local
 Issues and an explicit refusal for shipping `external:` targets. The current
-BDP Link contract does not admit external endpoints, and no implementation PR
-exists yet. This is a selected behavior rule, not a claim about the pinned
-integration build.
+BDP Link contract does not admit external endpoints. Unmerged #197–#202
+implement local subsets; this is a selected behavior rule, not a claim about
+the pinned integration build or selection of every candidate PR.
 
 `bd links` is absent from shipping v1.3.1 and unregistered in link mode. Donna
 selected cutting its dead implementation in unmerged

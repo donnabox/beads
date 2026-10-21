@@ -73,7 +73,7 @@ these answers; neither fix is present in the pinned integration commit.
 | `close` | Single close and no-op work. | A batch may close earlier IDs then fail on a later one; JSON differs; `--continue` and `--no-auto` refuse. |
 | `comment` | Issue comment write works. | Comments on non-Issue Beads are unavailable; graph `issue_id` uses a canonical path. |
 | `comments` | Issue feed and `comments add` work. | Non-Issue comments are unavailable; custom-author/file combinations were not fully retested. |
-| `create` | Omitted `--type` creates a task; admitted inline Issue and Memory forms work. | Explicit-ID child identity is P1 at the pinned commit; #180 fixes bare-ID alignment but is unmerged. Initial status, atomic `--deps`, dry run and several file/batch/routing forms refuse at that commit. #181 fixes initial status, #197–#198 add local atomic `--deps`, and #199–#200 combine it with `--parent` as unmerged candidates; #152 and #159 are other subsets. External targets, partial dependency IDs and dependency-bearing batches remain gaps. |
+| `create` | Omitted `--type` creates a task; admitted inline Issue and Memory forms work. | Explicit-ID child identity is P1 at the pinned commit; #180 fixes bare-ID alignment but is unmerged. Initial status, atomic `--deps`, dry run and several file/batch/routing forms refuse at that commit. #181 fixes initial status, #197–#198 add local atomic `--deps`, #199–#200 combine it with `--parent`, and #201–#202 admit Markdown dependencies on existing local Issues as unmerged candidates; #152 and #159 are other subsets. External targets, partial dependency IDs, same-batch target references and graph-JSON batch relationships remain gaps. |
 | `create-form` | Explicit refusal. | Interactive Issue creation is unavailable. |
 | `delete` | One unreferenced Bead can be previewed and force-deleted with a retained tombstone. | Linked Beads refuse; multi-ID, cascade, `--from-file`, and `--dry-run` refuse at this commit. #163 is an unmerged single-ID dry-run alias. |
 | `edit` | Tested one-field editor no-op works. | Both shipping and graph require an ID despite `[id]` help; combining field flags enters shipping's editor but refuses in graph mode. Actual editor mutation was not requalified; Memory editing refuses. |
@@ -263,6 +263,35 @@ these answers; neither fix is present in the pinned integration commit.
   `TestGraphPreviewCreate` selection passed 69 test/subtest results with four
   server-only skips on embedded Dolt. The combined checkout is local-only,
   not a PR merge or full CRUD+ qualification.
+- Stacked [#201](https://github.com/donnabox/beads/pull/201)–[#202](https://github.com/donnabox/beads/pull/202)
+  admit Markdown `### Dependencies` on existing local Issues. #201 maps
+  native edges, canonical Links and source-owned History in the batch
+  transaction; #202 wires `bd create --file` and retains the ordinary bare
+  Issue-array JSON response. A fault after Link retention and a missing target
+  roll the whole file back; `external:` is explicitly refused. The storage
+  batch tests and installed Markdown workflow each passed embedded and real
+  shared-server Dolt on their exact source. The broader embedded
+  `TestGraphPreviewCreate` selection passed with server-only subtests not run.
+  Docsync, generated CLI docs, freshness and diff checks passed. #201's four
+  current-head hosted checks and #202's six checks at `de012f5bb` passed;
+  both reviews are pending. A disposable local checkout at `fb8e1d02c` combined earlier
+  parity candidates, selected #175, and #197–#202 without pushing or merging
+  PRs. Seven selected create/storage workflow roots passed on embedded and real
+  shared-server Dolt in two Go packages. An assembled broad
+  `TestGraphPreview` run first found one obsolete expectation: a local
+  dependency targeting a Memory now fails Issue-selector validation rather
+  than the old blanket capability refusal. #202 corrected the test; the
+  local-only combined checkout at `cb610557b` then passed the full selected
+  embedded run: 274 top-level tests passed, one server-only top-level skip,
+  zero failures (1,265 pass and 81 skip events including subtests). This is
+  broader embedded evidence, not complete CRUD+ or shared-server qualification.
+  The PRs remain unmerged candidates.
+  Upstream contributor
+  [#7512](https://github.com/gastownhall/beads/pull/7512) owns a separate
+  Markdown alias/direction parser correction; these PRs leave that parser
+  untouched and do not replace the contributor's work. Partial target IDs,
+  references to another new heading in the same file, and graph-JSON batch
+  relationships remain explicit gaps.
 - A broad local assembled `TestGraphPreview` run through #196 completed with
   two failing top-level tests: `--ready=false` expected a now-obsolete
   refusal, and the usability workflow expected `capability_unavailable` for
@@ -273,8 +302,9 @@ these answers; neither fix is present in the pinned integration commit.
   and no failures. It ran on embedded Dolt; the earlier failing run is not
   counted as passing, and neither run qualifies the shared-server tier.
 - **No complete repair PR yet.** Issue `create --deps` has an unmerged local
-  target subset in #197–#198, with parent combination in #199–#200. Full batch
-  input, `delete` multi-ID/cascade/from-file, Issue `update` multi-ID/parent,
+  target subset in #197–#198, with parent combination in #199–#200 and
+  existing-target Markdown batches in #201–#202. Graph-JSON batch relations,
+  `delete` multi-ID/cascade/from-file, Issue `update` multi-ID/parent,
   remaining `list --ready` combinations, and broader Link selector forms
   remain work to scope, implement and qualify.
   Some need a graph transaction primitive, not just a CLI flag. Their explicit
@@ -285,13 +315,14 @@ these answers; neither fix is present in the pinned integration commit.
   explicitly does not admit external Link endpoints. Local Issue targets need
   one transaction that creates the Issue, native edges, canonical Links, and
   source-owned History together. Unmerged #197–#198 implement that local
-  transaction, and #199–#200 extend it to a child Issue and parent Link. Their
+  transaction, #199–#200 extend it to a child Issue and parent Link, and
+  #201–#202 handle Markdown batches targeting existing Issues. Their
   focused embedded and real shared-server Dolt tests cover both directions
   and rollback. An `external:` target cannot silently become
   a native-only edge invisible to graph reads. Donna selected atomic local
   Issue targets with an explicit `external:` refusal for graph mode. Partial
-  dependency IDs and dependency-bearing Markdown batches remain unavailable
-  in these candidates. See
+  dependency IDs and references to a newly created heading in the same
+  Markdown file remain unavailable in these candidates. See
   `cmd/bd/create_deps.go` and
   `docs/reference/bdp/cli/references.md`.
 - **Decisions before implementation.** Donna selected native ID alignment
