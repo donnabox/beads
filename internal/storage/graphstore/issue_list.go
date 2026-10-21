@@ -58,6 +58,12 @@ func (s *Store) listIssues(ctx context.Context, request publicops.ListRequest, p
 	if err != nil {
 		return IssueListPage{}, err
 	}
+	if request.ReadyFlag && parent != nil {
+		return IssueListPage{}, fmt.Errorf("%w: graph Issue list cannot combine --ready with --parent", ErrCapabilityUnavailable)
+	}
+	if request.ReadyFlag {
+		s.wakeExpiredDefersAdvisory(ctx)
+	}
 	var result IssueListPage
 	err = s.withTx(ctx, false, func(tx *sql.Tx) error {
 		var err error
@@ -71,6 +77,12 @@ func (s *Store) listIssues(ctx context.Context, request publicops.ListRequest, p
 }
 
 func prepareIssueListRequest(in publicops.ListRequest) (publicops.ListRequest, error) {
+	// Reject dropped ready filters before a graph selector can be normalized
+	// to an empty native ID set. Otherwise --ready --id missing would appear
+	// to succeed with an empty page without checking the unsupported pairing.
+	if err := publicops.ValidateReadyFlagScope(in); err != nil {
+		return publicops.ListRequest{}, fmt.Errorf("%w: %v", storage.ErrValidation, err)
+	}
 	allowed := publicops.ListRequest{
 		Status: in.Status, IssueType: in.IssueType, IDFilter: in.IDFilter, TitleSearch: in.TitleSearch, TitleContains: in.TitleContains,
 		Assignee: in.Assignee, NoAssignee: in.NoAssignee,
@@ -78,7 +90,8 @@ func prepareIssueListRequest(in publicops.ListRequest) (publicops.ListRequest, e
 		Labels: in.Labels, LabelsAny: in.LabelsAny, ExcludeLabels: in.ExcludeLabels,
 		Priority: in.Priority, PriorityMin: in.PriorityMin, PriorityMax: in.PriorityMax,
 		PinnedFlag: in.PinnedFlag, NoPinnedFlag: in.NoPinnedFlag, NoParent: in.NoParent, AllFlag: in.AllFlag,
-		SortBy: in.SortBy, Reverse: in.Reverse, Limit: in.Limit, MaxRows: in.MaxRows, MaxRowsSource: in.MaxRowsSource,
+		ReadyFlag: in.ReadyFlag,
+		SortBy:    in.SortBy, Reverse: in.Reverse, Limit: in.Limit, MaxRows: in.MaxRows, MaxRowsSource: in.MaxRowsSource,
 	}
 	if !reflect.DeepEqual(in, allowed) {
 		return publicops.ListRequest{}, fmt.Errorf("%w: unsupported graph Issue list option", ErrCapabilityUnavailable)
@@ -155,6 +168,9 @@ func (s *Store) listIssuesInTx(ctx context.Context, tx *sql.Tx, request publicop
 }
 
 func (s *Store) listIssuesWithParentInTx(ctx context.Context, tx *sql.Tx, request *publicops.ListRequest, parent *IssueSelector) (IssueListPage, error) {
+	if request.ReadyFlag && parent != nil {
+		return IssueListPage{}, fmt.Errorf("%w: graph Issue list cannot combine --ready with --parent", ErrCapabilityUnavailable)
+	}
 	if err := checkCurrentReadBytes(ctx, tx); err != nil {
 		return IssueListPage{}, err
 	}
@@ -238,7 +254,7 @@ func (s *Store) listIssuesWithParentInTx(ctx context.Context, tx *sql.Tx, reques
 		// not the larger candidate set.
 		filter.MaxRows = 0
 	}
-	rows, err := issueops.SearchIssuesWithCountsInTx(ctx, tx, "", filter)
+	rows, err := queryIssueListRowsInTx(ctx, tx, filter, request.ReadyFlag)
 	if err != nil {
 		var capError *issueops.ErrTooManyRows
 		if errors.As(err, &capError) {
@@ -300,6 +316,30 @@ func (s *Store) listIssuesWithParentInTx(ctx context.Context, tx *sql.Tx, reques
 		}
 	}
 	return result, nil
+}
+
+// queryIssueListRowsInTx keeps the blocker-aware ready predicate in the same
+// checked snapshot as graph mapping and page validation. The ordinary list
+// path and its legacy counted projection use this same query choice.
+func queryIssueListRowsInTx(ctx context.Context, tx *sql.Tx, filter types.IssueFilter, ready bool) ([]*types.IssueWithCounts, error) {
+	if !ready {
+		return issueops.SearchIssuesWithCountsInTx(ctx, tx, "", filter)
+	}
+	work := workapi.ReadyFilterFromIssueFilter(filter)
+	if work.Limit == 0 {
+		// Natural ID sorting needs the complete candidate set before the
+		// visible graph IDs can be ordered. Bound acquisition by the graph
+		// snapshot limit plus one so overage is detected, not truncated.
+		work.Limit = PreviewSnapshotLimit + 1
+	}
+	rows, err := issueops.GetReadyWorkWithCountsInTx(ctx, tx, work)
+	if err != nil {
+		return nil, err
+	}
+	if len(rows) > PreviewSnapshotLimit {
+		return nil, fmt.Errorf("%w: graph Issue ready list exceeds %d rows", ErrLimitExceeded, PreviewSnapshotLimit)
+	}
+	return rows, nil
 }
 
 // resolveIssueListIDsInTx lowers the shipping --id set to native Issue keys.
