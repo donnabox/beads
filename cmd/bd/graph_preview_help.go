@@ -192,7 +192,8 @@ bd dep blocker --blocks issue is the same operation with reversed arguments.
 Memory endpoints, remote routing and bulk dependency flags are unavailable
 in this preview. Native dep operands retain literal Issue-ID semantics,
 including @; bd link parses the selected endpoint revision syntax, but exact
-pins and @current still refuse pending implementation.`},
+pins and @current are supported for local informational Links. Native
+Dependency endpoints remain floating.`},
 		{depRemoveCmd, `Use bd dep remove issue blocker (or bd dep rm) to
 remove one local blocking Dependency by its Issue pair. An absent pair is a
 successful no-op and reports status not_found with --json. A real removal
@@ -209,8 +210,9 @@ by default and --force applies the checked mutation.
 
 Without --type, bd link SOURCE TARGET creates the ordinary
 blocking Dependency between two live Issues. In graph workspaces this form
-also parses the selected revision syntax; exact pins and @current still refuse
-pending implementation. bd dep add/remove keep literal Issue IDs, so the input
+also parses the selected revision syntax for informational Links; exact local
+pins and @current are supported, while native Dependency endpoints remain
+floating. bd dep add/remove keep literal Issue IDs, so the input
 syntaxes are not interchangeable. To create any native Dependency
 kind through the canonical namespace, use
   bd link create --type blocks --source ISSUE --target ISSUE

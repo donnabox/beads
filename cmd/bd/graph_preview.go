@@ -682,7 +682,14 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 	if canonicalOutputSelected(cmd) {
 		return runCanonicalShow(cmd, args, false)
 	}
-	if err := graphPreviewFlags(cmd, "version", "format", "include-dependents", "include-comments", "brief-deps"); err != nil {
+	if err := graphPreviewFlags(cmd, "version", "format", "include-dependents", "include-comments", "brief-deps", "short", "long", "local-time", "comments-tail"); err != nil {
+		return err
+	}
+	shortMode, _ := cmd.Flags().GetBool("short")
+	longMode, _ := cmd.Flags().GetBool("long")
+	localTime, _ := cmd.Flags().GetBool("local-time")
+	commentsTail, _ := cmd.Flags().GetInt("comments-tail")
+	if err := validateCommentsTail(commentsTail); err != nil {
 		return err
 	}
 	format, _ := cmd.Flags().GetString("format")
@@ -691,6 +698,9 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 	}
 	if format != "" && (cmd.Flags().Changed("include-dependents") || cmd.Flags().Changed("include-comments") || cmd.Flags().Changed("brief-deps")) {
 		return graphFailure("capability_unavailable", "Issue detail flags require legacy Issue --json output", 5)
+	}
+	if format != "" && (cmd.Flags().Changed("short") || cmd.Flags().Changed("long") || cmd.Flags().Changed("local-time") || cmd.Flags().Changed("comments-tail")) {
+		return graphFailure("capability_unavailable", "Issue display flags require the familiar Issue output format", 5)
 	}
 	if len(args) != 1 {
 		return graphFailure("invalid_selector", "graph show requires one Bead ID (or beads/PATH) or explicit links/PATH", 2)
@@ -716,10 +726,13 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 	if versioned && (cmd.Flags().Changed("include-dependents") || cmd.Flags().Changed("include-comments") || cmd.Flags().Changed("brief-deps")) {
 		return graphFailure("capability_unavailable", "Issue detail flags cannot describe an exact retained version", 5)
 	}
+	if versioned && (cmd.Flags().Changed("short") || cmd.Flags().Changed("long") || cmd.Flags().Changed("local-time") || cmd.Flags().Changed("comments-tail")) {
+		return graphFailure("capability_unavailable", "Issue display flags require a current Issue", 5)
+	}
 	if versioned && (version == "" || !utf8.ValidString(version) || len(version) > graphstore.PreviewVersionTokenLimit) {
 		return graphFailure("invalid_selector", "--version requires a nonempty UTF-8 token of at most 4096 bytes", 2)
 	}
-	var shownIssue, legacyIssue bool
+	var shownIssue, legacyIssue, legacyShort bool
 	err = withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 		var r any
 		var err error
@@ -732,6 +745,12 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 			return nil, "", err
 		}
 		_, shownIssue = r.(graphstore.IssueRecord)
+		if shortMode && shownIssue && !versioned && format == "" {
+			legacyShort = true
+			issue := *r.(graphstore.IssueRecord).Properties
+			issue.ID = path
+			return r, formatShortIssue(&issue), nil
+		}
 		if shownIssue && jsonOutput && format == "" && !versioned {
 			includeDependents, _ := cmd.Flags().GetBool("include-dependents")
 			includeComments, _ := cmd.Flags().GetBool("include-comments")
@@ -743,8 +762,15 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 			legacyIssue = true
 			return []*types.IssueDetails{details}, "", nil
 		}
-		if !shownIssue && (cmd.Flags().Changed("include-dependents") || cmd.Flags().Changed("include-comments") || cmd.Flags().Changed("brief-deps")) {
-			return nil, "", graphFailure("capability_unavailable", "Issue detail flags require an Issue", 5)
+		if shownIssue && !jsonOutput && format == "" && !versioned {
+			details, err := s.ShowIssueDetails(ctx, path, workapi.DetailOptions{IncludeDependents: true, IncludeComments: true})
+			if err != nil {
+				return nil, "", err
+			}
+			return details, renderGraphIssueDetails(details, graphIssueDetailOptions{Long: longMode, LocalTime: localTime, CommentsTail: commentsTail}), nil
+		}
+		if !shownIssue && (cmd.Flags().Changed("include-dependents") || cmd.Flags().Changed("include-comments") || cmd.Flags().Changed("brief-deps") || cmd.Flags().Changed("short") || cmd.Flags().Changed("long") || cmd.Flags().Changed("local-time") || cmd.Flags().Changed("comments-tail")) {
+			return nil, "", graphFailure("capability_unavailable", "Issue detail and display flags require an Issue", 5)
 		}
 		projected, err := graphProjectCompleteRecords(r)
 		if err != nil {
@@ -756,6 +782,10 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 		}
 		return r, string(data), nil
 	}, func(result any, human string) error {
+		if legacyShort {
+			_, err := fmt.Fprintln(cmd.OutOrStdout(), human)
+			return err
+		}
 		if legacyIssue {
 			return outputJSON(result)
 		}
