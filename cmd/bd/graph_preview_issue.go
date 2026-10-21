@@ -37,7 +37,7 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if beadType != graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) {
 		return runGraphPreviewCreateMemory(cmd, args)
 	}
-	if err := graphPreviewFlags(cmd, "id", "parent", "no-inherit-labels", "force", "title", "description", "body", "message", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due", "metadata", "properties"); err != nil {
+	if err := graphPreviewFlags(cmd, "id", "parent", "no-inherit-labels", "force", "title", "description", "body", "message", "type", "status", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due", "metadata", "properties"); err != nil {
 		return err
 	}
 	parentSelector, _ := cmd.Flags().GetString("parent")
@@ -151,11 +151,15 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	}
 	labels, _ := cmd.Flags().GetStringSlice("labels")
 	aliasLabels, _ := cmd.Flags().GetStringSlice("label")
+	initialStatus, _ := cmd.Flags().GetString("status")
+	if initialStatus == "" {
+		initialStatus = string(types.StatusOpen)
+	}
 	creator := getActorWithGit()
 	forceIDPrefix, _ := cmd.Flags().GetBool("force")
 	request := publicops.CreateRequest{Actor: creator, ForceIDPrefix: forceIDPrefix, Issue: &types.Issue{
 		CreatedBy: creator, Owner: getOwner(),
-		Title: title, Description: description, Status: types.StatusOpen,
+		Title: title, Description: description, Status: types.Status(initialStatus),
 		Priority: priority, IssueType: issueType, Labels: utils.NormalizeLabels(append(labels, aliasLabels...)),
 	}}
 	if cmd.Flags().Changed("id") {
