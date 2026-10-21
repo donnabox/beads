@@ -5,6 +5,7 @@ package main
 import (
 	"os"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -134,6 +135,70 @@ func TestGraphPreviewReadyClaimWorkflow(t *testing.T) {
 				if _, _, raceVersions, _ := graphVersionsListed(t, call("versions", "race")); len(raceVersions) != 2 {
 					t.Fatalf("concurrent claim minted unexpected versions: %+v", raceVersions)
 				}
+			}
+		})
+	}
+}
+
+func TestGraphPreviewReadyParentListsDescendants(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := t.TempDir(), t.TempDir()
+			const scope = "https://example.invalid/ready-parent/"
+			call := func(code string, args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
+			}
+			initArgs := []string{"init", "--graph-mode", "link", "--scope-url", scope,
+				"--skip-hooks", "--skip-agents", "--non-interactive"}
+			if engine == "server" {
+				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
+				if port == "" {
+					t.Skip("set BEADS_GRAPH_TEST_SERVER_PORT for ordinary shared-server qualification")
+				}
+				initArgs = append(initArgs, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
+			}
+			call("", initArgs...)
+			parent := graphMixedResult[graphstore.IssueRecord](t, call("", "create", "Parent", "--id", "beads/selected-parent", "--type", "epic"))
+			other := graphMixedResult[graphstore.IssueRecord](t, call("", "create", "Other", "--id", "beads/other-parent", "--type", "epic"))
+			child := graphMixedResult[graphstore.IssueRecord](t, call("", "create", "Child", "--parent", "beads/selected-parent"))
+			grandchild := graphMixedResult[graphstore.IssueRecord](t, call("", "create", "Grandchild", "--parent", child.ID))
+			outsider := graphMixedResult[graphstore.IssueRecord](t, call("", "create", "Outsider", "--parent", other.ID))
+			if parent.Properties.ID == "selected-parent" {
+				t.Fatal("fixture needs a native parent ID distinct from the graph path")
+			}
+			if got := graphMixedResult[[]graphstore.IssueRecord](t, call("", "ready")); len(got) == 0 {
+				t.Fatal("fixture needs ready work to detect an accidentally broadened parent filter")
+			}
+			call("invalid_selector", "ready", "--parent=")
+			call("invalid_selector", "ready", "--parent", "   ")
+			for _, selector := range []string{"beads/selected-parent", scope + "beads/selected-parent", parent.Properties.ID} {
+				got := graphMixedResult[[]graphstore.IssueRecord](t, call("", "ready", "--parent", selector))
+				found := map[string]bool{}
+				for _, issue := range got {
+					found[issue.ID] = true
+				}
+				if len(found) != 2 || !found[child.ID] || !found[grandchild.ID] || found[outsider.ID] {
+					t.Fatalf("ready --parent %s selected wrong descendants: %+v", selector, got)
+				}
+			}
+			if got := graphMixedResult[[]graphstore.IssueRecord](t, call("", "ready", "--parent", "missing")); len(got) != 0 {
+				t.Fatalf("missing parent selected work: %+v", got)
+			}
+			call("capability_unavailable", "ready", "--claim", "--parent", "beads/selected-parent", "--actor", "ready-agent")
+			call("capability_unavailable", "ready", "--claim", "--parent=", "--actor", "ready-agent")
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("", "show", "--format", "graph-json", child.ID)); got.Revision != child.Revision {
+				t.Fatal("refused parent-scoped claim changed a child")
+			}
+			human := graphPolicyCLI(t, bd, work, home, nil, "", "ready", "--parent", parent.ID)
+			if !strings.Contains(human, child.ID) || strings.Contains(human, outsider.ID) {
+				t.Fatalf("human parent view selected wrong work: %s", human)
+			}
+			call("", "remember", "Ambiguous path", "--id", "beads/"+parent.Properties.ID)
+			call("invalid_properties", "ready", "--parent", parent.Properties.ID)
+			if got := graphMixedResult[[]graphstore.IssueRecord](t, call("", "ready", "--parent", parent.ID)); len(got) != 2 {
+				t.Fatalf("explicit parent path lost its descendants: %+v", got)
 			}
 		})
 	}
