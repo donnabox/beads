@@ -1,5 +1,12 @@
 # Graph CLI Specification (Draft)
 
+For the October 2026 generic CLI selection, projection and output design, see
+[CLI selection, projection and output](/reference/bdp/cli/selection-and-output).
+That specification owns the intended common output contract for adopting generic
+commands; the historical implementation ledger below is not a claim that its
+new flags are shipped. Root `show/history/versions/compare` may inspect Beads or
+Links; root writes remain Bead-only and Link writes use `bd link`.
+
 For setup and task-oriented commands, start with the
 [graph CLI guide](/reference/graph-cli). This page specifies the intended
 graph CLI when it is ready for main. Its implementation ledger separately
