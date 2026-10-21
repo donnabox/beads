@@ -682,11 +682,25 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 	if canonicalOutputSelected(cmd) {
 		return runCanonicalShow(cmd, args, false)
 	}
-	if err := graphPreviewFlags(cmd, "id", "version", "format", "include-dependents", "include-comments", "brief-deps", "short", "long", "local-time", "comments-tail"); err != nil {
+	if err := graphPreviewFlags(cmd, "id", "current", "version", "format", "include-dependents", "include-comments", "brief-deps", "short", "long", "local-time", "comments-tail"); err != nil {
 		return err
 	}
 	idFlags, _ := cmd.Flags().GetStringArray("id")
 	args = append(args, idFlags...)
+	currentMode, _ := cmd.Flags().GetBool("current")
+	if currentMode {
+		if len(args) != 0 {
+			return graphFailure("invalid_selector", "--current cannot be combined with explicit Issue IDs", 2)
+		}
+		currentID, err := graphPreviewCurrentIssueID(getActorWithGit())
+		if err != nil {
+			return err
+		}
+		if currentID == "" {
+			return graphFailure("not_found", "no current Issue found (no in-progress, hooked, or recently touched Issues)", 3)
+		}
+		args = []string{currentID}
+	}
 	shortMode, _ := cmd.Flags().GetBool("short")
 	longMode, _ := cmd.Flags().GetBool("long")
 	localTime, _ := cmd.Flags().GetBool("local-time")

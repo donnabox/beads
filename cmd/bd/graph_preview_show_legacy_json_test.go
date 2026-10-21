@@ -26,6 +26,7 @@ func TestGraphPreviewShowLegacyIssueJSON(t *testing.T) {
 				initArgs = append(initArgs, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "", initArgs...)
+			graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "--current", "--actor", "nobody", "--json")
 			created := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "Visible issue", "--id", "beads/work", "--description", "Body", "--labels", "one,two", "--estimate", "17", "--metadata", `{"review":true}`, "--json"))
 			prerequisite := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "Prerequisite", "--id", "beads/needs", "--json"))
 			// A native backing ID can also name a different canonical Bead. No ID in
@@ -58,6 +59,22 @@ func TestGraphPreviewShowLegacyIssueJSON(t *testing.T) {
 			}
 
 			shown := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/work", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/needs", "--json")
+			var fallback []types.IssueDetails
+			fallbackJSON := graphPolicyCLI(t, bd, work, home, nil, "", "show", "--current", "--actor", "nobody", "--json")
+			if err := json.Unmarshal([]byte(fallbackJSON), &fallback); err != nil || len(fallback) != 1 || fallback[0].ID != "beads/needs" {
+				t.Fatalf("--current did not use the last-touched fallback after empty actor reads: %v\n%s", err, fallbackJSON)
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "show", "beads/work", "--current", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "show", "--id=beads/work", "--current", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "", "create", "Active work", "--id", "beads/active", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "", "update", "beads/active", "--claim", "--actor", "holder", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/needs", "--json")
+			var active []types.IssueDetails
+			activeJSON := graphPolicyCLI(t, bd, work, home, nil, "", "show", "--current", "--actor", "holder", "--json")
+			if err := json.Unmarshal([]byte(activeJSON), &active); err != nil || len(active) != 1 || active[0].ID != "beads/active" {
+				t.Fatalf("--current did not prefer claimed Issue over last touched: %v\n%s", err, activeJSON)
+			}
 			byID := graphPolicyCLI(t, bd, work, home, nil, "", "show", "--id=beads/work", "--json")
 			if byID != shown {
 				t.Fatalf("--id must select the same Issue as the positional operand:\n%s\n%s", byID, shown)

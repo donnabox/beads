@@ -131,6 +131,8 @@ fields refuse. Fresh workspaces create types/issue Issues.`},
 Issue; use bd show links/ID for a Link. Multiple positional/--id operands
 show current Issues in the supplied order, with ordinary Issue JSON or human
 details. Memory, Link, exact-version and graph-json reads remain single-ID.
+--current selects the actor's first in-progress Issue, then hooked Issue, then
+the last-touched Issue; it cannot combine with an explicit ID.
 ID@TOKEN or '[URL]@TOKEN' selects
 one exact retained record; --version TOKEN remains an alternative (not both).
 @current and @unpinned read current. Unwrapped URL forms containing :// are
