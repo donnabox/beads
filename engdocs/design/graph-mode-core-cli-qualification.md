@@ -32,7 +32,7 @@ lanes. A skipped server subtest is not a pass for that engine.
 | `show` / `link show` | Canonical show and legacy current-Issue `--json` have installed tests. This branch restores familiar human Issue details, `--short`, `--long`, and comment-tail rendering; selected cases pass on embedded and shared-server Dolt. | Check shipping multi-ID, current, refs, children and watch forms separately; keep canonical JSON and retained-state rules separate. |
 | `list` / `link list` | Existing tests cover bounded Bead/Issue/Link selections and legacy Issue JSON. | Common shipping Issue filters and tree/pretty presentation still refuse. Pagination implementation is deferred; preserve current product limit behavior. |
 | `versions` / `link versions` | Existing tests cover Issue, Memory, live Link and removed-Link histories, local ordering and JSON member sets. | Recheck after PR #141 integration and with both real engines; do not infer HTTP History from CLI History. |
-| `link FROM SOURCE` | Existing installed tests exercise informational Links, source guards and endpoint pins. This branch additionally passes embedded-process checks for default `blocks`, first-operand orientation, duplicate/no-op, explicit `tracks` and refusal to layer a different kind on the same Issue pair. | Check shipping and graph JSON/human feedback and qualify the same cases on shared-server Dolt. The starting candidate's help incorrectly said exact pins refuse; this branch corrects it. |
+| `link FROM SOURCE` | Existing installed tests exercise informational Links, source guards and endpoint pins. This branch checks default `blocks`, first-operand orientation, duplicate/no-op, explicit `tracks`, same-pair type conflict, and shipping JSON/human feedback on embedded and shared-server Dolt. | Check remaining shipping flags and partial-ID error behavior. The starting candidate's help incorrectly said exact pins refuse; this branch corrects it. |
 
 The second gate is `bd dep`, `bd ready`, and logical aliases to the core verbs
 (including `new`, `view`, `q`, `forget`, `unlink` and graph `history`, where
@@ -74,3 +74,9 @@ top-level server-only race test skipped, and 64 subtests skipped without a
 configured shared-server port. The focused final show test passed on both
 engines afterward. This establishes local regression evidence, not full
 shipping parity or Bazel CI qualification; PR #151 CI remains pending.
+
+After restoring the positional `bd link` shipping JSON and human result, the
+compatibility-defaults workflow passed again on both engines. Installed
+typed-relationship, endpoint-reference, and selected-Type workflows also
+passed on embedded and shared-server Dolt. These targeted tests compile the
+latest Link output edit; the broader 285-test run predates it.
