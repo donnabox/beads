@@ -128,7 +128,10 @@ classifications (for example task or bug); the CLI selects types/issue for them.
 accepts body/description/message and an optional title; unsupported Issue-only
 fields refuse. Fresh workspaces create types/issue Issues.`},
 		{showCmd, `Use bd show ID or bd show --id ID (equivalent to beads/ID) for a current Memory or
-Issue; use bd show links/ID for a Link. ID@TOKEN or '[URL]@TOKEN' selects
+Issue; use bd show links/ID for a Link. Multiple positional/--id operands
+show current Issues in the supplied order, with ordinary Issue JSON or human
+details. Memory, Link, exact-version and graph-json reads remain single-ID.
+ID@TOKEN or '[URL]@TOKEN' selects
 one exact retained record; --version TOKEN remains an alternative (not both).
 @current and @unpinned read current. Unwrapped URL forms containing :// are
 literal, including raw @; use the full canonical Scope URL to escape local

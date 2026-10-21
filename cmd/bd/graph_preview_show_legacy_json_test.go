@@ -62,7 +62,26 @@ func TestGraphPreviewShowLegacyIssueJSON(t *testing.T) {
 			if byID != shown {
 				t.Fatalf("--id must select the same Issue as the positional operand:\n%s\n%s", byID, shown)
 			}
-			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "show", "beads/work", "--id=beads/needs", "--json")
+			manyJSON := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/work", "--id=beads/needs", "--json")
+			var many []types.IssueDetails
+			if err := json.Unmarshal([]byte(manyJSON), &many); err != nil || len(many) != 2 || many[0].ID != "beads/work" || many[1].ID != "beads/needs" {
+				t.Fatalf("multi-ID JSON lost shipping Issue order or detail shape: %v\n%s", err, manyJSON)
+			}
+			partialJSON := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/missing", "--id=beads/needs", "--json")
+			var partial []types.IssueDetails
+			if err := json.Unmarshal([]byte(partialJSON), &partial); err != nil || len(partial) != 1 || partial[0].ID != "beads/needs" {
+				t.Fatalf("missing multi-ID member prevented a successful Issue read: %v\n%s", err, partialJSON)
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "beads/missing-one", "--id=beads/missing-two", "--json")
+			manyHuman := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/work", "beads/needs")
+			if !strings.Contains(manyHuman, "Visible issue") || !strings.Contains(manyHuman, "Prerequisite") || !strings.Contains(manyHuman, "─") {
+				t.Fatalf("multi-ID human output lost Issue detail separator: %s", manyHuman)
+			}
+			manyShort := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/work", "--id=beads/needs", "--short", "--json")
+			if strings.Count(strings.TrimSpace(manyShort), "\n") != 1 || strings.Contains(manyShort, "DESCRIPTION") || strings.HasPrefix(strings.TrimSpace(manyShort), "[") {
+				t.Fatalf("multi-ID short output did not take precedence over JSON: %s", manyShort)
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "show", "beads/work", "links/missing", "--json")
 			var details []types.IssueDetails
 			if err := json.Unmarshal([]byte(shown), &details); err != nil || len(details) != 1 {
 				t.Fatalf("graph Issue show must use ordinary flat detail array: %v\n%s", err, shown)
@@ -108,6 +127,7 @@ func TestGraphPreviewShowLegacyIssueJSON(t *testing.T) {
 				}
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "", "remember", "Memory body", "--id", "beads/memory", "--title", "Memo", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "show", "beads/work", "beads/memory", "--json")
 			var memory struct{ Result graphstore.Record }
 			memoryJSON := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/memory", "--json")
 			if err := json.Unmarshal([]byte(memoryJSON), &memory); err != nil || memory.Result.ID != "https://example.invalid/show/beads/memory" {

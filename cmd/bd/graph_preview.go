@@ -704,6 +704,9 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 	if format != "" && (cmd.Flags().Changed("short") || cmd.Flags().Changed("long") || cmd.Flags().Changed("local-time") || cmd.Flags().Changed("comments-tail")) {
 		return graphFailure("capability_unavailable", "Issue display flags require the familiar Issue output format", 5)
 	}
+	if len(args) > 1 {
+		return runGraphPreviewShowMany(cmd, args, shortMode, longMode, localTime, commentsTail, format)
+	}
 	if len(args) != 1 {
 		return graphFailure("invalid_selector", "graph show requires one Bead ID (or beads/PATH) or explicit links/PATH; use a positional ID or --id", 2)
 	}
