@@ -5,6 +5,12 @@ Status: working audit, October 21, 2026. Compare the shipping `v1.3.1` tag
 when the shipping release changes. This document records observed behavior;
 the graph CLI specification remains the contract for intentional differences.
 
+Donna selected basic Bead/Link CRUD and the `ready` invariant as the first
+Preview 3 compatibility slice on October 21. [The command/form table](preview3-cli-compatibility-selection.md)
+marks #151, #152, #156 and the #175 readiness regression as selected unmerged
+work, while the other parity PRs remain candidates. Selection does not imply
+that the entire first slice is qualified or integrated.
+
 ## Objective and method
 
 An existing Issue command that is admitted by `--graph-mode link` should keep
