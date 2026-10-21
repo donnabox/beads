@@ -34,14 +34,15 @@ design is settled.
 | `create --file` Markdown dependencies | Ordinary Markdown import can create Issue relationships. | Graph route refuses templates requiring mapped Links. | Missing capability; requires atomic Issue/Link mapping, not a CLI-only flag change. |
 | `list --limit` and `query --limit` | A page of Issues, default 50 unless context changes it; explicit zero means unlimited. `--offset` is proxied-server-only. JSON is a bare Issue array. | Legacy graph Issue JSON keeps the array shape. Canonical collection output has a separate page contract and refuses a truncated selection until retained continuation exists. | Preserve the shipping limit and output behavior for admitted Issue routes. Canonical continuation work is deferred for Preview 3; do not invent a cursor. Generic query design awaits Melinda. |
 
-The current #150 head `34c28e9d9` passed 121 hosted checks with eight
+The #150 implementation head `34c28e9d9` passed 121 hosted checks with eight
 intentional skips, including the complete Graph C0 real-engine qualifier.
 Its installed `blocked --parent` workflow covers embedded and shared-server
 Dolt, graph/native ID mismatch, explicit paths, canonical URLs and ambiguous
 bare IDs. The first macOS race attempt failed before tests because the runner
 could not resolve `proxy.golang.org` while downloading `github.com/creack/pty`;
 rerunning only that job passed, and the macOS coverage gate passed. This
-qualifies #150's current head, not the other unmerged parity branches.
+qualifies that implementation head, not this later audit-only commit or the
+other unmerged parity branches.
 
 ## First-gate implementation progress
 
@@ -52,7 +53,7 @@ Their tests qualify their stated slices, not the whole gate:
 
 | PR | Implemented slice | Current evidence |
 | --- | --- | --- |
-| [#150](https://github.com/donnabox/beads/pull/150) | `blocked --parent`; also records this working audit. | Head `34c28e9d9`: 121 hosted checks passed, eight intentional skips; complete Graph C0 on real engines and macOS retry passed. No review decision. |
+| [#150](https://github.com/donnabox/beads/pull/150) | `blocked --parent`; also records this working audit. | Implementation head `34c28e9d9`: 121 hosted checks passed, eight intentional skips; complete Graph C0 on real engines and macOS retry passed. This audit-only successor awaits its own checks; no review decision. |
 | [#151](https://github.com/donnabox/beads/pull/151) | Familiar Issue `show`, including multi-ID, `--current`, refs, children and watch; shipping positional Link feedback. | Six checks passed; selected installed workflows passed embedded and shared-server Dolt. |
 | [#152](https://github.com/donnabox/beads/pull/152) | Issue create/update description file and stdin sources. | Seven checks passed, two skipped; the new workflow passed both engines. |
 | [#156](https://github.com/donnabox/beads/pull/156) | `list --format=json` and `--tree=false` aliases. | Four checks passed; focused installed workflows passed both engines. |
