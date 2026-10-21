@@ -24,6 +24,8 @@ func graphListTestCommand(t *testing.T, args []string) *cobra.Command {
 	cmd.Flags().StringP("type", "t", "", "")
 	cmd.Flags().StringP("assignee", "a", "", "")
 	cmd.Flags().StringSlice("exclude-type", nil, "")
+	cmd.Flags().String("parent", "", "")
+	cmd.Flags().String("filter-parent", "", "")
 	for _, name := range []string{"flat", "json", "quiet", "pinned", "no-pinned", "no-parent", "reverse", "ready", "tree", "no-assignee", "overdue", "include-comments"} {
 		cmd.Flags().Bool(name, false, "")
 	}
@@ -78,6 +80,12 @@ func TestGraphPreviewIssueListInput(t *testing.T) {
 		{"sort-closed", []string{"--flat", "--sort=closed", "--all"}, false, 0, false, 0},
 		{"both-pin", []string{"--flat", "--pinned", "--no-pinned"}, false, 2, false, 0},
 		{"no-parent", []string{"--flat", "--no-parent"}, false, 0, false, 0},
+		{"parent-flat", []string{"--flat", "--parent=beads/work"}, false, 0, false, 0},
+		{"parent-tree-false", []string{"--tree=false", "--parent=beads/work"}, false, 0, false, 0},
+		{"parent-json", []string{"--json", "--parent=beads/work"}, false, 0, false, 0},
+		{"parent-records", []string{"--format=records-json", "--parent=beads/work"}, false, 0, true, 0},
+		{"parent-default-tree-refused", []string{"--parent=beads/work"}, false, 5, false, 0},
+		{"parent-empty", []string{"--flat", "--parent="}, false, 2, false, 0},
 		{"both-status-aliases", []string{"--flat", "--status=open", "--state=closed"}, false, 2, false, 0},
 		{"repeat-status", []string{"--flat", "--status=open", "-sclosed"}, false, 5, false, 0},
 		{"repeat-type", []string{"--flat", "--type=task", "-tbug"}, false, 5, false, 0},
