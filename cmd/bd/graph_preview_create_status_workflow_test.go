@@ -51,6 +51,10 @@ func TestGraphPreviewCreateInitialStatusWorkflow(t *testing.T) {
 					}
 				})
 			}
+			child := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "Status child", "--parent", "status-default", "--status=deferred", "--json"))
+			if child.Properties.ID != "status-default.1" || child.Properties.Status != types.StatusDeferred {
+				t.Fatalf("child create lost native dotted ID or initial status: %+v", child.Properties)
+			}
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "create", "Invalid", "--id", "status-invalid", "--status=not-configured", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "status-invalid", "--json")
 		})
