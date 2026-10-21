@@ -43,6 +43,31 @@ macOS CLI suite reported an unrelated failure in
 long graphstore suite completed. These results do not qualify the shared-server
 route or the remaining rows above.
 
+## First-gate implementation progress
+
+The first implementation gate is `create`, `update`, `delete`, `show`, `list`,
+`versions`, their `bd link` variants, and shipping `bd link FROM SOURCE` in
+graph mode. As of October 20, the following fork PRs are open and unmerged.
+Their tests qualify their stated slices, not the whole gate:
+
+| PR | Implemented slice | Current evidence |
+| --- | --- | --- |
+| [#150](https://github.com/donnabox/beads/pull/150) | `blocked --parent`; also records this working audit. | Six checks passed; shared-server route remains unqualified. |
+| [#151](https://github.com/donnabox/beads/pull/151) | Familiar Issue `show`, including multi-ID, `--current`, refs, children and watch; shipping positional Link feedback. | Six checks passed; selected installed workflows passed embedded and shared-server Dolt. |
+| [#152](https://github.com/donnabox/beads/pull/152) | Issue create/update description file and stdin sources. | Seven checks passed, two skipped; the new workflow passed both engines. |
+| [#156](https://github.com/donnabox/beads/pull/156) | `list --format=json` and `--tree=false` aliases. | Four checks passed; focused installed workflows passed both engines. |
+| [#158](https://github.com/donnabox/beads/pull/158) | Issue list sort by visible ID, assignee or closed time; detailed `--long` output. | Installed workflow passed both engines at `089b595ac`; current-head CI pending. Stacked on #156. |
+
+The shared base [#141](https://github.com/donnabox/beads/pull/141) remains a
+draft. Its current head includes the C0 test-sharding repair from #157; broad
+CI is still running. Further first-gate gaps include atomic `create --deps`,
+update label/status and multi-ID forms, multi-ID and cascading deletion,
+shipping list filters and tree/pretty output, and partial-ID behavior in the
+positional Link form. Those remain inventory items until an implementation and
+both-engine evidence close them. The next gate is `dep`, `ready`, and logical
+aliases; the remaining command inventory follows that. Generic query design
+waits for Melinda, and pagination implementation is deferred for Preview 3.
+
 The Preview graph CLI specification has an older pinned-commit implementation
 ledger and a larger target inventory. Its target rows are not evidence that
 the current binary already supports an option. Continue this audit against
