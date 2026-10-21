@@ -153,7 +153,7 @@ func (s *Store) createIssue(ctx context.Context, path string, request publicops.
 			if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_issue_versions (path,version,issue_id,issue_revision,owned,revision_context,history_ordinal) VALUES (?,?,?,?,'[]','{"inception":"create"}',?)`, path, revision, created.Issue.ID, ordinal, ordinal); err != nil {
 				return err
 			}
-		} else if err := s.mapIssueCreateDependenciesInTx(ctx, tx, path, created.Issue.ID, request.Actor, resolved, true); err != nil {
+		} else if err := s.mapIssueCreateDependenciesInTx(ctx, tx, path, created.Issue.ID, request.Actor, resolved, true, false); err != nil {
 			return fmt.Errorf("map created Issue dependencies: %w", err)
 		}
 		if err := s.afterStage("retained"); err != nil {

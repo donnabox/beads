@@ -188,7 +188,7 @@ func (s *Store) CreateChildIssue(ctx context.Context, request IssueChildCreateRe
 			return err
 		}
 		if len(resolved) != 0 {
-			if err := s.mapIssueCreateDependenciesInTx(ctx, tx, childPath, created.Issue.ID, create.Actor, resolved, false); err != nil {
+			if err := s.mapIssueCreateDependenciesInTx(ctx, tx, childPath, created.Issue.ID, create.Actor, resolved, false, false); err != nil {
 				return fmt.Errorf("map child Issue dependencies: %w", err)
 			}
 		}

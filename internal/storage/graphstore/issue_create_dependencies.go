@@ -93,7 +93,7 @@ func (s *Store) prepareIssueCreateDependenciesInTx(ctx context.Context, tx *sql.
 	return resolved, native, nil
 }
 
-func (s *Store) mapIssueCreateDependenciesInTx(ctx context.Context, tx *sql.Tx, issuePath, issueID, actor string, dependencies []resolvedIssueCreateDependency, mapNewIssue bool) error {
+func (s *Store) mapIssueCreateDependenciesInTx(ctx context.Context, tx *sql.Tx, issuePath, issueID, actor string, dependencies []resolvedIssueCreateDependency, mapNewIssue, reverseAlreadyWritten bool) error {
 	reverseSources := make(map[string]string)
 	var reverseEdges []publicops.DependencyEdge
 	for _, dependency := range dependencies {
@@ -101,7 +101,7 @@ func (s *Store) mapIssueCreateDependenciesInTx(ctx context.Context, tx *sql.Tx, 
 			reverseEdges = append(reverseEdges, publicops.DependencyEdge{IssueID: dependency.targetID, DependsOnID: issueID, Type: dependency.nativeType})
 		}
 	}
-	if len(reverseEdges) != 0 {
+	if len(reverseEdges) != 0 && !reverseAlreadyWritten {
 		if _, _, err := issueops.ExecuteAddDependencies(ctx, tx, publicops.AddDependenciesRequest{Actor: actor, Edges: reverseEdges}); err != nil {
 			var hierarchy *publicops.DependencyHierarchyConflictError
 			if errors.Is(err, publicops.ErrDependencyCycle) || errors.As(err, &hierarchy) {
