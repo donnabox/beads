@@ -133,7 +133,7 @@ func TestGraphPreviewListNoParentWorkflow(t *testing.T) {
 				t.Fatalf("structured no-parent Issue list = %v, more=%t; want %v", paths, more, ids)
 			}
 			human := call("list", "--no-parent", "--flat")
-			if !strings.Contains(human, "beads/parent") || !strings.Contains(human, "beads/parent.9") || strings.Contains(human, "Child") || strings.Contains(human, "beads/memory") {
+			if !strings.Contains(human, `"`+scope+`beads/parent"`) || !strings.Contains(human, `"`+scope+`beads/parent.9"`) || strings.Contains(human, "Child") || strings.Contains(human, "beads/memory") {
 				t.Fatalf("no-parent human list: %s", human)
 			}
 		})
