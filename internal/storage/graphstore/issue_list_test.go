@@ -55,7 +55,7 @@ func assertIssueListRetained(t *testing.T, ctx context.Context, s *Store, path s
 func TestGraphIssueListRequestAdmission(t *testing.T) {
 	// Every nonzero unsupported request field must refuse before touching a DB.
 	admitted := map[string]bool{}
-	for _, name := range []string{"Status", "IssueType", "IDFilter", "TitleSearch", "TitleContains", "Assignee", "NoAssignee", "DueBefore", "DueAfter", "OverdueFlag", "Labels", "LabelsAny", "ExcludeLabels", "Priority", "PriorityMin", "PriorityMax", "PinnedFlag", "NoPinnedFlag", "NoParent", "AllFlag", "SortBy", "Reverse", "Limit", "MaxRows", "MaxRowsSource"} {
+	for _, name := range []string{"Status", "IssueType", "IDFilter", "TitleSearch", "TitleContains", "Assignee", "NoAssignee", "DueBefore", "DueAfter", "OverdueFlag", "Labels", "LabelsAny", "ExcludeLabels", "Priority", "PriorityMin", "PriorityMax", "PinnedFlag", "NoPinnedFlag", "NoParent", "ReadyFlag", "AllFlag", "SortBy", "Reverse", "Limit", "MaxRows", "MaxRowsSource"} {
 		admitted[name] = true
 	}
 	typ := reflect.TypeFor[publicops.ListRequest]()
@@ -177,6 +177,27 @@ func TestGraphIssueListLifecycle(t *testing.T) {
 				if record.ID == dep.Source.ID {
 					t.Fatal("blocked source is ready")
 				}
+			}
+			readyPage, err := s.ListIssues(ctx, publicops.ListRequest{ReadyFlag: true, Limit: issueListInt(0)})
+			if err != nil || len(readyPage.Items) != 2 || readyPage.HasMore || readyPage.Items[0].ID != wanted["beads/prereq"].ID || readyPage.Items[1].ID != wanted["beads/other"].ID {
+				t.Fatalf("blocker-aware ready list: %+v %v", readyPage, err)
+			}
+			readyPage, err = s.ListIssues(ctx, publicops.ListRequest{ReadyFlag: true, SortBy: "id", Limit: issueListInt(1)})
+			if err != nil || len(readyPage.Items) != 1 || !readyPage.HasMore || readyPage.Items[0].ID != wanted["beads/other"].ID {
+				t.Fatalf("ready list sorts visible IDs before paging: %+v %v", readyPage, err)
+			}
+			readyLegacy, err := s.ListIssuesLegacy(ctx, publicops.ListRequest{ReadyFlag: true, Limit: issueListInt(0)})
+			if err != nil || len(readyLegacy.Items) != 2 || readyLegacy.HasMore || readyLegacy.Items[0].ID != "beads/prereq" || readyLegacy.Items[1].ID != "beads/other" {
+				t.Fatalf("blocker-aware legacy ready list: %+v %v", readyLegacy, err)
+			}
+			if got, err := s.ListIssues(ctx, publicops.ListRequest{ReadyFlag: true, TitleContains: "work"}); !errors.Is(err, storage.ErrValidation) || !reflect.ValueOf(got).IsZero() {
+				t.Fatalf("unsupported ready filter must refuse: %+v %v", got, err)
+			}
+			if got, err := s.ListIssues(ctx, publicops.ListRequest{ReadyFlag: true, NoParent: true}); !errors.Is(err, storage.ErrValidation) || !reflect.ValueOf(got).IsZero() {
+				t.Fatalf("dropped ready no-parent must refuse: %+v %v", got, err)
+			}
+			if got, err := s.ListIssues(ctx, publicops.ListRequest{ReadyFlag: true, IDFilter: "beads/missing"}); !errors.Is(err, storage.ErrValidation) || !reflect.ValueOf(got).IsZero() {
+				t.Fatalf("dropped ready ID filter must refuse before empty-page resolution: %+v %v", got, err)
 			}
 			if !reflect.DeepEqual(before, reopenState(t, ctx, s)) {
 				t.Fatal("listing/readiness changed stored state")
