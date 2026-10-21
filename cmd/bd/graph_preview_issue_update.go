@@ -43,7 +43,7 @@ func graphPreviewIssueEditFlagsChanged(cmd *cobra.Command) bool {
 // workflow flags remain explicit refusals; legacy routing is unchanged.
 func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.UpdateIssueRequest, error) {
 	request := graphstore.UpdateIssueRequest{Path: path}
-	allowed := append([]string{"if-revision", "force", "session", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "properties", "allow-empty-description"}, graphPreviewIssueEditFlags...)
+	allowed := append([]string{"if-revision", "if-status", "force", "session", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "properties", "allow-empty-description"}, graphPreviewIssueEditFlags...)
 	if err := graphPreviewFlags(cmd, allowed...); err != nil {
 		return request, err
 	}
@@ -60,6 +60,14 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 		return request, err
 	}
 	request.ExpectedRevision, request.Unconditional = revision, unconditional
+	if cmd.Flags().Changed("if-status") {
+		status, _ := cmd.Flags().GetString("if-status")
+		if status == "" || !utf8.ValidString(status) {
+			return request, graphFailure("invalid_properties", "expected Issue status must be a nonempty UTF-8 name", 2)
+		}
+		value := types.Status(status)
+		request.ExpectedStatus = &value
+	}
 	if cmd.Flags().Changed("notes") && (cmd.Flags().Changed("clear-notes") || cmd.Flags().Changed("append-notes")) ||
 		cmd.Flags().Changed("clear-notes") && cmd.Flags().Changed("append-notes") {
 		return request, graphFailure("invalid_properties", "--notes, --clear-notes and --append-notes are mutually exclusive", 2)

@@ -527,13 +527,16 @@ accepts built-in statuses and configured custom statuses, and preserves the
 other Issue fields. Moving into a done status checks open children and live
 blocking dependencies in the same transaction; `--force` overrides that close
 policy, as it does on the shipping update command. A no-op status edit keeps
-the current revision. Use `--if-revision` to reject a stale edit atomically.
+the current revision. Use `--if-revision` to reject a stale revision, or
+`--if-status` to require the Issue's current status. Both guards are checked
+atomically; a stale status refuses even an otherwise no-op edit.
 For literal `closed`, `--session` (or `CLAUDE_SESSION_ID`) records the closing
 session.
 
 ```sh
 bd update work --status in_progress --if-revision REVISION_FROM_SHOW
 bd update work --status closed --force --session review-session
+bd update work --status open --if-status in_progress
 ```
 
 ## Edit Issue notes
