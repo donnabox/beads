@@ -109,8 +109,9 @@ func TestGraphPreviewListNoParentWorkflow(t *testing.T) {
 				t.Helper()
 				return graphPolicyCLI(t, bd, work, home, nil, "", args...)
 			}
-			call("create", "Parent", "--id", "beads/parent", "--json")
-			call("create", "Child", "--parent", "beads/parent", "--json")
+			parent := graphMixedResult[graphstore.IssueRecord](t, call("create", "Parent", "--id", "beads/parent", "--json"))
+			child := graphMixedResult[graphstore.IssueRecord](t, call("create", "Child", "--parent", "beads/parent", "--json"))
+			call("create", "Grandchild", "--parent", strings.TrimPrefix(child.ID, scope), "--json")
 			call("create", "Dotted without an edge", "--id", "beads/parent.9", "--json")
 			call("remember", "memory body", "--id", "beads/memory", "--title", "Memory", "--json")
 
@@ -135,6 +136,55 @@ func TestGraphPreviewListNoParentWorkflow(t *testing.T) {
 			human := call("list", "--no-parent", "--flat")
 			if !strings.Contains(human, `"`+scope+`beads/parent"`) || !strings.Contains(human, `"`+scope+`beads/parent.9"`) || strings.Contains(human, "Child") || strings.Contains(human, "beads/memory") {
 				t.Fatalf("no-parent human list: %s", human)
+			}
+			wantChildren := graphListSorted([]string{strings.TrimPrefix(child.ID, scope), "beads/parent.9"})
+			paths, more = graphListBeads(t, bd, work, home, scope, "--parent", "beads/parent", "--sort=id")
+			if !slices.Equal(paths, wantChildren) || more {
+				t.Fatalf("parent records list = %v, more=%t; want %v", paths, more, wantChildren)
+			}
+			first, more := graphListBeads(t, bd, work, home, scope, "--parent", "beads/parent", "--sort=id", "--limit=1")
+			if !slices.Equal(first, wantChildren[:1]) || !more {
+				t.Fatalf("parent limited page = %v, more=%t; want %v and more", first, more, wantChildren[:1])
+			}
+			graphPolicyCLI(t, bd, work, home, []string{"BEADS_MAX_ROWS=2"}, "", "list", "--parent", "beads/parent", "--format=records-json")
+			graphPolicyCLI(t, bd, work, home, []string{"BEADS_MAX_ROWS=1"}, "", "list", "--parent", "beads/parent", "--format=records-json", "--limit=1")
+			graphPolicyCLI(t, bd, work, home, []string{"BEADS_MAX_ROWS=1"}, "capability_unavailable", "list", "--parent", "beads/parent", "--format=records-json")
+			output = call("list", "--parent", parent.Properties.ID, "--json", "--sort=id")
+			rows = nil
+			if err := json.Unmarshal([]byte(output), &rows); err != nil {
+				t.Fatalf("decode parent Issue list: %v: %s", err, output)
+			}
+			ids = ids[:0]
+			for _, row := range rows {
+				ids = append(ids, row.ID)
+			}
+			if !slices.Equal(ids, wantChildren) {
+				t.Fatalf("bare native parent list = %v, want %v", ids, wantChildren)
+			}
+			if alias := call("list", "--filter-parent", "beads/parent", "--json", "--sort=id"); alias != call("list", "--parent", "beads/parent", "--json", "--sort=id") {
+				t.Fatalf("filter-parent alias differs from parent:\n%s\n%s", alias, output)
+			}
+			human = call("list", "--parent", "beads/parent", "--flat", "--sort=id")
+			for _, id := range wantChildren {
+				if !strings.Contains(human, `"`+scope+id+`"`) {
+					t.Fatalf("parent flat list missing %s: %s", id, human)
+				}
+			}
+			if strings.Contains(human, "Grandchild") || strings.Contains(human, "Memory") {
+				t.Fatalf("parent flat list leaked other resources: %s", human)
+			}
+			long := call("list", "--parent", "beads/parent", "--flat", "--long")
+			if !strings.Contains(long, "Child") || !strings.Contains(long, "Dotted without an edge") || strings.Contains(long, "Grandchild") {
+				t.Fatalf("parent long list: %s", long)
+			}
+			call("create", "Edge-less orphan", "--id", "beads/orphan.3", "--json")
+			paths, more = graphListBeads(t, bd, work, home, scope, "--parent", "orphan")
+			if !slices.Equal(paths, []string{"beads/orphan.3"}) || more {
+				t.Fatalf("missing bare parent dotted fallback = %v, more=%t", paths, more)
+			}
+			paths, more = graphListBeads(t, bd, work, home, scope, "--parent", "beads/memory")
+			if len(paths) != 0 || more {
+				t.Fatalf("non-Issue parent unexpectedly selected Issues: %v, more=%t", paths, more)
 			}
 		})
 	}
