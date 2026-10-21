@@ -4,6 +4,7 @@ package main
 
 import (
 	"encoding/json"
+	"os"
 	"reflect"
 	"strings"
 	"testing"
@@ -58,5 +59,41 @@ func TestGraphPreviewCreateParentNativeChildAndCanonicalLink(t *testing.T) {
 	call("not_found", "create", "Refused", "--parent", "missing", "--json")
 	if after := call("", "children", "selected-parent", "--json"); after != before {
 		t.Fatalf("refused create changed parent children\nbefore: %s\nafter: %s", before, after)
+	}
+}
+
+func TestGraphPreviewCreateSilentTwoEngines(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := t.TempDir(), t.TempDir()
+			args := []string{"init", "--graph-mode", "link", "--prefix", "silent", "--scope-url", "https://example.invalid/silent/", "--skip-hooks", "--skip-agents", "--non-interactive"}
+			if engine == "server" {
+				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
+				if port == "" {
+					t.Skip("set BEADS_GRAPH_TEST_SERVER_PORT for shared-server create qualification")
+				}
+				args = append(args, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
+			}
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", args...)
+			}
+			call(args...)
+			if got := call("create", "Explicit", "--id", "beads/fixed", "--silent"); got != "beads/fixed\n" {
+				t.Fatalf("silent explicit ID output = %q", got)
+			}
+			if got := call("create", "Generated", "--silent", "--quiet"); !strings.HasPrefix(got, "beads/silent-") || strings.Count(got, "\n") != 1 {
+				t.Fatalf("silent generated ID output = %q", got)
+			}
+			created := graphMixedResult[graphstore.IssueRecord](t, call("create", "JSON", "--id", "beads/json", "--silent", "--json"))
+			if created.Properties.Title != "JSON" || created.ID != "https://example.invalid/silent/beads/json" {
+				t.Fatalf("--json did not retain graph create result: %+v", created)
+			}
+			if got := call("create", "Normal", "--silent=false"); !strings.HasPrefix(got, "Created beads/silent-") {
+				t.Fatalf("explicit false changed normal output: %q", got)
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "identity_reserved", "create", "Duplicate", "--id", "beads/fixed", "--silent", "--json")
+		})
 	}
 }
