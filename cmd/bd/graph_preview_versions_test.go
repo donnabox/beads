@@ -67,7 +67,7 @@ func TestGraphPreviewRemovedLinkVersionsTwoEngines(t *testing.T) {
 					"--server-port", port, "--server-user", "root")
 			}
 			call(initArgs...)
-			call("create", "Source", "--id", "source")
+			call("create", "Source", "--id", "beads/source")
 			call("remember", "Target", "--id", "target")
 			call("link", "source", "target", "--id", "links/edge", "--type", scope+"types/references")
 			call("update", "links/edge", "--properties", `{"note":"changed"}`)

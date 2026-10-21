@@ -208,12 +208,12 @@ func TestGraphPreviewCloseSuggestNextWorkflow(t *testing.T) {
 				return graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
 			}
 			call("", initArgs...)
-			call("", "create", "Prerequisite", "--id", "prerequisite")
-			call("", "create", "Dependent", "--id", "dependent")
+			call("", "create", "Prerequisite", "--id", "beads/prerequisite")
+			call("", "create", "Dependent", "--id", "beads/dependent")
 			call("", "dep", "add", "dependent", "prerequisite")
 			dependentBefore := call("", "versions", "dependent")
 			prerequisiteBefore := call("", "versions", "prerequisite")
-			call("", "create", "Unrelated", "--id", "unrelated")
+			call("", "create", "Unrelated", "--id", "beads/unrelated")
 			unrelatedBefore := call("", "versions", "unrelated")
 			call("invalid_selector", "close", "prerequisite", "unrelated", "--suggest-next")
 			if call("", "versions", "prerequisite") != prerequisiteBefore || call("", "versions", "unrelated") != unrelatedBefore {
