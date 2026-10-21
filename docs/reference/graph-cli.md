@@ -470,6 +470,22 @@ The remaining ordinary ready modes and blocked `--parent` remain in
 the [draft CLI specification](/reference/graph-cli-specification-draft)
 and refuse in this graph slice until their supporting graph behavior is ready.
 
+## Change Issue status
+
+`bd update ID --status STATUS` changes a native Issue's lifecycle status. It
+accepts built-in statuses and configured custom statuses, and preserves the
+other Issue fields. Moving into a done status checks open children and live
+blocking dependencies in the same transaction; `--force` overrides that close
+policy, as it does on the shipping update command. A no-op status edit keeps
+the current revision. Use `--if-revision` to reject a stale edit atomically.
+For literal `closed`, `--session` (or `CLAUDE_SESSION_ID`) records the closing
+session.
+
+```sh
+bd update work --status in_progress --if-revision REVISION_FROM_SHOW
+bd update work --status closed --force --session review-session
+```
+
 ## Edit Issue notes
 
 An Issue's notes can carry progress across sessions. `--append-notes` adds a

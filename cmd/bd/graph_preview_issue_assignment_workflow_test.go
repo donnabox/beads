@@ -174,6 +174,55 @@ func TestGraphPreviewIssueAssignmentWorkflow(t *testing.T) {
 	}
 }
 
+func TestGraphPreviewUpdateStatusTwoEngines(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := t.TempDir(), t.TempDir()
+			args := []string{"init", "--graph-mode", "link", "--prefix", "status", "--scope-url", "https://example.invalid/update-status/", "--skip-hooks", "--skip-agents", "--non-interactive"}
+			if engine == "server" {
+				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
+				if port == "" {
+					t.Skip("set BEADS_GRAPH_TEST_SERVER_PORT for shared-server status qualification")
+				}
+				args = append(args, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
+			}
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+			}
+			refuse := func(code string, args ...string) {
+				t.Helper()
+				graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
+			}
+			call(args...)
+			call("create", "Work", "--id", "beads/work")
+			call("create", "Prerequisite", "--id", "beads/gate")
+			call("dep", "add", "beads/work", "beads/gate")
+			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/work", "--format", "graph-json"))
+			refuse("constraint_violation", "update", "beads/work", "--status=closed", "--if-revision", before.Revision)
+			refuse("invalid_properties", "update", "beads/work", "--status=bogus")
+			refuse("invalid_properties", "update", "beads/work", "--status=open", "--session=review")
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/work", "--format", "graph-json")); !reflect.DeepEqual(got, before) {
+				t.Fatal("refused status edits changed the Issue")
+			}
+			closed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--status=closed", "--session=review", "--force", "--if-revision", before.Revision))
+			if !closed.Changed || closed.Issue.Properties.Status != "closed" || closed.Issue.Properties.ClosedAt == nil || closed.Issue.Properties.ClosedBySession != "review" {
+				t.Fatalf("forced status did not close with attribution: %+v", closed)
+			}
+			refuse("revision_conflict", "update", "beads/work", "--status=open", "--if-revision", before.Revision)
+			reopened := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--status=open", "--if-revision", closed.Issue.Revision))
+			if !reopened.Changed || reopened.Issue.Properties.Status != "open" || reopened.Issue.Properties.ClosedAt != nil {
+				t.Fatalf("status update did not reopen: %+v", reopened)
+			}
+			noop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--status=open", "--if-revision", reopened.Issue.Revision))
+			if noop.Changed || noop.Issue.Revision != reopened.Issue.Revision {
+				t.Fatalf("same-status update minted a revision: %+v", noop)
+			}
+		})
+	}
+}
+
 func TestGraphPreviewUpdateForceAssigneeTwoEngines(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	for _, engine := range []string{"embedded", "server"} {
