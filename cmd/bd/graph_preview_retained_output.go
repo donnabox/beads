@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -26,7 +27,7 @@ func init() {
 		}
 	}
 	for _, cmd := range []*cobra.Command{versionsCmd, historyCmd, linkVersionsCmd} {
-		cmd.Flags().Lookup("output-format").Usage = "Canonical output: default, table, detail or json (cannot combine with legacy --json or --format)"
+		cmd.Flags().Lookup("output-format").Usage = "Canonical output: default, table, detail, json or jsonl (cannot combine with legacy --json or --format)"
 		canonicalFailureFactories[cmd] = func(options clioutput.Options) (canonicalFailureRenderer, error) {
 			renderer, err := newGraphVersionOutput(bdpwire.Pin, options)
 			if err != nil {
@@ -58,11 +59,53 @@ func graphVersionItemDescriptor(bdpSpec string) clioutput.Descriptor {
 }
 
 func newGraphVersionOutput(bdpSpec string, options clioutput.Options) (*clioutput.CollectionRenderer, error) {
+	format := ""
+	if len(options.Formats) != 0 {
+		format = options.Formats[0]
+	}
+	item := graphVersionItemDescriptor(bdpSpec)
+	standalone := format == "jsonl"
+	if standalone {
+		item.Protection.Required = []string{"resource", "kind", "version"}
+	}
 	return clioutput.NewCollection(clioutput.CollectionDescriptor{
-		Item: graphVersionItemDescriptor(bdpSpec), ResultKind: "version_collection",
+		Item: item, ResultKind: "version_collection",
 		ItemsMember: "versions", ContextMembers: []string{"resource", "kind"},
-		DefaultColumns: []string{"/version", "/local_revision", "/change_at", "/actor", "/attribution"},
+		StandaloneJSONLItems: standalone,
+		DefaultColumns:       []string{"/version", "/local_revision", "/change_at", "/actor", "/attribution"},
 	}, options)
+}
+
+// A JSONL record is independently interpretable even after --omit envelope.
+// The ordinary JSON collection keeps its established {resource,kind,versions}
+// structure; only the stream's delivery unit repeats the subject context.
+func graphVersionStreamItem(resource, kind string, row map[string]any) (json.RawMessage, error) {
+	item := make(map[string]any, len(row)+2)
+	for key, value := range row {
+		item[key] = value
+	}
+	item["resource"], item["kind"] = resource, kind
+	return json.Marshal(item)
+}
+
+// Every native collection member outside versions is context for interpreting
+// its rows. Until the stream has a declared way to carry that member in each
+// raw item, refuse the stream rather than silently losing it.
+func graphVersionJSONLContextSupported(result map[string]any) error {
+	for member := range result {
+		switch member {
+		case "resource", "kind", "versions":
+		default:
+			return fmt.Errorf("version JSONL cannot preserve native collection context %q", member)
+		}
+	}
+	return nil
+}
+
+type graphVersionJSONLFailure struct{ stream *clioutput.JSONLWriter }
+
+func (f graphVersionJSONLFailure) RenderFailure(origin string, problem json.RawMessage) ([]byte, error) {
+	return nil, f.stream.Failure(origin, problem)
 }
 
 // graphComparisonDescriptor describes the local comparison result. Its from/to
@@ -105,6 +148,7 @@ func runCanonicalGraphVersions(cmd *cobra.Command, args []string, options cliout
 	if err := canonicalGraphFlags(cmd, renderer); err != nil {
 		return err
 	}
+	jsonl := len(options.Formats) != 0 && options.Formats[0] == "jsonl"
 	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
 	if cmd.Parent() != nil && cmd.Parent().Name() == "link" {
 		path, err = graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, args[0])
@@ -112,8 +156,17 @@ func runCanonicalGraphVersions(cmd *cobra.Command, args []string, options cliout
 	if err != nil {
 		return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
 	}
+	var stream *clioutput.JSONLWriter
+	var failure canonicalFailureRenderer = renderer
+	if jsonl {
+		stream, err = renderer.NewJSONL(cmd.OutOrStdout())
+		if err != nil {
+			return canonicalFailure(cmd, nil, "output_error", err.Error(), 1)
+		}
+		failure = graphVersionJSONLFailure{stream}
+	}
 	var count int
-	return canonicalReadWithGraphStore(cmd, renderer, func(ctx context.Context, store *graphstore.Store) (any, error) {
+	return canonicalReadWithGraphStore(cmd, failure, func(ctx context.Context, store *graphstore.Store) (any, error) {
 		kind, rows, err := store.Versions(ctx, path)
 		if errors.Is(err, graphstore.ErrNotFound) {
 			return nil, graphVersionsNotFound(args[0])
@@ -128,6 +181,26 @@ func runCanonicalGraphVersions(cmd *cobra.Command, args []string, options cliout
 		count = len(citable)
 		return map[string]any{"resource": path, "kind": string(kind), "versions": graphVersionRowsJSON(citable)}, nil
 	}, func(result any) error {
+		if jsonl {
+			data := result.(map[string]any)
+			if err := graphVersionJSONLContextSupported(data); err != nil {
+				return canonicalFailure(cmd, failure, "capability_unavailable", err.Error(), 5)
+			}
+			rows := data["versions"].([]map[string]any)
+			for _, row := range rows {
+				item, err := graphVersionStreamItem(path, data["kind"].(string), row)
+				if err != nil {
+					return canonicalFailure(cmd, failure, "output_error", err.Error(), 1)
+				}
+				if err := stream.Item(item); err != nil {
+					return canonicalFailure(cmd, nil, "output_error", err.Error(), 1)
+				}
+			}
+			if err := stream.Finish(true, "exhausted", nil); err != nil {
+				return canonicalFailure(cmd, nil, "output_error", err.Error(), 1)
+			}
+			return nil
+		}
 		raw, err := graphProjectCompleteRecords(result)
 		if err == nil {
 			// Versions is a bounded complete-result provider. It refuses above

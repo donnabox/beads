@@ -18,6 +18,9 @@ type CollectionDescriptor struct {
 	// ContextMembers names mandatory native top-level context (for example the
 	// subject of a version collection). Human output displays it before rows.
 	ContextMembers []string
+	// StandaloneJSONLItems promises that each version item carries the native
+	// subject context named above, including when the envelope is omitted.
+	StandaloneJSONLItems bool
 }
 
 // Completion is the CLI collection completion schema. A nil Exhausted
@@ -32,13 +35,14 @@ type Completion struct {
 // CollectionRenderer applies one immutable item projection to a native collection.
 // It is safe to reuse concurrently. JSONL streaming uses NewJSONL instead.
 type CollectionRenderer struct {
-	item           *Renderer
-	kind           string
-	itemsMember    string
-	format         string
-	raw            bool
-	columns        []string
-	contextMembers []string
+	item                 *Renderer
+	kind                 string
+	itemsMember          string
+	format               string
+	raw                  bool
+	columns              []string
+	contextMembers       []string
+	standaloneJSONLItems bool
 }
 
 // NewCollection validates presentation before any provider operation. The default
@@ -62,8 +66,9 @@ func NewCollection(descriptor CollectionDescriptor, options Options) (*Collectio
 	if err != nil {
 		return nil, err
 	}
-	if format == "jsonl" && (descriptor.ResultKind != "resource_collection" || len(descriptor.ContextMembers) != 0) {
-		return nil, fmt.Errorf("JSONL requires an admitted resource collection stream contract")
+	if format == "jsonl" && !(descriptor.ResultKind == "resource_collection" && len(descriptor.ContextMembers) == 0 ||
+		descriptor.ResultKind == "version_collection" && descriptor.StandaloneJSONLItems && len(descriptor.ContextMembers) != 0) {
+		return nil, fmt.Errorf("JSONL requires an admitted collection stream contract with self-contained items")
 	}
 	raw := false
 	for _, path := range options.Omit {
@@ -100,7 +105,7 @@ func NewCollection(descriptor CollectionDescriptor, options Options) (*Collectio
 			orderedColumns = append(orderedColumns, column)
 		}
 	}
-	return &CollectionRenderer{item: item, kind: descriptor.ResultKind, itemsMember: descriptor.ItemsMember, format: format, raw: raw, columns: orderedColumns, contextMembers: canonicalPaths(descriptor.ContextMembers)}, nil
+	return &CollectionRenderer{item: item, kind: descriptor.ResultKind, itemsMember: descriptor.ItemsMember, format: format, raw: raw, columns: orderedColumns, contextMembers: canonicalPaths(descriptor.ContextMembers), standaloneJSONLItems: descriptor.StandaloneJSONLItems}, nil
 }
 
 func collectionFormat(formats []string, shorthand bool) (string, error) {
@@ -220,7 +225,15 @@ func (r *CollectionRenderer) RenderFailure(origin string, problem json.RawMessag
 		return nil, err
 	}
 	if r.format == "jsonl" {
-		return nil, fmt.Errorf("JSONL failures require a terminal record")
+		var output bytes.Buffer
+		stream, err := r.NewJSONL(&output)
+		if err != nil {
+			return nil, err
+		}
+		if err := stream.Failure(origin, problem); err != nil {
+			return nil, err
+		}
+		return output.Bytes(), nil
 	}
 	if r.raw || r.format != "json" {
 		return nil, nil
