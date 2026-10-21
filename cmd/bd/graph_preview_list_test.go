@@ -71,7 +71,7 @@ func TestGraphPreviewIssueListInput(t *testing.T) {
 		{"format-json-comments", []string{"--format=json", "--include-comments"}, false, 0, false, 0},
 		{"ambient-flat", []string{"--flat"}, true, 0, false, 0},
 		{"false-flat", []string{"--flat=false"}, false, 5, false, 0},
-		{"false-ready", []string{"--flat", "--ready=false"}, false, 5, false, 0},
+		{"false-ready", []string{"--flat", "--ready=false"}, false, 0, false, 0},
 		{"flat-and-tree-false", []string{"--flat", "--tree=false"}, false, 0, false, 0},
 		{"tree-true", []string{"--tree=true"}, false, 5, false, 0},
 		{"negative-limit", []string{"--flat", "--limit=-1"}, false, 2, false, 0},
