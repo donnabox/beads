@@ -65,6 +65,8 @@ Their tests qualify their stated slices, not the whole gate:
 | [#164](https://github.com/donnabox/beads/pull/164) | Forced assignee replacement on Issue update. | Embedded/shared-server installed workflow and explicit `--force=false` append-notes regression passed; six current-head checks passed. Stacked on #141. |
 | [#165](https://github.com/donnabox/beads/pull/165) | All native Dependency kinds in human `dep list`. | Embedded/shared-server workflows and filter-before-incident-cap regression passed; six current-head checks passed. Shipping JSON shapes remain refused. Stacked on #141. |
 | [#166](https://github.com/donnabox/beads/pull/166) | `list --no-parent` selection, including exact human-row regression. | Embedded/shared-server installed workflow passed; six current-head checks passed. Stacked on #158. |
+| [#169](https://github.com/donnabox/beads/pull/169) | Checked `list --parent` storage selection for parent-child edges and edge-less dotted graph IDs, plus the counted legacy projection. | Targeted storage tests and installed CLI workflow passed embedded and real shared-server Dolt; four current-head checks passed. Stacked on #166. |
+| [#170](https://github.com/donnabox/beads/pull/170) | `list --parent`/`--filter-parent` for flat, `--tree=false`, JSON, long, and records output; explicitly refuses the unfinished default recursive tree. | Broad graph list tests, both-engine installed workflow, generated CLI docs, Markdown links, and six current-head checks passed. Stacked on #169. |
 
 The shared base [#141](https://github.com/donnabox/beads/pull/141) remains a
 draft. Its head `8baf79d43` includes the twenty-group C0 verifier correction
@@ -74,10 +76,12 @@ returned the exact final live predecessor plus a distinct terminal deletion
 revision. The shared smoke/verifier fix was prepared as #167, fast-forwarded
 onto #141 and combined with stronger negative controls; GitHub automatically
 marked #167 merged. All 57 local verifier tests pass on the combined head.
-Current-head full real-engine C0 qualification is still running, so #141 is
-not yet qualified. Further first-gate gaps include atomic `create --deps`,
+Current-head full real-engine C0 qualification and both race tiers passed:
+119 hosted checks succeeded, with ten intentional skips. Review remains
+undecided and the PR is still draft. Further first-gate gaps include atomic `create --deps`,
 update label/status and multi-ID forms, multi-ID and cascading deletion,
-shipping list filters and tree/pretty output, and partial-ID behavior in the
+shipping list filters and tree/pretty output (including the default recursive
+`list --parent` view), and partial-ID behavior in the
 positional Link form. Those remain inventory items until an implementation and
 both-engine evidence close them. The next gate is `dep`, `ready`, and logical
 aliases; the remaining command inventory follows that. Generic query design
@@ -118,7 +122,7 @@ distinguished from disposable-workspace execution below.
 | P1 | `dep list` | Shipping lists all dependency kinds and has distinct single-anchor and batch `--json` shapes. Baseline graph `dep list` was blocks-only and refused JSON. | #165 restores all native kinds in human output. The facade's single-anchor and batch JSON shapes remain refused; do not invent them. |
 | P1/P2 | `create --deps` and `create --file` relationships | Shipping can create dependencies with the Issue; graph refuses the combined form. Separate `create` and `dep add` are available but do not preserve one-operation failure behavior. | Design an atomic Issue-plus-Link creation route and test rollback; keep this separate from quick flag-admission repairs. |
 | P2 | `q --parent`, `create --body-file`; `update` text/label/status flags | Baseline graph smoke refused shipping forms including `q --parent`, `create --body-file`, `update --description=-`, `--add-label`, `--if-status`, and `--status`. | #152 restores description file/stdin on create/update; #164 covers forced assignee replacement. `q --parent`, label/status forms and other text fields remain. |
-| P2 | `list`, `children`, `graph` presentation | Baseline graph refused shipping `list --parent/--no-parent/--ready/--pretty/--tree`, `children --pretty`, and several filters. `graph ISSUE` has a simpler blocking view and refuses shipping render switches; the latter is documented as an intentional graph change. | #156 restores format/tree aliases, #158 sort/long and #166 no-parent. Other list filters and tree/pretty output remain. |
+| P2 | `list`, `children`, `graph` presentation | Baseline graph refused shipping `list --parent/--no-parent/--ready/--pretty/--tree`, `children --pretty`, and several filters. `graph ISSUE` has a simpler blocking view and refuses shipping render switches; the latter is documented as an intentional graph change. | #156 restores format/tree aliases, #158 sort/long, #166 no-parent, and #169/#170 flat/JSON parent selection. The default recursive parent tree, other list filters and tree/pretty output remain. Shipping's default tree walks descendants and renders their hierarchy; #169 returns flat parent-filtered rows, so the tree needs a checked hierarchy result before CLI rendering. Upstream contributor [#7081](https://github.com/gastownhall/beads/pull/7081) improves that shipping walk and carries cycle and row-cap tests to preserve when implementing the graph route. |
 | P2 | `dep add --file`, `dep tree`, `dep cycles` | Graph refuses shipping bulk import and options such as tree status/Mermaid output and cycle inclusion of tracks. Source and installed smoke confirm representative refusals. | Preserve one ordinary facade at a time; test nonblocking relationships where supported. |
 | P2 | `delete --cascade --dry-run` | Shipping previews a cascade; graph explicitly refuses it. A disposable shipping workspace reported two Issues and one dependency for a representative cascade. | #163 restores single-ID `--dry-run`; cascading and multi-ID preview still need a policy and shape before implementation. |
 
