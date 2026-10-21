@@ -542,7 +542,10 @@ of at most 32 bytes. `depends-on` and `blocked-by` therefore remain custom,
 nonblocking kinds here; neither becomes `blocks`. `bd dep add --type` treats
 those two spellings as aliases for `blocks` and admits only built-in kinds.
 Canonical `bd link create --type` selects an installed Link Type, so it does
-not accept a custom native Dependency kind.
+not accept a custom native Dependency kind. In the two-operand form, a bare
+Issue ID may be abbreviated when it uniquely identifies a live Issue. A
+`beads/PATH` or full Scope URL remains an exact graph selector; an ambiguous
+bare spelling is refused.
 
 Link updates accept the current Link by default; `--if-revision TOKEN`
 rejects a stale Link. Removal needs `--if-revision TOKEN` or `--unconditional`
