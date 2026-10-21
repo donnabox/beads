@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/spf13/cobra"
 	graph "github.com/steveyegge/beads/graphops"
@@ -122,8 +123,13 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 		}
 		raw = string(types.DepBlocks)
 	}
-	depType := canonicalDependencyType(types.DependencyType(raw))
-	if !depType.IsWellKnown() {
+	depType := types.DependencyType(raw)
+	if cmd.Name() != "link" {
+		// dep add and generic create retain their own well-known-kind policy
+		// and aliases. Shipping positional bd link stores the chosen kind.
+		depType = canonicalDependencyType(depType)
+	}
+	if !depType.IsValid() || !utf8.ValidString(string(depType)) || (cmd.Name() != "link" && !depType.IsWellKnown()) {
 		return graphFailure("capability_unavailable", "Dependency type is not registered in this preview", 5)
 	}
 	linkPath := ""
