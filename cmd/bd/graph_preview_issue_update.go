@@ -43,7 +43,7 @@ func graphPreviewIssueEditFlagsChanged(cmd *cobra.Command) bool {
 // workflow flags remain explicit refusals; legacy routing is unchanged.
 func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.UpdateIssueRequest, error) {
 	request := graphstore.UpdateIssueRequest{Path: path}
-	allowed := append([]string{"if-revision", "if-status", "force", "session", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "properties", "allow-empty-description"}, graphPreviewIssueEditFlags...)
+	allowed := append([]string{"if-revision", "if-status", "if-assignee", "force", "session", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "properties", "allow-empty-description"}, graphPreviewIssueEditFlags...)
 	if err := graphPreviewFlags(cmd, allowed...); err != nil {
 		return request, err
 	}
@@ -60,6 +60,13 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 		return request, err
 	}
 	request.ExpectedRevision, request.Unconditional = revision, unconditional
+	if cmd.Flags().Changed("if-assignee") {
+		value, _ := cmd.Flags().GetString("if-assignee")
+		if !utf8.ValidString(value) {
+			return request, graphFailure("invalid_properties", "expected Issue assignee must be valid UTF-8", 2)
+		}
+		request.ExpectedAssignee = &value
+	}
 	if cmd.Flags().Changed("if-status") {
 		status, _ := cmd.Flags().GetString("if-status")
 		if status == "" || !utf8.ValidString(status) {
@@ -143,7 +150,9 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 		// Preserve the existing update's literal value. A graph revision guard
 		// does not grant permission to take another actor's active assignment.
 		request.Assignee = &value
-		request.ForceAssigneeTransfer = force
+		// A matching assignee guard authorizes a transfer in the native writer.
+		// It is mutually exclusive with the unconditional force-transfer bit.
+		request.ForceAssigneeTransfer = force && request.ExpectedAssignee == nil
 	}
 	if graphPreviewDescriptionFlagsChanged(cmd) {
 		// Keep graph's structured conflict error for incompatible inline aliases;
@@ -329,8 +338,8 @@ func graphPreviewApplyIssueProperties(cmd *cobra.Command, request *graphstore.Up
 	force, _ := cmd.Flags().GetBool("force")
 	if request.FromRevision == "" {
 		request.ForceNotesOverwrite = force && request.Notes != nil
-		request.ForceAssigneeTransfer = force && request.Assignee != nil
-		if force && !request.ForceNotesOverwrite && !request.ForceAssigneeTransfer && !request.ForceClosePolicy {
+		request.ForceAssigneeTransfer = force && request.Assignee != nil && request.ExpectedAssignee == nil
+		if force && !request.ForceNotesOverwrite && request.Assignee == nil && !request.ForceClosePolicy {
 			return graphFailure("invalid_properties", "graph Issue update accepts --force only with notes replacement, assignee, or status", 2)
 		}
 	}
