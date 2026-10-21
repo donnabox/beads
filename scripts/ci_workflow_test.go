@@ -401,16 +401,18 @@ func TestPRCoreRequiresExcludeReadPermissionCoverage(t *testing.T) {
 	if strategy.FailFast || !reflect.DeepEqual(strategy.Matrix, map[string]any{"scope": []any{"graphstore", "remaining"}}) {
 		t.Error("PR Core must run both disjoint scopes without fail-fast cancellation")
 	}
-	download := gate.step(t, "Download both PR core scope artifacts")
-	verify := gate.step(t, "Verify complete PR core coverage and cleanup")
-	if download.If != "needs.pr-core-wrapper.result == 'success'" || download.TimeoutMinutes != 3 || download.Uses != "actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c" || download.With["pattern"] != "pr-core-go-test-${{ github.sha }}-*" || download.With["path"] != "artifacts/pr-core-scope-results" {
-		t.Error("required CI gate must retrieve both exact-source scope artifacts")
+	for _, scope := range []string{"graphstore", "remaining"} {
+		download := gate.step(t, "Download PR core "+scope+" evidence")
+		if download.If != "needs.pr-core-wrapper.result == 'success'" || download.TimeoutMinutes != 3 || download.Uses != "actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c" || download.With["name"] != "pr-core-go-test-${{ github.sha }}-"+scope || download.With["path"] != "artifacts/pr-core-scope-results/"+scope || download.With["pattern"] != "" {
+			t.Error("required CI gate must retrieve only the exact named source scope artifacts")
+		}
 	}
-	if verify.If != download.If || verify.TimeoutMinutes != 2 || verify.ContinueOnError != nil {
+	verify := gate.step(t, "Verify complete PR core coverage and cleanup")
+	if verify.If != "needs.pr-core-wrapper.result == 'success'" || verify.TimeoutMinutes != 2 || verify.ContinueOnError != nil {
 		t.Error("required CI gate must propagate bounded complete-union proof failures")
 	}
 	assertStepRunsExactly(t, gate, "Verify complete PR core coverage and cleanup", `python3 scripts/ci/macos-go-test.py --verify-scopes artifacts/pr-core-scope-results --source-sha "$(git rev-parse HEAD)" --package-parallel 4 --test-parallel 4`)
-	assertStepsBefore(t, gate, []string{"Download both PR core scope artifacts", "Verify complete PR core coverage and cleanup"}, []string{"Evaluate CI gate"})
+	assertStepsBefore(t, gate, []string{"Download PR core graphstore evidence", "Download PR core remaining evidence", "Verify complete PR core coverage and cleanup"}, []string{"Evaluate CI gate"})
 
 }
 

@@ -2595,13 +2595,20 @@ jobs:
 
       # The existing required CI Gate remains the complete PR Core signal:
       # matrix success alone cannot hide an omitted package or lost receipt.
-      - name: Download both PR core scope artifacts
+      - name: Download PR core graphstore evidence
         if: needs.pr-core-wrapper.result == 'success'
         timeout-minutes: 3
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
-          pattern: pr-core-go-test-${{ github.sha }}-*
-          path: artifacts/pr-core-scope-results
+          name: pr-core-go-test-${{ github.sha }}-graphstore
+          path: artifacts/pr-core-scope-results/graphstore
+      - name: Download PR core remaining evidence
+        if: needs.pr-core-wrapper.result == 'success'
+        timeout-minutes: 3
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: pr-core-go-test-${{ github.sha }}-remaining
+          path: artifacts/pr-core-scope-results/remaining
       - name: Verify complete PR core coverage and cleanup
         if: needs.pr-core-wrapper.result == 'success'
         timeout-minutes: 2
